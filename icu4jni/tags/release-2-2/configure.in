@@ -1,0 +1,89 @@
+dnl -*-m4-*-
+dnl configure.in for ICU4JNI
+dnl Ram Viswanadha
+dnl copyright (c) 2001 IBM, Inc.
+
+dnl Process this file with autoconf to produce a configure script
+AC_INIT(src/native/collation/CollationInterface.h)
+AC_PREFIX_PROGRAM(genrb)
+# Cross compiling is taken care of becuase you're pointing to an entire set of configuration options
+#AC_CHECK_FILE($prefix/lib/icu/Makefile.inc,,AC_MSG_ERROR([Could not find the installed ICU. Re-run ./configure with --prefix=XXX where XXX is the same prefix that the ICU was configured with. ]))
+
+CHECK_ICU_CONFIG
+
+#OLDCPPFLAGS=${CPPFLAGS}
+#CPPFLAGS="${CPPFLAGS} -I$prefix/include"
+#AC_CHECK_HEADERS($prefix/include/unicode/utypes.h,,AC_MSG_ERROR([Could not find the installed ICU. Re-run ./configure with --prefix=XXX where XXX is the same prefix that the ICU was configured with. ]))
+#CPPFLAGS=${OLDCPPFLAGS}
+
+PACKAGE="icu4jni"
+AC_SUBST(PACKAGE)
+
+AC_CHECK_PROG(AUTOCONF, autoconf, autoconf, true)
+
+ICU_MAKEFILE=$prefix/lib/icu/Makefile.inc
+AC_SUBST(ICU_MAKEFILE)
+
+
+AC_PATH_PROG(JAVA, java,false, $JAVA_HOME/bin)
+AC_PATH_PROG(JAVAC,javac,false, $JAVA_HOME/bin)
+if test "${JAVA}" = "false" ; then
+    AC_MSG_ERROR([Could not find JAVA virtual machine. Please check its existence.])
+fi
+if test "${JAVAC}" = "false" ; then
+     AC_MSG_ERROR([Could not find JAVAC compiler. Please check its existence.]) 
+fi
+AC_CANONICAL_HOST
+CANON="helo"
+case "${host}" in
+        *-*-solaris*)   CANON="solaris" ;;
+        *-*-linux*)     CANON="linux" ;;
+        *-*-freebsd*)   CANON="bsd" ;;
+        *-*-aix*)       CANON="aix" ;;
+        *-sequent-*)    CANON="ptx" ;;
+        *-*-hpux*)      CANON="hpux" ;;
+        *-*-irix*)      CANON="irix" ;;
+        *-*-os390*)     CANON="os390" ;;
+        *-*-os400*)     CANON="os400" ;;
+        *-apple-darwin*|*-apple-rhapsody*)      CANON="darwin" ;;
+        *)              CANON="unknown" ;;
+esac
+AC_SUBST(CANON)
+
+
+AC_CHECK_FILE(/usr/lib/libC.so,CRT=-lC,)
+AC_SUBST(CRT)
+
+#AC_MSG_RESULT( [The canonical name ${CANON} ])
+AC_CHECK_FILE($JAVA_HOME/include/jni.h,,AC_MSG_ERROR([Could not find jni include file please check JAVA_HOME enviroment variable.]))
+AC_CHECK_FILE($JAVA_HOME/include/$CANON/jni_md.h,,AC_CHECK_FILE($JAVA_HOME/include/jni_md.h,,AC_MSG_ERROR([Could not find jni_md.h include file please check its existence.])))
+
+JDK14="helo"
+AC_ARG_ENABLE(jdk14,
+        [  --enable-jdk14        build ICU4JNI with JDK1.4 [default=no]],
+        [case "${enableval}" in
+             yes) JDK14="true";;
+             no)  JDK14="false";;
+                *) AC_MSG_ERROR(bad value ${enableval} for --enable-jdk14) ;;
+         esac]
+        )
+AC_SUBST(JDK14)
+#AC_MSG_RESULT([JDK14 has been set to $JDK14])
+
+AC_OUTPUT([Makefile])
+
+AC_CHECK_FILE(build,,[echo creating build directory;mkdir build])
+AC_CHECK_FILE(build/lib,,[echo creating build/lib directory.;mkdir build/lib])
+AC_CHECK_FILE(build/classes,,[echo creating build/classes directory.; mkdir build/classes])
+
+if test ${JDK14} = true; then
+MSG1="# icu4jni converters"
+MSG2="# Please place this file in dir ${JAVA_HOME}/classes/META-INF directory"
+MSG3="# or append the following line to ${JAVA_HOME}/classes/META-INF/java.nio.charset.spi.CharsetProvider file"
+MSG4="com.ibm.icu4jni.charset.CharsetProviderICU"
+FNAME=./build/META-INF/java.nio.charset.spi.CharsetProvider
+AC_CHECK_FILE(build/META-INF,,[echo creating build/META-INF directory.;mkdir build/META-INF])
+AC_CHECK_FILE(build/META-INF/java.nio.charset.spi.CharsetProvider,,[echo Creating java.nio.charset.spi.CharsetProvider in build/META-INF directory; echo ${MSG1} >> ${FNAME}; echo ${MSG2} >> ${FNAME}; echo ${MSG3}>> ${FNAME}; echo ${MSG4}>> ${FNAME}] )
+fi
+
+dnl # Makefile

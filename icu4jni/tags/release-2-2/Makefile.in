@@ -1,0 +1,241 @@
+#/**********************************************************************
+#*   Copyright (C) 2001, International Business Machines
+#*   Corporation and others.  All Rights Reserved.
+#***********************************************************************/
+## Makefile.in for icu4jni
+## Ram Viswanadha 
+
+srcdir=@srcdir@
+top_srcdir=@top_srcdir@
+CANON=@CANON@
+JDK14=@JDK14@
+CRT=@CRT@
+ICU_CONFIG=@ICU_CONFIG@
+
+## Build directory information
+top_builddir = .
+subdir = .
+
+####################################################################
+# Load ICU information. You can copy this to other makefiles #######
+####################################################################
+CC=$(shell @ICU_CONFIG@ --cc)
+CXX=$(shell @ICU_CONFIG@ --cxx)
+CPPFLAGS=$(shell @ICU_CONFIG@ --cppflags)
+CFLAGS=$(shell @ICU_CONFIG@ --cflags)
+CXXFLAGS=$(shell @ICU_CONFIG@ --cxxflags)
+LDFLAGS =$(shell @ICU_CONFIG@ --ldflags)
+INVOKE =$(shell @ICU_CONFIG@ --invoke)
+SO =$(shell @ICU_CONFIG@ --so)
+BINDIR = $(shell @ICU_CONFIG@ --bindir)
+GENRB=$(shell @ICU_CONFIG@ --invoke=genrb)
+PKGDATA=$(shell @ICU_CONFIG@ --invoke=pkgdata)
+SHLIB_c=$(shell @ICU_CONFIG@ --shlib-c)
+SHLIB_cc=$(shell @ICU_CONFIG@ --shlib-cc)
+####################################################################
+MKINSTALLDIRS = $(SHELL) $(top_srcdir)/mkinstalldirs
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+
+CSRC_DIR=src/native
+BUILDDIR=build
+BUILD_DIR=build/lib
+JAVAC_EXEC=$(JAVA_HOME)/bin/javac
+JAVA_EXEC=$(JAVA_HOME)/bin/java
+JAVA_FLAGS=-d $(BUILDDIR)\classes
+JAVA_T_FLAGS=-d $(BUILDDIR)/classes -classpath $(BUILDDIR)/classes;.
+CLASSDIR=classes/com/ibm/icu4jni
+CONVDIR=converters
+CSDIR=charset
+COMDIR=common
+TESTDIR=test
+COLDIR=text
+SRCDIR=src
+PATHWD=$(shell pwd)
+
+TESTCLASS=TestAll.java \
+TestFmwk.java \
+TestLog.java 
+
+CSCLASS=CharsetICU.java \
+CharsetEncoderICU.java \
+CharsetDecoderICU.java \
+CharsetProviderICU.java \
+
+TESTTEXTCLASS=CollationElementIteratorTest.java \
+CollatorAPITest.java \
+CollatorPerformanceTest.java \
+CollatorRegressionTest.java \
+CollatorTest.java \
+CurrencyCollatorTest.java \
+DanishCollatorTest.java \
+DummyCollatorTest.java \
+EnglishCollatorTest.java \
+FinnishCollatorTest.java \
+FrenchCollatorTest.java \
+G7CollatorTest.java \
+GermanCollatorTest.java \
+KanaCollatorTest.java \
+MonkeyCollatorTest.java \
+SpanishCollatorTest.java \
+ThaiCollatorTest.java \
+TurkishCollatorTest.java \
+BasicTest.java \
+ConformanceTest.java
+
+TESTCONVCLASS=TestConverter.java
+
+COMCLASS=ErrorCode.java \
+ICU4JNILoader.java
+
+CONVCLASS=NativeConverter.java \
+ByteToCharConverterICU.java \
+CharToByteConverterICU.java \
+ByteToCharGB18030.java \
+CharToByteGB18030.java 
+
+COLCLASS=NativeCollation.java \
+CollationAttribute.java \
+CollationElementIterator.java \
+CollationKey.java \
+Collator.java \
+RuleBasedCollator.java \
+NativeNormalizer.java \
+Normalizer.java
+
+TESTCSCLASS=TestCharset.java
+
+ifeq ($(JDK14) , true) 
+MAKE_CLASS :=  $(CONVCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(CONVDIR)/%)  \
+           $(COMCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(COMDIR)/%)	\
+           $(COLCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(COLDIR)/%) \
+           $(CSCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(CSDIR)/%) \
+           $(TESTCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(TESTDIR)/%) \
+           $(TESTTEXTCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(TESTDIR)/$(COLDIR)/%) \
+           $(TESTCONVCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(TESTDIR)/$(CONVDIR)/%) \
+           $(TESTCSCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(TESTDIR)/$(CSDIR)/%) 
+CSTEST:= LD_LIBRARY_PATH=$(prefix)/lib ICU_DATA=$(prefix)/lib/icu/$(VERSION) $(JAVA_EXEC) -classpath :./build/classes: -Djava.library.path=$(prefix)/lib:$(PATHWD)/build/lib: com.ibm.icu4jni.test.charset.TestCharset -nothrow
+SERVICESTR="#icu4jni converters\n# Please place this file in dir\ncom.ibm.icu4jni.charset.CharsetProviderICU"
+MKSERVICE = $(shell mdir $(BUILDDIR)/META-INF)
+else 
+MAKE_CLASS :=  $(CONVCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(CONVDIR)/%)  \
+           $(COMCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(COMDIR)/%)	\
+           $(COLCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(COLDIR)/%) \
+           $(TESTCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(TESTDIR)/%) \
+           $(TESTTEXTCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(TESTDIR)/$(COLDIR)/%) \
+           $(TESTCONVCLASS:%=$(SRCDIR)/$(CLASSDIR)/$(TESTDIR)/$(CONVDIR)/%) 
+CSTEST :=
+MKSERVICE = $(shell mkdir $(BUILDDIR)/META-INF)
+endif
+
+MAKE_CLASSOUT1=$(MAKE_CLASS:.java=.class)
+MAKE_CLASSOUT =$(MAKE_CLASSOUT1:src/%=build/%)
+
+## Extra files to remove for 'make clean'
+CLEANFILES = *~
+
+## Target information
+JNI_VERSION = 22
+TARGET = $(BUILD_DIR)/libICUInterface$(JNI_VERSION)d.$(SO)
+TARGETR = $(BUILD_DIR)/libICUInterface$(JNI_VERSION).$(SO)
+
+OBJECTS =  $(CSRC_DIR)/common/ErrorCode.o  $(CSRC_DIR)/collation/CollationInterface.o  $(CSRC_DIR)/converter/ConverterInterface.o $(CSRC_DIR)/normalizer/NormalizationInterface.o
+
+HEADERS =   $(CSRC_DIR)/common/ErrorCode.h  $(CSRC_DIR)/collation/CollationInterface.h  $(CSRC_DIR)/converter/ConverterInterface.h $(CSRC_DIR)/normalizer/NormalizationInterface.h
+
+#donot produce dependency information
+#DEPS = $(OBJECTS:.o=.d)
+
+# We want to get the local copies of these files first, as the
+# dependency. Even though they do get exported.
+LDFLAGS += -L/usr/lib $(CRT)
+
+
+# get the hostname the code is built on
+CPPFLAGS := -I$(JAVA_HOME)/include	-I$(JAVA_HOME)/include/$(CANON) -I $(CSRC_DIR)/common -I $(CSRC_DIR)/collation -I $(CSRC_DIR)/converter $(CPPFLAGS)
+
+## List of phony targets
+.PHONY : all all-local install install-local clean clean-local \
+distclean distclean-local dist dist-local check check-local java javar
+
+
+## List of standard targets
+all: all-local java
+install: install-local
+clean: clean-local
+distclean : distclean-local
+dist: dist-local
+check: check-local
+debug: all-local java
+release:all-release javar
+
+all-local: $(TARGET)
+## For printing use @echo
+##	@echo This is JDK14 $(JDK14) 
+
+install-local: all-local install-headers install-library
+
+install-library: all-local
+	$(MKINSTALLDIRS) $(libdir)
+	$(INSTALL) $(TARGET) $(libdir)/$(TARGET)
+
+
+install-headers:
+	$(MKINSTALLDIRS) $(includedir)
+	@list='$(HEADERS)'; for file in $$list; do \
+	 echo " $(INSTALL_DATA) $$file $(includedir)/$$file"; \
+	 $(INSTALL_DATA) $$file $(includedir)/$$file; \
+	done
+
+
+dist-local:
+
+clean-local:
+	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+	rm -f $(OBJECTS) $(BUILD_DIR)/$(TARGET)
+	rm -f $(BUILD_DIR)/$(TARGETR)
+	rm -rf $(BUILDDIR)/classes/com
+
+
+distclean-local: clean-local
+	rm -f Makefile $(DEPS)
+
+check-local: all testfmwk  testcs
+
+testfmwk: copy-file
+	$(INVOKE) $(JAVA_EXEC) -classpath :./build/classes: -Djava.library.path=$(prefix)/lib:$(PATHWD)/build/lib: com.ibm.icu4jni.test.TestAll -nothrow
+
+testcs:
+	$(CSTEST)
+	
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) \
+	 && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+all-release: $(TARGETR)
+
+# Make the class file
+java :  $(MAKE_CLASSOUT)
+
+$(MAKE_CLASSOUT): $(MAKE_CLASS)
+	$(JAVAC_EXEC) -g -d $(BUILDDIR)/classes $(MAKE_CLASS)
+
+javar :
+	$(JAVAC_EXEC) -g:none -O -d $(BUILDDIR)/classes $(MAKE_CLASS)
+
+copy-file :
+	cp $(SRCDIR)/classes/com/ibm/icu4jni/test/text/*.txt $(BUILDDIR)/classes/com/ibm/icu4jni/test/text
+
+$(TARGET) : $(OBJECTS)
+	$(SHLIB_c) -o $@ $^ $(LDFLAGS)
+
+$(TARGETR) :$(OBJECTS)
+	$(SHLIB_c) -mno-debug-info -o $@ $^ $(LDFLAGS) 
+
+#ifneq ($(MAKECMDGOALS),distclean)
+#-include $(DEPS)
+#endif
+
