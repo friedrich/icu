@@ -1,0 +1,140 @@
+LOCALE EXPLORER  :  by Steven R. Loomis, IBM
+-------------------------
+
+[ * NEW: see the section on HINDI/SYRIAC and TRANSLITERATION at the bottom ]
+
+This is the source for the locale explorer CGI which is on IBM's
+external website at:
+
+    http://www10.software.ibm.com/developerworks/opensource/icu/localeexplorer
+
+ The purpose of this CGI is to (1) make available the locale data for
+viewing, and (2) show off the ICU.  Hopefully, it will also be an
+interesting and useful sample.  Please let us know (via the newsgroup)
+if this is useful or not, if you have any questions, or comments..
+
+ The tools and routines were also built to support locale explorer
+first, however we are continuing to try to make them more general
+purpose.  If you see something you think should be part of the ICU,
+by all means file a bug and explain what you want and how it can be
+made better!
+
+ Locale explorer isn't quite as much of a 'ready-to-go' application as
+some of the others in icuapps.  Installing it takes some familliarity
+with and a running web server.  
+
+
+BUILDING
+--------
+
+ To build the locale explorer, first you must have the ICU built and
+installed of course (see ../README).  Secondly, the uconv and usort
+projects should be built and installed.   In short, your best bet is
+to simply type 'make install' from the top level of icuapps.
+
+ Please read Makefile.in for details on making 'Makefile.local'.
+
+
+INSTALLING
+----------
+
+ After 'make install' is run in the locexp directory, the locale
+explorer itself will be installed in PREFIX/bin and it's data will be
+in the 'locexp' directory under the ICU's own installed data
+directory. 
+
+ If the binaries and data are left in these directories, then the
+'locexp' program can simply be called directly as a CGI.  On one
+server, it is installed this way: [apache syntax]
+
+   # The prefix is /home/srl/II
+   ScriptAlias /localeexplorer /home/srl/II/bin/locexp
+
+ There are also some HTML and image files in the 'html'
+directory. Change the URLPREFIX variable in locexp/Makefile.in such
+that if URLPREFIX is set to '/~gumby/' for example, then the file
+'explore.gif' is accessible as:
+
+      /~gumby/localeexplorer/explore.gif
+
+
+DEBUGGING
+--------- 
+
+ There is also a script called 'testVars.sh' in the tools directory
+that can aid in command-line debugging. See that script for more
+information. 
+
+ICU-DATA
+--------
+
+ The locale explorer works best when installed with a few patches to
+the ICU data.  The file 'icudata.tgz' contains some additional data
+you may install in your icu data directory.  See the README in that
+directory for more information.
+
+ In addition, there are a few new locales thrown in here. They are to
+be considered in 'draft' stage. Please give them a try!  You can add
+them to your index.txt [the ICU one, not the one in the locexp
+directory] if you want them to show up in the locale explorer's list.
+Consider these a bonus.
+
+ There are some make targets in the top-level locexp/Makefile.in which
+will assist you in using this data.
+  Note that none of these will install the data for you.
+
+#  make icudata-dir 
+
+    This will unpack the .tgz into the icudata directory 
+
+#  make icudata-res   icudata-conv 
+
+    These targets will build the resource and converter files,
+    respectively. 
+
+#  make icudata-all  
+
+     All of the above.
+
+
+HINDI - ASSYRIAN - TRANSLITERATION
+----------------------------------
+ To make the transliteration and/or fonted [syriac/hindi] support work,
+you need to modify and rebuild your converters.txt file.  Find the
+line that has 'LATIN_1' and a whole bunch of iso-8859's and other
+stuff.  At the end of the 'line' (which spans 3 lines on my screen)
+add these two words:
+
+   fonted transliteration
+
+This adds two new aliases to Latin-1.  You can select them normally in
+the locale explorer's converter-chooser.  But, they are special cased
+so as to cause transliteration or fontification to happen.
+
+
+Here are user side isntructions for installing Hindi support:
+-----------------------------
+     Go to the ITRANS site http://www.aczone.com/itrans/ and download
+this file:  
+         ftp://ftp.aczone.com/pub/itrans/itransfn.zip 
+
+     Unzip the file. You should find the directory itrans5.2/lib/fonts/ 
+     You should find files starting with 'xdvng.*' there. 
+         Mac: 
+              Drop 'xdvng.hqx' into Stuffit expander, or double click
+it, or drop it into Netscape/IE -- you should get the file 
+              xdvng.suit out of it. 
+              Drop xdvng.suit into your System folder, and restart
+your web browser.  
+
+         Windows: 
+              Open the Fonts control panel. You can either drag
+xdvng.ttf into that control panel, or go to the file menu (in Fonts) 
+              and pick Install, to install it. 
+              Restart your web browser. 
+
+         X-Windows 
+              See the README and ../FONTS.SCALE files.. 
+              Run 'mkfontdir .' and then 'xset fp+ `pwd`' and finally 'xset fp rehash'. 
+              Restart your browser 
+-------------------------------
