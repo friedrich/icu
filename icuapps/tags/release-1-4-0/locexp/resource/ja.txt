@@ -1,0 +1,12 @@
+// -*- Coding: shift_jis -*-
+// Copyright (c) 1999, International Business Machines Corporation and
+// others. All Rights Reserved.
+// Japanese. by Steven R. Loomis
+
+ja 
+{
+	DefaultEncoding
+	{
+		{ "shift_jis" }
+	}
+}
