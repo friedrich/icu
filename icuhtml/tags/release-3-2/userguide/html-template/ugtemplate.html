@@ -1,0 +1,352 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html lang="en-US">
+<head>
+  <title>ICU Userguide</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="keywords" content=
+  "ICU, ICU4C, ICU4J, International Components for Unicode, unicode, internationalization, i18n, localization, l10n, globalization, g11n, nls, code page, codepage, encoding, locale, collation">
+  <meta name="description" content=
+  "The International Components for Unicode (ICU) library user guide.">
+  <link rel="stylesheet" href="icu.css" type="text/css">
+</head>
+
+<body>
+
+<div class="topbar">
+	<img  src="images/hlines.gif" 
+		alt="Horizontal Lines" width="150" height="47"
+	><img  src="images/gr100.gif"
+		alt="Horizontal Lines Gradiant"><span class="toptitle">ICU User Guide</span></div> 
+
+
+
+<div class="sidebar">		
+	    <p class="sidebar1">ICU</p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="intro.html">Introduction</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="i18n.html">Internationalization</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2"
+		href="unicodeBasics.html">Unicode Basics</a></p>
+	
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="framework.html">ICU Services</a></p>
+	
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="design.html">ICU Design</a></p>
+		
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="posix.html">C/POSIX Migration</a></p>
+		
+	    <p class="sidebar1">Chars &amp; Strings</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="strings.html">Strings</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="properties.html">Properties</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="characterIterator.html">CharacterIterator</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="unicodeSet.html">UnicodeSet</a></p>
+		
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="regexp.html">Regular Expressions</a></p>
+
+	    <p class="sidebar1">Conversion</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="conversion.html">Conversion Basics</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="codepageConverters.html">Converter</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="conversion-data.html">Conversion Data</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="compression.html">Compression</a></p>
+
+	    <p class="sidebar1">Locales &amp; Resources</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="locale.html">Locale Class</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="ResourceManagement.html">Resources</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="localizing.html">Localizing with ICU</a></p>
+
+	    <p class="sidebar1">Date/Time</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="dateTime.html">Date/Time Services</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="dateCalendar.html">Calendar Services</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="dateTimezone.html">TimeZone class</a></p>
+
+	    <p class="sidebar1">Formatting</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="formatParse.html">Format &amp; Parse</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="formatNumbers.html">Format Numbers</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="formatDateTime.html">Format Date/Time</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="formatMessages.html">Format Messages</a></p>
+
+	    <p class="sidebar1">Transforms</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="Transformations.html">Transformations</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="caseMappings.html">Case Mapping</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="bidi.html">BiDi Algorithm</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="normalization.html">Normalization</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="Transform.html">Transform</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="TransformRule.html">Rule Tutorial</a></p>
+
+	    <p class="sidebar1">Collation</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="Collate_Intro.html">Introduction</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="Collate_Concepts.html">Concepts</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="Collate_ServiceArchitecture.html">Architecture</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="Collate_Customization.html">Customization</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="searchString.html">Search String</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="Collate_FAQ.html">Collation FAQ</a></p>
+
+	    <p class="sidebar1">Boundary Analysis</p>
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2"
+		href="boundaryAnalysis.html">Boundary Analysis</a></p>
+
+	    <p class="sidebar1">Layout Engine</p>
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2"
+		href="layoutEngine.html">Layout Engine</a></p>
+
+	    <p class="sidebar1">ICU Data</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="icudata.html">ICU Data</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="packaging.html">Packaging ICU</a></p>
+		
+	    <p class="sidebar1">Use From ...</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="JNI.html">Java Native Interface</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="cobol.html">Cobol</a></p>
+		
+	    <p class="sidebar1">Misc</p>
+	    
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="conventions.html">Coding Guidelines</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="sync.html">Synchronization</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="userguideupdate.html">User Guide Editing</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="icufaq.html">ICU FAQs</a></p>
+
+		<p class="sidebar2">&nbsp;&middot;&nbsp;<a class="sidebar2" 
+		href="glossary.html">Glossary</a></p>
+		
+		<p class="sidebar2">&nbsp;&nbsp;</p>
+
+ </div>
+ 
+
+<!-- Start of the main content portion of the page  -->
+ <div class="main-content">
+    <a name="main"></a>
+   <img src="images/w24.gif" width="96" height="81" align="right"
+    alt="Languages Around The World"><br>
+	
+<!-- HTML conversion tool insert content HERE -->
+<h1>FAKE ICU USER GUIDE</h1>
+
+<h2>Introduction</h2>
+<hr>
+
+<h3>text in h3 format?</h3>
+
+<p>ICU is a mature, widely used set of C/C++ and Java libraries for
+Unicode support, software internationalization and globalization
+(i18n/g11n). It grew out of the JDK 1.1 internationalization APIs,
+which the ICU team contributed, and the project continues to be
+developed for the most advanced Unicode/i18n support. ICU is widely
+portable and gives applications the same results on all platforms and
+between C/C++ and Java software.</p>
+
+<ul>
+  <li>Features: See the overview below.</li>
+
+  <li>Performance: See <a href=
+  "http://oss.software.ibm.com/icu/charts/performance/">our
+  comparison charts</a></li>
+
+  <li>Users: See <a href=
+  "http://oss.software.ibm.com/icu/credits/companies.html">our list
+  of companies and organizations using ICU</a>. Please let us know if
+  you use ICU but cannot find your name!</li>
+
+  <li>Please find further information on this page and through the
+  navigation bar</li>
+</ul>
+-<h3>Why Unicode?</h3>
+
+<p>Unicode (and the parallel ISO 10646 standard) defines the
+character set necessary for efficiently processing text in any
+language and for maintaining text data integrity. In addition to
+global character coverage, the Unicode standard is unique among
+character set standards because it also defines data and algorithms
+for efficient and consistent text processing. This simplifies
+high-level processing and ensures that all conformant software
+produces the same results. The widespread adoption of Unicode over
+the last decade made text data truly portable and formed a
+cornerstone of the Internet.</p>
+
+<h3>Repeat enough stuff to extend beyond the side bar</h3>
+
+<p>Unicode (and the parallel ISO 10646 standard) defines the
+character set necessary for efficiently processing text in any
+language and for maintaining text data integrity. In addition to
+global character coverage, the Unicode standard is unique among
+character set standards because it also defines data and algorithms
+for efficient and consistent text processing. This simplifies
+high-level processing and ensures that all conformant software
+produces the same results. The widespread adoption of Unicode over
+the last decade made text data truly portable and formed a
+cornerstone of the Internet.</p>
+
+<p>Unicode (and the parallel ISO 10646 standard) defines the
+character set necessary for efficiently processing text in any
+language and for maintaining text data integrity. In addition to
+global character coverage, the Unicode standard is unique among
+character set standards because it also defines data and algorithms
+for efficient and consistent text processing. This simplifies
+high-level processing and ensures that all conformant software
+produces the same results. The widespread adoption of Unicode over
+the last decade made text data truly portable and formed a
+cornerstone of the Internet.</p>
+
+<p>Unicode (and the parallel ISO 10646 standard) defines the
+character set necessary for efficiently processing text in any
+language and for maintaining text data integrity. In addition to
+global character coverage, the Unicode standard is unique among
+character set standards because it also defines data and algorithms
+for efficient and consistent text processing. This simplifies
+high-level processing and ensures that all conformant software
+produces the same results. The widespread adoption of Unicode over
+the last decade made text data truly portable and formed a
+cornerstone of the Internet.</p>
+
+<p>Unicode (and the parallel ISO 10646 standard) defines the
+character set necessary for efficiently processing text in any
+language and for maintaining text data integrity. In addition to
+global character coverage, the Unicode standard is unique among
+character set standards because it also defines data and algorithms
+for efficient and consistent text processing. This simplifies
+high-level processing and ensures that all conformant software
+produces the same results. The widespread adoption of Unicode over
+the last decade made text data truly portable and formed a
+cornerstone of the Internet.</p>
+
+<p>Unicode (and the parallel ISO 10646 standard) defines the
+character set necessary for efficiently processing text in any
+language and for maintaining text data integrity. In addition to
+global character coverage, the Unicode standard is unique among
+character set standards because it also defines data and algorithms
+for efficient and consistent text processing. This simplifies
+high-level processing and ensures that all conformant software
+produces the same results. The widespread adoption of Unicode over
+the last decade made text data truly portable and formed a
+cornerstone of the Internet.</p>
+
+<p>Unicode (and the parallel ISO 10646 standard) defines the
+character set necessary for efficiently processing text in any
+language and for maintaining text data integrity. In addition to
+global character coverage, the Unicode standard is unique among
+character set standards because it also defines data and algorithms
+for efficient and consistent text processing. This simplifies
+high-level processing and ensures that all conformant software
+produces the same results. The widespread adoption of Unicode over
+the last decade made text data truly portable and formed a
+cornerstone of the Internet.</p>
+
+<p>Unicode (and the parallel ISO 10646 standard) defines the
+character set necessary for efficiently processing text in any
+language and for maintaining text data integrity. In addition to
+global character coverage, the Unicode standard is unique among
+character set standards because it also defines data and algorithms
+for efficient and consistent text processing. This simplifies
+high-level processing and ensures that all conformant software
+produces the same results. The widespread adoption of Unicode over
+the last decade made text data truly portable and formed a
+cornerstone of the Internet.</p>
+
+<p>Unicode (and the parallel ISO 10646 standard) defines the
+character set necessary for efficiently processing text in any
+language and for maintaining text data integrity. In addition to
+global character coverage, the Unicode standard is unique among
+character set standards because it also defines data and algorithms
+for efficient and consistent text processing. This simplifies
+high-level processing and ensures that all conformant software
+produces the same results. The widespread adoption of Unicode over
+the last decade made text data truly portable and formed a
+cornerstone of the Internet.</p>
+
+<h3> That ought to do it. </h3>
+<!-- END of generated html content -->
+
+<br/>
+<hr/>
+<p> 
+<i>Copyright (c) 2000 - 2004 IBM and Others</i> - 
+<a href="http://oss.software.ibm.com/icu/userguide/icu.pdf">PDF Version</a>
+- Feedback: 
+<a href="mailto:icu-issues@oss.software.ibm.com">icu-issues@oss.software.ibm.com</a>
+</p>
+<p>User Guide for ICU Generated yyyy-mm-dd. </p>
+ </div>
+</body>
+</html>
