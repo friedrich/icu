@@ -1,0 +1,37 @@
+<!-- Copyright (c) 2006 IBM and others, all rights reserved -->
+<project name="userguide" default="all" basedir=".">
+	<target name="init">
+		<!-- nothing, yet -->
+	</target>
+
+	<target name="UGtoHtml" description="Build UGtoHtml tool">
+		<javac sourcepath="UGtoHtml/src"
+			srcdir="UGtoHtml/src"
+			destdir="UGtoHtml/src"
+			debug="on" deprecation="off" 
+			encoding="ascii">
+			<exclude name="**/CVS/**/*"/>
+			<include name="*.java"/>
+		</javac>
+	</target>
+
+	<target name="all" description="build all" depends="UGtoHtml">
+	        <java classname="UGtoHtml" fork="yes" failonerror="true">
+			<classpath>
+				<pathelement path="UGtoHtml/src"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="zip" description="build zipfile" depends="all">
+        <zip destfile="icu-userguide.zip" basedir="html" includes="**/*" />
+	</target>
+
+	<target name="clean" depends="init" description="remove all build targets">
+        	<delete>
+			<fileset dir="UGtoHtml/src" includes="**/*.class" />
+		</delete>
+		<delete dir="html/" />
+		<delete file="icu-userguide.zip" />
+	</target>
+</project>
