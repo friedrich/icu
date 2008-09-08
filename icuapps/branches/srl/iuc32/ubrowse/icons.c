@@ -16,9 +16,13 @@
 
 U_CFUNC char ubrowseres_dat[];
 
+U_CFUNC const char* icons_bundlePath() {
+    return "ubrowseres";
+}
+
 int icons_init() {
   UErrorCode status = U_ZERO_ERROR;
-  udata_setAppData( "ubrowseres", (const void*) ubrowseres_dat, &status);
+  udata_setAppData( icons_bundlePath(), (const void*) ubrowseres_dat, &status);
   if(U_FAILURE(status)) {
     return 1;
   }
@@ -34,7 +38,7 @@ void icons_write ( /* UFILE *OUT, */ const char *path )
   UErrorCode s2 = U_ZERO_ERROR;
   const char *thePath = NULL;
 
-  thePath = "ubrowseres";
+  thePath = icons_bundlePath();
 
   rb = ures_open(thePath, "icons", &status);   /* direct */
 

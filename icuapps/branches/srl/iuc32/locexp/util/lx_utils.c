@@ -1051,15 +1051,19 @@ UResourceBundle *gRB = NULL;
 
 UResourceBundle *FSWF_getBundle()
 {
-
+fprintf(stderr, "This is the machine that goes BING\n");
   if(gRB == 0)
     {
       FSWF_bundleErr = U_ZERO_ERROR;
       gRB = ures_open(  FSWF_bundlePath(), gLocale, &FSWF_bundleErr);
       if(U_FAILURE(FSWF_bundleErr))
-	{
+	  {
+        fprintf(stderr, "BP %s err %s\n", FSWF_bundlePath(), u_errorName(FSWF_bundleErr));
 	  gRB = 0;
-	}
+	  }
+      else {
+        fprintf(stderr, "BP %s ok %s\n", FSWF_bundlePath(), u_errorName(FSWF_bundleErr));
+      }
     }
   return gRB;
 

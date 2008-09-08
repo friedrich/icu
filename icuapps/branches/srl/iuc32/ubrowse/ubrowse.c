@@ -1,9 +1,7 @@
 /*
 *******************************************************************************
-* Copyright (C) 1996-2006, International Business Machines Corporation and    *
+* Copyright (C) 1996-2008, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
-*******************************************************************************
-* HTML Design by Josh Mast <josh@hivehaus.org>                                *
 *******************************************************************************
 *
 * File ubrowse.c
@@ -11,13 +9,13 @@
 * Modification History:
 *
 *   Date        Name        Description
-*   06/11/99    stephen     Creation.
-*   06/16/99    stephen     Modified to use uprint.
 *   08/02/1999  srl         Unibrowse
-*   12/02/1999  srl         Integrated design changes from Josh Mast
+*   12/02/1999  srl         Integrated design changes from Josh Mast <josh@hivehaus.org>
 *   05/12/2001  srl         Revamping design from the beautiful St. Paul's Bay, Malta
 *   06/16/2001  srl         More design updates.. added incremental search by name.
 *    8/02/2006  srl         Happy 7th Birthday,  UnicodeBrowser.
+*   21/09/2007  srl         Rewrite to be UnicodeSet-based
+*    5/ 5/2008  srl         More UnicodeSet updates
 *******************************************************************************
 */
 
@@ -39,8 +37,27 @@
         restartable.
 */
 
+#define Q_SET "set"
+#define Q_I "i" /* index */
+#define Q_O "o"  /* offset */
+#define Q_MODE "mode"
+
+#define M_CHAR "ch"
+#define M_BLOCK "block"
+#define M_COLUMN "column"
+#define M_ALL "all"
+
 /*
-    Query formats which come in:
+
+ *NEW*   Set structure:
+        set=  [a-z]          unicodeSet to traverse
+        i=  'index into set'
+        mode=    'mode'
+        
+ 
+---
+
+ *OLD*   Query formats which come in:
 
   *****************
         go=XXXXXX           (from the 'go' panel- key doesn't tell
@@ -56,6 +73,7 @@
        s=_______            search by text      ENAME|EEXACT
           &sx=              .. +exact
           &cs=XXXX          .. continue search from XXXX
+   
 
 */
 
@@ -74,11 +92,13 @@
 #include "unicode/uscript.h"
 #include "unicode/decompcb.h" /* from locexp/util */
 #include "unicode/lx_utils.h"
+#include "unicode/cgiutil.h"
 #include "unicode/uset.h"
 #include "icons.h"
 
 #include "demo_settings.h"
 #include "demoutil.h"
+#include <assert.h>
 
 int validate_sanity();
 
@@ -87,6 +107,13 @@ int validate_sanity();
 #include <kangxi.c> /* Kang-Xi Radical mapping table */
 
 typedef enum { ECHAR, ETOP, EBLOCK, ECOLUMN, ERADLST, ERADICAL, ENAME, EEXACTNAME, ESET, ESETCHUNK } ESearchMode;
+
+UChar gNullSet[] = { (UChar)'[', (UChar)']', 0 };
+UChar gUPlus[] = { (UChar)'U', (UChar)'+', 0 };
+UChar gSlashU[] = { (UChar)'\\', (UChar)'u', 0 };
+UChar gSlashUOpen[] = { '[', (UChar)'\\', (UChar)'u', 0 };
+UChar gSlashUClose[] = { (UChar)']', 0 };
+UChar gNullString[] = { 0 };
 
 #define kSetChunkWidth 10  /* chars per row in unicode set chunk */
 #define kSetChunkHeight 10 /* chars per column in unicode set chunk */
@@ -100,9 +127,10 @@ UChar32 doSearchBlock(int32_t, UChar32 startFrom);
 UChar32 doSearchType(int8_t, UChar32 startFrom);
 void showSearchMenu(UChar32 startFrom);
 void printCharName(UChar32 ch);
-void printModeCHAR(UChar32 ch);
+void printModeCHAR(UChar32 ch, const char *qs);
 void printModeSET(const char *qs, ESearchMode mode);
 void printElsewhereBox(UChar32 block, ESearchMode mode);
+void showBlockMap(UFILE *out, USet *set, int32_t idx, UChar32 block, UChar32 theChar, const char *qs);
 
 /**
  * Print a row (like in "Column" view)
@@ -114,21 +142,34 @@ void printElsewhereBox(UChar32 block, ESearchMode mode);
 void printRow(UChar32 theChar, UBool showBlock, const char *hilite, const char *link);
 void printRowHeader(UBool showBlock);
 
+char *removeParam(char *buf, int bufSize, const char *qs, const char *param);
+void showSkipBox(UFILE *gOut, USet *set, int setSize, int idx, int blocksize);
+
 
 /* globals, current search.. */
 int32_t gSearchType = -1;
 int32_t gSearchBlock = -1;
 char    gSearchName[512];
 char    gSearchHTML[512];
-UChar usf[1024]; /* unicode string set */
 UChar32 gSearchChar = 0xFFFF;
 UBool gSearchCharValid = FALSE;
+
+/* set stuff */
+const   UChar *usf = NULL; /* unicode string set */
+USet *uset = NULL; /* the set */
+int32_t usetItemCount = -1; /* count of items */
+int32_t usetSize = -1;
+int32_t usetIndex = -1; /* our current pos in the set */
 
 UBool anyDecompose = FALSE;
 
 UFILE      *gOut = NULL;
+CGIContext *ctx = NULL;
 
 int enumHits = 0, foundCount = 0; /* # of enumerations, # of hits */
+  ESearchMode mode = ETOP;
+/* TODO: move html chunks into templates */
+
 
 static const char htmlHeader[]=
     "Content-Type: text/html; charset=utf-8\n"
@@ -139,11 +180,19 @@ static const char htmlHeader[]=
 
 static const char defaultHeader[]=
     "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
-    "<title>ICU Demonstration - Unicode Browser</title>\n";
+    "<title>%S</title>\n"
+    "<link rel=\"stylesheet\" type=\"text/css\" href=\"./icudemos/icu.css\" /><link rel=\"stylesheet\" type=\"text/css\" href=\"./icudemos/main.css\" />";
 
 static const char endHeaderBeginBody[] =
     "</head>\n"
     "<body>\n"
+                    // from Survey Tool
+                    "<script type='text/javascript'><!-- \n" 
+                    "function show(what)\n" 
+                    "{document.getElementById(what).style.display=\"block\";\ndocument.getElementById(\"h_\"+what).style.display=\"none\";}\n" 
+                    "function hide(what)\n" 
+                    "{document.getElementById(what).style.display=\"none\";\ndocument.getElementById(\"h_\"+what).style.display=\"block\";}\n" 
+                    "--></script>"
     
     "<style type=text/css>\n" 
                     "<!-- \n" 
@@ -154,7 +203,7 @@ static const char endHeaderBeginBody[] =
 static const char breadCrumbMainHeader[]=
     "<a class=\"bctl\" href=\"//www.icu-project.org/\">ICU</a><span class=\"bct\">&nbsp;&nbsp;&gt;&nbsp;</span>\n"
     "<a class=\"bctl\" href=\"icudemos\">Demo</a><span class=\"bct\">&nbsp;&nbsp;&gt;&nbsp;</span>\n"
-    "<h1>Unicode Browser</h1>\n";
+    "<h1>%S</h1>\n";
 
 static const char *htmlFooter=
     "</body>\n"
@@ -466,13 +515,13 @@ void printIconMenu(const char *alt, const char *name, ESearchMode target, ESearc
 {
   u_fprintf(gOut, "<input type=\"image\" "
 	    " border=\"0\" width=\"32\" height=\"32\" "
-	    "alt=\"%s%s%s\" value=\"%s%s%s\" "
+	    "alt=\"%s%s%s\" value=\"%s\" "
 	    "name=\"%s\" "
 	    "src=\"%s/_/%s%s.gif\" "
 	    " />\n",
 	    (current==target)?"[":"", alt,  (current==target)?"]":"",
-	    (current==target)?"[":"", alt,  (current==target)?"]":"",
-	    name, 
+	    name,
+	    Q_MODE, 
 	    getenv("SCRIPT_NAME"),
 	    alt, (current==target)?"-x":"");
 } 
@@ -685,19 +734,25 @@ u_fprintf(gOut, "<td>%s", u_getPropertyValueName(UCHAR_BIDI_CLASS,
 
 }
 
+char ourLocale[256] = "";
+
 int
 main(int argc,
      char **argv)
 {
   char *qs;
+  const char *modestr;
+  const char *idxstr;
   char *pi;
   char *tmp = NULL;
   UChar chars[800];
-  UChar32 theChar;
+  UChar setOut[2048];
+  UChar32 theChar = 0xFFFF;
   int n,i,r,c,uc;
   UBool searchedFor;
-  UChar32 block = 0xFFFF;
-  ESearchMode mode;
+  
+  UChar32 block = 0xFFFF; /* beginning of current 'block' */
+  int32_t idx = 0; /* item index on uset */
   UVersionInfo uvi;
   UErrorCode status = U_ZERO_ERROR;
 
@@ -712,10 +767,47 @@ main(int argc,
     }
     icons_write(pi);
     return 0;
+  } else {
+    if(icons_init()) {
+        fprintf(stderr, "icons_init failed\n");
+    } else {
+        fprintf(stderr, "icons_init OK\n");
+    }
   }
 
+  /* set up CGI */
+  ctx = cgi_open();
+  cgi_initCGIVariables(ctx);
+  
+  /* set up locale */
+  if(0 && ctx->acceptLanguage && *ctx->acceptLanguage) {
+    UEnumeration *ourLocales = NULL;
+    UErrorCode acceptStatus = U_ZERO_ERROR;
+    UAcceptResult outResult;
+    int32_t acceptRes = uloc_acceptLanguageFromHTTP(ourLocale, sizeof(ourLocale)/sizeof(ourLocale[0]),
+                            &outResult,
+                            ctx->acceptLanguage,
+                            ourLocales,
+                            &acceptStatus);
+    
+  } else if(ctx->acceptLanguage && *ctx->acceptLanguage) {
+    if(strstr(ctx->acceptLanguage, "mt")) {
+        strcpy(ourLocale, "mt_MT");
+    } else {
+        strcpy(ourLocale, "en_US");
+    }
+  }
+  
+  {
+    UErrorCode berr = U_ZERO_ERROR;
+    FSWF_setBundlePath((char*)icons_bundlePath());
+    FSWF_setLocale(ourLocale);
+    FSWF_getBundle();
+    berr = FSWF_bundleError();
+    fprintf(stderr, "[%s], err %s\n", ourLocale, u_errorName( berr ));
+  }
 
-  gOut = u_finit(stdout, "en_US", "UTF-8");
+  gOut = u_finit(stdout, ourLocale, "UTF-8");
 
   if(gOut == NULL)
   {
@@ -724,9 +816,11 @@ main(int argc,
   }
 
   u_fprintf(gOut, "%s", htmlHeader);
-  if (!printHTMLFragment(gOut, NULL, DEMO_COMMON_DIR "ubrowse-header.html")) {
-      u_fprintf(gOut, "%s", defaultHeader);
-  }
+#if 0
+  if (!printHTMLFragment(gOut, NULL, DEMO_COMMON_DIR "ubrowse-header.html")) 
+#endif
+      u_fprintf(gOut, defaultHeader, FSWF("title", "ICU Demonstration - Unicode Browser"));
+
   u_fprintf(gOut, "%s", endHeaderBeginBody);
   if (printHTMLFragment(gOut, NULL, DEMO_COMMON_MASTHEAD)) {
       u_fprintf(gOut, "%s", DEMO_BEGIN_LEFT_NAV);
@@ -734,7 +828,7 @@ main(int argc,
       u_fprintf(gOut, "%s", DEMO_END_LEFT_NAV);
       u_fprintf(gOut, "%s", DEMO_BEGIN_CONTENT);
   }
-  u_fprintf(gOut, "%s", breadCrumbMainHeader);
+  u_fprintf(gOut, breadCrumbMainHeader, FSWF("ubrowse_name", "Unicode Browser"));
 
   if(lxu_validate_property_sanity()) {
     u_fprintf(gOut, "<H1>Err, uchar.h changed without update to lx_utils.c</H1>\n");
@@ -757,8 +851,64 @@ main(int argc,
   if (qs==NULL)
       qs = "";
   mode = ETOP;
+  /* UnicodeSet. */
+  usf = cgi_queryFieldU(ctx, "us");
+  
+ /*  if(mode==ETOP) usf=NULL; */
 
-  if(qs)
+  if(usf)       fprintf(stderr, ">>len %d\n", u_strlen(usf));  fflush(stderr);
+  
+  /* Fix up the Unicode Set. If it is a bare string, turn it into a set. */
+  if(usf && *usf) {
+        if(!u_strncmp(usf,gUPlus,2)) {
+            UChar *tmpu  = malloc(sizeof(UChar)*(u_strlen(usf)+4));
+            u_strcpy(tmpu,gSlashUOpen);
+            u_strcat(tmpu,usf+2);
+            u_strcat(tmpu,gSlashUClose);
+            usf = tmpu;
+        } else if(*usf != (UChar)'[') {
+            UChar *tmpu  = malloc(sizeof(UChar)*(u_strlen(usf)+3));
+            tmpu[0]='[';
+            u_strcpy(tmpu+1,usf);
+            if(tmpu[u_strlen(usf)]!=']') {
+               tmpu[u_strlen(usf)+1]  = ']';
+               tmpu[u_strlen(usf)+2]  = 0;
+            }
+            usf = tmpu;
+        }
+  }
+
+  modestr = cgi_queryField(ctx, Q_MODE);
+  if(modestr==NULL) {
+    modestr = "";
+  }
+  if(!strcmp(modestr, M_COLUMN)) {
+    mode = ECOLUMN;
+  } else if(!strcmp(modestr, M_CHAR)) {
+    mode = ECHAR; 
+  } else if(!strcmp(modestr, M_BLOCK)) {
+    mode = EBLOCK;
+  }
+  
+  idxstr = cgi_queryField(ctx, Q_I);
+  if(idxstr && *idxstr) {
+    if(!sscanf(idxstr, "%d",&idx)) {
+        idx = 0;
+    }
+  } 
+  /* some exceptions */
+    if(sscanf(qs,"ch=%x", &block)== 1) 
+    {
+        mode = ECHAR;
+        uset = uset_open(block,block); 
+        uset_toPattern(uset, setOut, 800, TRUE, &status);
+/*         u_sprintf(chars, "%lC", block); */
+        usf = setOut;
+    }
+  
+
+    /* below are disabled */
+  if(0 && qs)
     { 
       const char *set; 
 
@@ -793,6 +943,8 @@ main(int argc,
       else if(sscanf(qs,"ch=%x", &block)== 1)
         {
           mode = ECHAR;
+          u_sprintf(chars, "[%lC]", block);
+          usf = chars;
         }
       else if(sscanf(qs,"n=%x", &block)== 1)
         {
@@ -898,8 +1050,11 @@ main(int argc,
 
   u_fprintf(gOut, "<td >");
 
-  u_fprintf(gOut, "<label for=\"go\">Go: </label><input id=\"go\" type=\"text\" size=\"6\" name=\"go\" value=\"%04X\" />\n", block);
+/*
+    u_fprintf(gOut, "<label for=\"go\">Go: </label><input id=\"go\" type=\"text\" size=\"6\" name=\"go\" value=\"%04X\" />\n", block);
+*/
 
+#if 0
   /* show which item we're on */
   printIconMenu("ch", "ch", ECHAR, mode);
   printIconMenu("column", "k", ECOLUMN, mode);
@@ -932,25 +1087,71 @@ main(int argc,
   u_fprintf(gOut, "</td>\n");
 
   u_fprintf(gOut, "<td>");
+#endif
 
-  {
-    const char *q;
-    q = strstr(qs,"us=");
-    if(!q) { q = ""; } else { q += 3; }
-    usf[0]=0;
-    unescapeAndDecodeQueryField_enc(usf, 1023,
-                                    q, "UTF-8");
+
+  /* Print out some stuff. */
+  u_fprintf(gOut, "To view Unicode Properties, enter some text such as the following examples:<br>"
+                   "<b>Q</b>  (A character.)<br>"
+                   "<b>abc</b> (Several characters.)<br>"
+                   "<B>\\u04AB</b>  (A Unicode codepoint)<br>"
+                   "<B>U+04AB</b>  (A Unicode codepoint)<br>"
+                   "<B>[a-h]</b>  (A Unicode Set)<br>"
+        );
+  /* open the set */
+  if(usf &&  *usf) {
+    UErrorCode s_status = U_ZERO_ERROR;
+    if(uset == NULL) {
+        uset = uset_openPattern(usf, -1, &s_status);
+    }
+    if(!uset || U_FAILURE(s_status)) {
+        u_fprintf(gOut, "</tr><tr><td>Could not open set: %s</td>", u_errorName(s_status));
+    } else {
+        usetItemCount = uset_getItemCount(uset);
+        usetSize= uset_size(uset);
+        if(usetSize>0 && usetItemCount>0) {
+            u_fprintf(gOut, "</tr><tr><td>%d items, %d characters and strings.</td>", usetItemCount, usetSize);
+        }
+        if(strcmp(modestr, M_ALL) && mode == ETOP && gNullSet!=usf) {
+            if(usetSize>1) {
+                mode = ECOLUMN;
+            } else {
+                mode = ECHAR;
+            }
+        }
+    }
   }
-  u_fprintf(gOut, "<label for=\"set\">Set:</label><input id=\"set\" type=\"text\" name=\"us\" size=\"50\" value=\"%S\" />", usf);
+  
+  if(usf == NULL || *usf == 0) {
+    /* */
+  } else {
+#if 0
+    /* aggressive rewrite of pattern */
+        uset_toPattern(uset, setOut, 2048, FALSE, &status);
+/*         u_sprintf(chars, "%lC", block); */
+        usf = setOut;
+#endif
+  }
+  u_fprintf(gOut, "<label for=\"set\"><!-- Set: --></label><input id=\"set\" type=\"text\" name=\"us\" size=\"50\" value=\"%S\" />", usf);
 
-  printIconMenu("column", "gosetk", ESET, mode);
-  printIconMenu("block", "gosetn", ESETCHUNK, mode);
+
+
+  /* Print out the menu, or an input button. */ 
+  u_fprintf(gOut, "<input value=\"%S\" name=ok type=submit>\n", FSWF("entry_ok", "View"));
   u_fprintf(gOut, "</td>\n");
+  
+  /* If an index was requested, jump to it. */
+  if(idx>=0&&idx<=usetSize) {
+    /* at char idx */
+    block = theChar = uset_charAt(uset, idx);
+  }
 
+#pragma mark ETOP
   if(mode == ETOP) /* top level list of blocks ******************************** ETOP ********** */
   {
       u_fprintf(gOut, "</tr></table></form>"); /* closer of menu */
 
+#if 0
       u_fprintf(gOut, "<br /><table summary=\"UnicodeBrowser\" border=\"0\" cellpadding=\"1\" cellspacing=\"1\"><tr><td bgcolor=\"#cccccc\">\n");
 
       u_fprintf(gOut, "<b>Unicode Browser</b> - Click on a type of character view it in more detail<br />\n");
@@ -958,6 +1159,7 @@ main(int argc,
              );
 
       u_fprintf(gOut, "<b>Blocks:</b> ");
+      u_fprintf(gOut, "<div id='h_blocks'><a href=\"javascript:show('blocks')\">(Show)</a></div><div style='display:none;' id='blocks'><a href=\"javascript:hide('blocks')\">(Hide)</a><br>");
       for(i=UBLOCK_BASIC_LATIN;i<UBLOCK_COUNT;i++)
       {
         if (UBLOCK_BASIC_LATIN != i) {
@@ -965,10 +1167,11 @@ main(int argc,
         }
         u_fprintf(gOut, "<a href=\"?scr=%d&amp;b=0\">%s</a>", i, getUBlockCodeName(i));
       }
-      u_fprintf(gOut, "<br />\n<br />\n");
+      u_fprintf(gOut, "</div><br />\n<br />\n");
       
 
       u_fprintf(gOut, "<b>General Categories:</b> ");
+      u_fprintf(gOut, "<div id='h_gcs'><a href=\"javascript:show('gcs')\">(Show)</a></div><div style='display:none;' id='gcs'><a href=\"javascript:hide('gcs')\">(Hide)</a><br>");
       for(i=U_UNASSIGNED;i<U_CHAR_CATEGORY_COUNT;i++)
       {
         if (U_UNASSIGNED != i) {
@@ -976,7 +1179,7 @@ main(int argc,
         }
         u_fprintf(gOut, "<a href=\"?typ=%d&amp;b=0\">%s</a>", i, getUCharCategoryName(i));
       }
-      u_fprintf(gOut, "<br />");
+      u_fprintf(gOut, "</div><br />");
 
 
       u_fprintf(gOut, "</td></tr></table>\n");
@@ -984,69 +1187,90 @@ main(int argc,
 /*       u_fprintf(gOut, "\n</td></tr><tr><td align=right>\n"); */
       
       showSearchMenu(0x0000);
-    }      
+#endif
+    }     
+#pragma mark EBLOCK
   else if (mode == EBLOCK) /* *************** BLOCK *******************************************/
-    {
+  {
+    const int32_t BLOCK_SIZE = 0x100;
+    UChar32 theChar = block;
+    
+    
     u_fprintf(gOut, "</tr></table></form>"); /* closer of menu */
+    
+    
+    block -= block % BLOCK_SIZE; /* normalize */
 
-      if(block <= 0xFFFF)
-        {
-            printElsewhereBox(block,mode);
-        }
+    showBlockMap(gOut, uset, idx, block, theChar, qs);
 
-      /* Unicode table  at block 'block' */
 
-      n = 0;
-      /*      for(n=0; n<0x100; n += 0x080) */
-        {
-          u_fprintf(gOut, "<table summary=\"Block View\" border=\"1\">");
-          u_fprintf(gOut, "<tr><td></td>");
-          for(c = n;c<(n + 0x100);c+= 0x10)
-            {
-              u_fprintf(gOut, "<td><b><a href=\"?k=%04X\"><tt>%03X</tt></a></b></td>", (block|c),  (block | c) >> 4   );
-            }
-          u_fprintf(gOut, "</tr>\n");
-          for(r = 0; r < 0x10; r++)
-            {
-              u_fprintf(gOut, "<tr><td><b><tt>%X</tt></b></td>", r);
-              for(c = n;c<(n + 0x100);c+= 0x10)
-                {
-                  theChar = (block | r | c );
-
-                  u_fprintf(gOut, "<td ");
-                  
-                  if(u_charType(theChar) == U_UNASSIGNED)
-                    {
-                      u_fprintf(gOut, " bgcolor=\"#888888\" ");
-                    }
-                  
-                  u_fprintf(gOut, " align=center>\n");
-                  
-                  
-                  /* print the simple data */
-                  explainOneUChar32(theChar);
-                  
-                  u_fprintf(gOut, "</td>");
-                }
-              u_fprintf(gOut, "<td><b><tt>%X</tt></b></td>", r);
-            }
-        }
-        u_fprintf(gOut, "</tr>");
-        u_fprintf(gOut, "<tr><td colspan=\"18\" align=\"center\"><i>Click on a column number to zoom in.</i></td></tr>\n");
-        u_fprintf(gOut, "</table>");
-      u_fprintf(gOut, "<hr />\n");
-      showSearchMenu( block + 0x0100);
+    if(block <= 0xFFFF)
+    {
+      printElsewhereBox(block,mode);
     }
+    
+    /* Unicode table  at block 'block' */
+
+    n = 0;
+    /*      for(n=0; n<0x100; n += 0x080) */
+    u_fprintf(gOut, "<table summary=\"Block View\" border=\"1\">");
+    u_fprintf(gOut, "<tr><td></td>");
+    for(c = n;c<(n + 0x100);c+= 0x10)
+    {
+      u_fprintf(gOut, "<td><b><a href=\"?k=%04X\"><tt>%03X</tt></a></b></td>", (block|c),  (block | c) >> 4   );
+    }
+    u_fprintf(gOut, "</tr>\n");
+    for(r = 0; r < 0x10; r++)
+    {
+      u_fprintf(gOut, "<tr><td><b><tt>%X</tt></b></td>", r);
+      for(c = n;c<(n + 0x100);c+= 0x10)
+      {
+          theChar = (block | r | c );
+          
+          u_fprintf(gOut, "<td ");
+          
+          if(!uset_contains(uset, theChar)) { 
+            u_fprintf(gOut, " bgcolor=\"#111111\" ");
+          } else if(u_charType(theChar) == U_UNASSIGNED)
+          {
+              u_fprintf(gOut, " bgcolor=\"#888888\" ");
+          }
+          
+          u_fprintf(gOut, " align=center>\n");
+          
+          
+          /* print the simple data */
+          explainOneUChar32(theChar);
+          
+          u_fprintf(gOut, "</td>");
+      }
+      u_fprintf(gOut, "<td><b><tt>%X</tt></b></td>", r);
+    }
+    u_fprintf(gOut, "</tr>");
+    u_fprintf(gOut, "<tr><td colspan=\"18\" align=\"center\"><i>Click on a column number to zoom in.</i></td></tr>\n");
+    u_fprintf(gOut, "</table>");
+    u_fprintf(gOut, "<hr />\n");
+    showSearchMenu( block + 0x0100);
+  }
+#pragma mark ECOLUMN
   else if(mode == ECOLUMN ) /****************************** COLUMN **************************/
     {
+      const int32_t COLUMN_SIZE = 0x10;
       const char *hilite;
+      char buf1[512];
+      char buf2[512];
+      char *p;
       UBool showBlock = FALSE;
       if(  ((block&~0xF)==0xFFF0) ||    /* FFFD/FFFF and */
            ((block&~0xF)==0xFEF0) ) {   /* FEFF are exceptional columns */
         showBlock = TRUE;
       }
+      idx -= idx % COLUMN_SIZE; /* normalize to column boundary */
       /* Unicode table  at column 'block' */
-
+      p = removeParam(buf1, 512, qs, Q_MODE);
+      strcpy(p, M_CHAR);
+      p = removeParam(buf2, 512, buf1, Q_I);
+      
       if(showBlock == FALSE) /* Explain what the block is ONCE: here */
       {  
         theChar = block;
@@ -1075,6 +1299,7 @@ main(int argc,
         u_fprintf(gOut, "</tr></table></form>"); /* closer of menu */
       }
 
+      showSkipBox(gOut, uset, usetSize, idx, 0x10 );
 
 
       u_fprintf(gOut, "<table summary=\"Unicode Column\" border=\"1\">");
@@ -1082,9 +1307,12 @@ main(int argc,
 
       printRowHeader(showBlock);
 
-      for(r = 0; r < 0x10; r++)  /***** rows ******/
+      for(r = 0; r < COLUMN_SIZE; r++)  /***** rows ******/
         {
-          theChar = (block | r );
+            if(idx+r >= usetSize) {
+                break;
+            }
+          theChar = uset_charAt(uset, idx+r);
 
           /* Do we have a match? for cell highlighting */ 
           if( (ublock_getCode(theChar) == gSearchBlock) || (u_charType(theChar) == gSearchType) || ((theChar == gSearchChar) && gSearchCharValid))
@@ -1099,32 +1327,39 @@ main(int argc,
           {
             hilite = "";
           }
+          
+          sprintf(p, "%d&ch=", idx+r);
 
-          printRow(theChar, showBlock, hilite, "ch");
+          printRow(theChar, showBlock, hilite, buf2);
 
         }
-      
-
+    
       u_fprintf(gOut, "</table><hr />");
-
-      showSearchMenu( block + 0x0010);
+      
+      showSkipBox(gOut, uset, usetSize, idx, COLUMN_SIZE );
+      
+/*      showSearchMenu( block + r );  search should be a mode*/
 
     }
+#pragma mark ECHAR
   else if(mode == ECHAR) /************************* CHAR *****************************/
     {
       u_fprintf(gOut, "</tr></table></form>"); /* closer of menu */
 
-      if(block <= 0xFFFF) {
-        printElsewhereBox(block, mode);
-      }
+      showSkipBox(gOut, uset, usetSize, idx, 1 );
 
-      printModeCHAR(block);
+      printElsewhereBox(theChar, mode);
+
+      printModeCHAR(theChar, qs);
 
       u_fprintf(gOut, "<br /><hr />\n");
 
-      showSearchMenu( block + 1);
+      showSkipBox(gOut, uset, usetSize, idx, 1 );
+
+/*      showSearchMenu( block + 1); */
     }
 #ifdef RADICAL_LIST 
+#pragma mark ERADLST
   else if(mode == ERADLST) /************************ RADICAL LIST ********************/
     {
       u_fprintf(gOut, "</table></form>");
@@ -1259,10 +1494,6 @@ main(int argc,
     }
   
 
-  u_fprintf(gOut, "</td></tr></table>\n\n"); /* ? */
-
-
-
   if(anyDecompose)
     {
       u_fprintf(gOut, "Note: text in <FONT COLOR=\"#00DD00\">");
@@ -1281,15 +1512,23 @@ main(int argc,
       u_fprintf(gOut, "%d.",uvi[uc]);
   }
   u_fprintf(gOut, "</a>\n");
+  
+  u_fprintf(gOut, "<h1>Locale: %s</h1><hr>", ourLocale);
 
   u_fprintf(gOut, "<br />Powered by <a href=\"" ICU_URL "\">ICU %s</a>\n", U_ICU_VERSION);
+
+
+  u_fprintf(gOut, "</td></tr></table>\n\n"); /* End Real Stuff */
+
+
+
   
   u_fprintf(gOut, "%s", DEMO_END_CONTENT);
   printHTMLFragment(gOut, NULL, DEMO_COMMON_FOOTER);
   u_fprintf(gOut, "%s", htmlFooter);
 
   u_fclose(gOut);
-
+  cgi_close(ctx);
   return 0;
 }
 
@@ -1356,7 +1595,9 @@ UChar32 doSearchType(int8_t type, UChar32 startFrom)
 
 void showSearchMenu(UChar32 startFrom)
 {
+
   int32_t i;
+return; /* no search menu- broken. */
     /* was: width=100% */
   u_fprintf(gOut, "<br /><table summary=\"Search Menu\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" ><tr><td bgcolor=\"#000000\">\n"
             "<table summary=\"\" border=\"0\" cellpadding=\"1\" cellspacing=\"1\"><tr><td bgcolor=\"#cccccc\">\n"
@@ -1416,7 +1657,7 @@ void showSearchMenu(UChar32 startFrom)
 
 }
 
-void printModeCHAR(UChar32 ch) 
+void printModeCHAR(UChar32 ch, const char *qs) 
 {
   int i;
   u_fprintf(gOut, "<table summary=\"Canonical Equivalents\" border=\"5\" cellpadding=\"3\" cellspacing=\"6\"><tr><td style=\"font-size: 300%%;\">&nbsp;");
@@ -1429,7 +1670,7 @@ void printModeCHAR(UChar32 ch)
   
   u_fprintf(gOut, "<table summary=\"Character Basic Row\" border=\"2\">");
   printRowHeader(TRUE);
-  printRow(ch, TRUE, "", "k1");
+  printRow(ch, TRUE, "", qs);
   u_fprintf(gOut, "</table>\n<br /><br />\n");
   
   u_fprintf(gOut, "<table summary=\"Detailed Character Properties\" border=\"2\">\n");
@@ -1582,7 +1823,7 @@ void printModeSET(const char *qs, ESearchMode mode)
       } else if(len == -1) {
         u_fprintf(gOut, "<b>err - out of range</b><p>\n");
       } else if(len == 0) {
-        printModeCHAR(start);
+        printModeCHAR(start, qs);
       } else {
         u_fprintf(gOut, "<B>string:</B> '<tt>%S</tt>'<p>\n", littleBuffer);
       }
@@ -1690,7 +1931,7 @@ void printModeSET(const char *qs, ESearchMode mode)
 #if !defined(UB_DEBUG)
     if(U_FAILURE(status)) {
 #endif
-      u_fprintf(gOut, "<hr width=\"22%%\" />\nstatus is %s<p>\n", u_errorName(status));
+      u_fprintf(gOut, "<hr width=\"22%%\" />\nstatus is %s on //%S//<p>\n", u_errorName(status), usf);
 #if !defined(UB_DEBUG)
     }
 #endif
@@ -1714,4 +1955,253 @@ void printElsewhereBox(UChar32 block, ESearchMode mode)
         break;
   }
   u_fprintf(gOut, "</div>");
+}
+
+/**
+ * remove and re-insert a query param, prepare for replacement 
+ * @param buf output buffer
+ * @param bufSize size of buffer
+ * @param qs the original query string
+ * @param param the parameter to modify
+ * @return a pointer after the last character of buf ( which will be a '=' )-  form a URL by copying value to this location
+ */
+char *removeParam(char *buf, int bufSize, const char *qs, const char *param) {
+    char target[20];
+    char *p,*q;
+    assert(1+strlen(param)+1+1 < sizeof(target)/sizeof(target[0]));
+    snprintf(target, 20, "&%s=", param);
+    
+    strncpy(buf,qs,bufSize);
+    
+    buf[bufSize-1]=0;
+    
+    do {
+        p = strstr(buf, target);
+        if(p) {
+            char *q = strchr(p+strlen(target),'&');
+            if(!q) {
+                *p=0; /* zero from end */
+            } else {
+                strcpy(p,q); /* eat index param */
+            }
+        }
+    } while(p);
+    
+    if(buf[strlen(buf)-1]!='&') {
+        strcat(buf,target);  /* doesn't have an '&' */
+    } else {
+        strcat(buf,target+1); /* already has an '&' */
+    }
+    
+    return buf+strlen(buf);  /* points at the spot to sprintf */
+}
+
+/**
+ * @param buf a buffer of size 512
+ * @param ch the character to write
+ * @return buf
+ */
+const UChar* niceChar(UChar* buf, UChar32 ch) {
+    int32_t len  = 0;
+    if(u_isprint(ch)) {
+        U16_APPEND_UNSAFE(buf,len,ch);
+        buf[len]=0;
+    } else {
+        u_snprintf(buf, 512, "\\u%04X", ch);
+    }
+    return buf;
+}
+
+struct Segment {
+    int32_t size; /* multiplier */
+    UChar32 l;
+    UBool hit[0x11];
+};
+
+#define SEGCOUNT 3
+void showBlockMap(UFILE *gOut, USet *set, int32_t idx, UChar32 block, UChar32 theChar, const char *qs) {
+    char qstr1[2048];
+    char qstr[2048];
+    char *p;
+    /* 10FFFF 
+       ^^     - plane
+         ^    - fourk
+          ^   - page
+    */
+    struct Segment segs[SEGCOUNT];
+    USet *tester = NULL;
+    int32_t j,k;
+    const char *names[] = { "Plane", "Fourk", "Page" };
+    
+    p = removeParam(qstr, 2048, qs, Q_O);
+    
+    tester = uset_open(0,0);
+    
+    memset(segs,0,sizeof(segs));
+    segs[0].size=0x10000;
+    segs[1].size= 0x1000;
+    segs[2].size=  0x100;
+    
+    segs[0].l=0;
+    for(j=1;j<SEGCOUNT;j++) {
+        segs[j].l = block-block%segs[j-1].size;
+    }
+//    for(j=0;j<SEGCOUNT;j++) {
+//        int32_t max = (j==0)?0x10:0xF;
+//        for(k=0;k<=max;k++) {
+//            UChar32 s = segs[j].l + (segs[j].size)*k;
+//            UChar32 e = s + (segs[j].size)-1;
+//            segs[j].hit[k]=
+//        }
+//    }
+    
+    for(j=0;j<SEGCOUNT;j++) {
+        char underscores[40];
+        int32_t q = segs[j].size;
+                
+        for(k=0;q>1;k++,q /= 16) {
+            underscores[k]='x'; /* _ */
+        }
+        underscores[k]=0;
+        int32_t max = (j==0)?0x10:0xF;
+        u_fprintf(gOut, "%s: ", names[j]);
+        for(k=0;k<=max;k++) {
+            UChar32 s = segs[j].l + (segs[j].size)*k;
+            UChar32 e = s + (segs[j].size)-1;
+            uset_set(tester, s, e);
+            UBool hit = uset_containsSome(set, tester);
+            
+            if(!hit) {
+                u_fprintf(gOut, "<span style='color: #ddd;'>");
+            }
+            if(s <= theChar && theChar <= e) {
+                u_fprintf(gOut, "<b>");
+            }
+            u_fprintf(gOut, " %1X%s", s/segs[j].size, underscores);
+            if(s <= theChar && theChar <= e) {
+                u_fprintf(gOut, "</b>");
+            }
+            if(!hit) {
+                u_fprintf(gOut, "</span>");
+            }            
+        }
+        u_fprintf(gOut, "<br>\n");
+    }
+    uset_close(tester);
+}
+
+/*       showSkipBox(gOut, uset, usetSize, idx, 10 ); */
+void showSkipBox(UFILE *gOut, USet *set, int setSize, int idx, int blocksize) {
+    int inpage = idx/blocksize; /* which page are we in? */
+    int pagecount = usetSize/blocksize;
+    int j;
+    const char *qs = getenv("QUERY_STRING");
+    char qsNoIndex[2048];
+    UChar buf1[512], buf2[512];
+    char *p;
+/*    const char *target = "&" Q_I "="; */
+    int starto = 0;
+    if(usetSize%blocksize > 0) {
+        pagecount++;
+    }
+    int endo = pagecount;
+    
+    if (qs==NULL)
+       qs = "";
+       
+    /* do we  have a LOT of pages? Go into emergency mode... */
+    if(pagecount > 10) { 
+        starto = (inpage-5);
+        endo = (inpage+5);
+        if(starto < 0) starto = 0;
+        if(endo >= pagecount) endo = pagecount;
+    }
+    
+    p = removeParam(qsNoIndex, 2047, qs, Q_I);
+    
+  u_fprintf(gOut, "<form method=\"get\" action=\"%s\">", getenv("SCRIPT_NAME"));
+      u_fprintf(gOut, "<input type=\"hidden\" name=\"us\" value=\"%S\" />\n", usf);
+      u_fprintf(gOut, "<input type=\"hidden\" name=\"%s\" value=\"%d\" />\n", Q_I, idx);
+    
+      printIconMenu(M_ALL,    M_ALL, ETOP, mode); 
+      printIconMenu(M_CHAR, M_CHAR, ECHAR, mode);
+      printIconMenu(M_COLUMN, M_COLUMN, ECOLUMN, mode);
+      printIconMenu(M_BLOCK, M_BLOCK, EBLOCK, mode);
+    
+    u_fprintf(gOut, "</form>");
+    
+    if(pagecount<2) {
+        return; /* no pages. */
+    }
+    
+    u_fprintf(gOut, "<p style='margin: 1em;'>");
+
+
+    u_fprintf(gOut, "<b>");
+    j = (inpage-1)*blocksize;
+    if(j>=0) {
+        sprintf(p, "%d", j);
+        u_fprintf(gOut, "<a href='?%s'>&lt;:prev</a>", qsNoIndex);
+    } else {
+        u_fprintf(gOut, "&lt;:prev");
+    }
+    u_fprintf(gOut, " &nbsp; ");
+    j = (inpage+1)*blocksize;
+    if(j<setSize) {
+        sprintf(p, "%d", j);
+        u_fprintf(gOut, "<a href='?%s'>next:&gt;</a>", qsNoIndex);
+    } else {
+        u_fprintf(gOut, "next:&gt;");
+    }
+    u_fprintf(gOut, "</b> : Page %d of %d", inpage+1, pagecount);
+
+    
+    u_fprintf(gOut, "<br>Quick Jump: ");
+    
+    if(starto > 0) {
+        UChar32 startch = uset_charAt(set, 0);
+        sprintf(p, "%d", 0);
+        u_fprintf(gOut, "<a href='?%s'>(beginning) %S</a> ... || ", qsNoIndex, niceChar(buf1,startch));
+    }
+
+    for(j=starto;j<endo;j++) {
+        UChar32 startch=0,endch=0;
+        int startidx = j*blocksize;
+        int endidx = startidx+(blocksize-1);
+        int here = (inpage==j);
+        if(endidx >= setSize) {
+            endidx = setSize-1;
+        }
+        startch = uset_charAt(set, startidx);
+        endch = uset_charAt(set, endidx);
+        
+        sprintf(p, "%d", startidx);
+        
+        if(here) {
+            u_fprintf(gOut, "<b style='background-color: navy; color: white; margin: 3px; padding: 3px;'>");
+        } else {
+            u_fprintf(gOut, "<a href='?%s'>", qsNoIndex);
+        }
+        
+        u_fprintf(gOut, "%S", niceChar(buf1,startch));
+        if(endidx>startidx) {
+            u_fprintf(gOut, "...%S", niceChar(buf1,endch));
+        }
+        
+        if(here) {
+            u_fprintf(gOut, "</b>\n");
+        } else {
+            u_fprintf(gOut, "</a>");
+        }
+        if(j+1<endo) {
+            u_fprintf(gOut, " | ");
+        }
+    }
+    
+    if(endo < pagecount) {
+        UChar32 endch = uset_charAt(set, setSize-1);
+        sprintf(p, "%d", (pagecount-1)*blocksize);
+        u_fprintf(gOut, " || ... <a href='?%s'>%S (end)</a>", qsNoIndex, niceChar(buf1,endch));
+    }
+    u_fprintf(gOut, "</p>\n");
 }

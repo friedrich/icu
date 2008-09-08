@@ -1,0 +1,10 @@
+﻿// ***************************************************************************
+// *
+// * Tool: com.ibm.icu.dev.tool.localeconverter.XLIFF2ICUConverter.java
+// * Date & Time: 09/08/2008 09:31:11 AM PDT
+// * Source File: ./xlf/mt.xlf
+// *
+// ***************************************************************************
+mt:table{
+    entry_ok:string{"Uri"}
+}

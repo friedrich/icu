@@ -1,0 +1,10 @@
+icons : table(nofallback) { 
+ all-x.gif:import { ../icons/all-x.gif } 
+ all.gif:import { ../icons/all.gif } 
+ block-x.gif:import { ../icons/block-x.gif } 
+ block.gif:import { ../icons/block.gif } 
+ ch-x.gif:import { ../icons/ch-x.gif } 
+ ch.gif:import { ../icons/ch.gif } 
+ column-x.gif:import { ../icons/column-x.gif } 
+ column.gif:import { ../icons/column.gif } 
+}

@@ -17,14 +17,13 @@ subdir = ubrowse
 include $(top_builddir)/icuapps.mk
 
 ## Extra files to remove for 'make clean'
-CLEANFILES = *~ README_$(PKG).txt $(PKG).*   icons.txt *.res
+CLEANFILES = *~ README_$(PKG).txt $(PKG).*  *.res
 
 ## Target information
 TARGET = ubrowse
 
 LDFLAGS += -L../apputil -lapputil -L../locexp/util -liculxutil $(LDFLAGS_ICUIO)
 CPPFLAGS += -I$(top_srcdir)/apputil
-ITMP=icontmp
 ICONS=icons
 
 # ICULIBS includes all standard ICU libraries.
@@ -35,12 +34,33 @@ ICONS=icons
 # Want to make sure the usort.h dependency is not on the installed version .. 
 CPPFLAGS  += -I../locexp/util
 
-OBJECTS = ubrowse.o icons.o $(PKG)_dat.o
+RES_OBJECTS= $(PKG)_dat.o
 
+OUTOBJ=$(OUT)/$(PKG)_dat.o
 
+OBJECTS = ubrowse.o icons.o $(OUTOBJ)
+
+## res setup
 PKG=ubrowseres
 PKGMODE=static
-OUT=.
+OUT=tmp
+PKGDIR=$(OUT)/$(PKG)
+XLF=$(srcdir)/xlf
+TXT=$(srcdir)/txt
+
+## res def'n
+resdatadir= $(libdir)/$(PACKAGE)/$(VERSION)/$(PKG)
+
+STATIC_TXT=icons.txt root.txt res_index.txt
+ALL_XLF=$(shell cd $(XLF) ; ls *.xlf | fgrep -v root.xlf)
+SRC_XLF=$(ALL_XLF:%.xlf=$(XLF)/%.xlf)
+ALL_TXT=$(ALL_XLF:%.xlf=$(TXT)/%.txt) $(STATIC_TXT)
+ALL_RES=$(ALL_XLF:%.xlf=$(PKGDIR)/%.res) $(STATIC_TXT:%.txt=$(PKGDIR)/%.res)
+
+ALL_RES_SHORT=$(ALL_XLF:%.xlf=%.res) $(STATIC_TXT:%.txt=%.res)
+
+# C Source files to extract FSWF strings from.  Remove items from here during development to not require a recompile.  
+FSWF_SRC= ubrowse.c
 
 ## List of standard targets
 all: all-local
@@ -54,12 +74,17 @@ all-local: $(TARGET)
 
 install-local: all-local install-target
 
+prt-all-res:
+	@echo $(ALL_RES)
 
 install-target: all-local
 	$(MKINSTALLDIRS) $(BINDIR) $(BINDIR)/data
 	$(INSTALL) $(TARGET) $(BINDIR)/$(TARGET)
 	$(INSTALL) ubrowse-header.html $(BINDIR)/data
-	$(INVOKE) $(PKGDATA) -I $(BINDIR)/../lib -p $(PKG)  -m $(PKGMODE) -c -d $(OUT) -T $(OUT) $(PKG).lst 
+#	$(INVOKE) $(PKGDATA) -I $(BINDIR)/../lib -p $(PKG)  -m $(PKGMODE) -c -d $(OUT) -T $(OUT) $(PKG).lst 
+
+$(OUT) $(PKGDIR):
+	$(MKINSTALLDIRS) $@
 
 dist-local:
 
@@ -67,7 +92,8 @@ clean-local:
 	@echo Calling pkgdata to cleanup. Ignore any errors.
 	@-$(INVOKE) $(PKGDATA) -k -p $(PKG)  -m $(PKGMODE) -c -d $(OUT) -T $(OUT) $(PKG).lst 2>/dev/null
 	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
-	rm -f $(OBJECTS) $(TARGET) $(ITMP)
+	-$(RMV) ./$(OUT)
+	rm -f $(OBJECTS) $(TARGET)
 
 distclean-local: clean-local
 	rm -f Makefile $(DEPS)
@@ -83,7 +109,7 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 #         '$(LIBS) -licuuc -lusort' ...
 
 -include local.mk
-
+-include Makefile.local
 
 
 # Run against HTMLTidy
@@ -94,21 +120,40 @@ tidy: $(TARGET)
 $(TARGET) : $(OBJECTS)
 	$(LINK.c) -o $@ $^ $(ICULIBS)
 
-icons.res: icons.txt
-	$(INVOKE) $(GENRB) -d. $<
+$(PKGDIR)/%.res: $(TXT)/%.txt $(OUT) $(PKGDIR)
+	$(INVOKE) $(GENRB) -s $(TXT) -d $(PKGDIR) $(<F)
 
 
-icons.txt: $(ICONS)/*.gif
+$(TXT)/icons.txt: $(ICONS)/*.gif
 	echo creating $@
 	@echo "icons : table(nofallback) { " > $@
 	@for file in `cd $(ICONS) ; ls *.gif`; do \
-	  echo " $$file:import { $(ICONS)/$$file } " >> $@; \
+	  echo " $$file:import { ../$(ICONS)/$$file } " >> $@; \
 	done;
 	@echo "}" >> $@
+	
+$(TXT)/root.txt: $(FSWF_SRC) ../locexp/tools/extractStrings.sh
+	$(INVOKE) PATH="../locexp/tools:$(bindir):$(sbindir):$(PATH)" extractStrings.sh $(FSWF_SRC) > $@ || ( rm -f $@ ; false )
 
-$(PKG).lst: Makefile.in	
-	echo "icons.res" > $@
+$(XLF)/root.xlf: $(TXT)/root.txt
+	@echo "$@ is out of date, run 'make update-root-xlf' to update!"
+	
+$(TXT)/%.txt: $(XLF)/%.xlf
+	java -classpath $(ICU4J_CLASSES) com.ibm.icu.dev.tool.localeconverter.XLIFF2ICUConverter -s $(XLF) -d $(TXT) `basename $<`
 
-$(PKG)_dat.o: $(PKG).lst icons.res 
+update-root-xlf: $(TXT)/root.txt
+	$(INVOKE) $(GENRB) -d"$(XLF)" -s"$(TXT)" root.txt -x 
+
+$(OUT)/$(PKG).lst: $(OUT) Makefile.in	
+	echo  > $@
+	for file in $(ALL_RES_SHORT); do \
+		echo $$file >> $@ ; \
+	done;
+
+$(OUTOBJ): $(OUT) $(OUT)/$(PKG).lst $(ALL_RES) 
 	-rm -f $@
-	-$(INVOKE) $(PKGDATA) -p $(PKG)  -m $(PKGMODE) -v -c -d $(OUT) -T $(OUT) $(PKG).lst
+	-$(INVOKE) $(PKGDATA) -p $(PKG)  -m $(PKGMODE) -s $(OUT)/$(PKG) -v -c -d $(OUT) -T $(OUT) $(OUT)/$(PKG).lst
+
+# why is this necessary?
+$(shell pwd)/$(OUT)/$(RES_OBJECTS): $(OUTOBJ)
+	@echo updated;

@@ -1,6 +1,6 @@
 // Generated copy of root.txt. Also look at 'en.txt'.
 // root file. Generated from ../calexp.c ../cgimain.c ../fcgimain.c ../locexp.c ../lxconv.c ../lxdate.c ../lxlocale.c ../lxnum.c ../lxprint.c ../lxrun.c ../lxshow.c ../lxshowloc.c ../srchexp.c ../wfobject.c ../lxsort.c ../lxcgi.c ../lxicir.c
-// Copyright (C) 2000-2006, International Business Machines
+// Copyright (C) 2000-2008, International Business Machines
 // It's probably not a good idea to change this file.
 // Better to change locexp.c or the ROOT.* source files and rebuild.
 

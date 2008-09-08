@@ -11,5 +11,5 @@
 
 U_CFUNC int icons_init();
 U_CFUNC void icons_write( /* UFILE *OUT, */ const char *path );
-
+U_CFUNC const char* icons_bundlePath();
 #endif

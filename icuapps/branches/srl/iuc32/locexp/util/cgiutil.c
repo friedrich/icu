@@ -213,7 +213,7 @@ const UChar* cgi_queryFieldU(CGIContext* lx, const char *field) {
         if(!end) { end = val+strlen(val); }
 /*fprintf(stderr, "%s:%d end:%p val:%p, malloc %d\n", __FILE__, __LINE__, end, val, (end-val+1)); */
         ret = malloc((end-val+1)*sizeof(ret[0])); /* worst case is 1:1. Best case is 9 chars per uchar (%aa%bb%cc):1 */
-        unescapeAndDecodeQueryField_enc(ret, end-val, val, NULL /* utf-8 */);
+        unescapeAndDecodeQueryField_enc(ret, end-val, val, "utf-8");
         return ret;
     }
 }

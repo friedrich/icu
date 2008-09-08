@@ -1,0 +1,17 @@
+// root file. Generated from ubrowse.c
+// Copyright (C) 2000-2008, International Business Machines
+// It's probably not a good idea to change this file.
+// Better to change locexp.c or the ROOT.* source files and rebuild.
+
+
+root {
+
+   entry_ok  {  "View"  }
+   title  {  "ICU Demonstration - Unicode Browser"  }
+   ubrowse_name  {  "Unicode Browser"  }
+
+// Special Cases
+
+
+}
+
