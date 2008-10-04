@@ -139,7 +139,7 @@ $(XLF)/root.xlf: $(TXT)/root.txt
 	@echo "$@ is out of date, run 'make update-root-xlf' to update!"
 	
 $(TXT)/%.txt: $(XLF)/%.xlf
-	java -classpath $(ICU4J_CLASSES) com.ibm.icu.dev.tool.localeconverter.XLIFF2ICUConverter -s $(XLF) -d $(TXT) `basename $<`
+	java $(JAVA_OPTS) -classpath $(ICU4J_CLASSES) com.ibm.icu.dev.tool.localeconverter.XLIFF2ICUConverter -t -s $(XLF) -d $(TXT) `basename $<`
 
 update-root-xlf: $(TXT)/root.txt
 	$(INVOKE) $(GENRB) -d"$(XLF)" -s"$(TXT)" root.txt -x 

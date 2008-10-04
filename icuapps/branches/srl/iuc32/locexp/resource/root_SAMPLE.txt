@@ -179,6 +179,7 @@ root {
    formatExample_errorParse3  {  "Could not parse this, replaced with a default value."  }
    formatExample_errorParse_num  {  "Could not parse this, replaced with a default value."  }
    formatExample_errorToPattern  {  "Couldn't convert the pattern [toPattern]"  }
+   formatExample_useFlexible  {  "Fetch pattern from flexible skeleton"  }
    help  {  "Help"  }
    helpgif  {  "help.gif"  }
    helpgif_opt  {  "border=\x22\x30\x22 width=\x22\x34\x30\x22  height=\x22\x34\x30\x22"  }

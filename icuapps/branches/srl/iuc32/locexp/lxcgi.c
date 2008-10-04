@@ -438,5 +438,5 @@ void uurl_close(UUrlIter *u)
 }
 
 const char *cgi_url(LXContext *lx  ) {
-    return "./locexp";
+    return lx->scriptName;
 }

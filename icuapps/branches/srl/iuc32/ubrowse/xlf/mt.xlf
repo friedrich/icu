@@ -1,13 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<xliff version = "1.1" xmlns='urn:oasis:names:tc:xliff:document:1.1' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:oasis:names:tc:xliff:document:1.1 http://www.oasis-open.org/committees/xliff/documents/xliff-core-1.1.xsd'>
-    <file xml:space = "preserve" source-language = "mt" datatype = "x-icu-resource-bundle" original = "mt.txt" date = "2008-06-07T00:52:16Z">
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1" xmlns="urn:oasis:names:tc:xliff:document:1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.1 ./xliff-core-1.1.xsd">
+    <file datatype="x-icu-resource-bundle" date="2008-09-08T19:14:02Z" original="root.txt" source-language="en" xml:space="preserve">
         <header>
-            <tool tool-id = "genrb-3.3-icu-4.0" tool-name = "genrb"/>
-        </header>
+            <tool tool-id="genrb-3.3-icu-4.1.1" tool-name="genrb"/>
+        <prop-group><prop prop-type="lastElementID=items_chars"/><prop prop-type="window-position=74 131 738 604 0 0 1024 746 "/></prop-group></header>
         <body>
-            <group id = "mt" restype = "x-icu-table">
-                <trans-unit id = "entry_ok" resname = "entry_ok">
-                    <source>Uri</source>
+            <group id="mt" restype="x-icu-table">
+                <trans-unit id="entry_ok" resname="entry_ok">
+                    <source>View</source><target xml:lang="mt">Uri</target>
+                </trans-unit>
+                <trans-unit id="items_chars" resname="items_chars">
+                    <source>%1$d items, %2$d characters and strings.</source><target state="needs-translation" xml:lang="mt">%2$d karattri u kliem %1$d ħaġijiet</target>
+                </trans-unit>
+                <trans-unit id="title" resname="title">
+                    <source>ICU Demonstration - Unicode Browser</source><target state="translated" xml:lang="mt">ICU Demonstration - Esploratur ta' l-Unicode</target>
+                </trans-unit>
+                <trans-unit id="ubrowse_name" resname="ubrowse_name">
+                    <source>Unicode Browser</source><target state="translated" xml:lang="mt">Esploratur ta' l-Unicode</target>
                 </trans-unit>
             </group>
         </body>

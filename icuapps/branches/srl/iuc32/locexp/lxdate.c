@@ -4,6 +4,7 @@
 ***********************************************************************/
 
 #include "locexp.h"
+#include <unicode/udatpg.h>
 
 /* routines having to do with the date sample */
 
@@ -26,6 +27,7 @@ void showExploreDateTimePatterns( LXContext *lx, UResourceBundle *myRB, const ch
     int32_t parsePos = 0;
 
     valueString[0]=0;
+    pattern[0] = 0;
     nf = unum_open(0, FSWF("EXPLORE_DateTimePatterns_dateAsNumber", "#"), -1, NULL, NULL, &status);
     status = U_ZERO_ERROR; /* ? */
   
@@ -38,10 +40,59 @@ void showExploreDateTimePatterns( LXContext *lx, UResourceBundle *myRB, const ch
                         FSWF("EXPLORE_DateTimePatterns", "Explore &gt; Date/Time"),
                         locale, FALSE, U_ZERO_ERROR);
 
-    u_fprintf(lx->OUT, "%S<p>", FSWF("formatExample_DateTimePatterns_What","This example demonstrates the formatting of date and time patterns in this locale."));
+    u_fprintf(lx->OUT, "%S<p>\n", FSWF("formatExample_DateTimePatterns_What","This example demonstrates the formatting of date and time patterns in this locale."));
+
+    /** FLEX **/
+    {
+        UDateTimePatternGenerator *ptg = NULL;
+        UChar prototype[PATTERN_LEN];
+        UChar skel[PATTERN_LEN];
+        UErrorCode ptgerr = U_ZERO_ERROR;
+        int32_t ptg_len;
+        ptg = udatpg_open(locale, &ptgerr);
+        
+        u_fprintf(lx->OUT, "<h2>%S</h2>\n", FSWF("formatExample_useFlexible","Fetch pattern from flexible skeleton"));
+        
+        u_fprintf(lx->OUT, "<form method=\"post\" action=\"%s#EXPLORE_DateTimePatterns\">\r\n", getLXBaseURL(lx, kNO_URL));
+        prototype[0]=0;
+        exploreFetchNextPattern(lx,prototype, queryField(lx,"skel"));
+        
+        if(prototype[0]!=0) {
+            ptg_len = 
+            udatpg_getSkeleton(ptg,
+                       prototype, -1,
+                       skel, PATTERN_LEN-1,
+                       &ptgerr);
+            if(u_strcmp(prototype,skel)) {
+                u_fprintf(lx->OUT, "Prototype pattern: %S<br>", prototype);
+            }
+        } else {
+            skel[0]=0;
+        }
+        
+        u_fprintf(lx->OUT, "<label>Skeleton: <input name=\"skel\" value=\"%S\">", skel);
+        
+        u_fprintf(lx->OUT, "<input type=\"submit\" value=\"%S\" /></form>", FSWF("EXPLORE_change", "Change"));
+        
+        if(skel[0]) {
+            ptg_len = udatpg_getBestPattern(ptg,
+                          skel, -1,
+                          pattern, PATTERN_LEN-1,
+                          &ptgerr);
+        }
+        
+
+        u_fprintf(lx->OUT, "<hr>");
+        
+        
+        udatpg_close(ptg);
+    }
+    /** END FLEX **/
   
     /* fetch the current pattern */
-    exploreFetchNextPattern(lx,pattern, queryField(lx,"str"));
+    if(pattern[0]==0) {
+        exploreFetchNextPattern(lx,pattern, queryField(lx,"str"));
+    }
 
     df = udat_open(UDAT_LONG,UDAT_LONG,locale, NULL, -1, NULL, 0, &status);
     if(pattern[0]) {

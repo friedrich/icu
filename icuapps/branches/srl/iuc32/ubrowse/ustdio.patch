@@ -1,0 +1,47 @@
+Index: unicode/ustdio.h
+===================================================================
+--- unicode/ustdio.h	(revision 24468)
++++ unicode/ustdio.h	(working copy)
+@@ -159,7 +159,7 @@
+ <tr><td>%l</td><td>%u</td><td>uint32_t</td><td>long format (no effect)</td></tr>
+ <tr><td>%l</td><td>c</td><td>N/A</td><td><b>(Unimplemented)</b> Reserved for future implementation</td></tr>
+ <tr><td>%l</td><td>s</td><td>N/A</td><td><b>(Unimplemented)</b> Reserved for future implementation</td></tr>
+-<tr><td>%l</td><td>C</td><td>UChar32</td><td><b>(Unimplemented)</b> 32-bit Unicode code unit</td></tr>
++<tr><td>%l</td><td>C</td><td>UChar32</td><td><b>(Unimplemented for scanf, implemented for printf)</b> 32-bit Unicode code unit</td></tr>
+ <tr><td>%l</td><td>S</td><td>UChar32 *</td><td><b>(Unimplemented)</b> Null terminated UTF-32 string</td></tr>
+ <tr><td>%ll</td><td>%d, %i, %o, %x</td><td>int64_t</td><td>long long format</td></tr>
+ <tr><td>%ll</td><td>%u</td><td>uint64_t</td><td><b>(Unimplemented)</b> long long format</td></tr>
+Index: uprntf_p.c
+===================================================================
+--- uprntf_p.c	(revision 24468)
++++ uprntf_p.c	(working copy)
+@@ -778,14 +778,26 @@
+                        const ufmt_args                *args)
+ {
+     int32_t written = 0;
+-    UChar arg = (UChar)(args[0].int64Value);
+-
++    
++    UChar arg[2]; /* one or two UChars, depending */
++    
++    int32_t len = 0;
++  
++    if(!info->fIsLong) {
++        /* utf-16 */
++        arg[0] = (UChar)(args[0].int64Value);
++        len = 1;
++    } else {
++        UChar32 arg32 = (UChar32)(args[0].int64Value);
++        U16_APPEND_UNSAFE(arg,len,arg32);
++    }
++    
+     /* width = minimum # of characters to write */
+     /* precision = maximum # of characters to write */
+     /* precision is ignored when handling a uchar */
+ 
+     /* determine if the string should be padded */
+-    written = handler->pad_and_justify(context, info, &arg, 1);
++    written = handler->pad_and_justify(context, info, arg, len); /* UTF-16 */
+ 
+     return written;
+ }

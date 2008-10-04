@@ -943,6 +943,7 @@ main(int argc,
       else if(sscanf(qs,"ch=%x", &block)== 1)
         {
           mode = ECHAR;
+#error %lC not implemented
           u_sprintf(chars, "[%lC]", block);
           usf = chars;
         }
@@ -1110,7 +1111,9 @@ main(int argc,
         usetItemCount = uset_getItemCount(uset);
         usetSize= uset_size(uset);
         if(usetSize>0 && usetItemCount>0) {
-            u_fprintf(gOut, "</tr><tr><td>%d items, %d characters and strings.</td>", usetItemCount, usetSize);
+            u_fprintf(gOut, "</tr><tr><td>");
+            u_fprintf_u(gOut, FSWF("items_chars", "%1$d items, %2$d characters and strings."), usetItemCount, usetSize);
+            u_fprintf(gOut, "</td>");
         }
         if(strcmp(modestr, M_ALL) && mode == ETOP && gNullSet!=usf) {
             if(usetSize>1) {

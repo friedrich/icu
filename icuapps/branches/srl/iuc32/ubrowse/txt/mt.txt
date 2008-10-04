@@ -1,10 +1,13 @@
 ﻿// ***************************************************************************
 // *
 // * Tool: com.ibm.icu.dev.tool.localeconverter.XLIFF2ICUConverter.java
-// * Date & Time: 09/08/2008 09:31:11 AM PDT
+// * Date & Time: 09/08/2008 05:17:28 PM PDT
 // * Source File: ./xlf/mt.xlf
 // *
 // ***************************************************************************
 mt:table{
     entry_ok:string{"Uri"}
+    items_chars:string{"%2$d karattri u kliem %1$d ħaġijiet"}
+    title:string{"ICU Demonstration - Esploratur ta' l-Unicode"}
+    ubrowse_name:string{"Esploratur ta' l-Unicode"}
 }

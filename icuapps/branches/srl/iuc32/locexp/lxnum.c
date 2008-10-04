@@ -34,7 +34,7 @@ void showExploreNumberPatterns(LXContext *lx, const char *locale)
 
     exploreFetchNextPattern(lx, pattern, queryField(lx, "str")); 
 
-    nf = unum_open(UNUM_DEFAULT,NULL, 0, locale, NULL, &status);
+    nf = unum_open(UNUM_CURRENCY,NULL, 0, locale, NULL, &status);
   
     if(U_FAILURE(status))
     {
@@ -43,7 +43,11 @@ void showExploreNumberPatterns(LXContext *lx, const char *locale)
         return; /* ? */
     }
   
-    unum_applyPattern(nf, TRUE, pattern, -1, NULL, NULL);
+    {
+        UParseError perr;
+        unum_applyPattern(nf, FALSE, pattern, -1, &perr, &status);
+/*        u_fprintf(lx->OUT, "(( %S, %d ))<br>", pattern, perr.line); */
+    }
   
     unum_toPattern(nf, FALSE, tempChars, 1024, &status);
 
@@ -65,7 +69,7 @@ void showExploreNumberPatterns(LXContext *lx, const char *locale)
     }
   
     /* Load the default with a simplistic pattern .. */
-    unum_applyPattern(nf_default, FALSE, FSWF("EXPLORE_NumberPatterns_defaultPattern", "#,###.###############"), -1, NULL, NULL);
+    unum_applyPattern(nf_default, FALSE, FSWF("EXPLORE_NumberPatterns_defaultPattern", "#,###.###############"), -1, NULL, &status);
       
     /* Allright. we've got 'nf' which is our custom pattern in the target 
        locale, and we've got 'nf_default' which is a pattern that we hope is
