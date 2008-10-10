@@ -1,0 +1,61 @@
+dnl -*-m4-*-
+dnl configure.in for ICU Apps
+dnl Steven R. Loomis
+dnl Copyright (C) 1999-2006, International Business Machines Corporation and
+dnl   others. All Rights Reserved.
+
+dnl Process this file with autoconf to produce a configure script
+
+dnl Check a file in our files, just to make sure we have a sane setup..
+AC_INIT(usort/lib/unicode/usort.h)
+
+dnl Will set the variable 'ICU_CONFIG'
+CHECK_ICU_CONFIG
+
+PACKAGE="icuapps"
+AC_SUBST(PACKAGE)
+
+AC_CHECK_PROG(AUTOCONF, autoconf, autoconf, true)
+
+AC_PROG_INSTALL
+
+# make sure install is relative to srcdir - if a script
+if test "$srcdir" = "."; then
+  # If srcdir isn't just ., then (srcdir) is already prepended.
+  if test "${ac_install_sh}" = "${INSTALL}"; then
+   INSTALL="\\\$(top_srcdir)/${ac_install_sh}"
+  fi
+fi
+
+
+AC_OUTPUT([icuapps.mk \
+Makefile \
+apputil/Makefile \
+usort/Makefile \
+usort/lib/Makefile \
+usort/client/Makefile \
+locexp/Makefile \
+locexp/tools/Makefile \
+locexp/util/Makefile \
+locexp/resource/Makefile \
+ubrowse/Makefile \
+nbrowser/Makefile \
+idnbrowser/Makefile \
+convexp/Makefile \
+scompare/Makefile \
+redemo/Makefile \
+datacustom/Makefile \
+datacustom/gendatadep/Makefile \
+icudemos/Makefile \
+xlitomatic/Makefile \
+rbbiperf/Makefile \
+dumpdat/Makefile \
+rtfcvrt/Makefile \
+XMLConverter/Makefile \
+obsolete/Makefile \
+test/Makefile \
+test/testdata/Makefile \
+test/obstest/Makefile])
+
+dnl
+
