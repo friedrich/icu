@@ -45,6 +45,7 @@ OBJECTS =  lx_utils.o ures_additions.o kangxi.o  lx_cpputils.o
 OBJECTS += decompcb.o
 OBJECTS += translitcb.o
 OBJECTS += cgiutil.o
+OBJECTS += csre.o
 
 #OBJECTS +=  collectcb.o translitcb.o  kannada.o
 

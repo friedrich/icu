@@ -6,6 +6,7 @@
 #include "locexp.h"
 #include "unicode/udata.h"
 #include "unicode/usearch.h"
+#include "unicode/csre.h"
 #include "uresimp.h"
 
 #define G7COUNT 8  /* all 8 of the g7 locales. showSort() */
@@ -693,15 +694,24 @@ void showSort(LXContext *lx, const char *locale)
 
   /* the search box  =======================================================================================*/
   if(!isG7) {
-      const char *overlap;
-      UBool doOverlap = FALSE;
+      const char *overlap, *regex;
+      UBool doOverlap = FALSE, doRegex = FALSE;
+
       overlap = queryField(lx, "usearch_overlap");
       doOverlap = overlap && *overlap;
+
+      regex = queryField(lx, "usearch_regex");
+      doRegex = regex && *regex;
       
       u_fprintf(lx->OUT, "<label for=\"search\"><b>%S</b></label>\r\n", /* top is only 1 row for now */
                 FSWF("usortSearch", "Search for: (or leave blank for no search)"));
+
       u_fprintf(lx->OUT, "<label><input type=checkbox %s name='usearch_overlap'>Overlap?</label>\n", 
         doOverlap?"checked":"");
+
+      u_fprintf(lx->OUT, "<label><input type=checkbox %s name='usearch_regex'>Regex?</label>\n",
+        doRegex?"checked":"");
+
       u_fprintf(lx->OUT, "<p><textarea id=\"search\" %s rows=\"4\" name=\"sch\">", 
                 (0?"":" class=\"wide\" cols=\"20\" "));
       
@@ -892,6 +902,7 @@ void showSort(LXContext *lx, const char *locale)
         int32_t i  = 0;
         int32_t j = 0;
         const char *overlap = NULL;
+        const char *regex = NULL;
         UCollator *coll;
         int32_t match;
         UErrorCode searchErr = U_ZERO_ERROR;
@@ -906,29 +917,47 @@ void showSort(LXContext *lx, const char *locale)
 //        }
 #endif
         
-        usearch = usearch_openFromCollator( schChars,
-                                   u_strlen(schChars),
-                                   strChars,
-                                   u_strlen(strChars),
-                                   coll,
-                                   NULL,
-                                   &searchErr );
-        overlap = queryField(lx, "usearch_overlap");
-        if(0 && overlap && *overlap) {
-           usearch_setAttribute( usearch,
-                                 USEARCH_OVERLAP,
-                                 USEARCH_ON,
-                                 &searchErr );
-        }
-        pos = calloc(sizeof(pos[0]),u_strlen(strChars));
-        if(U_SUCCESS(searchErr)) {
-            for(match=usearch_first(usearch, &searchErr);
-                U_SUCCESS(searchErr) && match != USEARCH_DONE;
-                match = usearch_next(usearch, &searchErr)) {
-                pos[posLen++] = match;
+        pos = calloc(sizeof(pos[0]), u_strlen(strChars));
+
+        regex = queryField(lx, "usearch_regex");
+        if (regex != NULL && regex[0] != 0) {
+            CSRE *csre = csre_open(coll,
+                                   schChars, u_strlen(schChars),
+                                   strChars, u_strlen(strChars),
+                                   &searchErr);
+
+
+            if (U_SUCCESS(searchErr)) {
+                while(U_SUCCESS(searchErr) && csre_find(csre)) {
+                    pos[posLen++] = csre_start(csre, &searchErr);
+                }
             }
+
+            csre_close(csre);
+        } else {
+            usearch = usearch_openFromCollator( schChars,
+                                    u_strlen(schChars),
+                                    strChars,
+                                    u_strlen(strChars),
+                                    coll,
+                                    NULL,
+                                    &searchErr );
+            overlap = queryField(lx, "usearch_overlap");
+            if(0 && overlap && *overlap) {
+            usearch_setAttribute( usearch,
+                                    USEARCH_OVERLAP,
+                                    USEARCH_ON,
+                                    &searchErr );
+            }
+            if(U_SUCCESS(searchErr)) {
+                for(match=usearch_first(usearch, &searchErr);
+                    U_SUCCESS(searchErr) && match != USEARCH_DONE;
+                    match = usearch_next(usearch, &searchErr)) {
+                    pos[posLen++] = match;
+                }
+            }
+            usearch_close(usearch);
         }
-        usearch_close(usearch);
         if(U_FAILURE(searchErr)) {
             u_fprintf(lx->OUT, "</td><td> <b>Search error:  %s</b></td>", 
                 u_errorName(searchErr));
