@@ -7,6 +7,7 @@
 #include "unicode/udata.h"
 #include "unicode/usearch.h"
 #include "unicode/csre.h"
+#include "unicode/bms.h"
 #include "uresimp.h"
 
 #define G7COUNT 8  /* all 8 of the g7 locales. showSort() */
@@ -879,6 +880,7 @@ void showSort(LXContext *lx, const char *locale)
 /*  output  =================================================================================== */ 
 
 
+#define BOYER_MOORE_SEARCH
 
   /* ========== Do the actual sort ======== */
   if(inputChars[0] != 0)
@@ -896,7 +898,12 @@ void showSort(LXContext *lx, const char *locale)
     
     if(schInputChars[0]!=0) {
         /* string search! */
+#ifdef BOYER_MOORE_SEARCH
+        BMS *bms = NULL;
+        UCD *ucd = NULL;
+#else
         UStringSearch *usearch = NULL;
+#endif
         int32_t *pos = NULL;
         int32_t posLen = 0;
         int32_t i  = 0;
@@ -935,6 +942,21 @@ void showSort(LXContext *lx, const char *locale)
 
             csre_close(csre);
         } else {
+#ifdef BOYER_MOORE_SEARCH
+            int32_t offset = 0, start = -1, end = -1;
+
+            ucd = ucd_open(coll);
+            bms = bms_open(ucd, schChars, u_strlen(schChars), strChars, u_strlen(strChars));
+
+            while (bms_search(bms, offset, &start, &end)) {
+                pos[posLen++] = start;
+                offset = end;
+            }
+
+            bms_close(bms);
+            ucd_close(ucd);
+
+#else
             usearch = usearch_openFromCollator( schChars,
                                     u_strlen(schChars),
                                     strChars,
@@ -957,13 +979,18 @@ void showSort(LXContext *lx, const char *locale)
                 }
             }
             usearch_close(usearch);
+#endif
         }
         if(U_FAILURE(searchErr)) {
             u_fprintf(lx->OUT, "</td><td> <b>Search error:  %s</b></td>", 
                 u_errorName(searchErr));
         } else {
             u_fprintf(lx->OUT, "</td><td WIDTH=\"22%%\" colspan=\"2\" rowspan=\"2\"><p><b>%S</b> &mdash; %d</p>\r\n",
+#ifdef BOYER_MOORE_SEARCH
+                      FSWF("usortBMSearchResults", "Boyer-Moore Search Results"), posLen);
+#else
                       FSWF("usortSearchResults", "Search Results"), posLen);
+#endif
             if(1 || (posLen>0)) {
                 i=0;
                 for(j=0;j<u_strlen(strChars);j++) {

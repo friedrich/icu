@@ -46,6 +46,7 @@ OBJECTS += decompcb.o
 OBJECTS += translitcb.o
 OBJECTS += cgiutil.o
 OBJECTS += csre.o
+OBJECTS += bms.o
 
 #OBJECTS +=  collectcb.o translitcb.o  kannada.o
 
