@@ -7,3 +7,6 @@
 # edited by: Stuart G. Gill
 add_executable(genpname genpname.cpp)
 target_link_libraries(genpname icuuc icutu)
+
+add_executable(bytetriedemo bytetriedemo.cpp)
+target_link_libraries(bytetriedemo icuuc icutu)

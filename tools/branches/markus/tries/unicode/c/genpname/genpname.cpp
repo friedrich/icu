@@ -11,8 +11,11 @@
 #include "unicode/utypes.h"
 #include "unicode/putil.h"
 #include "unicode/uclean.h"
+#include "bytetriebuilder.h"
 #include "cmemory.h"
+#include "charstr.h"
 #include "cstring.h"
+#include "denseranges.h"
 #include "filestrm.h"
 #include "uarrsort.h"
 #include "unewdata.h"
@@ -20,12 +23,18 @@
 #include "uprops.h"
 #include "propname.h"
 #include "uassert.h"
+#include "uvectr32.h"
 
 #include <stdio.h>
 
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
+
 U_NAMESPACE_USE
 
-// TODO: Clean up and comment this code.
+// We test for ASCII delimiters and White_Space, and build ASCII string ByteTries.
+#if U_CHARSET_FAMILY!=U_ASCII_FAMILY
+#   error This builder requires U_CHARSET_FAMILY==U_ASCII_FAMILY.
+#endif
 
 //----------------------------------------------------------------------
 // BEGIN DATA
@@ -43,10 +52,13 @@ class AliasName {
 public:
     const char* str;
     int32_t     index;
+    char        normalized[64];
 
     AliasName(const char* str, int32_t index);
 
-    int compare(const AliasName& other) const;
+    int compare(const AliasName& other) const {
+        return uprv_strcmp(normalized, other.normalized);
+    }
 
     UBool operator==(const AliasName& other) const {
         return compare(other) == 0;
@@ -58,14 +70,28 @@ public:
 };
 
 AliasName::AliasName(const char* _str,
-               int32_t _index) :
+                     int32_t _index) :
     str(_str),
     index(_index)
 {
-}
-
-int AliasName::compare(const AliasName& other) const {
-    return uprv_comparePropertyNames(str, other.str);
+    const char *s=str;
+    char c;
+    int32_t i=0;
+    while((c=*s++)!=0) {
+        // Ignore delimiters '-', '_', and ASCII White_Space.
+        if(c==0x2d || c==0x5f || c==0x20 || (0x09<=c && c<=0x0d)) {
+            continue;
+        }
+        normalized[i++]=uprv_tolower(c);
+    }
+    normalized[i]=0;
+    if(i>=LENGTHOF(normalized)) {
+        fprintf(stderr,
+                "Error: Property (value) alias '%s' results in "
+                "too-long normalized string (length %d)\n",
+                str, (int)i);
+        exit(U_BUFFER_OVERFLOW_ERROR);
+    }
 }
 
 class Alias {
@@ -900,6 +926,201 @@ int8_t* Builder::createData(int32_t& length) const {
 // END Builder
 //----------------------------------------------------------------------
 
+class Builder2 {
+public:
+    Builder2(UErrorCode &errorCode) : valueMaps(errorCode) {}
+
+    void build(UErrorCode &errorCode) {
+        // Build main property aliases value map.
+        UVector32 propEnums(errorCode);
+        int32_t propIndex;
+        for(propIndex=0; propIndex<PROPERTY_COUNT; ++propIndex) {
+            propEnums.sortedInsert(PROPERTY[propIndex].enumValue, errorCode);
+        }
+        int32_t ranges[10][2];
+        int32_t numPropRanges=uprv_makeDenseRanges(propEnums.getBuffer(), PROPERTY_COUNT, 0x100,
+                                                   ranges, LENGTHOF(ranges));
+        valueMaps.addElement(numPropRanges, errorCode);
+        int32_t i, j;
+        for(i=0; i<numPropRanges; ++i) {
+            valueMaps.addElement(ranges[i][0], errorCode);
+            valueMaps.addElement(ranges[i][1], errorCode);
+            for(j=ranges[i][0]; j<=ranges[i][1]; ++j) {
+                // Reserve two slots per property for the name group offset and the value-map offset.
+                valueMaps.addElement(0, errorCode);
+                valueMaps.addElement(0, errorCode);
+            }
+        }
+
+        // Build the rest of the data.
+        buildAliasesByteTrie(PROPERTY, PROPERTY_COUNT, errorCode);
+        printf("*** length of PROPERTY ByteTrie: %ld\n", (long)byteTries.length());
+        int32_t binPropsByteTrieOffset=buildAliasesByteTrie(VALUES_binprop, VALUES_binprop_COUNT, errorCode);
+        int32_t cccByteTrieOffset=buildAliasesByteTrie(VALUES_ccc, VALUES_ccc_COUNT, errorCode);
+        for(propIndex=0; propIndex<PROPERTY_COUNT; ++propIndex) {
+            setPropertyInt(PROPERTY[propIndex].enumValue, 0,
+                           writeNameGroup(PROPERTY[propIndex], errorCode));
+            int32_t valueCount=PROPERTY[propIndex].valueCount;
+            if(valueCount>0) {
+                setPropertyInt(PROPERTY[propIndex].enumValue, 1, valueMaps.size());
+                int32_t byteTrieOffset;
+                const Alias *valueList=PROPERTY[propIndex].valueList;
+                if(valueList==VALUES_binprop) {
+                    byteTrieOffset=binPropsByteTrieOffset;
+                } else if(valueList==VALUES_ccc || valueList==VALUES_lccc || valueList==VALUES_tccc) {
+                    byteTrieOffset=cccByteTrieOffset;
+                } else {
+                    byteTrieOffset=buildAliasesByteTrie(valueList, valueCount, errorCode);
+                }
+                valueMaps.addElement(byteTrieOffset, errorCode);
+                buildValueMap(valueList, valueCount, errorCode);
+            }
+        }
+        printf("*** length of all ByteTries:   %6ld\n", (long)byteTries.length());
+        printf("*** length of all name groups: %6ld\n", (long)nameGroups.length());
+        printf("*** length of all value maps:  %6ld\n", (long)valueMaps.size());
+        // TODO: U_FAILURE(errorCode)?
+    }
+
+    int32_t writeNameGroup(const Alias &alias, UErrorCode &errorCode) {
+        int32_t nameOffset=nameGroups.length();
+        // Count how many aliases this group has.
+        int32_t i=alias.nameGroupIndex;
+        int32_t nameIndex;
+        do { nameIndex=NAME_GROUP[i++]; } while(nameIndex>=0);
+        int32_t count=i-alias.nameGroupIndex;
+        // The first byte tells us how many aliases there are.
+        // We use only values 0..0x1f in the first byte because when we write
+        // the name groups as an invariant-character string into a source file,
+        // those values (C0 control codes) are written as numbers rather than as characters.
+        if(count>=0x20) {
+            fprintf(stderr, "Error: Too many aliases in the group with index %d\n",
+                    (int)alias.nameGroupIndex);
+            exit(U_INDEX_OUTOFBOUNDS_ERROR);
+        }
+        nameGroups.append((char)count, errorCode);
+        // There is at least a short name (sometimes empty) and a long name. (count>=2)
+        // Note: Sometimes the short and long names are the same.
+        // In such a case, we could set a flag and omit the duplicate,
+        // but that would save only about 1.35% of total data size (Unicode 6.0/ICU 4.6)
+        // which is not worth the trouble.
+        i=alias.nameGroupIndex;
+        int32_t n;
+        do {
+            nameIndex=n=NAME_GROUP[i++];
+            if(nameIndex<0) {
+                nameIndex=-nameIndex;
+            }
+            const char *s=STRING_TABLE[nameIndex].str;
+            nameGroups.append(s, uprv_strlen(s)+1, errorCode);  // including NUL
+        } while(n>=0);
+        return nameOffset;
+    }
+
+    void buildValueMap(const Alias aliases[], int32_t length, UErrorCode &errorCode) {
+        UVector32 sortedValues(errorCode);
+        UVector32 nameOffsets(errorCode);  // Parallel to aliases[].
+        int32_t i;
+        for(i=0; i<length; ++i) {
+            sortedValues.sortedInsert(aliases[i].enumValue, errorCode);
+            nameOffsets.addElement(writeNameGroup(aliases[i], errorCode), errorCode);
+        }
+        int32_t ranges[10][2];
+        int32_t numRanges=uprv_makeDenseRanges(sortedValues.getBuffer(), length, 0xe0,
+                                               ranges, LENGTHOF(ranges));
+        if(numRanges>0) {
+            valueMaps.addElement(numRanges, errorCode);
+            for(i=0; i<numRanges; ++i) {
+                valueMaps.addElement(ranges[i][0], errorCode);
+                valueMaps.addElement(ranges[i][1], errorCode);
+                for(int32_t j=ranges[i][0]; j<=ranges[i][1]; ++j) {
+                    // The range might not be completely dense, so j might not have an entry,
+                    // in which case we write a nameOffset of 0.
+                    // Real nameOffsets for property values are never 0.
+                    // (The first name group is for the first property name.)
+                    int32_t aliasIndex=aliasesIndexOf(aliases, length, j);
+                    int32_t nameOffset= aliasIndex>=0 ? nameOffsets.elementAti(aliasIndex) : 0;
+                    valueMaps.addElement(nameOffset, errorCode);
+                }
+            }
+        } else {
+            // No dense ranges.
+            valueMaps.addElement(0x10+length, errorCode);
+            for(i=0; i<length; ++i) {
+                valueMaps.addElement(sortedValues.elementAti(i), errorCode);
+            }
+            for(i=0; i<length; ++i) {
+                valueMaps.addElement(
+                    nameOffsets.elementAti(
+                        aliasesIndexOf(aliases, length,
+                                       sortedValues.elementAti(i))), errorCode);
+            }
+        }
+    }
+
+    static int32_t aliasesIndexOf(const Alias aliases[], int32_t length, int32_t value) {
+        for(int32_t i=0;; ++i) {
+            if(aliases[i].enumValue==value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    void setPropertyInt(int32_t prop, int32_t subIndex, int32_t value) {
+        // Assume that prop is in the valueMaps.elementAti(0) ranges.
+        int32_t index=1;
+        for(;;) {
+            int32_t rangeStart=valueMaps.elementAti(index);
+            int32_t rangeEnd=valueMaps.elementAti(index+1);
+            index+=2;
+            if(rangeStart<=prop && prop<=rangeEnd) {
+                valueMaps.setElementAt(value, index+2*(prop-rangeStart)+subIndex);
+                break;
+            }
+            index+=2*(rangeEnd-rangeStart+1);
+        }
+    }
+
+    void addAliasToByteTrie(const Alias &alias, UErrorCode &errorCode) {
+        int32_t names[MAX_NAMES_PER_GROUP];
+        int32_t numNames=alias.getUniqueNames(names);
+        for(int32_t i=0; i<numNames; ++i) {
+            // printf("* adding %s: 0x%lx\n", STRING_TABLE[names[i]].normalized, (long)alias.enumValue);
+            btb.add(STRING_TABLE[names[i]].normalized, alias.enumValue, errorCode);
+        }
+    }
+
+    int32_t buildAliasesByteTrie(const Alias aliases[], int32_t length, UErrorCode &errorCode) {
+        btb.clear();
+        for(int32_t i=0; i<length; ++i) {
+            addAliasToByteTrie(aliases[i], errorCode);
+        }
+        int32_t byteTrieOffset=byteTries.length();
+        byteTries.append(btb.build(errorCode), errorCode);
+        return byteTrieOffset;
+    }
+
+    // Overload for Property. Property is-an Alias, but when we iterate through
+    // the array we need to increment by the right object size.
+    int32_t buildAliasesByteTrie(const Property aliases[], int32_t length,
+                                    UErrorCode &errorCode) {
+        btb.clear();
+        for(int32_t i=0; i<length; ++i) {
+            addAliasToByteTrie(aliases[i], errorCode);
+        }
+        int32_t byteTrieOffset=byteTries.length();
+        byteTries.append(btb.build(errorCode), errorCode);
+        return byteTrieOffset;
+    }
+
+    UVector32 valueMaps;
+    ByteTrieBuilder btb;
+    CharString byteTries;
+    CharString nameGroups;
+};
+
+
 /* UDataInfo cf. udata.h */
 static UDataInfo dataInfo = {
     sizeof(UDataInfo),
@@ -1193,6 +1414,8 @@ int genpname::MMain(int argc, char* argv[])
         fprintf(stdout, "Output file: %s.%s, %ld bytes\n",
             U_ICUDATA_NAME "_" PNAME_DATA_NAME, PNAME_DATA_TYPE, (long)wlen);
     }
+
+    Builder2(status).build(status);
 
     return 0; // success
 }
