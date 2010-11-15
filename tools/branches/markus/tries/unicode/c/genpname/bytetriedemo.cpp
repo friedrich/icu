@@ -104,7 +104,7 @@ extern int main(int argc, char* argv[]) {
     builder.clear().add("a", 1, errorCode).add("b", 2, errorCode).add("c", 3, errorCode);
     builder.add("d", 10, errorCode).add("e", 20, errorCode).add("f", 30, errorCode);
     builder.add("g", 100, errorCode).add("h", 200, errorCode).add("i", 300, errorCode);
-    builder.add("j", 1000, errorCode).add("k", 2000, errorCode).add("l", 3000, errorCode);
+    builder.add("j", 1000, errorCode).add("k", 10000, errorCode).add("l", 100000, errorCode);
     sp=builder.build(errorCode);
     printBytes("a-l", sp);
     ByteTrie a_l(sp.data());

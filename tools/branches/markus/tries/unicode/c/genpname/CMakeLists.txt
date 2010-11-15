@@ -10,3 +10,6 @@ target_link_libraries(genpname icuuc icutu)
 
 add_executable(bytetriedemo bytetriedemo.cpp)
 target_link_libraries(bytetriedemo icuuc icutu)
+
+add_executable(uchartriedemo uchartriedemo.cpp)
+target_link_libraries(uchartriedemo icuuc icutu)
