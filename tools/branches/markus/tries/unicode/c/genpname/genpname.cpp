@@ -950,7 +950,8 @@ public:
     Builder2(UErrorCode &errorCode) : valueMaps(errorCode), maxNameLength(0) {}
 
     void build(UErrorCode &errorCode) {
-        // Build main property aliases value map.
+        // Build main property aliases value map at value map offset 0,
+        // so that we need not store another offset for it.
         UVector32 propEnums(errorCode);
         int32_t propIndex;
         for(propIndex=0; propIndex<PROPERTY_COUNT; ++propIndex) {
@@ -971,28 +972,51 @@ public:
             }
         }
 
-        // Build the rest of the data.
+        // Build the properties trie first, at ByteTrie offset 0,
+        // so that we need not store another offset for it.
         buildAliasesByteTrie(PROPERTY, PROPERTY_COUNT, errorCode);
         printf("*** length of PROPERTY ByteTrie: %ld\n", (long)byteTries.length());
-        int32_t binPropsByteTrieOffset=buildAliasesByteTrie(VALUES_binprop, VALUES_binprop_COUNT, errorCode);
-        int32_t cccByteTrieOffset=buildAliasesByteTrie(VALUES_ccc, VALUES_ccc_COUNT, errorCode);
+
+        // Build the name group for the first property, at nameGroups offset 0.
+        // Name groups for *value* aliases must not start at offset 0
+        // because that is a missing-value marker for sparse value ranges.
+        setPropertyInt(PROPERTY[0].enumValue, 0,
+                       writeNameGroup(PROPERTY[0], errorCode));
+
+        // Build the known-repeated binary properties once.
+        int32_t binPropsValueMapOffset=valueMaps.size();
+        int32_t byteTrieOffset=buildAliasesByteTrie(VALUES_binprop, VALUES_binprop_COUNT, errorCode);
+        valueMaps.addElement(byteTrieOffset, errorCode);
+        buildValueMap(VALUES_binprop, VALUES_binprop_COUNT, errorCode);
+
+        // Build the known-repeated canonical combining class properties once.
+        int32_t cccValueMapOffset=valueMaps.size();
+        byteTrieOffset=buildAliasesByteTrie(VALUES_ccc, VALUES_ccc_COUNT, errorCode);
+        valueMaps.addElement(byteTrieOffset, errorCode);
+        buildValueMap(VALUES_ccc, VALUES_ccc_COUNT, errorCode);
+
+        // Build the rest of the data.
         for(propIndex=0; propIndex<PROPERTY_COUNT; ++propIndex) {
-            setPropertyInt(PROPERTY[propIndex].enumValue, 0,
-                           writeNameGroup(PROPERTY[propIndex], errorCode));
+            if(propIndex>0) {
+                // writeNameGroup(PROPERTY[0], ...) already done
+                setPropertyInt(PROPERTY[propIndex].enumValue, 0,
+                               writeNameGroup(PROPERTY[propIndex], errorCode));
+            }
             int32_t valueCount=PROPERTY[propIndex].valueCount;
             if(valueCount>0) {
-                setPropertyInt(PROPERTY[propIndex].enumValue, 1, valueMaps.size());
-                int32_t byteTrieOffset;
+                int32_t valueMapOffset;
                 const Alias *valueList=PROPERTY[propIndex].valueList;
                 if(valueList==VALUES_binprop) {
-                    byteTrieOffset=binPropsByteTrieOffset;
+                    valueMapOffset=binPropsValueMapOffset;
                 } else if(valueList==VALUES_ccc || valueList==VALUES_lccc || valueList==VALUES_tccc) {
-                    byteTrieOffset=cccByteTrieOffset;
+                    valueMapOffset=cccValueMapOffset;
                 } else {
+                    valueMapOffset=valueMaps.size();
                     byteTrieOffset=buildAliasesByteTrie(valueList, valueCount, errorCode);
+                    valueMaps.addElement(byteTrieOffset, errorCode);
+                    buildValueMap(valueList, valueCount, errorCode);
                 }
-                valueMaps.addElement(byteTrieOffset, errorCode);
-                buildValueMap(valueList, valueCount, errorCode);
+                setPropertyInt(PROPERTY[propIndex].enumValue, 1, valueMapOffset);
             }
         }
 
@@ -1168,29 +1192,29 @@ public:
 };
 
 void writeCSourceFile(const char *destdir, const Builder2& builder) {
-    FILE *f=usrc_create(destdir, "propname_data.cpp");
+    FILE *f=usrc_create(destdir, "propname_data.h");
     if(f==NULL) {
         return;  // usrc_create() reported an error.
     }
 
     fputs("#ifndef INCLUDED_FROM_PROPNAME_CPP\n"
-          "#   error This file is #included from propname.cpp and must not be compiled by itself.\n"
+          "#   error This file must be #included from propname.cpp only.\n"
           "#endif\n\n", f);
 
     // TODO: write static PropNamesData fields?
     usrc_writeArray(f, "static const int32_t pnames_indexes[%ld]={",
                     builder.indexes, 32, PropNamesData::IX_COUNT,
                     "};\n\n");
-    usrc_writeArray(f, "static const int32_t pnames_valueMaps[%ld]={",
+    usrc_writeArray(f, "static const int32_t pnames_valueMaps[%ld]={\n",
                     builder.valueMaps.getBuffer(), 32, builder.valueMaps.size(),
-                    "};\n\n");
-    usrc_writeArray(f, "static const uint8_t pnames_byteTries[%ld]={",
+                    "\n};\n\n");
+    usrc_writeArray(f, "static const uint8_t pnames_byteTries[%ld]={\n",
                     builder.byteTries.data(), 8, builder.byteTries.length(),
-                    "};\n\n");
+                    "\n};\n\n");
     usrc_writeArrayOfMostlyInvChars(
-        f, "static const char pnames_nameGroups[%ld]={",
+        f, "static const char pnames_nameGroups[%ld]={\n",
         builder.nameGroups.data(), builder.nameGroups.length(),
-        "};\n");
+        "\n};\n");
 
     fclose(f);
 }
