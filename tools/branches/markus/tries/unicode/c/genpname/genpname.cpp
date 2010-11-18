@@ -24,6 +24,7 @@
 #include "propname.h"
 #include "uassert.h"
 #include "uvectr32.h"
+#include "writesrc.h"
 
 #include <stdio.h>
 
@@ -1120,6 +1121,66 @@ public:
     CharString nameGroups;
 };
 
+U_DEFINE_LOCAL_OPEN_POINTER(LocalStdioFilePointer, FILE, fclose);
+
+class PropNamesData {
+public:
+    enum {
+        // Byte offsets from the start of the data, after the generic header.
+        IX_VALUE_MAPS_OFFSET,
+        IX_BYTE_TRIES_OFFSET,
+        IX_NAME_GROUPS_OFFSET,
+        IX_RESERVED3_OFFSET,
+        IX_RESERVED4_OFFSET,
+        IX_TOTAL_SIZE,
+
+        // Other values.
+        IX_MAX_NAME_LENGTH,
+        IX_RESERVED7,
+        IX_COUNT
+    };
+};
+
+void writeCSourceFile(const char *destdir, const Builder2& builder) {
+    LocalStdioFilePointer f(usrc_create(destdir, "pnames_data.c"));
+    if(f.isNull()) {
+        return;
+    }
+
+    // TODO: write #if/#error guard against including from anywhere but pnames.cpp
+
+    int32_t indexes[PropNamesData::IX_COUNT];
+    int32_t offset=(int32_t)sizeof(indexes);
+    indexes[PropNamesData::IX_VALUE_MAPS_OFFSET]=offset;
+    offset+=builder.valueMaps.size()*4;
+    indexes[PropNamesData::IX_BYTE_TRIES_OFFSET]=offset;
+    offset+=builder.byteTries.length();
+    indexes[PropNamesData::IX_NAME_GROUPS_OFFSET]=offset;
+    offset+=builder.nameGroups.length();
+    int32_t i;
+    for(i=PropNamesData::IX_RESERVED3_OFFSET; i<=PropNamesData::IX_TOTAL_SIZE; ++i) {
+        indexes[i]=offset;
+    }
+    indexes[PropNamesData::IX_MAX_NAME_LENGTH]=-1;  // TODO
+    for(i=PropNamesData::IX_RESERVED7; i<PropNamesData::IX_COUNT; ++i) {
+        indexes[i]=0;
+    }
+
+    // TODO: write static PropNamesData fields?
+    usrc_writeArray(f.getAlias(), "static const int32_t pnames_indexes[%ld]={",
+                    indexes, 32, PropNamesData::IX_COUNT,
+                    "};\n\n");
+    usrc_writeArray(f.getAlias(), "static const int32_t pnames_valueMaps[%ld]={",
+                    builder.valueMaps.getBuffer(), 32, builder.valueMaps.size(),
+                    "};\n\n");
+    usrc_writeArray(f.getAlias(), "static const uint8_t pnames_byteTries[%ld]={",
+                    builder.byteTries.data(), 8, builder.byteTries.length(),
+                    "};\n\n");
+    usrc_writeArrayOfMostlyInvChars(
+        f.getAlias(), "static const char pnames_nameGroups[%ld]={",
+        builder.nameGroups.data(), builder.nameGroups.length(),
+        "};\n");
+}
 
 /* UDataInfo cf. udata.h */
 static UDataInfo dataInfo = {
@@ -1415,7 +1476,11 @@ int genpname::MMain(int argc, char* argv[])
             U_ICUDATA_NAME "_" PNAME_DATA_NAME, PNAME_DATA_TYPE, (long)wlen);
     }
 
-    Builder2(status).build(status);
+    Builder2 builder2(status);
+    builder2.build(status);
+    if(U_SUCCESS(status)) {
+        writeCSourceFile(options[3].value, builder2);
+    }
 
     return 0; // success
 }
