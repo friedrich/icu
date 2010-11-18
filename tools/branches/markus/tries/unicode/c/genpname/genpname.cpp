@@ -927,9 +927,27 @@ int8_t* Builder::createData(int32_t& length) const {
 // END Builder
 //----------------------------------------------------------------------
 
+class PropNamesData {
+public:
+    enum {
+        // Byte offsets from the start of the data, after the generic header.
+        IX_VALUE_MAPS_OFFSET,
+        IX_BYTE_TRIES_OFFSET,
+        IX_NAME_GROUPS_OFFSET,
+        IX_RESERVED3_OFFSET,
+        IX_RESERVED4_OFFSET,
+        IX_TOTAL_SIZE,
+
+        // Other values.
+        IX_MAX_NAME_LENGTH,
+        IX_RESERVED7,
+        IX_COUNT
+    };
+};
+
 class Builder2 {
 public:
-    Builder2(UErrorCode &errorCode) : valueMaps(errorCode) {}
+    Builder2(UErrorCode &errorCode) : valueMaps(errorCode), maxNameLength(0) {}
 
     void build(UErrorCode &errorCode) {
         // Build main property aliases value map.
@@ -977,10 +995,32 @@ public:
                 buildValueMap(valueList, valueCount, errorCode);
             }
         }
+
+        if(U_FAILURE(errorCode)) {
+            fprintf(stderr, "Builder2.build() failure: %s\n", u_errorName(errorCode));
+            exit(errorCode);
+        }
+
+        // TODO: if(verbose) and move out of here.
+        printf("*** length of all value maps:  %6ld\n", (long)valueMaps.size());
         printf("*** length of all ByteTries:   %6ld\n", (long)byteTries.length());
         printf("*** length of all name groups: %6ld\n", (long)nameGroups.length());
-        printf("*** length of all value maps:  %6ld\n", (long)valueMaps.size());
-        // TODO: U_FAILURE(errorCode)?
+
+        // Write the indexes.
+        int32_t offset=(int32_t)sizeof(indexes);
+        indexes[PropNamesData::IX_VALUE_MAPS_OFFSET]=offset;
+        offset+=valueMaps.size()*4;
+        indexes[PropNamesData::IX_BYTE_TRIES_OFFSET]=offset;
+        offset+=byteTries.length();
+        indexes[PropNamesData::IX_NAME_GROUPS_OFFSET]=offset;
+        offset+=nameGroups.length();
+        for(i=PropNamesData::IX_RESERVED3_OFFSET; i<=PropNamesData::IX_TOTAL_SIZE; ++i) {
+            indexes[i]=offset;
+        }
+        indexes[PropNamesData::IX_MAX_NAME_LENGTH]=maxNameLength;
+        for(i=PropNamesData::IX_RESERVED7; i<PropNamesData::IX_COUNT; ++i) {
+            indexes[i]=0;
+        }
     }
 
     int32_t writeNameGroup(const Alias &alias, UErrorCode &errorCode) {
@@ -1013,7 +1053,11 @@ public:
                 nameIndex=-nameIndex;
             }
             const char *s=STRING_TABLE[nameIndex].str;
-            nameGroups.append(s, uprv_strlen(s)+1, errorCode);  // including NUL
+            int32_t sLength=uprv_strlen(s)+1;
+            if(sLength>maxNameLength) {
+                maxNameLength=sLength;
+            }
+            nameGroups.append(s, sLength, errorCode);  // including NUL
         } while(n>=0);
         return nameOffset;
     }
@@ -1105,7 +1149,7 @@ public:
     // Overload for Property. Property is-an Alias, but when we iterate through
     // the array we need to increment by the right object size.
     int32_t buildAliasesByteTrie(const Property aliases[], int32_t length,
-                                    UErrorCode &errorCode) {
+                                 UErrorCode &errorCode) {
         btb.clear();
         for(int32_t i=0; i<length; ++i) {
             addAliasToByteTrie(aliases[i], errorCode);
@@ -1115,71 +1159,40 @@ public:
         return byteTrieOffset;
     }
 
+    int32_t indexes[PropNamesData::IX_COUNT];
     UVector32 valueMaps;
     ByteTrieBuilder btb;
     CharString byteTries;
     CharString nameGroups;
-};
-
-U_DEFINE_LOCAL_OPEN_POINTER(LocalStdioFilePointer, FILE, fclose);
-
-class PropNamesData {
-public:
-    enum {
-        // Byte offsets from the start of the data, after the generic header.
-        IX_VALUE_MAPS_OFFSET,
-        IX_BYTE_TRIES_OFFSET,
-        IX_NAME_GROUPS_OFFSET,
-        IX_RESERVED3_OFFSET,
-        IX_RESERVED4_OFFSET,
-        IX_TOTAL_SIZE,
-
-        // Other values.
-        IX_MAX_NAME_LENGTH,
-        IX_RESERVED7,
-        IX_COUNT
-    };
+    int32_t maxNameLength;
 };
 
 void writeCSourceFile(const char *destdir, const Builder2& builder) {
-    LocalStdioFilePointer f(usrc_create(destdir, "pnames_data.c"));
-    if(f.isNull()) {
-        return;
+    FILE *f=usrc_create(destdir, "propname_data.cpp");
+    if(f==NULL) {
+        return;  // usrc_create() reported an error.
     }
 
-    // TODO: write #if/#error guard against including from anywhere but pnames.cpp
-
-    int32_t indexes[PropNamesData::IX_COUNT];
-    int32_t offset=(int32_t)sizeof(indexes);
-    indexes[PropNamesData::IX_VALUE_MAPS_OFFSET]=offset;
-    offset+=builder.valueMaps.size()*4;
-    indexes[PropNamesData::IX_BYTE_TRIES_OFFSET]=offset;
-    offset+=builder.byteTries.length();
-    indexes[PropNamesData::IX_NAME_GROUPS_OFFSET]=offset;
-    offset+=builder.nameGroups.length();
-    int32_t i;
-    for(i=PropNamesData::IX_RESERVED3_OFFSET; i<=PropNamesData::IX_TOTAL_SIZE; ++i) {
-        indexes[i]=offset;
-    }
-    indexes[PropNamesData::IX_MAX_NAME_LENGTH]=-1;  // TODO
-    for(i=PropNamesData::IX_RESERVED7; i<PropNamesData::IX_COUNT; ++i) {
-        indexes[i]=0;
-    }
+    fputs("#ifndef INCLUDED_FROM_PROPNAME_CPP\n"
+          "#   error This file is #included from propname.cpp and must not be compiled by itself.\n"
+          "#endif\n\n", f);
 
     // TODO: write static PropNamesData fields?
-    usrc_writeArray(f.getAlias(), "static const int32_t pnames_indexes[%ld]={",
-                    indexes, 32, PropNamesData::IX_COUNT,
+    usrc_writeArray(f, "static const int32_t pnames_indexes[%ld]={",
+                    builder.indexes, 32, PropNamesData::IX_COUNT,
                     "};\n\n");
-    usrc_writeArray(f.getAlias(), "static const int32_t pnames_valueMaps[%ld]={",
+    usrc_writeArray(f, "static const int32_t pnames_valueMaps[%ld]={",
                     builder.valueMaps.getBuffer(), 32, builder.valueMaps.size(),
                     "};\n\n");
-    usrc_writeArray(f.getAlias(), "static const uint8_t pnames_byteTries[%ld]={",
+    usrc_writeArray(f, "static const uint8_t pnames_byteTries[%ld]={",
                     builder.byteTries.data(), 8, builder.byteTries.length(),
                     "};\n\n");
     usrc_writeArrayOfMostlyInvChars(
-        f.getAlias(), "static const char pnames_nameGroups[%ld]={",
+        f, "static const char pnames_nameGroups[%ld]={",
         builder.nameGroups.data(), builder.nameGroups.length(),
         "};\n");
+
+    fclose(f);
 }
 
 /* UDataInfo cf. udata.h */
@@ -1479,6 +1492,7 @@ int genpname::MMain(int argc, char* argv[])
     Builder2 builder2(status);
     builder2.build(status);
     if(U_SUCCESS(status)) {
+        // TODO: add and switch on --csource option
         writeCSourceFile(options[3].value, builder2);
     }
 
