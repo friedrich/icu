@@ -174,29 +174,6 @@ int32_t Alias::getUniqueNames(int32_t* stringIndices) const {
 // END DATA
 //----------------------------------------------------------------------
 
-class PropNameData {
-public:
-    enum {
-        // Byte offsets from the start of the data, after the generic header.
-        IX_VALUE_MAPS_OFFSET,
-        IX_BYTE_TRIES_OFFSET,
-        IX_NAME_GROUPS_OFFSET,
-        IX_RESERVED3_OFFSET,
-        IX_RESERVED4_OFFSET,
-        IX_TOTAL_SIZE,
-
-        // Other values.
-        IX_MAX_NAME_LENGTH,
-        IX_RESERVED7,
-        IX_COUNT
-    };
-
-    static const int32_t indexes[];
-    static const int32_t valueMaps[];
-    static const uint8_t byteTries[];
-    static const char nameGroups[];
-};
-
 class Builder {
 public:
     Builder(UErrorCode &errorCode) : valueMaps(errorCode), maxNameLength(0) {}
@@ -479,17 +456,17 @@ static void writeCSourceFile(const char *destdir, const Builder& builder) {
           "#   error This file must be #included from propname.cpp only.\n"
           "#endif\n\n", f);
 
-    usrc_writeArray(f, "static const int32_t PropNameData::indexes[%ld]={",
+    usrc_writeArray(f, "const int32_t PropNameData::indexes[%ld]={",
                     builder.indexes, 32, PropNameData::IX_COUNT,
                     "};\n\n");
-    usrc_writeArray(f, "static const int32_t PropNameData::valueMaps[%ld]={\n",
+    usrc_writeArray(f, "const int32_t PropNameData::valueMaps[%ld]={\n",
                     builder.valueMaps.getBuffer(), 32, builder.valueMaps.size(),
                     "\n};\n\n");
-    usrc_writeArray(f, "static const uint8_t PropNameData::byteTries[%ld]={\n",
+    usrc_writeArray(f, "const uint8_t PropNameData::byteTries[%ld]={\n",
                     builder.byteTries.data(), 8, builder.byteTries.length(),
                     "\n};\n\n");
     usrc_writeArrayOfMostlyInvChars(
-        f, "static const char PropNameData::nameGroups[%ld]={\n",
+        f, "const char PropNameData::nameGroups[%ld]={\n",
         builder.nameGroups.data(), builder.nameGroups.length(),
         "\n};\n");
 
