@@ -195,7 +195,7 @@ public:
         int32_t i, j;
         for(i=0; i<numPropRanges; ++i) {
             valueMaps.addElement(ranges[i][0], errorCode);
-            valueMaps.addElement(ranges[i][1], errorCode);
+            valueMaps.addElement(ranges[i][1]+1, errorCode);
             for(j=ranges[i][0]; j<=ranges[i][1]; ++j) {
                 // Reserve two slots per property for the name group offset and the value-map offset.
                 valueMaps.addElement(0, errorCode);
@@ -321,7 +321,7 @@ public:
             valueMaps.addElement(numRanges, errorCode);
             for(i=0; i<numRanges; ++i) {
                 valueMaps.addElement(ranges[i][0], errorCode);
-                valueMaps.addElement(ranges[i][1], errorCode);
+                valueMaps.addElement(ranges[i][1]+1, errorCode);
                 for(int32_t j=ranges[i][0]; j<=ranges[i][1]; ++j) {
                     // The range might not be completely dense, so j might not have an entry,
                     // in which case we write a nameOffset of 0.
@@ -361,13 +361,13 @@ public:
         int32_t index=1;
         for(;;) {
             int32_t rangeStart=valueMaps.elementAti(index);
-            int32_t rangeEnd=valueMaps.elementAti(index+1);
+            int32_t rangeLimit=valueMaps.elementAti(index+1);
             index+=2;
-            if(rangeStart<=prop && prop<=rangeEnd) {
+            if(rangeStart<=prop && prop<rangeLimit) {
                 valueMaps.setElementAt(value, index+2*(prop-rangeStart)+subIndex);
                 break;
             }
-            index+=2*(rangeEnd-rangeStart+1);
+            index+=2*(rangeLimit-rangeStart);
         }
     }
 
