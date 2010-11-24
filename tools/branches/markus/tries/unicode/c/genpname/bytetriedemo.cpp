@@ -57,48 +57,48 @@ extern int main(int argc, char* argv[]) {
     StringPiece sp=builder.add("", 0, errorCode).build(errorCode);
     printBytes("empty string", sp);
     ByteTrie empty(sp.data());
-    UBool contains=empty.contains();
-    printf("empty.next() %d %d\n", contains, (int)empty.getValue());
+    UBool hasValue=empty.hasValue();
+    printf("empty.next() %d %d\n", hasValue, (int)empty.getValue());
     printTrie(sp);
 
     sp=builder.clear().add("a", 1, errorCode).build(errorCode);
     printBytes("a", sp);
     ByteTrie a(sp.data());
-    contains=a.next('a') && a.contains();
-    printf("a.next(a) %d %d\n", contains, (int)a.getValue());
+    hasValue=a.next('a') && a.hasValue();
+    printf("a.next(a) %d %d\n", hasValue, (int)a.getValue());
     printTrie(sp);
 
     sp=builder.clear().add("ab", -1, errorCode).build(errorCode);
     printBytes("ab", sp);
     ByteTrie ab(sp.data());
-    contains=ab.next('a') && ab.next('b') && ab.contains();
-    printf("ab.next(ab) %d %d\n", contains, (int)ab.getValue());
+    hasValue=ab.next('a') && ab.next('b') && ab.hasValue();
+    printf("ab.next(ab) %d %d\n", hasValue, (int)ab.getValue());
     printTrie(sp);
 
     sp=builder.clear().add("a", 1, errorCode).add("ab", 100, errorCode).build(errorCode);
     printBytes("a+ab", sp);
     ByteTrie a_ab(sp.data());
-    contains=a_ab.next('a') && a_ab.contains();
-    printf("a_ab.next(a) %d %d\n", contains, (int)a_ab.getValue());
-    contains=a_ab.next('b') && a_ab.contains();
-    printf("a_ab.next(b) %d %d\n", contains, (int)a_ab.getValue());
-    contains=a_ab.contains();
-    printf("a_ab.next() %d %d\n", contains, (int)a_ab.getValue());
+    hasValue=a_ab.next('a') && a_ab.hasValue();
+    printf("a_ab.next(a) %d %d\n", hasValue, (int)a_ab.getValue());
+    hasValue=a_ab.next('b') && a_ab.hasValue();
+    printf("a_ab.next(b) %d %d\n", hasValue, (int)a_ab.getValue());
+    hasValue=a_ab.hasValue();
+    printf("a_ab.next() %d %d\n", hasValue, (int)a_ab.getValue());
     printTrie(sp);
 
     sp=builder.clear().add("a", 1, errorCode).add("b", 2, errorCode).add("c", 3, errorCode).build(errorCode);
     printBytes("a+b+c", sp);
     ByteTrie a_b_c(sp.data());
-    contains=a_b_c.next('a') && a_b_c.contains();
-    printf("a_b_c.next(a) %d %d\n", contains, (int)a_b_c.getValue());
-    contains=a_b_c.next('b') && a_b_c.contains();
-    printf("a_b_c.next(b) %d %d\n", contains, (int)a_b_c.getValue());
-    contains=a_b_c.reset().next('b') && a_b_c.contains();
-    printf("a_b_c.r.next(b) %d %d\n", contains, (int)a_b_c.getValue());
-    contains=a_b_c.reset().next('c') && a_b_c.contains();
-    printf("a_b_c.r.next(c) %d %d\n", contains, (int)a_b_c.getValue());
-    contains=a_b_c.reset().next('d') && a_b_c.contains();
-    printf("a_b_c.r.next(d) %d %d\n", contains, (int)a_b_c.getValue());
+    hasValue=a_b_c.next('a') && a_b_c.hasValue();
+    printf("a_b_c.next(a) %d %d\n", hasValue, (int)a_b_c.getValue());
+    hasValue=a_b_c.next('b') && a_b_c.hasValue();
+    printf("a_b_c.next(b) %d %d\n", hasValue, (int)a_b_c.getValue());
+    hasValue=a_b_c.reset().next('b') && a_b_c.hasValue();
+    printf("a_b_c.r.next(b) %d %d\n", hasValue, (int)a_b_c.getValue());
+    hasValue=a_b_c.reset().next('c') && a_b_c.hasValue();
+    printf("a_b_c.r.next(c) %d %d\n", hasValue, (int)a_b_c.getValue());
+    hasValue=a_b_c.reset().next('d') && a_b_c.hasValue();
+    printf("a_b_c.r.next(d) %d %d\n", hasValue, (int)a_b_c.getValue());
     printTrie(sp);
 
     builder.clear().add("a", 1, errorCode).add("b", 2, errorCode).add("c", 3, errorCode);
@@ -109,8 +109,8 @@ extern int main(int argc, char* argv[]) {
     printBytes("a-l", sp);
     ByteTrie a_l(sp.data());
     for(char c='`'; c<='m'; ++c) {
-        contains=a_l.reset().next(c) && a_l.contains();
-        printf("a_l.r.next(%c) %d %d\n", c, contains, (int)a_l.getValue());
+        hasValue=a_l.reset().next(c) && a_l.hasValue();
+        printf("a_l.r.next(%c) %d %d\n", c, hasValue, (int)a_l.getValue());
     }
     printTrie(sp);
 
