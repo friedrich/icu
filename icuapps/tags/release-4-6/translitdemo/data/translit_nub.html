@@ -1,0 +1,51 @@
+<html>
+<head><title>Transform Demo Nub</title></head>
+<body onload="handleLoad()">
+
+<script>
+
+// Load up this stuff relative to the CGI
+  SELF = "$SCRIPT_NAME";
+  JS = "$SCRIPT_NAME?TEMPLATE_FILE=data/js";
+
+// Invoke the CGI with opcode, arg1, and arg2.  Then invoke the
+// callback as: callback(context, result), where result is the
+// result of the CGI opcode call.  callback and context should
+// be STRINGS that will be eval'ed.  callback will have
+// "parent.MAINFRAME." prepended to it.
+function op(callback, context, opcode, arg1, arg2, arg3) {
+  document.FORM.OPCODE.value = opcode;
+  document.FORM.OPARG1.value = arg1;
+  document.FORM.OPARG2.value = arg2;
+  document.FORM.OPARG3.value = arg3;
+  document.FORM.CALLBACK.value = callback;
+  document.FORM.CONTEXT.value = context;
+  document.FORM.submit();
+}
+
+// Called when after a submit() when the page is fully loaded.
+function handleLoad() {
+  var c = document.FORM.CALLBACK.value;
+  if (c) {
+    eval("parent.MAINFRAME." + c +
+         "(document.FORM.CONTEXT.value, unescape(document.FORM.OPRESULT.value))");
+  }
+  //document.FORM.CALLBACK.value = ""; // Should be unnecessary
+}
+
+document.writeln('<form method="POST" action="' + SELF + '" name="FORM">');
+</script>
+  <input type="HIDDEN" name="TEMPLATE_FILE" value="data/translit_nub.html">
+  <input type="HIDDEN" name="OPCODE" value="$OPCODE">
+  <input type="HIDDEN" name="OPARG1" value="$OPARG1">
+  <input type="HIDDEN" name="OPARG2" value="$OPARG2">
+  <input type="HIDDEN" name="OPARG3" value="$OPARG3">
+  <input type="HIDDEN" name="OPRESULT" value="$OPRESULT">
+  <input type="HIDDEN" name="CALLBACK" value="$CALLBACK">
+  <input type="HIDDEN" name="CONTEXT" value="$CONTEXT">
+  <input type="SUBMIT" value="Submit">
+</form>
+
+</body>
+</html>
+

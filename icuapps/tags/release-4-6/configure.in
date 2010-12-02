@@ -1,0 +1,70 @@
+dnl -*-m4-*-
+dnl configure.in for ICU Apps
+dnl Steven R. Loomis
+dnl Copyright (C) 1999-2010, International Business Machines Corporation and
+dnl   others. All Rights Reserved.
+
+dnl Process this file with autoconf to produce a configure script
+
+AC_INIT(icuapps, 0.0, http://icu-project.org/bugs, [ICU Apps], [http://icu-project.org])
+dnl Check a file in our files, just to make sure we have a sane setup..
+AC_CONFIG_SRCDIR(usort/lib/unicode/usort.h)
+
+dnl Will set the variable 'ICU_CONFIG'
+CHECK_ICU_CONFIG
+
+
+AC_CHECK_PROG(AUTOCONF, autoconf, autoconf, true)
+
+# ICU4C configure.in is working too hard. See below.
+AC_CHECK_HEADERS([dlfcn.h readline/readline.h])
+AC_SEARCH_LIBS(readline, [readline edit]) 
+AC_CHECK_FUNCS([dlopen readline])
+
+AC_PROG_INSTALL
+
+# make sure install is relative to srcdir - if a script
+if test "$srcdir" = "."; then
+  # If srcdir isn't just ., then (srcdir) is already prepended.
+  if test "${ac_install_sh}" = "${INSTALL}"; then
+   INSTALL="\\\$(top_srcdir)/${ac_install_sh}"
+  fi
+fi
+
+AC_CONFIG_HEADER(apputil/demo_config.h)
+
+
+AC_OUTPUT([icuapps.mk \
+Makefile \
+apputil/Makefile \
+usort/Makefile \
+usort/lib/Makefile \
+usort/client/Makefile \
+locexp/Makefile \
+locexp/tools/Makefile \
+locexp/util/Makefile \
+locexp/resource/Makefile \
+ubrowse/Makefile \
+nbrowser/Makefile \
+idnbrowser/Makefile \
+convexp/Makefile \
+scompare/Makefile \
+redemo/Makefile \
+datacustom/Makefile \
+datacustom/gendatadep/Makefile \
+icudemos/Makefile \
+xlitomatic/Makefile \
+rbbiperf/Makefile \
+ucd/Makefile \
+dumpdat/Makefile \
+rtfcvrt/Makefile \
+XMLConverter/Makefile \
+obsolete/Makefile \
+regressionTest/CollRegressionTest/c/Makefile \
+regressionTest/StrsrchRegressionTest/c/Makefile \
+test/Makefile \
+test/testdata/Makefile \
+test/obstest/Makefile])
+
+dnl
+
