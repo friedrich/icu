@@ -38,7 +38,7 @@ printUChars(const char *name, const UnicodeString &uchars) {
 static void
 printTrie(const UnicodeString &uchars) {
     IcuToolErrorCode errorCode("printTrie");
-    UCharTrieIterator iter(uchars.getBuffer(), errorCode);
+    UCharTrieIterator iter(uchars.getBuffer(), 0, errorCode);
     std::string utf8;
     while(iter.next(errorCode)) {
         utf8.clear();

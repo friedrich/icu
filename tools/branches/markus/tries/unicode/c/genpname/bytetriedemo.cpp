@@ -37,7 +37,7 @@ printBytes(const char *name, const StringPiece &bytes) {
 static void
 printTrie(const StringPiece &bytes) {
     IcuToolErrorCode errorCode("printTrie");
-    ByteTrieIterator iter(bytes.data(), errorCode);
+    ByteTrieIterator iter(bytes.data(), 0, errorCode);
     while(iter.next(errorCode)) {
         printf("  '%s': %d\n", iter.getString().data(), (int)iter.getValue());
     }
