@@ -386,7 +386,7 @@ public:
             addAliasToByteTrie(aliases[i], errorCode);
         }
         int32_t byteTrieOffset=byteTries.length();
-        byteTries.append(btb.build(errorCode), errorCode);
+        byteTries.append(btb.build(UDICTTRIE_BUILD_SMALL, errorCode), errorCode);
         return byteTrieOffset;
     }
 
@@ -399,7 +399,7 @@ public:
             addAliasToByteTrie(aliases[i], errorCode);
         }
         int32_t byteTrieOffset=byteTries.length();
-        byteTries.append(btb.build(errorCode), errorCode);
+        byteTries.append(btb.build(UDICTTRIE_BUILD_SMALL, errorCode), errorCode);
         return byteTrieOffset;
     }
 

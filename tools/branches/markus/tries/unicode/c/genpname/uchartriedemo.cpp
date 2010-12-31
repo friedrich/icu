@@ -50,51 +50,53 @@ printTrie(const UnicodeString &uchars) {
 extern int main(int argc, char* argv[]) {
     IcuToolErrorCode errorCode("bytetriedemo");
     UCharTrieBuilder builder;
-    UnicodeString str=builder.add(UnicodeString(), 0, errorCode).build(errorCode);
+    UnicodeString str;
+    builder.add(UnicodeString(), 0, errorCode).build(UDICTTRIE_BUILD_FAST, str, errorCode);
     printUChars("empty string", str);
     UCharTrie empty(str.getBuffer());
-    UBool hasValue=empty.hasValue();
-    printf("empty.next() %d %d\n", hasValue, (int)empty.getValue());
+    UDictTrieResult result=empty.current();
+    printf("empty.current() %d %d\n", result, (int)empty.getValue());
     printTrie(str);
 
-    str=builder.clear().add("a", 1, errorCode).build(errorCode);
+    builder.clear().add("a", 1, errorCode).build(UDICTTRIE_BUILD_FAST, str, errorCode);
     printUChars("a", str);
     UCharTrie a(str.getBuffer());
-    hasValue=a.next('a') && a.hasValue();
-    printf("a.next(a) %d %d\n", hasValue, (int)a.getValue());
+    result=a.next('a');
+    printf("a.next(a) %d %d\n", result, (int)a.getValue());
     printTrie(str);
 
-    str=builder.clear().add("ab", -1, errorCode).build(errorCode);
+    builder.clear().add("ab", -1, errorCode).build(UDICTTRIE_BUILD_FAST, str, errorCode);
     printUChars("ab", str);
     UCharTrie ab(str.getBuffer());
-    hasValue=ab.next('a') && ab.next('b') && ab.hasValue();
-    printf("ab.next(ab) %d %d\n", hasValue, (int)ab.getValue());
+    ab.next('a');
+    result=ab.next('b');
+    printf("ab.next(ab) %d %d\n", result, (int)ab.getValue());
     printTrie(str);
 
-    str=builder.clear().add("a", 1, errorCode).add("ab", 100, errorCode).build(errorCode);
+    builder.clear().add("a", 1, errorCode).add("ab", 100, errorCode).build(UDICTTRIE_BUILD_FAST, str, errorCode);
     printUChars("a+ab", str);
     UCharTrie a_ab(str.getBuffer());
-    hasValue=a_ab.next('a') && a_ab.hasValue();
-    printf("a_ab.next(a) %d %d\n", hasValue, (int)a_ab.getValue());
-    hasValue=a_ab.next('b') && a_ab.hasValue();
-    printf("a_ab.next(b) %d %d\n", hasValue, (int)a_ab.getValue());
-    hasValue=a_ab.hasValue();
-    printf("a_ab.next() %d %d\n", hasValue, (int)a_ab.getValue());
+    result=a_ab.next('a');
+    printf("a_ab.next(a) %d %d\n", result, (int)a_ab.getValue());
+    result=a_ab.next('b');
+    printf("a_ab.next(b) %d %d\n", result, (int)a_ab.getValue());
+    result=a_ab.current();
+    printf("a_ab.current() %d %d\n", result, (int)a_ab.getValue());
     printTrie(str);
 
-    str=builder.clear().add("a", 1, errorCode).add("b", 2, errorCode).add("c", 3, errorCode).build(errorCode);
+    builder.clear().add("a", 1, errorCode).add("b", 2, errorCode).add("c", 3, errorCode).build(UDICTTRIE_BUILD_FAST, str, errorCode);
     printUChars("a+b+c", str);
     UCharTrie a_b_c(str.getBuffer());
-    hasValue=a_b_c.next('a') && a_b_c.hasValue();
-    printf("a_b_c.next(a) %d %d\n", hasValue, (int)a_b_c.getValue());
-    hasValue=a_b_c.next('b') && a_b_c.hasValue();
-    printf("a_b_c.next(b) %d %d\n", hasValue, (int)a_b_c.getValue());
-    hasValue=a_b_c.reset().next('b') && a_b_c.hasValue();
-    printf("a_b_c.r.next(b) %d %d\n", hasValue, (int)a_b_c.getValue());
-    hasValue=a_b_c.reset().next('c') && a_b_c.hasValue();
-    printf("a_b_c.r.next(c) %d %d\n", hasValue, (int)a_b_c.getValue());
-    hasValue=a_b_c.reset().next('d') && a_b_c.hasValue();
-    printf("a_b_c.r.next(d) %d %d\n", hasValue, (int)a_b_c.getValue());
+    result=a_b_c.next('a');
+    printf("a_b_c.next(a) %d %d\n", result, (int)a_b_c.getValue());
+    result=a_b_c.next('b');
+    printf("a_b_c.next(b) %d\n", result);
+    result=a_b_c.reset().next('b');
+    printf("a_b_c.r.next(b) %d %d\n", result, (int)a_b_c.getValue());
+    result=a_b_c.reset().next('c');
+    printf("a_b_c.r.next(c) %d %d\n", result, (int)a_b_c.getValue());
+    result=a_b_c.reset().next('d');
+    printf("a_b_c.r.next(d) %d\n", result);
     printTrie(str);
 
     builder.clear().add("a", 1, errorCode).add("b", 2, errorCode).add("c", 3, errorCode);
@@ -102,12 +104,16 @@ extern int main(int argc, char* argv[]) {
     builder.add("g", 100, errorCode).add("h", 200, errorCode).add("i", 300, errorCode);
     builder.add("j", 1000, errorCode).add("k", 2000, errorCode).add("l", 3000, errorCode);
     builder.add("m", 10000, errorCode).add("n", 100000, errorCode).add("o", 1000000, errorCode);
-    str=builder.build(errorCode);
+    builder.build(UDICTTRIE_BUILD_FAST, str, errorCode);
     printUChars("a-o", str);
     UCharTrie a_o(str.getBuffer());
     for(char c='`'; c<='p'; ++c) {
-        hasValue=a_o.reset().next(c) && a_o.hasValue();
-        printf("a_o.r.next(%c) %d %d\n", c, hasValue, (int)a_o.getValue());
+        result=a_o.reset().next(c);
+        if(UDICTTRIE_RESULT_HAS_VALUE(result)) {
+            printf("a_o.r.next(%c) %d %d\n", c, result, (int)a_o.getValue());
+        } else {
+            printf("a_o.r.next(%c) %d\n", c, result);
+        }
     }
     printTrie(str);
 
