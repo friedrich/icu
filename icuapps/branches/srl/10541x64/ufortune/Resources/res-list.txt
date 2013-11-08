@@ -1,0 +1,4 @@
+root.res
+te.res
+de.res
+es.res

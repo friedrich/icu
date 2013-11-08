@@ -1,0 +1,79 @@
+# -*-makefile-*-
+## ******************************************************************************
+## *
+## *   Copyright (C) 2002-2011, International Business Machines
+## *   Corporation and others.  All Rights Reserved.
+## *
+## *******************************************************************************
+
+base_srcdir=@srcdir@
+base_top_srcdir=@top_srcdir@
+
+# For future removal of the Makefile.in's in favor of just Makefiles.
+#srcdir=$(base_srcdir)/$(subdir)
+
+# Note: These values can be overridden locally with an icuapps-mk.local file
+# at the top icuapps level.
+
+ICU_CONFIG=@ICU_CONFIG@
+####################################################################
+# Load ICU information. You can copy this to other makefiles #######
+####################################################################
+CC=$(shell @ICU_CONFIG@ --cc)
+CXX=$(shell @ICU_CONFIG@ --cxx)
+CPPFLAGS=$(shell @ICU_CONFIG@ --cppflags) @DEFS@
+CFLAGS=$(shell @ICU_CONFIG@ --cflags)
+CXXFLAGS=$(shell @ICU_CONFIG@ --cxxflags)
+LDFLAGS =$(shell @ICU_CONFIG@ --ldflags) @LIBS@
+LDFLAGS_ICUIO =$(shell @ICU_CONFIG@ --ldflags-icuio)
+LDFLAGS_OBSOLETE =$(shell @ICU_CONFIG@ --ldflags-obsolete)
+INVOKE =$(shell @ICU_CONFIG@ --invoke)
+SO =$(shell @ICU_CONFIG@ --so)
+BINDIR = $(shell @ICU_CONFIG@ --bindir)
+GENRB=$(shell @ICU_CONFIG@ --invoke=genrb)
+UCONV=$(shell @ICU_CONFIG@ --invoke=uconv)
+PKGDATA=$(shell @ICU_CONFIG@ --invoke=pkgdata)
+
+# fake version #s for these.
+SO_TARGET_VERSION = 0.0
+SO_TARGET_VERSION_MAJOR = 0
+OUTOPT = -o # The extra space after the argument is needed.
+
+
+CPPFLAGS_APPUTIL=-I$(top_builddir)/apputil
+
+# Warning: needs ICU's install nearby.
+LDFLAGS_TOOLUTIL =$(shell @ICU_CONFIG@ --ldflags-toolutil)
+ICU_SOURCE=$(top_srcdir)/../icu/source
+ICU_BUILD=$(top_srcdir)/../icu/source
+####################################################################
+#MKINSTALLDIRS = $(SHELL) $(top_srcdir)/mkinstalldirs
+
+INSTALL=$(shell @ICU_CONFIG@ --install)
+MKINSTALLDIRS=$(shell @ICU_CONFIG@ --mkinstalldirs)
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+
+## Extra files to remove for 'make clean'
+CLEANFILES = *~
+
+RMV=rm -rf
+
+# # Commands to compile
+# COMPILE.c=    $(CC) $(CPPFLAGS) $(CFLAGS) $(DEFS) -c
+# COMPILE.cc=   $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(DEFS) -c
+
+# # Commands to link
+# LINK.c=       $(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS)
+# LINK.cc=      $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
+
+# # Commands to make a shared library
+# SHLIB.c=      $(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -shared
+# SHLIB.cc=     $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -shared
+
+# list of CGIs
+CGIAPPS=convexp idnbrowser translit locexp nbrowser scompare ubrowse redemo icudemos
+
+# optional override file
+-include $(top_srcdir)/icuapps-mk.local

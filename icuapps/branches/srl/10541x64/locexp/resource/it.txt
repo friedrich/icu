@@ -1,0 +1,24 @@
+// Copyright (c) 2000-2013 IBM, Inc. and Others
+// some italian sort words
+
+it
+{
+          EXPLORE_CollationElements_sampleString { 
+
+       "coniglio|"
+       "nome|"
+       "regione|"
+       "soldi|"
+       "gatto|"
+       "università|"
+       "Milano|"
+       "fratello|"
+       "cognato|"
+       "telefono|"
+       "porta|"
+       "cane|"
+       "battello|"
+       "trombone"
+
+          }
+}
