@@ -22,7 +22,11 @@
 #include "params.h"
 
 #include <stdio.h>
+#ifndef _MSC_VER
 #include <strings.h>
+#else
+#define strncasecmp(x,y,z) strnicmp(x,y,z)
+#endif
 #include <string.h>
 #include <ctype.h>
 

@@ -41,14 +41,17 @@ UFILE *ustdin  = NULL;
 
 UConverter *def = NULL;
 
-int32_t workmax = 0;
+const int32_t workmax = 32000;
 UChar *workbuffer = 0;
 int32_t worklen = 0;
 
 void realloc_work(int32_t len) {
   if(len > workmax) {
-    workbuffer = (UChar*)realloc(workbuffer,len*sizeof(workbuffer[0]));
+      puts("fail");
+      abort();
+/*    workbuffer = (UChar*)realloc(workbuffer,len*sizeof(workbuffer[0]));
     workmax = len;
+  */
   }
 }
 /**
