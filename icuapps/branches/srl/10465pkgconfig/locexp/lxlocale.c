@@ -180,7 +180,7 @@ void chooseLocale(LXContext *lx, UBool toOpen, const char *current, const char *
     if(showAll == FALSE && toOpen == FALSE)
     {
         u_fprintf(lx->OUT, "<a href=\"?locale_all&amp;%s\"><img border=\"0\" width=\"16\" height=\"16\" src=\"" LDATA_PATH_LOC "closed.gif\" alt=\"+\"/>%S</a>\r\n<br />",
-                  (lx->queryString&&strlen(lx->queryString)>7)?(lx->queryString+7):"",
+                  (lx->cgi->queryString&&strlen(lx->cgi->queryString)>7)?(lx->cgi->queryString+7):"",
                   lx->dispLocale,
                   FSWF("showAll", "Show All"));
     }
@@ -384,7 +384,7 @@ void printLocaleLink(LXContext *lx, UBool toOpen, MySortable *l, const char *cur
     else
     {
         u_fprintf(lx->OUT, "%s/%s/",
-                  lx->scriptName,
+                  lx->cgi->scriptName,
                   l->str);
         if(lx->convSet)
             u_fprintf(lx->OUT,"%s/", lx->convRequested);

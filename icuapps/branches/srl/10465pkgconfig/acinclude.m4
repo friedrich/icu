@@ -18,7 +18,7 @@ ICU_VERSION=unknown
 
 dnl for pkg-config.
 PKG_PROG_PKG_CONFIG([0])
-PKG_CHECK_MODULES(ICU, [icu-uc,icu-i18n], [ICU_OK=yes], [ICU_OK=no])
+PKG_CHECK_MODULES(ICU, [icu-uc,icu-i18n,icu-io], [ICU_OK=yes], [ICU_OK=no])
 
 AC_ARG_WITH(icu,
 	[  --with-icu, --with-icu=yes, or --with-icu={path} specify the installed ICU to compile against [default=yes] - ICU autodetected from PATH],

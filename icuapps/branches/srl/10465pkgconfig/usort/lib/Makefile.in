@@ -16,9 +16,4 @@ include $(top_srcdir)/icuapps.mk
 
 include usort.mk
 
-all:
-
-install:
-
-distclean clean:
-	-rm -fv $(OBJECTS)
+include $(top_srcdir)/libdir.mk

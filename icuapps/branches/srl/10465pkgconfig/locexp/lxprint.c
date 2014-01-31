@@ -287,8 +287,8 @@ void printStatusTable(LXContext *lx)
     if(lx->inDemo == FALSE)
     {
         u_fprintf(lx->OUT, "<a href=\"?converter");
-        if(strncmp(lx->queryString, "converter",9)) /* fixme */
-            u_fprintf(lx->OUT,"&amp;%s", lx->queryString);
+        if(strncmp(lx->cgi->queryString, "converter",9)) /* fixme */
+            u_fprintf(lx->OUT,"&amp;%s", lx->cgi->queryString);
         u_fprintf(lx->OUT, "\">");
     }
 
@@ -345,7 +345,7 @@ void printStatusTable(LXContext *lx)
 #if 0
     if(lx->inDemo == FALSE)
     {
-        u_fprintf(lx->OUT, "<a href=\"%s/en/utf-8/?PANICDEFAULT=yes\"><img src=\"" LDATA_PATH_LOC "incorrect.gif\" alt=\"Click here if text displays incorrectly\" /></a>", lx->scriptName, lx->dispLocale);
+        u_fprintf(lx->OUT, "<a href=\"%s/en/utf-8/?PANICDEFAULT=yes\"><img src=\"" LDATA_PATH_LOC "incorrect.gif\" alt=\"Click here if text displays incorrectly\" /></a>", lx->cgi->scriptName, lx->dispLocale);
     }
 #endif
 
@@ -375,19 +375,19 @@ void printStatusTable(LXContext *lx)
 #else
     /* Transliteration is OK */
     if(lx->inDemo == FALSE)  {
-      if(strstr(lx->pathInfo,"/transliterated/")) {
+      if(strstr(lx->cgi->pathInfo,"/transliterated/")) {
         u_fprintf(lx->OUT, "<td><b>*%S*</b> / <a href=\"%s/%s/?",
                   FSWF("on","on"),
-                  lx->scriptName,
+                  lx->cgi->scriptName,
                   lx->dispLocale);
-        writeEscapedHTMLChars(lx, lx->queryString);
+        writeEscapedHTMLChars(lx, lx->cgi->queryString);
         u_fprintf(lx->OUT, "\">%S</a></td>\r\n",
                   FSWF("off","off"));
       } else {
         u_fprintf(lx->OUT, "<td><a rel=\"nofollow\" href=\"%s/%s/transliterated/?",
-                  lx->scriptName,
+                  lx->cgi->scriptName,
                   lx->dispLocale);
-        writeEscapedHTMLChars(lx, lx->queryString);
+        writeEscapedHTMLChars(lx, lx->cgi->queryString);
         u_fprintf(lx->OUT, "\">%S</a> / <b>*%S*</b></td>\r\n",
                   FSWF("on","on"),
                   FSWF("off","off"));
@@ -620,7 +620,7 @@ void doFatal(LXContext *lx, const char *what, UErrorCode err)
     fprintf(stderr, "locexp: err %d trying to %s\n",err,what);
 #endif
     fprintf(lx->fOUT, "You can try <a href=\"%s\">starting over</a>, or complain to srl.<p>\r\n",
-            lx->scriptName);
+            lx->cgi->scriptName);
     fflush(lx->fOUT);
     exit(0);
 }

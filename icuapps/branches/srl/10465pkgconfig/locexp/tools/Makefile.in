@@ -1,11 +1,9 @@
 ## ******************************************************************************
 ## *
-## *   Copyright (C) 1999-2000, International Business Machines
+## *   Copyright (C) 1999-2014, International Business Machines
 ## *   Corporation and others.  All Rights Reserved.
 ## *
 ## *******************************************************************************
-
-# todo:  install this stuff??????
 
 srcdir=@srcdir@
 top_srcdir=@top_srcdir@
@@ -15,20 +13,10 @@ subdir = locexp/tools
 
 # srcdir must be set before this is included
 include $(top_builddir)/icuapps.mk
--include $(shell $(ICU_CONFIG) --incfile) 
 
 SCRIPTS = genIndex.sh emitResourceFromFile.sh extractStrings.sh
 
-
-## Extra files to remove for 'make clean'
-CLEANFILES = *~
-
-TARGET = escapeForBundle
-OBJECTS = escapeForBundle.o
-DEPS = $(OBJECTS:.o=.d)
-
-findSame: findSame.o
-	$(LINK.c) -o $@ $^ $(ICULIBS)
+TOOLS= escapeForBundle findSame
 
 ## List of phony targets
 .PHONY : all all-local install install-local clean clean-local \
@@ -46,22 +34,22 @@ distclean :  distclean-local
 dist:  dist-local
 check:  check-local
 
-all-local: $(TARGET)
+all-local: $(TOOLS)
 	chmod a+x $(SCRIPTS)
+
+# simple build
+%: %.c
+	$(CXX) -o $@ $^ $(CPPFLAGS) $(CXXFLAGS) $(CFLAGS) $(LIBS)
 
 install-local: all-local install-target
 
-
 install-target: all-local
-	$(MKINSTALLDIRS) $(bindir)
-	$(INSTALL_PROGRAM) $(TARGET) $(sbindir)/$(TARGET)
-	$(INSTALL_SCRIPT) $(SCRIPTS) $(sbindir)
 
 dist-local:
 
 clean-local:
 	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJECTS) $(TARGET) $(TOOLS)
 
 distclean-local: clean-local
 	rm -f Makefile $(DEPS)
@@ -75,9 +63,6 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 # ICULIBS includes all standard ICU libraries.
 # if we wanted only part of the ICU, we could use (for example) just
 #         '$(LIBS) -licu-uc -lusort' ...
-
-$(TARGET) : $(OBJECTS)
-	$(LINK.c) -o $@ $^ $(shell $(ICU_CONFIG) --ldflags-system)
 
 ifneq ($(MAKECMDGOALS),distclean)
 -include $(DEPS)

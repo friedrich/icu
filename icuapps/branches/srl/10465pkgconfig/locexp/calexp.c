@@ -243,7 +243,7 @@ extern void showExploreCalendar( LXContext *lx)
     /* fill out field names */
     fillFieldNames(fieldNames);
 
-    if((tmp = strstr(lx->queryString, "EXPLORE_Calendar")))
+    if((tmp = strstr(lx->cgi->queryString, "EXPLORE_Calendar")))
     {
         type = *(tmp + strlen("EXPLORE_Calendar="));
     }
@@ -251,7 +251,7 @@ extern void showExploreCalendar( LXContext *lx)
     nf = unum_open(0, FSWF("EXPLORE_DateTimePatterns_dateAsNumber", "#"), -1, lx-> curLocaleName, NULL, &status);
     status = U_ZERO_ERROR; /* ? */
 
-    if ((tmp = strstr(lx->queryString,"NP_DBL"))) /* Double: UDate format input ============= */
+    if ((tmp = strstr(lx->cgi->queryString,"NP_DBL"))) /* Double: UDate format input ============= */
     {
         /* Localized # */
         tmp += 7;

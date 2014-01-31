@@ -43,7 +43,7 @@ check: $(TARGET)
 	$(INVOKE) ./$(TARGET) < Makefile > Makefile-Sorted~
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
-	cd $(top_builddir) \
+	cd $(top_builddir) \g
 	 && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 

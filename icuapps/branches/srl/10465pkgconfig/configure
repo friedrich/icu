@@ -2257,12 +2257,12 @@ if test -n "$ICU_CFLAGS"; then
     pkg_cv_ICU_CFLAGS="$ICU_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"icu-uc,icu-i18n\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "icu-uc,icu-i18n") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"icu-uc,icu-i18n,icu-io\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "icu-uc,icu-i18n,icu-io") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_ICU_CFLAGS=`$PKG_CONFIG --cflags "icu-uc,icu-i18n" 2>/dev/null`
+  pkg_cv_ICU_CFLAGS=`$PKG_CONFIG --cflags "icu-uc,icu-i18n,icu-io" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -2273,12 +2273,12 @@ if test -n "$ICU_LIBS"; then
     pkg_cv_ICU_LIBS="$ICU_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"icu-uc,icu-i18n\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "icu-uc,icu-i18n") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"icu-uc,icu-i18n,icu-io\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "icu-uc,icu-i18n,icu-io") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_ICU_LIBS=`$PKG_CONFIG --libs "icu-uc,icu-i18n" 2>/dev/null`
+  pkg_cv_ICU_LIBS=`$PKG_CONFIG --libs "icu-uc,icu-i18n,icu-io" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -2296,9 +2296,9 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        ICU_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "icu-uc,icu-i18n" 2>&1`
+	        ICU_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "icu-uc,icu-i18n,icu-io" 2>&1`
         else
-	        ICU_PKG_ERRORS=`$PKG_CONFIG --print-errors "icu-uc,icu-i18n" 2>&1`
+	        ICU_PKG_ERRORS=`$PKG_CONFIG --print-errors "icu-uc,icu-i18n,icu-io" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$ICU_PKG_ERRORS" >&5
@@ -3953,7 +3953,7 @@ else
   TESTS_TRUE='#'
 fi
 
-ac_config_files="$ac_config_files icuapps.mk Makefile XMLConverter/Makefile apputil/Makefile convexp/Makefile datacustom/Makefile datacustom/gendatadep/Makefile dumpdat/Makefile icudemos/Makefile icusegments/Makefile idnbrowser/Makefile locexp/Makefile locexp/resource/Makefile locexp/tools/Makefile locexp/util/Makefile locexp2/Makefile nbrowser/Makefile obsolete/Makefile rbbiperf/Makefile redemo/Makefile regressionTest/CollRegressionTest/c/Makefile regressionTest/StrsrchRegressionTest/c/Makefile rtfcvrt/Makefile scompare/Makefile test/Makefile test/obstest/Makefile test/testdata/Makefile ubrowse/Makefile ucd/Makefile usort/Makefile usort/client/Makefile usort/lib/Makefile xlitomatic/Makefile"
+ac_config_files="$ac_config_files icuapps.mk Makefile XMLConverter/Makefile apputil/Makefile convexp/Makefile datacustom/Makefile datacustom/gendatadep/Makefile dumpdat/Makefile icudemos/Makefile icusegments/Makefile idnbrowser/Makefile locexp/Makefile locexp/tools/Makefile locexp/util/Makefile locexp2/Makefile nbrowser/Makefile obsolete/Makefile rbbiperf/Makefile redemo/Makefile regressionTest/CollRegressionTest/c/Makefile regressionTest/StrsrchRegressionTest/c/Makefile rtfcvrt/Makefile scompare/Makefile test/Makefile test/obstest/Makefile test/testdata/Makefile ubrowse/Makefile ucd/Makefile usort/Makefile usort/client/Makefile usort/lib/Makefile xlitomatic/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4659,7 +4659,6 @@ do
     "icusegments/Makefile") CONFIG_FILES="$CONFIG_FILES icusegments/Makefile" ;;
     "idnbrowser/Makefile") CONFIG_FILES="$CONFIG_FILES idnbrowser/Makefile" ;;
     "locexp/Makefile") CONFIG_FILES="$CONFIG_FILES locexp/Makefile" ;;
-    "locexp/resource/Makefile") CONFIG_FILES="$CONFIG_FILES locexp/resource/Makefile" ;;
     "locexp/tools/Makefile") CONFIG_FILES="$CONFIG_FILES locexp/tools/Makefile" ;;
     "locexp/util/Makefile") CONFIG_FILES="$CONFIG_FILES locexp/util/Makefile" ;;
     "locexp2/Makefile") CONFIG_FILES="$CONFIG_FILES locexp2/Makefile" ;;

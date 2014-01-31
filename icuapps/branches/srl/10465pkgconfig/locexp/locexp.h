@@ -15,6 +15,7 @@
 #include <stddef.h>
 #include <string.h>
 #include "unicode/ubrk.h"
+#include "unicode/cgiutil.h"
 
 #ifdef WIN32
 /* Silly Windows compatibility naming */
@@ -89,7 +90,7 @@ typedef struct {
 typedef struct 
 {
   /* ============= HTTP input - to be set up by context initializer */
-#if 0
+#if 1
    CGIContext *cgi;
 #else
   const char *scriptName;      /* Cached results of getenv("SCRIPT_NAME") */
@@ -343,11 +344,13 @@ extern UResourceBundle *loadCalRes3(LXContext *lx, const char *style, const char
 extern UResourceBundle *loadCalRes3x(LXContext *lx, const char *style, const char *type, const char *keyStem, UBool *isDefault, UResourceBundle *par, UErrorCode *status);
 
 /* CGI (or CGI-like) helper functions */
-void initCGIVariables(LXContext* lx);
-void initPOSTFromFILE(LXContext* lx, FILE *f);
-void closeCGIVariables(LXContext* lx);
-void closePOSTFromFILE(LXContext* lx);
-const char *cgi_url(LXContext *lx);
+/* .. live in cgiutil now- use them. */
+
+void initCGIVariables(LXContext* lx); /**< @deprecated use cgi_* */
+void initPOSTFromFILE(LXContext* lx, FILE *f); /**< @deprecated use cgi_* */
+void closeCGIVariables(LXContext* lx); /**< @deprecated use cgi_* */
+void closePOSTFromFILE(LXContext* lx); /**< @deprecated use cgi_* */
+const char *cgi_url(LXContext *lx); /**< @deprecated use cgi_* */
 
 typedef enum { kALL_PARTS   = 0,
                kNO_LOC = 1,      /* omit _  */
@@ -370,7 +373,7 @@ const char *getLXBaseURL(LXContext* lx, uint32_t o);
 
 /* lxurl */
 /* find start of field from a query like string */
-typedef void* UUrlIter;
+/*typedef void* UUrlIter;*/
 
 extern const char *fieldInQuery(LXContext* lx, const char *query, const char *field);
 extern const char *queryField(LXContext* lx, const char *field);

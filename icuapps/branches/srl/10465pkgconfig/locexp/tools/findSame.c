@@ -1,7 +1,7 @@
-/* Copyright (c) 2000 IBM, Inc.
+/* Copyright (c) 2000-2014 IBM, Inc.
 
    A tool that tells whether a given locale in locale explorer, has tags that are duplicates of the parent (root).
- 
+
  This was designed to help in the analysis of local explorer translation. But maybe it'll be useful as a general resource bundle analyzer.
 
    These duplicates might be removed, or marked for translation.
@@ -45,7 +45,7 @@ void prettyPrintUChar(UChar c)
     char buf[1000];
     UErrorCode status = U_ZERO_ERROR;
     int32_t o;
-    
+
     o = u_charName(c, U_UNICODE_CHAR_NAME, buf, 1000, &status);
     if(U_SUCCESS(status) && (o>0) ) {
       buf[6] = 0;
@@ -111,7 +111,7 @@ void printUChars(const char  *name,
 main()
 {
   UErrorCode  err = U_ZERO_ERROR;
-  
+
   UResourceBundle *root;
   UResourceBundle *x;
   const char *loc  = "en";
@@ -119,7 +119,7 @@ main()
   int  n;
   int t;
   const UChar *s1, *s2;
-  const char path[200];
+  char path[200];
   int len;
   UResourceBundle *sub = NULL;
 
@@ -134,12 +134,12 @@ main()
   err = U_ZERO_ERROR;
   x =  ures_open(path, loc, &err);
   U_ASSERT(err);
-  
-  if(err != U_ZERO_ERROR) 
+
+  if(err != U_ZERO_ERROR)
     {
       printf("** warning: opened %s with %s!\n", loc, u_errorName(err));
     }
-  
+
   t = ures_getSize(root);
   printf("root size=%d\n", t);
   t = ures_getSize(x);
@@ -150,7 +150,7 @@ main()
     {
       sub = ures_getNextResource(x, sub, &err);
       U_ASSERT(err);
-      
+
 /*      printf("== %s\n", ures_getKey(sub)); */
       if(ures_getType(sub)==RES_STRING)
         {

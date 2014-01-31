@@ -70,7 +70,6 @@ icudemos/Makefile \
 icusegments/Makefile \
 idnbrowser/Makefile \
 locexp/Makefile \
-locexp/resource/Makefile \
 locexp/tools/Makefile \
 locexp/util/Makefile \
 locexp2/Makefile \

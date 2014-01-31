@@ -1,9 +1,11 @@
-/* 
-   Copyright (C) 1999-2013, International Business Machines
+/*
+   Copyright (C) 1999-2014, International Business Machines
    Corporation and others.  All Rights Reserved.
 
-   This little program takes utf16_be input and outputs 
+   This little program takes utf16_be input and outputs
    escaped text suitable for inclusion in a resource bundle.
+
+   Does not depend on ICU.
 
    Use it like this:
 
@@ -24,7 +26,7 @@ int main(void)
   while(!feof(stdin))
     {
       cHi = getchar();
-      
+
       if(feof(stdin)) return -1; /* half-char */
 
       cLo = getchar();

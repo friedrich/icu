@@ -12,6 +12,7 @@
 
 #include "unicode/utypes.h"
 #include "unicode/unum.h"
+#include <stdarg.h>
 
 #include <stdio.h>
 
@@ -66,6 +67,9 @@ const UChar* cgi_queryFieldU(CGIContext* lx, const char *field);
 double cgi_parseDoubleFromString(CGIContext* lx, UNumberFormat* nf, const char *str, double defVal);
 
 
+
+void cgi_appendHeader(CGIContext* lx, const char *header, const char *fmt, ...);
+void cgi_vappendHeader(CGIContext* lx, const char *header, const char *fmt, va_list ap);
 
 
 

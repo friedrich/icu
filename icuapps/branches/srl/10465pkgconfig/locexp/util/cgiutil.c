@@ -38,22 +38,22 @@ void cgi_initCGIVariables(CGIContext* lx)
     static char qs_str[1024];
     static char sn_str[1024];
     static char sp_str[1024];
-    
+
 /*    fprintf(stderr, "This program is designed to be run as a CGI-BIN.  QUERY_STRING is undefined."); */
-    
+
     strcpy(ho_str, "HTTP_HOST=host.moc");
     strcpy(pi_str, "PATH_INFO=");
     strcpy(qs_str, "QUERY_STRING=");
     strcpy(sn_str, "SCRIPT_NAME=/cgi-bin/locexp");
     strcpy(sp_str, "SERVER_PORT=80");
-    
+
     puts("");
     /* path info */
     printf(pi_str);
     if(fgets(pi_str+strlen(pi_str),1000, stdin)) {
       pi_str[strlen(pi_str)-1] = 0;
     }
-    
+
     printf(qs_str);
     fgets(qs_str+strlen(qs_str),1000, stdin);
 
@@ -62,13 +62,13 @@ void cgi_initCGIVariables(CGIContext* lx)
     puts(qs_str);
     puts(sn_str);
     puts(sp_str);
-    
+
     putenv(ho_str);
     putenv(pi_str);
     putenv(qs_str);
     putenv(sn_str);
     putenv(sp_str);
-    
+
   }
 
   lx->scriptName      = getenvOrEmpty("SCRIPT_NAME");
@@ -94,13 +94,13 @@ void cgi_initPOSTFromFILE(CGIContext* lx, FILE *f)
   if(!tmp || strcmp(tmp,"POST")) {
     return;
   }
-  
+
   tmp=getenv("CONTENT_LENGTH");
-  
+
   if(!tmp || (clen=atoi(tmp))<=0) {
     return;
   }
-  
+
   if(clen > 60000) {
     return ; /* a little sanity, please! */
   }
@@ -116,10 +116,10 @@ void cgi_initPOSTFromFILE(CGIContext* lx, FILE *f)
     return;
   }
 
-  if(len>clen) { 
+  if(len>clen) {
     len = clen; /* avoid reading more than requsted? */
   }
-  
+
   buf[len]=0;
 #ifdef SRL_DEBUG
   fprintf(stderr, "Got: [%d/%d] >%s<\n", len,clen,buf);
@@ -154,7 +154,7 @@ const char *cgi_fieldInQuery(CGIContext* lx, const char *query, const char *fiel
     /* fprintf(stderr, "trine %s>%s<\n", field, q); */
     if(((q==query) || (q[-1]=='&')) && /* beginning, or field boundary */
        (q[len]=='=')) {   /* end with = sign */
-      return q+len+1; 
+      return q+len+1;
     }
     q++;
   }
@@ -170,7 +170,7 @@ const char *cgi_fieldInCookie(CGIContext* lx, const char *query, const char *fie
     /* fprintf(stderr, "trine %s>%s<\n", field, q); */
     if(((q==query) || (q[-1]==' ' && q[-2]==';')) && /* beginning, or field boundary */
        (q[len]=='=')) {   /* end with = sign */
-      return q+len+1; 
+      return q+len+1;
     }
     q++;
     if(*q == ' ') {
@@ -186,7 +186,7 @@ const char *cgi_copyField(CGIContext* lx, const char *val)
 
   if(!val) return NULL; /* not found */
   if(!*val) return val;  /* 0 length field at end of string */
-  
+
   end = strchr(val, '&');
   if(!end) {
     return strdup(val);  /* you get the whole string - */
@@ -202,7 +202,7 @@ const char *cgi_copyField(CGIContext* lx, const char *val)
 
 const UChar* cgi_queryFieldU(CGIContext* lx, const char *field) {
     const char *val = cgi_getQueryField(lx, field);
-    if(!val) { 
+    if(!val) {
         return NULL; /* field not found */
     } else if(!*val || *val == '&') {
         return zeroStr; /* 0-length */
@@ -224,7 +224,7 @@ const char *cgi_copyCookieField(CGIContext* lx, const char *val)
 
   if(!val) return NULL; /* not found */
   if(!*val) return val;  /* 0 length field at end of string */
-  
+
   end = strchr(val, ';');
   if(!end) {
     return strdup(val);  /* you get the whole string - */
@@ -264,9 +264,9 @@ UBool cgi_hasQueryField(CGIContext* lx, const char *field)
 {
   const char *val =  cgi_getQueryField(lx,field);
   if((val == NULL) || (*val == '&')) {
-    return FALSE; 
+    return FALSE;
   } else {
-    return TRUE; 
+    return TRUE;
   }
 }
 
@@ -291,27 +291,32 @@ UBool cgi_hasCookieField(CGIContext* lx, const char *field)
   }
   val =  cgi_fieldInCookie(lx,lx->cookies, field);
   if((val == NULL) || (*val == ';')) {
-    return FALSE; 
+    return FALSE;
   } else {
-    return TRUE; 
+    return TRUE;
   }
 }
 
 void cgi_appendHeader(CGIContext* lx, const char *header, const char *fmt, ...)
 {
   va_list ap;
+
+  va_start(ap, fmt);
+
+  cgi_vappendHeader(lx, header, fmt, ap);
+}
+
+void cgi_vappendHeader(CGIContext* lx, const char *header, const char *fmt, va_list ap) {
   char buf[1024];
   int32_t len;
   int32_t hdrlen;
 
-  va_start(ap, fmt);
-
   strcpy(buf,header);
   strcat(buf,": ");
-  
+
   vsnprintf(buf+strlen(buf), 1024-3-(strlen(buf)), fmt, ap);
   strcat(buf,"\n");
-  
+
   len = strlen(buf);
   if(!lx->headers) {
     lx->headers = malloc(1024);
@@ -319,7 +324,7 @@ void cgi_appendHeader(CGIContext* lx, const char *header, const char *fmt, ...)
     lx->headers[0] = 0;
   }
   hdrlen = strlen(lx->headers);
-  if((hdrlen+len+5) > lx->headerLen) { /* 5 = \r\n\r\n\0 */ 
+  if((hdrlen+len+5) > lx->headerLen) { /* 5 = \r\n\r\n\0 */
     lx->headerLen = hdrlen + len + 5;
     lx->headers = realloc(lx->headers,lx->headerLen);
   }
@@ -379,13 +384,13 @@ static const char *uurl_next_priv(UUrlIter *u, const char **buf)
 		if(!j) {
 			j = (*buf)+strlen(*buf);
 		}
-		
+
 		if((j-(*buf)) > (((sizeof((n->fldBuf))/sizeof(n->fldBuf[0]))-1) )) {
 			n->field = malloc(j-(*buf)+1);
 		} else {
 			n->field = n->fldBuf;
 		}
-		
+
 		strncpy(n->field, (*buf),j-(*buf));
 		n->field[j-(*buf)]=0;
 		*buf = j;
@@ -397,7 +402,7 @@ static const char *uurl_next_priv(UUrlIter *u, const char **buf)
 		if(!j) {
 			j = (*buf)+strlen(*buf);
 		}
-		
+
 		if((j-(*buf)) > (((sizeof((n->valBuf))/sizeof(n->valBuf[0]))-1) )) {
 			n->val = malloc(j-(*buf)+1);
 		} else {
@@ -421,7 +426,7 @@ static const char *uurl_next_priv(UUrlIter *u, const char **buf)
     /* fprintf(stderr, "trine %s>%s<\n", field, q); */
     if(((q==query) || (q[-1]=='&')) && /* beginning, or field boundary */
        (q[len]=='=')) {   /* end with = sign */
-      return q+len+1; 
+      return q+len+1;
     }
     q++;
   }
@@ -432,7 +437,7 @@ const char *uurl_next(UUrlIter *u)
 {
 	UUrlIter* n = (UUrlIter*)u;
 	const char *f = NULL;
-	
+
 	if(n->val && (n->val != n->valBuf)) {
 		free(n->val);
 	}
@@ -441,15 +446,15 @@ const char *uurl_next(UUrlIter *u)
 		free(n->field);
 	}
 	n->field=NULL;
-	
+
 	if(n->pd) {
 		f =  uurl_next_priv(u, &(n->pd));
 	}
-	
+
 	if(!f && n->qs) {
 		f = uurl_next_priv(u, &(n->qs));
 	}
-	
+
 	return f;
 }
 

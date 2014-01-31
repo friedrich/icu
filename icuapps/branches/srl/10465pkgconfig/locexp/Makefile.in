@@ -1,6 +1,6 @@
 ## ******************************************************************************
 ## *
-## *   Copyright (C) 1999-2013, International Business Machines
+## *   Copyright (C) 1999-2014, International Business Machines
 ## *   Corporation and others.  All Rights Reserved.
 ## *
 ## *******************************************************************************
@@ -13,64 +13,49 @@ top_srcdir=@top_srcdir@
 top_builddir = ..
 subdir = locexp
 
-BUILTRES=resource/.builtres
-
+RESDIR = resource
+BLDRES = $(RESDIR).build
 
 # srcdir must be set before this is included
 include $(top_builddir)/icuapps.mk
--include $(shell $(ICU_CONFIG) --incfile) 
 
-CPPFLAGS+=-I../apputil
-CPPFLAGS+=-I$(ICU_SORUCE)/common
-
-
-# See the end of this makefile for documentation on the 
-# following line.
-LXOPTIONS = -DLX_USE_FONTED
-
-ICUDIR=$(ICU_SOURCE)/common
-CPPFLAGS+=-I$(ICUDIR)
-#AHEADER=$(ICUDIR)/uresimp.h
-
-DYNAMICCPPFLAGS = $(SHAREDLIBCPPFLAGS)
-DYNAMICCFLAGS = $(SHAREDLIBCFLAGS)
-DYNAMICCXXFLAGS = $(SHAREDLIBCXXFLAGS)
-
-SUBDIRS=tools util resource
-
-## Extra files to remove for 'make clean'
-CLEANFILES = *~
+SUBDIRS=tools util
 
 ## Target information
 TARGET = locexp
 
-LXOBJ = locexp.o lxrun.o lxconv.o lxdate.o lxlocale.o lxnum.o lxsort.o lxprint.o lxshow.o lxshowloc.o wfobject.o calexp.o srchexp.o lxbrk.o lxcgi.o version.o lxicir.o lxregion.o
+LXOBJ = locexp.o lxrun.o lxconv.o lxdate.o lxlocale.o lxnum.o lxsort.o lxprint.o lxshow.o lxshowloc.o wfobject.o calexp.o srchexp.o lxbrk.o  version.o lxicir.o lxregion.o lxcgi.o
 CGIOBJ = cgimain.o
 # FCGIOBJ = fcgimain.o
-OBJECTS = $(LXOBJ) $(CGIOBJ) $(FCGIOBJ) $(LOCALOBJ)
+OTHER_OBJECTS += $(LXOBJ) $(CGIOBJ) $(FCGIOBJ) $(LOCALOBJ)
 
-DEPS = $(OBJECTS:.o=.d)
+# C Source files to extract FSWF strings from.  Remove items from here during development to not require a recompile.
+FSWF_SRC= calexp.c cgimain.c fcgimain.c locexp.c lxconv.c lxdate.c lxlocale.c lxnum.c lxprint.c lxrun.c lxshow.cpp lxshowloc.c  srchexp.c wfobject.c  lxsort.c lxicir.c
 
-LXLIBS=  -L../usort/lib -lusort -L./util -liculxutil$(ICULIBSUFFIX)   -L./resource/out/ -llocexp
-ICULIBS := $(ICULIBS) -L../apputil -lapputil $(LXLIBS) $(LDFLAGS_TOOLUTIL) $(LDFLAGS_ICUIO)
+# Add to OBJECTS for the following modules.
+include $(top_srcdir)/usort/lib/usort.mk
+include $(top_srcdir)/locexp/util/lxutil.mk
+include $(top_srcdir)/apputil/apputil.mk
+
+ALL_OBJECTS=$(OBJECTS) $(OTHER_OBJECTS)
+
+DEPS = $(ALL_OBJECTS:.o=.d)
+
+LXLIBS=   -L./$(BLDRES)/ -llocexp
 
 # We want to get the local copies of these files first, as the
 # dependency. Even though they do get exported.
-LDFLAGS += -L../usort/lib -L./util -L./resource/out/ 
+LDFLAGS += -L./$(RESDIR)/
 
 # get the hostname the code is built on
 CPPFLAGS := $(URLPREFIX) -DLXHOSTNAME=\"`hostname`\" -I../usort/lib -I./util $(CPPFLAGS) -DLXHOST=\"$(host)\"
 CPPFLAGS += $(LXOPTIONS) -DLX_STATIC
-CPPFLAGS += -I../apputil
 CPPFLAGS += -I.
 ## List of phony targets
 .PHONY : all all-local install install-local clean clean-local \
 distclean distclean-local dist dist-local check check-local all-recursive \
  install-recursive clean-recursive distclean-recursive dist-recursive \
- distclean-recursive check-recursive 
-
-## Clear suffix list
-.SUFFIXES :
+ distclean-recursive check-recursive build-rsrc
 
 ## List of standard targets
 all: all-recursive all-local
@@ -104,7 +89,7 @@ all-recursive install-recursive clean-recursive distclean-recursive dist-recursi
 	fi
 
 
-all-local: $(TARGET) 
+all-local: $(TARGET)
 
 install-local: install-target
 
@@ -132,28 +117,28 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 # if we wanted only part of the ICU, we could use (for example) just
 #         '$(LIBS) -licuuc -lusort' ...
 
-$(TARGET) : $(LXOBJ) $(CGIOBJ)  $(AHEADER) $(BUILTRES) $(CEOBJS) $(LOCALOBJ)
+$(TARGET) : $(LXOBJ) $(CGIOBJ)  $(AHEADER) build-rsrc $(CEOBJS) $(LOCALOBJ) $(OBJECTS)
 	-$(RMV) $(TARGET)
-	$(LINK.cc) -o $@ $(LOCALOBJ) $(CEOBJS) $(LXOBJ) $(CGIOBJ) $(ICULIBS) -llocexp $(LOCALLIBS)
+	$(CXX) -o $@ $(LOCALOBJ) $(CEOBJS) $(LXOBJ) $(CGIOBJ) $(OBJECTS) $(LIBS) -llocexp $(LOCALLIBS) $(CXXFLAGS)
 
 ifneq ($(MAKECMDGOALS),distclean)
 -include $(DEPS)
 endif
 
-#  
+#
 #   You can put your own settings for locale explorer
 #   into a 'Makefile.local' file.  Lines starting with '###'
 #   are suggestions.
-#  
+#
 #* URLPREFIX
-#  
+#
 #     Use this to set a custom URL prefix on things such as
-#   gifs, etc.   Put the contents of html/ somewhere where 
+#   gifs, etc.   Put the contents of html/ somewhere where
 #   this URL can access them.   The example below would
 #   construct a URL such as
 #     /~srl/localeexplorer/closed.gif
-#    ^^^^^^^  
-#  
+#    ^^^^^^^
+#
 ###     URLPREFIX=-DURLPREFIX=\"/~srl\"
 #
 #* LXOPTIONS
@@ -163,7 +148,7 @@ endif
 #                                   locale to ANY locale, not just implemented
 #                                   ones. (this is the locale of it's UI)
 #
-#  
+#
 #  -DLX_UBROWSE_PATH=\"path\"      - Path to the ubrowse CGI, ex:
 #                                     /developerworks/opensource/icu/ubrowse
 #
@@ -177,11 +162,11 @@ endif
 #  -DLX_USE_TIMEZONE            Try to do timezone manipulation
 #                            Also, add 'utimezon.o' to util/Makefile.in OBJECTS
 #
-###     LXOPTIONS +=    -DLX_SHOW_ALL_DISPLAY_LOCALES 
+###     LXOPTIONS +=    -DLX_SHOW_ALL_DISPLAY_LOCALES
 #
 #OR [to replace]
-#  
-#   LXOPTIONS = -DLX_USE_FONTED  
+#
+#   LXOPTIONS = -DLX_USE_FONTED
 #  (standard options won't be used)
 
 
@@ -195,17 +180,26 @@ iflx: flx
 	chmod u+s $(bindir)/flx
 	./kflx
 
-# fast locale explorer itself 
+# fast locale explorer itself
 flx: $(LXOBJ) fcgimain.o
-	$(LINK.cc) -o $@ $^ $(ICULIBS) -lfcgi
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS) -lfcgi
 
-treetest:  test/treetest.o  $(LXOBJ)
-	$(LINK.cc) -o $@ $^ $(ICULIBS) 
+treetest:  test/treetest.o  $(LXOBJ) $(OBJECTS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
 
-urltest:  test/urltest.o  $(LXOBJ)
-	$(LINK.cc) -o $@ $^ $(ICULIBS) 
+urltest:  test/urltest.o  $(LXOBJ) $(OBJECTS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
 
+GENERATED_RSRC: $(RESDIR)/root.txt $(RESDIR)/root.txt.SAMPLE
+BLDICURES_OPTS=-n locexp -m static -vv
 
-$(BUILTRES):
-	@echo Error, some problem with building resources.
-	@exit 1
+$(RESDIR)/root.txt: $(FSWF_SRC) $(RESDIR)/root.txt.inc tools/extractStrings.sh
+	tools/extractStrings.sh $(FSWF_SRC) > $(RESDIR)/root.txt || ( rm -f $(RESDIR)/root.txt ; false )
+
+$(RESDIR)/root.txt.SAMPLE: $(RESDIR)/root.txt
+	echo "// Generated copy of root.txt. Also look at 'en.txt'." > $@
+	cat < $@ >> $^
+
+build-rsrc: $(GENERATED_RSRC)
+	-rm -rf $(BLDRES)
+	$(BLDICURES_PY) $(BLDICURES_OPTS) -f $(RESDIR) -d $(BLDRES)

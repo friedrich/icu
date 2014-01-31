@@ -68,7 +68,7 @@ void displayLocaleExplorer(LXContext *lx)
     printPath(lx, NULL/*lx->curLocale*/, lx->curLocale, FALSE);
 
     /* TODO: check 'section' here */
-    if(strstr(lx->queryString, "EXPLORE"))
+    if(strstr(lx->cgi->queryString, "EXPLORE"))
     {
         lx->inDemo = TRUE;
         u_fprintf(lx->OUT, " &gt; %S", FSWF("exploreTitle", "Explore"));
@@ -81,7 +81,7 @@ void displayLocaleExplorer(LXContext *lx)
     lx->backslashCtx.html =TRUE;
     u_fprintf(lx->OUT, "</title>\r\n");
 
-    /* if(!lx->pathInfo || !(lx->pathInfo[0])) */
+    /* if(!lx->cgi->pathInfo || !(lx->cgi->pathInfo[0])) */
     {
         const char *host;
         host = getenv("LX_FORCE_HOST");  /* special variable - to force the hostname */
@@ -98,7 +98,7 @@ void displayLocaleExplorer(LXContext *lx)
             host = "";
         }
         /* TODO: : scheme, port, ..  */
-        sprintf(lx->myBaseURL, "http://%s%s", host, lx->scriptName);
+        sprintf(lx->myBaseURL, "http://%s%s", host, lx->cgi->scriptName);
 /*        u_fprintf(lx->OUT, "<base href=\"%s%s/\" />\r\n",  lx->myBaseURL,
                 (lx->dispLocale&&lx->dispLocale[0])?lx->dispLocale:"root"); */
                     /* Ensure that all relative paths have the cgi name followed by a slash.  Nope.. not anymore.   */
@@ -107,16 +107,16 @@ void displayLocaleExplorer(LXContext *lx)
 
     /* Robot Exclusion */
     if(hasQueryField(lx,"PANICDEFAULT") ||
-        (lx->pathInfo && strstr(lx->pathInfo,"transliterated"))) /* TODO: urlfix */
+        (lx->cgi->pathInfo && strstr(lx->cgi->pathInfo,"transliterated"))) /* TODO: urlfix */
     {
         u_fprintf(lx->OUT, "<meta name=\"robots\" content=\"noindex,nofollow\" />\r\n");
-    } else if(!strncmp(lx->queryString, "locale_all", 10) || strstr(lx->queryString,"converter")){
+    } else if(!strncmp(lx->cgi->queryString, "locale_all", 10) || strstr(lx->cgi->queryString,"converter")){
         u_fprintf(lx->OUT, "<meta name=\"robots\" content=\"noindex,nofollow\" />\r\n");
-    } else if(lx->pathInfo && *lx->pathInfo && lx->pathInfo[1] && !strstr(lx->pathInfo,"en_US")) {
+    } else if(lx->cgi->pathInfo && *lx->cgi->pathInfo && lx->cgi->pathInfo[1] && !strstr(lx->cgi->pathInfo,"en_US")) {
         u_fprintf(lx->OUT, "<meta name=\"robots\" content=\"noindex,nofollow\" />\r\n");
     } else if(lx->convRequested && lx->convRequested[0] && !strstr(lx->convRequested, "utf-8")) {
         u_fprintf(lx->OUT, "<meta name=\"robots\" content=\"noindex,nofollow\" />\r\n");
-    } else if(strstr(lx->queryString, "_=")) {
+    } else if(strstr(lx->cgi->queryString, "_=")) {
         u_fprintf(lx->OUT, "<meta name=\"robots\" content=\"noindex,nofollow\" />\r\n");
     }
 
@@ -170,7 +170,7 @@ void displayLocaleExplorer(LXContext *lx)
                 FSWF("warningNoBug", "Please do not file bugs against this locale."));
         }
 
-        if(strstr(lx->queryString,"EXPLORE")) { /* TODO: get rid of this... */
+        if(strstr(lx->cgi->queryString,"EXPLORE")) { /* TODO: get rid of this... */
             const char *suffix = NULL; /* Eventually would like ALL explorers to be able to use this logic */
 
             u_fprintf(lx->OUT, "<big>");
@@ -204,8 +204,8 @@ void displayLocaleExplorer(LXContext *lx)
 
         }
 
-        if ( lx->queryString == NULL )
-            lx->queryString = ""; /* for sanity */
+        if ( lx->cgi->queryString == NULL )
+            lx->cgi->queryString = ""; /* for sanity */
         if( !lx->curLocaleName[0]
             || hasQueryField(lx, "PANICDEFAULT")) /* They're coming in cold. Give them the spiel.. */
         {
@@ -244,14 +244,14 @@ void displayLocaleExplorer(LXContext *lx)
             */
             u_fprintf(lx->OUT, "<hr />");
 
-            if(lx->queryString[9] == '=')
+            if(lx->cgi->queryString[9] == '=')
             {
                 /* choose from encodings that match a string */
                 char *sample;
                 char *end;
                 UChar usample[256];
 
-                sample = strdup(lx->queryString + 10);
+                sample = strdup(lx->cgi->queryString + 10);
                 end    = strchr(sample, '&');
 
                 if(end == NULL)
@@ -271,7 +271,7 @@ void displayLocaleExplorer(LXContext *lx)
                 chooseConverter(lx, restored);
             }
         }
-        else if (!strncmp(lx->queryString,"SETTZ=",6))
+        else if (!strncmp(lx->cgi->queryString,"SETTZ=",6))
         {
             /* lx->newZone is initted early, need it for cookies :) */
             if(u_strlen(lx->newZone))
@@ -327,8 +327,8 @@ void displayLocaleExplorer(LXContext *lx)
         u_fprintf(lx->OUT, "<br /><a href=\"%s?converter=", cgi_url(lx));
         writeEscaped(lx, COLLECT_getChars());
 
-        if(strncmp(lx->queryString, "converter",9)) /* TODO: FIXME */
-            u_fprintf(lx->OUT,"&amp;%s", lx->queryString);
+        if(strncmp(lx->cgi->queryString, "converter",9)) /* TODO: FIXME */
+            u_fprintf(lx->OUT,"&amp;%s", lx->cgi->queryString);
         u_fprintf(lx->OUT, "\">");
         u_fprintf(lx->OUT, "%S</a>\r\n",
             FSWF("encoding_PickABetter", "Click here to search for a better encoding"));
@@ -396,7 +396,7 @@ UBool didUserAskForKey(LXContext *lx, const char *key)
     
     
     /* look to see if they asked for it */
-    start = lx->queryString;
+    start = lx->cgi->queryString;
     while( (start = strstr(start, "SHOW")) )
     {
         start += 4;

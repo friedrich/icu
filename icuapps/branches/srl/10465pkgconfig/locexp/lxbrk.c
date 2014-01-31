@@ -27,7 +27,7 @@ void showExploreBreak(LXContext *lx, const char *locale)
 
     u_fprintf(lx->OUT, "%S<p>", FSWF("formatExample_Break_What","This example demonstrates break iteration"));
 
-    exploreFetchNextPattern(lx, pattern, strstr(lx->queryString,"EXPLORE_Break")); 
+    exploreFetchNextPattern(lx, pattern, strstr(lx->cgi->queryString,"EXPLORE_Break")); 
 
     /* 
      *

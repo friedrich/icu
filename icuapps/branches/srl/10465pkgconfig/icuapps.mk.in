@@ -73,7 +73,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 
 ## Extra files to remove for 'make clean'
-CLEANFILES = *~
+CLEANFILES += *~
 
 RMV=rm -rf
 

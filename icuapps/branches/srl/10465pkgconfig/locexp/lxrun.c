@@ -21,8 +21,6 @@ void initContext ( LXContext *ctx )
     ctx->parLocale = NULL;
     ctx -> numLocales = 0;
     /* END INIT LX */
-    ctx->headers = NULL;
-    ctx->headerLen = 0;
     ctx->OUT = NULL;
     ctx->fOUT = NULL;
 }
@@ -239,7 +237,7 @@ int setupLocaleExplorer(LXContext *lx)
     /* Open an RB in the default locale */
     lx->dispRB = ures_open(NULL, lx->dispLocale, &status);
 
-    if(strstr(lx->pathInfo,"/transliterated/"))
+    if(strstr(lx->cgi->pathInfo,"/transliterated/"))
     {
         char id[200];
         UErrorCode transStatus = U_ZERO_ERROR;
@@ -355,9 +353,9 @@ void runLocaleExplorer(LXContext *lx)
 #endif
     appendHeader(lx, "Content-length", "%d", len);
 
-    strcat(lx->headers, "\n");
+    strcat(lx->cgi->headers, "\n");
 
-    fwrite(lx->headers,1,strlen(lx->headers),realout); /* write out in one chunk */
+    fwrite(lx->cgi->headers,1,strlen(lx->cgi->headers),realout); /* write out in one chunk */
 #if defined(LX_TMPFILE)
 #define OBUFSIZ 16384
     {
@@ -706,7 +704,7 @@ void setLocaleAndEncoding(LXContext *lx)
   lx->dispLocale = lx->dispLocaleBlob.name;
   loadLocaleFromFields(lx, &(lx->dispLocaleBlob), "d");
 
-  if(!lx->dispLocale[0] && lx->acceptLanguage && *lx->acceptLanguage) {
+  if(!lx->dispLocale[0] && lx->cgi->acceptLanguage && *lx->cgi->acceptLanguage) {
     UErrorCode acceptStatus = U_ZERO_ERROR;
     char newLocale[200];
     int32_t newLocaleLen = -1;
@@ -714,7 +712,7 @@ void setLocaleAndEncoding(LXContext *lx)
     UAcceptResult outResult;
     
     available = ures_openAvailableLocales(FSWF_bundlePath(), &acceptStatus);
-    newLocaleLen = uloc_acceptLanguageFromHTTP(newLocale, 200, &outResult, lx->acceptLanguage, available, &acceptStatus);
+    newLocaleLen = uloc_acceptLanguageFromHTTP(newLocale, 200, &outResult, lx->cgi->acceptLanguage, available, &acceptStatus);
     if(U_SUCCESS(status) && isSupportedLocale(newLocale, TRUE)) { /* DO NOT pick an unsupported locale from the browser's settings! */
       setBlobFromLocale(lx, &lx->dispLocaleBlob, newLocale, &status);
       strcat(lx->dispLocaleBlob.name, lx->dispLocaleBlob.base); /* copy base to name - no keywords */
@@ -741,7 +739,7 @@ void setLocaleAndEncoding(LXContext *lx)
     const char *accept;
     const char *agent;
     
-    accept = lx->acceptCharset;
+    accept = lx->cgi->acceptCharset;
     
     if(accept && strstr(accept, "utf-8")) {
       lx->convRequested = "utf-8"; /* use UTF8 if they have it ! */
@@ -756,7 +754,7 @@ void setLocaleAndEncoding(LXContext *lx)
   if(lx->convRequested && *lx->convRequested) {
     lx->convUsed = lx->convRequested;
   }
-  lx->altPath=lx->pathInfo&&*lx->pathInfo;
+  lx->altPath=lx->cgi->pathInfo&&*lx->cgi->pathInfo;
   
   /* Map transliterated/fonted : */
   if(!lx->convUsed || !*(lx->convUsed)) {
@@ -767,12 +765,12 @@ void setLocaleAndEncoding(LXContext *lx)
       lx->convUsed = "utf-8"; /* wire encoding: utf-8 */
   }
 
-  if(lx->pathInfo && strstr(lx->pathInfo, "/_/")) {
-    const char *n = strstr(lx->pathInfo, "/_/");
+  if(lx->cgi->pathInfo && strstr(lx->cgi->pathInfo, "/_/")) {
+    const char *n = strstr(lx->cgi->pathInfo, "/_/");
     char tmpLoc[100];
-    strncpy(tmpLoc, lx->pathInfo+1, 99);
+    strncpy(tmpLoc, lx->cgi->pathInfo+1, 99);
     tmpLoc[99]=0;
-    tmpLoc[n-lx->pathInfo-1]=0;
+    tmpLoc[n-lx->cgi->pathInfo-1]=0;
     lx->dispLocale = strdup(tmpLoc);
     lx->fileObj = n + 3;
     lx->convRequested  = "_";
