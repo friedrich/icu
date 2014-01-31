@@ -73,7 +73,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 
 ## Extra files to remove for 'make clean'
-CLEANFILES += *~
+CLEANFILES = *~
 
 RMV=rm -rf
 
@@ -94,3 +94,5 @@ CGIAPPS=convexp idnbrowser translit locexp nbrowser scompare ubrowse redemo icud
 
 # optional override file
 -include $(top_srcdir)/icuapps-mk.local
+
+BLDICURES_PY=$(top_srcdir)/bldicures.py
