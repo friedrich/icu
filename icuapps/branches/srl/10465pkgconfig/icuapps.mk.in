@@ -16,9 +16,12 @@ base_top_srcdir=@top_srcdir@
 # at the top icuapps level.
 
 ICU_CONFIG=@ICU_CONFIG@
+@ICU_CONFIG_TRUE@HAVE_ICU_CONFIG:=$(ICU_CONFIG)
+@ICU_CONFIG_FALSE@HAVE_ICU_CONFIG:=
 ####################################################################
 # Load ICU information. You can copy this to other makefiles #######
 ####################################################################
+ifneq ($(HAVE_ICU_CONFIG),)
 CC=$(shell @ICU_CONFIG@ --cc)
 CXX=$(shell @ICU_CONFIG@ --cxx)
 CPPFLAGS=$(shell @ICU_CONFIG@ --cppflags) @DEFS@
@@ -33,6 +36,22 @@ BINDIR = $(shell @ICU_CONFIG@ --bindir)
 GENRB=$(shell @ICU_CONFIG@ --invoke=genrb)
 UCONV=$(shell @ICU_CONFIG@ --invoke=uconv)
 PKGDATA=$(shell @ICU_CONFIG@ --invoke=pkgdata)
+# Warning: needs ICU's install nearby.
+LDFLAGS_TOOLUTIL =$(shell @ICU_CONFIG@ --ldflags-toolutil)
+INCLUDE_MAKEFILE_INC=include $(shell $(ICU_CONFIG) --incfile)
+else
+INCLUDE_MAKEFILE_INC=
+# pkgdata version.
+#CC=
+#CXX=
+CPPFLAGS+=@ICU_CFLAGS@
+LIBS+=@ICU_LIBS@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+BINDIR=@bindir@
+MKINSTALLDIRS=-mkdir -p
+INSTALL_DATA=cp
+endif
 
 # fake version #s for these.
 SO_TARGET_VERSION = 0.0
@@ -42,10 +61,8 @@ OUTOPT = -o # The extra space after the argument is needed.
 
 CPPFLAGS_APPUTIL=-I$(top_builddir)/apputil
 
-# Warning: needs ICU's install nearby.
-LDFLAGS_TOOLUTIL =$(shell @ICU_CONFIG@ --ldflags-toolutil)
-ICU_SOURCE=$(top_srcdir)/../icu/source
-ICU_BUILD=$(top_srcdir)/../icu/source
+ICU_SOURCE=@ICU_SOURCE@
+ICU_BUILD:=$(ICU_SOURCE)
 ####################################################################
 #MKINSTALLDIRS = $(SHELL) $(top_srcdir)/mkinstalldirs
 

@@ -1,7 +1,7 @@
 dnl -*-m4-*-
 dnl configure.in for ICU Apps
 dnl Steven R. Loomis
-dnl Copyright (C) 1999-2013, International Business Machines Corporation and
+dnl Copyright (C) 1999-2014, International Business Machines Corporation and
 dnl   others. All Rights Reserved.
 
 dnl Process this file with autoconf to produce a configure script
@@ -13,14 +13,30 @@ dnl Check a file in our files, just to make sure we have a sane setup..
 AC_CONFIG_SRCDIR(usort/lib/unicode/usort.h)
 
 dnl Will set the variable 'ICU_CONFIG'
+
 CHECK_ICU_CONFIG
+
+dnl now, do we have ICU source?
+AC_MSG_CHECKING([ICU source (optional)])
+AC_ARG_WITH(icu-source,
+	[  --with-icu-source={path} specify the ICU source dir (icu/source) [default=none] - must match installed ICU],
+	[case "${withval}" in
+		*) AC_MSG_RESULT([yes - ${withval}]); ICU_SOURCE="${withval}"; ICU_SOURCE_FALSE='#'; ICU_SOURCE_TRUE=''; ;;
+		esac],
+        [AC_MSG_RESULT([no])
+         ICU_SOURCE_FALSE=
+         ICU_SOURCE_TRUE='#'
+         ICU_SOURCE=])
+AC_SUBST(ICU_SOURCE)
+AC_SUBST(ICU_SOURCE_FALSE)
+AC_SUBST(ICU_SOURCE_TRUE)
 
 
 AC_CHECK_PROG(AUTOCONF, autoconf, autoconf, true)
 
 # ICU4C configure.in is working too hard. See below.
 AC_CHECK_HEADERS([dlfcn.h readline/readline.h fcgiapp.h])
-AC_SEARCH_LIBS(readline, [readline edit]) 
+AC_SEARCH_LIBS(readline, [readline edit])
 AC_SEARCH_LIBS(FCGX_GetParam, [fcgi])
 AC_CHECK_FUNCS([dlopen readline])
 
@@ -36,6 +52,11 @@ fi
 
 AC_CONFIG_HEADER(apputil/demo_config.h)
 
+AC_ARG_ENABLE([obsolete], [  --enable-obsolete		enable obsolete compatibility library])
+ICU_CONDITIONAL(OBSOLETE, test "$obsolete" = true)
+
+AC_ARG_ENABLE([test], [  --enable-test		enable test code])
+ICU_CONDITIONAL(TESTS, test "$test" = true)
 
 AC_OUTPUT([icuapps.mk \
 Makefile \
@@ -72,4 +93,3 @@ usort/lib/Makefile \
 xlitomatic/Makefile])
 
 dnl
-

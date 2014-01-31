@@ -624,6 +624,8 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+TESTS_TRUE
+OBSOLETE_TRUE
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
@@ -638,8 +640,13 @@ LDFLAGS
 CFLAGS
 CC
 AUTOCONF
+ICU_SOURCE_TRUE
+ICU_SOURCE_FALSE
+ICU_SOURCE
 ICU_VERSION
-ICU_CONFIG
+ICU_LIBS
+ICU_CFLAGS
+PKG_CONFIG
 target_alias
 host_alias
 build_alias
@@ -677,15 +684,24 @@ PACKAGE_VERSION
 PACKAGE_TARNAME
 PACKAGE_NAME
 PATH_SEPARATOR
-SHELL'
+SHELL
+ICU_CONFIG_TRUE
+ICU_CONFIG_FALSE
+ICU_CONFIG'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 with_icu
+with_icu_source
+enable_obsolete
+enable_test
 '
       ac_precious_vars='build_alias
 host_alias
 target_alias
+PKG_CONFIG
+ICU_CFLAGS
+ICU_LIBS
 CC
 CFLAGS
 LDFLAGS
@@ -1297,12 +1313,23 @@ if test -n "$ac_init_help"; then
    esac
   cat <<\_ACEOF
 
+Optional Features:
+  --disable-option-checking  ignore unrecognized --enable/--with options
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-obsolete		enable obsolete compatibility library
+  --enable-test		enable test code
+
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-icu, --with-icu=yes, or --with-icu={path} specify the installed ICU to compile against default=yes - ICU autodetected from PATH
+  --with-icu-source={path} specify the ICU source dir (icu/source) default=none - must match installed ICU
 
 Some influential environment variables:
+  PKG_CONFIG  path to pkg-config utility
+  ICU_CFLAGS  C compiler flags for ICU, overriding pkg-config
+  ICU_LIBS    linker flags for ICU, overriding pkg-config
   CC          C compiler command
   CFLAGS      C compiler flags
   LDFLAGS     linker flags, e.g. -L<lib dir> if you have libraries in a
@@ -2100,9 +2127,194 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+
 icu_path=
 icu_path_extra=${prefix}/bin
 ICU_VERSION=unknown
+
+
+
+if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
+	if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
+set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
+if test -n "$PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
+$as_echo "$PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_path_PKG_CONFIG"; then
+  ac_pt_PKG_CONFIG=$PKG_CONFIG
+  # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_ac_pt_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $ac_pt_PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ac_pt_PKG_CONFIG="$ac_pt_PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+ac_pt_PKG_CONFIG=$ac_cv_path_ac_pt_PKG_CONFIG
+if test -n "$ac_pt_PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_PKG_CONFIG" >&5
+$as_echo "$ac_pt_PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_pt_PKG_CONFIG" = x; then
+    PKG_CONFIG=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKG_CONFIG=$ac_pt_PKG_CONFIG
+  fi
+else
+  PKG_CONFIG="$ac_cv_path_PKG_CONFIG"
+fi
+
+fi
+if test -n "$PKG_CONFIG"; then
+	_pkg_min_version=0
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking pkg-config is at least version $_pkg_min_version" >&5
+$as_echo_n "checking pkg-config is at least version $_pkg_min_version... " >&6; }
+	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+		PKG_CONFIG=""
+	fi
+
+fi
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ICU" >&5
+$as_echo_n "checking for ICU... " >&6; }
+
+if test -n "$ICU_CFLAGS"; then
+    pkg_cv_ICU_CFLAGS="$ICU_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"icu-uc,icu-i18n\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "icu-uc,icu-i18n") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_ICU_CFLAGS=`$PKG_CONFIG --cflags "icu-uc,icu-i18n" 2>/dev/null`
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$ICU_LIBS"; then
+    pkg_cv_ICU_LIBS="$ICU_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"icu-uc,icu-i18n\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "icu-uc,icu-i18n") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_ICU_LIBS=`$PKG_CONFIG --libs "icu-uc,icu-i18n" 2>/dev/null`
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        ICU_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "icu-uc,icu-i18n" 2>&1`
+        else
+	        ICU_PKG_ERRORS=`$PKG_CONFIG --print-errors "icu-uc,icu-i18n" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$ICU_PKG_ERRORS" >&5
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+                ICU_OK=no
+elif test $pkg_failed = untried; then
+	ICU_OK=no
+else
+	ICU_CFLAGS=$pkg_cv_ICU_CFLAGS
+	ICU_LIBS=$pkg_cv_ICU_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	ICU_OK=yes
+fi
 
 
 # Check whether --with-icu was given.
@@ -2164,7 +2376,6 @@ done
 test -n "$ICU_CONFIG" || ICU_CONFIG=":"
 
 
-
  if test -n "$ac_cv_path_ICU_CONFIG"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking ICU installation" >&5
 $as_echo_n "checking ICU installation... " >&6; }
@@ -2180,9 +2391,42 @@ $as_echo_n "checking ICU version... " >&6; }
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ICU_VERSION}" >&5
 $as_echo "${ICU_VERSION}" >&6; }
 
+    ICU_CONFIG_TRUE=""
+    ICU_CONFIG_FALSE="#"
+    ICU_CONFIG=
  else
-    as_fn_error $? "Cannot find icu-config, please check the PATH or use --with-icu=path/to/icu" "$LINENO" 5
+    if test "$ICU_OK" = "yes"; then
+       ICU_VERSION=`${PKG_CONFIG} --modversion icu-uc`
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: result: Using ICU ${ICU_VERSION} found by pkg-config" >&5
+$as_echo "Using ICU ${ICU_VERSION} found by pkg-config" >&6; }
+       ICU_CONFIG_TRUE="#"
+       ICU_CONFIG_FALSE=""
+    else
+       as_fn_error $? "Cannot find icu-config, please check the PATH or use --with-icu=path/to/icu" "$LINENO" 5
+    fi
  fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking ICU source (optional)" >&5
+$as_echo_n "checking ICU source (optional)... " >&6; }
+
+# Check whether --with-icu-source was given.
+if test "${with_icu_source+set}" = set; then :
+  withval=$with_icu_source; case "${withval}" in
+		*) { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes - ${withval}" >&5
+$as_echo "yes - ${withval}" >&6; }; ICU_SOURCE="${withval}"; ICU_SOURCE_FALSE='#'; ICU_SOURCE_TRUE=''; ;;
+		esac
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+         ICU_SOURCE_FALSE=
+         ICU_SOURCE_TRUE='#'
+         ICU_SOURCE=
+fi
+
+
+
 
 
 
@@ -3685,6 +3929,29 @@ fi
 ac_config_headers="$ac_config_headers apputil/demo_config.h"
 
 
+# Check whether --enable-obsolete was given.
+if test "${enable_obsolete+set}" = set; then :
+  enableval=$enable_obsolete;
+fi
+
+
+if test "$obsolete" = true; then
+  OBSOLETE_TRUE=
+else
+  OBSOLETE_TRUE='#'
+fi
+
+# Check whether --enable-test was given.
+if test "${enable_test+set}" = set; then :
+  enableval=$enable_test;
+fi
+
+
+if test "$test" = true; then
+  TESTS_TRUE=
+else
+  TESTS_TRUE='#'
+fi
 
 ac_config_files="$ac_config_files icuapps.mk Makefile XMLConverter/Makefile apputil/Makefile convexp/Makefile datacustom/Makefile datacustom/gendatadep/Makefile dumpdat/Makefile icudemos/Makefile icusegments/Makefile idnbrowser/Makefile locexp/Makefile locexp/resource/Makefile locexp/tools/Makefile locexp/util/Makefile locexp2/Makefile nbrowser/Makefile obsolete/Makefile rbbiperf/Makefile redemo/Makefile regressionTest/CollRegressionTest/c/Makefile regressionTest/StrsrchRegressionTest/c/Makefile rtfcvrt/Makefile scompare/Makefile test/Makefile test/obstest/Makefile test/testdata/Makefile ubrowse/Makefile ucd/Makefile usort/Makefile usort/client/Makefile usort/lib/Makefile xlitomatic/Makefile"
 
@@ -4998,6 +5265,5 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
-
 
 

@@ -21,8 +21,17 @@ CPPFLAGS+=$(CPPFLAGS_APPUTIL)
 # Don't change this ordering!
 
 # TODO: disable obsolete and test by option.
-OBS=obsolete test
-SUBDIRS= $(OBS) apputil usort locexp ubrowse dumpdat  XMLConverter  nbrowser idnbrowser convexp translitdemo scompare redemo icudemos ucd icusegments
+@TESTS_TRUE@OBS+=test
+@OBSOLETE_TRUE@OBS+=obsolete
+
+# Many of these will require icu-config. A smaller subset are self container.
+@ICU_CONFIG_TRUE@SUBDIRS+=$(OBS)
+SUBDIRS+= apputil
+SUBDIRS+= usort
+#SUBDIRS+= locexp
+@ICU_CONFIG_TRUE@SUBDIRS+= ubrowse dumpdat  XMLConverter  nbrowser idnbrowser convexp scompare redemo icudemos ucd icusegments
+# This one needs ICU's source code also.
+@ICU_SOURCE_TRUE@SUBDIRS+= translitdemo
 # calexpo
 
 

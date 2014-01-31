@@ -12,6 +12,11 @@ root {
      ETOP_clickmsg  {  "Click on a type of character to view it in more detail"  }
 
     /**
+     * @translate yes
+     */
+     APP_NAME  {  "Unicode Browser"  }
+
+    /**
      * @note Note about green text
      * @translate yes
      */
@@ -26,11 +31,6 @@ root {
      * @translate yes
      */
      ETOP_general_categories  {  "General Categories"  }
-
-    /**
-     * @translate yes
-     */
-     APP_NAME  {  "Unicode Browser"  }
 
 
 
