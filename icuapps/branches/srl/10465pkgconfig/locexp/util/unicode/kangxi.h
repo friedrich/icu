@@ -12,9 +12,9 @@
 #include <unicode/utypes.h>
 
 #ifdef WIN32
-UChar  gKangXiRadicalTable[];
+static UChar  gKangXiRadicalTable[];
 #else
-extern UChar  gKangXiRadicalTable[];
+static UChar  gKangXiRadicalTable[];
 #endif
 
 #endif

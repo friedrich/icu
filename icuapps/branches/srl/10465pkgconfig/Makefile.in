@@ -29,7 +29,8 @@ CPPFLAGS+=$(CPPFLAGS_APPUTIL)
 SUBDIRS+= apputil
 SUBDIRS+= usort
 SUBDIRS+= locexp
-@ICU_CONFIG_TRUE@SUBDIRS+= ubrowse dumpdat  XMLConverter  nbrowser idnbrowser convexp scompare redemo icudemos ucd icusegments
+@ICU_CONFIG_TRUE@SUBDIRS+= dumpdat  XMLConverter  nbrowser idnbrowser convexp scompare redemo icudemos icusegments
+SUBDIRS+= ucd ubrowse
 # This one needs ICU's source code also.
 @ICU_SOURCE_TRUE@SUBDIRS+= translitdemo
 # calexpo

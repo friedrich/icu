@@ -1,6 +1,6 @@
 /*
 *******************************************************************************
-* Copyright (C) 2004-2010, International Business Machines Corporation and    *
+* Copyright (C) 2004-2014, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 **/
 
@@ -18,9 +18,12 @@
 #define BUNDLE_PATH "ubrowseres"
 #define ICON_BUNDLE "icons"
 
+#ifdef HAVE_UBROWSERES_DAT
 U_CFUNC char ubrowseres_dat[];
+#endif
 
 int icons_init() {
+#ifdef HAVE_UBROWSERES_DAT
   UErrorCode status = U_ZERO_ERROR;
   udata_setAppData(BUNDLE_PATH, (const void*) ubrowseres_dat, &status);
   if(U_FAILURE(status)) {
@@ -28,8 +31,9 @@ int icons_init() {
   }
   FSWF_setBundlePath(BUNDLE_PATH);
   return 0;
+#endif
 }
-  
+
 
 void icons_write ( /* UFILE *OUT, */ const char *path )
 {

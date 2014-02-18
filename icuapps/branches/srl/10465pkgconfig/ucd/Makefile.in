@@ -21,6 +21,8 @@ TARGET = $(TARGET_STUB_NAME)$(EXEEXT)
 
 OBJECTS = $(TARGET_STUB_NAME).o 
 
+include $(top_srcdir)/usort/lib/usort.mk
+
 #CPPFLAGS += 
 CPPFLAGS+=$(CPPFLAGS_APPUTIL)
 
@@ -36,8 +38,8 @@ CPPFLAGS+=$(CPPFLAGS_APPUTIL)
 #LDFLAGS += -L/sw/lib -ldl -bind_at_load
 ####
 
-ICULIBS += -L../usort/lib -lusort
-CPPFLAGS += -I../usort/lib
+#ICULIBS += -L../usort/lib -lusort
+#CPPFLAGS += -I../usort/lib
 
 
 -include Makefile.local
@@ -79,9 +81,10 @@ check-local: all-local
 	$(INVOKE) ./$(TARGET) -n u+0127 u+#295
 
 $(TARGET): $(OBJECTS)
-	$(LINK.cc) -o $@ $^ $(ICULIBS)  $(LDFLAGS_ICUIO)
+	$(LINK.cc) -o $@ $^ $(LIBS)  $(LDFLAGS_ICUIO)
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
 	 && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 	$(MAKEFILE_POSTPROCESS)
+

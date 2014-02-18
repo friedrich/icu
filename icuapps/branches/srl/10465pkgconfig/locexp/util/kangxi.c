@@ -1,5 +1,5 @@
 /**********************************************************************
-*   Copyright (C) 1999, International Business Machines
+*   Copyright (C) 1999-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ***********************************************************************/
 
@@ -20,7 +20,7 @@
   radical -> normal
 */
 
-UChar  gKangXiRadicalTable[] = 
+static UChar  gKangXiRadicalTable[] = 
 {0x2F00	,
 	0x4E00
 ,0x2F01	,

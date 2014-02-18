@@ -15,7 +15,6 @@ subdir = locexp
 
 RESDIR = resource
 BLDRES = $(RESDIR).build
-
 # srcdir must be set before this is included
 include $(top_builddir)/icuapps.mk
 
@@ -41,7 +40,18 @@ ALL_OBJECTS=$(OBJECTS) $(OTHER_OBJECTS)
 
 DEPS = $(ALL_OBJECTS:.o=.d)
 
-LXLIBS=   -L./$(BLDRES)/ -llocexp
+GENERATED_RSRC: $(RESDIR)/root.txt $(RESDIR)/root.txt.SAMPLE
+BLDICURES_OPTS=-n locexp
+RESMODE=static
+## static mode
+ifeq ($(RESMODE),static)
+RESLIB=$(RESDIR)/liblocexp.a
+LXLIBS=-L./$(BLDRES)/ -llocexp
+BLDICURES_OPTS+=-m $(RESMODE)
+else
+$(error Unknown RESMODE: $(RESMODE))
+endif
+
 
 # We want to get the local copies of these files first, as the
 # dependency. Even though they do get exported.
@@ -117,9 +127,9 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 # if we wanted only part of the ICU, we could use (for example) just
 #         '$(LIBS) -licuuc -lusort' ...
 
-$(TARGET) : $(LXOBJ) $(CGIOBJ)  $(AHEADER) build-rsrc $(CEOBJS) $(LOCALOBJ) $(OBJECTS)
+$(TARGET) : $(LXOBJ) $(CGIOBJ)  $(AHEADER) $(RESLIB) $(CEOBJS) $(LOCALOBJ) $(OBJECTS)
 	-$(RMV) $(TARGET)
-	$(CXX) -o $@ $(LOCALOBJ) $(CEOBJS) $(LXOBJ) $(CGIOBJ) $(OBJECTS) $(LIBS) -llocexp $(LOCALLIBS) $(CXXFLAGS)
+	$(CXX) -o $@ $(LOCALOBJ) $(CEOBJS) $(LXOBJ) $(CGIOBJ) $(OBJECTS) $(LXLIBS) $(LIBS) -llocexp $(LOCALLIBS) $(CXXFLAGS)
 
 ifneq ($(MAKECMDGOALS),distclean)
 -include $(DEPS)
@@ -190,15 +200,14 @@ treetest:  test/treetest.o  $(LXOBJ) $(OBJECTS)
 urltest:  test/urltest.o  $(LXOBJ) $(OBJECTS)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
 
-GENERATED_RSRC: $(RESDIR)/root.txt $(RESDIR)/root.txt.SAMPLE
-BLDICURES_OPTS=-n locexp -m static -vv
-
 $(RESDIR)/root.txt: $(FSWF_SRC) $(RESDIR)/root.txt.inc tools/extractStrings.sh
 	tools/extractStrings.sh $(FSWF_SRC) > $(RESDIR)/root.txt || ( rm -f $(RESDIR)/root.txt ; false )
 
 $(RESDIR)/root.txt.SAMPLE: $(RESDIR)/root.txt
 	echo "// Generated copy of root.txt. Also look at 'en.txt'." > $@
 	cat < $@ >> $^
+
+$(RESLIB): build-rsrc
 
 build-rsrc: $(GENERATED_RSRC)
 	-rm -rf $(BLDRES)

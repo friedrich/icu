@@ -22,8 +22,6 @@ CLEANFILES = *~ README_$(PKG).txt $(PKG).*   icons.txt *.res ubrowse.msg
 ## Target information
 TARGET = ubrowse
 
-LDFLAGS += -L../apputil -lapputil -L../locexp/util -liculxutil $(LDFLAGS_ICUIO)
-CPPFLAGS += -I$(top_srcdir)/apputil
 ITMP=icontmp
 ICONS=icons
 RES_DIR=res
@@ -32,12 +30,16 @@ RES_DIR=res
 # ICULIBS includes all standard ICU libraries.
 # if we wanted only part of the ICU, we could use (for example) just '$(LIBS) -licuuc -lusort' ...
 # -ldl is needed for DLL version
-#ICULIBS    +=  -lustdio 
+#ICULIBS    +=  -lustdio
 
-# Want to make sure the usort.h dependency is not on the installed version .. 
-CPPFLAGS  += -I../locexp/util
+# Want to make sure the usort.h dependency is not on the installed version ..
+#CPPFLAGS += -DHAVE_UBROWSERES_DAT
 
-OBJECTS = ubrowse.o icons.o $(PKG)_dat.o
+OBJECTS = ubrowse.o icons.o
+
+include $(top_srcdir)/usort/lib/usort.mk
+include $(top_srcdir)/locexp/util/lxutil.mk
+include $(top_srcdir)/apputil/apputil.mk
 
 
 PKG=ubrowseres
@@ -64,7 +66,7 @@ install-target: all-local
 	$(MKINSTALLDIRS) $(BINDIR) $(BINDIR)/data
 	$(INSTALL) $(TARGET) $(BINDIR)/$(TARGET)
 	$(INSTALL) ubrowse-header.html $(BINDIR)/data
-	$(INVOKE) $(PKGDATA) -I $(BINDIR)/../lib -p $(PKG)  -m $(PKGMODE) -c -d $(OUT) -T $(OUT) $(PKG).lst 
+	$(INVOKE) $(PKGDATA) -I $(BINDIR)/../lib -p $(PKG)  -m $(PKGMODE) -c -d $(OUT) -T $(OUT) $(PKG).lst
 
 dist-local:
 
@@ -121,7 +123,7 @@ tidy: $(TARGET)
 	tidy -utf8 -q ubrowse.html 2>&1 | sed -e "s%^ubrowse.html%"`pwd`"/ubrowse.html%g"
 
 $(TARGET) : $(OBJECTS)
-	$(LINK.cc) -o $@ $^ $(ICULIBS)
+	$(LINK.cc) -o $@ $^ $(LIBS)
 
 icons.res: icons.txt
 	$(INVOKE) $(GENRB) -d. $<
@@ -138,6 +140,6 @@ icons.txt: $(ICONS)/*.gif
 $(PKG).lst:
 	echo "icons.res" > $@
 
-$(PKG)_dat.o: $(PKG).lst icons.res 
+$(PKG)_dat.o: $(PKG).lst icons.res
 	-rm -f $@
 	-$(INVOKE) $(PKGDATA) -p $(PKG)  -m $(PKGMODE) -v -c -d $(OUT) -T $(OUT) $(PKG).lst
