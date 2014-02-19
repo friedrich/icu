@@ -30,9 +30,10 @@ static UChar zeroStr[] = { 0x0000 };
 /* helpers for CGI-like environments */
 void cgi_initCGIVariables(CGIContext* lx)
 {
+  bzero(lx, sizeof(lx));
   const char *tmp;
 
-  if((tmp=getenv("QUERY_STRING")) == NULL) {
+  if((tmp=getenv("SERVER_PORT")) == NULL) {
     static char ho_str[1024];
     static char pi_str[1024];
     static char qs_str[1024];
@@ -469,5 +470,5 @@ void uurl_close(UUrlIter *u)
 }
 
 const char *cgi_url(CGIContext *lx  ) {
-    return "./???";
+  return "locexp";
 }

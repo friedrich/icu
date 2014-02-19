@@ -26,14 +26,13 @@ ITMP=icontmp
 ICONS=icons
 RES_DIR=res
 
-
 # ICULIBS includes all standard ICU libraries.
 # if we wanted only part of the ICU, we could use (for example) just '$(LIBS) -licuuc -lusort' ...
 # -ldl is needed for DLL version
 #ICULIBS    +=  -lustdio
 
 # Want to make sure the usort.h dependency is not on the installed version ..
-#CPPFLAGS += -DHAVE_UBROWSERES_DAT
+CPPFLAGS += -DHAVE_UBROWSERES_DAT
 
 OBJECTS = ubrowse.o icons.o
 
@@ -45,6 +44,18 @@ include $(top_srcdir)/apputil/apputil.mk
 PKG=ubrowseres
 PKGMODE=static
 OUT=.
+RESDIR=$(PKG).build
+BLDICURES_OPTS=-n $(PKG)
+RESMODE:=$(PKGMODE)
+## static mode
+ifeq ($(RESMODE),static)
+RESLIB=$(RESDIR)/lib$(PKG).a
+LIBS+=-L./$(RESDIR)/ -l$(PKG)
+BLDICURES_OPTS+=-m $(RESMODE)
+BLDICURES_OPTS+=-v
+else
+$(error Unknown RESMODE: $(RESMODE))
+endif
 
 ## List of standard targets
 all: all-local
@@ -71,10 +82,8 @@ install-target: all-local
 dist-local:
 
 clean-local:
-	@echo Calling pkgdata to cleanup. Ignore any errors.
-	@-$(INVOKE) $(PKGDATA) -k -p $(PKG)  -m $(PKGMODE) -c -d $(OUT) -T $(OUT) $(PKG).lst 2>/dev/null
-	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
-	rm -f $(OBJECTS) $(TARGET) $(ITMP)
+	test -z "$(CLEANFILES)" || rm -fr $(CLEANFILES)
+	rm -rf $(OBJECTS) $(TARGET) $(ITMP)
 
 distclean-local: clean-local
 	rm -f Makefile $(DEPS)
@@ -122,18 +131,18 @@ tidy: $(TARGET)
 	$(UBROWSEOPTS) $(INVOKE) ./$(TARGET) | tail +3 > ubrowse.html
 	tidy -utf8 -q ubrowse.html 2>&1 | sed -e "s%^ubrowse.html%"`pwd`"/ubrowse.html%g"
 
-$(TARGET) : $(OBJECTS)
-	$(LINK.cc) -o $@ $^ $(LIBS)
+$(TARGET) : $(OBJECTS) build-rsrc
+	$(LINK.cc) -o $@ $(OBJECTS) $(LIBS)
 
 icons.res: icons.txt
 	$(INVOKE) $(GENRB) -d. $<
 
-icons.txt: $(ICONS)/*.gif
+$(RES_DIR)/icons.txt: $(ICONS)/*.gif
 	echo creating $@ in $(ICONS)
 	@echo "icons : table(nofallback) { " > $@
 	@for file in `cd ./$(ICONS) ; ls *.gif *.css`; do \
 	echo "Processing $$file " ; \
-	  echo " $$file:import { $(ICONS)/$$file } " >> $@; \
+	  echo " $$file:import { ../$(ICONS)/$$file } " >> $@; \
 	done;
 	@echo "}" >> $@
 
@@ -143,3 +152,11 @@ $(PKG).lst:
 $(PKG)_dat.o: $(PKG).lst icons.res
 	-rm -f $@
 	-$(INVOKE) $(PKGDATA) -p $(PKG)  -m $(PKGMODE) -v -c -d $(OUT) -T $(OUT) $(PKG).lst
+
+build-rsrc: $(GENERATED_RSRC)
+	-rm -rf $(RESDIR)
+	$(BLDICURES_PY) $(BLDICURES_OPTS) -f $(RES_DIR) -d $(RESDIR)
+
+GENERATED_RSRC: $(RES_DIR)/root.txt $(RES_DIR)/icons.txt
+
+.PHONY: build-rsrc

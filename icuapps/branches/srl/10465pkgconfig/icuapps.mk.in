@@ -60,6 +60,7 @@ BINDIR=@bindir@
 MKINSTALLDIRS=-mkdir -p
 INSTALL_DATA=cp
 INSTALL=cp
+GENRB=genrb
 endif
 
 # fake version #s for these.

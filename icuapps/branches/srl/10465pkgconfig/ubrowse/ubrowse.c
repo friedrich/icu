@@ -1777,6 +1777,7 @@ void printElsewhereBox(UChar32 block, ESearchMode mode)
     case ECHAR:
         u_fprintf(gOut, "<a href='http://www.fileformat.info/info/unicode/char/%04X/'>fileformat.info</a> <br/> \n", block);
         u_fprintf(gOut, "<a href='http://decodeunicode.org/w3.php?nodeId=%s&page=1&lang=2&zoom=&prop='>decodeunicode.org</a> \n", dunum);
+        u_fprintf(gOut, "<a href='http://unicode.org/cldr/utility/character.jsp?a=%04X'>Unicode.org Utility</a>", block);
         break;
     case EBLOCK:
         u_fprintf(gOut, "<a href=\"http://www.unicode.org/charts/PDF/U%04X.pdf\">PDF@unicode.org</a>\n", block, block);

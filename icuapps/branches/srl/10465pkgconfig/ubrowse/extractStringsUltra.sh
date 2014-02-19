@@ -1,7 +1,7 @@
 #!/bin/sh
 ## *****************************************************************************
 ## *
-## *   Copyright (C) 1999-2010, International Business Machines
+## *   Copyright (C) 1999-2014, International Business Machines
 ## *   Corporation and others.  All Rights Reserved.
 ## *
 ## *****************************************************************************
@@ -11,7 +11,7 @@
 ##
 ## into the root resource for the project.
 ##
-## NOTE:  
+## NOTE:
 ##   - only ONE fswf per line, please.
 ##
 ##   - make sure the whole FSWF expression (in the source) is on one line
@@ -23,7 +23,7 @@
 ##	     FSWF ( /* NOEXTRACT */ "htmlHEAD",
 ##		    "</HEAD>\r\n<BODY BGCOLOR=\"#FFFFFF\" >\r\n");
 ##
-##      The /*NOEXTRACT*/ between the leftparenthesis and the 
+##      The /*NOEXTRACT*/ between the leftparenthesis and the
 ##      doublequote is sufficient to break the matching string below.
 ##
 ## BUGS
@@ -34,15 +34,16 @@
 ## Note: FSWF means Fetch String with Fallback.   see locexp.c
 export INVOKE_UCONV
 echo "// root file. Generated from $*"
-echo "// Copyright (C) 2000-2010, International Business Machines"
+YEAR=`date +'%Y'`
+echo "// Copyright (C) 2000-${YEAR}, International Business Machines"
 echo "// It's probably not a good idea to change this file."
 echo "// Better to change locexp.c or the ROOT.* source files and rebuild."
 echo "// Now with XLIFF tags"
 echo
 echo "root {"
 echo
-fgrep -h 'FSWF("' $* | sort | uniq | sed -f extractStrings.sed 
-echo 
+fgrep -h 'FSWF("' $* | sort | uniq | sed -f extractStrings.sed
+echo
 if [ -f root.txt.inc ]; then
     echo "// Special Cases"
     echo
