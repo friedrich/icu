@@ -1,6 +1,6 @@
 ## ******************************************************************************
 ## *
-## *   Copyright (C) 1999-2000, International Business Machines
+## *   Copyright (C) 1999-2014, International Business Machines
 ## *   Corporation and others.  All Rights Reserved.
 ## *
 ## *******************************************************************************
@@ -21,13 +21,13 @@ TARGET = dumpdat
 OBJECTS = dumpdat.o
 # upkg.o
 
-#CPPFLAGS += 
+#CPPFLAGS +=
 CPPFLAGS+=$(CPPFLAGS_APPUTIL)
 
 # enable the following if you have some kind of readline function
 #####
 #CPPFLAGS += -DHAVE_READLINE -I/sw/include
-#LDFLAGS += -L/sw/lib -lreadline 
+#LDFLAGS += -L/sw/lib -lreadline
 #####
 
 # Enable the following if you have dlopen()
@@ -68,15 +68,14 @@ clean-local: target-clean-local
 	rm -f $(OBJECTS)
 
 distclean-local: clean-local
-	rm -f Makefile 
+	rm -f Makefile
 
 check-local:
 	$(INVOKE) ./$(TARGET) icu unames
 
 $(TARGET): $(OBJECTS)
-	$(LINK.cc) -o $@ $^ $(ICULIBS) 
+	$(LINK.cc) -o $@ $^ $(ICULIBS)
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
 	 && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-

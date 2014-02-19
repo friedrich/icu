@@ -19,7 +19,7 @@ ICU_CONFIG=@ICU_CONFIG@
 @ICU_CONFIG_TRUE@HAVE_ICU_CONFIG:=$(ICU_CONFIG)
 @ICU_CONFIG_FALSE@HAVE_ICU_CONFIG:=
 ####################################################################
-# Load ICU information. You can copy this to other makefiles #######
+# Load ICU information.
 ####################################################################
 ifneq ($(HAVE_ICU_CONFIG),)
 CC=$(shell @ICU_CONFIG@ --cc)
@@ -30,6 +30,7 @@ CXXFLAGS=$(shell @ICU_CONFIG@ --cxxflags)
 LDFLAGS =$(shell @ICU_CONFIG@ --ldflags) @LIBS@
 LDFLAGS_ICUIO =$(shell @ICU_CONFIG@ --ldflags-icuio)
 LDFLAGS_OBSOLETE =$(shell @ICU_CONFIG@ --ldflags-obsolete)
+LIBS=${LDFLAGS} ${LDFLAGS_ICUIO}
 INVOKE =$(shell @ICU_CONFIG@ --invoke)
 SO =$(shell @ICU_CONFIG@ --so)
 BINDIR = $(shell @ICU_CONFIG@ --bindir)
@@ -39,7 +40,14 @@ PKGDATA=$(shell @ICU_CONFIG@ --invoke=pkgdata)
 # Warning: needs ICU's install nearby.
 LDFLAGS_TOOLUTIL =$(shell @ICU_CONFIG@ --ldflags-toolutil)
 INCLUDE_MAKEFILE_INC=include $(shell $(ICU_CONFIG) --incfile)
+INSTALL=$(shell @ICU_CONFIG@ --install)
+MKINSTALLDIRS=$(shell @ICU_CONFIG@ --mkinstalldirs)
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
 else
+# pkg-config version
+
 INCLUDE_MAKEFILE_INC=
 # pkgdata version.
 #CC=
@@ -51,6 +59,7 @@ exec_prefix=@exec_prefix@
 BINDIR=@bindir@
 MKINSTALLDIRS=-mkdir -p
 INSTALL_DATA=cp
+INSTALL=cp
 endif
 
 # fake version #s for these.
@@ -66,11 +75,6 @@ ICU_BUILD:=$(ICU_SOURCE)
 ####################################################################
 #MKINSTALLDIRS = $(SHELL) $(top_srcdir)/mkinstalldirs
 
-INSTALL=$(shell @ICU_CONFIG@ --install)
-MKINSTALLDIRS=$(shell @ICU_CONFIG@ --mkinstalldirs)
-INSTALL_PROGRAM = @INSTALL_PROGRAM@
-INSTALL_DATA = @INSTALL_DATA@
-INSTALL_SCRIPT = @INSTALL_SCRIPT@
 
 ## Extra files to remove for 'make clean'
 CLEANFILES = *~

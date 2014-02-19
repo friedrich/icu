@@ -14,13 +14,15 @@
 
    TODO:  use the compatibility decomposition of these chars from the Unicode
    properties files.
+
+   Note: the data is currently static.
 */
 
-/* form:  
+/* form:
   radical -> normal
 */
 
-static UChar  gKangXiRadicalTable[] = 
+static UChar  gKangXiRadicalTable[] =
 {0x2F00	,
 	0x4E00
 ,0x2F01	,

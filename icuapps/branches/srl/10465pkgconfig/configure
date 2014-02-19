@@ -1323,7 +1323,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-icu, --with-icu=yes, or --with-icu={path} specify the installed ICU to compile against default=yes - ICU autodetected from PATH
+  --with-icu, --with-icu=yes, or --with-icu={path} specify an installation containing icu-config of an installed ICU to compile against default=yes - ICU autodetected from pkg-config or PATH
   --with-icu-source={path} specify the ICU source dir (icu/source) default=none - must match installed ICU
 
 Some influential environment variables:
@@ -2315,14 +2315,18 @@ else
 $as_echo "yes" >&6; }
 	ICU_OK=yes
 fi
-
+if test "$ICU_OK" = "yes"; then
+      TRY_ICU_CONFIG=no
+else
+      TRY_ICU_CONFIG=yes
+fi
 
 # Check whether --with-icu was given.
 if test "${with_icu+set}" = set; then :
   withval=$with_icu; case "${withval}" in
 		no) as_fn_error $? "Error: These are ICU apps... --with-icu=no  / --without-icu don't make sense." "$LINENO" 5  ;;
-                yes)  ;;
-		*) icu_path=${withval}; icu_path_extra=${icu_path}/bin ;;
+                yes)  TRY_ICU_CONFIG=yes;;
+		*) TRY_ICU_CONFIG=yes; icu_path=${withval}; icu_path_extra=${icu_path}/bin ;;
 		esac
 else
   icu_path=
@@ -2376,32 +2380,34 @@ done
 test -n "$ICU_CONFIG" || ICU_CONFIG=":"
 
 
- if test -n "$ac_cv_path_ICU_CONFIG"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking ICU installation" >&5
-$as_echo_n "checking ICU installation... " >&6; }
+ if test "$TRY_ICU_CONFIG" = "yes" -a -n "$ac_cv_path_ICU_CONFIG"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking ICU installation via icu-config" >&5
+$as_echo_n "checking ICU installation via icu-config... " >&6; }
     if ${ICU_CONFIG} --exists; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: ok" >&5
 $as_echo "ok" >&6; }
     else
         as_fn_error $? "ICU is not installed properly." "$LINENO" 5
     fi
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking ICU version" >&5
-$as_echo_n "checking ICU version... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking ICU version via icu-config" >&5
+$as_echo_n "checking ICU version via icu-config... " >&6; }
     ICU_VERSION=`${ICU_CONFIG} --version`
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ICU_VERSION}" >&5
 $as_echo "${ICU_VERSION}" >&6; }
 
     ICU_CONFIG_TRUE=""
     ICU_CONFIG_FALSE="#"
-    ICU_CONFIG=
  else
     if test "$ICU_OK" = "yes"; then
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking ICU version via pkg-config" >&5
+$as_echo_n "checking ICU version via pkg-config... " >&6; }
        ICU_VERSION=`${PKG_CONFIG} --modversion icu-uc`
 
-       { $as_echo "$as_me:${as_lineno-$LINENO}: result: Using ICU ${ICU_VERSION} found by pkg-config" >&5
-$as_echo "Using ICU ${ICU_VERSION} found by pkg-config" >&6; }
+       { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ICU_VERSION}" >&5
+$as_echo "${ICU_VERSION}" >&6; }
        ICU_CONFIG_TRUE="#"
        ICU_CONFIG_FALSE=""
+       ICU_CONFIG=
     else
        as_fn_error $? "Cannot find icu-config, please check the PATH or use --with-icu=path/to/icu" "$LINENO" 5
     fi
@@ -2418,8 +2424,8 @@ if test "${with_icu_source+set}" = set; then :
 $as_echo "yes - ${withval}" >&6; }; ICU_SOURCE="${withval}"; ICU_SOURCE_FALSE='#'; ICU_SOURCE_TRUE=''; ;;
 		esac
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no - some demos will be disabled" >&5
+$as_echo "no - some demos will be disabled" >&6; }
          ICU_SOURCE_FALSE=
          ICU_SOURCE_TRUE='#'
          ICU_SOURCE=

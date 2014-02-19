@@ -48,6 +48,7 @@ ifeq ($(RESMODE),static)
 RESLIB=$(RESDIR)/liblocexp.a
 LXLIBS=-L./$(BLDRES)/ -llocexp
 BLDICURES_OPTS+=-m $(RESMODE)
+BLDICURES_OPTS+=-v
 else
 $(error Unknown RESMODE: $(RESMODE))
 endif
@@ -105,8 +106,8 @@ install-local: install-target
 
 
 install-target: all-local
-	$(MKINSTALLDIRS) $(bindir)
-	$(INSTALL) $(TARGET) $(bindir)/$(TARGET)
+	$(MKINSTALLDIRS) $(BINDIR)
+	$(INSTALL) $(TARGET) $(BINDIR)/$(TARGET)
 
 dist-local:
 
@@ -185,9 +186,9 @@ endif
 # install fast locale explorer
 #  [kflx kills old instances, it's a Suid program]
 iflx: flx
-	$(INSTALL) flx $(bindir)/flx
-	$(INSTALL) flx.sh $(bindir)/flx.sh
-	chmod u+s $(bindir)/flx
+	$(INSTALL) flx $(BINDIR)/flx
+	$(INSTALL) flx.sh $(BINDIR)/flx.sh
+	chmod u+s $(BINDIR)/flx
 	./kflx
 
 # fast locale explorer itself

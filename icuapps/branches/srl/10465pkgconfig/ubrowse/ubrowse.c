@@ -1,6 +1,6 @@
 /*
 *******************************************************************************
-* Copyright (C) 1996-2010, International Business Machines Corporation and    *
+* Copyright (C) 1996-2014, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 * HTML Design by Josh Mast <josh@hivehaus.org>                                *
@@ -725,7 +725,7 @@ main(int argc,
      char **argv)
 {
   char *qs;
-  char *pi;
+  const char *pi;
   char *tmp = NULL;
   UChar chars[800];
   UChar32 theChar;
@@ -1320,7 +1320,7 @@ main(int argc,
 
   if(anyDecompose)
     {
-      u_fprintf(FSWF("NOTE_ANY_DECOMPOSE", "Note: text in <span class='anydecompose'>Italic Green</span> is the best-try using decomposition. Underscore (_) denotes missing characters in the decomposition."/*Note about green text*/), gOut);
+      u_fprintf_u(gOut, FSWF("NOTE_ANY_DECOMPOSE", "Note: text in <span class='anydecompose'>Italic Green</span> is the best-try using decomposition. Underscore (_) denotes missing characters in the decomposition."/*Note about green text*/), gOut);
     }
 
   uvi[0]=0xFF;

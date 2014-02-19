@@ -17,12 +17,6 @@ root {
      APP_NAME  {  "Unicode Browser"  }
 
     /**
-     * @note Note about green text
-     * @translate yes
-     */
-     NOTE_ANY_DECOMPOSE  {  "Note: text in <span class='anydecompose'>Italic Green</span> is the best-try using decomposition. Underscore (_) denotes missing characters in the decomposition."  }
-
-    /**
      * @translate yes
      */
      ETOP_blocks  {  "Blocks"  }
@@ -31,6 +25,12 @@ root {
      * @translate yes
      */
      ETOP_general_categories  {  "General Categories"  }
+
+    /**
+     * @note Note about green text
+     * @translate yes
+     */
+     NOTE_ANY_DECOMPOSE  {  "Note: text in <span class='anydecompose'>Italic Green</span> is the best-try using decomposition. Underscore (_) denotes missing characters in the decomposition."  }
 
 
 

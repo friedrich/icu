@@ -23,7 +23,7 @@ AC_ARG_WITH(icu-source,
 	[case "${withval}" in
 		*) AC_MSG_RESULT([yes - ${withval}]); ICU_SOURCE="${withval}"; ICU_SOURCE_FALSE='#'; ICU_SOURCE_TRUE=''; ;;
 		esac],
-        [AC_MSG_RESULT([no])
+        [AC_MSG_RESULT([no - some demos will be disabled])
          ICU_SOURCE_FALSE=
          ICU_SOURCE_TRUE='#'
          ICU_SOURCE=])

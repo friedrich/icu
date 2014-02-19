@@ -1,5 +1,5 @@
 /**********************************************************************
-*   Copyright (C) 1999, International Business Machines
+*   Copyright (C) 1999-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ***********************************************************************/
 
@@ -24,6 +24,7 @@
 
 #define HAVE_KANGXI
 #include "unicode/kangxi.h"
+#include "kangxi.c" /* static */
 
 static UChar block0300Subs[] =
     { 0x0060, 0x00b4, 0x005e, 0x007e, 0x007e, 0x00af, 0x0306, 0x0307, 0x00a8, 0x0309, 0x00b0, 0x0022, 0x030c, 0x0022 }; 
