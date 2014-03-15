@@ -1,10 +1,11 @@
 <!DOCTYPE html><html lang="en-US"><meta charset="utf-8">
 <head>
-<title>Encoding Standard</title>
+<title>ICU Collation Demo</title>
 </head>
 <body>
-<form>
-<select><!-- begin output from webdemo/collation/available -->
+<h1>ICU Collation Demo</h1>
+<form action="/cgi-bin/collation/icu-config" method="post" target="output">
+<select name="co"><!-- begin output from webdemo/collation/available -->
 <option value="">und (type=standard):   Root (Standard Sort Order)</option>
 <option value="root@collation=eor">root-u-co-eor:   Root (European Ordering Rules)</option>
 <option value="root@collation=search">root-u-co-search (normalization=on):   Root (General-Purpose Search)</option>
@@ -127,6 +128,63 @@
 <option value="zh@collation=unihan">zh-u-co-unihan:   Chinese (Radical-Stroke Sort Order)</option>
 <option value="zh@collation=zhuyin">zh-u-co-zhuyin:   Chinese (Zhuyin Sort Order)</option>
 <!-- end output from webdemo/collation/available --></select>
+<!-- TODO: convenience buttons that set "ignore accents" and other common combinations,
+see http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Common_Settings -->
+<table>
+<tr><th>normalization:</th><td>
+<input type="radio" name="kk" value="?" checked>default
+<input type="radio" name="kk" value="P"><b>off</b>
+<input type="radio" name="kk" value="Q">on</td></tr>
+<tr><th>strength:</th><td>
+<input type="radio" name="ks" value="?" checked>default
+<input type="radio" name="ks" value="@">primary
+<input type="radio" name="ks" value="A">secondary
+<input type="radio" name="ks" value="B"><b>tertiary</b>
+<input type="radio" name="ks" value="C">quaternary
+<input type="radio" name="ks" value="O">identical</td></tr>
+<tr><th>numeric:</th><td>
+<input type="radio" name="kn" value="?" checked>default
+<input type="radio" name="kn" value="P"><b>off</b>
+<input type="radio" name="kn" value="Q">on</td></tr>
+<tr><th>backwards<br>secondary:</th><td>
+<input type="radio" name="kb" value="?" checked>default
+<input type="radio" name="kb" value="P"><b>off</b>
+<input type="radio" name="kb" value="Q">on</td></tr>
+<tr><th>case level:</th><td>
+<input type="radio" name="kc" value="?" checked>default
+<input type="radio" name="kc" value="P"><b>off</b>
+<input type="radio" name="kc" value="Q">on</td></tr>
+<tr><th>case first:</th><td>
+<input type="radio" name="kf" value="?" checked>default
+<input type="radio" name="kf" value="P"><b>off</b>
+<input type="radio" name="kf" value="X">lower
+<input type="radio" name="kf" value="Y">upper</td></tr>
+<tr><th>alternate:</th><td>
+<input type="radio" name="ka" value="?" checked>default
+<input type="radio" name="ka" value="U"><b>non-ignorable</b>
+<input type="radio" name="ka" value="T">shifted</td></tr>
+<tr><th>max variable:</th><td>
+<input type="radio" name="kv" value="?" checked>default
+<input type="radio" name="kv" value="@">space
+<input type="radio" name="kv" value="A"><b>punct</b>
+<input type="radio" name="kv" value="B">symbol
+<input type="radio" name="kv" value="C">currency</td></tr>
+</table>
+<!-- TODO: kr=reorder textarea -->
+<input type="submit" value="   sort   "><br>
+<input type="checkbox" name="sk" value="1" checked>show sort keys
+<input type="checkbox" name="ce" value="1">show raw collation elements
+<hr>
+<textarea rows="32" cols="16">
+abc
+ab©
+abç
+äbc
+File-3
+file-12
+filé-110
+</textarea>
+<iframe id="output" width="300" height="500"></iframe>
 </form>
 </body>
 </html>

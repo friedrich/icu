@@ -187,6 +187,9 @@ main(int argc, char* argv[]) {
             }
         }
 
+        // TODO: maxVariable
+        // TODO: reorder codes
+
         if(!attributes.isEmpty()) {
             text.append((const UChar *)u" (").append(attributes).append((UChar)')');
         }
