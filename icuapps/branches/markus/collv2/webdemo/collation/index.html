@@ -1,6 +1,10 @@
 <!DOCTYPE html><html lang="en-US"><meta charset="utf-8">
 <head>
 <title>ICU Collation Demo</title>
+<style type="text/css">
+.settings { font-size:67% }
+.default { text-decoration:underline }
+</style>
 </head>
 <body>
 <h1>ICU Collation Demo</h1>
@@ -127,53 +131,55 @@
 <option value="zh@collation=stroke">zh-u-co-stroke:   Chinese (Stroke Sort Order)</option>
 <option value="zh@collation=unihan">zh-u-co-unihan:   Chinese (Radical-Stroke Sort Order)</option>
 <option value="zh@collation=zhuyin">zh-u-co-zhuyin:   Chinese (Zhuyin Sort Order)</option>
-<!-- end output from webdemo/collation/available --></select>
-<p>Append rules:<br>
-<textarea name="rules" rows="3" cols="60"></textarea></p>
+<!-- end output from webdemo/collation/available --></select><br>
+Append rules: (see the
+<a href="http://unicode.org/repos/cldr/trunk/common/collation/">CLDR tailoring data</a>,
+use "View Source" for .xml)<br>
+<textarea name="rules" rows="3" cols="60"></textarea><br>
 <!-- TODO: convenience buttons that set "ignore accents" and other common combinations,
 see http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Common_Settings -->
-<table>
+<table class="settings">
 <tr><th>normalization:</th><td>
 <input type="radio" name="kk" value="?" checked>default
-<input type="radio" name="kk" value="P"><b>off</b>
-<input type="radio" name="kk" value="Q">on</td></tr>
-<tr><th>strength:</th><td>
-<input type="radio" name="ks" value="?" checked>default
-<input type="radio" name="ks" value="@">primary
-<input type="radio" name="ks" value="A">secondary
-<input type="radio" name="ks" value="B"><b>tertiary</b>
-<input type="radio" name="ks" value="C">quaternary
-<input type="radio" name="ks" value="O">identical</td></tr>
-<tr><th>numeric:</th><td>
+<input type="radio" name="kk" value="P"><span class="default">off</span>
+<input type="radio" name="kk" value="Q">on</td>
+<th>numeric:</th><td>
 <input type="radio" name="kn" value="?" checked>default
 <input type="radio" name="kn" value="P"><b>off</b>
 <input type="radio" name="kn" value="Q">on</td></tr>
-<tr><th>backwards<br>secondary:</th><td>
+<tr><th>strength:</th><td colspan="3">
+<input type="radio" name="ks" value="?" checked>default
+<input type="radio" name="ks" value="@">primary
+<input type="radio" name="ks" value="A">secondary
+<input type="radio" name="ks" value="B"><span class="default">tertiary</span>
+<input type="radio" name="ks" value="C">quaternary
+<input type="radio" name="ks" value="O">identical</td></tr>
+<tr><th>backwards<br>secondary:</th><td colspan="3">
 <input type="radio" name="kb" value="?" checked>default
-<input type="radio" name="kb" value="P"><b>off</b>
+<input type="radio" name="kb" value="P"><span class="default">off</span>
 <input type="radio" name="kb" value="Q">on</td></tr>
 <tr><th>case level:</th><td>
 <input type="radio" name="kc" value="?" checked>default
-<input type="radio" name="kc" value="P"><b>off</b>
-<input type="radio" name="kc" value="Q">on</td></tr>
-<tr><th>case first:</th><td>
+<input type="radio" name="kc" value="P"><span class="default">off</span>
+<input type="radio" name="kc" value="Q">on</td>
+<th>case first:</th><td>
 <input type="radio" name="kf" value="?" checked>default
-<input type="radio" name="kf" value="P"><b>off</b>
+<input type="radio" name="kf" value="P"><span class="default">off</span>
 <input type="radio" name="kf" value="X">lower
 <input type="radio" name="kf" value="Y">upper</td></tr>
 <tr><th>alternate:</th><td>
 <input type="radio" name="ka" value="?" checked>default
-<input type="radio" name="ka" value="U"><b>non-ignorable</b>
-<input type="radio" name="ka" value="T">shifted</td></tr>
-<tr><th>max variable:</th><td>
+<input type="radio" name="ka" value="U"><span class="default">non-ignorable</span>
+<input type="radio" name="ka" value="T">shifted</td>
+<th>max variable:</th><td>
 <input type="radio" name="kv" value="?" checked>default
 <input type="radio" name="kv" value="@">space
-<input type="radio" name="kv" value="A"><b>punct</b>
+<input type="radio" name="kv" value="A"><span class="default">punct</span>
 <input type="radio" name="kv" value="B">symbol
 <input type="radio" name="kv" value="C">currency</td></tr>
 </table>
 <!-- TODO: kr=reorder textarea -->
-<input type="submit" value="   sort   "><br>
+<input type="submit" value="   sort   ">  
 <input type="checkbox" name="sk" value="1" checked>show sort keys
 <input type="checkbox" name="ce" value="1">show raw collation elements
 <hr>

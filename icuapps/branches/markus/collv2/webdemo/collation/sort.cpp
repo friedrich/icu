@@ -24,6 +24,8 @@
 #include "unicode/utypes.h"
 #include "unicode/coll.h"
 #include "unicode/locid.h"
+#include "unicode/tblcoll.h"
+#include "unicode/uchar.h"
 #include "unicode/ucol.h"
 #include "unicode/uloc.h"
 #include "unicode/unistr.h"
@@ -35,6 +37,7 @@ using std::string;
 
 using icu::Collator;
 using icu::Locale;
+using icu::RuleBasedCollator;
 using icu::UnicodeString;
 
 namespace {
@@ -103,7 +106,18 @@ char *unPercentString(char *s) {
     return t;  // Return the modified string limit.
 }
 
-UnicodeString &readUnicodeString(char *s, UnicodeString &dest) {
+const char *readChars(const KeysToLimits &data, const char *key, const char *defaultChars) {
+    const auto entry = data.find(key);
+    if(entry == data.end()) { return defaultChars; }
+    char *s = (*entry).second.first;
+    unPercentString(s);
+    return s;
+}
+
+UnicodeString &readUnicodeString(const KeysToLimits &data, const char *key, UnicodeString &dest) {
+    const auto entry = data.find(key);
+    if(entry == data.end()) { return dest; }
+    char *s = (*entry).second.first;
     char *limit = unPercentString(s);
     int32_t u8Length = (int32_t)(limit - s);
     UChar *buffer = dest.getBuffer(u8Length);
@@ -118,6 +132,96 @@ UnicodeString &readUnicodeString(char *s, UnicodeString &dest) {
     return dest;
 }
 
+bool onlyPatternWhiteSpace(const UnicodeString &s) {
+    for(int32_t i = 0; i < s.length(); ++i) {
+        if(!u_hasBinaryProperty(s[i], UCHAR_PATTERN_WHITE_SPACE)) { return false; }
+    }
+    return true;
+}
+
+Collator *createCollator(const KeysToLimits &data) {
+    const char *localeString = readChars(data, "co", "");
+    UErrorCode errorCode = U_ZERO_ERROR;
+    Locale loc(localeString);
+    std::unique_ptr<Collator> coll(Collator::createInstance(loc, errorCode));
+    if(U_FAILURE(errorCode)) {
+        fprintf(stderr, "Collator::createInstance(%s) failed - %s\n",
+                localeString, u_errorName(errorCode));
+        exit(1);
+    }
+
+    UnicodeString moreRules;
+    readUnicodeString(data, "rules", moreRules);
+    if(!onlyPatternWhiteSpace(moreRules)) {
+        const RuleBasedCollator *rbc = dynamic_cast<const RuleBasedCollator *>(coll.get());
+        if(rbc == NULL) {
+            puts("unable to append rules to a Collator that is not a RuleBasedCollator");
+            exit(2);
+        }
+        const UnicodeString &collRules = rbc->getRules();
+        UnicodeString rules = collRules + moreRules;
+        UParseError parseError;
+        UnicodeString reason;
+        std::unique_ptr<Collator> coll2(
+            new RuleBasedCollator(rules, parseError, reason, errorCode));
+        if(U_FAILURE(errorCode)) {
+            printf("RuleBasedCollator(rules) failed - %s\n", u_errorName(errorCode));
+            string s8;
+            printf("  reason: %s\n", reason.toUTF8String(s8).c_str());
+            if(parseError.offset >= 0) {
+                printf("  offset in appended rules: %d\n",
+                       (int)(parseError.offset - collRules.length()));
+            }
+            if(parseError.preContext[0] != 0 || parseError.postContext[0] != 0) {
+                string pre, post;
+                printf("  snippet: ...%s(!)%s...\n",
+                       UnicodeString(parseError.preContext).toUTF8String(pre).c_str(),
+                       UnicodeString(parseError.postContext).toUTF8String(post).c_str());
+            }
+            exit(2);
+        }
+        coll.reset(coll2.release());
+    }
+
+    UColAttributeValue value = (UColAttributeValue)(*readChars(data, "kk", "?") - '@');
+    if(value != UCOL_DEFAULT) {
+        coll->setAttribute(UCOL_NORMALIZATION_MODE, value, errorCode);
+    }
+    value = (UColAttributeValue)(*readChars(data, "ks", "?") - '@');
+    if(value != UCOL_DEFAULT) {
+        coll->setAttribute(UCOL_STRENGTH, value, errorCode);
+    }
+    value = (UColAttributeValue)(*readChars(data, "kn", "?") - '@');
+    if(value != UCOL_DEFAULT) {
+        coll->setAttribute(UCOL_NUMERIC_COLLATION, value, errorCode);
+    }
+    value = (UColAttributeValue)(*readChars(data, "kb", "?") - '@');
+    if(value != UCOL_DEFAULT) {
+        coll->setAttribute(UCOL_FRENCH_COLLATION, value, errorCode);
+    }
+    value = (UColAttributeValue)(*readChars(data, "kc", "?") - '@');
+    if(value != UCOL_DEFAULT) {
+        coll->setAttribute(UCOL_CASE_LEVEL, value, errorCode);
+    }
+    value = (UColAttributeValue)(*readChars(data, "kf", "?") - '@');
+    if(value != UCOL_DEFAULT) {
+        coll->setAttribute(UCOL_CASE_FIRST, value, errorCode);
+    }
+    value = (UColAttributeValue)(*readChars(data, "ka", "?") - '@');
+    if(value != UCOL_DEFAULT) {
+        coll->setAttribute(UCOL_ALTERNATE_HANDLING, value, errorCode);
+    }
+    value = (UColAttributeValue)(*readChars(data, "kv", "?") - '@');
+    if(value != UCOL_DEFAULT) {
+        coll->setMaxVariable((UColReorderCode)(UCOL_REORDER_CODE_FIRST + value), errorCode);
+    }
+    if(U_FAILURE(errorCode)) {
+        printf("setting attributes failed - %s", u_errorName(errorCode));
+        exit(2);
+    }
+    return coll.release();
+}
+
 }  // namespace
 
 extern "C" int
@@ -130,20 +234,7 @@ main(int argc, char* argv[]) {
     KeysToLimits data;
     readFormData(content, data);
     puts("Content-type:text/plain; charset=UTF-8\n");
-    for(const auto &entry : data) {
-        const string &key = entry.first.c_str();
-        const auto &range = entry.second;
-        char *value = range.first;
-        // char *limit = range.second;
-        UnicodeString s16;
-        string s8;
-        if(key == "rules" || key == "input") {
-            readUnicodeString(value, s16).unescape().toUTF8String(s8);
-            value = (char *)s8.c_str();
-        } else {
-            unPercentString(value);
-        }
-        printf("- %s: %s\n", key.c_str(), value);
-    }
+    std::unique_ptr<Collator> coll(createCollator(data));
+    puts("ok");
     return 0;
 }
