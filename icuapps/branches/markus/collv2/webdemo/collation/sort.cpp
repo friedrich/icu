@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -132,6 +133,31 @@ UnicodeString &readUnicodeString(const KeysToLimits &data, const char *key, Unic
     return dest;
 }
 
+struct Line {
+    Line(int n, const UnicodeString &s) : nr(n), str(s) {}
+    int nr;
+    UnicodeString str;
+};
+
+void splitAndEscapeLines(const UnicodeString &s, std::vector<Line> &lines) {
+    // Escape after splitting.
+    int nr = 1;
+    int32_t start = 0;
+    for(int32_t i = 0; i < s.length(); ++i) {
+        UChar c = s[i];
+        if(c == 0x0A || c == 0x0D) {
+            UnicodeString str = s.tempSubStringBetween(start, i).unescape();
+            lines.emplace_back(nr++, str);
+            if(c == 0x0D && s[i + 1] == 0x0A) { ++i; }
+            start = i + 1;
+        }
+    }
+    // Delete an empty trailing line.
+    if(!lines.empty() && lines.back().str.isEmpty()) {
+        lines.pop_back();
+    }
+}
+
 bool onlyPatternWhiteSpace(const UnicodeString &s) {
     for(int32_t i = 0; i < s.length(); ++i) {
         if(!u_hasBinaryProperty(s[i], UCHAR_PATTERN_WHITE_SPACE)) { return false; }
@@ -222,6 +248,16 @@ Collator *createCollator(const KeysToLimits &data) {
     return coll.release();
 }
 
+struct LessThan {
+    LessThan(const Collator &c) : coll(c) {}
+    bool operator()(const Line &left, const Line &right) const {
+        UErrorCode errorCode = U_ZERO_ERROR;
+        return coll.compare(left.str, right.str, errorCode) < 0;
+    }
+
+    const Collator &coll;
+};
+
 }  // namespace
 
 extern "C" int
@@ -235,6 +271,18 @@ main(int argc, char* argv[]) {
     readFormData(content, data);
     puts("Content-type:text/plain; charset=UTF-8\n");
     std::unique_ptr<Collator> coll(createCollator(data));
-    puts("ok");
+
+    UnicodeString input;
+    std::vector<Line> lines;
+    splitAndEscapeLines(readUnicodeString(data, "input", input), lines);
+    LessThan lessThan(*coll);
+    std::sort(lines.begin(), lines.end(), lessThan);
+
+    for(const Line &line : lines) {
+        // TODO: unescape invisible, unassigned, HTML syntax, ...
+        string s8;
+        printf("[%d] %s\n", line.nr, line.str.toUTF8String(s8).c_str());
+    }
+
     return 0;
 }
