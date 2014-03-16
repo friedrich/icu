@@ -2,6 +2,7 @@
 ICU_SRC=/home/mscherer/svn.icu/trunk/src
 PREFIX=/home/mscherer/svn.icu/trunk/inst
 ICUAPPS_SRC=/home/mscherer/svn.icuapps/collv2/src
+CGI_BIN=/var/www/cgi-bin
 
 CC=/home/mscherer/clang/bin/clang
 CXX=/home/mscherer/clang/bin/clang++
@@ -11,6 +12,13 @@ CPPFLAGS="-DU_NO_DEFAULT_INCLUDE_UTF_HEADERS=1 -DU_DEBUG=1 -D_REENTRANT -DU_HAVE
 LINKFLAGS="-L$PREFIX/lib -licutu -licui18n -licuuc -licudata -lpthread -ldl -lm"
 
 $CXX $CPPFLAGS $CXXFLAGS $LINKFLAGS $ICUAPPS_SRC/webdemo/collation/available.cpp -o $PREFIX/bin/available
+LD_LIBRARY_PATH=$PREFIX/lib $PREFIX/bin/available > $ICUAPPS_SRC/../available-collators.txt
 
+$CXX $CPPFLAGS $CXXFLAGS $LINKFLAGS $ICUAPPS_SRC/webdemo/collation/sort.cpp -o $PREFIX/bin/sort
+cp $PREFIX/bin/sort $CGI_BIN/collation
+chmod a+rx $CGI_BIN/collation/sort
 
-# ~/svn.icuapps/collv2/src$ webdemo/collation/build.sh && LD_LIBRARY_PATH=~/svn.icu/trunk/inst/lib ~/svn.icu/trunk/inst/bin/available
+cp webdemo/collation/index.html /var/www/collation.html
+chmod a+r /var/www/collation.html
+
+# ~/svn.icuapps/collv2/src$ webdemo/collation/build.sh

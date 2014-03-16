@@ -20,7 +20,6 @@
 #include "unicode/coll.h"
 #include "unicode/locdspnm.h"
 #include "unicode/locid.h"
-#include "unicode/tblcoll.h"
 #include "unicode/ucol.h"
 #include "unicode/uloc.h"
 #include "unicode/ures.h"

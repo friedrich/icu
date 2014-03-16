@@ -4,7 +4,7 @@
 </head>
 <body>
 <h1>ICU Collation Demo</h1>
-<form action="/cgi-bin/collation/icu-config" method="post" target="output">
+<form action="/cgi-bin/collation/dosort.sh" method="post" target="output">
 <select name="co"><!-- begin output from webdemo/collation/available -->
 <option value="">und (type=standard):   Root (Standard Sort Order)</option>
 <option value="root@collation=eor">root-u-co-eor:   Root (European Ordering Rules)</option>
@@ -128,6 +128,8 @@
 <option value="zh@collation=unihan">zh-u-co-unihan:   Chinese (Radical-Stroke Sort Order)</option>
 <option value="zh@collation=zhuyin">zh-u-co-zhuyin:   Chinese (Zhuyin Sort Order)</option>
 <!-- end output from webdemo/collation/available --></select>
+<p>Append rules:<br>
+<textarea name="rules" rows="3" cols="60"></textarea></p>
 <!-- TODO: convenience buttons that set "ignore accents" and other common combinations,
 see http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Common_Settings -->
 <table>
@@ -175,7 +177,7 @@ see http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Common_Se
 <input type="checkbox" name="sk" value="1" checked>show sort keys
 <input type="checkbox" name="ce" value="1">show raw collation elements
 <hr>
-<textarea rows="32" cols="16">
+<textarea name="input" rows="32" cols="16">
 abc
 ab©
 abç
