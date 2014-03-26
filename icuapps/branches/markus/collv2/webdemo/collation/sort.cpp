@@ -25,17 +25,21 @@
 #include "unicode/utypes.h"
 #include "unicode/coll.h"
 #include "unicode/locid.h"
+#include "unicode/sortkey.h"
 #include "unicode/tblcoll.h"
 #include "unicode/uchar.h"
 #include "unicode/ucol.h"
 #include "unicode/uloc.h"
 #include "unicode/unistr.h"
 #include "unicode/ustring.h"
+#include "unicode/utf16.h"
+#include "unicode/utf8.h"
 
 #define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 using std::string;
 
+using icu::CollationKey;
 using icu::Collator;
 using icu::Locale;
 using icu::RuleBasedCollator;
@@ -43,6 +47,8 @@ using icu::UnicodeString;
 
 namespace {
 
+// Map of CGI key-value pairs where the map keys are CGI key strings
+// and the map values are pairs of start/limit pointers to the CGI values.
 typedef std::map<string, std::pair<char *, char *>> KeysToLimits;
 
 void readFormData(std::unique_ptr<char[]> &content, KeysToLimits &data) {
@@ -103,7 +109,7 @@ char *unPercentString(char *s) {
         }
         *t++ = c;
     }
-    *t = 0;
+    *t = 0;  // NUL-terminate
     return t;  // Return the modified string limit.
 }
 
@@ -113,6 +119,25 @@ const char *readChars(const KeysToLimits &data, const char *key, const char *def
     char *s = (*entry).second.first;
     unPercentString(s);
     return s;
+}
+
+UColAttributeValue readUColAttributeValue(const KeysToLimits &data, const char *key) {
+    // Simple attribute values are encoded as one ASCII character '@'+value.
+    // '?' encodes -1=UCOL_DEFAULT. ('?'=0x3f, '@'=0x40, 'A'=0x41, 'B'=0x42, ...)
+    return (UColAttributeValue)(*readChars(data, key, "?") - '@');
+}
+
+void readAndSetSimpleUColAttribute(Collator &coll,
+                                   const KeysToLimits &data, const char *key,
+                                   UColAttribute attr, UErrorCode &errorCode) {
+    UColAttributeValue value = readUColAttributeValue(data, key);
+    if(value != UCOL_DEFAULT) {
+        coll.setAttribute(attr, value, errorCode);
+    }
+}
+
+bool readBoolean(const KeysToLimits &data, const char *key) {
+    return *readChars(data, key, "0") == '1';
 }
 
 UnicodeString &readUnicodeString(const KeysToLimits &data, const char *key, UnicodeString &dest) {
@@ -139,26 +164,33 @@ struct Line {
     UnicodeString str;
 };
 
-void splitAndEscapeLines(const UnicodeString &s, std::vector<Line> &lines) {
-    // Escape after splitting.
+void splitAndUnescapeLines(const UnicodeString &s, std::vector<Line> &lines) {
+    // Unescape after splitting so that we do not get confused by escaped CR or LF.
     int nr = 1;
     int32_t start = 0;
-    for(int32_t i = 0; i < s.length(); ++i) {
+    for(int32_t i = 0;; ++i) {
+        if(i == s.length()) {
+            if(start < i) {
+                UnicodeString str = s.tempSubStringBetween(start, i).unescape();
+                lines.emplace_back(nr++, str);
+            }
+            break;
+        }
         UChar c = s[i];
-        if(c == 0x0A || c == 0x0D) {
+        if(c == 0x0A || c == 0x0D) {  // LF or CR
             UnicodeString str = s.tempSubStringBetween(start, i).unescape();
             lines.emplace_back(nr++, str);
-            if(c == 0x0D && s[i + 1] == 0x0A) { ++i; }
+            if(c == 0x0D && s[i + 1] == 0x0A) { ++i; }  // CR LF is one single line break
             start = i + 1;
         }
     }
-    // Delete an empty trailing line.
-    if(!lines.empty() && lines.back().str.isEmpty()) {
+    // Delete empty trailing lines.
+    while(!lines.empty() && lines.back().str.isEmpty()) {
         lines.pop_back();
     }
 }
 
-bool onlyPatternWhiteSpace(const UnicodeString &s) {
+bool containsOnlyPatternWhiteSpace(const UnicodeString &s) {
     for(int32_t i = 0; i < s.length(); ++i) {
         if(!u_hasBinaryProperty(s[i], UCHAR_PATTERN_WHITE_SPACE)) { return false; }
     }
@@ -178,7 +210,7 @@ Collator *createCollator(const KeysToLimits &data) {
 
     UnicodeString moreRules;
     readUnicodeString(data, "rules", moreRules);
-    if(!onlyPatternWhiteSpace(moreRules)) {
+    if(!containsOnlyPatternWhiteSpace(moreRules)) {
         const RuleBasedCollator *rbc = dynamic_cast<const RuleBasedCollator *>(coll.get());
         if(rbc == NULL) {
             puts("unable to append rules to a Collator that is not a RuleBasedCollator");
@@ -209,43 +241,92 @@ Collator *createCollator(const KeysToLimits &data) {
         coll.reset(coll2.release());
     }
 
-    UColAttributeValue value = (UColAttributeValue)(*readChars(data, "kk", "?") - '@');
+    Collator &c = *coll;
+    readAndSetSimpleUColAttribute(c, data, "kk", UCOL_NORMALIZATION_MODE, errorCode);
+    readAndSetSimpleUColAttribute(c, data, "ks", UCOL_STRENGTH, errorCode);
+    readAndSetSimpleUColAttribute(c, data, "kn", UCOL_NUMERIC_COLLATION, errorCode);
+    readAndSetSimpleUColAttribute(c, data, "kb", UCOL_FRENCH_COLLATION, errorCode);
+    readAndSetSimpleUColAttribute(c, data, "kc", UCOL_CASE_LEVEL, errorCode);
+    readAndSetSimpleUColAttribute(c, data, "kf", UCOL_CASE_FIRST, errorCode);
+    readAndSetSimpleUColAttribute(c, data, "ka", UCOL_ALTERNATE_HANDLING, errorCode);
+
+    UColAttributeValue value = readUColAttributeValue(data, "kv");
     if(value != UCOL_DEFAULT) {
-        coll->setAttribute(UCOL_NORMALIZATION_MODE, value, errorCode);
-    }
-    value = (UColAttributeValue)(*readChars(data, "ks", "?") - '@');
-    if(value != UCOL_DEFAULT) {
-        coll->setAttribute(UCOL_STRENGTH, value, errorCode);
-    }
-    value = (UColAttributeValue)(*readChars(data, "kn", "?") - '@');
-    if(value != UCOL_DEFAULT) {
-        coll->setAttribute(UCOL_NUMERIC_COLLATION, value, errorCode);
-    }
-    value = (UColAttributeValue)(*readChars(data, "kb", "?") - '@');
-    if(value != UCOL_DEFAULT) {
-        coll->setAttribute(UCOL_FRENCH_COLLATION, value, errorCode);
-    }
-    value = (UColAttributeValue)(*readChars(data, "kc", "?") - '@');
-    if(value != UCOL_DEFAULT) {
-        coll->setAttribute(UCOL_CASE_LEVEL, value, errorCode);
-    }
-    value = (UColAttributeValue)(*readChars(data, "kf", "?") - '@');
-    if(value != UCOL_DEFAULT) {
-        coll->setAttribute(UCOL_CASE_FIRST, value, errorCode);
-    }
-    value = (UColAttributeValue)(*readChars(data, "ka", "?") - '@');
-    if(value != UCOL_DEFAULT) {
-        coll->setAttribute(UCOL_ALTERNATE_HANDLING, value, errorCode);
-    }
-    value = (UColAttributeValue)(*readChars(data, "kv", "?") - '@');
-    if(value != UCOL_DEFAULT) {
-        coll->setMaxVariable((UColReorderCode)(UCOL_REORDER_CODE_FIRST + value), errorCode);
+        c.setMaxVariable((UColReorderCode)(UCOL_REORDER_CODE_FIRST + value), errorCode);
     }
     if(U_FAILURE(errorCode)) {
         printf("setting attributes failed - %s", u_errorName(errorCode));
         exit(2);
     }
     return coll.release();
+}
+
+void appendLastHexDigit(string &s8, int32_t i) {
+    i &= 0xf;
+    s8.push_back(i <= 9 ? (char)('0' + i) : (char)('A' + i - 10));
+}
+
+void appendEscaped(string &s8, UChar32 c) {
+    if(c <= 0xffff) {
+        s8.append("\\u");
+    } else {
+        s8.append("\\U00");
+        appendLastHexDigit(s8, c >> 20);
+        appendLastHexDigit(s8, c >> 16);
+    }
+    appendLastHexDigit(s8, c >> 12);
+    appendLastHexDigit(s8, c >> 8);
+    appendLastHexDigit(s8, c >> 4);
+    appendLastHexDigit(s8, c);
+}
+
+void escapeForHTML(const UnicodeString &s, string &s8) {
+    for(int32_t i = 0; i < s.length();) {
+        UChar32 c = s.char32At(i);
+        if(c == '&') {
+            s8.append("&amp;");
+        } else if(c == '<') {
+            s8.append("&lt;");
+        } else if(c == '>') {
+            s8.append("&gt;");
+        } else if(u_hasBinaryProperty(c, UCHAR_DEFAULT_IGNORABLE_CODE_POINT) ||
+                ((U_GET_GC_MASK(c) & (U_GC_MN_MASK|U_GC_MC_MASK|U_GC_CO_MASK|U_GC_CN_MASK)) != 0) ||
+                ((c != 0x20 || i == 0 || i == (s.length() - 1)) && u_isUWhiteSpace(c))) {
+            appendEscaped(s8, c);
+        } else {
+            char c8[U8_MAX_LENGTH];
+            size_t len = 0;
+            U8_APPEND_UNSAFE(c8, len, c);
+            s8.append(c8, len);
+        }
+        i += U16_LENGTH(c);
+    }
+}
+
+const char *const diffStrings[] = {
+    "=", "&lt;1", "&lt;2", "&lt;c", "&lt;3", "&lt;4", "&lt;i"
+};
+
+int getDiffStrength(const CollationKey &prevKey, const CollationKey &key, bool hasCaseLevel) {
+    int32_t prevKeyLength;
+    const uint8_t *prevBytes = prevKey.getByteArray(prevKeyLength);
+    int32_t keyLength;
+    const uint8_t *bytes = key.getByteArray(keyLength);
+    int32_t level = 1;  // primary level
+    for(int32_t i = 0;; ++i) {
+        uint8_t b = prevBytes[i];
+        if(b != bytes[i]) {
+            return level;
+        }
+        if(b == 1) {  // level separator
+            ++level;
+            if(level == 3 && !hasCaseLevel) {
+                ++level;  // skip case level which is off
+            }
+        } else if(b == 0) {  // sort key terminator
+            return 0;  // equal
+        }
+    }
 }
 
 struct LessThan {
@@ -269,20 +350,86 @@ main(int argc, char* argv[]) {
     std::unique_ptr<char[]> content;
     KeysToLimits data;
     readFormData(content, data);
-    puts("Content-type:text/plain; charset=UTF-8\n");
+    puts("Content-type:text/html; charset=UTF-8\n");
     std::unique_ptr<Collator> coll(createCollator(data));
 
     UnicodeString input;
     std::vector<Line> lines;
-    splitAndEscapeLines(readUnicodeString(data, "input", input), lines);
+    splitAndUnescapeLines(readUnicodeString(data, "input", input), lines);
     LessThan lessThan(*coll);
     std::sort(lines.begin(), lines.end(), lessThan);
 
+    puts("<!DOCTYPE html><html><meta charset='utf-8'>");
+    puts("<head><style type='text/css'>");
+    puts(".a{}");
+    puts(".b{background-color:Bisque}");
+    puts("</style></head><body>");
+
+    bool inputIsSorted = true;
+    int nr = 1;
     for(const Line &line : lines) {
-        // TODO: unescape invisible, unassigned, HTML syntax, ...
-        string s8;
-        printf("[%d] %s\n", line.nr, line.str.toUTF8String(s8).c_str());
+        if(line.nr != nr) {
+            inputIsSorted = false;
+            break;
+        }
+        ++nr;
+    }
+    if(inputIsSorted) {
+        puts("<p><b>The input is already in sorted order.</b></p>");
     }
 
+    bool showDiffStrengths = readBoolean(data, "ds");
+    bool showLineNumbers = readBoolean(data, "nr");
+    bool showSortKeys = readBoolean(data, "sk");
+    bool showCEs = readBoolean(data, "ce");
+
+    UErrorCode errorCode = U_ZERO_ERROR;
+    bool hasCaseLevel = coll->getAttribute(UCOL_CASE_LEVEL, errorCode) == UCOL_ON;
+
+    CollationKey sk0, sk1;
+    CollationKey *prevSK = &sk0, *sk = &sk1;
+    UnicodeString empty;
+    const UnicodeString *prevStr = &empty;
+    coll->getCollationKey(empty, *prevSK, errorCode);
+
+    int i = 0;
+    for(const Line &line : lines) {
+        printf("<span class='%c'>", (char)('a' + (i & 1)));
+        coll->getCollationKey(line.str, *sk, errorCode);
+        // TODO: show when coll->compare() != prevSK->compareTo(*sk)
+        if(showDiffStrengths) {
+            int diffStrength = getDiffStrength(*prevSK, *sk, hasCaseLevel);
+            printf("%s ", diffStrings[diffStrength]);
+        }
+        if(showLineNumbers) {
+            printf("[%d] ", line.nr);
+        }
+        string s8;
+        escapeForHTML(line.str, s8);
+        printf("%s", s8.c_str());
+        // TODO: get & show sortkeys; optionally show diff strength
+        // TODO: get & show CEs
+        if(showSortKeys) {
+            // TODO
+        }
+        if(showCEs) {
+            // TODO
+        }
+        puts("</span><br>");
+        prevStr = &line.str;
+        if(sk == &sk0) {
+            prevSK = &sk0;
+            sk = &sk1;
+        } else {
+            prevSK = &sk1;
+            sk = &sk0;
+        }
+        ++i;
+    }
+
+    if(U_FAILURE(errorCode)) {
+        printf("<p><b>%s</b></p>\n", u_errorName(errorCode));
+    }
+    puts("</body></html>");
     return 0;
 }
