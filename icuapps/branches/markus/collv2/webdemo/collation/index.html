@@ -140,10 +140,14 @@
 <option value="zh@collation=unihan">zh-u-co-unihan:   Chinese (Radical-Stroke Sort Order)</option>
 <option value="zh@collation=zhuyin">zh-u-co-zhuyin:   Chinese (Zhuyin Sort Order)</option>
 <!-- end output from webdemo/collation/available --></select><br>
+<!-- TODO: Maybe collapsible/growable rules textarea? -->
 Append rules: (For examples see the
 <a href="http://unicode.org/repos/cldr/trunk/common/collation/">CLDR tailoring data</a>,
 use "View Source" for .xml)<br>
 <textarea name="rules" rows="3" cols="60"></textarea><br>
+<b>Settings</b> (see LDML <a href="http://www.unicode.org/reports/tr35/tr35-collation.html#Collation_Settings">Table</a> /
+<a href="http://www.unicode.org/reports/tr35/tr35-collation.html#Common_Settings">Common combinations</a>)<br>
+<!-- TODO: Maybe make the settings collapsible? -->
 <!-- TODO: convenience buttons that set "ignore accents" and other common combinations,
 see http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Common_Settings -->
 <table class="settings">
@@ -193,23 +197,44 @@ see http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Common_Se
 <input type="checkbox" name="sk" value="1">sort keys
 <input type="checkbox" name="ce" value="1">raw collation elements
 <hr>
+<!-- TODO: Maybe buttons to make the following sections taller, and the input wider? -->
 <div id="inputsection">
-<h3>Input</h3>
+<p><b>Input</b></p>
 <!-- TODO: use full width of the #inputsection -->
 <textarea name="input" rows="32" cols="20">
+ｶ
+ヵ
 abc
+ab\uFFFEc
 ab©
+𝒶bc
+𝕒bc
+ガ
+が
 abç
 äbc
+カ
+か
 File-3
 file-12
 filé-110
 </textarea>
+<p>Escape syntax: \uHHHH or \U00HHHHHH.
+(See <a href="http://www.icu-project.org/apiref/icu4c/classicu_1_1UnicodeString.html">UnicodeString</a>::unescape() documentation.)</p>
 </div>
+<!-- TODO: Add a little margin between the inputsection and outputsection. -->
 <div id="outputsection">
-<h3>Output</h3>
+<p><b>Output</b> (<a href="#legend">Legend</a>)</p>
 <!-- TODO: match alignment and height of the #inputsection -->
 <iframe id="output" width="100%" height="500em"></iframe>
+<p><a name="legend" href="#legend">Legend</a></p>
+<p>Difference strengths: = equal &lt;1 primary &lt;2 secondary
+&lt;c case level &lt;3 tertiary &lt;4 quaternary &lt;i identical level</p>
+<p>Sort keys: _ = 02 merge separator   , = 01 level separator   . = 00 terminator</p>
+<p>CEs (Collation Elements): [] for completely ignorable or
+[primary,secondary,case+tertiary,optional quaternary]<br>
+case: _ = uncased/lowercase   m = mixed case   u = uppercase<br>
+  q1/q2/q3 = quaternary weight</p>
 </div>
 </form>
 </body>

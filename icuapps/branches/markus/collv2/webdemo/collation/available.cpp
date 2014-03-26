@@ -62,7 +62,7 @@ struct {
     { "numeric", UCOL_NUMERIC_COLLATION, UCOL_OFF }
 };
 
-const char *const collAttrNames[UCOL_ATTRIBUTE_VALUE_COUNT] = {
+const char *const collValueNames[UCOL_ATTRIBUTE_VALUE_COUNT] = {
     "primary",
     "secondary",
     "tertiary",
@@ -181,7 +181,7 @@ main(int argc, char* argv[]) {
             errorCode.assertSuccess();
             if(value != collAttr.defaultValue) {
                 appendAttribute(UnicodeString(collAttr.name, -1, US_INV),
-                                UnicodeString(collAttrNames[value], -1, US_INV),
+                                UnicodeString(collValueNames[value], -1, US_INV),
                                 attributes);
             }
         }
