@@ -352,12 +352,14 @@ void appendSortKey(string &s8, const uint8_t *p, int32_t length) {
             s8.push_back('.');
         } else if(b == 1) {  // level separator
             s8.push_back(',');
-        } else if(b == 2) {  // merge separator
-            s8.push_back('_');
         } else {
             appendLastHexDigit(s8, b >> 4);
             appendLastHexDigit(s8, b);
         }
+        // Note: 02 is the merge separator if it is the first byte of a weight,
+        // but 02 is a normal weight byte value elsewhere.
+        // Do not print a special symbol for 02 because we cannot distinguish
+        // between these functions.
     }
 }
 
