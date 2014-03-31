@@ -4,6 +4,10 @@
 <style type="text/css">
 .settings { font-size:67% }
 .default { text-decoration:underline }
+th { text-align:right }
+#intro { float:left }
+#settings { float:left }
+#sortaction { clear:both }
 #inputsection {
   float:left;
   width:33%
@@ -15,7 +19,12 @@
 </style>
 </head>
 <body>
-<h1>ICU Collation Demo</h1>
+<div id="intro">
+<h1><a href="http://site.icu-project.org/">ICU</a> Collation Demo</h1>
+<p><a href="http://userguide.icu-project.org/collation/customization">User Guide</a> —
+<a href="http://www.unicode.org/reports/tr35/tr35-collation.html">LDML Collation</a> —
+<a href="http://demo.icu-project.org/icu-bin/icudemos">ICU4C Demos</a> —
+<a href="http://icu-project.org/icu4jdemos.html">ICU4J Demos</a></p>
 <form action="/cgi-bin/collation/dosort.sh" method="post" target="output">
 <select name="co"><!-- begin output from webdemo/collation/available -->
 <option value="">und (type=standard):   Root (Standard Sort Order)</option>
@@ -145,6 +154,8 @@ Append rules: (For examples see the
 <a href="http://unicode.org/repos/cldr/trunk/common/collation/">CLDR tailoring data</a>,
 use "View Source" for .xml)<br>
 <textarea name="rules" rows="3" cols="60"></textarea><br>
+</div><!-- intro -->
+<div id="settings">
 <b>Settings</b> (see LDML <a href="http://www.unicode.org/reports/tr35/tr35-collation.html#Collation_Settings">Table</a> /
 <a href="http://www.unicode.org/reports/tr35/tr35-collation.html#Common_Settings">Common combinations</a>)<br>
 <!-- TODO: Maybe make the settings collapsible? -->
@@ -154,27 +165,27 @@ see http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Common_Se
 <tr><th>normalization:</th><td>
 <input type="radio" name="kk" value="?" checked>default
 <input type="radio" name="kk" value="P"><span class="default">off</span>
-<input type="radio" name="kk" value="Q">on</td>
-<th>numeric:</th><td>
+<input type="radio" name="kk" value="Q">on</td></tr>
+<tr><th>numeric:</th><td>
 <input type="radio" name="kn" value="?" checked>default
 <input type="radio" name="kn" value="P"><span class="default">off</span>
 <input type="radio" name="kn" value="Q">on</td></tr>
-<tr><th>strength:</th><td colspan="3">
+<tr><th>strength:</th><td>
 <input type="radio" name="ks" value="?" checked>default
 <input type="radio" name="ks" value="@">primary
-<input type="radio" name="ks" value="A">secondary
-<input type="radio" name="ks" value="B"><span class="default">tertiary</span>
+<input type="radio" name="ks" value="A">secondary<br>
+        <input type="radio" name="ks" value="B"><span class="default">tertiary</span>
 <input type="radio" name="ks" value="C">quaternary
 <input type="radio" name="ks" value="O">identical</td></tr>
-<tr><th>backwards<br>secondary:</th><td colspan="3">
+<tr><th>backwards<br>secondary:</th><td>
 <input type="radio" name="kb" value="?" checked>default
 <input type="radio" name="kb" value="P"><span class="default">off</span>
 <input type="radio" name="kb" value="Q">on</td></tr>
 <tr><th>case level:</th><td>
 <input type="radio" name="kc" value="?" checked>default
 <input type="radio" name="kc" value="P"><span class="default">off</span>
-<input type="radio" name="kc" value="Q">on</td>
-<th>case first:</th><td>
+<input type="radio" name="kc" value="Q">on</td></tr>
+<tr><th>case first:</th><td>
 <input type="radio" name="kf" value="?" checked>default
 <input type="radio" name="kf" value="P"><span class="default">off</span>
 <input type="radio" name="kf" value="X">lower
@@ -182,8 +193,8 @@ see http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Common_Se
 <tr><th>alternate:</th><td>
 <input type="radio" name="ka" value="?" checked>default
 <input type="radio" name="ka" value="U"><span class="default">non-ignorable</span>
-<input type="radio" name="ka" value="T">shifted</td>
-<th>max variable:</th><td>
+<input type="radio" name="ka" value="T">shifted</td></tr>
+<tr><th>max variable:</th><td>
 <input type="radio" name="kv" value="?" checked>default
 <input type="radio" name="kv" value="@">space
 <input type="radio" name="kv" value="A"><span class="default">punct</span>
@@ -191,12 +202,14 @@ see http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Common_Se
 <input type="radio" name="kv" value="C">currency</td></tr>
 </table>
 <!-- TODO: kr=reorder textarea -->
+</div><!-- settings -->
+<div id="sortaction">
 <input type="submit" value="   sort   "> &amp; show
 <input type="checkbox" name="ds" value="1" checked>diff strengths
 <input type="checkbox" name="nr" value="1">input line numbers
 <input type="checkbox" name="sk" value="1">sort keys
 <input type="checkbox" name="ce" value="1">raw collation elements
-<hr>
+</div><!-- sortaction -->
 <!-- TODO: Maybe buttons to make the following sections taller, and the input wider? -->
 <div id="inputsection">
 <p><b>Input</b></p>
@@ -215,13 +228,15 @@ abç
 äbc
 カ
 か
+Abc
+abC
 File-3
 file-12
 filé-110
 </textarea>
 <p>Escape syntax: \uHHHH or \U00HHHHHH.
 (See <a href="http://www.icu-project.org/apiref/icu4c/classicu_1_1UnicodeString.html">UnicodeString</a>::unescape() documentation.)</p>
-</div>
+</div><!-- inputsection -->
 <!-- TODO: Add a little margin between the inputsection and outputsection. -->
 <div id="outputsection">
 <p><b>Output</b> (<a href="#legend">Legend</a>)</p>
@@ -235,7 +250,7 @@ filé-110
 [primary,secondary,case+tertiary,optional quaternary]<br>
 case: _ = uncased/lowercase   m = mixed case   u = uppercase<br>
   q1/q2/q3 = quaternary weight</p>
-</div>
+</div><!-- outputsection -->
 </form>
 </body>
 </html>
