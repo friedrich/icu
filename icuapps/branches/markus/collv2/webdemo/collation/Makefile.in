@@ -1,11 +1,18 @@
 ## ******************************************************************************
 ## *
-## *   Copyright (C) 1999-2006, International Business Machines
+## *   Copyright (C) 1999-2014, International Business Machines
 ## *   Corporation and others.  All Rights Reserved.
 ## *
 ## *******************************************************************************
-## Makefile.in for ICU - scompare
-## Andy Heninger, Oct 17, 2003
+## Originally by Andy Heninger, Oct 17, 2003
+## Makefile.in for ICU - collation webdemo
+##
+## To change the path that collation.html uses to call the sortcgi, add a line like:
+##
+##    CGIPATH=/icu-bin/sortcgi
+##
+## .. to the new file local.mk
+##
 
 srcdir=@srcdir@
 top_srcdir=@top_srcdir@
@@ -13,11 +20,17 @@ top_srcdir=@top_srcdir@
 top_builddir = ../..
 subdir = webdemo/collation
 
+SORTCGI=sortcgi
+AVAILABLE=available
+CONTEXTPATH=/collation/
+
+CGIPATH=$(CONTEXTPATH)$(SORTCGI)
+
 # srcdir must be set before this is included
 include $(top_builddir)/icuapps.mk
 
 ## Extra files to remove for 'make clean'
-CLEANFILES = *~
+CLEANFILES = *~ collation.html
 
 ## Target information
 TARGET = available sortcgi
@@ -47,7 +60,10 @@ distclean : distclean-local
 dist: dist-local
 check: check-local
 
-all-local: $(TARGET)
+all-local: $(TARGET) collation.html
+
+collation.html: index.html
+	sed -e 's%\(<form action="\)[^"]*\(.*\)%\1'"$(CGIPATH)"'\2%' < $^ > $@
 
 install-local: all-local install-target
 
@@ -56,13 +72,13 @@ install-target: all-local
 	$(MKINSTALLDIRS) $(BINDIR) $(BINDIR)/data
 	$(INSTALL) sortcgi$(EXEEXT) $(BINDIR)/sortcgi$(EXEEXT)
 	$(INSTALL) available$(EXEEXT) $(BINDIR)/available$(EXEEXT)
-	$(INSTALL) index.html $(BINDIR)/data/collation.html
+	$(INSTALL) collation.html $(BINDIR)/data/collation.html
 
 dist-local:
 
 clean-local:
 	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJECTS) $(SORTCGI)$(EXEEXT) $(AVAILABLE)$(EXEEXT)
 
 distclean-local: clean-local
 	rm -f Makefile $(DEPS)
