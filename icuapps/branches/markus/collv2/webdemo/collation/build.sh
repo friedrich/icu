@@ -14,9 +14,9 @@ LINKFLAGS="-L$PREFIX/lib -licutu -licui18n -licuuc -licudata -lpthread -ldl -lm"
 $CXX $CPPFLAGS $CXXFLAGS $LINKFLAGS $ICUAPPS_SRC/webdemo/collation/available.cpp -o $PREFIX/bin/available
 LD_LIBRARY_PATH=$PREFIX/lib $PREFIX/bin/available > $ICUAPPS_SRC/../available-collators.txt
 
-$CXX $CPPFLAGS $CXXFLAGS $LINKFLAGS $ICUAPPS_SRC/webdemo/collation/sort.cpp -o $PREFIX/bin/sort
-cp $PREFIX/bin/sort $CGI_BIN/collation
-chmod a+rx $CGI_BIN/collation/sort
+$CXX $CPPFLAGS $CXXFLAGS $LINKFLAGS $ICUAPPS_SRC/webdemo/collation/sortcgi.cpp -o $PREFIX/bin/sortcgi
+cp $PREFIX/bin/sortcgi $CGI_BIN/collation
+chmod a+rx $CGI_BIN/collation/sortcgi
 
 cp webdemo/collation/index.html /var/www/collation.html
 chmod a+r /var/www/collation.html

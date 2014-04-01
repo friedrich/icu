@@ -3,7 +3,7 @@
 * Copyright (C) 2014, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
-* icuapps/webdemo/collation/sort.cpp
+* icuapps/webdemo/collation/sortcgi.cpp
 *
 * created on: 2014mar15
 * created by: Markus W. Scherer
@@ -21,6 +21,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "unicode/utypes.h"
 #include "unicode/coll.h"
@@ -34,7 +35,7 @@
 #include "unicode/ustring.h"
 #include "unicode/utf16.h"
 #include "unicode/utf8.h"
-#include "uvectr64.h"  // for RuleBasedCollator::internalGetCEs()
+#include "uvectr64.h"  // ICU-internal header for RuleBasedCollator::internalGetCEs().
 
 #define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 

@@ -18,13 +18,13 @@
 
 #include "unicode/utypes.h"
 #include "unicode/coll.h"
+#include "unicode/errorcode.h"
 #include "unicode/locdspnm.h"
 #include "unicode/locid.h"
+#include "unicode/strenum.h"
 #include "unicode/ucol.h"
 #include "unicode/uloc.h"
 #include "unicode/ures.h"
-#include "toolutil.h"
-#include "uresimp.h"
 
 #define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
@@ -36,6 +36,33 @@ using icu::LocalUResourceBundlePointer;
 using icu::UnicodeString;
 
 namespace {
+
+/**
+ * Private ErrorCode subclass.
+ * The destructor calls handleFailure() which calls exit(errorCode) when isFailure().
+ */
+class MyErrorCode : public icu::ErrorCode {
+public:
+    /**
+     * @param loc A short string describing where the MyErrorCode is used.
+     */
+    MyErrorCode(const char *loc) : location(loc) {}
+    virtual ~MyErrorCode();
+protected:
+    virtual void handleFailure() const;
+private:
+    const char *location;
+};
+
+MyErrorCode::~MyErrorCode() {
+    // Safe because our handleFailure() does not throw exceptions.
+    if(isFailure()) { handleFailure(); }
+}
+
+void MyErrorCode::handleFailure() const {
+    fprintf(stderr, "error at %s: %s\n", location, errorName());
+    exit(errorCode);
+}
 
 void appendAttribute(const UnicodeString &attr, const UnicodeString &value, UnicodeString &dest) {
     if(!dest.isEmpty()) {
@@ -97,8 +124,10 @@ extern "C" int
 main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
-    icu::IcuToolErrorCode errorCode("webdemo/collation/available");
+    MyErrorCode errorCode("webdemo/collation/available");
     std::map<string, Collator *> locToColl;
+    std::map<string, string> locToDefaultType;
+    locToDefaultType[string()] = "standard";
     const Locale &root = Locale::getRoot();
     locToColl[string(" ") + root.getName()] = Collator::createInstance(root, errorCode);
     errorCode.assertSuccess();
@@ -111,8 +140,8 @@ main(int argc, char* argv[]) {
         std::unique_ptr<icu::StringEnumeration> types(
                 Collator::getKeywordValuesForLocale("collation", locale, FALSE, errorCode));
         errorCode.assertSuccess();
-        const char *type = NULL;  // default type
-        do {
+        const char *type = NULL;  // Ask ICU for the default collation type.
+        for(;;) {
             Locale localeWithType(locale);
             if(type != NULL) {
                 localeWithType.setKeywordValue("collation", type, errorCode);
@@ -126,11 +155,17 @@ main(int argc, char* argv[]) {
                 // Make root locales sort before others.
                 actualName.insert(0, " ");
             }
-            if(locToColl.find(actualName) != locToColl.end()) {
-                continue;
+            if(locToColl.find(actualName) == locToColl.end()) {
+                locToColl[actualName] = coll.release();
             }
-            locToColl[actualName] = coll.release();
-        } while((type = types->next(NULL, errorCode)) != NULL);
+            const char *nextType = types->next(NULL, errorCode);
+            if(nextType == NULL) { break; }
+            if(type == NULL) {
+                // There is always at least the default type which is the first list item.
+                locToDefaultType[localeID] = nextType;
+            }
+            type = nextType;
+        }
         isRoot = false;
     } while((localeID = locales->next(NULL, errorCode)) != NULL);
 
@@ -159,19 +194,10 @@ main(int argc, char* argv[]) {
         int32_t typeLength = locale.getKeywordValue("collation", type, LENGTHOF(type), errorCode);
         errorCode.assertSuccess();
         if(typeLength == 0) {
-            LocalUResourceBundlePointer bundle(
-                ures_open(U_ICUDATA_NAME U_TREE_SEPARATOR_STRING "coll", locID, errorCode));
-            LocalUResourceBundlePointer collations(
-                ures_getByKey(bundle.getAlias(), "collations", NULL, errorCode));
-            LocalUResourceBundlePointer def(
-                ures_getByKeyWithFallback(collations.getAlias(), "default", NULL, errorCode));
-            int32_t length;
-            const UChar *s = ures_getString(def.getAlias(), &length, errorCode);
-            errorCode.assertSuccess();
-            appendAttribute((const UChar *)u"type", UnicodeString(TRUE, s, length), attributes);
-            assert(length < LENGTHOF(type));
-            u_UCharsToChars(s, type, length + 1);
-            locale.setKeywordValue("collation", type, errorCode);
+            string &defaultType = locToDefaultType[locID];
+            UnicodeString uType(defaultType.data(), defaultType.length(), US_INV);
+            appendAttribute((const UChar *)u"type", uType, attributes);
+            locale.setKeywordValue("collation", defaultType.c_str(), errorCode);
             errorCode.assertSuccess();
         }
 
