@@ -1,7 +1,12 @@
 root {
   welcome { "Hello! We have {territoryCount, number} territories." }
+
+ // Three versions. Uncomment as needed.
+
+  // #1 this is the first cut - no plurals.
   //info { "The territory of {territory} has {population} persons." }
-  //info { "The territory of {territory} has {population, plural, =0{no people} =1{one person} other{# persons}}."
+
+  // #2 this is the second try - split out each pluralization by sentence.
   info { "{population, plural, =0{{territory} has a population of zero.} =1{Only one person lives on {territory}!} other{The territory of {territory} has # persons in it.}}"
  }
 }

@@ -1,6 +1,7 @@
 #include "../iucsamples.h"
 #include "../popdata/popdata_inc.h"
 #include <list>
+#include <algorithm>
 
 /**
  * A comparison object for std::sort which compares two TerritoryEntries
