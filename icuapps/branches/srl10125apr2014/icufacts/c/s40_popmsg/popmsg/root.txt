@@ -1,5 +1,5 @@
 root {
-  welcome { "Hello! We have {territoryCount, number} territories." }
+  welcome { "My language is {myLanguage} and today is {today, date}. We have {territoryCount, number} territories." }
 
  // Three versions. Uncomment as needed.
 
@@ -7,7 +7,7 @@ root {
   //info { "The territory of {territory} has {population} persons." }
 
   // #2 this is the second try - split out each pluralization by sentence.
-  info { "{population, plural, =0{{territory} has a population of zero.} =1{Only one person lives on {territory}!} other{The territory of {territory} has # persons in it.}}"
- }
+  info { "{population, plural, =0{{territory} has a population of zero.} one{Only one person lives on {territory}!} other{The territory of {territory} has # persons.}}"
+     }
 }
 
