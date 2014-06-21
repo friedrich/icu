@@ -1,3 +1,52 @@
+/*
+**********************************************************************
+*   Copyright (C) 2014, International Business Machines
+*   Corporation and others.  All Rights Reserved.
+**********************************************************************
+*
+* Created 2014-06-20 by Steven R. Loomis
+*/
+
+/*
+WHAT IS THIS?
+
+Here's the problem: It's difficult to reconfigure ICU from the command
+line without using the full makefiles. You can do a lot, but not
+everything.
+
+Consider:
+
+ $ icupkg -r 'ja*' icudt53l.dat
+
+Great, you've now removed the (main) Japanese data. But something's
+still wrong-- res_index (and thus, getAvailable* functions) still
+claim the locale is present.
+
+You are reading the source to a tool (using only public API C code)
+that can solve this problem. Use as follows:
+
+ $ iculslocs -i . -N icudt53l -b res_index.txt
+
+.. Generates a NEW res_index.txt (by looking at the .dat file, and
+figuring out which locales are actually available. Has commented out
+the ones which are no longer available:
+
+          ...
+          it_SM {""}
+//        ja {""}
+//        ja_JP {""}
+          jgo {""}
+          ...
+
+Then you can build and in-place patch it with existing ICU tools:
+ $ genrb res_index.txt
+ $ icupkg -a res_index.res icudt53l.dat
+
+.. Now you have a patched icudt539.dat that not only doesn't have
+Japanese, it doesn't *claim* to have Japanese.
+
+*/
+
 #include <unicode/ustdio.h>
 #include <unicode/ures.h>
 #include <unicode/udata.h>
