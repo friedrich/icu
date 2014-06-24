@@ -65,9 +65,11 @@ args = parser.parse_args()
 if args.verbose>0:
     print "Options: "+str(args)
 
-if(args.verbose>9):
-    print "TODO: delete and recreate tmpdir %s" % (args.tmpdir)
-
+if not (os.path.isdir(args.tmpdir)):
+    os.mkdir(args.tmpdir)
+else:
+    print "Please delete tmpdir %s before beginning." % args.tmpdir
+    sys.exit(1)
 
 if args.endian not in ("big","little","host"):
     print "Unknown endianness: %s" % args.endian
@@ -147,20 +149,34 @@ items = fi.readlines()
 items = [items[i].strip() for i in range(len(items))]
 fi.close()
 
+itemset = set(items)
+
 if (args.verbose>1):
     print "input file: %d items" % (len(items))
 
 # list of all trees
 trees = {}
 RES_INDX = "res_index.res"
-
-
+remove = None
+# remove - always remove these
 if config.has_key("remove"):
     remove = set(config["remove"])
 else:
     remove = set()
 
+# keep - always keep these
+if config.has_key("keep"):
+    keep = set(config["keep"])
+else:
+    keep = set()
+
 def queueForRemoval(tree):
+    global remove
+    if not config.has_key("trees"):
+        # no config
+        return
+    if not config["trees"].has_key(tree):
+        return
     mytree = trees[tree]
     if(args.verbose>0):
         print "* %s: %d items" % (tree, len(mytree["locs"]))
@@ -184,6 +200,12 @@ def queueForRemoval(tree):
         only = None
         if myconfig.has_key("only"):
             only = set(myconfig["only"])
+            if (len(only)==0) and (mytree["treeprefix"] != ""):
+                thePool = "%spool.res" % (mytree["treeprefix"])
+                if (False and thePool in itemset):
+                    if(args.verbose>0):
+                        print "Removing %s because tree %s is empty." % (thePool, tree)
+                    remove.add(thePool)
         else:
             print "tree %s - no ONLY"
         for l in range(len(mytree["locs"])):
@@ -196,18 +218,23 @@ def queueForRemoval(tree):
                 remove.add(toRemove)
 
 def addTreeByType(tree, mytree):
+    if(args.verbose>1):
+        print "(considering %s): %s" % (tree, mytree)
     trees[tree] = mytree
     mytree["locs"]=[]
     for i in range(len(items)):
         item = items[i]
         if item.startswith(mytree["treeprefix"]) and item.endswith(mytree["extension"]):
-            mytree["locs"].append(item[0:-4])
+            mytree["locs"].append(item[len(mytree["treeprefix"]):-4])
     # now, process
     queueForRemoval(tree)
 
 addTreeByType("converters",{"treeprefix":"", "extension":".cnv"})
 addTreeByType("stringprep",{"treeprefix":"", "extension":".spp"})
 addTreeByType("translit",{"treeprefix":"translit/", "extension":".res"})
+addTreeByType("brkfiles",{"treeprefix":"brkitr/", "extension":".brk"})
+addTreeByType("brkdict",{"treeprefix":"brkitr/", "extension":"dict"})
+addTreeByType("confusables",{"treeprefix":"", "extension":".cfu"})
 
 for i in range(len(items)):
     item = items[i]
@@ -220,7 +247,7 @@ for i in range(len(items)):
             tree = treeprefix[0:-1]
         if(args.verbose>6):
             print "procesing %s" % (tree)
-        trees[tree] = { "extension": ".res", "treeprefix": treeprefix }
+        trees[tree] = { "extension": ".res", "treeprefix": treeprefix, "hasIndex": True }
         # read in the resource list for the tree
         treelistfile = os.path.join(args.tmpdir,"%s.lst" % tree)
         runcmd("iculslocs", "-i %s -N %s -T %s -l > %s" % (outfile, dataname, tree, treelistfile))
@@ -234,6 +261,9 @@ for i in range(len(items)):
             queueForRemoval(tree)
 
 def removeList(count=0):
+    # don't allow "keep" items to creep in here.
+    global remove
+    remove = remove - keep
     if(count > 10):
         print "Giving up - %dth attempt at removal." % count
         sys.exit(1)
@@ -276,3 +306,19 @@ def removeList(count=0):
 
 # fire it up
 removeList(1)
+
+# now, fixup res_index, one at a time
+for tree in trees:
+    # skip trees that don't have res_index
+    if not trees[tree].has_key("hasIndex"):
+        continue
+    treebunddir = args.tmpdir
+    if(trees[tree]["treeprefix"]):
+        treebunddir = os.path.join(treebunddir, trees[tree]["treeprefix"])
+    if not (os.path.isdir(treebunddir)):
+        os.mkdir(treebunddir)
+    treebundres = os.path.join(treebunddir,RES_INDX)
+    treebundtxt = "%s.txt" % (treebundres[0:-4])
+    runcmd("iculslocs", "-i %s -N %s -T %s -b %s" % (outfile, dataname, tree, treebundtxt))
+    runcmd("genrb","-d %s %s" % (treebunddir, treebundtxt))
+    runcmd("icupkg","-s %s -a %s%s %s" % (args.tmpdir, trees[tree]["treeprefix"], RES_INDX, outfile))

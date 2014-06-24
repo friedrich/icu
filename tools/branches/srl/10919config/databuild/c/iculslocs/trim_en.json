@@ -17,14 +17,19 @@
         "zone":   "en_only",
         "converters":  "none",
         "stringprep": "none",
-        "translit": "none"
+        "translit": "none",
+        "brkfiles": "none",
+        "brkdict": "none",
+        "confusables": "none"
     },
     "remove" : [
-        "brkitr/*",
         "cnvalias.icu",
         "postalCodeData.res",
         "uts46.nrm",
-        "confusables.cfu",
-        "genderList.res"
+        "genderList.res",
+        "brkitr/root.res"
+    ],
+    "keep" : [
+        "pool.res"
     ]
 }
