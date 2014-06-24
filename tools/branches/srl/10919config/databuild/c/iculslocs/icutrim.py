@@ -21,7 +21,7 @@ import re
 
 endian=sys.byteorder
 
-parser = argparse.ArgumentParser(description="ICU Datafile repackager",
+parser = argparse.ArgumentParser(description="ICU Datafile repackager.  Example of use:    \"mkdir tmp ;  python icutrim.py -D ~/Downloads/icudt53l.dat -T tmp -F trim_en.json -O icudt53l.dat\"       you will then find a smaller icudt53l.dat in 'tmp'. ",
                                  epilog="ICU tool, http://icu-project.org - master copy at http://source.icu-project.org/repos/icu/tools/trunk/scripts/icutrim.py")
 
 parser.add_argument("-P","--tool-path",
