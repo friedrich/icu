@@ -27,7 +27,8 @@
         "postalCodeData.res",
         "uts46.nrm",
         "genderList.res",
-        "brkitr/root.res"
+        "brkitr/root.res",
+        "unames.icu"
     ],
     "keep" : [
         "pool.res"

@@ -202,7 +202,7 @@ def queueForRemoval(tree):
             only = set(myconfig["only"])
             if (len(only)==0) and (mytree["treeprefix"] != ""):
                 thePool = "%spool.res" % (mytree["treeprefix"])
-                if (False and thePool in itemset):
+                if (thePool in itemset):
                     if(args.verbose>0):
                         print "Removing %s because tree %s is empty." % (thePool, tree)
                     remove.add(thePool)
