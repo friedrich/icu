@@ -10,6 +10,7 @@
 #  Use "-h" to get help options.
 
 import sys
+import shutil
 # for utf-8
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -47,6 +48,12 @@ parser.add_argument("-T","--tmp-dir",
                     help="working directory.",
                     required=True)
 
+parser.add_argument("--delete-tmp",
+                    action="count",
+                    dest="deltmpdir",
+                    help="delete working directory.",
+                    default=0)
+
 parser.add_argument("-O","--outfile",
                     action="store",
                     dest="outfile",
@@ -64,6 +71,11 @@ args = parser.parse_args()
 
 if args.verbose>0:
     print "Options: "+str(args)
+
+if (os.path.isdir(args.tmpdir) and args.deltmpdir):
+  if args.verbose>1:
+    print "Deleting tmp dir %s.." % (args.tmpdir)
+  shutil.rmtree(args.tmpdir)
 
 if not (os.path.isdir(args.tmpdir)):
     os.mkdir(args.tmpdir)
@@ -320,5 +332,5 @@ for tree in trees:
     treebundres = os.path.join(treebunddir,RES_INDX)
     treebundtxt = "%s.txt" % (treebundres[0:-4])
     runcmd("iculslocs", "-i %s -N %s -T %s -b %s" % (outfile, dataname, tree, treebundtxt))
-    runcmd("genrb","-d %s %s" % (treebunddir, treebundtxt))
+    runcmd("genrb","-d %s -s %s res_index.txt" % (treebunddir, treebunddir))
     runcmd("icupkg","-s %s -a %s%s %s" % (args.tmpdir, trees[tree]["treeprefix"], RES_INDX, outfile))
