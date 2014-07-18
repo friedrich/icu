@@ -1,0 +1,39 @@
+<%// Copyright 2011 IBM Corporation and Others. All rights reserved. %>
+<% LXUSER %>
+<html>
+<head>
+    <title>Locexp2 &mdash; <%=%S lxu->pageTitle.getTerminatedBuffer() %></title>
+
+    <style type="text/css">
+         div.header { background-color: #ddf; }
+
+        table.data {
+            border-collapse: collapse;
+            border: 1px solid purple;
+        }
+
+        table.data thead th {
+        background-color: #ddd;
+        }
+        table.data thead th {
+        background-color: #ddd;
+        }
+        table.data tbody th {
+        background-color: #ddf;
+        }
+        table.data tbody td {
+        background-color: #bbd;
+        }
+    </style>
+</head>
+<body>
+    <div class='header'>
+        <h1><a href="<%=%s SCRIPT_NAME %>">Locexp2</a>
+                &mdash; <b><%=%S lxu->pageTitle.getTerminatedBuffer() %></b></h1>
+    </div>
+
+
+    <!-- end lxheader -->
+<%1
+setPattern("xyzzy",status); // no direct access
+%>
