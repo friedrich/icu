@@ -185,7 +185,7 @@ bld()
     /usr/bin/time -o ${BUILD_DIR}/times/${NAME}.il      make -k install-local ${1}  DEPS=          || fail install-local
     stats tests
     /usr/bin/time -o ${BUILD_DIR}/times/${NAME}.tst     make -k ${JOPT} tests ${1}  DEPS= || fail tests
-    if [ -f ${BUILD_DIR}/test/intltest/intltest ];
+    if [ -f ${BUILD_DIR}/${NAME}/test/intltest/intltest ];
     then
         stats check
         # use parallel check (pcheck)
