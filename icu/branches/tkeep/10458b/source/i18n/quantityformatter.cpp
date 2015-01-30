@@ -21,108 +21,41 @@
 
 U_NAMESPACE_BEGIN
 
-// other must always be first.
-static const char * const gPluralForms[] = {
-        "other", "zero", "one", "two", "few", "many"};
-
-static int32_t getPluralIndex(const char *pluralForm) {
-    int32_t len = UPRV_LENGTHOF(gPluralForms);
-    for (int32_t i = 0; i < len; ++i) {
-        if (uprv_strcmp(pluralForm, gPluralForms[i]) == 0) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-QuantityFormatter::QuantityFormatter() {
-    for (int32_t i = 0; i < UPRV_LENGTHOF(formatters); ++i) {
-        formatters[i] = NULL;
-    }
-}
-
-QuantityFormatter::QuantityFormatter(const QuantityFormatter &other) {
-    for (int32_t i = 0; i < UPRV_LENGTHOF(formatters); ++i) {
-        if (other.formatters[i] == NULL) {
-            formatters[i] = NULL;
-        } else {
-            formatters[i] = new SimplePatternFormatter(*other.formatters[i]);
-        }
-    }
-}
-
-QuantityFormatter &QuantityFormatter::operator=(
-        const QuantityFormatter& other) {
-    if (this == &other) {
-        return *this;
-    }
-    for (int32_t i = 0; i < UPRV_LENGTHOF(formatters); ++i) {
-        delete formatters[i];
-        if (other.formatters[i] == NULL) {
-            formatters[i] = NULL;
-        } else {
-            formatters[i] = new SimplePatternFormatter(*other.formatters[i]);
-        }
-    }
-    return *this;
-}
-
-QuantityFormatter::~QuantityFormatter() {
-    for (int32_t i = 0; i < UPRV_LENGTHOF(formatters); ++i) {
-        delete formatters[i];
-    }
-}
-
 void QuantityFormatter::reset() {
-    for (int32_t i = 0; i < UPRV_LENGTHOF(formatters); ++i) {
-        delete formatters[i];
-        formatters[i] = NULL;
-    }
+    formatters.reset();
+    bValid = FALSE;
 }
 
 UBool QuantityFormatter::add(
         const char *variant,
         const UnicodeString &rawPattern,
         UErrorCode &status) {
+    int32_t pluralIndex = pluralMap_getIndex(variant);
+    SimplePatternFormatter *current = formatters.getMutable(
+            pluralIndex, status);
+    SimplePatternFormatter fmt;
+    fmt.compile(rawPattern, status);
     if (U_FAILURE(status)) {
         return FALSE;
     }
-    int32_t pluralIndex = getPluralIndex(variant);
-    if (pluralIndex == -1) {
+    if (fmt.getPlaceholderCount() > 1) {
         status = U_ILLEGAL_ARGUMENT_ERROR;
         return FALSE;
     }
-    SimplePatternFormatter *newFmt =
-            new SimplePatternFormatter(rawPattern);
-    if (newFmt == NULL) {
-        status = U_MEMORY_ALLOCATION_ERROR;
-        return FALSE;
+    if (pluralIndex == 0) {
+        bValid = TRUE;
     }
-    if (newFmt->getPlaceholderCount() > 1) {
-        delete newFmt;
-        status = U_ILLEGAL_ARGUMENT_ERROR;
-        return FALSE;
-    }
-    delete formatters[pluralIndex];
-    formatters[pluralIndex] = newFmt;
+    *current = fmt;
     return TRUE;
 }
 
 UBool QuantityFormatter::isValid() const {
-    return formatters[0] != NULL;
+    return bValid;
 }
 
 const SimplePatternFormatter *QuantityFormatter::getByVariant(
         const char *variant) const {
-    int32_t pluralIndex = getPluralIndex(variant);
-    if (pluralIndex == -1) {
-        pluralIndex = 0;
-    }
-    const SimplePatternFormatter *pattern = formatters[pluralIndex];
-    if (pattern == NULL) {
-        pattern = formatters[0];
-    }
-    return pattern;
+    return &formatters.get(variant);
 }
 
 UnicodeString &QuantityFormatter::format(
@@ -161,10 +94,6 @@ UnicodeString &QuantityFormatter::format(
         return appendTo;
     }
     const SimplePatternFormatter *pattern = getByVariant(buffer.data());
-    if (pattern == NULL) {
-        status = U_INVALID_STATE_ERROR;
-        return appendTo;
-    }
     UnicodeString formattedNumber;
     FieldPosition fpos(pos.getField());
     fmt.format(quantity, formattedNumber, fpos, status);

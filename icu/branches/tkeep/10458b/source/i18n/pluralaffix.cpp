@@ -12,112 +12,40 @@
 
 U_NAMESPACE_BEGIN
 
-// TODO: Duplicate code in quantityformatter.cpp
-// other must always be first.
-static const char * const gPluralForms[] = {
-        "other", "zero", "one", "two", "few", "many"};
-
-static int32_t getPluralIndex(const char *pluralForm) {
-    int32_t len = UPRV_LENGTHOF(gPluralForms);
-    for (int32_t i = 0; i < len; ++i) {
-        if (uprv_strcmp(pluralForm, gPluralForms[i]) == 0) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-
-PluralAffix::PluralAffix() : otherAffix() {
-    affixes[0] = &otherAffix;
-    for (int32_t i = 1; i < UPRV_LENGTHOF(affixes); ++i) {
-        affixes[i] = NULL;
-    }
-}
-
-PluralAffix::PluralAffix(const PluralAffix &other)
-        : otherAffix(other.otherAffix) {
-    affixes[0] = &otherAffix;
-    for (int32_t i = 1; i < UPRV_LENGTHOF(affixes); ++i) {
-        affixes[i] = other.affixes[i] ? new DigitAffix(*other.affixes[i]) : NULL;
-    }
-}
-
-PluralAffix &
-PluralAffix::operator=(const PluralAffix &other) {
-    if (this == &other) {
-        return *this;
-    }
-    for (int32_t i = 0; i < UPRV_LENGTHOF(affixes); ++i) {
-        if (affixes[i] != NULL && other.affixes[i] != NULL) {
-            *affixes[i] = *other.affixes[i];
-        } else if (affixes[i] != NULL) {
-            delete affixes[i];
-            affixes[i] = NULL;
-        } else if (other.affixes[i] != NULL) {
-            affixes[i] = new DigitAffix(*other.affixes[i]);
-        } else {
-            // do nothing
-        }
-    }
-    return *this;
-}
-
-PluralAffix::~PluralAffix() {
-    for (int32_t i = 1; i < UPRV_LENGTHOF(affixes); ++i) {
-        delete affixes[i];
-    }
-}
-
 UBool
 PluralAffix::setVariant(
         const char *variant, const UnicodeString &value, UErrorCode &status) {
+    DigitAffix *current = affixes.getMutable(variant, status);
     if (U_FAILURE(status)) {
         return FALSE;
     }
-    int32_t pluralIndex = getPluralIndex(variant);
-    if (pluralIndex == -1) {
-        status = U_ILLEGAL_ARGUMENT_ERROR;
-        return FALSE;
-    }
-    if (affixes[pluralIndex] == NULL) {
-        affixes[pluralIndex] = new DigitAffix;
-    }
-    if (affixes[pluralIndex] == NULL) {
-        status = U_MEMORY_ALLOCATION_ERROR;
-        return FALSE;
-    }
-    affixes[pluralIndex]->remove();
-    affixes[pluralIndex]->append(value);
+    current->remove();
+    current->append(value);
     return TRUE;
 }
 
 void
 PluralAffix::remove() {
-    affixes[0]->remove();
-    for (int32_t i = 1; i < UPRV_LENGTHOF(affixes); ++i) {
-        delete affixes[i];
-        affixes[i] = NULL;
-    }
+    affixes.reset();
 }
 
 void
 PluralAffix::appendUChar(
         const UChar value, int32_t fieldId) {
-    for (int32_t i = 0; i < UPRV_LENGTHOF(affixes); ++i) {
-        if (affixes[i] != NULL) {
-            affixes[i]->appendUChar(value, fieldId);
-        }
+    int32_t index = -1;
+    for (DigitAffix *current = affixes.nextMutable(index);
+            current != NULL; current = affixes.nextMutable(index)) {
+        current->appendUChar(value, fieldId);
     }
 }
 
 void
 PluralAffix::append(
         const UnicodeString &value, int32_t fieldId) {
-    for (int32_t i = 0; i < UPRV_LENGTHOF(affixes); ++i) {
-        if (affixes[i] != NULL) {
-            affixes[i]->append(value, fieldId);
-        }
+    int32_t index = -1;
+    for (DigitAffix *current = affixes.nextMutable(index);
+            current != NULL; current = affixes.nextMutable(index)) {
+        current->append(value, fieldId);
     }
 }
 
@@ -127,50 +55,27 @@ PluralAffix::append(
     if (U_FAILURE(status)) {
         return FALSE;
     }
-    for (int i = 1; i < UPRV_LENGTHOF(affixes); ++i) {
-        if (affixes[i] != NULL && rhs.affixes[i] != NULL) {
-            affixes[i]->append(rhs.affixes[i]->toString(), fieldId);
-        } else if (affixes[i] != NULL) {
-            affixes[i]->append(rhs.affixes[0]->toString(), fieldId);
-        } else if (rhs.affixes[i] != NULL) {
-            affixes[i] = new DigitAffix(*affixes[0]);
-            if (affixes[i] == NULL) {
-                status = U_MEMORY_ALLOCATION_ERROR;
-                return FALSE;
-            }
-            affixes[i]->append(rhs.affixes[i]->toString(), fieldId);
-        } else {
-            // Do nothing.
-        }
+    int32_t index = -1;
+    while(rhs.affixes.next(index) != NULL) {
+        affixes.getMutableWithDefault(index, affixes.getOther(), status);
     }
-    // Have to do this at the end so that in the for loop the other form
-    // which is affixes[0] is guaranteed to be what it was before appending
-    // began.
-    affixes[0]->append(rhs.affixes[0]->toString(), fieldId);
+    index = -1;
+    for (DigitAffix *current = affixes.nextMutable(index);
+            current != NULL; current = affixes.nextMutable(index)) {
+        current->append(rhs.affixes.get(index).toString(), fieldId);
+    }
     return TRUE;
 }
 
 const DigitAffix &
 PluralAffix::getByVariant(const char *variant) const {
-    int32_t pluralIndex = getPluralIndex(variant);
-    if (pluralIndex == -1) {
-        pluralIndex = 0;
-    }
-    const DigitAffix *affix = affixes[pluralIndex];
-    if (affix == NULL) {
-        affix = affixes[0];
-    }
-    return *affix;
+    return affixes.get(variant);
 }
 
 UBool
 PluralAffix::hasMultipleVariants() const {
-    for (int32_t i = 1; i < UPRV_LENGTHOF(affixes); ++i) {
-        if (affixes[i] != NULL) {
-            return TRUE;
-        }
-    }
-    return FALSE;
+    int32_t index = 0;
+    return (affixes.next(index) != NULL);
 }
 
 U_NAMESPACE_END

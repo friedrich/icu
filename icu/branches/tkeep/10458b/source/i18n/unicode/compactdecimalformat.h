@@ -26,6 +26,7 @@ struct UHashtable;
 U_NAMESPACE_BEGIN
 
 class PluralRules;
+class CDFUnitsByVariant;
 
 /**
  * The CompactDecimalFormat produces abbreviated numbers, suitable for display in
@@ -312,12 +313,12 @@ public:
 
 private:
 
-    const UHashtable* _unitsByVariant;
+    const CDFUnitsByVariant* _unitsByVariant;
     const double* _divisors;
     PluralRules* _pluralRules;
 
     // Default constructor not implemented.
-    CompactDecimalFormat(const DecimalFormat &, const UHashtable* unitsByVariant, const double* divisors, PluralRules* pluralRules);
+    CompactDecimalFormat(const DecimalFormat &, const CDFUnitsByVariant* unitsByVariant, const double* divisors, PluralRules* pluralRules);
 
     UBool eqHelper(const CompactDecimalFormat& that) const;
 };

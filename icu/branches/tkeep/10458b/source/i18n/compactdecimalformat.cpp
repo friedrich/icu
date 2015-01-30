@@ -25,6 +25,7 @@
 #include "umutex.h"
 #include "unicode/ures.h"
 #include "uresimp.h"
+#include "pluralmap.h"
 
 // Maps locale name to CDFLocaleData struct.
 static UHashtable* gCompactDecimalData = NULL;
@@ -78,6 +79,14 @@ struct CDFUnit : public UMemory {
   }
 };
 
+struct CDFUnitArray : public UMemory {
+  CDFUnit data[MAX_DIGITS];
+};
+
+class CDFUnitsByVariant : public PluralMap<CDFUnitArray> {
+};
+
+
 // CDFLocaleStyleData contains formatting data for a particular locale
 // and style.
 class CDFLocaleStyleData : public UMemory {
@@ -93,7 +102,7 @@ class CDFLocaleStyleData : public UMemory {
   // (e.g zero, one, two, few, many, other).
   // Compute cdfUnits = unitsByVariant[pluralVariant].
   // Prefix and suffix to use at cdfUnits[log10(x)]
-  UHashtable* unitsByVariant;
+  CDFUnitsByVariant* unitsByVariant;
   inline CDFLocaleStyleData() : unitsByVariant(NULL) {}
   ~CDFLocaleStyleData();
   // Init initializes this object.
@@ -129,10 +138,6 @@ static UBool U_CALLCONV cdf_cleanup(void) {
   return TRUE;
 }
 
-static void U_CALLCONV deleteCDFUnits(void* ptr) {
-  delete [] (icu::CDFUnit*) ptr;
-}
-
 static void U_CALLCONV deleteCDFLocaleData(void* ptr) {
   delete (icu::CDFLocaleData*) ptr;
 }
@@ -152,19 +157,19 @@ static UResourceBundle* tryGetByKeyWithFallback(const UResourceBundle* rb, const
 static UBool isRoot(const UResourceBundle* rb, UErrorCode& status);
 static void initCDFLocaleStyleData(const UResourceBundle* decimalFormatBundle, CDFLocaleStyleData* result, UErrorCode& status);
 static void populatePower10(const UResourceBundle* power10Bundle, CDFLocaleStyleData* result, UErrorCode& status);
-static int32_t populatePrefixSuffix(const char* variant, int32_t log10Value, const UnicodeString& formatStr, UHashtable* result, UErrorCode& status);
+static int32_t populatePrefixSuffix(const char* variant, int32_t log10Value, const UnicodeString& formatStr, CDFUnitsByVariant* result, UErrorCode& status);
 static UBool onlySpaces(UnicodeString u);
 static void fixQuotes(UnicodeString& s);
 static void fillInMissing(CDFLocaleStyleData* result);
 static int32_t computeLog10(double x, UBool inRange);
-static CDFUnit* createCDFUnit(const char* variant, int32_t log10Value, UHashtable* table, UErrorCode& status);
-static const CDFUnit* getCDFUnitFallback(const UHashtable* table, const UnicodeString& variant, int32_t log10Value);
+static CDFUnit* createCDFUnit(const char* variant, int32_t log10Value, CDFUnitsByVariant* table, UErrorCode& status);
+static const CDFUnit* getCDFUnitFallback(const CDFUnitsByVariant* table, const UnicodeString& variant, int32_t log10Value);
 
 UOBJECT_DEFINE_RTTI_IMPLEMENTATION(CompactDecimalFormat)
 
 CompactDecimalFormat::CompactDecimalFormat(
     const DecimalFormat& decimalFormat,
-    const UHashtable* unitsByVariant,
+    const CDFUnitsByVariant* unitsByVariant,
     const double* divisors,
     PluralRules* pluralRules)
   : DecimalFormat(decimalFormat), _unitsByVariant(unitsByVariant), _divisors(divisors), _pluralRules(pluralRules) {
@@ -234,7 +239,8 @@ CompactDecimalFormat::operator==(const Format& that) const {
 
 UBool
 CompactDecimalFormat::eqHelper(const CompactDecimalFormat& that) const {
-  return uhash_equals(_unitsByVariant, that._unitsByVariant) && divisors_equal(_divisors, that._divisors) && (*_pluralRules == *that._pluralRules);
+  // TODO: revisit this.
+  return (_unitsByVariant == that._unitsByVariant) && divisors_equal(_divisors, that._divisors) && (*_pluralRules == *that._pluralRules);
 }
 
 UnicodeString&
@@ -347,15 +353,14 @@ CompactDecimalFormat::parseCurrency(
 }
 
 void CDFLocaleStyleData::Init(UErrorCode& status) {
-  if (unitsByVariant != NULL) {
+  if (unitsByVariant != NULL || U_FAILURE(status)) {
     return;
   }
-  unitsByVariant = uhash_open(uhash_hashChars, uhash_compareChars, NULL, &status);
-  if (U_FAILURE(status)) {
+  unitsByVariant = new CDFUnitsByVariant();
+  if (unitsByVariant == NULL) {
+    status = U_MEMORY_ALLOCATION_ERROR;
     return;
   }
-  uhash_setKeyDeleter(unitsByVariant, uprv_free);
-  uhash_setValueDeleter(unitsByVariant, deleteCDFUnits);
 }
 
 CDFLocaleStyleData::~CDFLocaleStyleData() {
@@ -364,7 +369,7 @@ CDFLocaleStyleData::~CDFLocaleStyleData() {
 
 void CDFLocaleStyleData::setToBogus() {
   if (unitsByVariant != NULL) {
-    uhash_close(unitsByVariant);
+    delete unitsByVariant;
     unitsByVariant = NULL;
   }
 }
@@ -762,7 +767,7 @@ static void populatePower10(const UResourceBundle* power10Bundle, CDFLocaleStyle
 // In the special case that formatStr contains only spaces for prefix
 // and suffix, populatePrefixSuffix returns log10Value + 1.
 static int32_t populatePrefixSuffix(
-    const char* variant, int32_t log10Value, const UnicodeString& formatStr, UHashtable* result, UErrorCode& status) {
+    const char* variant, int32_t log10Value, const UnicodeString& formatStr, CDFUnitsByVariant* result, UErrorCode& status) {
   if (U_FAILURE(status)) {
     return 0;
   }
@@ -854,12 +859,12 @@ static void fixQuotes(UnicodeString& s) {
 // missing from given variant, copy the prefix-suffix pair for that
 // log10 value from the 'other' variant.
 static void fillInMissing(CDFLocaleStyleData* result) {
-  const CDFUnit* otherUnits =
-      (const CDFUnit*) uhash_get(result->unitsByVariant, gOther);
+  const CDFUnitArray* otherUnits =
+      &result->unitsByVariant->getOther();
   UBool definedInCLDR[MAX_DIGITS];
   double lastDivisor = 1.0;
   for (int32_t i = 0; i < MAX_DIGITS; ++i) {
-    if (!otherUnits[i].isSet()) {
+    if (!otherUnits->data[i].isSet()) {
       result->divisors[i] = lastDivisor;
       definedInCLDR[i] = FALSE;
     } else {
@@ -868,20 +873,19 @@ static void fillInMissing(CDFLocaleStyleData* result) {
     }
   }
   // Iterate over each variant.
-  int32_t pos = UHASH_FIRST;
-  const UHashElement* element = uhash_nextElement(result->unitsByVariant, &pos);
-  for (;element != NULL; element = uhash_nextElement(result->unitsByVariant, &pos)) {
-    CDFUnit* units = (CDFUnit*) element->value.pointer;
+  int32_t pos = -1;
+  CDFUnitArray *units = result->unitsByVariant->nextMutable(pos);
+  for (;units != NULL; units = result->unitsByVariant->nextMutable(pos)) {
     for (int32_t i = 0; i < MAX_DIGITS; ++i) {
       if (definedInCLDR[i]) {
-        if (!units[i].isSet()) {
-          units[i] = otherUnits[i];
+        if (!units->data[i].isSet()) {
+          units->data[i] = otherUnits->data[i];
         }
       } else {
         if (i == 0) {
-          units[0].markAsSet();
+          units->data[0].markAsSet();
         } else {
-          units[i] = units[i - 1];
+          units->data[i] = units->data[i - 1];
         }
       }
     }
@@ -908,23 +912,15 @@ static int32_t computeLog10(double x, UBool inRange) {
 // createCDFUnit returns a pointer to the prefix-suffix pair for a given
 // variant and log10 value within table. If no such prefix-suffix pair is
 // stored in table, one is created within table before returning pointer.
-static CDFUnit* createCDFUnit(const char* variant, int32_t log10Value, UHashtable* table, UErrorCode& status) {
+static CDFUnit* createCDFUnit(const char* variant, int32_t log10Value, CDFUnitsByVariant* table, UErrorCode& status) {
   if (U_FAILURE(status)) {
     return NULL;
   }
-  CDFUnit *cdfUnit = (CDFUnit*) uhash_get(table, variant);
-  if (cdfUnit == NULL) {
-    cdfUnit = new CDFUnit[MAX_DIGITS];
-    if (cdfUnit == NULL) {
-      status = U_MEMORY_ALLOCATION_ERROR;
+  CDFUnitArray *cdfUnits = table->getMutable(variant, status);
+  if (U_FAILURE(status)) {
       return NULL;
-    }
-    uhash_put(table, uprv_strdup(variant), cdfUnit, &status);
-    if (U_FAILURE(status)) {
-      return NULL;
-    }
   }
-  CDFUnit* result = &cdfUnit[log10Value];
+  CDFUnit* result = &cdfUnits->data[log10Value];
   result->markAsSet();
   return result;
 }
@@ -933,18 +929,9 @@ static CDFUnit* createCDFUnit(const char* variant, int32_t log10Value, UHashtabl
 // variant and log10 value within table. If the given variant doesn't exist, it
 // falls back to the OTHER variant. Therefore, this method will always return
 // some non-NULL value.
-static const CDFUnit* getCDFUnitFallback(const UHashtable* table, const UnicodeString& variant, int32_t log10Value) {
-  CharString cvariant;
-  UErrorCode status = U_ZERO_ERROR;
-  const CDFUnit *cdfUnit = NULL;
-  cvariant.appendInvariantChars(variant, status);
-  if (!U_FAILURE(status)) {
-    cdfUnit = (const CDFUnit*) uhash_get(table, cvariant.data());
-  }
-  if (cdfUnit == NULL) {
-    cdfUnit = (const CDFUnit*) uhash_get(table, gOther);
-  }
-  return &cdfUnit[log10Value];
+static const CDFUnit* getCDFUnitFallback(const CDFUnitsByVariant* table, const UnicodeString& variant, int32_t log10Value) {
+  const CDFUnitArray *cdfUnitArray = &table->getByUniStr(variant);
+  return &cdfUnitArray->data[log10Value];
 }
 
 U_NAMESPACE_END

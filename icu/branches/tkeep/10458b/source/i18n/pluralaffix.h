@@ -16,6 +16,7 @@
 #include "unicode/uobject.h"
 #include "digitaffix.h"
 #include "unicode/unum.h"
+#include "pluralmap.h"
 
 U_NAMESPACE_BEGIN
 
@@ -31,13 +32,6 @@ class FieldPositionHandler;
  */
 class U_I18N_API PluralAffix : public UMemory {
 public:
-    /**
-     * The 'other' variant set to empty string with no field annotations.
-     */
-    PluralAffix();
-    PluralAffix(const PluralAffix &other);
-    PluralAffix &operator=(const PluralAffix &other);
-    ~PluralAffix();
 
     /**
      * Sets a particular plural variant while overwritting anything that
@@ -87,15 +81,16 @@ public:
     /**
      * Get the DigitAffix for the other variant which is always set.
      */
-    const DigitAffix &getOtherVariant() const { return *affixes[0]; }
+    const DigitAffix &getOtherVariant() const {
+        return affixes.getOther();
+    }
 
     /**
      * Returns TRUE if this instance has variants besides "other"
      */
     UBool hasMultipleVariants() const;
 private:
-    DigitAffix otherAffix;
-    DigitAffix *affixes[6];
+    PluralMap<DigitAffix> affixes;
 };
 
 

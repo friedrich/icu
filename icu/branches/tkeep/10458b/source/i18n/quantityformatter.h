@@ -11,12 +11,13 @@
 
 #include "unicode/utypes.h"
 #include "unicode/uobject.h"
+#include "pluralmap.h"
+#include "simplepatternformatter.h"
 
 #if !UCONFIG_NO_FORMATTING
 
 U_NAMESPACE_BEGIN
 
-class SimplePatternFormatter;
 class UnicodeString;
 class PluralRules;
 class NumberFormat;
@@ -41,22 +42,7 @@ public:
     /**
      * Default constructor.
      */
-    QuantityFormatter();
-
-    /**
-     * Copy constructor.
-     */
-    QuantityFormatter(const QuantityFormatter& other);
-
-    /**
-     * Assignment operator
-     */
-    QuantityFormatter &operator=(const QuantityFormatter& other);
-
-    /**
-     * Destructor.
-     */
-    ~QuantityFormatter();
+    QuantityFormatter() : bValid(FALSE) { }
 
     /**
      * Removes all variants from this object including the "other" variant.
@@ -109,7 +95,8 @@ public:
             UErrorCode &status) const;
 
 private:
-    SimplePatternFormatter *formatters[6];
+    PluralMap<SimplePatternFormatter> formatters;
+    UBool bValid;
 };
 
 U_NAMESPACE_END
