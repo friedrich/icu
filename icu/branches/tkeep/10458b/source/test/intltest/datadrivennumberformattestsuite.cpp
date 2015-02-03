@@ -76,6 +76,9 @@ void DataDrivenNumberFormatTestSuite::run(const char *fileName, UBool runAllTest
                 fTuple.setField(
                         columnTypes[i], columnValues[i].unescape(), status);
             }
+            for (int32_t i = columnsInThisRow; i < columnCount; ++i) {
+                fTuple.clearField(columnTypes[i], status);
+            }
             if (U_FAILURE(status)) {
                 showError("Invalid column values");
                 return;

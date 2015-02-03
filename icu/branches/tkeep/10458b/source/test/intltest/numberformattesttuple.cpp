@@ -147,6 +147,21 @@ NumberFormatTestTuple::setField(
     return TRUE;
 }
 
+UBool
+NumberFormatTestTuple::clearField(
+        ENumberFormatTestTupleField fieldId, 
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    if (fieldId == kNumberFormatTestTupleFieldCount) {
+        status = U_ILLEGAL_ARGUMENT_ERROR;
+        return FALSE;
+    }
+    setFlag(fieldId, FALSE);
+    return TRUE;
+}
+
 void
 NumberFormatTestTuple::clear() {
     for (int32_t i = 0; i < kNumberFormatTestTupleFieldCount; ++i) {

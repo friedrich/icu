@@ -65,6 +65,9 @@ public:
             ENumberFormatTestTupleField field,
             const UnicodeString &fieldValue,
             UErrorCode &status);
+    UBool clearField(
+            ENumberFormatTestTupleField field,
+            UErrorCode &status);
     void clear();
     UnicodeString &toString(UnicodeString &appendTo) const;
     static ENumberFormatTestTupleField getFieldByName(const UnicodeString &name);
