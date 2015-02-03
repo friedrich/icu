@@ -154,6 +154,56 @@ format	output	breaks
 100000	100,000
 1000000	1,000,000
 
+test min max fraction digits
+set locale en
+set pattern #,##0.###
+set format 1234.567
+begin
+minFractionDigits	maxFractionDigits	output
+0	0	1,235
+0	2	1,234.57
+4	5	1,234.5670
 
+test min max integer digits
+set locale en
+set pattern #,##0.###
+set format 1234.567
+begin
+minIntegerDigits	maxIntegerDigits	output
+0	0	.567
+0	3	234.567
+5	5	01,234.567
+
+test min max fraction digits scientific
+set locale en
+set pattern #E0
+set format 299792458.0
+begin
+minIntegerDigits	maxIntegerDigits	minFractionDigits	maxFractionDigits	output
+0	1	0	0	2.99792458E8
+1	1	0	0	3E8
+0	0	0	0	2.99792458E8
+0	1	0	5	2.9979E8
+0	3	0	0	299.792458E6
+0	3	0	1	300E6
+2	3	0	4	299.792E6
+2	3	0	5	299.7925E6
+3	3	0	5	299.79246E6
+3	3	0	4	299.7925E6
+2	2	0	3	29.979E7
+4	4	0	0	2998E5
+0	0	1	5	.29979E9
+0	0	1	0	2.99792458E8
+0	0	0	4	2.998E8
+
+test min max fraction digits scientific 2
+set locale en
+set pattern #E0
+set format 29979245.0
+begin
+minIntegerDigits	maxIntegerDigits	minFractionDigits	maxFractionDigits	output
+0	0	0	0	2.9979245E7
+0	1	0	0	2.9979245E7
+0	4	0	0	2997.9245E4
 
 

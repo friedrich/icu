@@ -71,6 +71,14 @@ public:
     }
 
     /**
+     * Returns number of digits to the right of the decimal that this
+     * interval includes.
+     */
+    int32_t getFracDigitCount() const {
+        return fSmallestInclusive == INT32_MIN ? INT32_MAX : -fSmallestInclusive;
+    }
+
+    /**
      * Returns the total number of digits that this interval spans.
      * Caution: If this interval spans all digits to the left or right of
      * decimal point instead of some fixed number, then what length()

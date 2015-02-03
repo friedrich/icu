@@ -77,6 +77,50 @@ UBool NumberFormat2Test_FieldPositionHandler::isRecording() const {
     return TRUE;
 }
 
+// Map output from pattern parser to what we actually need for scientific
+// notation.
+static void fixScientificExponentGrouping(
+        const FixedPrecision &original, FixedPrecision &newResult) {
+    int32_t maxIntDigitCount = original.fMax.getIntDigitCount();
+    int32_t minIntDigitCount = original.fMin.getIntDigitCount();
+    int32_t maxFracDigitCount = original.fMax.getFracDigitCount();
+    int32_t minFracDigitCount = original.fMin.getFracDigitCount();
+
+    // Per the spec, exponent grouping happens if maxIntDigitCount is more
+    // than 1 and more than minIntDigitCount.
+    UBool bExponentGrouping = maxIntDigitCount > 1 && minIntDigitCount < maxIntDigitCount;
+    if (bExponentGrouping) {
+        newResult.fMax.setIntDigitCount(maxIntDigitCount);
+
+        // For exponent grouping minIntDigits is always treated as 1 even
+        // if it wasn't set to 1!
+        newResult.fMin.setIntDigitCount(1);
+    } else {
+        // Fixed digit count left of decimal. minIntDigitCount doesn't have
+        // to equal maxIntDigitCount i.e minIntDigitCount == 0 while
+        // maxIntDigitCount == 1.
+        int32_t fixedIntDigitCount = maxIntDigitCount;
+
+        // If fixedIntDigitCount is 0 but 
+        // either fraction count is 0 too then use 1. This way we can get
+        // unlimited precision for X.XXXEX
+        if (fixedIntDigitCount == 0 && (maxFracDigitCount == 0 || minFracDigitCount == 0)) {
+            fixedIntDigitCount = 1;
+        }
+        newResult.fMax.setIntDigitCount(fixedIntDigitCount);
+        newResult.fMin.setIntDigitCount(fixedIntDigitCount);
+    }
+    // Spec says this is how we compute significant digits. 0 means
+    // unlimited significant digits.
+    int32_t maxSigDigits = minIntDigitCount + maxFracDigitCount;
+    if (maxSigDigits > 0) {
+        int32_t minSigDigits = minIntDigitCount + minFracDigitCount;
+        newResult.fSignificant.setMin(minSigDigits);
+        newResult.fSignificant.setMax(maxSigDigits);
+    }
+    newResult.fRoundingIncrement = original.fRoundingIncrement;
+}
+
 class NumberFormat2TestDecimalFormat : public UMemory {
 public:
 ScientificPrecision fPrecision;
@@ -99,7 +143,8 @@ NumberFormat2TestDecimalFormat(
         const DecimalFormatSymbols &sym,
         const UnicodeString &pattern, UErrorCode &status);
 ~NumberFormat2TestDecimalFormat();
-ValueFormatter &prepareValueFormatter(ValueFormatter &vf);
+ValueFormatter &prepareValueFormatter(
+        ValueFormatter &vf, ScientificPrecision &scratchPrecision);
 UnicodeString &format(
         DigitList &dl, UnicodeString &appendTo, UErrorCode &status);
 void setCurrency(const UChar *currency, UErrorCode &status);
@@ -130,10 +175,11 @@ NumberFormat2TestDecimalFormat::~NumberFormat2TestDecimalFormat() {
 
 ValueFormatter &
 NumberFormat2TestDecimalFormat::prepareValueFormatter(
-        ValueFormatter &vf) {
+        ValueFormatter &vf, ScientificPrecision &scratchPrecision) {
     if (fUseScientific) {
+        fixScientificExponentGrouping(fPrecision.fMantissa, scratchPrecision.fMantissa);
         vf.prepareScientificFormatting(
-                fSciFormatter, fFormatter, fPrecision, fOptions);
+                fSciFormatter, fFormatter, scratchPrecision, fOptions);
         return vf;
     }
     vf.prepareFixedDecimalFormatting(
@@ -148,9 +194,10 @@ NumberFormat2TestDecimalFormat::format(
     FieldPosition fpos(FieldPosition::DONT_CARE);
     FieldPositionOnlyHandler handler(fpos);
     ValueFormatter vf;
+    ScientificPrecision scratch;
     return fAap.format(
             dl,
-            prepareValueFormatter(vf),
+            prepareValueFormatter(vf, scratch),
             handler,
             fRules,
             appendTo,
@@ -242,15 +289,8 @@ void NumberFormat2TestDecimalFormat::parsePattern(
     } else {
         fPrecision.fMantissa.fMin.setIntDigitCount(out.fMinimumIntegerDigits);
         fPrecision.fMantissa.fMax.setIntDigitCount(out.fMaximumIntegerDigits);
-        if (fUseScientific && out.fMinimumIntegerDigits != out.fMaximumIntegerDigits) {
-            fPrecision.fMantissa.fSignificant.setMin(
-                    1 + out.fMinimumFractionDigits);
-            fPrecision.fMantissa.fSignificant.setMax(
-                    1 + out.fMaximumFractionDigits);
-        } else {
-            fPrecision.fMantissa.fMin.setFracDigitCount(out.fMinimumFractionDigits);
-            fPrecision.fMantissa.fMax.setFracDigitCount(out.fMaximumFractionDigits);
-        }
+        fPrecision.fMantissa.fMin.setFracDigitCount(out.fMinimumFractionDigits);
+        fPrecision.fMantissa.fMax.setFracDigitCount(out.fMaximumFractionDigits);
     }
     fOptions.fExponent.fMinDigits = out.fMinExponentDigits;
     fOptions.fExponent.fAlwaysShowSign = out.fExponentSignAlwaysShown;
