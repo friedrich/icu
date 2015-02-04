@@ -219,14 +219,18 @@ fEmptyText(NULL)
     // Finally, initialize an empty string for utility purposes
     fEmptyText = utext_openUChars(NULL, NULL, 0, status);
     
-    return; // If we reached this point, everything is fine so just exit
+    if (U_SUCCESS(*status)) {
+        return;
+    }
 
 ExitConstrDeleteAll: // Remove fPropSets and fRuleSets and return error
     for (i=0; i<URX_LAST_SET; i++) {
         delete fPropSets[i];
         fPropSets[i] = NULL;
     }
-    *status = U_MEMORY_ALLOCATION_ERROR;
+    if (U_SUCCESS(*status)) {
+        *status = U_MEMORY_ALLOCATION_ERROR;
+    }
 }
 
 

@@ -55,6 +55,8 @@
 
 // Forward Declarations
 
+struct UHashtable;
+
 U_NAMESPACE_BEGIN
 
 struct Regex8BitSet;
@@ -438,6 +440,41 @@ public:
 
 
     /**
+     * Get the group number corresponding to a named capture group.
+     * The returned number can be used with any function that access
+     * capture groups by number.
+     *
+     * The function returns an error status if the specified name does not
+     * appear in the pattern.
+     *
+     * @param  groupName   The capture group name.
+     * @param  status      A UErrorCode to receive any errors.
+     *
+     * @draft ICU 55
+     */
+    virtual int32_t groupNumberFromName(const UnicodeString &groupName, UErrorCode &status) const;
+
+
+    /**
+     * Get the group number corresponding to a named capture group.
+     * The returned number can be used with any function that access
+     * capture groups by number.
+     *
+     * The function returns an error status if the specified name does not
+     * appear in the pattern.
+     *
+     * @param  groupName   The capture group name,
+     *                     platform invariant characters only.
+     * @param  nameLength  The length of the name, or -1 if the name is
+     *                     nul-terminated.
+     * @param  status      A UErrorCode to receive any errors.
+     *
+     * @draft ICU 55
+     */
+    virtual int32_t groupNumberFromName(const char *groupName, int32_t nameLength, UErrorCode &status) const;
+
+
+    /**
      * Split a string into fields.  Somewhat like split() from Perl or Java.
      * Pattern matches identify delimiters that separate the input
      * into fields.  The input data between the delimiters becomes the
@@ -588,6 +625,8 @@ private:
     UChar32         fInitialChar;
     Regex8BitSet   *fInitialChars8;
     UBool           fNeedsAltInput;
+
+    UHashtable     *fNamedCaptureMap;  // Map from capture group names to numbers.
 
     friend class RegexCompile;
     friend class RegexMatcher;
@@ -855,60 +894,11 @@ public:
     virtual UnicodeString group(int32_t groupNum, UErrorCode &status) const;
 
    /**
-    *    Returns a string containing the text captured by the given group
-    *    during the previous match operation.
-    *
-    *    @param groupName the capture group name
-    *    @param   status     A reference to a UErrorCode to receive any errors.
-    *                        Possible errors are  U_REGEX_INVALID_STATE if no match
-    *                        has been attempted or the last match failed and
-    *                        U_REGEX_INVALID_CAPTURE_GROUP_NAME for a bad capture group name.
-    *    @return the captured text
-    *    @draft ICU 55
-    */
-    virtual UnicodeString group(const UnicodeString &groupName, UErrorCode &status) const;
-
-
-   /**
     *   Returns the number of capturing groups in this matcher's pattern.
     *   @return the number of capture groups
     *   @stable ICU 2.4
     */
     virtual int32_t groupCount() const;
-
-
-    /**
-     * Get the group number corresponding to a named capture group.
-     * The returned number can be used with any function that access
-     * capture groups by number.
-     *
-     * The function returns an error status if the specified name does not
-     * appear in the pattern.
-     *
-     * @param  groupName   The capture group name.
-     * @param  status      A UErrorCode to receive any errors.
-     *
-     * @draft ICU 55
-     */
-    virtual int32_t groupNumberFromName(const UnicodeString &groupName, UErrorCode &status) const;
-
-    /**
-     * Get the group number corresponding to a named capture group.
-     * The returned number can be used with any function that access
-     * capture groups by number.
-     *
-     * The function returns an error status if the specified name does not
-     * appear in the pattern.
-     *
-     * @param  groupName   The capture group name,
-     *                     platform invariant characters only.
-     * @param  nameLength  The length of the name, or -1 if the name is
-     *                     nul-terminated.
-     * @param  status      A UErrorCode to receive any errors.
-     *
-     * @draft ICU 55
-     */
-    virtual int32_t groupNumberFromName(const char *groupName, int32_t nameLength, UErrorCode &status) const;
 
 
    /**

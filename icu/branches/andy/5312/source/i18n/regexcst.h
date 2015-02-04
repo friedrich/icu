@@ -17,105 +17,104 @@ U_NAMESPACE_BEGIN
 // Character classes for regex pattern scanning.
 //
     static const uint8_t kRuleSet_digit_char = 128;
-    static const uint8_t kRuleSet_ascii_letter = 129;
-    static const uint8_t kRuleSet_rule_char = 130;
+    static const uint8_t kRuleSet_rule_char = 129;
+    static const uint8_t kRuleSet_ascii_letter = 130;
 
 
 enum Regex_PatternParseAction {
-    doOpenLookBehind,
-    doContinueNamedCapture,
+    doBackslashX,
+    doDollar,
+    doSetPosixProp,
+    doSuppressComments,
+    doLiteralChar,
+    doBackslashA,
+    doConditionalExpr,
+    doBackslashD,
+    doPossessivePlus,
     doBackslashz,
-    doBackslashW,
-    doEnterQuoteMode,
+    doSetBackslash_s,
+    doSetAddDash,
+    doIntervalUpperDigit,
+    doSetIntersection2,
+    doSetNamedChar,
+    doOpenNonCaptureParen,
     doBeginNamedCapture,
     doSetEnd,
+    doSetDifference2,
+    doSetBackslash_w,
+    doSetBeginIntersection1,
+    doIntevalLowerDigit,
+    doIntervalSame,
     doBackslashS,
-    doSetAddAmp,
-    doSetNoCloseError,
-    doOpenAtomicParen,
-    doBackslashs,
+    doPossessiveStar,
+    doIntervalInit,
+    doOpenCaptureParen,
+    doNOP,
+    doEscapeError,
+    doSetNamedRange,
+    doBackslashG,
+    doStar,
+    doExit,
+    doNamedChar,
+    doSetBackslash_W,
+    doSetOpError,
+    doSetBeginDifference1,
+    doBadOpenParenType,
     doOpt,
     doDotAny,
-    doPlus,
-    doOpenLookAhead,
-    doBadModeFlag,
-    doConditionalExpr,
-    doPossessiveInterval,
-    doPossessiveStar,
-    doOpenCaptureParen,
-    doProperty,
-    doPatStart,
-    doSetNamedRange,
-    doSetBackslash_D,
-    doMismatchedParenErr,
-    doSetNegate,
-    doSetBackslash_W,
-    doNGInterval,
-    doIntevalLowerDigit,
-    doMatchMode,
-    doLiteralChar,
-    doIntervalInit,
-    doCaret,
-    doOpenLookAheadNeg,
-    doNGStar,
-    doSetPosixProp,
-    doSetBackslash_S,
-    doOpenNonCaptureParen,
-    doBackslashG,
-    doSetIntersection2,
-    doOpenLookBehindNeg,
-    doSetBackslash_w,
-    doSetBackslash_s,
-    doPossessiveOpt,
-    doPossessivePlus,
-    doExit,
-    doSetBegin,
-    doSetFinish,
-    doBackslashD,
     doSetBeginUnion,
-    doNGOpt,
-    doCompleteNamedCapture,
-    doRuleError,
-    doSetBeginDifference1,
-    doEscapedLiteralChar,
-    doBackRef,
-    doMatchModeParen,
-    doBackslashB,
-    doInterval,
-    doBackslashX,
-    doSetMatchMode,
-    doBeginMatchMode,
-    doSetBackslash_d,
-    doBackslashA,
-    doIntervalUpperDigit,
-    doSetProp,
-    doBackslashd,
-    doSetOpError,
-    doBadNamedCapture,
-    doIntervalSame,
-    doCloseParen,
-    doBackslashb,
-    doBackslashZ,
     doIntervalError,
-    doSetNamedChar,
-    doSetLiteralEscaped,
-    doBackslashw,
-    doSetDifference2,
-    doStar,
-    doNGPlus,
-    doBadOpenParenType,
-    doSetAddDash,
+    doSetBackslash_D,
+    doBackslashW,
     doOrOperator,
-    doEscapeError,
-    doSetBeginIntersection1,
-    doNamedChar,
-    doSuppressComments,
-    doNOP,
-    doSetRange,
+    doOpenAtomicParen,
+    doNGOpt,
+    doSetMatchMode,
     doSetLiteral,
-    doPerlInline,
+    doSetBackslash_S,
+    doRuleError,
+    doEnterQuoteMode,
+    doMatchMode,
+    doMatchModeParen,
+    doNGStar,
+    doSetNegate,
+    doSetBackslash_d,
+    doInterval,
+    doEscapedLiteralChar,
+    doBackslashZ,
+    doSetLiteralEscaped,
+    doBackslashd,
+    doBackslashb,
+    doNGInterval,
+    doBackslashs,
+    doBadNamedCapture,
+    doSetBegin,
+    doPossessiveOpt,
+    doSetRange,
+    doOpenLookBehindNeg,
+    doPatStart,
     doPatFinish,
-    doDollar,
+    doNGPlus,
+    doBadModeFlag,
+    doBackslashB,
+    doSetNoCloseError,
+    doMismatchedParenErr,
+    doSetProp,
+    doSetFinish,
+    doSetAddAmp,
+    doPlus,
+    doCaret,
+    doCloseParen,
+    doContinueNamedCapture,
+    doProperty,
+    doPossessiveInterval,
+    doOpenLookBehind,
+    doPerlInline,
+    doOpenLookAheadNeg,
+    doBackslashw,
+    doOpenLookAhead,
+    doBeginMatchMode,
+    doBackRef,
     rbbiLastAction};
 
 //-------------------------------------------------------------------------------
@@ -137,7 +136,7 @@ static const struct RegexTableEl gRuleParseStateTable[] = {
     {doNOP, 0, 0, 0, TRUE}
     , {doPatStart, 255, 2,0,  FALSE}     //  1      start
     , {doLiteralChar, 254, 14,0,  TRUE}     //  2      term
-    , {doLiteralChar, 130, 14,0,  TRUE}     //  3 
+    , {doLiteralChar, 129, 14,0,  TRUE}     //  3 
     , {doSetBegin, 91 /* [ */, 109, 187, TRUE}     //  4 
     , {doNOP, 40 /* ( */, 27,0,  TRUE}     //  5 
     , {doDotAny, 46 /* . */, 14,0,  TRUE}     //  6 
@@ -182,7 +181,7 @@ static const struct RegexTableEl gRuleParseStateTable[] = {
     , {doBadOpenParenType, 255, 188,0,  FALSE}     //  45 
     , {doOpenLookBehind, 61 /* = */, 2, 20, TRUE}     //  46      open-paren-lookbehind
     , {doOpenLookBehindNeg, 33 /* ! */, 2, 20, TRUE}     //  47 
-    , {doBeginNamedCapture, 129, 64,0,  FALSE}     //  48 
+    , {doBeginNamedCapture, 130, 64,0,  FALSE}     //  48 
     , {doBadOpenParenType, 255, 188,0,  FALSE}     //  49 
     , {doNOP, 41 /* ) */, 255,0,  TRUE}     //  50      paren-comment
     , {doMismatchedParenErr, 253, 188,0,  FALSE}     //  51 
@@ -198,9 +197,9 @@ static const struct RegexTableEl gRuleParseStateTable[] = {
     , {doSetMatchMode, 41 /* ) */, 2,0,  TRUE}     //  61 
     , {doMatchModeParen, 58 /* : */, 2, 14, TRUE}     //  62 
     , {doBadModeFlag, 255, 188,0,  FALSE}     //  63 
-    , {doContinueNamedCapture, 129, 64,0,  TRUE}     //  64      named-capture
+    , {doContinueNamedCapture, 130, 64,0,  TRUE}     //  64      named-capture
     , {doContinueNamedCapture, 128, 64,0,  TRUE}     //  65 
-    , {doCompleteNamedCapture, 62 /* > */, 2, 14, TRUE}     //  66 
+    , {doOpenCaptureParen, 62 /* > */, 2, 14, TRUE}     //  66 
     , {doBadNamedCapture, 255, 188,0,  FALSE}     //  67 
     , {doNGStar, 63 /* ? */, 20,0,  TRUE}     //  68      quant-star
     , {doPossessiveStar, 43 /* + */, 20,0,  TRUE}     //  69 

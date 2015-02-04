@@ -70,6 +70,7 @@ RegexCompile::RegexCompile(RegexPattern *rxp, UErrorCode &status) :
 
     fMatchOpenParen   = -1;
     fMatchCloseParen  = -1;
+    fCaptureName      = NULL;
 
     if (U_SUCCESS(status) && U_FAILURE(rxp->fDeferredStatus)) {
         status = rxp->fDeferredStatus;
@@ -86,6 +87,8 @@ static const UChar      chDash      = 0x2d;      // '-'
 //
 //------------------------------------------------------------------------------
 RegexCompile::~RegexCompile() {
+    delete fCaptureName;         // Normally will be NULL, but can exist if pattern
+                                 //   compilation stops with a syntax error.
 }
 
 static inline void addCategory(UnicodeSet *set, int32_t value, UErrorCode& ec) {
@@ -438,8 +441,22 @@ UBool RegexCompile::doParseActions(int32_t action)
         break;
 
 
+    case doBeginNamedCapture:
+        // Scanning (?<letter.
+        //   The first letter of the name will come through again under doConinueNamedCapture.
+        fCaptureName = new UnicodeString();
+        if (fCaptureName == NULL) {
+            *fStatus = U_MEMORY_ALLOCATION_ERROR;
+        }
+        break;
+
+    case  doContinueNamedCapture:
+        // Store name as invariant chars?
+        fCaptureName->append(fC.fChar);
+        break;
+
     case doOpenCaptureParen:
-        // Open Paren.
+        // Open Capturing Paren, possibly named.
         //   Compile to a
         //      - NOP, which later may be replaced by a save-state if the
         //         parenthesized group gets a * quantifier, followed by
@@ -474,8 +491,19 @@ UBool RegexCompile::doParseActions(int32_t action)
 
             // Save the mapping from group number to stack frame variable position.
             fRXPat->fGroupMap->addElement(varsLoc, *fStatus);
+
+            // If this is a named capture group, add the name->group number mapping.
+            // The hash table owns the name (char *) string.
+            if (fCaptureName != NULL) {
+                int32_t groupNumber = fRXPat->fGroupMap->size();
+                int32_t previousMapping = uhash_puti(fRXPat->fNamedCaptureMap, fCaptureName, groupNumber, fStatus);
+                fCaptureName = NULL;    // hash table takes ownership of the name (key) string.
+                if (previousMapping > 0 && U_SUCCESS(*fStatus)) {
+                    *fStatus = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
+                }
+            }
         }
-         break;
+        break;
 
     case doOpenNonCaptureParen:
         // Open non-caputuring (grouping only) Paren.

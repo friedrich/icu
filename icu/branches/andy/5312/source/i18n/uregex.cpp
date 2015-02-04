@@ -639,7 +639,7 @@ uregex_groupNumberFromName(URegularExpression *regexp2,
     if (validateRE(regexp, FALSE, status) == FALSE) {
         return 0;
     }
-    int32_t  result = regexp->fMatcher->groupNumberFromName(UnicodeString(groupName, nameLength), *status);
+    int32_t  result = regexp->fPat->groupNumberFromName(UnicodeString(groupName, nameLength), *status);
     return result;
 }
 
@@ -652,7 +652,7 @@ uregex_groupNumberFromCName(URegularExpression *regexp2,
     if (validateRE(regexp, FALSE, status) == FALSE) {
         return 0;
     }
-    return regexp->fMatcher->groupNumberFromName(groupName, nameLength, *status);
+    return regexp->fPat->groupNumberFromName(groupName, nameLength, *status);
 }
 
 //------------------------------------------------------------------------------

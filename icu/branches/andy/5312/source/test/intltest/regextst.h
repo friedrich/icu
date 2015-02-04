@@ -41,6 +41,7 @@ public:
     virtual void API_Replace_UTF8();
     virtual void PerlTestsUTF8();
     virtual void PreAllocatedUTextCAPI();
+    virtual void NamedCapture();
     virtual void Bug7651();
     virtual void Bug7740();
     virtual void Bug8479();
