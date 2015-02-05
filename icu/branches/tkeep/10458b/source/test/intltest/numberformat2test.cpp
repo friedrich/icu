@@ -45,10 +45,12 @@ class NumberFormat2Test_FieldPositionHandler : public FieldPositionHandler {
 public:
 NumberFormat2Test_Attributes attributes[100];
 int32_t count;
+UBool bRecording;
 
 
 
-NumberFormat2Test_FieldPositionHandler() : count(0) { attributes[0].spos = -1; }
+NumberFormat2Test_FieldPositionHandler() : count(0), bRecording(TRUE) { attributes[0].spos = -1; }
+NumberFormat2Test_FieldPositionHandler(UBool recording) : count(0), bRecording(recording) { attributes[0].spos = -1; }
 virtual ~NumberFormat2Test_FieldPositionHandler();
 virtual void addAttribute(int32_t id, int32_t start, int32_t limit);
 virtual void shiftLast(int32_t delta);
@@ -74,7 +76,7 @@ void NumberFormat2Test_FieldPositionHandler::shiftLast(int32_t /* delta */) {
 }
 
 UBool NumberFormat2Test_FieldPositionHandler::isRecording() const {
-    return TRUE;
+    return bRecording;
 }
 
 // Map output from pattern parser to what we actually need for scientific
@@ -875,6 +877,19 @@ void NumberFormat2Test::TestBenchmark() {
                 status);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
+    UErrorCode status = U_ZERO_ERROR;
+    DecimalFormatSymbols symbols("en", status);
+    DigitFormatter formatter(symbols);
+    DigitFormatterIntOptions options;
+    FieldPosition fpos(FieldPosition::DONT_CARE);
+//    FieldPosition fpos(3);
+    FieldPositionOnlyHandler handler(fpos);
+    clock_t start = clock();
+    for (int32_t i = 0; i < 10000000; ++i) {
+        UnicodeString appendTo;
+        formatter.formatInt32(2345, options, 0, 0, handler, appendTo);
+    }
+    errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
 */
 }
 
@@ -1048,6 +1063,127 @@ void NumberFormat2Test::TestDigitIntFormatter() {
                 9,
                 FALSE,
                 expectedAttributes);
+    }
+    // Test fast track boundaries
+    {
+        verifyDigitIntFormatter(
+                "+23",
+                formatter,
+                23,
+                0,
+                TRUE,
+                NULL);
+        verifyDigitIntFormatter(
+                "+000023",
+                formatter,
+                23,
+                6,
+                TRUE,
+                NULL);
+        verifyDigitIntFormatter(
+                "00023",
+                formatter,
+                23,
+                5,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "4096",
+                formatter,
+                4096,
+                0,
+                FALSE,
+                NULL);
+    }
+    // Test fast track
+    {
+        verifyDigitIntFormatter(
+                "23",
+                formatter,
+                23,
+                0,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "23",
+                formatter,
+                23,
+                1,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "23",
+                formatter,
+                23,
+                2,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "023",
+                formatter,
+                23,
+                3,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "0023",
+                formatter,
+                23,
+                4,
+                FALSE,
+                NULL);
+    }
+    // Test fast track digit count boundaries
+    {
+        verifyDigitIntFormatter(
+                "9",
+                formatter,
+                9,
+                0,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "10",
+                formatter,
+                10,
+                0,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "99",
+                formatter,
+                99,
+                0,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "100",
+                formatter,
+                100,
+                0,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "999",
+                formatter,
+                999,
+                0,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "1000",
+                formatter,
+                1000,
+                0,
+                FALSE,
+                NULL);
+        verifyDigitIntFormatter(
+                "4095",
+                formatter,
+                4095,
+                0,
+                FALSE,
+                NULL);
     }
 }
 
@@ -2321,7 +2457,7 @@ void NumberFormat2Test::verifyDigitIntFormatter(
             expected.countChar32(),
             formatter.countChar32ForInt(value, options));
     UnicodeString appendTo;
-    NumberFormat2Test_FieldPositionHandler handler;
+    NumberFormat2Test_FieldPositionHandler handler(expectedAttributes != NULL);
     assertEquals(
             "",
             expected,

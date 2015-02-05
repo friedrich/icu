@@ -145,6 +145,16 @@ UnicodeString fGroupingSeparator;
 UnicodeString fDecimal;
 UnicodeString fNegativeSign;
 UnicodeString fPositiveSign;
+UBool fIsStandardDigits;
+
+UBool isStandardDigits() const;
+static UnicodeString &formatSmallInt(
+    int32_t smallPositiveValue,
+    int32_t minDigits,
+    UnicodeString &appendTo);
+static int32_t countChar32ForSmallInt(
+    int32_t smallPositiveValue,
+    int32_t minDigits);
 };
 
 U_NAMESPACE_END
