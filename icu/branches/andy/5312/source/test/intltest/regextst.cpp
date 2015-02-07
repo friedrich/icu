@@ -5211,8 +5211,12 @@ void RegexTest::PreAllocatedUTextCAPI () {
 void RegexTest::NamedCapture() {
     UErrorCode status = U_ZERO_ERROR;
     RegexPattern *pat = RegexPattern::compile(UnicodeString(
-            "abc()()(?<cgname>xyz)de(?<zzzzzzzzzzzzzzzzz>hmm)(?<cgn,ame> )f"), 0, status);
-    pat->dumpPattern();
+            "abc()()(?<cgname>xyz)de(?<zzzzzzzzzzzzzzzzz>hmm)(?<cgniiame> )f"), 0, status);
+    if (U_SUCCESS(status)) {
+        pat->dumpPattern();
+    } else {
+        printf("%s\n", u_errorName(status));
+    }
 }
 
 

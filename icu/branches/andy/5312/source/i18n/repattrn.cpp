@@ -597,16 +597,26 @@ UText *RegexPattern::patternText(UErrorCode      &status) const {
 //
 //--------------------------------------------------------------------------------
 int32_t RegexPattern::groupNumberFromName(const UnicodeString &groupName, UErrorCode &status) const {
-    status = U_REGEX_UNIMPLEMENTED;
-    (void)groupName;
-    return 0;
+    if (U_FAILURE(status)) {
+        return 0;
+    }
+    int32_t number = uhash_geti(fNamedCaptureMap, &groupName);
+    if (number == 0) {
+        status = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
+    }
+    return number;
 }
 
 int32_t RegexPattern::groupNumberFromName(const char *groupName, int32_t nameLength, UErrorCode &status) const {
-    status = U_REGEX_UNIMPLEMENTED;
-    (void)groupName;
-    (void)nameLength;
-    return 0;
+    if (U_FAILURE(status)) {
+        return 0;
+    }
+    UnicodeString name(groupName, nameLength, US_INV);  // Invariant character conversion.
+                                                        // For ASCII, the bytes just come straight across.
+                                                        // For EBCDIC, non-invariant chars substitute with nul.
+    // No need to explicitly check for syntactically valid names.
+    // Invalid ones will never be in the map.
+    return groupNumberFromName(name, status);
 }
 
 

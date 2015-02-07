@@ -446,7 +446,7 @@ UBool RegexCompile::doParseActions(int32_t action)
         //   The first letter of the name will come through again under doConinueNamedCapture.
         fCaptureName = new UnicodeString();
         if (fCaptureName == NULL) {
-            *fStatus = U_MEMORY_ALLOCATION_ERROR;
+            error(U_MEMORY_ALLOCATION_ERROR);
         }
         break;
 
@@ -455,6 +455,10 @@ UBool RegexCompile::doParseActions(int32_t action)
         fCaptureName->append(fC.fChar);
         break;
 
+    case doBadNamedCapture:
+        error(U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+        break;
+        
     case doOpenCaptureParen:
         // Open Capturing Paren, possibly named.
         //   Compile to a
@@ -493,13 +497,12 @@ UBool RegexCompile::doParseActions(int32_t action)
             fRXPat->fGroupMap->addElement(varsLoc, *fStatus);
 
             // If this is a named capture group, add the name->group number mapping.
-            // The hash table owns the name (char *) string.
             if (fCaptureName != NULL) {
                 int32_t groupNumber = fRXPat->fGroupMap->size();
                 int32_t previousMapping = uhash_puti(fRXPat->fNamedCaptureMap, fCaptureName, groupNumber, fStatus);
                 fCaptureName = NULL;    // hash table takes ownership of the name (key) string.
                 if (previousMapping > 0 && U_SUCCESS(*fStatus)) {
-                    *fStatus = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
+                    error(U_REGEX_INVALID_CAPTURE_GROUP_NAME);
                 }
             }
         }

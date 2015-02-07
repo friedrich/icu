@@ -251,6 +251,7 @@ backslash:
    'd'                   n  expr-quant                              doBackslashd
    'D'                   n  expr-quant                              doBackslashD
    'G'                   n  term                                    doBackslashG
+   'k'                   n  named-backref
    'N'                      expr-quant                              doNamedChar      #   \N{NAME}  named char
    'p'                      expr-quant                              doProperty       #   \p{Lu}  style property
    'P'                      expr-quant                              doProperty
@@ -266,6 +267,24 @@ backslash:
    eof                      errorDeath                              doEscapeError
    default               n  expr-quant                              doEscapedLiteralChar
 
+
+# named-backref   Scanned \k
+#                 Leading to \k{captureName}
+#                 Failure to get the full sequence is an error.
+#
+named-backref:
+    '{'                  n  named-backref-2
+    default                 errorDeath                              doBadNamedCapture
+
+named-backref-2:
+    ascii_letter         n  named-backref-3                         doNamedBackRef
+    default                 errorDeath                              doBadNamedCapture
+
+named-backref-3:
+    ascii_letter         n  named-backref-3                         doNamedBackRef
+    digit_char           n  named-backref-3                         doNamedBackRef
+    '}'                  n  expr-quant                              doNamedBackRef
+    default                 errorDeath                              doBadNamedCapture
 
 
 #
