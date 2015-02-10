@@ -30,6 +30,15 @@ class FieldPositionHandler;
  */
 class U_I18N_API SciFormatterOptions : public UMemory {
     public:
+
+    /**
+     * Returns TRUE if this object equals rhs.
+     */
+    UBool equals(const SciFormatterOptions &rhs) const {
+        return (fMantissa.equals(rhs.fMantissa) &&
+                fExponent.equals(rhs.fExponent));
+    }
+
     /**
      * Options for formatting the mantissa. 
      */
@@ -89,6 +98,14 @@ int32_t countChar32(
         const DigitFormatter &formatter,
         const DigitInterval &mantissaInterval,
         const SciFormatterOptions &options) const;
+
+/**
+ * Returns TRUE if this object equals rhs.
+ */
+UBool equals(const SciFormatter &rhs) const {
+    return (fExponent == rhs.fExponent);
+}
+
 private:
 UnicodeString fExponent;
 };

@@ -54,6 +54,16 @@ DigitList fRoundingIncrement;
 FixedPrecision();
 
 /**
+ * Returns TRUE if this object equals rhs.
+ */
+UBool equals(const FixedPrecision &rhs) const {
+    return (fMin.equals(rhs.fMin) &&
+            fMax.equals(rhs.fMax) &&
+            fSignificant.equals(rhs.fSignificant) &&
+            (fRoundingIncrement == rhs.fRoundingIncrement));
+}
+
+/**
  * Rounds value in place to prepare it for formatting.
  * @param value The value to be rounded. It is rounded in place.
  * @param exponent Always pass 0 for fixed decimal formatting. scientific
@@ -99,6 +109,13 @@ public:
      * @return the exponent of value.
      */
     int32_t toScientific(DigitList &value) const;
+
+    /**
+     * Returns TRUE if this object equals rhs.
+     */
+    UBool equals(const ScientificPrecision &rhs) const {
+        return fMantissa.equals(rhs.fMantissa);
+    }
 private:
     int32_t getMultiplier() const;
 

@@ -2791,6 +2791,23 @@ DigitFormatter::countChar32ForSmallInt(
     return minDigits;
 }
 
+UBool
+DigitFormatter::equals(const DigitFormatter &rhs) const {
+    UBool result = (fGroupingSeparator == rhs.fGroupingSeparator) &&
+                   (fDecimal == rhs.fDecimal) &&
+                   (fNegativeSign == rhs.fNegativeSign) &&
+                   (fPositiveSign == rhs.fPositiveSign) &&
+                   (fIsStandardDigits == rhs.fIsStandardDigits);
+    if (!result) {
+        return FALSE;
+    }
+    for (int32_t i = 0; i < UPRV_LENGTHOF(fLocalizedDigits); ++i) {
+        if (fLocalizedDigits[i] != rhs.fLocalizedDigits[i]) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
 
 
 U_NAMESPACE_END

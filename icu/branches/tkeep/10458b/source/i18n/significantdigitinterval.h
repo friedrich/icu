@@ -30,6 +30,13 @@ public:
             : fMax(INT32_MAX), fMin(0) { }
 
     /**
+     * Returns TRUE if this object is equal to rhs.
+     */
+    UBool equals(const SignificantDigitInterval &rhs) const {
+        return ((fMax == rhs.fMax) && (fMin == rhs.fMin));
+    }
+
+    /**
      * Sets maximum significant digits. 0 or negative means no maximum.
      */
     void setMax(int32_t count) {

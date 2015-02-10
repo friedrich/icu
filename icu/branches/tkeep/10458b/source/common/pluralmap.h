@@ -200,6 +200,26 @@ public:
         return getMutable(index, &defaultValue, status);
     }
 
+    /**
+     * Returns TRUE if this object equals rhs.
+     */
+    UBool equals(
+            const PluralMap<T> &rhs,
+            UBool (*eqFunc)(const T &, const T &)) const {
+        for (int32_t i = 0; i < UPRV_LENGTHOF(fVariants); ++i) {
+            if (fVariants[i] == rhs.fVariants[i]) {
+                continue;
+            }
+            if (fVariants[i] == NULL || rhs.fVariants[i] == NULL) {
+                return FALSE;
+            }
+            if (!eqFunc(*fVariants[i], *rhs.fVariants[i])) {
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
+
 private:
     T fOtherVariant;
     T* fVariants[6];

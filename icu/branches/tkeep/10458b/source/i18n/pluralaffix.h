@@ -89,8 +89,20 @@ public:
      * Returns TRUE if this instance has variants besides "other"
      */
     UBool hasMultipleVariants() const;
+
+    /**
+     * Returns TRUE if this instance equals rhs.
+     */
+    UBool equals(const PluralAffix &rhs) const {
+        return affixes.equals(rhs.affixes, &eq);
+    }
+
 private:
     PluralMap<DigitAffix> affixes;
+
+    static UBool eq(const DigitAffix &x, const DigitAffix &y) {
+        return x.equals(y);
+    }
 };
 
 

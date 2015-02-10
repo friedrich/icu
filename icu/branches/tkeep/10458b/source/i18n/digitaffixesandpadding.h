@@ -92,6 +92,18 @@ DigitAffixesAndPadding()
         : fPadPosition(kPadBeforePrefix), fPadChar(0x2a), fWidth(0) { }
 
 /**
+ * Returns TRUE if this object is equal to rhs.
+ */
+UBool equals(const DigitAffixesAndPadding &rhs) const {
+    return (fPositivePrefix.equals(rhs.fPositivePrefix) &&
+            fPositiveSuffix.equals(rhs.fPositiveSuffix) &&
+            fNegativePrefix.equals(rhs.fNegativePrefix) &&
+            fNegativeSuffix.equals(rhs.fNegativeSuffix) &&
+            fPadPosition == rhs.fPadPosition &&
+            fPadChar == rhs.fPadChar);
+}
+
+/**
  * Returns TRUE if a plural rules instance is needed to complete the
  * formatting by detecting if any of the affixes have multiple plural
  * variations.

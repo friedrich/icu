@@ -55,6 +55,13 @@ public:
      * Returns this affix as a unicode string.
      */
     const UnicodeString & toString() const { return fAffix; }
+
+    /**
+     * Returns TRUE if this object equals rhs.
+     */
+    UBool equals(const DigitAffix &rhs) const {
+        return ((fAffix == rhs.fAffix) && (fAnnotations == rhs.fAnnotations));
+    }
 private:
     UnicodeString fAffix;
     UnicodeString fAnnotations;

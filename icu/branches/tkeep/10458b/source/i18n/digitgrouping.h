@@ -28,6 +28,15 @@ public:
     DigitGrouping() : fGrouping(0), fGrouping2(0), fMinGrouping(0) { }
 
     /**
+     * Returns TRUE if this object is equal to rhs.
+     */
+    UBool equals(const DigitGrouping &rhs) const {
+        return ((fGrouping == rhs.fGrouping) && 
+                (fGrouping2 == rhs.fGrouping2) &&
+                (fMinGrouping == rhs.fMinGrouping));
+    }
+
+    /**
      * Returns true if a separator is needed after a particular digit.
      * @param digitsLeftOfDecimal the total count of digits left of the
      *  decimal.

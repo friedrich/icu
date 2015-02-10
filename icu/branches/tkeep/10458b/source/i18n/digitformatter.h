@@ -33,6 +33,13 @@ class U_I18N_API DigitFormatterOptions : public UMemory {
     DigitFormatterOptions() : fAlwaysShowDecimal(FALSE) { }
 
     /**
+     * Returns TRUE if this object equals rhs.
+     */
+    UBool equals(const DigitFormatterOptions &rhs) const {
+        return (fAlwaysShowDecimal == rhs.fAlwaysShowDecimal);
+    }
+
+    /**
      * If TRUE, show the decimal separator even when there are no fraction
      * digits. default is FALSE.
      */
@@ -45,6 +52,15 @@ class U_I18N_API DigitFormatterOptions : public UMemory {
 class U_I18N_API DigitFormatterIntOptions : public UMemory {
     public:
     DigitFormatterIntOptions() : fMinDigits(1), fAlwaysShowSign(FALSE) { }
+
+    /**
+     * Returns TRUE if this object equals rhs.
+     */
+    UBool equals(const DigitFormatterIntOptions &rhs) const {
+        return ((fMinDigits == rhs.fMinDigits) &&
+                (fAlwaysShowSign == rhs.fAlwaysShowSign));
+    }
+
     /**
      * Minimum digit count to use. Left pad small ints with 0's
      * (or equivalent) to get the minimum digits. Default is 1.
@@ -138,6 +154,11 @@ int32_t countChar32(
 int32_t countChar32ForInt(
         int32_t value,
         const DigitFormatterIntOptions &options) const;
+
+/**
+ * Returns TRUE if this object equals rhs.
+ */
+UBool equals(const DigitFormatter &rhs) const;
 
 private:
 UChar32 fLocalizedDigits[10];

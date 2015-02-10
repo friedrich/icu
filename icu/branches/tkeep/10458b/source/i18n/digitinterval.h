@@ -30,6 +30,14 @@ public:
             : fLargestExclusive(INT32_MAX), fSmallestInclusive(INT32_MIN) { }
 
     /**
+     * Returns true if this object is the same as rhs.
+     */
+    UBool equals(const DigitInterval &rhs) const {
+        return ((fLargestExclusive == rhs.fLargestExclusive) &&
+                (fSmallestInclusive == rhs.fSmallestInclusive));
+    }
+
+    /**
      * Expand this interval so that it contains all of rhs.
      */
     void expandToContain(const DigitInterval &rhs);
