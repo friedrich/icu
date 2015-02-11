@@ -81,26 +81,169 @@ public:
             FixedPrecision &precision, UErrorCode &status);
 };
 
+class AffixPatternIterator;
 
 /**
- * A parser of a single affix pattern. Parses affix patterns produced from
- * using DecimalFormatPatternParser to parse a format pattern. Affix patterns
- * include the positive prefix and suffix and the negative prefix and suffix.
- * This class expects affix patterns to be in the same format that
- * DecimalFormatPatternParser produces. Namely special characters in the
- * affix that correspond to a field type must be prefixed with an
- * apostrophe ('). These special character sequences inluce minus (-),
- * percent (%), permile (U+2030), short currency (U+00a4),
- * medium currency (u+00a4 * 2), long currency (u+a4 * 3), and apostrophe (')
- * (apostrophe does not correspond to a field type but has to be escaped
- * because it itself is the escape character).
- * When parsing an affix pattern, this class translates these apostrophe
- * prefixed special character sequences to their equivalent in the given
- * locale using the DecimalFormatSymbols provided to the constructor.
- * If these special characters are not prefixed with an apostrophe in
- * the affix pattern, then they are treated verbatim just as any other
- * character. If an apostrophe prefixes a non special character in the
- * affix pattern, the apostrophe is simply ignored.
+ * A locale agnostic representation of an affix pattern.
+ */
+class U_I18N_API AffixPattern : public UMemory {
+public:
+
+    /**
+     * The token types that can appear in an affix pattern.
+     */
+    enum ETokenType {
+        kLiteral,
+        kPercent,
+        kPerMill,
+        kCurrency,
+        kNegative
+    };
+
+    /**
+     * An empty affix pattern.
+     */
+    AffixPattern()
+            : tokens(), literals(), hasCurrencyToken(FALSE), char32Count(0) {
+    }
+
+    /**
+     * Adds a string literal to this affix pattern.
+     */
+    void addLiteral(const UChar *, int32_t start, int32_t len);
+
+    /**
+     * Adds a token to this affix pattern. t must not be kLiteral as
+     * the addLiteral() method adds literals. 
+     * @param t the token type to add
+     * @param count the token count. Used for currency to distinguish between
+     *  one, two, or three currency symbols. Note that adding a currency
+     *  token with count=2 (Use ISO code) is different than adding two
+     *  currency tokens each with count=1 (two currency symbols).
+     */
+    void add(ETokenType t, uint8_t count);
+
+    /**
+     * Makes this instance be an empty affix pattern.
+     */
+    void remove();
+
+    /**
+     * Provides an iterator over the tokens in this instance.
+     * @param result this is initialized to point just before the
+     *   first token of this instance. Caller must call nextToken()
+     *   on the iterator once it is set up to have it actually point
+     *   to the first token. This first call to nextToken() will return
+     *   FALSE if the AffixPattern being iterated over is empty.
+     * @return result
+     */
+    AffixPatternIterator &iterator(AffixPatternIterator &result) const;
+
+    /**
+     * Returns TRUE if this instance has currency tokens in it.
+     */
+    UBool usesCurrency() const {
+        return hasCurrencyToken;
+    }
+
+    /**
+     * Returns the number of code points a string of this instance
+     * would have if none of the special tokens were escaped.
+     * Used to compute the padding size.
+     */
+    int32_t countChar32() const {
+        return char32Count;
+    }
+
+
+    /**
+     * Parses an affix pattern string appending it to an AffixPattern.
+     * Parses affix pattern strings produced from using
+     * DecimalFormatPatternParser to parse a format pattern. Affix patterns
+     * include the positive prefix and suffix and the negative prefix
+     * and suffix. This method expects affix patterns strings to be in the
+     * same format that DecimalFormatPatternParser produces. Namely special
+     * characters in the affix that correspond to a field type must be
+     * prefixed with an apostrophe ('). These special character sequences
+     * inluce minus (-), percent (%), permile (U+2030),
+     * short currency (U+00a4), medium currency (u+00a4 * 2),
+     * long currency (u+a4 * 3), and apostrophe (')
+     * (apostrophe does not correspond to a field type but has to be escaped
+     * because it itself is the escape character).
+     * Since the expansion of these special character
+     * sequences is locale dependent, these sequences are not expanded in
+     * an AffixPattern instance.
+     * If these special characters are not prefixed with an apostrophe in
+     * the affix pattern string, then they are treated verbatim just as
+     * any other character. If an apostrophe prefixes a non special
+     * character in the affix pattern, the apostrophe is simply ignored.
+     *
+     * @param affixStr the string from DecimalFormatPatternParser
+     * @param appendTo parsed result appended here.
+     * @param status any error parsing returned here.
+     */
+    static AffixPattern &parseAffixString(
+            const UnicodeString &affixStr,
+            AffixPattern &appendTo,
+            UErrorCode &status);
+private:
+    UnicodeString tokens;
+    UnicodeString literals;
+    UBool hasCurrencyToken;
+    int32_t char32Count;
+
+};
+
+/**
+ * An iterator over the tokens in an AffixPattern instance.
+ */
+class U_I18N_API AffixPatternIterator : public UMemory {
+public:
+
+    /**
+     * Using an iterator without first calling iterator on an AffixPattern
+     * instance to initialize the iterator results in
+     * undefined behavior.
+     */
+    AffixPatternIterator() : nextLiteralIndex(0), nextTokenIndex(0), tokens(NULL), literals(NULL) { }
+    /**
+     * Advances this iterator to the next token. Returns FALSE when there
+     * are no more tokens. Calling the other methods after nextToken()
+     * returns FALSE results in undefined behavior.
+     */ 
+    UBool nextToken();
+
+    /**
+     * Returns the type of token.
+     */
+    AffixPattern::ETokenType getTokenType() const;
+
+    /**
+     * For literal tokens, returns the literal string. Calling this for
+     * other token types results in undefined behavior.
+     * @param result replaced with a read-only alias to the literal string.
+     * @return result
+     */
+    UnicodeString &getLiteral(UnicodeString &result) const;
+
+    /**
+     * Returns the token length. Usually 1, but for currency tokens may
+     * be 2 for ISO code and 3 for long form.
+     */
+    int32_t getTokenLength() const;
+private:
+    int32_t nextLiteralIndex;
+    int32_t nextTokenIndex;
+    const UnicodeString *tokens;
+    const UnicodeString *literals;
+    friend class AffixPattern;
+    AffixPatternIterator(const AffixPatternIterator &);
+    AffixPatternIterator &operator=(const AffixPatternIterator &);
+};
+
+/**
+ * A locale aware class that converts locale independent AffixPattern
+ * instances into locale dependent PluralAffix instances.
  */
 class U_I18N_API AffixPatternParser : public UMemory {
 public:
@@ -108,36 +251,24 @@ AffixPatternParser(const DecimalFormatSymbols &symbols);
 void setDecimalFormatSymbols(const DecimalFormatSymbols &symbols);
 
 /**
- * Contains the currency forms. Only needs to be initialized if the affixes
- * being parsed contain the currency symbol (U+00a4).
+ * Contains the currency forms. Only needs to be initialized if the affix
+ * patterns being parsed contain the currency symbol (U+00a4).
  */
 CurrencyAffixInfo fCurrencyAffixInfo;
 
 /**
- * Parses affixStr.
- * @param affixStr the input.
- * @param affix The result of parsing affixStr is appended here.
+ * Parses affixPattern appending the result to appendTo.
+ * @param affixPattern The affix pattern.
+ * @param appendTo The result of parsing affixPattern is appended here.
  * @param status any error returned here.
+ * @return 2 if there is a percent symbol in affixPattern; 3 if there
+ *   is a permill symbol; 0 otherwise.
  */
 int32_t parse(
-        const UnicodeString &affixStr,
-        PluralAffix &affix,
+        const AffixPattern &affixPattern,
+        PluralAffix &appendTo,
         UErrorCode &status) const;
 
-/**
- * Determines if affixStr needs currencies. That is it determines if affixStr
- * has the currency symbol(s) (U+00a4) prefixed with apostrophe. Useful to
- * see if fCurrencyAffixInfo needs initializing.
- */
-static UBool usesCurrencies(
-        const UnicodeString &affixStr);
-/**
- * Appends affixStr to appendTo while removing any escaping apostrophes and
- * returns appendTo. Used in figuring out the intended format width for
- * padding.
- */
-static UnicodeString &unescape(
-        const UnicodeString &affixStr, UnicodeString &appendTo);
 private:
 UnicodeString fPercent;
 UnicodeString fPermill;

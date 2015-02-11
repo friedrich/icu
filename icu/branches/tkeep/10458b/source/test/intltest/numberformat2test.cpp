@@ -132,10 +132,10 @@ SciFormatter fSciFormatter;
 DigitFormatter fFormatter;
 AffixPatternParser fAffixParser;
 DigitAffixesAndPadding fAap;
-UnicodeString fPositivePrefixPattern;
-UnicodeString fNegativePrefixPattern;
-UnicodeString fPositiveSuffixPattern;
-UnicodeString fNegativeSuffixPattern;
+AffixPattern fPositivePrefixPattern;
+AffixPattern fNegativePrefixPattern;
+AffixPattern fPositiveSuffixPattern;
+AffixPattern fNegativeSuffixPattern;
 UBool fUseScientific;
 Locale fLocale;
 PluralRules *fRules;
@@ -222,10 +222,10 @@ void NumberFormat2TestDecimalFormat::setCurrency(
 }
 
 UBool NumberFormat2TestDecimalFormat::usesCurrency() {
-    return AffixPatternParser::usesCurrencies(fPositivePrefixPattern)
-    || AffixPatternParser::usesCurrencies(fNegativePrefixPattern)
-    || AffixPatternParser::usesCurrencies(fPositiveSuffixPattern)
-    || AffixPatternParser::usesCurrencies(fNegativeSuffixPattern);
+    return fPositivePrefixPattern.usesCurrency()
+    || fNegativePrefixPattern.usesCurrency()
+    || fPositiveSuffixPattern.usesCurrency()
+    || fNegativeSuffixPattern.usesCurrency();
 }
 
 #define NUMBERFORMAT2TEST_UPDATE(dest, src) ((dest) = (dest) == 0 ? (src) : (dest))
@@ -301,23 +301,33 @@ void NumberFormat2TestDecimalFormat::parsePattern(
         fGrouping.fGrouping2 = out.fGroupingSize2;
     }
     fOptions.fMantissa.fAlwaysShowDecimal = out.fDecimalSeparatorAlwaysShown;
-    fAap.fWidth = out.fFormatWidth;
-    {
-        UnicodeString scratch;
-        fAap.fWidth += AffixPatternParser::unescape(out.fPosPrefixPattern, scratch).countChar32();
-    }
-    {
-        UnicodeString scratch;
-        fAap.fWidth += AffixPatternParser::unescape(out.fPosSuffixPattern, scratch).countChar32();
-    }
     if (out.fRoundingIncrementUsed) {
         fPrecision.fMantissa.fRoundingIncrement = out.fRoundingIncrement;
     }
     fAap.fPadChar = out.fPad;
-    fNegativePrefixPattern = out.fNegPrefixPattern;
-    fNegativeSuffixPattern = out.fNegSuffixPattern;
-    fPositivePrefixPattern = out.fPosPrefixPattern;
-    fPositiveSuffixPattern = out.fPosSuffixPattern;
+    fNegativePrefixPattern.remove();
+    fNegativeSuffixPattern.remove();
+    fPositivePrefixPattern.remove();
+    fPositiveSuffixPattern.remove();
+    AffixPattern::parseAffixString(
+            out.fNegPrefixPattern,
+            fNegativePrefixPattern,
+            status);
+    AffixPattern::parseAffixString(
+            out.fNegSuffixPattern,
+            fNegativeSuffixPattern,
+            status);
+    AffixPattern::parseAffixString(
+            out.fPosPrefixPattern,
+            fPositivePrefixPattern,
+            status);
+    AffixPattern::parseAffixString(
+            out.fPosSuffixPattern,
+            fPositiveSuffixPattern,
+            status);
+    fAap.fWidth = out.fFormatWidth;
+    fAap.fWidth += fPositivePrefixPattern.countChar32();
+    fAap.fWidth += fPositiveSuffixPattern.countChar32();
     switch (out.fPadPosition) {
     case DecimalFormatPattern::kPadBeforePrefix:
         fAap.fPadPosition = DigitAffixesAndPadding::kPadBeforePrefix;
@@ -1659,9 +1669,16 @@ void NumberFormat2Test::TestAffixPatternParser() {
     UnicodeString str("'--y'''dz'%'\u00a4\u00a4\u00a4\u00a4 y '\u00a4\u00a4\u00a4 or '\u00a4\u00a4 but '\u00a4");
     str = str.unescape();
     assertSuccess("", status);
-    assertEquals("", 2, parser.parse(str, affix, status));
+    AffixPattern affixPattern;
+    assertEquals(
+            "",
+            2,
+            parser.parse(
+                    AffixPattern::parseAffixString(str, affixPattern, status),
+                    affix,
+                    status));
     assertSuccess("", status);
-    assertTrue("", AffixPatternParser::usesCurrencies(str));
+    assertTrue("", affixPattern.usesCurrency());
     assertTrue("", affix.hasMultipleVariants());
     {
         // other
@@ -1695,9 +1712,16 @@ void NumberFormat2Test::TestAffixPatternParser() {
     }
     affix.remove();
     str = "%'-";
-    assertFalse("", AffixPatternParser::usesCurrencies(str));
-    assertEquals("", 0, parser.parse(str, affix, status));
+    affixPattern.remove();
+    assertEquals(
+            "",
+            0,
+            parser.parse(
+                    AffixPattern::parseAffixString(str, affixPattern, status),
+                    affix,
+                    status));
     assertSuccess("", status);
+    assertFalse("", affixPattern.usesCurrency());
     assertFalse("", affix.hasMultipleVariants());
     {
         // other
@@ -1710,7 +1734,43 @@ void NumberFormat2Test::TestAffixPatternParser() {
                 expectedAttributes);
     }
     UnicodeString a4("\u00a4");
-    assertFalse("", AffixPatternParser::usesCurrencies(a4.unescape()));
+    AffixPattern scratchPattern;
+    AffixPattern::parseAffixString(a4.unescape(), scratchPattern, status);
+    assertFalse("", scratchPattern.usesCurrency());
+
+    // Test really long string > 256 chars.
+    str = "'%012345678901234567890123456789012345678901234567890123456789"
+          "012345678901234567890123456789012345678901234567890123456789"
+          "012345678901234567890123456789012345678901234567890123456789"
+          "012345678901234567890123456789012345678901234567890123456789"
+          "012345678901234567890123456789012345678901234567890123456789";
+    affixPattern.remove();
+    affix.remove();
+    assertEquals(
+            "",
+            2,
+            parser.parse(
+                    AffixPattern::parseAffixString(str, affixPattern, status),
+                    affix,
+                    status));
+    assertSuccess("", status);
+    assertFalse("", affixPattern.usesCurrency());
+    assertFalse("", affix.hasMultipleVariants());
+    {
+        NumberFormat2Test_Attributes expectedAttributes[] = {
+            {UNUM_PERCENT_FIELD, 0, 1},
+            {0, -1, 0}};
+        verifyAffix(
+                "%012345678901234567890123456789012345678901234567890123456789"
+                "012345678901234567890123456789012345678901234567890123456789"
+                "012345678901234567890123456789012345678901234567890123456789"
+                "012345678901234567890123456789012345678901234567890123456789"
+                "012345678901234567890123456789012345678901234567890123456789",
+                affix.getOtherVariant(),
+                expectedAttributes);
+    }
+  
+
 }
 
 
