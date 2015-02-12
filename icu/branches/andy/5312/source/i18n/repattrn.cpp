@@ -93,7 +93,7 @@ RegexPattern &RegexPattern::operator = (const RegexPattern &other) {
     fMinMatchLen      = other.fMinMatchLen;
     fFrameSize        = other.fFrameSize;
     fDataSize         = other.fDataSize;
-    fMaxCaptureDigits = other.fMaxCaptureDigits;
+    fNumCaptureGroups = other.fNumCaptureGroups;
     fStaticSets       = other.fStaticSets;
     fStaticSets8      = other.fStaticSets8;
 
@@ -135,8 +135,20 @@ RegexPattern &RegexPattern::operator = (const RegexPattern &other) {
     }
 
     // Copy the named capture group hash map.
-    //   TODO(andy).
-
+    int32_t hashPos = UHASH_FIRST;
+    while (const UHashElement *hashEl = uhash_nextElement(other.fNamedCaptureMap, &hashPos)) {
+        if (U_FAILURE(fDeferredStatus)) {
+            break;
+        }
+        const UnicodeString *name = (const UnicodeString *)hashEl->key.pointer;
+        UnicodeString *key = new UnicodeString(*name);
+        int32_t val = hashEl->value.integer;
+        if (key == NULL) {
+            fDeferredStatus = U_MEMORY_ALLOCATION_ERROR;
+        } else {
+            uhash_puti(fNamedCaptureMap, key, val, &fDeferredStatus);
+        }
+    }
     return *this;
 }
 
@@ -158,7 +170,7 @@ void RegexPattern::init() {
     fFrameSize        = 0;
     fDataSize         = 0;
     fGroupMap         = NULL;
-    fMaxCaptureDigits = 1;
+    fNumCaptureGroups = 0;
     fStaticSets       = NULL;
     fStaticSets8      = NULL;
     fStartType        = START_NO_INFO;

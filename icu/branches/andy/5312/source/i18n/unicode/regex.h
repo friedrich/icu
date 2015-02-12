@@ -138,7 +138,7 @@ public:
 
     /**
      * Create an exact copy of this RegexPattern object.  Since RegexPattern is not
-     * intended to be subclasses, <code>clone()</code> and the copy construction are
+     * intended to be subclassed, <code>clone()</code> and the copy construction are
      * equivalent operations.
      * @return the copy of this RegexPattern
      * @stable ICU 2.4
@@ -611,6 +611,7 @@ private:
                                    //   the group's variables in the matcher stack frame.
 
     int32_t         fMaxCaptureDigits;
+    int32_t         fNumCaptureGroups;
 
     UnicodeSet     **fStaticSets;  // Ptr to static (shared) sets for predefined
                                    //   regex character classes, e.g. Word.

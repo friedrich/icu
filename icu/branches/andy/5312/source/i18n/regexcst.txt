@@ -273,17 +273,17 @@ backslash:
 #                 Failure to get the full sequence is an error.
 #
 named-backref:
-    '{'                  n  named-backref-2
+    '<'                  n  named-backref-2                         doBeginNamedBackRef
     default                 errorDeath                              doBadNamedCapture
 
 named-backref-2:
-    ascii_letter         n  named-backref-3                         doNamedBackRef
+    ascii_letter         n  named-backref-3                         doContinueNamedBackRef
     default                 errorDeath                              doBadNamedCapture
 
 named-backref-3:
-    ascii_letter         n  named-backref-3                         doNamedBackRef
-    digit_char           n  named-backref-3                         doNamedBackRef
-    '}'                  n  expr-quant                              doNamedBackRef
+    ascii_letter         n  named-backref-3                         doContinueNamedBackRef
+    digit_char           n  named-backref-3                         doContinueNamedBackRef
+    '>'                  n  expr-quant                              doCompleteNamedBackRef
     default                 errorDeath                              doBadNamedCapture
 
 

@@ -288,17 +288,7 @@ void    RegexCompile::compile(
     //
     // The pattern has now been read and processed, and the compiled code generated.
     //
-
-    //
-    // Compute the number of digits requried for the largest capture group number.
-    //
-    fRXPat->fMaxCaptureDigits = 1;
-    int32_t  n = 10;
-    int32_t  groupCount = fRXPat->fGroupMap->size();
-    while (n <= groupCount) {
-        fRXPat->fMaxCaptureDigits++;
-        n *= 10;
-    }
+    fRXPat->fNumCaptureGroups = fRXPat->fGroupMap->size();
 
     //
     // The pattern's fFrameSize so far has accumulated the requirements for
@@ -1301,7 +1291,41 @@ UBool RegexCompile::doParseActions(int32_t action)
         }
         break;
 
+    case doBeginNamedBackRef:
+        U_ASSERT(fCaptureName == NULL);
+        fCaptureName = new UnicodeString;
+        if (fCaptureName == NULL) {
+            error(U_MEMORY_ALLOCATION_ERROR);
+        }
+        break;
+            
+    case doContinueNamedBackRef:
+        fCaptureName->append(fC.fChar);
+        break;
 
+    case doCompleteNamedBackRef:
+        {
+        int32_t groupNumber = uhash_geti(fRXPat->fNamedCaptureMap, fCaptureName);
+        if (groupNumber == 0) {
+            // Group name has not been defined.
+            //   Could be a forward reference. If we choose to support them at some
+            //   future time, extra mechanism will be required at this point.
+            error(U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+        } else {
+            // Given the number, handle identically to a \n numbered back reference.
+            // See comments above, under doBackRef
+            fixLiterals(FALSE);
+            if (fModeFlags & UREGEX_CASE_INSENSITIVE) {
+                appendOp(URX_BACKREF_I, groupNumber);
+            } else {
+                appendOp(URX_BACKREF, groupNumber);
+            }
+        }
+        delete fCaptureName;
+        fCaptureName = NULL;
+        break;
+        }
+       
     case doPossessivePlus:
         // Possessive ++ quantifier.
         // Compiles to

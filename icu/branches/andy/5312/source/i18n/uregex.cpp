@@ -1389,10 +1389,10 @@ int32_t RegexCImpl::appendReplacement(RegularExpression    *regexp,
             matchStart = (int32_t)m->fMatchStart;
         } else {
             // !!!: Would like a better way to do this!
-            UErrorCode status = U_ZERO_ERROR;
-            lastMatchEnd = utext_extract(m->fInputText, 0, m->fLastMatchEnd, NULL, 0, &status);
-            status = U_ZERO_ERROR;
-            matchStart = lastMatchEnd + utext_extract(m->fInputText, m->fLastMatchEnd, m->fMatchStart, NULL, 0, &status);
+            UErrorCode tempStatus = U_ZERO_ERROR;
+            lastMatchEnd = utext_extract(m->fInputText, 0, m->fLastMatchEnd, NULL, 0, &tempStatus);
+            tempStatus = U_ZERO_ERROR;
+            matchStart = lastMatchEnd + utext_extract(m->fInputText, m->fLastMatchEnd, m->fMatchStart, NULL, 0, &tempStatus);
         }
         for (i=lastMatchEnd; i<matchStart; i++) {
             appendToBuf(regexp->fText[i], &destIdx, dest, capacity);
@@ -1407,7 +1407,7 @@ int32_t RegexCImpl::appendReplacement(RegularExpression    *regexp,
 
     // scan the replacement text, looking for substitutions ($n) and \escapes.
     int32_t  replIdx = 0;
-    while (replIdx < replacementLength) {
+    while (replIdx < replacementLength && U_SUCCESS(*status)) {
         UChar  c = replacementText[replIdx];
         replIdx++;
         if (c != DOLLARSIGN && c != BACKSLASH) {
@@ -1475,9 +1475,14 @@ int32_t RegexCImpl::appendReplacement(RegularExpression    *regexp,
             }
 
             U16_FWD_1(replacementText, replIdx, replacementLength);
-            groupNum=groupNum*10 + u_charDigitValue(digitC);
-            numDigits++;
-            if (numDigits >= m->fPattern->fMaxCaptureDigits) {
+            int32_t digitVal = u_charDigitValue(digitC);
+            if (groupNum * 10 + digitVal <= m->fPattern->fNumCaptureGroups) {
+                groupNum = groupNum * 10 + digitVal;
+                numDigits++;
+            } else {
+                if (numDigits == 0) {
+                    *status = U_INDEX_OUTOFBOUNDS_ERROR;
+                }
                 break;
             }
         }

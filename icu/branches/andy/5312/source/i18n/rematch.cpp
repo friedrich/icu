@@ -331,8 +331,7 @@ RegexMatcher &RegexMatcher::appendReplacement(UText *dest,
     //  TODO:  optimize this loop by efficiently scanning for '$' or '\',
     //         move entire ranges not containing substitutions.
     UTEXT_SETNATIVEINDEX(replacement, 0);
-    UChar32 c = UTEXT_NEXT32(replacement);
-    while (c != U_SENTINEL) {
+    for (UChar32 c = UTEXT_NEXT32(replacement); U_SUCCESS(status) && c != U_SENTINEL;  c = UTEXT_NEXT32(replacement)) {
         if (c == BACKSLASH) {
             // Backslash Escape.  Copy the following char out without further checks.
             //                    Note:  Surrogate pairs don't need any special handling
@@ -402,47 +401,76 @@ RegexMatcher &RegexMatcher::appendReplacement(UText *dest,
             // Consume at most the number of digits necessary for the largest capture
             // number that is valid for this pattern.
 
-            int32_t numDigits = 0;
             int32_t groupNum  = 0;
-            UChar32 digitC;
-            for (;;) {
-                digitC = UTEXT_CURRENT32(replacement);
-                if (digitC == U_SENTINEL) {
-                    break;
+            int32_t numDigits = 0;
+            UChar32 nextChar = utext_current32(replacement);
+            if (nextChar == 0x7b) {   // if (nextChar == '{')
+                // Scan for a Named Capture Group, ${name}.
+                UnicodeString groupName;
+                for(;;) {
+                    nextChar = utext_current32(replacement);
+                    if (nextChar == U_SENTINEL) {
+                        status = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
+                        break;
+                    }
+                    if ((nextChar >= 0x41 && nextChar <= 0x5a) ||       // A..Z
+                            (nextChar >= 0x61 && nextChar <= 0x7a) ||   // a..z
+                            (nextChar >= 0x31 && nextChar <= 0x39)) {   // 0..9
+                        groupName.append(nextChar);
+                    } else if (nextChar == 0x7d) {    // == '}'
+                        groupNum = uhash_geti(fPattern->fNamedCaptureMap, &groupName);
+                        if (groupNum == 0) {
+                            status = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
+                            break;
+                        }
+                    } else {
+                        // Character was something other than a name char or a closing '}'
+                        status = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
+                        break;
+                    }
+                    utext_next32(replacement);
                 }
-                if (u_isdigit(digitC) == FALSE) {
-                    break;
+                        
+            } else if (u_isdigit(nextChar)) {
+
+                // $n    Scan for a capture group number
+                UChar32 digitC;
+                for (;;) {
+                    digitC = UTEXT_CURRENT32(replacement);
+                    if (digitC == U_SENTINEL) {
+                        break;
+                    }
+                    if (u_isdigit(digitC) == FALSE) {
+                        break;
+                    }
+                    int32_t nextDigitVal = u_charDigitValue(digitC);
+                    if (groupNum*10 + nextDigitVal > fPattern->fNumCaptureGroups) {
+                        // Don't consume the next digit if it makes the capture group number too big.
+                        if (numDigits == 0) {
+                            status = U_INDEX_OUTOFBOUNDS_ERROR;
+                        }
+                        break;
+                    }
+                    (void)UTEXT_NEXT32(replacement);
+                    groupNum=groupNum*10 + nextDigitVal; 
+                    ++numDigits;
                 }
-                (void)UTEXT_NEXT32(replacement);
-                groupNum=groupNum*10 + u_charDigitValue(digitC);
-                numDigits++;
-                if (numDigits >= fPattern->fMaxCaptureDigits) {
-                    break;
-                }
+
             }
 
-
-            if (numDigits == 0) {
-                // The $ didn't introduce a group number at all.
-                // Treat it as just part of the substitution text.
-                UChar c16 = DOLLARSIGN;
-                destLen += utext_replace(dest, destLen, destLen, &c16, 1, &status);
-            } else {
-                // Finally, append the capture group data to the destination.
-                destLen += appendGroup(groupNum, dest, status);
-                if (U_FAILURE(status)) {
-                    // Can fail if group number is out of range.
-                    break;
+            if (U_SUCCESS(status)) {
+                if (groupNum > 0 || numDigits > 0) {
+                    destLen += appendGroup(groupNum, dest, status);
+                } else {  
+                    // The $ didn't introduce a group at all.
+                    // Treat it as just part of the substitution text.
+                    // TODO: Java treats this case as an error. Should we?
+                    UChar c16 = DOLLARSIGN;
+                    destLen += utext_replace(dest, destLen, destLen, &c16, 1, &status);
                 }
             }
-        }
-
-        if (U_FAILURE(status)) {
-            break;
-        } else {
-            c = UTEXT_NEXT32(replacement);
-        }
-    }
+        }  // End of $ capture group handling
+    }  // End of per-character loop through the replacement string.
 
     return *this;
 }

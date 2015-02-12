@@ -5211,12 +5211,50 @@ void RegexTest::PreAllocatedUTextCAPI () {
 void RegexTest::NamedCapture() {
     UErrorCode status = U_ZERO_ERROR;
     RegexPattern *pat = RegexPattern::compile(UnicodeString(
-            "abc()()(?<cgname>xyz)de(?<zzzzzzzzzzzzzzzzz>hmm)(?<cgniiame> )f"), 0, status);
-    if (U_SUCCESS(status)) {
-        pat->dumpPattern();
-    } else {
-        printf("%s\n", u_errorName(status));
-    }
+            "abc()()(?<three>xyz)(de)(?<five>hmm)(?<six>oh)f\\k<five>"), 0, status);
+    REGEX_CHECK_STATUS;
+    int32_t group = pat->groupNumberFromName("five", -1, status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(5 == group);
+    group = pat->groupNumberFromName("three", -1, status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(3 == group);
+
+    status = U_ZERO_ERROR;
+    group = pat->groupNumberFromName(UnicodeString("six"), status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(6 == group);
+
+    status = U_ZERO_ERROR;
+    group = pat->groupNumberFromName(UnicodeString("nosuch"), status);
+    U_ASSERT(status == U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+
+    status = U_ZERO_ERROR;
+
+    // After copying a pattern, named capture should still work in the copy.
+    RegexPattern *copiedPat = new RegexPattern(*pat);
+    REGEX_ASSERT(*copiedPat == *pat);
+    delete pat; pat = NULL;  // Delete original, copy should have no references back to it.
+
+    group = copiedPat->groupNumberFromName("five", -1, status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(5 == group);
+    group = copiedPat->groupNumberFromName("three", -1, status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(3 == group);
+    delete copiedPat;
+
+    // ReplaceAll with named capture group.
+    status = U_ZERO_ERROR;
+    UnicodeString text("Substitution of <<quotes>> for <<double brackets>>");
+    RegexMatcher m(UnicodeString("<<(?<mid>.+?)>>"), text, 0, status);
+    REGEX_CHECK_STATUS;
+    m.pattern().dumpPattern();
+    UnicodeString replacedText = m.replaceAll("'${mid}'", status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("Substitution of 'quotes' for 'double brackets'") == replacedText);
+
+//   pat->dumpPattern();
 }
 
 
@@ -5527,6 +5565,7 @@ void RegexTest::TestBug11480() {
     REGEX_ASSERT(buf[0] == 13);
     REGEX_ASSERT(buf[1] == 0);
     REGEX_ASSERT(buf[2] == 13);
+    uregex_close(re);
 }
 
 
