@@ -1,6 +1,6 @@
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 1997-2014, International Business Machines Corporation and
+ * Copyright (c) 1997-2015, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 /* Modification History:
@@ -205,6 +205,7 @@ void NumberFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &n
   TESTCASE_AUTO(TestCurrencyUsage);
   TESTCASE_AUTO(TestNumberFormatTestTuple);
   TESTCASE_AUTO(TestDataDrivenSpecification);
+  TESTCASE_AUTO(TestFastPathConsistent11524);
   TESTCASE_AUTO_END;
 }
 
@@ -7871,6 +7872,16 @@ void
 NumberFormatTest::TestDataDrivenSpecification() {
     NumberFormatTestDataDriven dd(this);
     dd.run("numberformattestspecification.txt", FALSE);
+}
+
+void NumberFormatTest::TestFastPathConsistent11524() {
+    UErrorCode status = U_ZERO_ERROR;
+    NumberFormat *fmt = NumberFormat::createInstance("en", status);
+    fmt->setMaximumIntegerDigits(INT32_MIN);
+    UnicodeString appendTo;
+    assertEquals("", "0", fmt->format(123, appendTo));
+    appendTo.remove();
+    assertEquals("", "0", fmt->format(12345, appendTo));
 }
 
 #endif /* #if !UCONFIG_NO_FORMATTING */

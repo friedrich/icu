@@ -375,16 +375,20 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
         return FALSE;
     }
     if (tuple.minIntegerDigitsFlag) {
-        fmt.fPrecision.fMantissa.fMin.setIntDigitCount(tuple.minIntegerDigits);
+        fmt.fPrecision.fMantissa.fMin.setIntDigitCount(
+                tuple.minIntegerDigits < 0 ? 0 : tuple.minIntegerDigits);
     }
     if (tuple.maxIntegerDigitsFlag) {
-        fmt.fPrecision.fMantissa.fMax.setIntDigitCount(tuple.maxIntegerDigits);
+        fmt.fPrecision.fMantissa.fMax.setIntDigitCount(
+                tuple.maxIntegerDigits < 0 ? 0 : tuple.maxIntegerDigits);
     }
     if (tuple.minFractionDigitsFlag) {
-        fmt.fPrecision.fMantissa.fMin.setFracDigitCount(tuple.minFractionDigits);
+        fmt.fPrecision.fMantissa.fMin.setFracDigitCount(
+                tuple.minFractionDigits < 0 ? 0 : tuple.minFractionDigits);
     }
     if (tuple.maxFractionDigitsFlag) {
-        fmt.fPrecision.fMantissa.fMax.setFracDigitCount(tuple.maxFractionDigits);
+        fmt.fPrecision.fMantissa.fMax.setFracDigitCount(
+                tuple.maxFractionDigits < 0 ? 0 : tuple.maxFractionDigits);
     }
     if (tuple.currencyFlag) {
         UnicodeString currency(tuple.currency);
@@ -965,11 +969,20 @@ void NumberFormat2Test::TestDigitIntFormatter() {
     DigitFormatter formatter(symbols);
     {
         verifyDigitIntFormatter(
-                "",
+                "0",
                 formatter,
                 0,
                 0,
                 FALSE,
+                NULL);
+    }
+    {
+        verifyDigitIntFormatter(
+                "+0",
+                formatter,
+                0,
+                0,
+                TRUE,
                 NULL);
     }
     {

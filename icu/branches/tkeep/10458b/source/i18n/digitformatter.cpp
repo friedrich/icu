@@ -2068,7 +2068,7 @@ static const UChar gDigits[] = {
         0x34,0x30,0x39,0x34,0x34,0x30,0x39,0x35};
 
     static const int32_t gDigitCount[] = {
-        0,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,
         1,1,2,2,2,2,2,2,
         2,2,2,2,2,2,2,2,
         2,2,2,2,2,2,2,2,
@@ -2625,6 +2625,18 @@ int32_t DigitFormatter::countChar32(
     return result;
 }
 
+static void appendField(
+        int32_t fieldId,
+        const UnicodeString &value,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) {
+    int32_t currentLength = appendTo.length();
+    appendTo.append(value);
+    handler.addAttribute(
+            fieldId,
+            currentLength,
+            appendTo.length());
+}
 
 UnicodeString &DigitFormatter::format(
         const DigitList &digits,
@@ -2636,35 +2648,50 @@ UnicodeString &DigitFormatter::format(
     int32_t digitsLeftOfDecimal = interval.getMostSignificantExclusive();
     int32_t lastDigitPos = interval.getLeastSignificantInclusive();
     int32_t intBegin = appendTo.length();
-    int32_t currentLength;
     int32_t fracBegin;
+
+    // Emit "0" instead of empty string.
+    if (digitsLeftOfDecimal == 0 && lastDigitPos == 0) {
+        appendTo.append(fLocalizedDigits[0]);
+        handler.addAttribute(UNUM_INTEGER_FIELD, intBegin, appendTo.length());
+        if (options.fAlwaysShowDecimal) {
+            appendField(
+                    UNUM_DECIMAL_SEPARATOR_FIELD,
+                    fDecimal,
+                    handler,
+                    appendTo);
+        }
+        return appendTo;
+    }
     for (int32_t i = digitsLeftOfDecimal - 1; i >= lastDigitPos; --i) { 
         if (i == -1) {
             if (!options.fAlwaysShowDecimal) {
-                currentLength = appendTo.length();
-                appendTo.append(fDecimal);
-                handler.addAttribute(UNUM_DECIMAL_SEPARATOR_FIELD, currentLength, appendTo.length());
+                appendField(
+                        UNUM_DECIMAL_SEPARATOR_FIELD,
+                        fDecimal,
+                        handler,
+                        appendTo);
             }
             fracBegin = appendTo.length();
         }
         appendTo.append(fLocalizedDigits[digits.getDigitByExponent(i)]);
         if (grouping.isSeparatorAt(digitsLeftOfDecimal, i)) {
-            currentLength = appendTo.length();
-            appendTo.append(fGroupingSeparator);
-            handler.addAttribute(UNUM_GROUPING_SEPARATOR_FIELD, currentLength, appendTo.length());
+            appendField(
+                    UNUM_GROUPING_SEPARATOR_FIELD,
+                    fGroupingSeparator,
+                    handler,
+                    appendTo);
         }
         if (i == 0) {
             if (digitsLeftOfDecimal > 0) {
                 handler.addAttribute(UNUM_INTEGER_FIELD, intBegin, appendTo.length());
             }
             if (options.fAlwaysShowDecimal) {
-                currentLength = appendTo.length();
-                appendTo.append(fDecimal);
-                handler.addAttribute(
+                appendField(
                         UNUM_DECIMAL_SEPARATOR_FIELD,
-                        currentLength,
-                        appendTo.length());
-                
+                        fDecimal,
+                        handler,
+                        appendTo);
             }
         }
     }
@@ -2723,7 +2750,8 @@ DigitFormatter::formatInt32(
     } else {
         uint8_t digits[10];
         int32_t count = _formatInt(lvalue, digits);
-        for (int32_t i = options.fMinDigits - 1; i >= count; --i) {
+        int32_t minDigits = options.fMinDigits < 1 ? 1 : options.fMinDigits;
+        for (int32_t i = minDigits - 1; i >= count; --i) {
             appendTo.append(fLocalizedDigits[0]);
         }
         for (int32_t i = count - 1; i >= 0; --i) {
@@ -2754,7 +2782,8 @@ DigitFormatter::countChar32ForInt(
     } else {
         uint8_t digits[10];
         int32_t count = _formatInt(lvalue, digits);
-        result += count < options.fMinDigits ? options.fMinDigits : count;
+        int32_t minDigits = options.fMinDigits < 1 ? 1 : options.fMinDigits;
+        result += count < minDigits ? minDigits : count;
     }
     return result;
 }
