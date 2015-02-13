@@ -873,7 +873,7 @@ static void fillInMissing(CDFLocaleStyleData* result) {
     }
   }
   // Iterate over each variant.
-  int32_t pos = -1;
+  PluralMapBase::Variant pos = PluralMapBase::NONE;
   CDFUnitArray *units = result->unitsByVariant->nextMutable(pos);
   for (;units != NULL; units = result->unitsByVariant->nextMutable(pos)) {
     for (int32_t i = 0; i < MAX_DIGITS; ++i) {
@@ -930,7 +930,7 @@ static CDFUnit* createCDFUnit(const char* variant, int32_t log10Value, CDFUnitsB
 // falls back to the OTHER variant. Therefore, this method will always return
 // some non-NULL value.
 static const CDFUnit* getCDFUnitFallback(const CDFUnitsByVariant* table, const UnicodeString& variant, int32_t log10Value) {
-  const CDFUnitArray *cdfUnitArray = &table->getByUniStr(variant);
+  const CDFUnitArray *cdfUnitArray = &table->get(variant);
   return &cdfUnitArray->data[log10Value];
 }
 

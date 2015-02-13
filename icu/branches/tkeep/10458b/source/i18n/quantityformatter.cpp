@@ -22,17 +22,17 @@
 U_NAMESPACE_BEGIN
 
 void QuantityFormatter::reset() {
-    formatters.reset();
+    formatters.clear();
     bValid = FALSE;
 }
 
 UBool QuantityFormatter::add(
-        const char *variant,
+        const char *variantStr,
         const UnicodeString &rawPattern,
         UErrorCode &status) {
-    int32_t pluralIndex = pluralMap_getIndex(variant);
+    PluralMapBase::Variant variant = PluralMapBase::toVariant(variantStr);
     SimplePatternFormatter *current = formatters.getMutable(
-            pluralIndex, status);
+            variant, status);
     SimplePatternFormatter fmt;
     fmt.compile(rawPattern, status);
     if (U_FAILURE(status)) {
@@ -42,7 +42,7 @@ UBool QuantityFormatter::add(
         status = U_ILLEGAL_ARGUMENT_ERROR;
         return FALSE;
     }
-    if (pluralIndex == 0) {
+    if (variant == PluralMapBase::OTHER) {
         bValid = TRUE;
     }
     *current = fmt;
@@ -88,12 +88,7 @@ UnicodeString &QuantityFormatter::format(
             return appendTo;
         }
     }
-    CharString buffer;
-    buffer.appendInvariantChars(count, status);
-    if (U_FAILURE(status)) {
-        return appendTo;
-    }
-    const SimplePatternFormatter *pattern = getByVariant(buffer.data());
+    const SimplePatternFormatter *pattern = &formatters.get(count);
     UnicodeString formattedNumber;
     FieldPosition fpos(pos.getField());
     fmt.format(quantity, formattedNumber, fpos, status);
