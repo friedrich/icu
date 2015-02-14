@@ -1435,8 +1435,8 @@ void RegexTest::API_Replace() {
     REGEX_ASSERT(dest == "The value of $1 is bc.defg");
 
     dest = matcher2->replaceFirst("$ by itself, no group number $$$", status);
-    REGEX_CHECK_STATUS;
-    REGEX_ASSERT(dest == "$ by itself, no group number $$$defg");
+    REGEX_ASSERT(U_FAILURE(status));
+    status = U_ZERO_ERROR;
 
     UnicodeString replacement = UNICODE_STRING_SIMPLE("Supplemental Digit 1 $\\U0001D7CF.");
     replacement = replacement.unescape();
@@ -2637,9 +2637,11 @@ void RegexTest::API_Replace_UTF8() {
     result = matcher2->replaceFirst(&replText, &destText, status);
     REGEX_CHECK_STATUS;
     REGEX_ASSERT(result == &destText);
-    REGEX_ASSERT_UTEXT_UTF8(str_Thevalueof1isbcdefg, result);
+    REGEX_ASSERT_UTEXT_UTF8(str_Thevalueof1isbcdefg, result);\
 
-    const char str_byitselfnogroupnumber[] = { 0x24, 0x20, 0x62, 0x79, 0x20, 0x69, 0x74, 0x73, 0x65, 0x6c, 0x66, 0x2c, 0x20, 0x6e, 0x6f, 0x20, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x20, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x20, 0x24, 0x24, 0x24, 0x00 }; /* $ by itself, no group number $$$ */
+    const char str_byitselfnogroupnumber[] = { 0x5c, 0x24, 0x20, 0x62, 0x79, 0x20, 0x69, 0x74, 0x73, 0x65, 0x6c,
+               0x66, 0x2c, 0x20, 0x6e, 0x6f, 0x20, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x20, 0x6e, 0x75, 0x6d, 0x62,
+               0x65, 0x72, 0x20, 0x5c, 0x24, 0x5c, 0x24, 0x5c, 0x24, 0x00 }; /* \$ by itself, no group number \$\$\$ */
     utext_openUTF8(&replText, str_byitselfnogroupnumber, -1, &status);
     result = matcher2->replaceFirst(&replText, NULL, status);
     REGEX_CHECK_STATUS;
@@ -5143,7 +5145,7 @@ void RegexTest::PreAllocatedUTextCAPI () {
 
         /* Unicode escapes */
         uregex_setText(re, text1, -1, &status);
-        regextst_openUTF8FromInvariant(&replText, "\\\\\\u0041$1\\U00000042$\\a", -1, &status);
+        regextst_openUTF8FromInvariant(&replText, "\\\\\\u0041$1\\U00000042\\$\\a", -1, &status);
         utext_replace(&bufferText, 0, utext_nativeLength(&bufferText), NULL, 0, &status);
         result = uregex_replaceFirstUText(re, &replText, &bufferText, &status);
         REGEX_CHECK_STATUS;
@@ -5247,14 +5249,186 @@ void RegexTest::NamedCapture() {
     // ReplaceAll with named capture group.
     status = U_ZERO_ERROR;
     UnicodeString text("Substitution of <<quotes>> for <<double brackets>>");
-    RegexMatcher m(UnicodeString("<<(?<mid>.+?)>>"), text, 0, status);
+    RegexMatcher *m = new RegexMatcher(UnicodeString("<<(?<mid>.+?)>>"), text, 0, status);
     REGEX_CHECK_STATUS;
-    m.pattern().dumpPattern();
-    UnicodeString replacedText = m.replaceAll("'${mid}'", status);
+    // m.pattern().dumpPattern();
+    UnicodeString replacedText = m->replaceAll("'${mid}'", status);
     REGEX_CHECK_STATUS;
     REGEX_ASSERT(UnicodeString("Substitution of 'quotes' for 'double brackets'") == replacedText);
+    delete m;
 
-//   pat->dumpPattern();
+    // ReplaceAll, allowed capture group numbers.
+    text = UnicodeString("abcmxyz");
+    m = new RegexMatcher(UnicodeString("..(?<one>m)(.)(.)"), text, 0, status);
+    REGEX_CHECK_STATUS;
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<$0>"), status);   // group 0, full match, is allowed.
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<bcmxy>z") == replacedText);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<$1>"), status);      // group 1 by number.
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<m>z") == replacedText);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<${one}>"), status);   // group 1 by name.
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<m>z") == replacedText);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<$2>"), status);   // group 2.
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<x>z") == replacedText);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<$3>"), status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<y>z") == replacedText);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<$4>"), status);
+    REGEX_ASSERT(status == U_INDEX_OUTOFBOUNDS_ERROR);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<$04>"), status);      // group 0, leading 0,
+    REGEX_CHECK_STATUS;                                                 //    trailing out-of-range 4 passes through.
+    REGEX_ASSERT(UnicodeString("a<bcmxy4>z") == replacedText);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<$000016>"), status);  // Consume leading zeroes. Don't consume digits
+    REGEX_CHECK_STATUS;                                                 //   that push group num out of range.
+    REGEX_ASSERT(UnicodeString("a<m6>z") == replacedText);              //   This is group 1.
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<$3$2$1${one}>"), status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<yxmm>z") == replacedText);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<$3$2$1${one}>"), status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<yxmm>z") == replacedText);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("$3$2$1${one}"), status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("ayxmmz") == replacedText);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<${noSuchName}>"), status);
+    REGEX_ASSERT(status == U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<${invalid-name}>"), status);
+    REGEX_ASSERT(status == U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("<${one"), status);
+    REGEX_ASSERT(status == U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+
+    status = U_ZERO_ERROR;
+    replacedText  = m->replaceAll(UnicodeString("$not a capture group"), status);
+    REGEX_ASSERT(status == U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+
+    delete m;
+
+    // Repeat the above replaceAll() tests using the plain C API, which
+    //  has a separate implementation internally.
+    //  TODO: factor out the test data.
+
+    status = U_ZERO_ERROR;
+    URegularExpression *re = uregex_openC("..(?<one>m)(.)(.)", 0, NULL, &status);
+    REGEX_CHECK_STATUS;
+    text = UnicodeString("abcmxyz");
+    uregex_setText(re, text.getBuffer(), text.length(), &status);
+    REGEX_CHECK_STATUS;
+
+    UChar resultBuf[100];
+    int32_t resultLength;
+    UnicodeString repl;
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<$0>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<bcmxy>z") == UnicodeString(resultBuf, resultLength));
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<$1>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<m>z") == UnicodeString(resultBuf, resultLength));
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<${one}>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<m>z") == UnicodeString(resultBuf, resultLength));
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<$2>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<x>z") == UnicodeString(resultBuf, resultLength));
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<$3>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<y>z") == UnicodeString(resultBuf, resultLength));
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<$4>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_ASSERT(status == U_INDEX_OUTOFBOUNDS_ERROR);
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<$04>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<bcmxy4>z") == UnicodeString(resultBuf, resultLength));
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<$000016>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<m6>z") == UnicodeString(resultBuf, resultLength));
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<$3$2$1${one}>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("a<yxmm>z") == UnicodeString(resultBuf, resultLength));
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("$3$2$1${one}");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_CHECK_STATUS;
+    REGEX_ASSERT(UnicodeString("ayxmmz") == UnicodeString(resultBuf, resultLength));
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<${noSuchName}>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_ASSERT(status == U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<${invalid-name}>");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_ASSERT(status == U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("<${one");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_ASSERT(status == U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+
+    status = U_ZERO_ERROR;
+    repl = UnicodeString("$not a capture group");
+    resultLength = uregex_replaceAll(re, repl.getBuffer(), repl.length(), resultBuf, UPRV_LENGTHOF(resultBuf), &status);
+    REGEX_ASSERT(status == U_REGEX_INVALID_CAPTURE_GROUP_NAME);
+
+    uregex_close(re);
 }
 
 

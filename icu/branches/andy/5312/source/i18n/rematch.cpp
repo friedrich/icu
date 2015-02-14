@@ -257,6 +257,9 @@ void RegexMatcher::init2(UText *input, UErrorCode &status) {
 
 static const UChar BACKSLASH  = 0x5c;
 static const UChar DOLLARSIGN = 0x24;
+static const UChar LEFTBRACKET = 0x7b;
+static const UChar RIGHTBRACKET = 0x7d;
+
 //--------------------------------------------------------------------------------
 //
 //    appendReplacement
@@ -397,42 +400,37 @@ RegexMatcher &RegexMatcher::appendReplacement(UText *dest,
                 }
             }
         } else {
-            // We've got a $.  Pick up a capture group number if one follows.
+            // We've got a $.  Pick up a capture group name or number if one follows.
             // Consume at most the number of digits necessary for the largest capture
             // number that is valid for this pattern.
 
             int32_t groupNum  = 0;
             int32_t numDigits = 0;
             UChar32 nextChar = utext_current32(replacement);
-            if (nextChar == 0x7b) {   // if (nextChar == '{')
+            if (nextChar == LEFTBRACKET) {
                 // Scan for a Named Capture Group, ${name}.
                 UnicodeString groupName;
-                for(;;) {
-                    nextChar = utext_current32(replacement);
+                utext_next32(replacement);
+                while(U_SUCCESS(status) && nextChar != RIGHTBRACKET) {
+                    nextChar = utext_next32(replacement);
                     if (nextChar == U_SENTINEL) {
                         status = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
-                        break;
-                    }
-                    if ((nextChar >= 0x41 && nextChar <= 0x5a) ||       // A..Z
-                            (nextChar >= 0x61 && nextChar <= 0x7a) ||   // a..z
-                            (nextChar >= 0x31 && nextChar <= 0x39)) {   // 0..9
+                    } else if ((nextChar >= 0x41 && nextChar <= 0x5a) ||       // A..Z
+                               (nextChar >= 0x61 && nextChar <= 0x7a) ||       // a..z
+                               (nextChar >= 0x31 && nextChar <= 0x39)) {       // 0..9
                         groupName.append(nextChar);
-                    } else if (nextChar == 0x7d) {    // == '}'
+                    } else if (nextChar == RIGHTBRACKET) {
                         groupNum = uhash_geti(fPattern->fNamedCaptureMap, &groupName);
                         if (groupNum == 0) {
                             status = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
-                            break;
                         }
                     } else {
                         // Character was something other than a name char or a closing '}'
                         status = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
-                        break;
                     }
-                    utext_next32(replacement);
                 }
                         
             } else if (u_isdigit(nextChar)) {
-
                 // $n    Scan for a capture group number
                 UChar32 digitC;
                 for (;;) {
@@ -455,19 +453,13 @@ RegexMatcher &RegexMatcher::appendReplacement(UText *dest,
                     groupNum=groupNum*10 + nextDigitVal; 
                     ++numDigits;
                 }
-
+            } else {
+                // $ not followed by capture group name or number.
+                status = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
             }
 
             if (U_SUCCESS(status)) {
-                if (groupNum > 0 || numDigits > 0) {
-                    destLen += appendGroup(groupNum, dest, status);
-                } else {  
-                    // The $ didn't introduce a group at all.
-                    // Treat it as just part of the substitution text.
-                    // TODO: Java treats this case as an error. Should we?
-                    UChar c16 = DOLLARSIGN;
-                    destLen += utext_replace(dest, destLen, destLen, &c16, 1, &status);
-                }
+                destLen += appendGroup(groupNum, dest, status);
             }
         }  // End of $ capture group handling
     }  // End of per-character loop through the replacement string.
