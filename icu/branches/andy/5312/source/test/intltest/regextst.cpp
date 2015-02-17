@@ -154,6 +154,9 @@ void RegexTest::runIndexedTest( int32_t index, UBool exec, const char* &name, ch
         case 27: name = "NamedCapture";
             if (exec) NamedCapture();
             break;
+        case 28: name = "NamedCaptureLimits";
+            if (exec) NamedCaptureLimits();
+            break;
         default: name = "";
             break; //needed to end loop
     }
@@ -5431,8 +5434,53 @@ void RegexTest::NamedCapture() {
     uregex_close(re);
 }
 
+//--------------------------------------------------------------
+//
+//  NamedCaptureLimits   Patterns with huge numbers of capture groups
+//                       The point is not so much what the exact limit is,
+//                       but that exceeding the limit fails cleanly.
+//
+//--------------------------------------------------------------
+void RegexTest::NamedCaptureLimits() {
+    if (quick) {
+        logln("Skipping test. Runs in exhuastive mode only.");
+        return;
+    }
+    char nnbuf[100];
+    UnicodeString pattern;
+    int32_t nn;
+    const int32_t goodLimit = 1000000;     // Pattern w this many groups builds successfully.
+    const int32_t failLimit = 10000000;    // Pattern exceeds internal limits, fails to compile.
+    
+    for (nn=1; nn<goodLimit; nn++) {
+        sprintf(nnbuf, "(?<nn%d>)", nn);
+        pattern.append(UnicodeString(nnbuf, -1, US_INV));
+    }
+    UErrorCode status = U_ZERO_ERROR;
+    RegexPattern *pat = RegexPattern::compile(pattern, 0, status);
+    REGEX_CHECK_STATUS;
+    for (nn=1; nn<goodLimit; nn++) {
+        sprintf(nnbuf, "nn%d", nn);
+        int32_t groupNum = pat->groupNumberFromName(nnbuf, -1, status);
+        REGEX_ASSERT(nn == groupNum);
+        if (nn != groupNum) {
+            break;
+        }
+    }
+    delete pat;
 
+    pattern.remove();
+    for (nn=1; nn<failLimit; nn++) {
+        sprintf(nnbuf, "(?<nn%d>)", nn);
+        pattern.append(UnicodeString(nnbuf, -1, US_INV));
+    }
+    status = U_ZERO_ERROR;
+    pat = RegexPattern::compile(pattern, 0, status);
+    REGEX_ASSERT(status == U_REGEX_PATTERN_TOO_BIG);
+    delete pat;
+}
 
+        
 //--------------------------------------------------------------
 //
 //  Bug7651   Regex pattern that exceeds default operator stack depth in matcher.
