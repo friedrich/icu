@@ -401,8 +401,8 @@ RegexMatcher &RegexMatcher::appendReplacement(UText *dest,
             }
         } else {
             // We've got a $.  Pick up a capture group name or number if one follows.
-            // Consume at most the number of digits necessary for the largest capture
-            // number that is valid for this pattern.
+            // Consume digits so long as the resulting group number <= the number of
+            // number of capture groups in the pattern.
 
             int32_t groupNum  = 0;
             int32_t numDigits = 0;
@@ -432,17 +432,17 @@ RegexMatcher &RegexMatcher::appendReplacement(UText *dest,
                         
             } else if (u_isdigit(nextChar)) {
                 // $n    Scan for a capture group number
-                UChar32 digitC;
+                int32_t numCaptureGroups = fPattern->fGroupMap->size();
                 for (;;) {
-                    digitC = UTEXT_CURRENT32(replacement);
-                    if (digitC == U_SENTINEL) {
+                    nextChar = UTEXT_CURRENT32(replacement);
+                    if (nextChar == U_SENTINEL) {
                         break;
                     }
-                    if (u_isdigit(digitC) == FALSE) {
+                    if (u_isdigit(nextChar) == FALSE) {
                         break;
                     }
-                    int32_t nextDigitVal = u_charDigitValue(digitC);
-                    if (groupNum*10 + nextDigitVal > fPattern->fNumCaptureGroups) {
+                    int32_t nextDigitVal = u_charDigitValue(nextChar);
+                    if (groupNum*10 + nextDigitVal > numCaptureGroups) {
                         // Don't consume the next digit if it makes the capture group number too big.
                         if (numDigits == 0) {
                             status = U_INDEX_OUTOFBOUNDS_ERROR;

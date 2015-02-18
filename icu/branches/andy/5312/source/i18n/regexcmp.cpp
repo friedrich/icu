@@ -1,7 +1,7 @@
 //
 //  file:  regexcmp.cpp
 //
-//  Copyright (C) 2002-2014 International Business Machines Corporation and others.
+//  Copyright (C) 2002-2015 International Business Machines Corporation and others.
 //  All Rights Reserved.
 //
 //  This file contains the ICU regular expression compiler, which is responsible
@@ -288,7 +288,6 @@ void    RegexCompile::compile(
     //
     // The pattern has now been read and processed, and the compiled code generated.
     //
-    fRXPat->fNumCaptureGroups = fRXPat->fGroupMap->size();
 
     //
     // The pattern's fFrameSize so far has accumulated the requirements for
@@ -441,7 +440,6 @@ UBool RegexCompile::doParseActions(int32_t action)
         break;
 
     case  doContinueNamedCapture:
-        // Store name as invariant chars?
         fCaptureName->append(fC.fChar);
         break;
 

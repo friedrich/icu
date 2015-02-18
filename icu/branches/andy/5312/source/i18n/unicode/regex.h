@@ -610,9 +610,6 @@ private:
     UVector32       *fGroupMap;    // Map from capture group number to position of
                                    //   the group's variables in the matcher stack frame.
 
-    int32_t         fMaxCaptureDigits;
-    int32_t         fNumCaptureGroups;
-
     UnicodeSet     **fStaticSets;  // Ptr to static (shared) sets for predefined
                                    //   regex character classes, e.g. Word.
 

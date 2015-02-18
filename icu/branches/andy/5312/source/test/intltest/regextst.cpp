@@ -2640,7 +2640,7 @@ void RegexTest::API_Replace_UTF8() {
     result = matcher2->replaceFirst(&replText, &destText, status);
     REGEX_CHECK_STATUS;
     REGEX_ASSERT(result == &destText);
-    REGEX_ASSERT_UTEXT_UTF8(str_Thevalueof1isbcdefg, result);\
+    REGEX_ASSERT_UTEXT_UTF8(str_Thevalueof1isbcdefg, result);
 
     const char str_byitselfnogroupnumber[] = { 0x5c, 0x24, 0x20, 0x62, 0x79, 0x20, 0x69, 0x74, 0x73, 0x65, 0x6c,
                0x66, 0x2c, 0x20, 0x6e, 0x6f, 0x20, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x20, 0x6e, 0x75, 0x6d, 0x62,
@@ -3119,7 +3119,7 @@ void RegexTest::API_Pattern_UTF8() {
         UnicodeString stringToSplit("first:second:third");
         UText *textToSplit = utext_openUnicodeString(NULL, &stringToSplit, &status);
         REGEX_CHECK_STATUS;
-        
+
         UText *splits[10] = {NULL};
         int32_t numFields = matcher.split(textToSplit, splits, UPRV_LENGTHOF(splits), status);
         REGEX_CHECK_STATUS;
@@ -5310,11 +5310,6 @@ void RegexTest::NamedCapture() {
     REGEX_ASSERT(UnicodeString("a<yxmm>z") == replacedText);
 
     status = U_ZERO_ERROR;
-    replacedText  = m->replaceAll(UnicodeString("<$3$2$1${one}>"), status);
-    REGEX_CHECK_STATUS;
-    REGEX_ASSERT(UnicodeString("a<yxmm>z") == replacedText);
-
-    status = U_ZERO_ERROR;
     replacedText  = m->replaceAll(UnicodeString("$3$2$1${one}"), status);
     REGEX_CHECK_STATUS;
     REGEX_ASSERT(UnicodeString("ayxmmz") == replacedText);
@@ -5436,9 +5431,10 @@ void RegexTest::NamedCapture() {
 
 //--------------------------------------------------------------
 //
-//  NamedCaptureLimits   Patterns with huge numbers of capture groups
+//  NamedCaptureLimits   Patterns with huge numbers of named capture groups.
 //                       The point is not so much what the exact limit is,
-//                       but that exceeding the limit fails cleanly.
+//                       but that a largish number doesn't hit bad non-linear performance,
+//                       and that exceeding the limit fails cleanly.
 //
 //--------------------------------------------------------------
 void RegexTest::NamedCaptureLimits() {
@@ -5446,12 +5442,12 @@ void RegexTest::NamedCaptureLimits() {
         logln("Skipping test. Runs in exhuastive mode only.");
         return;
     }
+    const int32_t goodLimit = 1000000;     // Pattern w this many groups builds successfully.
+    const int32_t failLimit = 10000000;    // Pattern exceeds internal limits, fails to compile.
     char nnbuf[100];
     UnicodeString pattern;
     int32_t nn;
-    const int32_t goodLimit = 1000000;     // Pattern w this many groups builds successfully.
-    const int32_t failLimit = 10000000;    // Pattern exceeds internal limits, fails to compile.
-    
+
     for (nn=1; nn<goodLimit; nn++) {
         sprintf(nnbuf, "(?<nn%d>)", nn);
         pattern.append(UnicodeString(nnbuf, -1, US_INV));
@@ -5480,7 +5476,7 @@ void RegexTest::NamedCaptureLimits() {
     delete pat;
 }
 
-        
+
 //--------------------------------------------------------------
 //
 //  Bug7651   Regex pattern that exceeds default operator stack depth in matcher.
@@ -5774,6 +5770,9 @@ void RegexTest::TestBug11371() {
 
 void RegexTest::TestBug11480() {
     // C API, get capture group of a group that does not participate in the match.
+    //        (Returns a zero length string, with nul termination,
+    //         indistinguishable from a group with a zero lenght match.)
+
     UErrorCode status = U_ZERO_ERROR;
     URegularExpression *re = uregex_openC("(A)|(B)", 0, NULL, &status);
     REGEX_CHECK_STATUS;
@@ -5791,6 +5790,4 @@ void RegexTest::TestBug11480() {
 }
 
 
-
 #endif  /* !UCONFIG_NO_REGULAR_EXPRESSIONS  */
-

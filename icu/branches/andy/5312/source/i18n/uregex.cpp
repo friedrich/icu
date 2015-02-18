@@ -21,6 +21,7 @@
 #include "uassert.h"
 #include "uhash.h"
 #include "umutex.h"
+#include "uvectr32.h"
 
 #include "regextxt.h"
 
@@ -1457,9 +1458,8 @@ int32_t RegexCImpl::appendReplacement(RegularExpression    *regexp,
             continue;
         }
 
-
-        // We've got a $.  Pick up a capture group name or number if one follows.
-        // Consume only digits that produce a valid number for the pattern.
+        // We've got a $.  Pick up the following capture group name or number.
+        // For numbers, consume only digits that produce a valid capture group for the pattern.
 
         int32_t groupNum  = 0;
         U_ASSERT(c == DOLLARSIGN);
@@ -1467,6 +1467,7 @@ int32_t RegexCImpl::appendReplacement(RegularExpression    *regexp,
         U16_GET(replacementText, 0, replIdx, replacementLength, c32);
         if (u_isdigit(c32)) {
             int32_t numDigits = 0;
+            int32_t numCaptureGroups = m->fPattern->fGroupMap->size();
             for (;;) {
                 if (replIdx >= replacementLength) {
                     break;
@@ -1477,7 +1478,7 @@ int32_t RegexCImpl::appendReplacement(RegularExpression    *regexp,
                 }
 
                 int32_t digitVal = u_charDigitValue(c32);
-                if (groupNum * 10 + digitVal <= m->fPattern->fNumCaptureGroups) {
+                if (groupNum * 10 + digitVal <= numCaptureGroups) {
                     groupNum = groupNum * 10 + digitVal;
                     U16_FWD_1(replacementText, replIdx, replacementLength);
                     numDigits++;
@@ -1543,10 +1544,12 @@ int32_t RegexCImpl::appendReplacement(RegularExpression    *regexp,
     //
     if (destIdx < capacity) {
         dest[destIdx] = 0;
-    } else if (destIdx == *destCapacity) {
-        *status = U_STRING_NOT_TERMINATED_WARNING;
-    } else {
-        *status = U_BUFFER_OVERFLOW_ERROR;
+    } else if (U_SUCCESS(*status)) {
+        if (destIdx == *destCapacity) {
+            *status = U_STRING_NOT_TERMINATED_WARNING;
+        } else {
+            *status = U_BUFFER_OVERFLOW_ERROR;
+        }
     }
 
     //

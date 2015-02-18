@@ -691,7 +691,7 @@ uregex_group(URegularExpression *regexp,
   *   @param   dest         A mutable UText in which to store the current input.
   *                         If NULL, a new UText will be created as an immutable shallow clone
   *                         of the entire input string.
-  *   @param   groupLength  The group length of the desired capture group.
+  *   @param   groupLength  The group length of the desired capture group. Output parameter.
   *   @param   status       A reference to a UErrorCode to receive any errors.
   *   @return               The subject text currently associated with this regular expression.
   *                         If a pre-allocated UText was provided, it will always be used and returned.

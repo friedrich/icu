@@ -182,7 +182,6 @@ named-capture:
     ascii_letter         n  named-capture                           doContinueNamedCapture
     digit_char           n  named-capture                           doContinueNamedCapture
     '>'                  n  term               ^expr-quant          doOpenCaptureParen      # common w non-named capture.
-
     default                 errorDeath                              doBadNamedCapture
 
 #
@@ -269,7 +268,7 @@ backslash:
 
 
 # named-backref   Scanned \k
-#                 Leading to \k{captureName}
+#                 Leading to \k<captureName>
 #                 Failure to get the full sequence is an error.
 #
 named-backref:

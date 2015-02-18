@@ -20,7 +20,6 @@
 #include "unicode/uobject.h"
 #include "unicode/uniset.h"
 #include "unicode/parseerr.h"
-#include "charstr.h"
 #include "uhash.h"
 #include "uvector.h"
 #include "uvectr32.h"

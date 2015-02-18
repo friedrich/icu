@@ -1,7 +1,7 @@
 //
 //  regexst.h
 //
-//  Copyright (C) 2004-2013, International Business Machines Corporation and others.
+//  Copyright (C) 2004-2015, International Business Machines Corporation and others.
 //  All Rights Reserved.
 //
 //  This file contains class RegexStaticSets
@@ -208,9 +208,9 @@ fEmptyText(NULL)
 
     // Sets used while parsing rules, but not referenced from the parse state table
     fRuleSets[kRuleSet_rule_char-128]   = UnicodeSet(UnicodeString(TRUE, gRuleSet_rule_char_pattern, -1),   *status);
-    fRuleSets[kRuleSet_digit_char-128].add((UChar)0x30, UChar(0x39));    // [0-9]
-    fRuleSets[kRuleSet_ascii_letter-128].add((UChar)0x41, UChar(0x5A));  // [A-Z]
-    fRuleSets[kRuleSet_ascii_letter-128].add((UChar)0x61, UChar(0x7A));  // [a-z]
+    fRuleSets[kRuleSet_digit_char-128].add((UChar)0x30, (UChar)0x39);    // [0-9]
+    fRuleSets[kRuleSet_ascii_letter-128].add((UChar)0x41, (UChar)0x5A);  // [A-Z]
+    fRuleSets[kRuleSet_ascii_letter-128].add((UChar)0x61, (UChar)0x7A);  // [a-z]
     fRuleDigitsAlias = &fRuleSets[kRuleSet_digit_char-128];
     for (i=0; i<UPRV_LENGTHOF(fRuleSets); i++) {
         fRuleSets[i].compact();

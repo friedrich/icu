@@ -3,7 +3,7 @@
 //
 /*
 ***************************************************************************
-*   Copyright (C) 2002-2014 International Business Machines Corporation   *
+*   Copyright (C) 2002-2015 International Business Machines Corporation   *
 *   and others. All rights reserved.                                      *
 ***************************************************************************
 */
@@ -93,7 +93,6 @@ RegexPattern &RegexPattern::operator = (const RegexPattern &other) {
     fMinMatchLen      = other.fMinMatchLen;
     fFrameSize        = other.fFrameSize;
     fDataSize         = other.fDataSize;
-    fNumCaptureGroups = other.fNumCaptureGroups;
     fStaticSets       = other.fStaticSets;
     fStaticSets8      = other.fStaticSets8;
 
@@ -170,7 +169,6 @@ void RegexPattern::init() {
     fFrameSize        = 0;
     fDataSize         = 0;
     fGroupMap         = NULL;
-    fNumCaptureGroups = 0;
     fStaticSets       = NULL;
     fStaticSets8      = NULL;
     fStartType        = START_NO_INFO;
@@ -612,6 +610,10 @@ int32_t RegexPattern::groupNumberFromName(const UnicodeString &groupName, UError
     if (U_FAILURE(status)) {
         return 0;
     }
+
+    // No need to explicitly check for syntactically valid names.
+    // Invalid ones will never be in the map, and the lookup will fail.
+
     int32_t number = uhash_geti(fNamedCaptureMap, &groupName);
     if (number == 0) {
         status = U_REGEX_INVALID_CAPTURE_GROUP_NAME;
@@ -623,11 +625,7 @@ int32_t RegexPattern::groupNumberFromName(const char *groupName, int32_t nameLen
     if (U_FAILURE(status)) {
         return 0;
     }
-    UnicodeString name(groupName, nameLength, US_INV);  // Invariant character conversion.
-                                                        // For ASCII, the bytes just come straight across.
-                                                        // For EBCDIC, non-invariant chars substitute with nul.
-    // No need to explicitly check for syntactically valid names.
-    // Invalid ones will never be in the map.
+    UnicodeString name(groupName, nameLength, US_INV);
     return groupNumberFromName(name, status);
 }
 
