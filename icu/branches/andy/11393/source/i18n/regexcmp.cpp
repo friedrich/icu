@@ -1188,6 +1188,21 @@ UBool RegexCompile::doParseActions(int32_t action)
         appendOp(URX_BACKSLASH_G, 0);
         break;
 
+    case doBackslashH:
+        fixLiterals(FALSE);
+        appendOp(URX_BACKSLASH_H, 0);
+        break;
+
+    case doBackslashh:
+        fixLiterals(FALSE);
+        appendOp(URX_BACKSLASH_H, 1);
+        break;
+
+    case doBackslashR:
+        fixLiterals(FALSE);
+        appendOp(URX_BACKSLASH_R, 0);
+        break;
+
     case doBackslashS:
         fixLiterals(FALSE);
         appendOp(URX_STAT_SETREF_N, URX_ISSPACE_SET);
@@ -1196,6 +1211,16 @@ UBool RegexCompile::doParseActions(int32_t action)
     case doBackslashs:
         fixLiterals(FALSE);
         appendOp(URX_STATIC_SETREF, URX_ISSPACE_SET);
+        break;
+
+    case doBackslashV:
+        fixLiterals(FALSE);
+        appendOp(URX_BACKSLASH_V, 0);
+        break;
+
+    case doBackslashv:
+        fixLiterals(FALSE);
+        appendOp(URX_BACKSLASH_V, 1);
         break;
 
     case doBackslashW:

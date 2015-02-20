@@ -173,7 +173,10 @@ enum {
      URX_BACKSLASH_BU  = 53,   // \b or \B in UREGEX_UWORD mode, using Unicode style
                                //   word boundaries.
      URX_DOLLAR_D      = 54,   // $ end of input test, in UNIX_LINES mode.
-     URX_DOLLAR_MD     = 55    // $ end of input test, in MULTI_LINE and UNIX_LINES mode.
+     URX_DOLLAR_MD     = 55,   // $ end of input test, in MULTI_LINE and UNIX_LINES mode.
+     URX_BACKSLASH_H   = 56,   // Value field:  0:  \h    1:  \H
+     URX_BACKSLASH_R   = 58,   // Any line break sequence.
+     URX_BACKSLASH_V   = 59    // Value field:  0:  \v    1:  \V
 
 };
 
