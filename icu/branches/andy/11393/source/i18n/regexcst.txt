@@ -477,6 +477,10 @@ set-escape:
    'W'                   n  set-after-range                         doSetBackslash_W
    'd'                   n  set-after-range                         doSetBackslash_d
    'D'                   n  set-after-range                         doSetBackslash_D
+   'h'                   n  set-after-range                         doSetBackslash_h
+   'H'                   n  set-after-range                         doSetBackslash_H
+   'v'                   n  set-after-range                         doSetBackslash_v
+   'V'                   n  set-after-range                         doSetBackslash_V
    default               n  set-after-lit                           doSetLiteralEscaped 
 
 #
