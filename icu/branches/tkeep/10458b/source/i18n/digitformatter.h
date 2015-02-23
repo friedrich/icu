@@ -141,6 +141,25 @@ UnicodeString &formatInt32(
         UnicodeString &appendTo) const;
 
 /**
+ * Fixed point formatting for 64 bit ints.
+ * @param value the value to format. May be positive or negative.
+ * @param options formatting options.
+ * @param signField The field ID to use when recording the sign field.
+ *   Can be anything if handler is not recording field positions.
+ * @param intField The field ID to use when recording the integer field.
+ *   Can be anything if handler is not recording field positions.
+ * @param handler Records the field positions.
+ * @param appendTo the formatted value appended here.
+ */
+UnicodeString &formatInt64(
+        int64_t value,
+        const DigitFormatterIntOptions &options,
+        int32_t signField,
+        int32_t intField,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
+/**
  * Counts the number of code points needed for formatting.
  */
 int32_t countChar32(
@@ -151,8 +170,15 @@ int32_t countChar32(
 /**
  * Counts the number of code points needed for formatting an int32.
  */
-int32_t countChar32ForInt(
+int32_t countChar32ForInt32(
         int32_t value,
+        const DigitFormatterIntOptions &options) const;
+
+/**
+ * Counts the number of code points needed for formatting an int64.
+ */
+int32_t countChar32ForInt64(
+        int64_t value,
         const DigitFormatterIntOptions &options) const;
 
 /**
@@ -169,13 +195,6 @@ UnicodeString fPositiveSign;
 UBool fIsStandardDigits;
 
 UBool isStandardDigits() const;
-static UnicodeString &formatSmallInt(
-    int32_t smallPositiveValue,
-    int32_t minDigits,
-    UnicodeString &appendTo);
-static int32_t countChar32ForSmallInt(
-    int32_t smallPositiveValue,
-    int32_t minDigits);
 };
 
 U_NAMESPACE_END

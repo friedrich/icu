@@ -484,6 +484,20 @@ private:
             int32_t minDigits,
             UBool alwaysShowSign,
             const NumberFormat2Test_Attributes *expectedAttributes);
+    void verifyDigitIntFormatter32(
+            const UnicodeString &expected,
+            const DigitFormatter &formatter,
+            int32_t value,
+            int32_t minDigits,
+            UBool alwaysShowSign,
+            const NumberFormat2Test_Attributes *expectedAttributes);
+    void verifyDigitIntFormatter64(
+            const UnicodeString &expected,
+            const DigitFormatter &formatter,
+            int64_t value,
+            int32_t minDigits,
+            UBool alwaysShowSign,
+            const NumberFormat2Test_Attributes *expectedAttributes);
     void verifyDigitFormatter(
             const UnicodeString &expected,
             const DigitFormatter &formatter,
@@ -1077,12 +1091,100 @@ void NumberFormat2Test::TestDigitIntFormatter() {
     }
     {
         NumberFormat2Test_Attributes expectedAttributes[] = {
+            {kIntField, 0, 10},
+            {0, -1, 0}};
+        verifyDigitIntFormatter(
+                "2147483647",
+                formatter,
+                INT32_MAX,
+                1,
+                FALSE,
+                expectedAttributes);
+    }
+    {
+        NumberFormat2Test_Attributes expectedAttributes[] = {
+            {kSignField, 0, 1},
+            {kIntField, 1, 20},
+            {0, -1, 0}};
+        verifyDigitIntFormatter64(
+                "-9223372036854775808",
+                formatter,
+                INT64_MIN,
+                1,
+                FALSE,
+                expectedAttributes);
+    }
+    {
+        NumberFormat2Test_Attributes expectedAttributes[] = {
+            {kSignField, 0, 1},
+            {kIntField, 1, 20},
+            {0, -1, 0}};
+        verifyDigitIntFormatter64(
+                "+9223372036854775807",
+                formatter,
+                INT64_MAX,
+                1,
+                TRUE,
+                expectedAttributes);
+    }
+    {
+        NumberFormat2Test_Attributes expectedAttributes[] = {
+            {kIntField, 0, 19},
+            {0, -1, 0}};
+        verifyDigitIntFormatter64(
+                "9223372036854775807",
+                formatter,
+                INT64_MAX,
+                1,
+                FALSE,
+                expectedAttributes);
+    }
+    {
+        NumberFormat2Test_Attributes expectedAttributes[] = {
             {kIntField, 0, 9},
             {0, -1, 0}};
         verifyDigitIntFormatter(
                 "007654321",
                 formatter,
                 7654321,
+                9,
+                FALSE,
+                expectedAttributes);
+    }
+    {
+        NumberFormat2Test_Attributes expectedAttributes[] = {
+            {kSignField, 0, 1},
+            {kIntField, 1, 10},
+            {0, -1, 0}};
+        verifyDigitIntFormatter(
+                "-007654321",
+                formatter,
+                -7654321,
+                9,
+                FALSE,
+                expectedAttributes);
+    }
+    {
+        NumberFormat2Test_Attributes expectedAttributes[] = {
+            {kIntField, 0, 12},
+            {0, -1, 0}};
+        verifyDigitIntFormatter64(
+                "369258147482",
+                formatter,
+                369258147482L,
+                9,
+                FALSE,
+                expectedAttributes);
+    }
+    {
+        NumberFormat2Test_Attributes expectedAttributes[] = {
+            {kSignField, 0, 1},
+            {kIntField, 1, 13},
+            {0, -1, 0}};
+        verifyDigitIntFormatter64(
+                "-369258147482",
+                formatter,
+                -369258147482L,
                 9,
                 FALSE,
                 expectedAttributes);
@@ -2522,19 +2624,73 @@ void NumberFormat2Test::verifyDigitIntFormatter(
         int32_t minDigits,
         UBool alwaysShowSign,
         const NumberFormat2Test_Attributes *expectedAttributes) {
+    verifyDigitIntFormatter32(
+            expected,
+            formatter,
+            value,
+            minDigits,
+            alwaysShowSign,
+            expectedAttributes);
+    verifyDigitIntFormatter64(
+            expected,
+            formatter,
+            value,
+            minDigits,
+            alwaysShowSign,
+            expectedAttributes);
+}
+
+void NumberFormat2Test::verifyDigitIntFormatter32(
+        const UnicodeString &expected,
+        const DigitFormatter &formatter,
+        int32_t value,
+        int32_t minDigits,
+        UBool alwaysShowSign,
+        const NumberFormat2Test_Attributes *expectedAttributes) {
     DigitFormatterIntOptions options;
     options.fMinDigits = minDigits;
     options.fAlwaysShowSign = alwaysShowSign;
     assertEquals(
             "",
             expected.countChar32(),
-            formatter.countChar32ForInt(value, options));
+            formatter.countChar32ForInt32(value, options));
     UnicodeString appendTo;
     NumberFormat2Test_FieldPositionHandler handler(expectedAttributes != NULL);
     assertEquals(
             "",
             expected,
             formatter.formatInt32(
+                    value,
+                    options,
+                    kSignField,
+                    kIntField,
+                    handler,
+                    appendTo));
+    if (expectedAttributes != NULL) {
+        verifyAttributes(expectedAttributes, handler.attributes);
+    }
+}
+
+void NumberFormat2Test::verifyDigitIntFormatter64(
+        const UnicodeString &expected,
+        const DigitFormatter &formatter,
+        int64_t value,
+        int32_t minDigits,
+        UBool alwaysShowSign,
+        const NumberFormat2Test_Attributes *expectedAttributes) {
+    DigitFormatterIntOptions options;
+    options.fMinDigits = minDigits;
+    options.fAlwaysShowSign = alwaysShowSign;
+    assertEquals(
+            "",
+            expected.countChar32(),
+            formatter.countChar32ForInt64(value, options));
+    UnicodeString appendTo;
+    NumberFormat2Test_FieldPositionHandler handler(expectedAttributes != NULL);
+    assertEquals(
+            "",
+            expected,
+            formatter.formatInt64(
                     value,
                     options,
                     kSignField,

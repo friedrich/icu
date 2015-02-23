@@ -2703,7 +2703,27 @@ UnicodeString &DigitFormatter::format(
     return appendTo;
 }
 
-static UBool _isNeg(int64_t &value) {
+static UnicodeString &formatSmallInt(
+        int32_t smallPositiveValue,
+        int32_t minDigits,
+        UnicodeString &appendTo) {
+    if (minDigits < gDigitCount[smallPositiveValue]) {
+        minDigits = gDigitCount[smallPositiveValue];
+    }
+    return appendTo.append(gDigits, ((smallPositiveValue  + 1) << 2) - minDigits, minDigits);
+}
+
+static int32_t countChar32ForSmallInt(
+        int32_t smallPositiveValue,
+        int32_t minDigits) {
+    if (minDigits < gDigitCount[smallPositiveValue]) {
+        minDigits = gDigitCount[smallPositiveValue];
+    }
+    return minDigits;
+}
+
+template<class T>
+static UBool isNeg(T &value) {
     if (value < 0) {
         value = -value;
         return TRUE;
@@ -2711,14 +2731,111 @@ static UBool _isNeg(int64_t &value) {
     return FALSE;
 }
 
-static int32_t _formatInt(
-        int64_t value, uint8_t *digits) {
+template<class T>
+static UBool isNeg(T &value, uint8_t *digits) {
+    if (value < 0) {
+        digits[0] = -(value % 10);
+        value = -(value / 10);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+template<class T>
+static int32_t formatInt(
+        T value, uint8_t *digits) {
     int32_t idx = 0;
     while (value > 0) {
         digits[idx++] = (uint8_t) (value % 10);
         value /= 10;
     }
     return idx;
+}
+
+template<class T>
+static UnicodeString &
+formatInt(
+        T value,
+        const DigitFormatterIntOptions &options,
+        int32_t signField,
+        int32_t intField,
+        FieldPositionHandler &handler,
+        const UChar32 *localizedDigits,
+        UBool isStandardDigits,
+        const UnicodeString &negativeSign,
+        const UnicodeString &positiveSign, 
+        UnicodeString &appendTo) {
+    UBool smallFieldAndStandardDigits = (
+            options.fMinDigits <= 4 && isStandardDigits);
+    // super fast path
+    if (smallFieldAndStandardDigits && !options.fAlwaysShowSign && value >= 0 && value < gMaxFastInt && !handler.isRecording()) {
+        return formatSmallInt(value, options.fMinDigits, appendTo);
+    }
+
+    // fast path
+    if (smallFieldAndStandardDigits && value > -gMaxFastInt && value < gMaxFastInt) {
+        UBool neg = isNeg(value);
+        int32_t begin;
+        if (neg || options.fAlwaysShowSign) {
+            begin = appendTo.length();
+            appendTo.append(neg ? negativeSign : positiveSign);
+            handler.addAttribute(signField, begin, appendTo.length());
+        }
+        begin = appendTo.length();
+        formatSmallInt(value, options.fMinDigits, appendTo);
+        handler.addAttribute(intField, begin, appendTo.length());
+        return appendTo;
+    }
+    uint8_t digits[19];
+    UBool neg = isNeg(value, digits);
+    int32_t begin;
+    if (neg || options.fAlwaysShowSign) {
+        begin = appendTo.length();
+        appendTo.append(neg ? negativeSign : positiveSign);
+        handler.addAttribute(signField, begin, appendTo.length());
+    }
+    begin = appendTo.length();
+    int32_t count = neg ? formatInt(value, digits + 1) + 1 : formatInt(value, digits);
+    int32_t minDigits = options.fMinDigits < 1 ? 1 : options.fMinDigits;
+    for (int32_t i = minDigits - 1; i >= count; --i) {
+        appendTo.append(localizedDigits[0]);
+    }
+    for (int32_t i = count - 1; i >= 0; --i) {
+        appendTo.append(localizedDigits[digits[i]]);
+    }
+    handler.addAttribute(intField, begin, appendTo.length());
+    return appendTo;
+}
+
+template<class T>
+static int32_t countChar32ForInt(
+        T value,
+        const DigitFormatterIntOptions &options,
+        const UnicodeString &negativeSign,
+        const UnicodeString &positiveSign) {
+    // super fast path
+    if (!options.fAlwaysShowSign && value >= 0 && value < gMaxFastInt) {
+        return countChar32ForSmallInt(value, options.fMinDigits);
+    }
+    if (value > -gMaxFastInt && value < gMaxFastInt) {
+        UBool neg = isNeg(value);
+        int32_t result = 0;
+        if (neg || options.fAlwaysShowSign) {
+            result += neg ? negativeSign.countChar32() : positiveSign.countChar32();
+        }
+        result += countChar32ForSmallInt(value, options.fMinDigits);
+        return result;
+    }
+    uint8_t digits[19];
+    UBool neg = isNeg(value, digits);
+    int32_t result = 0;
+    if (neg || options.fAlwaysShowSign) {
+        result += neg ? negativeSign.countChar32() : positiveSign.countChar32();
+    }
+    int32_t count = neg ? formatInt(value, digits + 1) + 1 : formatInt(value, digits);
+    int32_t minDigits = options.fMinDigits < 1 ? 1 : options.fMinDigits;
+    result += count < minDigits ? minDigits : count;
+    return result;
 }
 
 UnicodeString &
@@ -2729,63 +2846,38 @@ DigitFormatter::formatInt32(
         int32_t intField,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
-    UBool smallFieldAndStandardDigits = (
-            options.fMinDigits <= 4 && fIsStandardDigits);
-    // super fast path
-    if (smallFieldAndStandardDigits && !options.fAlwaysShowSign && value >= 0 && value < gMaxFastInt && !handler.isRecording()) {
-        return formatSmallInt(value, options.fMinDigits, appendTo);
-    }
-    int64_t lvalue = value;
-    UBool neg = _isNeg(lvalue);
-    int32_t begin;
-    if (neg || options.fAlwaysShowSign) {
-        begin = appendTo.length();
-        appendTo.append(neg ? fNegativeSign : fPositiveSign);
-        handler.addAttribute(signField, begin, appendTo.length());
-    }
-    begin = appendTo.length();
-    // fast path
-    if (smallFieldAndStandardDigits && lvalue < gMaxFastInt) {
-        formatSmallInt(lvalue, options.fMinDigits, appendTo);
-    } else {
-        uint8_t digits[10];
-        int32_t count = _formatInt(lvalue, digits);
-        int32_t minDigits = options.fMinDigits < 1 ? 1 : options.fMinDigits;
-        for (int32_t i = minDigits - 1; i >= count; --i) {
-            appendTo.append(fLocalizedDigits[0]);
-        }
-        for (int32_t i = count - 1; i >= 0; --i) {
-            appendTo.append(fLocalizedDigits[digits[i]]);
-        }
-    }
-    handler.addAttribute(intField, begin, appendTo.length());
-    return appendTo;
+    return formatInt(value, options, signField, intField, handler,
+            fLocalizedDigits, fIsStandardDigits,
+            fNegativeSign, fPositiveSign, appendTo);
+}
+
+UnicodeString &
+DigitFormatter::formatInt64(
+        int64_t value,
+        const DigitFormatterIntOptions &options,
+        int32_t signField,
+        int32_t intField,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    return formatInt(value, options, signField, intField, handler,
+            fLocalizedDigits, fIsStandardDigits,
+            fNegativeSign, fPositiveSign, appendTo);
 }
 
 int32_t
-DigitFormatter::countChar32ForInt(
+DigitFormatter::countChar32ForInt32(
         int32_t value,
         const DigitFormatterIntOptions &options) const {
-    // super fast path
-    if (!options.fAlwaysShowSign && value >= 0 && value < gMaxFastInt) {
-        return countChar32ForSmallInt(value, options.fMinDigits);
-    }
-    int64_t lvalue = value;
-    UBool neg = _isNeg(lvalue);
-    int32_t result = 0;
-    if (neg || options.fAlwaysShowSign) {
-        result += neg ? fNegativeSign.countChar32() : fPositiveSign.countChar32();
-    }
-    // fast path
-    if (lvalue < gMaxFastInt) {
-        result += countChar32ForSmallInt(lvalue, options.fMinDigits);
-    } else {
-        uint8_t digits[10];
-        int32_t count = _formatInt(lvalue, digits);
-        int32_t minDigits = options.fMinDigits < 1 ? 1 : options.fMinDigits;
-        result += count < minDigits ? minDigits : count;
-    }
-    return result;
+    return countChar32ForInt(
+            value, options, fNegativeSign, fPositiveSign);
+}
+
+int32_t
+DigitFormatter::countChar32ForInt64(
+        int64_t value,
+        const DigitFormatterIntOptions &options) const {
+    return countChar32ForInt(
+            value, options, fNegativeSign, fPositiveSign);
 }
 
 UBool DigitFormatter::isStandardDigits() const {
@@ -2797,27 +2889,6 @@ UBool DigitFormatter::isStandardDigits() const {
         ++cdigit;
     }
     return TRUE;
-}
-
-UnicodeString &
-DigitFormatter::formatSmallInt(
-        int32_t smallPositiveValue,
-        int32_t minDigits,
-        UnicodeString &appendTo) {
-    if (minDigits < gDigitCount[smallPositiveValue]) {
-        minDigits = gDigitCount[smallPositiveValue];
-    }
-    return appendTo.append(gDigits, ((smallPositiveValue  + 1) << 2) - minDigits, minDigits);
-}
-
-int32_t
-DigitFormatter::countChar32ForSmallInt(
-        int32_t smallPositiveValue,
-        int32_t minDigits) {
-    if (minDigits < gDigitCount[smallPositiveValue]) {
-        minDigits = gDigitCount[smallPositiveValue];
-    }
-    return minDigits;
 }
 
 UBool

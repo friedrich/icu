@@ -68,7 +68,7 @@ SciFormatter::countChar32(
     int32_t count = formatter.countChar32(
             grouping, mantissaInterval, options.fMantissa);
     count += fExponent.countChar32();
-    count += formatter.countChar32ForInt(
+    count += formatter.countChar32ForInt32(
             exponent, options.fExponent);
     return count;
 }
