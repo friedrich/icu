@@ -463,16 +463,38 @@ struct CmpEquivLevel {
 };
 typedef struct CmpEquivLevel CmpEquivLevel;
 
-/* internal function */
-U_CFUNC int32_t
-u_strcmpFold(const UChar *s1, int32_t length1,
-             const UChar *s2, int32_t length2,
-             uint32_t options,
-             UErrorCode *pErrorCode) {
+/**
+ * Internal implementation code comparing string with case fold.
+ * This function is called from u_strcmpFold() and u_caseInsensitivePrefixMatch().
+ *
+ * @param s1            input string 1
+ * @param length1       length of string 1, or -1 (NULL terminated)
+ * @param s2            input string 2
+ * @param length2       length of string 2, or -1 (NULL terminated)
+ * @param options       compare options
+ * @param matchLen1     (output) length of partial prefix match in s1
+ * @param matchLen2     (output) length of partial prefix match in s2
+ * @param pErrorCode    receives error status
+ * @return The result of comparison
+ */
+static int32_t _cmpFold(
+            const UChar *s1, int32_t length1,
+            const UChar *s2, int32_t length2,
+            uint32_t options,
+            int32_t *matchLen1, int32_t *matchLen2,
+            UErrorCode *pErrorCode) {
+    int32_t cmpRes = 0;
+
     const UCaseProps *csp;
 
     /* current-level start/limit - s1/s2 as current */
     const UChar *start1, *start2, *limit1, *limit2;
+
+    /* points to the original start address */
+    const UChar *org1, *org2;
+
+    /* points to the end of match + 1 */
+    const UChar *m1, *m2;
 
     /* case folding variables */
     const UChar *p;
@@ -502,14 +524,21 @@ u_strcmpFold(const UChar *s1, int32_t length1,
     }
 
     /* initialize */
-    start1=s1;
+    if(matchLen1) {
+        *matchLen1=0;
+    }
+    if(matchLen2) {
+        *matchLen2=0;
+    }
+
+    start1=m1=org1=s1;
     if(length1==-1) {
         limit1=NULL;
     } else {
         limit1=s1+length1;
     }
 
-    start2=s2;
+    start2=m2=org2=s2;
     if(length2==-1) {
         limit2=NULL;
     } else {
@@ -577,15 +606,68 @@ u_strcmpFold(const UChar *s1, int32_t length1,
          * either variable c1, c2 is -1 only if the corresponding string is finished
          */
         if(c1==c2) {
+            const UChar *next1, *next2;
+            UBool endOfStack;
+            int32_t tmpLevel;
+
             if(c1<0) {
-                return 0;   /* c1==c2==-1 indicating end of strings */
+                cmpRes=0;   /* c1==c2==-1 indicating end of strings */
+                break;
+            }
+
+            /*
+             * Note: Move the match positions in both strings at the same time
+             *      only when correspoinding code point(s) in the original strings
+             *      are fully consumed. For example, when comparing s1="Fust" and
+             *      s2="Fu\u00dfball", s2[2] is folded into "ss", and s1[2] matches
+             *      the first code point in the case-folded data. But the second "s"
+             *      has no matching code point in s1, so this implementation returns
+             *      2 as the prefix match length ("Fu").
+             */
+            next1=next2=NULL;
+            if(level1==0) {
+                next1=s1;
+            } else if(s1==limit1) {
+                /* is s1 at the end of the current stack? */
+                for(endOfStack=TRUE,tmpLevel=level1-1;tmpLevel>0;--tmpLevel) {
+                    if(stack1[tmpLevel].s!=stack1[tmpLevel].limit) {
+                        endOfStack=FALSE;
+                        break;
+                    }
+                }
+                if(endOfStack) {
+                    next1=stack1[0].s;
+                }
+            }
+
+            if (next1!=NULL) {
+                if(level2==0) {
+                    next2=s2;
+                } else if(s2==limit2) {
+                    /* is s2 at the end of the current stack? */
+                    for (endOfStack=TRUE,tmpLevel=level2-1;tmpLevel>0;--tmpLevel) {
+                        if (stack2[tmpLevel].s!=stack2[tmpLevel].limit) {
+                            endOfStack = FALSE;
+                            break;
+                        }
+                    }
+                    if(endOfStack) {
+                        next2=stack2[0].s;
+                    }
+                }
+                if(next1!=NULL && next2!=NULL) {
+                    m1=next1;
+                    m2=next2;
+                }
             }
             c1=c2=-1;       /* make us fetch new code units */
             continue;
         } else if(c1<0) {
-            return -1;      /* string 1 ends before string 2 */
+            cmpRes=-1;      /* string 1 ends before string 2 */
+            break;
         } else if(c2<0) {
-            return 1;       /* string 2 ends before string 1 */
+            cmpRes=1;       /* string 2 ends before string 1 */
+            break;
         }
         /* c1!=c2 && c1>=0 && c2>=0 */
 
@@ -644,6 +726,7 @@ u_strcmpFold(const UChar *s1, int32_t length1,
                      * the decomposition would replace the entire code point
                      */
                     --s2;
+                    --m2;
                     c2=*(s2-1);
                 }
             }
@@ -689,6 +772,7 @@ u_strcmpFold(const UChar *s1, int32_t length1,
                      * the decomposition would replace the entire code point
                      */
                     --s1;
+                    --m2;
                     c1=*(s1-1);
                 }
             }
@@ -757,8 +841,26 @@ u_strcmpFold(const UChar *s1, int32_t length1,
             }
         }
 
-        return c1-c2;
+        cmpRes=c1-c2;
+        break;
     }
+
+    if(matchLen1) {
+        *matchLen1=m1-org1;
+    }
+    if(matchLen2) {
+        *matchLen2=m2-org2;
+    }
+    return cmpRes;
+}
+
+/* internal function */
+U_CFUNC int32_t
+u_strcmpFold(const UChar *s1, int32_t length1,
+             const UChar *s2, int32_t length2,
+             uint32_t options,
+             UErrorCode *pErrorCode) {
+    return _cmpFold(s1, length1, s2, length2, options, NULL, NULL, pErrorCode);
 }
 
 /* public API functions */
@@ -807,298 +909,11 @@ u_strncasecmp(const UChar *s1, const UChar *s2, int32_t n, uint32_t options) {
 
 /* internal API - detect length of shared prefix */
 U_CAPI void
-u_caseInsensitivePrefixMatch(const UChar *str1, int32_t len1,
-                             const UChar *str2, int32_t len2,
-                             uint32_t option,
-                             int32_t *prefixLen1, int32_t *prefixLen2,
+u_caseInsensitivePrefixMatch(const UChar *s1, int32_t length1,
+                             const UChar *s2, int32_t length2,
+                             uint32_t options,
+                             int32_t *matchLen1, int32_t *matchLen2,
                              UErrorCode *pErrorCode) {
-    const UCaseProps *csp;
-
-    /* current-level start/limit - s1/s2 as current */
-    const UChar *s1, *s2, *start1, *start2, *limit1, *limit2;
-
-    /* case folding variables */
-    const UChar *p;
-    int32_t length;
-
-    /* stacks of previous-level start/current/limit */
-    CmpEquivLevel stack1[2], stack2[2];
-
-    /* case folding buffers, only use current-level start/limit */
-    UChar fold1[UCASE_MAX_STRING_LENGTH+1], fold2[UCASE_MAX_STRING_LENGTH+1];
-
-    /* track which is the current level per string */
-    int32_t level1, level2;
-
-    /* current code units, and code points for lookups */
-    UChar32 c1, c2, cp1, cp2;
-
-    /* ponts to the end of match + 1 */
-    const UChar *m1, *m2;
-
-    /* no argument error checking for now */
-
-    *prefixLen1 = *prefixLen2 = 0;
-
-    /*
-     * assume that at least the option U_COMPARE_IGNORE_CASE is set
-     * otherwise this function would have to behave exactly as uprv_strCompare()
-     */
-    csp=ucase_getSingleton();
-    if(U_FAILURE(*pErrorCode)) {
-        return;
-    }
-
-    /* initialize */
-    start1 = s1 = m1 = str1;
-    if (len1 == -1) {
-        limit1 = NULL;
-    } else {
-        limit1 = s1 + len1;
-    }
-
-    start2 = s2 = m2 = str2;
-    if (len2 == -1) {
-        limit2 = NULL;
-    } else {
-        limit2 = s2 + len2;
-    }
-
-    level1 = level2 = 0;
-    c1 = c2 = -1;
-
-    /* comparison loop */
-    for(;;) {
-        /*
-         * here a code unit value of -1 means "get another code unit"
-         * below it will mean "this source is finished"
-         */
-
-        if(c1<0) {
-            /* get next code unit from string 1, post-increment */
-            for(;;) {
-                if(s1==limit1 || ((c1=*s1)==0 && limit1==NULL)) {
-                    if(level1==0) {
-                        c1=-1;
-                        break;
-                    }
-                } else {
-                    ++s1;
-                    break;
-                }
-
-                /* reached end of level buffer, pop one level */
-                do {
-                    --level1;
-                    start1=stack1[level1].start;    /*Not uninitialized*/
-                } while(start1==NULL);
-                s1=stack1[level1].s;                /*Not uninitialized*/
-                limit1=stack1[level1].limit;        /*Not uninitialized*/
-            }
-        }
-
-        if(c2<0) {
-            /* get next code unit from string 2, post-increment */
-            for(;;) {
-                if(s2==limit2 || ((c2=*s2)==0 && limit2==NULL)) {
-                    if(level2==0) {
-                        c2=-1;
-                        break;
-                    }
-                } else {
-                    ++s2;
-                    break;
-                }
-
-                /* reached end of level buffer, pop one level */
-                do {
-                    --level2;
-                    start2=stack2[level2].start;    /*Not uninitialized*/
-                } while(start2==NULL);
-                s2=stack2[level2].s;                /*Not uninitialized*/
-                limit2=stack2[level2].limit;        /*Not uninitialized*/
-            }
-        }
-
-        /*
-         * compare c1 and c2
-         * either variable c1, c2 is -1 only if the corresponding string is finished
-         */
-        if (c1 < 0 || c2 < 0) {
-            break;  /* end of either string */
-        } else if (c1 == c2) {
-            UBool mvEnd;
-            int32_t tmpLevel;
-
-            if (level1 == 0) {
-                m1 = s1;
-            } else if (s1 == limit1) {
-                /* check if we are evaluating the final data in stack */
-                for (mvEnd = TRUE, tmpLevel = level1 - 1; tmpLevel > 0; --tmpLevel) {
-                    if (stack1[tmpLevel].s != stack1[tmpLevel].limit) {
-                        mvEnd = FALSE;
-                        break;
-                    }
-                }
-                if (mvEnd) {
-                    m1 = stack1[0].s;
-                }
-            }
-
-            if (level2 == 0) {
-                m2 = s2;
-            } else if (s2 == limit2) {
-                /* check if we are evaluating the final data in stack */
-                for (mvEnd = TRUE, tmpLevel = level2 - 1; tmpLevel > 0; --tmpLevel) {
-                    if (stack2[tmpLevel].s != stack2[tmpLevel].limit) {
-                        mvEnd = FALSE;
-                        break;
-                    }
-                }
-                if (mvEnd) {
-                    m2 = stack2[0].s;
-                }
-            }
-
-            c1 = c2 = -1;   /* make us fetch new code units */
-            continue;
-        }
-
-        /* c1!=c2 && c1>=0 && c2>=0 */
-
-        /* get complete code points for c1, c2 for lookups if either is a surrogate */
-        cp1=c1;
-        if(U_IS_SURROGATE(c1)) {
-            UChar c;
-
-            if(U_IS_SURROGATE_LEAD(c1)) {
-                if(s1!=limit1 && U16_IS_TRAIL(c=*s1)) {
-                    /* advance ++s1; only below if cp1 decomposes/case-folds */
-                    cp1=U16_GET_SUPPLEMENTARY(c1, c);
-                }
-            } else /* isTrail(c1) */ {
-                if(start1<=(s1-2) && U16_IS_LEAD(c=*(s1-2))) {
-                    cp1=U16_GET_SUPPLEMENTARY(c, c1);
-                }
-            }
-        }
-
-        cp2=c2;
-        if(U_IS_SURROGATE(c2)) {
-            UChar c;
-
-            if(U_IS_SURROGATE_LEAD(c2)) {
-                if(s2!=limit2 && U16_IS_TRAIL(c=*s2)) {
-                    /* advance ++s2; only below if cp2 decomposes/case-folds */
-                    cp2=U16_GET_SUPPLEMENTARY(c2, c);
-                }
-            } else /* isTrail(c2) */ {
-                if(start2<=(s2-2) && U16_IS_LEAD(c=*(s2-2))) {
-                    cp2=U16_GET_SUPPLEMENTARY(c, c2);
-                }
-            }
-        }
-
-        /*
-         * go down one level for each string
-         * continue with the main loop as soon as there is a real change
-         */
-
-        if( level1==0 &&
-            (length=ucase_toFullFolding(csp, (UChar32)cp1, &p, option))>=0
-        ) {
-            /* cp1 case-folds to the code point "length" or to p[length] */
-            if(U_IS_SURROGATE(c1)) {
-                if(U_IS_SURROGATE_LEAD(c1)) {
-                    /* advance beyond source surrogate pair if it case-folds */
-                    ++s1;
-                } else /* isTrail(c1) */ {
-                    /*
-                     * we got a supplementary code point when hitting its trail surrogate,
-                     * therefore the lead surrogate must have been the same as in the other string;
-                     * compare this decomposition with the lead surrogate in the other string
-                     * remember that this simulates bulk text replacement:
-                     * the decomposition would replace the entire code point
-                     */
-                    --s2;
-                    --m2;
-                    c2=*(s2-1);
-                }
-            }
-
-            /* push current level pointers */
-            stack1[0].start=start1;
-            stack1[0].s=s1;
-            stack1[0].limit=limit1;
-            ++level1;
-
-            /* copy the folding result to fold1[] */
-            if(length<=UCASE_MAX_STRING_LENGTH) {
-                u_memcpy(fold1, p, length);
-            } else {
-                int32_t i=0;
-                U16_APPEND_UNSAFE(fold1, i, length);
-                length=i;
-            }
-
-            /* set next level pointers to case folding */
-            start1=s1=fold1;
-            limit1=fold1+length;
-
-            /* get ready to read from decomposition, continue with loop */
-            c1=-1;
-            continue;
-        }
-
-        if( level2==0 &&
-            (length=ucase_toFullFolding(csp, (UChar32)cp2, &p, option))>=0
-        ) {
-            /* cp2 case-folds to the code point "length" or to p[length] */
-            if(U_IS_SURROGATE(c2)) {
-                if(U_IS_SURROGATE_LEAD(c2)) {
-                    /* advance beyond source surrogate pair if it case-folds */
-                    ++s2;
-                } else /* isTrail(c2) */ {
-                    /*
-                     * we got a supplementary code point when hitting its trail surrogate,
-                     * therefore the lead surrogate must have been the same as in the other string;
-                     * compare this decomposition with the lead surrogate in the other string
-                     * remember that this simulates bulk text replacement:
-                     * the decomposition would replace the entire code point
-                     */
-                    --s1;
-                    --m1;
-                    c1=*(s1-1);
-                }
-            }
-
-            /* push current level pointers */
-            stack2[0].start=start2;
-            stack2[0].s=s2;
-            stack2[0].limit=limit2;
-            ++level2;
-
-            /* copy the folding result to fold2[] */
-            if(length<=UCASE_MAX_STRING_LENGTH) {
-                u_memcpy(fold2, p, length);
-            } else {
-                int32_t i=0;
-                U16_APPEND_UNSAFE(fold2, i, length);
-                length=i;
-            }
-
-            /* set next level pointers to case folding */
-            start2=s2=fold2;
-            limit2=fold2+length;
-
-            /* get ready to read from decomposition, continue with loop */
-            c2=-1;
-            continue;
-        }
-        break;
-    }
-
-    *prefixLen1 = m1 - str1;
-    *prefixLen2 = m2 - str2;
+    _cmpFold(s1, length1, s2, length2, options,
+        matchLen1, matchLen2, pErrorCode);
 }
-

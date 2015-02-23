@@ -65,20 +65,20 @@ u_strcmpFold(const UChar *s1, int32_t length1,
 /**
  * Interanl API, used for detecting length of
  * shared prefix case-insensitively.
- * @param str1          input string 1
- * @param len1          length of string 1, or -1 (NULL terminated)
- * @param str2          input string 2
- * @param len2          length of string 2, or -1 (NULL terminated)
- * @param option        case folding option
- * @param prefixLen1    (output) length of the shared prefix in string 1
- * @param prefixLen2    (output) length of the shared prefix in string 2
+ * @param s1            input string 1
+ * @param length1       length of string 1, or -1 (NULL terminated)
+ * @param s2            input string 2
+ * @param length2       length of string 2, or -1 (NULL terminated)
+ * @param options       compare options
+ * @param matchLen1     (output) length of partial prefix match in s1
+ * @param matchLen2     (output) length of partial prefix match in s2
  * @param pErrorCode    receives error status
  */
 U_CAPI void
-u_caseInsensitivePrefixMatch(const UChar *str1, int32_t len1,
-                             const UChar *str2, int32_t len2,
-                             uint32_t option,
-                             int32_t *prefixLen1, int32_t *prefixLen2,
+u_caseInsensitivePrefixMatch(const UChar *s1, int32_t length1,
+                             const UChar *s2, int32_t length2,
+                             uint32_t options,
+                             int32_t *matchLen1, int32_t *matchLen2,
                              UErrorCode *pErrorCode);
 
 /**

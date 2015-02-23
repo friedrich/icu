@@ -1004,6 +1004,9 @@ TestUCaseInsensitivePrefixMatch(void) {
         {"ABC", "xyz", 0, 0},
         /* U+00DF LATIN SMALL LETTER SHARP S */
         {"A\\u00dfBC", "Ass", 2, 3},
+        {"Fust", "Fu\\u00dfball", 2, 2},
+        {"\\u00dfsA", "s\\u00dfB", 2, 2},
+        {"\\u00dfs", "s\\u00df", 2, 2},
         /* U+0130 LATIN CAPITAL LETTER I WITH DOT ABOVE */
         {"XYZ\\u0130i\\u0307xxx", "xyzi\\u0307\\u0130yyy", 6, 6},
         {0, 0, 0, 0}

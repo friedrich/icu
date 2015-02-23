@@ -2238,11 +2238,10 @@ ExitParse:
 
 //----------------------------------------------------------------------
 
-static UBool
+static int32_t
 matchStringWithOptionalDot(const UnicodeString &text,
                             int32_t index,
-                            const UnicodeString &data,
-                            int32_t &matchLength);
+                            const UnicodeString &data);
 
 int32_t SimpleDateFormat::matchQuarterString(const UnicodeString& text,
                               int32_t start,
@@ -2263,11 +2262,9 @@ int32_t SimpleDateFormat::matchQuarterString(const UnicodeString& text,
 
     for (; i < count; ++i) {
         int32_t matchLength = 0;
-        if (matchStringWithOptionalDot(text, start, data[i], matchLength)) {
-            if (matchLength > bestMatchLength) {
-                bestMatchLength = matchLength;
-                bestMatch = i;
-            }
+        if ((matchLength = matchStringWithOptionalDot(text, start, data[i])) > bestMatchLength) {
+            bestMatchLength = matchLength;
+            bestMatch = i;
         }
     }
 
@@ -2449,11 +2446,9 @@ int32_t SimpleDateFormat::matchString(const UnicodeString& text,
 
     for (; i < count; ++i) {
         int32_t matchLen = 0;
-        if (matchStringWithOptionalDot(text, start, data[i], matchLen)) {
-            if (matchLen > bestMatchLength) {
-                bestMatch = i;
-                bestMatchLength = matchLen;
-            }
+        if ((matchLen = matchStringWithOptionalDot(text, start, data[i])) > bestMatchLength) {
+            bestMatch = i;
+            bestMatchLength = matchLen;
         }
 
         if (monthPattern != NULL) {
@@ -2462,12 +2457,10 @@ int32_t SimpleDateFormat::matchString(const UnicodeString& text,
             Formattable monthName((const UnicodeString&)(data[i]));
             MessageFormat::format(*monthPattern, &monthName, 1, leapMonthName, status);
             if (U_SUCCESS(status)) {
-                if (matchStringWithOptionalDot(text, start, leapMonthName, matchLen)) {
-                    if (matchLen > bestMatchLength) {
-                        bestMatch = i;
-                        bestMatchLength = matchLen;
-                        isLeapMonth = 1;
-                    }
+                if ((matchLen = matchStringWithOptionalDot(text, start, leapMonthName)) > bestMatchLength) {
+                    bestMatch = i;
+                    bestMatchLength = matchLen;
+                    isLeapMonth = 1;
                 }
             }
         }
@@ -2493,12 +2486,12 @@ int32_t SimpleDateFormat::matchString(const UnicodeString& text,
     return -start;
 }
 
-static UBool
+static int32_t
 matchStringWithOptionalDot(const UnicodeString &text,
                             int32_t index,
-                            const UnicodeString &data,
-                            int32_t &matchLength) {
+                            const UnicodeString &data) {
     UErrorCode sts = U_ZERO_ERROR;
+    int32_t matchLength = 0;
     int32_t matchLenText = 0;
     int32_t matchLenData = 0;
 
@@ -2512,16 +2505,14 @@ matchStringWithOptionalDot(const UnicodeString &text,
     if (matchLenData == data.length()) {
         // normal match
         matchLength = matchLenText;
-        return TRUE;
     }
 
     if (data.charAt(data.length() - 1) == 0x2e && matchLenData == data.length() - 1) {
         // match without trailing dot
         matchLength = matchLenText;
-        return TRUE;
     }
 
-    return FALSE;
+    return matchLength;
 }
 
 //----------------------------------------------------------------------
