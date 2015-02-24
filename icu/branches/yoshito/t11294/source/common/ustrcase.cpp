@@ -28,6 +28,7 @@
 #include "cmemory.h"
 #include "ucase.h"
 #include "ustr_imp.h"
+#include "uassert.h"
 
 U_NAMESPACE_USE
 
@@ -525,9 +526,8 @@ static int32_t _cmpFold(
 
     /* initialize */
     if(matchLen1) {
+        U_ASSERT(matchLen2 !=NULL);
         *matchLen1=0;
-    }
-    if(matchLen2) {
         *matchLen2=0;
     }
 
@@ -607,8 +607,6 @@ static int32_t _cmpFold(
          */
         if(c1==c2) {
             const UChar *next1, *next2;
-            UBool endOfStack;
-            int32_t tmpLevel;
 
             if(c1<0) {
                 cmpRes=0;   /* c1==c2==-1 indicating end of strings */
@@ -617,7 +615,7 @@ static int32_t _cmpFold(
 
             /*
              * Note: Move the match positions in both strings at the same time
-             *      only when correspoinding code point(s) in the original strings
+             *      only when corresponding code point(s) in the original strings
              *      are fully consumed. For example, when comparing s1="Fust" and
              *      s2="Fu\u00dfball", s2[2] is folded into "ss", and s1[2] matches
              *      the first code point in the case-folded data. But the second "s"
@@ -628,34 +626,27 @@ static int32_t _cmpFold(
             if(level1==0) {
                 next1=s1;
             } else if(s1==limit1) {
+                /* Note: This implementation only use a single level of stack.
+                 *      If this code needs to be changed to use multiple levels
+                 *      of stacks, the code above should check if the current
+                 *      code is at the end of all stacks.
+                 */
+                U_ASSERT(level1==1);
+
                 /* is s1 at the end of the current stack? */
-                for(endOfStack=TRUE,tmpLevel=level1-1;tmpLevel>0;--tmpLevel) {
-                    if(stack1[tmpLevel].s!=stack1[tmpLevel].limit) {
-                        endOfStack=FALSE;
-                        break;
-                    }
-                }
-                if(endOfStack) {
-                    next1=stack1[0].s;
-                }
+                next1=stack1[0].s;
             }
 
             if (next1!=NULL) {
                 if(level2==0) {
                     next2=s2;
                 } else if(s2==limit2) {
+                    U_ASSERT(level2==1);
+
                     /* is s2 at the end of the current stack? */
-                    for (endOfStack=TRUE,tmpLevel=level2-1;tmpLevel>0;--tmpLevel) {
-                        if (stack2[tmpLevel].s!=stack2[tmpLevel].limit) {
-                            endOfStack = FALSE;
-                            break;
-                        }
-                    }
-                    if(endOfStack) {
-                        next2=stack2[0].s;
-                    }
+                    next2=stack2[0].s;
                 }
-                if(next1!=NULL && next2!=NULL) {
+                if(next2!=NULL) {
                     m1=next1;
                     m2=next2;
                 }
@@ -847,8 +838,6 @@ static int32_t _cmpFold(
 
     if(matchLen1) {
         *matchLen1=m1-org1;
-    }
-    if(matchLen2) {
         *matchLen2=m2-org2;
     }
     return cmpRes;

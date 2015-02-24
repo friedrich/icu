@@ -2491,7 +2491,6 @@ matchStringWithOptionalDot(const UnicodeString &text,
                             int32_t index,
                             const UnicodeString &data) {
     UErrorCode sts = U_ZERO_ERROR;
-    int32_t matchLength = 0;
     int32_t matchLenText = 0;
     int32_t matchLenData = 0;
 
@@ -2502,17 +2501,13 @@ matchStringWithOptionalDot(const UnicodeString &text,
                                  &sts);
     U_ASSERT (U_SUCCESS(sts));
 
-    if (matchLenData == data.length()) {
-        // normal match
-        matchLength = matchLenText;
+    if (matchLenData == data.length() /* normal match */
+        || data.charAt(data.length() - 1) == 0x2e
+            && matchLenData == data.length() - 1 /* match witout trailing dot */) {
+        return matchLenText;
     }
 
-    if (data.charAt(data.length() - 1) == 0x2e && matchLenData == data.length() - 1) {
-        // match without trailing dot
-        matchLength = matchLenText;
-    }
-
-    return matchLength;
+    return 0;
 }
 
 //----------------------------------------------------------------------
