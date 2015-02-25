@@ -1,6 +1,6 @@
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2014, International Business Machines Corporation and
+ * Copyright (c) 1997-2015, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 /********************************************************************************
@@ -37,6 +37,7 @@ static void TestAllLocales(void);
 static void TestRelativeCrash(void);
 static void TestContext(void);
 static void TestCalendarDateParse(void);
+static void TestParseErrorReturnValue(void);
 
 #define LEN(a) (sizeof(a)/sizeof(a[0]))
 
@@ -56,6 +57,7 @@ void addDateForTest(TestNode** root)
     TESTCASE(TestContext);
     TESTCASE(TestCalendarDateParse);
     TESTCASE(TestOverrideNumberFormat);
+    TESTCASE(TestParseErrorReturnValue);
 }
 /* Testing the DateFormat API */
 static void TestDateFormat()
@@ -673,7 +675,7 @@ static void TestSymbols()
     VerifygetSymbols(zhChiCal, UDAT_CYCLIC_YEARS_NARROW, 59, "\\u7678\\u4EA5");
     VerifygetSymbols(zhChiCal, UDAT_ZODIAC_NAMES_ABBREVIATED, 0, "\\u9F20");
     VerifygetSymbols(zhChiCal, UDAT_ZODIAC_NAMES_WIDE, 11, "\\u732A");
-    VerifygetSymbols(def,UDAT_LOCALIZED_CHARS, 0, "GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxr");
+    VerifygetSymbols(def,UDAT_LOCALIZED_CHARS, 0, "GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxr:");
 
 
     if(result != NULL) {
@@ -1606,23 +1608,19 @@ static const char * overrideNumberFormat[][2] = {
 static void TestOverrideNumberFormat(void) {
     UErrorCode status = U_ZERO_ERROR;
     UChar pattern[50];
-    UChar* expected;
-    UChar* fields;
+    UChar expected[50];
+    UChar fields[50];
     char bbuf1[kBbufMax];
     char bbuf2[kBbufMax];
     const char* localeString = "zh@numbers=hanidays";
     UDateFormat* fmt;
     const UNumberFormat* getter_result;
     int32_t i;
-    unsigned j;
 
-    expected=(UChar*)malloc(sizeof(UChar) * 10);
-    fields=(UChar*)malloc(sizeof(UChar) * 10);
     u_uastrcpy(fields, "d");
     u_uastrcpy(pattern,"MM d");
 
-
-    fmt=udat_open(UDAT_PATTERN, UDAT_PATTERN,"en_US",NULL,0,pattern, u_strlen(pattern), &status);
+    fmt=udat_open(UDAT_PATTERN, UDAT_PATTERN, "en_US", zoneGMT, -1, pattern, u_strlen(pattern), &status);
     if (!assertSuccess("udat_open()", &status)) {
         return;
     }
@@ -1650,22 +1648,22 @@ static void TestOverrideNumberFormat(void) {
     }
     udat_close(fmt);
     
-    for (j=0; i<sizeof(overrideNumberFormat)/sizeof(overrideNumberFormat[0]); i++){
+    for (i=0; i<UPRV_LENGTHOF(overrideNumberFormat); i++){
         UChar ubuf[kUbufMax];
         UDateFormat* fmt2;
         UNumberFormat* overrideFmt2;
 
-        fmt2 =udat_open(UDAT_PATTERN, UDAT_PATTERN,"en_US",NULL,0,pattern, u_strlen(pattern), &status);
+        fmt2 =udat_open(UDAT_PATTERN, UDAT_PATTERN,"en_US", zoneGMT, -1, pattern, u_strlen(pattern), &status);
         assertSuccess("udat_open() with en_US", &status);
 
         overrideFmt2 = unum_open(UNUM_DEFAULT, NULL, 0, localeString, NULL, &status);
         assertSuccess("unum_open() in loop", &status);
 
         u_uastrcpy(fields, overrideNumberFormat[i][0]);
-        u_unescape(overrideNumberFormat[i][1], expected, 50);
+        u_unescape(overrideNumberFormat[i][1], expected, UPRV_LENGTHOF(expected));
 
         if ( strcmp(overrideNumberFormat[i][0], "") == 0 ) { // use the one w/o field
-            udat_setNumberFormat(fmt2, overrideFmt2);
+            udat_adoptNumberFormat(fmt2, overrideFmt2);
         } else if ( strcmp(overrideNumberFormat[i][0], "mixed") == 0 ) { // set 1 field at first but then full override, both(M & d) should be override
             const char* singleLocale = "en@numbers=hebr";
             UNumberFormat* singleOverrideFmt;
@@ -1677,7 +1675,7 @@ static void TestOverrideNumberFormat(void) {
             udat_adoptNumberFormatForFields(fmt2, fields, singleOverrideFmt, &status);
             assertSuccess("udat_setNumberFormatForField() in mixed", &status);
 
-            udat_setNumberFormat(fmt2, overrideFmt2);
+            udat_adoptNumberFormat(fmt2, overrideFmt2);
         } else if ( strcmp(overrideNumberFormat[i][0], "do") == 0 ) { // o is an invalid field
             udat_adoptNumberFormatForFields(fmt2, fields, overrideFmt2, &status);
             if(status == U_INVALID_FORMAT_ERROR) {
@@ -1697,11 +1695,43 @@ static void TestOverrideNumberFormat(void) {
             log_err("fail: udat_format for locale, expected %s, got %s\n",
                     u_austrncpy(bbuf1,expected,kUbufMax), u_austrncpy(bbuf2,ubuf,kUbufMax) );
 
-        udat_close(overrideFmt2);
         udat_close(fmt2);
     }
-    free(expected);
-    free(fields);
+}
+
+/*
+ * Ticket #11523
+ * udat_parse and udat_parseCalendar should have the same error code when given the same invalid input.
+ */
+static void TestParseErrorReturnValue(void) {
+    UErrorCode status = U_ZERO_ERROR;
+    UErrorCode expectStatus = U_PARSE_ERROR;
+    UDateFormat* df;
+    UCalendar* cal;
+
+    df = udat_open(UDAT_DEFAULT, UDAT_DEFAULT, NULL, NULL, -1, NULL, -1, &status);
+    if (!assertSuccess("udat_open()", &status)) {
+        return;
+    }
+
+    cal = ucal_open(NULL, 0, "en_US", UCAL_GREGORIAN, &status);
+    if (!assertSuccess("ucal_open()", &status)) {
+        return;
+    }
+
+    udat_parse(df, NULL, -1, NULL, &status);
+    if (status != expectStatus) {
+        log_err("%s should have been returned by udat_parse when given an invalid input, instead got - %s\n", u_errorName(expectStatus), u_errorName(status));
+    }
+
+    status = U_ZERO_ERROR;
+    udat_parseCalendar(df, cal, NULL, -1, NULL, &status);
+    if (status != expectStatus) {
+        log_err("%s should have been returned by udat_parseCalendar when given an invalid input, instead got - %s\n", u_errorName(expectStatus), u_errorName(status));
+    }
+
+    ucal_close(cal);
+    udat_close(df);
 }
 
 #endif /* #if !UCONFIG_NO_FORMATTING */

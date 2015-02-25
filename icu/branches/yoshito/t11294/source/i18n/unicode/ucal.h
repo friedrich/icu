@@ -1,6 +1,6 @@
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and
+ * Copyright (C) 1996-2015, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -422,7 +422,22 @@ enum UCalendarDateFields {
    * an example of this.
    */
   UCAL_IS_LEAP_MONTH,
-  
+
+#ifndef U_HIDE_DRAFT_API
+  /**
+   * Field number indicating the separator between
+   * <code>HOUR</code>, <code>MINUTE</code> and <code>SECOND</code>.
+   * E.g., at 10:04 the <code>TIME_SEPARATOR</code> is <code>:</code>.
+   * @see #UCAL_HOUR
+   * @see #UCAL_MINUTE
+   * @see #UCAL_SECOND
+   * @draft ICU 55
+   */
+  UCAL_TIME_SEPARATOR,
+#else
+  UCAL_TIME_SEPARATOR_HIDE_DRAFT_API,
+#endif  /* U_HIDE_DRAFT_API */
+
   /**
    * Field count
    * @stable ICU 2.6
