@@ -239,6 +239,22 @@
     <p>See the <a href="APIChangeReport.html">API Change Report</a> for a complete 
     list of APIs added, removed, or changed in this release.</p>
 
+    <!-- ICU 55 items -->
+    <h3>Layout Engine: breaking API change</h3>
+    <p>The LayoutEngine (already deprecated) has had the function
+      <tt>LEFontInstance::getFontTable(LETag, size_t &length)</tt>
+      since ICU 52. Its implementation was optional. In ICU 55, this
+      version
+      of <tt>getFontTable</tt> has been made pure virtual, and the
+      version without a length (<tt>getFontTable(LETag)</tt>) has been
+      completely removed. This is a breaking change for users who have
+      not implemented the two-argument <tt>getFontTable()</tt>
+      function in their <tt>LEFontInstance</tt> subclasses.
+      The break is intentional, as the one-argument version cannot be
+      made secure. See <tt>LEFontInstance</tt> api docs for more detail.
+    </p>
+
+
     <!-- ICU 54 items -->
     <h3>Deprecation: Layout Engine</h3>
     <p>The LayoutEngine is now deprecated. Please
