@@ -55,6 +55,12 @@ public:
     DigitList &round(DigitList &value, UErrorCode &status) const;
 
     /**
+     * Returns TRUE if the absolute value of value can be fast formatted
+     * using ValueFormatter::formatInt32.
+     */
+    UBool isFastFormattable(int32_t value) const;
+
+    /**
      * Return the plural form to use for a given value.
      * Value should have already been adjusted with round.
      * @return 'zero', 'one', 'two', 'few', 'many', or 'other'
@@ -64,11 +70,22 @@ public:
         const DigitList &value) const;
 
     /**
-     * formats value and appends to appendTo. Returns appendTo.
+     * formats positiveValue and appends to appendTo. Returns appendTo.
      * value must be positive.
      */
     UnicodeString &format(
         const DigitList &positiveValue,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
+    /**
+     * formats positiveValue and appends to appendTo. Returns appendTo.
+     * value must be positive. Calling formatInt32 to format a value when
+     * isFastFormattable indicates that the value cannot be fast formatted
+     * results in undefined behavior.
+     */
+    UnicodeString &formatInt32(
+        int32_t positiveValue,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
 

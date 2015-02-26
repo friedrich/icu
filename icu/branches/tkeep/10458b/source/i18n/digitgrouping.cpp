@@ -8,6 +8,7 @@
 #include "unicode/utypes.h"
 
 #include "digitgrouping.h"
+#include "smallintformatter.h"
 
 U_NAMESPACE_BEGIN
 
@@ -29,6 +30,12 @@ int32_t DigitGrouping::getSeparatorCount(int32_t digitsLeftOfDecimal) const {
 UBool DigitGrouping::isGroupingEnabled(int32_t digitsLeftOfDecimal) const {
     return (isGroupingUsed()
             && digitsLeftOfDecimal >= fGrouping + getMinGrouping());
+}
+
+UBool DigitGrouping::isNoGrouping(
+        int32_t positiveValue, const IntDigitCountRange &range) const {
+    return getSeparatorCount(
+            SmallIntFormatter::estimateDigitCount(positiveValue, range)) == 0;
 }
 
 int32_t DigitGrouping::getGrouping2() const {

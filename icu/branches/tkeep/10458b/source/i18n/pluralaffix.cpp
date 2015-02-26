@@ -72,6 +72,11 @@ PluralAffix::getByVariant(const char *variant) const {
     return affixes.get(variant);
 }
 
+const DigitAffix &
+PluralAffix::getByVariant(const UnicodeString &variant) const {
+    return affixes.get(variant);
+}
+
 UBool
 PluralAffix::hasMultipleVariants() const {
     // This works because OTHER is guaranteed to be the first enum value

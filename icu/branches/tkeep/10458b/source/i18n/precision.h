@@ -83,6 +83,11 @@ DigitList &round(DigitList &value, int32_t exponent, UErrorCode &status) const;
  */
 DigitInterval &getInterval(
         const DigitList &roundedValue, DigitInterval &interval) const;
+
+/**
+ * Returns TRUE if this instance allows for fast formatting of integers.
+ */
+UBool isFastFormattable() const;
 };
 
 /**

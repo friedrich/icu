@@ -25,6 +25,39 @@ DigitAffixesAndPadding::needsPluralRules() const {
 }
 
 UnicodeString &
+DigitAffixesAndPadding::formatInt32(
+        int32_t value,
+        const ValueFormatter &formatter,
+        FieldPositionHandler &handler,
+        const PluralRules *optPluralRules,
+        UnicodeString &appendTo,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return appendTo;
+    }
+    if (optPluralRules != NULL || fWidth > 0 || !formatter.isFastFormattable(value)) {
+        DigitList digitList;
+        digitList.set(value);
+        return format(
+                digitList,
+                formatter,
+                handler,
+                optPluralRules,
+                appendTo,
+                status);
+    }
+    UBool bPositive = value >= 0;
+    const DigitAffix *prefix = bPositive ? &fPositivePrefix.getOtherVariant() : &fNegativePrefix.getOtherVariant();
+    const DigitAffix *suffix = bPositive ? &fPositiveSuffix.getOtherVariant() : &fNegativeSuffix.getOtherVariant();
+    if (value < 0) {
+        value = -value;
+    }
+    prefix->format(handler, appendTo);
+    formatter.formatInt32(value, handler, appendTo);
+    return suffix->format(handler, appendTo);
+}
+
+UnicodeString &
 DigitAffixesAndPadding::format(
         DigitList &value,
         const ValueFormatter &formatter,
@@ -46,17 +79,16 @@ DigitAffixesAndPadding::format(
         prefix = &pluralPrefix->getOtherVariant();
         suffix = &pluralSuffix->getOtherVariant();
     } else {
-        UnicodeString count;
-        count = formatter.select(*optPluralRules, value);
-        CharString buffer;
-        buffer.appendInvariantChars(count, status);
-        if (U_FAILURE(status)) {
-            return appendTo;
-        }
-        prefix = &pluralPrefix->getByVariant(buffer.data());
-        suffix = &pluralSuffix->getByVariant(buffer.data());
+        UnicodeString count(formatter.select(*optPluralRules, value));
+        prefix = &pluralPrefix->getByVariant(count);
+        suffix = &pluralSuffix->getByVariant(count);
     }
     value.setPositive(TRUE);
+    if (fWidth <= 0) {
+        prefix->format(handler, appendTo);
+        formatter.format(value, handler, appendTo);
+        return suffix->format(handler, appendTo);
+    }
     int32_t codePointCount = prefix->countChar32() + formatter.countChar32(value) + suffix->countChar32();
     int32_t paddingCount = fWidth - codePointCount;
     switch (fPadPosition) {

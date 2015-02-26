@@ -17,6 +17,8 @@
 
 U_NAMESPACE_BEGIN
 
+class IntDigitCountRange;
+
 /**
  * The digit grouping policy.
  */
@@ -56,9 +58,19 @@ public:
     /**
      * Returns true if grouping is used FALSE otherwise. When
      * isGroupingUsed() returns FALSE; isSeparatorAt always returns FALSE
-     * and separatorCount always returns 0.
+     * and getSeparatorCount always returns 0.
      */
     UBool isGroupingUsed() const { return fGrouping > 0; }
+
+    /**
+     * Returns TRUE if this instance would not add grouping separators
+     * when formatting value using the given constraint on digit count.
+     *
+     * @param value the value to format.
+     * @param range the minimum and maximum digits for formatting value.
+     */
+    UBool isNoGrouping(
+            int32_t positiveValue, const IntDigitCountRange &range) const;
 
 public:
 

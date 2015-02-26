@@ -79,6 +79,13 @@ public:
     const DigitAffix &getByVariant(const char *variant) const;
 
     /**
+     * Get the DigitAffix for a paricular variant such as "zero", "one", ...
+     * If the particular variant is not set, returns the 'other' variant
+     * which is always set.
+     */
+    const DigitAffix &getByVariant(const UnicodeString &variant) const;
+
+    /**
      * Get the DigitAffix for the other variant which is always set.
      */
     const DigitAffix &getOtherVariant() const {

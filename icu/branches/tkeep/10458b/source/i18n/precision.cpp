@@ -55,6 +55,11 @@ FixedPrecision::getInterval(
     return interval;
 }
 
+UBool
+FixedPrecision::isFastFormattable() const {
+    return (fMin.getFracDigitCount() == 0 && fSignificant.isNoConstraints() && fRoundingIncrement.isZero());
+}
+
 DigitList &
 ScientificPrecision::round(DigitList &value, UErrorCode &status) const {
     if (U_FAILURE(status)) {

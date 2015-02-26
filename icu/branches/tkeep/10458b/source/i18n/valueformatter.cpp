@@ -20,6 +20,8 @@
 #include "unicode/plurrule.h"
 #include "plurrule_impl.h"
 #include "uassert.h"
+#include "smallintformatter.h"
+#include "digitgrouping.h"
 
 U_NAMESPACE_BEGIN
 
@@ -48,6 +50,38 @@ ValueFormatter::select(
     return UnicodeString();
 }
 
+static UBool isNoGrouping(
+        const DigitGrouping &grouping,
+        int32_t value,
+        const FixedPrecision &precision) {
+    IntDigitCountRange range(
+            precision.fMin.getIntDigitCount(),
+            precision.fMax.getIntDigitCount());
+    return grouping.isNoGrouping(value, range);
+}
+
+UBool
+ValueFormatter::isFastFormattable(int32_t value) const {
+    switch (fType) {
+    case kFixedDecimal:
+        {
+            if (value == INT32_MIN) {
+                return FALSE;
+            }
+            if (value < 0) {
+                value = -value;
+            }
+            return fFixedPrecision->isFastFormattable() && fFixedOptions->isFastFormattable() && isNoGrouping(*fGrouping, value, *fFixedPrecision);
+        }
+    case kScientificNotation:
+        return FALSE;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return FALSE;
+}
+
 DigitList &
 ValueFormatter::round(DigitList &value, UErrorCode &status) const {
     switch (fType) {
@@ -62,6 +96,32 @@ ValueFormatter::round(DigitList &value, UErrorCode &status) const {
     return value;
 }
 
+
+UnicodeString &
+ValueFormatter::formatInt32(
+        int32_t value,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    switch (fType) {
+    case kFixedDecimal:
+        {
+            IntDigitCountRange range(
+                    fFixedPrecision->fMin.getIntDigitCount(),
+                    fFixedPrecision->fMax.getIntDigitCount());
+            return fDigitFormatter->formatPositiveInt32(
+                    value,
+                    range,
+                    handler,
+                    appendTo);
+        }
+        break;
+    case kScientificNotation:
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return appendTo;
+}
 
 UnicodeString &
 ValueFormatter::format(

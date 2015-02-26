@@ -128,6 +128,28 @@ UnicodeString &format(
         const PluralRules *optPluralRules,
         UnicodeString &appendTo,
         UErrorCode &status) const;
+
+/**
+ * Formats a 32-bit integer and appends to appendTo. When formatting an
+ * integer, this method is preferred to plain format as it can run
+ * several times faster under certain conditions.
+ *
+ * @param value the value to format.
+ * @param formatter handles the details of formatting the actual value.
+ * @param handler records field positions
+ * @param optPluralRules the plural rules, but may be NULL if
+ *   needsPluralRules returns FALSE. 
+ * @appendTo formatted string appended here.
+ * @status any error returned here.
+ */
+UnicodeString &formatInt32(
+        int32_t value,
+        const ValueFormatter &formatter,
+        FieldPositionHandler &handler,
+        const PluralRules *optPluralRules,
+        UnicodeString &appendTo,
+        UErrorCode &status) const;
+
 private:
 UnicodeString &appendPadding(int32_t paddingCount, UnicodeString &appendTo) const;
 

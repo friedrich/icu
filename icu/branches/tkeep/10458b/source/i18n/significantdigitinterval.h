@@ -64,6 +64,14 @@ public:
         return fMin;
     }
 
+    /**
+     * Returns TRUE if this instance represents no constraints on significant
+     * digits.
+     */
+    UBool isNoConstraints() const {
+        return fMin == 0 && fMax == INT32_MAX;
+    }
+
 private:
     int32_t fMax;
     int32_t fMin;

@@ -24,6 +24,7 @@ class DigitGrouping;
 class DigitInterval;
 class UnicodeString;
 class FieldPositionHandler;
+class IntDigitCountRange;
 
 /**
  * Various options for formatting in fixed point.
@@ -37,6 +38,14 @@ class U_I18N_API DigitFormatterOptions : public UMemory {
      */
     UBool equals(const DigitFormatterOptions &rhs) const {
         return (fAlwaysShowDecimal == rhs.fAlwaysShowDecimal);
+    }
+
+    /**
+     * Returns TRUE if these options allow for fast formatting of
+     * integers.
+     */
+    UBool isFastFormattable() const {
+        return (fAlwaysShowDecimal == FALSE);
     }
 
     /**
@@ -112,12 +121,29 @@ void setDecimalFormatSymbols(const DecimalFormatSymbols &symbols);
  * @param options formatting options
  * @param handler records field positions
  * @param appendTo formatted value appended here.
+ * @return appendTo
  */
 UnicodeString &format(
         const DigitList &positiveDigits,
         const DigitGrouping &grouping,
         const DigitInterval &interval,
         const DigitFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
+/**
+ * Fixed point formatting of integers.
+ * Always performed with no grouping and no decimal point.
+ *
+ * @param positiveValue the value to format must be positive.
+ * @param range specifies minimum and maximum number of digits.
+ * @param handler records field positions
+ * @param appendTo formatted value appended here.
+ * @return appendTo
+ */
+UnicodeString &formatPositiveInt32(
+        int32_t positiveValue,
+        const IntDigitCountRange &range,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
 
@@ -141,25 +167,6 @@ UnicodeString &formatInt32(
         UnicodeString &appendTo) const;
 
 /**
- * Fixed point formatting for 64 bit ints.
- * @param value the value to format. May be positive or negative.
- * @param options formatting options.
- * @param signField The field ID to use when recording the sign field.
- *   Can be anything if handler is not recording field positions.
- * @param intField The field ID to use when recording the integer field.
- *   Can be anything if handler is not recording field positions.
- * @param handler Records the field positions.
- * @param appendTo the formatted value appended here.
- */
-UnicodeString &formatInt64(
-        int64_t value,
-        const DigitFormatterIntOptions &options,
-        int32_t signField,
-        int32_t intField,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const;
-
-/**
  * Counts the number of code points needed for formatting.
  */
 int32_t countChar32(
@@ -172,13 +179,6 @@ int32_t countChar32(
  */
 int32_t countChar32ForInt32(
         int32_t value,
-        const DigitFormatterIntOptions &options) const;
-
-/**
- * Counts the number of code points needed for formatting an int64.
- */
-int32_t countChar32ForInt64(
-        int64_t value,
         const DigitFormatterIntOptions &options) const;
 
 /**
@@ -195,6 +195,15 @@ UnicodeString fPositiveSign;
 UBool fIsStandardDigits;
 
 UBool isStandardDigits() const;
+
+UnicodeString &formatDigits(
+        uint8_t *digits,
+        int32_t count,
+        const IntDigitCountRange &range,
+        int32_t intField,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
 };
 
 U_NAMESPACE_END
