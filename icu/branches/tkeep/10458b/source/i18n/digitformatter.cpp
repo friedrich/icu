@@ -15,7 +15,7 @@
 #include "unicode/unum.h"
 #include "fphdlimp.h"
 #include "smallintformatter.h"
-
+#include "unistrappender.h"
 
 U_NAMESPACE_BEGIN
 
@@ -104,35 +104,41 @@ UnicodeString &DigitFormatter::format(
         }
         return appendTo;
     }
-    for (int32_t i = digitsLeftOfDecimal - 1; i >= lastDigitPos; --i) { 
-        if (i == -1) {
-            if (!options.fAlwaysShowDecimal) {
+    {
+        UnicodeStringAppender appender(appendTo);
+        for (int32_t i = digitsLeftOfDecimal - 1; i >= lastDigitPos; --i) { 
+            if (i == -1) {
+                appender.flush();
+                if (!options.fAlwaysShowDecimal) {
+                    appendField(
+                            UNUM_DECIMAL_SEPARATOR_FIELD,
+                            fDecimal,
+                            handler,
+                            appendTo);
+                }
+                fracBegin = appendTo.length();
+            }
+            appender.append(fLocalizedDigits[digits.getDigitByExponent(i)]);
+            if (grouping.isSeparatorAt(digitsLeftOfDecimal, i)) {
+                appender.flush();
                 appendField(
-                        UNUM_DECIMAL_SEPARATOR_FIELD,
-                        fDecimal,
+                        UNUM_GROUPING_SEPARATOR_FIELD,
+                        fGroupingSeparator,
                         handler,
                         appendTo);
             }
-            fracBegin = appendTo.length();
-        }
-        appendTo.append(fLocalizedDigits[digits.getDigitByExponent(i)]);
-        if (grouping.isSeparatorAt(digitsLeftOfDecimal, i)) {
-            appendField(
-                    UNUM_GROUPING_SEPARATOR_FIELD,
-                    fGroupingSeparator,
-                    handler,
-                    appendTo);
-        }
-        if (i == 0) {
-            if (digitsLeftOfDecimal > 0) {
-                handler.addAttribute(UNUM_INTEGER_FIELD, intBegin, appendTo.length());
-            }
-            if (options.fAlwaysShowDecimal) {
-                appendField(
-                        UNUM_DECIMAL_SEPARATOR_FIELD,
-                        fDecimal,
-                        handler,
-                        appendTo);
+            if (i == 0) {
+                appender.flush();
+                if (digitsLeftOfDecimal > 0) {
+                    handler.addAttribute(UNUM_INTEGER_FIELD, intBegin, appendTo.length());
+                }
+                if (options.fAlwaysShowDecimal) {
+                    appendField(
+                            UNUM_DECIMAL_SEPARATOR_FIELD,
+                            fDecimal,
+                            handler,
+                            appendTo);
+                }
             }
         }
     }
@@ -180,23 +186,13 @@ DigitFormatter::formatDigits(
         handler.addAttribute(intField, begin, appendTo.length());
         return appendTo;
     }
-    // Optimization to get around the slowness of UnicodeString::append.
-    if (i < 32) {
-        UChar chars[32];
-        int32_t idx = 0;
+    {
+        UnicodeStringAppender appender(appendTo);
         for (; i >= count; --i) {
-            chars[idx++] = fLocalizedDigits[0];
+            appender.append(fLocalizedDigits[0]);
         }
         for (; i >= 0; --i) {
-            chars[idx++] = fLocalizedDigits[digits[i]];
-        }
-        appendTo.append(chars, 0, idx);
-    } else {
-        for (; i >= count; --i) {
-            appendTo.append(fLocalizedDigits[0]);
-        }
-        for (; i >= 0; --i) {
-            appendTo.append(fLocalizedDigits[digits[i]]);
+            appender.append(fLocalizedDigits[digits[i]]);
         }
     }
     handler.addAttribute(intField, begin, appendTo.length());
@@ -257,7 +253,6 @@ DigitFormatter::formatPositiveInt32(
         const IntDigitCountRange &range,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
-    int32_t begin = appendTo.length();
     // super fast path
     if (fIsStandardDigits && SmallIntFormatter::canFormat(positiveValue, range)) {
         int32_t begin = appendTo.length();
