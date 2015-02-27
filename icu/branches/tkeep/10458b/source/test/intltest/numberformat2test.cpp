@@ -1740,6 +1740,16 @@ void NumberFormat2Test::TestValueFormatterIsFastFormattable() {
         assertFalse("1049", vf.isFastFormattable(1049));
     }
     {
+        // test presence of rounding increment
+        FixedPrecision precision;
+        ValueFormatter vf;
+        vf.prepareFixedDecimalFormatting(
+                formatter, grouping, precision, options);
+        assertTrue("1099", vf.isFastFormattable(1099));
+        precision.fRoundingIncrement.set(2.3);
+        assertFalse("1099", vf.isFastFormattable(1099));
+    }
+    {
         // test scientific notation
         ScientificPrecision precision;
         SciFormatter sciformatter;
