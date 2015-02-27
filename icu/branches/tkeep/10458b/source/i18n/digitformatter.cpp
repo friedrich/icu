@@ -180,11 +180,24 @@ DigitFormatter::formatDigits(
         handler.addAttribute(intField, begin, appendTo.length());
         return appendTo;
     }
-    for (; i >= count; --i) {
-        appendTo.append(fLocalizedDigits[0]);
-    }
-    for (; i >= 0; --i) {
-        appendTo.append(fLocalizedDigits[digits[i]]);
+    // Optimization to get around the slowness of UnicodeString::append.
+    if (i < 32) {
+        UChar chars[32];
+        int32_t idx = 0;
+        for (; i >= count; --i) {
+            chars[idx++] = fLocalizedDigits[0];
+        }
+        for (; i >= 0; --i) {
+            chars[idx++] = fLocalizedDigits[digits[i]];
+        }
+        appendTo.append(chars, 0, idx);
+    } else {
+        for (; i >= count; --i) {
+            appendTo.append(fLocalizedDigits[0]);
+        }
+        for (; i >= 0; --i) {
+            appendTo.append(fLocalizedDigits[digits[i]]);
+        }
     }
     handler.addAttribute(intField, begin, appendTo.length());
     return appendTo;

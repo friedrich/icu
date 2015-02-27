@@ -899,7 +899,7 @@ void NumberFormat2Test::TestBenchmark() {
         UnicodeString appendTo;
         FieldPositionOnlyHandler handler(fpos);
         formatter.formatPositiveInt32(
-                7894, range, handler, appendTo);
+                627894, range, handler, appendTo);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
 
@@ -916,7 +916,7 @@ void NumberFormat2Test::TestBenchmark() {
         vf.prepareFixedDecimalFormatting(
                 formatter, grouping, precision.fMantissa, options);
         aap.formatInt32(
-                7894,
+                627894,
                 vf,
                 handler,
                 NULL,
@@ -945,11 +945,12 @@ void NumberFormat2Test::TestBenchmark2() {
     UErrorCode status = U_ZERO_ERROR;
     UParseError perror;
     NumberFormat *nf = NumberFormat::createInstance("en", status);
+    nf->setGroupingUsed(FALSE);
     FieldPosition fpos(FieldPosition::DONT_CARE);
     clock_t start = clock();
     for (int32_t i = 0; i < 10000000; ++i) {
         UnicodeString appendTo;
-        nf->format(7894, appendTo, fpos);
+        nf->format(627894, appendTo, fpos);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     return;
@@ -1071,6 +1072,20 @@ void NumberFormat2Test::TestPositiveIntDigitFormatter() {
                 formatter,
                 2147483647,
                 12,
+                INT32_MAX,
+                expectedAttributes);
+    }
+    {
+        // Test long digit string where we have to append one
+        // character at a time.
+        NumberFormat2Test_Attributes expectedAttributes[] = {
+            {UNUM_INTEGER_FIELD, 0, 40},
+            {0, -1, 0}};
+        verifyPositiveIntDigitFormatter(
+                "0000000000000000000000000000002147483647",
+                formatter,
+                2147483647,
+                40,
                 INT32_MAX,
                 expectedAttributes);
     }
