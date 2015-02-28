@@ -1,0 +1,91 @@
+#This file contains a number of test cases for the Linkifier.
+#The URL is at the start of each line, 
+# optionally followed by <space>ILL_FORMED
+# everything after <space># or <newline># is a comment.
+#
+#for testing
+www.xn--cr-a.com	ILL_FORMED
+www.%F0%A0%80%80.com/%F0%A0%80%80/?qa=%F0%A0%80%80#%F0%A0%80%80
+
+#basic tests
+foo.com
+www.foo.com
+foo.рф
+www.foo.рф
+foo.xn--p1ai
+www.foo.xn--p1ai
+www.xn--tda.com
+www.youtube.abcd
+www.xn--cr-a.com
+abc.www.google.com
+?www.google.com	ILL_FORMED
+üwww.google.com
+午後google.com?午後yahoo.com
+google.com
+правительство.рф
+google.abc	ILL_FORMED
+üwww.google.com
+www.google.com/abc
+www.google.com/abc?
+www.google.com/abc?q=a
+xn--cr-a.www.google.com
+www.xn--tda.com/[a]?q=[a]#[a]
+ü.com/ü?q=ü#ü
+www.𠀀.com/𠀀/?qa=𠀀#𠀀
+http://www.𠀀.com/𠀀/?qa=𠀀#𠀀﻿
+
+#percent encoded
+www.y%61hoo.com
+y%61hoo.com
+www.%F0%A0%80%80.com/%F0%A0%80%80/?qa=%F0%A0%80%80#%F0%A0%80%80
+www.a%C1%82c.com	ILL_FORMED
+google.com/a%C1%82	ILL_FORMED
+
+#Special cases
+www.abc.com/a x
+www.abc.com/a"x
+www.abc.com/a#x
+www.abc.com/a%x
+www.abc.com/a<x
+www.abc.com/a>x
+www.abc.com/a[x
+www.abc.com/a\x
+www.abc.com/a]x
+www.abc.com/a^x
+www.abc.com/a`x
+www.abc.com/a{x
+www.abc.com/a|x
+www.abc.com/a}x﻿
+
+#Simple cases
+google.com
+google%F3%A0%80%80.com
+xn--a.com
+google.com./
+google.com./abc/def
+αβγ｡com/δεζ?η=θ?&ι=κ#λμ_?#ξ
+http://google.com/
+
+#email
+αβγ@δεζ.com
+mailto:αβγ@δεζ.com
+
+#paths that should be recognized
+http://be.wikipedia.org/wiki/Вікіпедыя:Артыкулы,_якія_мусяць_быць_у_кожнай_Вікіпедыі
+http://bpy.wikipedia.org/wiki/উইকিপিডিয়া:থানা_থকিসে_নিবন্ধ
+http://bug.wikipedia.org/wiki/Wikipedia:Daftar_artikel_ᨆᨊᨛᨂ_ᨅᨔ_ᨄᨑᨛᨒᨘ_ᨂᨛᨀ
+http://fa.wikipedia.org/wiki/ویکی‌پدیا:فهرست_نوشتارهایی_که_هر_ویکی‌پدیا_باید_بدارد
+http://gu.wikipedia.org/wiki/વિકિપીડિયા:દરેક_ભાષાના_વિકિપીડિયામાં_હોય_એવા_પ્રારંભિક_લેખોની_યાદી
+http://hi.wikipedia.org/wiki/विकिपीडिया:कुछ_प्रारंभिक_लेख_जो_कि_हर_भाषा_के_विकिपीडिया_में_होने_चाहिए
+http://kn.wikipedia.org/wiki/ವಿಕಿಪೀಡಿಯ:ಅಗತ್ಯ_ಲೇಖನಗಳು
+http://ml.wikipedia.org/wiki/വിക്കിപീഡിയ:അവശ്യലേഖനങ്ങള്‍
+http://mr.wikipedia.org/wiki/विकिपीडिया:लेख_संपादन_स्पर्धा/लेखांची_यादी
+http://zh-min-nan.wikipedia.org/wiki/Wikipedia:Só͘-ū_ê_Wikipedia_pán-pún_lóng_èng-kai_ū_ê_bûn-chiuⁿ
+http://new.wikipedia.org/wiki/विकिपिडियाःहलिमसफूया_ख्यःत
+http://os.wikipedia.org/wiki/Википеди:Алы_æвзагыл_дæр_чи_хъуамæ_уа,_уыцы_статьятæ
+http://ru.wikipedia.org/wiki/Википедия:Список_статей,_которые_должны_быть_во_всех_языковых_версиях
+http://ta.wikipedia.org/wiki/Wikipedia:அனைத்து_மொழி_விக்கிபீடியாக்களிலும்_இருக்க_வேண்டிய_கட்டுரைகளின்_பட்டியல்
+http://te.wikipedia.org/wiki/Wikipedia:వికీపీడియాలో_తప్పకుండా_ఉండవలసిన_వ్యాసాలు
+http://th.wikipedia.org/wiki/วิกิพีเดีย:รายชื่อบทความที่วิกิพีเดียทุกภาษาควรมี
+http://uk.wikipedia.org/wiki/Вікіпедія:Статті,_які_повинні_бути_у_всіх_вікіпедіях
+http://yi.wikipedia.org/wiki/װיקיפּעדיע:וויכטיגע_ארטיקלן"
