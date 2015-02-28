@@ -260,44 +260,104 @@ public abstract class LocaleDisplayNames {
 
     /**
      * Return a list of information used to construct a UI list of locale names.
-     * @param titlecase whether to titlecase the names
      * @param collator how to collate—should normally be Collator.getInstance(locale)
-     * @param localeSet a list of locales to present in a UI list.
-     * @return an ordered list of information.
+     * @param inSelf if true, compares the nameInSelf, otherwise the nameInDisplayLocale.
+     * Set depending on which field (displayLocale vs self) is to show up in the UI.
+     * If both are to show up in the UI, then it should be the one used for the primary sort order.
+     * @param localeSet a list of locales to present in a UI list. The casing uses the settings in the LocaleDisplayNames instance.
+     * @return an ordered list of UiListItems.
      */
-    public abstract List<Row> getList(Comparator<Object> collator, Collection<ULocale> localeSet);
-
+    public List<UiListItem> getUiList(Comparator<Object> collator, boolean inSelf, Collection<ULocale> localeSet) {
+        return getUiListX(UiListItem.getComparator(collator, inSelf), localeSet);
+    }
 
     /**
-     * Struct-like class used to return information for constructing a UI list.
+     * Return a list of information used to construct a UI list of locale names, providing more access to control the sorting. 
+     * Normally use getUiList instead.
+     * @param comparator how to sort the UiListItems in the result.
+     * @param localeSet a list of locales to present in a UI list. The casing uses the settings in the LocaleDisplayNames instance.
+     * @return an ordered list of UiListItems.
      */
-    public static class Row {
-        public final String nameInDisplayLocale;
-        public final String nameInSelf;
-        public final ULocale minimized;
-        public final ULocale modified;
+    public abstract List<UiListItem> getUiListX(Comparator<UiListItem> comparator, Collection<ULocale> localeSet);
 
-        public Row(String nameInDisplayLocale, String nameInSelf, ULocale minimized, ULocale modified) {
-            this.nameInDisplayLocale = nameInDisplayLocale;
-            this.nameInSelf = nameInSelf;
+    /**
+     * Struct-like class used to return information for constructing a UI list, each corresponding to a locale.
+     */
+    public static class UiListItem {
+        /**
+         * Returns the minimized locale for an input locale, such as sr-Cyrl → sr
+         */
+        public final ULocale minimized;
+        /**
+         * Returns the modified locale for an input locale, such as sr → sr-Cyrl, where there is also an sr-Latn in the list
+         */
+        public final ULocale modified;
+        /**
+         * Returns the name of the modified locale in the display locale, such as "Englisch (VS)" (for 'en-US', where the display locale is 'de').
+         */
+        public final String nameInDisplayLocale;
+        /**
+         * Returns the name of the modified locale in itself, such as "English (US)" (for 'en-US').
+         */
+        public final String nameInSelf;
+
+        /** 
+         * Constructor, normally only called internally.
+         * @param nameInDisplayLocale name of the modified locale in the display locale
+         * @param nameInSelf name of the modified locale in itself
+         * @param minimized locale for an input locale
+         * @param modified modified for an input locale
+         */
+        public UiListItem(String nameInDisplayLocale, String nameInSelf, ULocale minimized, ULocale modified) {
             this.minimized = minimized;
             this.modified = modified;
+            this.nameInDisplayLocale = nameInDisplayLocale;
+            this.nameInSelf = nameInSelf;
         }
+        
         @Override
         public boolean equals(Object obj) {
-            Row other = (Row)obj;
+            UiListItem other = (UiListItem)obj;
             return nameInDisplayLocale.equals(other.nameInDisplayLocale)
                     && nameInSelf.equals(other.nameInSelf)
                     && minimized.equals(other.minimized)
                     && modified.equals(other.modified);
         }
+        
+        @Override
+        public int hashCode() {
+            return modified.hashCode() ^ nameInDisplayLocale.hashCode();
+        }
+        
         @Override
         public String toString() {
-            // TODO Auto-generated method stub
             return "{" + nameInDisplayLocale + ", " + nameInSelf + ", " + modified + ", " + minimized + "}";
         }
-    }
+        
+        /**
+         * Return a comparator that compares the locale names for the display locale or the in-self names, depending on an input parameter.
+         * @param inSelf if true, compares the nameInSelf, otherwise the nameInDisplayLocale
+         * @param comparator (meant for strings, but because Java Collator doesn't have &lt;String>...) 
+         * @return UiListItem comparator
+         */
+        public static Comparator<UiListItem> getComparator(Comparator<Object> comparator, boolean inSelf) {
+            return new UiListItemComparator(comparator, inSelf);
+        }
 
+        private static class UiListItemComparator implements Comparator<UiListItem> {
+            private final Comparator<Object> collator;
+            private final boolean useSelf;
+            UiListItemComparator(Comparator<Object> collator, boolean useSelf) {
+                this.collator = collator;
+                this.useSelf = useSelf;
+            }
+            public int compare(UiListItem o1, UiListItem o2) {
+                int result = useSelf ? collator.compare(o1.nameInSelf, o2.nameInSelf)
+                        : collator.compare(o1.nameInDisplayLocale, o2.nameInDisplayLocale);
+                return result != 0 ? result : o1.modified.compareTo(o2.modified); // just in case
+            }
+        }
+    }
 
     /**
      * Sole constructor.  (For invocation by subclass constructors,
@@ -441,20 +501,15 @@ public abstract class LocaleDisplayNames {
             return value;
         }
 
-        /* (non-Javadoc)
-         * @see com.ibm.icu.text.LocaleDisplayNames#getList(java.util.Comparator, java.util.Collection)
-         */
         @Override
-        public List<Row> getList(Comparator<Object> collator, Collection<ULocale> localeSet) {
-            return Collections.EMPTY_LIST;
+        public List<UiListItem> getUiListX(Comparator<UiListItem> comparator, Collection<ULocale> localeSet) {
+            return Collections.emptyList();
         }
-
-
     }
     /**
      * Should move to being public.
      * @internal
-     * @Deprecated
+     * @deprecated This API is ICU internal only.
      */
     public static final class StringBreakIterator extends BreakIterator {
         private final BreakIterator source;

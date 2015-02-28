@@ -21,7 +21,7 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.DisplayContext;
 import com.ibm.icu.text.DisplayContext.Type;
 import com.ibm.icu.text.LocaleDisplayNames;
-import com.ibm.icu.text.LocaleDisplayNames.Row;
+import com.ibm.icu.text.LocaleDisplayNames.UiListItem;
 import com.ibm.icu.util.ULocale;
 
 public class ULocaleCollationTest extends TestFmwk {
@@ -271,7 +271,8 @@ public class ULocaleCollationTest extends TestFmwk {
                 }
         };
         ULocale french = ULocale.FRENCH;
-        LocaleDisplayNames names = LocaleDisplayNames.getInstance(french, DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU);
+        LocaleDisplayNames names = LocaleDisplayNames.getInstance(french, 
+                DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU);
         for (Type type : DisplayContext.Type.values()) {
             logln("Contexts: " + names.getContext(type).toString());
         }
@@ -279,15 +280,15 @@ public class ULocaleCollationTest extends TestFmwk {
 
         for (String[][] test : tests) {
             ArrayList<ULocale> list = new ArrayList<ULocale>();
-            List<Row> expected = new ArrayList<Row>();
+            List<UiListItem> expected = new ArrayList<UiListItem>();
             for (String item : test[0]) {
                 list.add(new ULocale(item));
             }
             for (int i = 1; i < test.length; ++i) {
                 String[] rawRow = test[i];
-                expected.add(new Row(rawRow[0], rawRow[1], new ULocale(rawRow[2]), new ULocale(rawRow[3])));
+                expected.add(new UiListItem(rawRow[0], rawRow[1], new ULocale(rawRow[2]), new ULocale(rawRow[3])));
             }
-            List<Row> newList = names.getList(collator, list);
+            List<UiListItem> newList = names.getUiList(collator, false, list);
             if (!expected.equals(newList)) {
                 if (expected.size() != newList.size()) {
                     errln(list.toString() + ": wrong size");
