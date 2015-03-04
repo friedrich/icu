@@ -104,7 +104,8 @@ public:
      * An empty affix pattern.
      */
     AffixPattern()
-            : tokens(), literals(), hasCurrencyToken(FALSE), char32Count(0) {
+            : tokens(), literals(), hasCurrencyToken(FALSE),
+              hasPercentToken(FALSE), hasPermillToken(FALSE),  char32Count(0) {
     }
 
     /**
@@ -116,12 +117,17 @@ public:
      * Adds a token to this affix pattern. t must not be kLiteral as
      * the addLiteral() method adds literals. 
      * @param t the token type to add
-     * @param count the token count. Used for currency to distinguish between
+     */
+    void add(ETokenType t);
+
+    /**
+     * Adds a currency token with specific count to this affix pattern.
+     * @param count the token count. Used to distinguish between
      *  one, two, or three currency symbols. Note that adding a currency
      *  token with count=2 (Use ISO code) is different than adding two
      *  currency tokens each with count=1 (two currency symbols).
      */
-    void add(ETokenType t, uint8_t count);
+    void addCurrency(uint8_t count);
 
     /**
      * Makes this instance be an empty affix pattern.
@@ -144,6 +150,14 @@ public:
      */
     UBool usesCurrency() const {
         return hasCurrencyToken;
+    }
+
+    UBool usesPercent() const {
+        return hasPercentToken;
+    }
+
+    UBool usesPermill() const {
+        return hasPermillToken;
     }
 
     /**
@@ -190,7 +204,10 @@ private:
     UnicodeString tokens;
     UnicodeString literals;
     UBool hasCurrencyToken;
+    UBool hasPercentToken;
+    UBool hasPermillToken;
     int32_t char32Count;
+    void add(ETokenType t, uint8_t count);
 
 };
 
@@ -247,6 +264,7 @@ private:
  */
 class U_I18N_API AffixPatternParser : public UMemory {
 public:
+AffixPatternParser();
 AffixPatternParser(const DecimalFormatSymbols &symbols);
 void setDecimalFormatSymbols(const DecimalFormatSymbols &symbols);
 

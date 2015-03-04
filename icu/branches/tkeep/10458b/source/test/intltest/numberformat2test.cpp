@@ -310,22 +310,10 @@ void NumberFormat2TestDecimalFormat::parsePattern(
     fNegativeSuffixPattern.remove();
     fPositivePrefixPattern.remove();
     fPositiveSuffixPattern.remove();
-    AffixPattern::parseAffixString(
-            out.fNegPrefixPattern,
-            fNegativePrefixPattern,
-            status);
-    AffixPattern::parseAffixString(
-            out.fNegSuffixPattern,
-            fNegativeSuffixPattern,
-            status);
-    AffixPattern::parseAffixString(
-            out.fPosPrefixPattern,
-            fPositivePrefixPattern,
-            status);
-    AffixPattern::parseAffixString(
-            out.fPosSuffixPattern,
-            fPositiveSuffixPattern,
-            status);
+    fNegativePrefixPattern = out.fNegPrefixAffix;
+    fNegativeSuffixPattern = out.fNegSuffixAffix;
+    fPositivePrefixPattern = out.fPosPrefixAffix;
+    fPositiveSuffixPattern = out.fPosSuffixAffix;
     fAap.fWidth = out.fFormatWidth;
     fAap.fWidth += fPositivePrefixPattern.countChar32();
     fAap.fWidth += fPositiveSuffixPattern.countChar32();
@@ -1987,6 +1975,8 @@ void NumberFormat2Test::TestAffixPatternParser() {
                     status));
     assertSuccess("", status);
     assertTrue("", affixPattern.usesCurrency());
+    assertTrue("", affixPattern.usesPercent());
+    assertFalse("", affixPattern.usesPermill());
     assertTrue("", affix.hasMultipleVariants());
     {
         // other
@@ -2030,6 +2020,8 @@ void NumberFormat2Test::TestAffixPatternParser() {
                     status));
     assertSuccess("", status);
     assertFalse("", affixPattern.usesCurrency());
+    assertFalse("", affixPattern.usesPercent());
+    assertFalse("", affixPattern.usesPermill());
     assertFalse("", affix.hasMultipleVariants());
     {
         // other
@@ -2047,33 +2039,39 @@ void NumberFormat2Test::TestAffixPatternParser() {
     assertFalse("", scratchPattern.usesCurrency());
 
     // Test really long string > 256 chars.
-    str = "'%012345678901234567890123456789012345678901234567890123456789"
+    str = "'\u2030012345678901234567890123456789012345678901234567890123456789"
           "012345678901234567890123456789012345678901234567890123456789"
           "012345678901234567890123456789012345678901234567890123456789"
           "012345678901234567890123456789012345678901234567890123456789"
           "012345678901234567890123456789012345678901234567890123456789";
+    str = str.unescape();
     affixPattern.remove();
     affix.remove();
     assertEquals(
             "",
-            2,
+            3,
             parser.parse(
                     AffixPattern::parseAffixString(str, affixPattern, status),
                     affix,
                     status));
     assertSuccess("", status);
     assertFalse("", affixPattern.usesCurrency());
+    assertFalse("", affixPattern.usesPercent());
+    assertTrue("", affixPattern.usesPermill());
     assertFalse("", affix.hasMultipleVariants());
     {
+       UnicodeString expected =
+           "\u2030012345678901234567890123456789012345678901234567890123456789"
+           "012345678901234567890123456789012345678901234567890123456789"
+           "012345678901234567890123456789012345678901234567890123456789"
+           "012345678901234567890123456789012345678901234567890123456789"
+           "012345678901234567890123456789012345678901234567890123456789";
+        expected = expected.unescape();
         NumberFormat2Test_Attributes expectedAttributes[] = {
-            {UNUM_PERCENT_FIELD, 0, 1},
+            {UNUM_PERMILL_FIELD, 0, 1},
             {0, -1, 0}};
         verifyAffix(
-                "%012345678901234567890123456789012345678901234567890123456789"
-                "012345678901234567890123456789012345678901234567890123456789"
-                "012345678901234567890123456789012345678901234567890123456789"
-                "012345678901234567890123456789012345678901234567890123456789"
-                "012345678901234567890123456789012345678901234567890123456789",
+                expected,
                 affix.getOtherVariant(),
                 expectedAttributes);
     }

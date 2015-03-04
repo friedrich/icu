@@ -128,11 +128,29 @@ AffixPattern::addLiteral(
 }
 
 void
+AffixPattern::add(ETokenType t) {
+    add(t, 1);
+}
+
+void
+AffixPattern::addCurrency(uint8_t count) {
+    add(kCurrency, count);
+}
+
+void
 AffixPattern::add(ETokenType t, uint8_t count) {
     U_ASSERT(t != kLiteral);
     char32Count += count;
-    if (t == kCurrency) {
+    switch (t) {
+    case kCurrency: 
         hasCurrencyToken = TRUE;
+        break;
+    case kPercent:
+        hasPercentToken = TRUE;
+        break;
+    case kPerMill:
+        hasPermillToken = TRUE;
+        break;
     }
     tokens.append(PACK_TOKEN_AND_LENGTH(t, count));
 }
@@ -142,6 +160,8 @@ AffixPattern::remove() {
     tokens.remove();
     literals.remove();
     hasCurrencyToken = FALSE;
+    hasPercentToken = FALSE;
+    hasPermillToken = FALSE;
     char32Count = 0;
 }
 
@@ -238,6 +258,11 @@ AffixPatternIterator::getLiteral(UnicodeString &result) const {
 int32_t
 AffixPatternIterator::getTokenLength() const {
     return UNPACK_LENGTH(tokens->charAt(nextTokenIndex - 1));
+}
+
+AffixPatternParser::AffixPatternParser()
+        : fPercent("%"), fPermill("\u2030"), fNegative("-") {
+    fPermill = fPermill.unescape();
 }
 
 AffixPatternParser::AffixPatternParser(

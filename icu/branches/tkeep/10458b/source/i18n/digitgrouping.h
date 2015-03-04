@@ -72,6 +72,11 @@ public:
     UBool isNoGrouping(
             int32_t positiveValue, const IntDigitCountRange &range) const;
 
+    /**
+     * Clears this instance so that digit grouping is not in effect.
+     */
+    void clear();
+
 public:
 
     /**

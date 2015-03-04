@@ -651,6 +651,14 @@ DecimalFormatPatternParser::applyPatternWithoutExpandAffix(
         out.fNegPrefixPattern.append(kQuote).append(kPatternMinus)
             .append(out.fPosPrefixPattern);
     }
+    AffixPattern::parseAffixString(
+            out.fNegSuffixPattern, out.fNegSuffixAffix, status);
+    AffixPattern::parseAffixString(
+            out.fPosSuffixPattern, out.fPosSuffixAffix, status);
+    AffixPattern::parseAffixString(
+            out.fNegPrefixPattern, out.fNegPrefixAffix, status);
+    AffixPattern::parseAffixString(
+            out.fPosPrefixPattern, out.fPosPrefixAffix, status);
 }
 
 U_NAMESPACE_END

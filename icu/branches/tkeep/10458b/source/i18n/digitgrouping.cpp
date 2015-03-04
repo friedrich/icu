@@ -46,5 +46,12 @@ int32_t DigitGrouping::getMinGrouping() const {
     return (fMinGrouping > 0 ? fMinGrouping : 1);
 }
 
+void
+DigitGrouping::clear() {
+    fMinGrouping = 0;
+    fGrouping = 0;
+    fGrouping2 = 0;
+}
+
 U_NAMESPACE_END
 
