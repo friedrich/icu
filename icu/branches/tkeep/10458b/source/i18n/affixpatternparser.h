@@ -68,6 +68,13 @@ public:
             const UChar *currency, UErrorCode &status);
 
     /**
+     * Returns true if this instance is the default. That is has no real
+     * currency. For instance never initialized with set()
+     * or reset with set(NULL, NULL, NULL, status).
+     */
+    UBool isDefault() const;
+
+    /**
      * Adjusts the precision used for a particular currency.
      * @param currency the null terminated, 3 character ISO code of the
      * currency.

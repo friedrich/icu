@@ -9,6 +9,7 @@
 
 #include "digitaffix.h"
 #include "fphdlimp.h"
+#include "unistrappender.h"
 
 
 U_NAMESPACE_BEGIN
@@ -24,12 +25,27 @@ DigitAffix::appendUChar(UChar value, int32_t fieldId) {
     fAffix.append(value);
     fAnnotations.append((UChar) fieldId);
 }
+
 void
 DigitAffix::append(const UnicodeString &value, int32_t fieldId) {
     fAffix.append(value);
-    int32_t len = value.length();
-    for (int32_t i = 0; i < len; ++i) {
-        fAnnotations.append((UChar) fieldId);
+    {
+        UnicodeStringAppender appender(fAnnotations);
+        int32_t len = value.length();
+        for (int32_t i = 0; i < len; ++i) {
+            appender.append((UChar) fieldId);
+        }
+    }
+}
+
+void
+DigitAffix::append(const UChar *value, int32_t charCount, int32_t fieldId) {
+    fAffix.append(value, charCount);
+    {
+        UnicodeStringAppender appender(fAnnotations);
+        for (int32_t i = 0; i < charCount; ++i) {
+            appender.append((UChar) fieldId);
+        }
     }
 }
 

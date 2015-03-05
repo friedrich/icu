@@ -15,6 +15,7 @@
 #include "uassert.h"
 
 static const int32_t kMaxTokenLength = 0x0F;
+        static UChar gDefaultSymbols[] = {0xa4, 0xa4, 0xa4};
 
 #define PACK_TOKEN_AND_LENGTH(t, l) ((UChar) (((t) << 8) | (l & 0x0F)))
 
@@ -44,6 +45,14 @@ CurrencyAffixInfo::CurrencyAffixInfo() {
     set(NULL, NULL, NULL, status);
 }
 
+UBool CurrencyAffixInfo::isDefault() const {
+    UnicodeString dSymbol(gDefaultSymbols, 1);
+    UnicodeString dISO(gDefaultSymbols, 2);
+    PluralAffix dLong;
+    dLong.append(gDefaultSymbols, 3);
+    return (fSymbol == dSymbol && fISO == dISO && fLong.equals(dLong));
+}
+
 void
 CurrencyAffixInfo::set(
         const char *locale,
@@ -54,11 +63,10 @@ CurrencyAffixInfo::set(
         return;
     }
     if (currency == NULL) {
-        static UChar defaultSymbols[] = {0xa4, 0xa4, 0xa4};
-        fSymbol.setTo(defaultSymbols, 1);
-        fISO.setTo(defaultSymbols, 2);
+        fSymbol.setTo(gDefaultSymbols, 1);
+        fISO.setTo(gDefaultSymbols, 2);
         fLong.remove();
-        fLong.append(UnicodeString(defaultSymbols, 3));
+        fLong.append(gDefaultSymbols, 3);
         return;
     }
     int32_t len;

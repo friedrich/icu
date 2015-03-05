@@ -1929,6 +1929,7 @@ void NumberFormat2Test::TestPluralAffix() {
 
 void NumberFormat2Test::TestCurrencyAffixInfo() {
     CurrencyAffixInfo info;
+    assertTrue("", info.isDefault());
     UnicodeString expectedSymbol("\u00a4");
     UnicodeString expectedSymbolIso("\u00a4\u00a4");
     UnicodeString expectedSymbols("\u00a4\u00a4\u00a4");
@@ -1946,7 +1947,9 @@ void NumberFormat2Test::TestCurrencyAffixInfo() {
     assertEquals("", "US dollar", info.fLong.getByVariant("one").toString());
     assertEquals("", "US dollars", info.fLong.getByVariant("other").toString());
     assertEquals("", "US dollars", info.fLong.getByVariant("two").toString());
+    assertFalse("", info.isDefault());
     info.set(NULL, NULL, NULL, status);
+    assertTrue("", info.isDefault());
     assertEquals("", expectedSymbol.unescape(), info.fSymbol);
     assertEquals("", expectedSymbolIso.unescape(), info.fISO);
     assertEquals("", expectedSymbols.unescape(), info.fLong.getByVariant("one").toString());

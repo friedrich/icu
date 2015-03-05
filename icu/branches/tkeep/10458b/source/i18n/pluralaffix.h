@@ -64,6 +64,12 @@ public:
     void append(const UnicodeString &value, int32_t fieldId=UNUM_FIELD_COUNT);
 
     /**
+     * Append value to all set variants. If fieldId present, value is that
+     * field type.
+     */
+    void append(const UChar *value, int32_t charCount, int32_t fieldId=UNUM_FIELD_COUNT);
+
+    /**
      * Append each variant in rhs to the corresponding variant in this
      * instance. Each variant appended from rhs is of type fieldId.
      */

@@ -49,6 +49,16 @@ PluralAffix::append(
     }
 }
 
+void
+PluralAffix::append(
+        const UChar *value, int32_t charCount, int32_t fieldId) {
+    PluralMapBase::Variant index = PluralMapBase::NONE;
+    for (DigitAffix *current = affixes.nextMutable(index);
+            current != NULL; current = affixes.nextMutable(index)) {
+        current->append(value, charCount, fieldId);
+    }
+}
+
 UBool
 PluralAffix::append(
         const PluralAffix &rhs, int32_t fieldId, UErrorCode &status) {
