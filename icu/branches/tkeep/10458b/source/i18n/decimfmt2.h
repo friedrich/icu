@@ -47,13 +47,13 @@ void setMinimumFractionDigits(int32_t newValue);
 void setMaximumFractionDigits(int32_t newValue);
 void setScientificNotation(UBool newValue);
 int32_t getMinimumIntegerDigits() const { 
-        return fPrecision.fMantissa.fMin.getIntDigitCount(); }
+        return fMinIntDigits; }
 int32_t getMaximumIntegerDigits() const { 
-        return fPrecision.fMantissa.fMax.getIntDigitCount(); }
+        return fMaxIntDigits; }
 int32_t getMinimumFractionDigits() const { 
-        return fPrecision.fMantissa.fMin.getFracDigitCount(); }
+        return fMinFracDigits; }
 int32_t getMaximumFractionDigits() const { 
-        return fPrecision.fMantissa.fMax.getFracDigitCount(); }
+        return fMaxFracDigits; }
 UBool isScientificNotation() const { return fUseScientific; }
 void setGroupingSize(int32_t newValue);
 void setSecondaryGroupingSize(int32_t newValue);
@@ -66,13 +66,27 @@ UBool isGroupingUsed() const { return fUseGrouping; }
 void setCurrency(const UChar *currency, UErrorCode &status);
 
 private:
-// These fields are the state that the user can see and set.
-// They alone determine the behavior of this object
-ScientificPrecision fPrecision;  // encapsulates fixed precision settings
-SciFormatterOptions fOptions;   // Encapsulates fixed precision options
+// These fields include what the user can see and set.
+// When the user updates these fields, it triggers automatic updates of
+// other fields that may be invisible to user
+
+// Updating the following fields triggers an update to the fEffPrecision field
+int32_t fMinIntDigits;
+int32_t fMaxIntDigits;
+int32_t fMinFracDigits;
+int32_t fMaxFracDigits;
+int32_t fMinSigDigits;
+int32_t fMaxSigDigits;
 UBool fUseScientific;
+
+// Updating the following fields triggers an update to fEffGrouping field
 DigitGrouping fGrouping;
 UBool fUseGrouping;
+
+// Updating the following fields triggers updates on the following:
+// fFormatter, fSciFormatter, fUsesCurrency, fRules, fAffixParser,
+// fAap.fPositivePrefiix, fAap.fPositiveSuffix,
+// fAap.fNegativePrefiix, fAap.fNegativeSuffix,
 AffixPattern fPositivePrefixPattern;
 AffixPattern fNegativePrefixPattern;
 AffixPattern fPositiveSuffixPattern;
@@ -80,35 +94,47 @@ AffixPattern fNegativeSuffixPattern;
 DecimalFormatSymbols *fSymbols;
 UChar fCurr[4];
 
+// TRUE if one or more affixes use currency.
+UBool fUsesCurrency;
+
+// Optional may be NULL
+PluralRules *fRules;
+
 // This field is totally hidden from user and is used to derive the affixes
-// in fAap below from the four affix patterns above. This field is set
-// from fSymbols above.
+// in fAap below from the four affix patterns above.
 AffixPatternParser fAffixParser;
 
-// These fields are used to format numbers. These fields are derived from
-// the first two groups of fields. Their settings are entirely hidden from
-// the user.
+// The actual precision used when formatting
 ScientificPrecision fEffPrecision;
+
+// The actual grouping used when formatting
 DigitGrouping fEffGrouping;
+SciFormatterOptions fOptions;   // Encapsulates fixed precision options
 SciFormatter fSciFormatter;
 DigitFormatter fFormatter;
 DigitAffixesAndPadding fAap;
-PluralRules *fRules;
-
-// How many places to move decimal to the left. Used for percent and permille.
-int32_t fScale;
 
 void parsePattern(
         const UnicodeString &pattern, UParseError &perror, UErrorCode &status);
-void updateSymbols();
-void updateLocalizedAffixes(UErrorCode &status);
-void updateForFixedDecimal();
-void updateIntDigitCounts();
-void updateFracDigitCounts();
-void updateSigDigitCounts();
-void updateForScientific();
-void updateLocalAffixes(UErrorCode &status);
-UBool affixesUseCurrency();
+
+// Updates everything
+void updateAll(UErrorCode &status);
+
+// Updates from changes to first group of attributes
+void updatePrecision(int32_t flags);
+
+// Updates from changes to second group of attributes
+void updateGrouping(int32_t flags);
+
+// Updates from changes to third group of attributes
+void updateFormatting(int32_t flags, UErrorCode &status);
+
+// Helper functions for updateFormattersAndAffixes
+UBool updateUsesCurrency();
+void updatePluralRules();
+void updateAffixParser(int32_t flags);
+void updateFormatters();
+void updateLocalizedAffixes(int32_t flags);
 
 };
 

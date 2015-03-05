@@ -11,6 +11,30 @@
 
 U_NAMESPACE_BEGIN
 
+static const int32_t kPrecisionInt = (1 << 0);
+static const int32_t kPrecisionFrac = (1 << 1);
+static const int32_t kPrecisionSig = (1 << 2);
+static const int32_t kPrecisionUseScientific = (1 << 3);
+static const int32_t kPrecisionAll = (1 << 4) - 1;
+
+static const int32_t kGroupingPrimary = (1 << 0);
+static const int32_t kGroupingSecondary = (1 << 1);
+static const int32_t kGroupingMin = (1 << 2);
+static const int32_t kGroupingOn = (1 << 3);
+static const int32_t kGroupingAll = (1 << 4) - 1;
+
+static const int32_t kFormattingPosPrefix = (1 << 0);
+static const int32_t kFormattingNegPrefix = (1 << 1);
+static const int32_t kFormattingPosSuffix = (1 << 2);
+static const int32_t kFormattingNegSuffix = (1 << 3);
+static const int32_t kFormattingSymbols = (1 << 4);
+static const int32_t kFormattingCurrency = (1 << 5);
+static const int32_t kFormattingUsesCurrency = (1 << 6);
+static const int32_t kFormattingPluralRules = (1 << 7);
+static const int32_t kFormattingAffixParser = (1 << 8);
+static const int32_t kFormattingAll = (1 << 9) - 1;
+
+
 DecimalFormat2::DecimalFormat2(
         const UnicodeString &pattern,
         DecimalFormatSymbols *symbolsToAdopt,
@@ -19,17 +43,17 @@ DecimalFormat2::DecimalFormat2(
         : fSymbols(symbolsToAdopt), fRules(NULL) {
     fCurr[0] = 0;
     parsePattern(pattern, parseError, status);
-    if (U_FAILURE(status)) {
-        return;
-    }
-    updateSymbols();
-    updateLocalizedAffixes(status);
+    updateAll(status);
 }
 
 DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           UMemory(other),
-          fPrecision(other.fPrecision),
-          fOptions(other.fOptions),
+          fMinIntDigits(other.fMinIntDigits),
+          fMaxIntDigits(other.fMaxIntDigits),
+          fMinFracDigits(other.fMinFracDigits),
+          fMaxFracDigits(other.fMaxFracDigits),
+          fMinSigDigits(other.fMinSigDigits),
+          fMaxSigDigits(other.fMaxSigDigits),
           fUseScientific(other.fUseScientific),
           fGrouping(other.fGrouping),
           fUseGrouping(other.fUseGrouping),
@@ -38,14 +62,15 @@ DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           fPositiveSuffixPattern(other.fPositiveSuffixPattern),
           fNegativeSuffixPattern(other.fNegativeSuffixPattern),
           fSymbols(other.fSymbols),
+          fUsesCurrency(other.fUsesCurrency),
+          fRules(other.fRules),
           fAffixParser(other.fAffixParser),
           fEffPrecision(other.fEffPrecision),
           fEffGrouping(other.fEffGrouping),
+          fOptions(other.fOptions),
           fSciFormatter(other.fSciFormatter),
           fFormatter(other.fFormatter),
-          fAap(other.fAap),
-          fRules(other.fRules),
-          fScale(other.fScale) {
+          fAap(other.fAap) {
     fSymbols = new DecimalFormatSymbols(*fSymbols);
     if (fRules != NULL) {
         fRules = new PluralRules(*fRules);
@@ -60,8 +85,12 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
         return (*this);
     }
     UMemory::operator=(other);
-    fPrecision = other.fPrecision;
-    fOptions = other.fOptions;
+    fMinIntDigits = other.fMinIntDigits;
+    fMaxIntDigits = other.fMaxIntDigits;
+    fMinFracDigits = other.fMinFracDigits;
+    fMaxFracDigits = other.fMaxFracDigits;
+    fMinSigDigits = other.fMinSigDigits;
+    fMaxSigDigits = other.fMaxSigDigits;
     fUseScientific = other.fUseScientific;
     fGrouping = other.fGrouping;
     fUseGrouping = other.fUseGrouping;
@@ -69,14 +98,15 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     fNegativePrefixPattern = other.fNegativePrefixPattern;
     fPositiveSuffixPattern = other.fPositiveSuffixPattern;
     fNegativeSuffixPattern = other.fNegativeSuffixPattern;
-    *fSymbols = *other.fSymbols;
-    u_strcpy(fCurr, other.fCurr);
+    fUsesCurrency = other.fUsesCurrency;
     fAffixParser = other.fAffixParser;
     fEffPrecision = other.fEffPrecision;
     fEffGrouping = other.fEffGrouping;
+    fOptions = other.fOptions;
     fSciFormatter = other.fSciFormatter;
     fFormatter = other.fFormatter;
     fAap = other.fAap;
+    *fSymbols = *other.fSymbols;
     if (fRules != NULL && other.fRules != NULL) {
         *fRules = *other.fRules;
     } else {
@@ -86,7 +116,7 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
             fRules = new PluralRules(*fRules);
         }
     }
-    fScale = other.fScale;
+    u_strcpy(fCurr, other.fCurr);
     return *this;
 }
 
@@ -106,80 +136,56 @@ DecimalFormat2::format(
 
 void
 DecimalFormat2::setMinimumIntegerDigits(int32_t newValue) {
-    fPrecision.fMantissa.fMin.setIntDigitCount(newValue);
-    if (fUseScientific) {
-        updateForScientific();
-    } else {
-        updateIntDigitCounts();
-    }
+    fMinIntDigits = newValue;
+    updatePrecision(kPrecisionInt);
 }
         
 void
 DecimalFormat2::setMaximumIntegerDigits(int32_t newValue) {
-    fPrecision.fMantissa.fMax.setIntDigitCount(newValue);
-    if (fUseScientific) {
-        updateForScientific();
-    } else {
-        updateIntDigitCounts();
-    }
+    fMaxIntDigits = newValue;
+    updatePrecision(kPrecisionInt);
 }
         
 void
 DecimalFormat2::setMinimumFractionDigits(int32_t newValue) {
-    fPrecision.fMantissa.fMin.setFracDigitCount(newValue);
-    if (fUseScientific) {
-        updateForScientific();
-    } else {
-        updateFracDigitCounts();
-    }
+    fMinFracDigits = newValue;
+    updatePrecision(kPrecisionFrac);
 }
         
 void
 DecimalFormat2::setMaximumFractionDigits(int32_t newValue) {
-    fPrecision.fMantissa.fMax.setFracDigitCount(newValue);
-    if (fUseScientific) {
-        updateForScientific();
-    } else {
-        updateFracDigitCounts();
-    }
+    fMaxFracDigits = newValue;
+    updatePrecision(kPrecisionFrac);
 }
 
 void
 DecimalFormat2::setScientificNotation(UBool newValue) {
     fUseScientific = newValue;
-    if (fUseScientific) {
-        updateForScientific();
-    } else {
-        updateForFixedDecimal();
-    }
+    updatePrecision(kPrecisionUseScientific);
 }
         
 void
 DecimalFormat2::setGroupingSize(int32_t newValue) {
     fGrouping.fGrouping = newValue;
-    fEffGrouping.fGrouping = newValue;
+    updateGrouping(kGroupingPrimary);
 }
 
 void
 DecimalFormat2::setSecondaryGroupingSize(int32_t newValue) {
     fGrouping.fGrouping2 = newValue;
-    fEffGrouping.fGrouping2 = newValue;
+    updateGrouping(kGroupingSecondary);
 }
 
 void
 DecimalFormat2::setMinimumGroupingDigits(int32_t newValue) {
     fGrouping.fMinGrouping = newValue;
-    fEffGrouping.fMinGrouping = newValue;
+    updateGrouping(kGroupingMin);
 }
 
 void
 DecimalFormat2::setGroupingUsed(UBool newValue) {
     fUseGrouping = newValue;
-    if (fUseGrouping) {
-        fEffGrouping = fGrouping;
-    } else {
-        fEffGrouping.clear();
-    }
+    updateGrouping(kGroupingOn);
 }
 
 void
@@ -190,9 +196,7 @@ DecimalFormat2::setCurrency(const UChar *currency, UErrorCode &status) {
         u_strncpy(fCurr, currency, UPRV_LENGTHOF(fCurr) - 1);
         fCurr[UPRV_LENGTHOF(fCurr) - 1] = 0;
     }
-    if (affixesUseCurrency()) {
-        updateLocalizedAffixes(status);
-    }
+    updateFormatting(kFormattingCurrency, status);
 }
 
 void
@@ -201,48 +205,44 @@ DecimalFormat2::parsePattern(
 }
 
 void
-DecimalFormat2::updateSymbols() {
+DecimalFormat2::updatePrecision(int32_t flags) {
 }
 
 void
-DecimalFormat2::updateLocalizedAffixes(UErrorCode &status) {
+DecimalFormat2::updateGrouping(int32_t flags) {
 }
 
 void
-DecimalFormat2::updateForFixedDecimal() {
-    updateIntDigitCounts();
-    updateFracDigitCounts();
-    updateSigDigitCounts();
-}
-
-void
-DecimalFormat2::updateIntDigitCounts() {
-}
-
-void
-DecimalFormat2::updateFracDigitCounts() {
-}
-
-void
-DecimalFormat2::updateSigDigitCounts() {
-}
-
-void
-DecimalFormat2::updateForScientific() {
-}
-
-void
-DecimalFormat2::updateLocalAffixes(UErrorCode &status) {
+DecimalFormat2::updateFormatting(int32_t flags, UErrorCode &status) {
 }
 
 UBool
-DecimalFormat2::affixesUseCurrency() {
-    return fPositivePrefixPattern.usesCurrency()
-    || fNegativePrefixPattern.usesCurrency()
-    || fPositiveSuffixPattern.usesCurrency()
-    || fNegativeSuffixPattern.usesCurrency();
+DecimalFormat2::updateUsesCurrency() {
+    return TRUE;
 }
 
+void
+DecimalFormat2::updatePluralRules() {
+}
+
+void
+DecimalFormat2::updateAffixParser(int32_t flags) {
+}
+
+void
+DecimalFormat2::updateFormatters() {
+}
+
+void
+DecimalFormat2::updateLocalizedAffixes(int32_t flags) {
+}
+
+void
+DecimalFormat2::updateAll(UErrorCode &status) {
+    updatePrecision(kPrecisionAll);
+    updateGrouping(kGroupingAll);
+    updateFormatting(kFormattingAll, status);
+}
 
 U_NAMESPACE_END
 
