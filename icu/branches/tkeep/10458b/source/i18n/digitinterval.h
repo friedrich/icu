@@ -30,6 +30,14 @@ public:
             : fLargestExclusive(INT32_MAX), fSmallestInclusive(INT32_MIN) { }
 
     /**
+     * Makes this instance span all digits.
+     */
+    void clear() {
+        fLargestExclusive = INT32_MAX;
+        fSmallestInclusive = INT32_MIN;
+    }
+
+    /**
      * Returns true if this object is the same as rhs.
      */
     UBool equals(const DigitInterval &rhs) const {

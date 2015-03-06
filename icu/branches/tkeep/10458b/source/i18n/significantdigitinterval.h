@@ -30,6 +30,14 @@ public:
             : fMax(INT32_MAX), fMin(0) { }
 
     /**
+     * Make this instance have no limit on significant digits.
+     */
+    void clear() {
+        fMin = 0;
+        fMax = INT32_MAX;
+    }
+
+    /**
      * Returns TRUE if this object is equal to rhs.
      */
     UBool equals(const SignificantDigitInterval &rhs) const {

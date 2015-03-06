@@ -24,6 +24,7 @@ U_NAMESPACE_BEGIN
 
 class UnicodeString;
 class FieldPosition;
+class ValueFormatter;
 
 class DecimalFormat2 : public UMemory {
 public:
@@ -40,12 +41,13 @@ UnicodeString &format(
         const DigitList &number,
         UnicodeString &appendTo,
         FieldPosition &pos,
-        UErrorCode &status);
+        UErrorCode &status) const;
 void setMinimumIntegerDigits(int32_t newValue);
 void setMaximumIntegerDigits(int32_t newValue);
 void setMinimumFractionDigits(int32_t newValue);
 void setMaximumFractionDigits(int32_t newValue);
 void setScientificNotation(UBool newValue);
+void setSignificantDigitsUsed(UBool newValue);
 int32_t getMinimumIntegerDigits() const { 
         return fMinIntDigits; }
 int32_t getMaximumIntegerDigits() const { 
@@ -55,6 +57,7 @@ int32_t getMinimumFractionDigits() const {
 int32_t getMaximumFractionDigits() const { 
         return fMaxFracDigits; }
 UBool isScientificNotation() const { return fUseScientific; }
+UBool areSignificantDigitsUsed() const { return fUseSigDigits; }
 void setGroupingSize(int32_t newValue);
 void setSecondaryGroupingSize(int32_t newValue);
 void setMinimumGroupingDigits(int32_t newValue);
@@ -70,7 +73,13 @@ private:
 // When the user updates these fields, it triggers automatic updates of
 // other fields that may be invisible to user
 
-// Updating the following fields triggers an update to the fEffPrecision field
+// Updating the following fields triggers an update to
+// fEffPrecision.fMantissa.fMin,
+// fEffPrecision.fMantissa.fMax,
+// fEffPrecision.fMantissa.fSignificant fields
+// We have this two phase update because of backward compatibility. 
+// DecimalFormat has to remember all settings even if those settings are
+// invalid or disabled.
 int32_t fMinIntDigits;
 int32_t fMaxIntDigits;
 int32_t fMinFracDigits;
@@ -78,15 +87,21 @@ int32_t fMaxFracDigits;
 int32_t fMinSigDigits;
 int32_t fMaxSigDigits;
 UBool fUseScientific;
+UBool fUseSigDigits;
 
 // Updating the following fields triggers an update to fEffGrouping field
+// Again we do it this way because original grouping settings have to
+// be retained if grouping is turned off.
 DigitGrouping fGrouping;
 UBool fUseGrouping;
 
 // Updating the following fields triggers updates on the following:
-// fFormatter, fSciFormatter, fUsesCurrency, fRules, fAffixParser,
+// fUsesCurrency, fRules, fAffixParser, fSciFormatter, fFormatter
 // fAap.fPositivePrefiix, fAap.fPositiveSuffix,
 // fAap.fNegativePrefiix, fAap.fNegativeSuffix,
+// We do this two phase update because localizing the affix patterns
+// and formatters can be expensive. Better to do it once with the setters
+// than each time within format.
 AffixPattern fPositivePrefixPattern;
 AffixPattern fNegativePrefixPattern;
 AffixPattern fPositiveSuffixPattern;
@@ -117,24 +132,37 @@ DigitAffixesAndPadding fAap;
 void parsePattern(
         const UnicodeString &pattern, UParseError &perror, UErrorCode &status);
 
+ValueFormatter &prepareValueFormatter(ValueFormatter &vf) const;
+int32_t getScale() const;
+
 // Updates everything
 void updateAll(UErrorCode &status);
 
 // Updates from changes to first group of attributes
-void updatePrecision(int32_t flags);
+void updatePrecision();
 
 // Updates from changes to second group of attributes
-void updateGrouping(int32_t flags);
+void updateGrouping();
 
 // Updates from changes to third group of attributes
-void updateFormatting(int32_t flags, UErrorCode &status);
+void updateFormatting(int32_t changedFormattingFields, UErrorCode &status);
 
-// Helper functions for updateFormattersAndAffixes
-UBool updateUsesCurrency();
-void updatePluralRules();
-void updateAffixParser(int32_t flags);
-void updateFormatters();
-void updateLocalizedAffixes(int32_t flags);
+// Helper functions for updatePrecision
+void updatePrecisionForScientific();
+void updatePrecisionForFixed();
+void extractMinMaxDigits(DigitInterval &min, DigitInterval &max) const;
+void extractSigDigits(SignificantDigitInterval &sig) const;
+
+// Helper functions for updateFormatting
+void updateFormattingUsesCurrency(int32_t &changedFormattingFields);
+void updateFormattingPluralRules(
+        int32_t &changedFormattingFields, UErrorCode &status);
+void updateFormattingAffixParser(
+        int32_t &changedFormattingFields, UErrorCode &status);
+void updateFormattingFormatters(
+        int32_t &changedFormattingFields);
+void updateFormattingLocalizedAffixes(
+        int32_t &changedFormattingFields, UErrorCode &status);
 
 };
 
