@@ -163,6 +163,7 @@ DecimalFormat2::format(
         FieldPosition &pos,
         UErrorCode &status) const {
     DigitList dl(number);
+    dl.reduce();
     dl.shiftDecimalRight(getScale());
     FieldPositionOnlyHandler handler(pos);
     ValueFormatter vf;
@@ -282,6 +283,22 @@ DecimalFormat2::parsePattern(
     fPositivePrefixPattern = out.fPosPrefixAffix;
     fPositiveSuffixPattern = out.fPosSuffixAffix;
     fFormatWidth = out.fFormatWidth;
+    switch (out.fPadPosition) {
+    case DecimalFormatPattern::kPadBeforePrefix:
+        fAap.fPadPosition = DigitAffixesAndPadding::kPadBeforePrefix;
+        break;    
+    case DecimalFormatPattern::kPadAfterPrefix:
+        fAap.fPadPosition = DigitAffixesAndPadding::kPadAfterPrefix;
+        break;    
+    case DecimalFormatPattern::kPadBeforeSuffix:
+        fAap.fPadPosition = DigitAffixesAndPadding::kPadBeforeSuffix;
+        break;    
+    case DecimalFormatPattern::kPadAfterSuffix:
+        fAap.fPadPosition = DigitAffixesAndPadding::kPadAfterSuffix;
+        break;    
+    default:
+        break;
+    }
     updateAll(status);
 }
 
@@ -307,7 +324,8 @@ DecimalFormat2::updatePrecisionForScientific() {
 
     FixedPrecision *result = &fEffPrecision.fMantissa;
     result->fMax.clear();
-    result->fMin.clear();
+    result->fMin.setIntDigitCount(0);
+    result->fMin.setFracDigitCount(0);
     result->fSignificant.clear();
 
     // Per the spec, exponent grouping happens if maxIntDigitCount is more
@@ -326,9 +344,9 @@ DecimalFormat2::updatePrecisionForScientific() {
         int32_t fixedIntDigitCount = maxIntDigitCount;
 
         // If fixedIntDigitCount is 0 but
-        // min fraction count is 0 too then use 1. This way we can get
+        // min or max fraction count is 0 too then use 1. This way we can get
         // unlimited precision for X.XXXEX
-        if (fixedIntDigitCount == 0 && minFracDigitCount == 0) {
+        if (fixedIntDigitCount == 0 && (minFracDigitCount == 0 || maxFracDigitCount == 0)) {
             fixedIntDigitCount = 1;
         }
         result->fMax.setIntDigitCount(fixedIntDigitCount);
@@ -352,7 +370,8 @@ DecimalFormat2::updatePrecisionForFixed() {
         result->fSignificant.clear();
     } else {
         extractSigDigits(result->fSignificant);
-        result->fMin.clear();
+        result->fMin.setIntDigitCount(0);
+        result->fMin.setFracDigitCount(0);
         result->fMax.clear();
     }
 }
@@ -364,7 +383,6 @@ void
     max.setIntDigitCount(fMaxIntDigits < 0 ? 0 : fMaxIntDigits);
     min.setFracDigitCount(fMinFracDigits < 0 ? 0 : fMinFracDigits);
     max.setFracDigitCount(fMaxFracDigits < 0 ? 0 : fMaxFracDigits);
-    max.expandToContain(min);
 }
 
 void

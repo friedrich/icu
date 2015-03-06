@@ -32,6 +32,7 @@
 #include "datadrivennumberformattestsuite.h"
 #include "charstr.h"
 #include "smallintformatter.h"
+#include "decimfmt2.h"
 
 static const int32_t kIntField = 4938;
 static const int32_t kSignField = 5770;
@@ -80,261 +81,6 @@ UBool NumberFormat2Test_FieldPositionHandler::isRecording() const {
     return bRecording;
 }
 
-// Map output from pattern parser to what we actually need for scientific
-// notation.
-static void fixScientificExponentGrouping(
-        const FixedPrecision &original, FixedPrecision &newResult) {
-    int32_t maxIntDigitCount = original.fMax.getIntDigitCount();
-    int32_t minIntDigitCount = original.fMin.getIntDigitCount();
-    int32_t maxFracDigitCount = original.fMax.getFracDigitCount();
-    int32_t minFracDigitCount = original.fMin.getFracDigitCount();
-
-    // Per the spec, exponent grouping happens if maxIntDigitCount is more
-    // than 1 and more than minIntDigitCount.
-    UBool bExponentGrouping = maxIntDigitCount > 1 && minIntDigitCount < maxIntDigitCount;
-    if (bExponentGrouping) {
-        newResult.fMax.setIntDigitCount(maxIntDigitCount);
-
-        // For exponent grouping minIntDigits is always treated as 1 even
-        // if it wasn't set to 1!
-        newResult.fMin.setIntDigitCount(1);
-    } else {
-        // Fixed digit count left of decimal. minIntDigitCount doesn't have
-        // to equal maxIntDigitCount i.e minIntDigitCount == 0 while
-        // maxIntDigitCount == 1.
-        int32_t fixedIntDigitCount = maxIntDigitCount;
-
-        // If fixedIntDigitCount is 0 but 
-        // either fraction count is 0 too then use 1. This way we can get
-        // unlimited precision for X.XXXEX
-        if (fixedIntDigitCount == 0 && (maxFracDigitCount == 0 || minFracDigitCount == 0)) {
-            fixedIntDigitCount = 1;
-        }
-        newResult.fMax.setIntDigitCount(fixedIntDigitCount);
-        newResult.fMin.setIntDigitCount(fixedIntDigitCount);
-    }
-    // Spec says this is how we compute significant digits. 0 means
-    // unlimited significant digits.
-    int32_t maxSigDigits = minIntDigitCount + maxFracDigitCount;
-    if (maxSigDigits > 0) {
-        int32_t minSigDigits = minIntDigitCount + minFracDigitCount;
-        newResult.fSignificant.setMin(minSigDigits);
-        newResult.fSignificant.setMax(maxSigDigits);
-    }
-    newResult.fRoundingIncrement = original.fRoundingIncrement;
-}
-
-class NumberFormat2TestDecimalFormat : public UMemory {
-public:
-ScientificPrecision fPrecision;
-SciFormatterOptions fOptions;
-DigitGrouping fGrouping;
-SciFormatter fSciFormatter;
-DigitFormatter fFormatter;
-AffixPatternParser fAffixParser;
-DigitAffixesAndPadding fAap;
-AffixPattern fPositivePrefixPattern;
-AffixPattern fNegativePrefixPattern;
-AffixPattern fPositiveSuffixPattern;
-AffixPattern fNegativeSuffixPattern;
-UBool fUseScientific;
-Locale fLocale;
-PluralRules *fRules;
-int32_t fScale;
-
-NumberFormat2TestDecimalFormat(
-        const DecimalFormatSymbols &sym,
-        const UnicodeString &pattern, UErrorCode &status);
-~NumberFormat2TestDecimalFormat();
-ValueFormatter &prepareValueFormatter(
-        ValueFormatter &vf, ScientificPrecision &scratchPrecision);
-UnicodeString &format(
-        DigitList &dl, UnicodeString &appendTo, UErrorCode &status);
-void setCurrency(const UChar *currency, UErrorCode &status);
-UBool usesCurrency();
-int32_t parseAffixes(
-        const UChar *currency, UErrorCode &status);
-void parsePattern(
-        const UnicodeString &pattern, UErrorCode &status);
-};
-
-
-NumberFormat2TestDecimalFormat::NumberFormat2TestDecimalFormat(
-        const DecimalFormatSymbols &sym, 
-        const UnicodeString &pattern, UErrorCode &status) :
-        fSciFormatter(sym), fFormatter(sym), fAffixParser(sym),
-        fRules(NULL) {
-    parsePattern(pattern, status);
-    if (U_FAILURE(status)) {
-        return;
-    }
-    fLocale = sym.getLocale();
-    fScale = parseAffixes(NULL, status);
-}
-
-NumberFormat2TestDecimalFormat::~NumberFormat2TestDecimalFormat() {
-    delete fRules;
-}
-
-ValueFormatter &
-NumberFormat2TestDecimalFormat::prepareValueFormatter(
-        ValueFormatter &vf, ScientificPrecision &scratchPrecision) {
-    if (fUseScientific) {
-        fixScientificExponentGrouping(fPrecision.fMantissa, scratchPrecision.fMantissa);
-        vf.prepareScientificFormatting(
-                fSciFormatter, fFormatter, scratchPrecision, fOptions);
-        return vf;
-    }
-    vf.prepareFixedDecimalFormatting(
-            fFormatter, fGrouping, fPrecision.fMantissa, fOptions.fMantissa);
-    return vf;
-}
-
-UnicodeString &
-NumberFormat2TestDecimalFormat::format(
-        DigitList &dl, UnicodeString &appendTo, UErrorCode &status) {
-    dl.shiftDecimalRight(fScale);
-    FieldPosition fpos(FieldPosition::DONT_CARE);
-    FieldPositionOnlyHandler handler(fpos);
-    ValueFormatter vf;
-    ScientificPrecision scratch;
-    return fAap.format(
-            dl,
-            prepareValueFormatter(vf, scratch),
-            handler,
-            fRules,
-            appendTo,
-            status);
-}
-
-
-void NumberFormat2TestDecimalFormat::setCurrency(
-        const UChar *currency, UErrorCode &status) {
-    if (usesCurrency()) {
-        if (currency == NULL || currency[0] == 0) {
-            parseAffixes(NULL, status);
-        } else {
-            UChar theCurrency[4];
-            u_strncpy(theCurrency, currency, 3);
-            theCurrency[3] = 0;
-            parseAffixes(theCurrency, status);
-        }
-    }
-}
-
-UBool NumberFormat2TestDecimalFormat::usesCurrency() {
-    return fPositivePrefixPattern.usesCurrency()
-    || fNegativePrefixPattern.usesCurrency()
-    || fPositiveSuffixPattern.usesCurrency()
-    || fNegativeSuffixPattern.usesCurrency();
-}
-
-#define NUMBERFORMAT2TEST_UPDATE(dest, src) ((dest) = (dest) == 0 ? (src) : (dest))
-
-int32_t NumberFormat2TestDecimalFormat::parseAffixes(
-        const UChar *currency, UErrorCode &status) {
-    if (U_FAILURE(status)) {
-        return 0;
-    }
-    if (usesCurrency()) {
-        if (!fRules) {
-            fRules = PluralRules::forLocale(fLocale, status);
-            if (U_FAILURE(status)) {
-                return 0;
-            }
-        }
-        UChar currencyBuf[4];
-        if (currency == NULL) {
-            ucurr_forLocale(fLocale.getName(), currencyBuf, UPRV_LENGTHOF(currencyBuf), &status);
-            if (U_SUCCESS(status)) {
-                currency = currencyBuf;
-            } else {
-                status = U_ZERO_ERROR;
-            }
-        }
-        fAffixParser.fCurrencyAffixInfo.set(
-                fLocale.getName(), fRules, currency, status);
-        if (currency) {
-            CurrencyAffixInfo::adjustPrecision(
-                    currency, UCURR_USAGE_STANDARD,
-                    fPrecision.fMantissa, status);
-        }
-    }
-    int32_t result = 0;
-    fAap.fPositivePrefix.remove();
-    fAap.fNegativePrefix.remove();
-    fAap.fPositiveSuffix.remove();
-    fAap.fNegativeSuffix.remove();
-    NUMBERFORMAT2TEST_UPDATE(result, fAffixParser.parse(fPositivePrefixPattern, fAap.fPositivePrefix, status));
-    NUMBERFORMAT2TEST_UPDATE(result, fAffixParser.parse(fNegativePrefixPattern, fAap.fNegativePrefix, status));
-    NUMBERFORMAT2TEST_UPDATE(result, fAffixParser.parse(fPositiveSuffixPattern, fAap.fPositiveSuffix, status));
-    NUMBERFORMAT2TEST_UPDATE(result, fAffixParser.parse(fNegativeSuffixPattern, fAap.fNegativeSuffix, status));
-    return result;
-}
-
-void NumberFormat2TestDecimalFormat::parsePattern(
-        const UnicodeString &pattern, UErrorCode &status) {
-    if (U_FAILURE(status)) {
-        return;
-    }
-    DecimalFormatPatternParser patternParser;
-    UParseError perror;
-    DecimalFormatPattern out;
-    patternParser.applyPatternWithoutExpandAffix(
-            pattern, out, perror, status);
-    if (U_FAILURE(status)) {
-        return;
-    }
-    fUseScientific = out.fUseExponentialNotation;
-    if (out.fUseSignificantDigits) {
-        fPrecision.fMantissa.fSignificant.setMin(out.fMinimumSignificantDigits);
-        fPrecision.fMantissa.fSignificant.setMax(out.fMaximumSignificantDigits);
-    } else {
-        fPrecision.fMantissa.fMin.setIntDigitCount(out.fMinimumIntegerDigits);
-        fPrecision.fMantissa.fMax.setIntDigitCount(out.fMaximumIntegerDigits);
-        fPrecision.fMantissa.fMin.setFracDigitCount(out.fMinimumFractionDigits);
-        fPrecision.fMantissa.fMax.setFracDigitCount(out.fMaximumFractionDigits);
-    }
-    fOptions.fExponent.fMinDigits = out.fMinExponentDigits;
-    fOptions.fExponent.fAlwaysShowSign = out.fExponentSignAlwaysShown;
-    if (out.fGroupingUsed) {
-        fGrouping.fGrouping = out.fGroupingSize;
-        fGrouping.fGrouping2 = out.fGroupingSize2;
-    }
-    fOptions.fMantissa.fAlwaysShowDecimal = out.fDecimalSeparatorAlwaysShown;
-    if (out.fRoundingIncrementUsed) {
-        fPrecision.fMantissa.fRoundingIncrement = out.fRoundingIncrement;
-    }
-    fAap.fPadChar = out.fPad;
-    fNegativePrefixPattern.remove();
-    fNegativeSuffixPattern.remove();
-    fPositivePrefixPattern.remove();
-    fPositiveSuffixPattern.remove();
-    fNegativePrefixPattern = out.fNegPrefixAffix;
-    fNegativeSuffixPattern = out.fNegSuffixAffix;
-    fPositivePrefixPattern = out.fPosPrefixAffix;
-    fPositiveSuffixPattern = out.fPosSuffixAffix;
-    fAap.fWidth = out.fFormatWidth;
-    fAap.fWidth += fPositivePrefixPattern.countChar32();
-    fAap.fWidth += fPositiveSuffixPattern.countChar32();
-    switch (out.fPadPosition) {
-    case DecimalFormatPattern::kPadBeforePrefix:
-        fAap.fPadPosition = DigitAffixesAndPadding::kPadBeforePrefix;
-        break;    
-    case DecimalFormatPattern::kPadAfterPrefix:
-        fAap.fPadPosition = DigitAffixesAndPadding::kPadAfterPrefix;
-        break;    
-    case DecimalFormatPattern::kPadBeforeSuffix:
-        fAap.fPadPosition = DigitAffixesAndPadding::kPadBeforeSuffix;
-        break;    
-    case DecimalFormatPattern::kPadAfterSuffix:
-        fAap.fPadPosition = DigitAffixesAndPadding::kPadAfterSuffix;
-        break;    
-    default:
-        break;
-    }
-}
-
 class NumberFormat2TestDataDriven : public icu::DataDrivenNumberFormatTestSuite {
 public:
 NumberFormat2TestDataDriven(IntlTest *t) : DataDrivenNumberFormatTestSuite(t) { }
@@ -356,27 +102,32 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
         return FALSE;
     }
     Locale en("en");
-    DecimalFormatSymbols symbols(NFTT_GET_FIELD(tuple, locale, en), status);
-    NumberFormat2TestDecimalFormat fmt(
-            symbols, NFTT_GET_FIELD(tuple, pattern, "0"), status);
+    DecimalFormatSymbols *symbols = new DecimalFormatSymbols(NFTT_GET_FIELD(tuple, locale, en), status);
+    if (symbols == NULL) {
+        appendErrorMessage.append("Error creating symbols.");
+        return FALSE;
+    }
+    UParseError perror;
+    DecimalFormat2 fmt(
+            NFTT_GET_FIELD(tuple, pattern, "0"), symbols, perror, status);
     if (U_FAILURE(status)) {
         appendErrorMessage.append("Error creating DecimalFormat");
         return FALSE;
     }
     if (tuple.minIntegerDigitsFlag) {
-        fmt.fPrecision.fMantissa.fMin.setIntDigitCount(
+        fmt.setMinimumIntegerDigits(
                 tuple.minIntegerDigits < 0 ? 0 : tuple.minIntegerDigits);
     }
     if (tuple.maxIntegerDigitsFlag) {
-        fmt.fPrecision.fMantissa.fMax.setIntDigitCount(
+        fmt.setMaximumIntegerDigits(
                 tuple.maxIntegerDigits < 0 ? 0 : tuple.maxIntegerDigits);
     }
     if (tuple.minFractionDigitsFlag) {
-        fmt.fPrecision.fMantissa.fMin.setFracDigitCount(
+        fmt.setMinimumFractionDigits(
                 tuple.minFractionDigits < 0 ? 0 : tuple.minFractionDigits);
     }
     if (tuple.maxFractionDigitsFlag) {
-        fmt.fPrecision.fMantissa.fMax.setFracDigitCount(
+        fmt.setMaximumFractionDigits(
                 tuple.maxFractionDigits < 0 ? 0 : tuple.maxFractionDigits);
     }
     if (tuple.currencyFlag) {
@@ -388,15 +139,15 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
         }
     }
     if (tuple.minGroupingDigitsFlag) {
-        fmt.fGrouping.fMinGrouping = tuple.minGroupingDigits;
+        fmt.setMinimumGroupingDigits(tuple.minGroupingDigits);
     }
     UnicodeString appendTo;
     CharString formatValue;
     formatValue.appendInvariantChars(tuple.format, status);
     DigitList digitList;
     digitList.set(StringPiece(formatValue.data()), status, 0);
-    digitList.reduce();
-    fmt.format(digitList, appendTo, status);
+    FieldPosition fpos(FieldPosition::DONT_CARE);
+    fmt.format(digitList, appendTo, fpos, status);
     if (U_FAILURE(status)) {
         appendErrorMessage.append("Error formatting.");
         return FALSE;
