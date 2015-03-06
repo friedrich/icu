@@ -73,7 +73,7 @@ private:
 // When the user updates these fields, it triggers automatic updates of
 // other fields that may be invisible to user
 
-// Updating the following fields triggers an update to
+// Updating any of the following fields triggers an update to
 // fEffPrecision.fMantissa.fMin,
 // fEffPrecision.fMantissa.fMax,
 // fEffPrecision.fMantissa.fSignificant fields
@@ -89,16 +89,16 @@ int32_t fMaxSigDigits;
 UBool fUseScientific;
 UBool fUseSigDigits;
 
-// Updating the following fields triggers an update to fEffGrouping field
-// Again we do it this way because original grouping settings have to
-// be retained if grouping is turned off.
+// Updating any of the following fields triggers an update to
+// fEffGrouping field Again we do it this way because original
+// grouping settings have to be retained if grouping is turned off.
 DigitGrouping fGrouping;
 UBool fUseGrouping;
 
-// Updating the following fields triggers updates on the following:
+// Updating any of the following fields triggers updates on the following:
 // fUsesCurrency, fRules, fAffixParser, fSciFormatter, fFormatter
 // fAap.fPositivePrefiix, fAap.fPositiveSuffix,
-// fAap.fNegativePrefiix, fAap.fNegativeSuffix,
+// fAap.fNegativePrefiix, fAap.fNegativeSuffix, and fAap.fWidth
 // We do this two phase update because localizing the affix patterns
 // and formatters can be expensive. Better to do it once with the setters
 // than each time within format.
@@ -108,6 +108,7 @@ AffixPattern fPositiveSuffixPattern;
 AffixPattern fNegativeSuffixPattern;
 DecimalFormatSymbols *fSymbols;
 UChar fCurr[4];
+int32_t fFormatWidth;
 
 // TRUE if one or more affixes use currency.
 UBool fUsesCurrency;
@@ -163,6 +164,7 @@ void updateFormattingFormatters(
         int32_t &changedFormattingFields);
 void updateFormattingLocalizedAffixes(
         int32_t &changedFormattingFields, UErrorCode &status);
+void updateFormattingWidth(int32_t &changedFormattingFields);
 
 };
 

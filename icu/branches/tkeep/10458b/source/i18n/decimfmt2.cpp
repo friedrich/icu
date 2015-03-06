@@ -20,10 +20,11 @@ static const int32_t kFormattingPosSuffix = (1 << 2);
 static const int32_t kFormattingNegSuffix = (1 << 3);
 static const int32_t kFormattingSymbols = (1 << 4);
 static const int32_t kFormattingCurrency = (1 << 5);
-static const int32_t kFormattingUsesCurrency = (1 << 6);
-static const int32_t kFormattingPluralRules = (1 << 7);
-static const int32_t kFormattingAffixParser = (1 << 8);
-static const int32_t kFormattingAll = (1 << 9) - 1;
+static const int32_t kFormattingWidth = (1 << 6);
+static const int32_t kFormattingUsesCurrency = (1 << 7);
+static const int32_t kFormattingPluralRules = (1 << 8);
+static const int32_t kFormattingAffixParser = (1 << 9);
+static const int32_t kFormattingAll = (1 << 10) - 1;
 static const int32_t kFormattingAffixes =
         kFormattingPosPrefix | kFormattingNegPrefix |
         kFormattingNegPrefix | kFormattingNegSuffix;
@@ -56,6 +57,7 @@ DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           fPositiveSuffixPattern(other.fPositiveSuffixPattern),
           fNegativeSuffixPattern(other.fNegativeSuffixPattern),
           fSymbols(other.fSymbols),
+          fFormatWidth(other.fFormatWidth),
           fUsesCurrency(other.fUsesCurrency),
           fRules(other.fRules),
           fAffixParser(other.fAffixParser),
@@ -93,6 +95,7 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     fNegativePrefixPattern = other.fNegativePrefixPattern;
     fPositiveSuffixPattern = other.fPositiveSuffixPattern;
     fNegativeSuffixPattern = other.fNegativeSuffixPattern;
+    fFormatWidth = other.fFormatWidth;
     fUsesCurrency = other.fUsesCurrency;
     fAffixParser = other.fAffixParser;
     fEffPrecision = other.fEffPrecision;
@@ -257,32 +260,18 @@ DecimalFormat2::parsePattern(
         return;
     }
     fUseScientific = out.fUseExponentialNotation;
-    if (out.fUseSignificantDigits) {
-        fUseSigDigits = TRUE;
-        fMinSigDigits = out.fMinimumSignificantDigits;
-        fMaxSigDigits = out.fMaximumSignificantDigits;
-        fMinIntDigits = 0;
-        fMaxIntDigits = 40;
-        fMinFracDigits = 0;
-        fMaxFracDigits = 3;
-    } else {
-        fUseSigDigits = FALSE;
-        fMinIntDigits = out.fMinimumIntegerDigits;
-        fMaxIntDigits = out.fMaximumIntegerDigits;
-        fMinFracDigits = out.fMinimumFractionDigits;
-        fMaxFracDigits = out.fMaximumFractionDigits;
-        fMinSigDigits = 0;
-        fMaxSigDigits = 0;
-    }
+    fUseSigDigits = out.fUseSignificantDigits;
+    fMinIntDigits = out.fMinimumIntegerDigits;
+    fMaxIntDigits = out.fMaximumIntegerDigits;
+    fMinFracDigits = out.fMinimumFractionDigits;
+    fMaxFracDigits = out.fMaximumFractionDigits;
+    fMinSigDigits = out.fMinimumSignificantDigits;
+    fMaxSigDigits = out.fMaximumSignificantDigits;
     fOptions.fExponent.fMinDigits = out.fMinExponentDigits;
     fOptions.fExponent.fAlwaysShowSign = out.fExponentSignAlwaysShown;
-    if (out.fGroupingUsed) {
-        fUseGrouping = TRUE;
-        fGrouping.fGrouping = out.fGroupingSize;
-        fGrouping.fGrouping2 = out.fGroupingSize2;
-    } else {
-        fUseGrouping = FALSE;
-    }
+    fUseGrouping = out.fGroupingUsed;
+    fGrouping.fGrouping = out.fGroupingSize;
+    fGrouping.fGrouping2 = out.fGroupingSize2;
     fOptions.fMantissa.fAlwaysShowDecimal = out.fDecimalSeparatorAlwaysShown;
     if (out.fRoundingIncrementUsed) {
         fEffPrecision.fMantissa.fRoundingIncrement = out.fRoundingIncrement;
@@ -292,9 +281,7 @@ DecimalFormat2::parsePattern(
     fNegativeSuffixPattern = out.fNegSuffixAffix;
     fPositivePrefixPattern = out.fPosPrefixAffix;
     fPositiveSuffixPattern = out.fPosSuffixAffix;
-    fAap.fWidth = out.fFormatWidth;
-    fAap.fWidth += fPositivePrefixPattern.countChar32();
-    fAap.fWidth += fPositiveSuffixPattern.countChar32();
+    fFormatWidth = out.fFormatWidth;
     updateAll(status);
 }
 
@@ -407,6 +394,7 @@ DecimalFormat2::updateFormatting(
     updateFormattingAffixParser(changedFormattingFields, status);
     updateFormattingFormatters(changedFormattingFields);
     updateFormattingLocalizedAffixes(changedFormattingFields, status);
+    updateFormattingWidth(changedFormattingFields);
 }
 
 void
@@ -556,6 +544,23 @@ DecimalFormat2::updateFormattingLocalizedAffixes(
                 fNegativeSuffixPattern, fAap.fNegativeSuffix, status);
     }
 }
+
+void
+DecimalFormat2::updateFormattingWidth(int32_t &changedFormattingFields) {
+    if ((changedFormattingFields & (kFormattingWidth | kFormattingPosPrefix | kFormattingPosSuffix)) == 0) {
+        // No work to do if these fields are unchanged
+        return;
+    }
+    if (fFormatWidth == 0) {
+        fAap.fWidth = 0;
+        return;
+    }
+    fAap.fWidth =
+            fFormatWidth +
+            fPositivePrefixPattern.countChar32() +
+            fPositiveSuffixPattern.countChar32();
+}
+        
 
 void
 DecimalFormat2::updateAll(UErrorCode &status) {
