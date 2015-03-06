@@ -35,7 +35,7 @@ DecimalFormat2::DecimalFormat2(
         DecimalFormatSymbols *symbolsToAdopt,
         UParseError &parseError,
         UErrorCode &status)
-        : fSymbols(symbolsToAdopt), fRules(NULL) {
+        : fSymbols(symbolsToAdopt), fUsesCurrency(FALSE), fRules(NULL) {
     fCurr[0] = 0;
     parsePattern(pattern, parseError, status);
 }

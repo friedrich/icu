@@ -627,6 +627,7 @@ void NumberFormat2Test::TestRounding() {
     }
 }
 void NumberFormat2Test::TestBenchmark() {
+/*
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
     DigitFormatter formatter(symbols);
@@ -671,9 +672,11 @@ void NumberFormat2Test::TestBenchmark() {
                 status);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
+*/
 }
 
 void NumberFormat2Test::TestBenchmark2() {
+/*
     UErrorCode status = U_ZERO_ERROR;
     UParseError perror;
     NumberFormat *nf = NumberFormat::createInstance("en", status);
@@ -686,7 +689,6 @@ void NumberFormat2Test::TestBenchmark2() {
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     return;
-/*
     UErrorCode status = U_ZERO_ERROR;
     NumberFormat *nf = NumberFormat::createScientificInstance("en", status);
     nf->setMaximumFractionDigits(6);
