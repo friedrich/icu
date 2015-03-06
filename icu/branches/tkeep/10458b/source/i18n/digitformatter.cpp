@@ -109,13 +109,11 @@ UnicodeString &DigitFormatter::format(
         for (int32_t i = digitsLeftOfDecimal - 1; i >= lastDigitPos; --i) { 
             if (i == -1) {
                 appender.flush();
-                if (!options.fAlwaysShowDecimal) {
-                    appendField(
-                            UNUM_DECIMAL_SEPARATOR_FIELD,
-                            fDecimal,
-                            handler,
-                            appendTo);
-                }
+                appendField(
+                        UNUM_DECIMAL_SEPARATOR_FIELD,
+                        fDecimal,
+                        handler,
+                        appendTo);
                 fracBegin = appendTo.length();
             }
             appender.append(fLocalizedDigits[digits.getDigitByExponent(i)]);
@@ -132,14 +130,15 @@ UnicodeString &DigitFormatter::format(
                 if (digitsLeftOfDecimal > 0) {
                     handler.addAttribute(UNUM_INTEGER_FIELD, intBegin, appendTo.length());
                 }
-                if (options.fAlwaysShowDecimal) {
-                    appendField(
-                            UNUM_DECIMAL_SEPARATOR_FIELD,
-                            fDecimal,
-                            handler,
-                            appendTo);
-                }
             }
+        }
+        if (options.fAlwaysShowDecimal && lastDigitPos == 0) {
+            appender.flush();
+            appendField(
+                    UNUM_DECIMAL_SEPARATOR_FIELD,
+                    fDecimal,
+                    handler,
+                    appendTo);
         }
     }
     // lastDigitPos is never > 0 so we are guaranteed that kIntegerField

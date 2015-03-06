@@ -954,13 +954,17 @@ DigitList::isZero() const
 DigitInterval &
 DigitList::getSmallestInterval(
         DigitInterval &result, int32_t minSigDigits) const {
-    int32_t intDigits = fDecNumber->digits + fDecNumber->exponent;
-    int32_t fracDigits = -fDecNumber->exponent;
-    if (intDigits < 0) {
-        intDigits = 0;
-    }
-    if (fracDigits < 0) {
-        fracDigits = 0;
+    int32_t intDigits = 0;
+    int32_t fracDigits = 0;
+    if (!isZero()) {
+        intDigits = fDecNumber->digits + fDecNumber->exponent;
+        fracDigits = -fDecNumber->exponent;
+        if (intDigits < 0) {
+            intDigits = 0;
+        }
+        if (fracDigits < 0) {
+            fracDigits = 0;
+        }
     }
     if (fracDigits < minSigDigits - intDigits) {
         fracDigits = minSigDigits - intDigits;

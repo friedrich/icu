@@ -25,6 +25,7 @@ U_NAMESPACE_BEGIN
 class UnicodeString;
 class FieldPosition;
 class ValueFormatter;
+class FieldPositionHandler;
 
 class DecimalFormat2 : public UMemory {
 public:
@@ -38,10 +39,46 @@ DecimalFormat2(const DecimalFormat2 &other);
 DecimalFormat2 &operator=(const DecimalFormat2 &other);
 ~DecimalFormat2();
 UnicodeString &format(
+        int32_t number,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const;
+UnicodeString &format(
+        int32_t number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const;
+UnicodeString &format(
+        int64_t number,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const;
+UnicodeString &format(
+        double number,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const;
+UnicodeString &format(
         const DigitList &number,
         UnicodeString &appendTo,
         FieldPosition &pos,
         UErrorCode &status) const;
+UnicodeString &format(
+        int64_t number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const;
+UnicodeString &format(
+        double number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const;
+UnicodeString &format(
+        const DigitList &number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const;
+
 void setMinimumIntegerDigits(int32_t newValue);
 void setMaximumIntegerDigits(int32_t newValue);
 void setMinimumFractionDigits(int32_t newValue);
@@ -129,6 +166,12 @@ SciFormatterOptions fOptions;   // Encapsulates fixed precision options
 SciFormatter fSciFormatter;
 DigitFormatter fFormatter;
 DigitAffixesAndPadding fAap;
+
+UnicodeString &formatDigitList(
+        DigitList &number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
 
 void parsePattern(
         const UnicodeString &pattern, UParseError &perror, UErrorCode &status);

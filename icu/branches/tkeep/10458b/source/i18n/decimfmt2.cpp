@@ -158,17 +158,120 @@ DecimalFormat2::getScale() const {
 
 UnicodeString &
 DecimalFormat2::format(
+        int32_t number,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const {
+    FieldPositionOnlyHandler handler(pos);
+    ValueFormatter vf;
+    return fAap.formatInt32(
+            number,
+            prepareValueFormatter(vf),
+            handler,
+            fRules,
+            appendTo,
+            status);
+}
+
+UnicodeString &
+DecimalFormat2::format(
+        int32_t number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const {
+    FieldPositionIteratorHandler handler(posIter, status);
+    ValueFormatter vf;
+    return fAap.formatInt32(
+            number,
+            prepareValueFormatter(vf),
+            handler,
+            fRules,
+            appendTo,
+            status);
+}
+
+UnicodeString &
+DecimalFormat2::format(
+        int64_t number,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const {
+    DigitList dl;
+    dl.set(number);
+    FieldPositionOnlyHandler handler(pos);
+    return formatDigitList(dl, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormat2::format(
+        double number,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const {
+    DigitList dl;
+    dl.set(number);
+    FieldPositionOnlyHandler handler(pos);
+    return formatDigitList(dl, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormat2::format(
         const DigitList &number,
         UnicodeString &appendTo,
         FieldPosition &pos,
         UErrorCode &status) const {
     DigitList dl(number);
-    dl.reduce();
-    dl.shiftDecimalRight(getScale());
     FieldPositionOnlyHandler handler(pos);
+    return formatDigitList(dl, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormat2::format(
+        int64_t number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const {
+    DigitList dl;
+    dl.set(number);
+    FieldPositionIteratorHandler handler(posIter, status);
+    return formatDigitList(dl, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormat2::format(
+        double number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const {
+    DigitList dl;
+    dl.set(number);
+    FieldPositionIteratorHandler handler(posIter, status);
+    return formatDigitList(dl, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormat2::format(
+        const DigitList &number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const {
+    DigitList dl(number);
+    FieldPositionIteratorHandler handler(posIter, status);
+    return formatDigitList(dl, appendTo, handler, status);
+}
+
+
+UnicodeString &
+DecimalFormat2::formatDigitList(
+        DigitList &number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const {
+    number.reduce();
+    number.shiftDecimalRight(getScale());
     ValueFormatter vf;
     return fAap.format(
-            dl,
+            number,
             prepareValueFormatter(vf),
             handler,
             fRules,

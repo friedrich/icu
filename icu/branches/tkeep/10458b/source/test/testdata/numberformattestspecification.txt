@@ -246,4 +246,14 @@ format	maxIntegerDigits	output
 5.3	1	5.3
 5.3	-2147483648	.3
 
+test patterns with zero
+set locale en
+set format 0
+begin
+pattern	output
+#.#	0
+#.	0.
+.#	.0
+#	0
+
 

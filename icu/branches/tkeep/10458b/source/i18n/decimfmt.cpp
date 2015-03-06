@@ -72,6 +72,7 @@
 #include "dcfmtimp.h"
 #include "plurrule_impl.h"
 #include "decimalformatpattern.h"
+#include "decimfmt2.h"
 
 /*
  * On certain platforms, round is a macro defined in math.h
@@ -431,6 +432,8 @@ DecimalFormat::init() {
     data.fFastParseStatus=kFastpathUNKNOWN; // don't try to calculate the fastpath until later.
 #endif
     fStaticSets = NULL;
+    fDecimFmt2 = NULL;
+    fUseDecimFmt2 = FALSE;
 }
 
 //------------------------------------------------------------------------------
@@ -563,7 +566,13 @@ DecimalFormat::construct(UErrorCode&            status,
     }
 
     applyPatternWithoutExpandAffix(*patternUsed,FALSE, parseErr, status);
-
+    UParseError perror;
+    fDecimFmt2 = new DecimalFormat2(
+            *patternUsed, new DecimalFormatSymbols(*fSymbols), perror, status);
+    if (fDecimFmt2 == NULL) {
+        status = U_MEMORY_ALLOCATION_ERROR;
+        return;
+    }
     // expand affixes
     if (fCurrencySignCount != fgCurrencySignCountInPluralFormat) {
         expandAffixAdjustWidth(NULL);
@@ -738,6 +747,7 @@ DecimalFormat::~DecimalFormat()
     deleteHashForAffix(fAffixesForCurrency);
     deleteHashForAffix(fPluralAffixesForCurrency);
     delete fCurrencyPluralInfo;
+    delete fDecimFmt2;
 }
 
 //------------------------------------------------------------------------------
@@ -841,6 +851,16 @@ DecimalFormat::operator=(const DecimalFormat& rhs)
         const DecimalFormatInternal &rhsData = internalData(rhs.fReserved);
         data = rhsData;
 #endif
+        if (fDecimFmt2 != NULL && rhs.fDecimFmt2 != NULL) {
+            *fDecimFmt2 = *rhs.fDecimFmt2;
+        } else {
+            delete fDecimFmt2;
+            fDecimFmt2 = rhs.fDecimFmt2;
+            if (fDecimFmt2 != NULL) {
+                fDecimFmt2 = new DecimalFormat2(*fDecimFmt2);
+            }
+        }
+        fUseDecimFmt2 = rhs.fUseDecimFmt2;
     }
     return *this;
 }
@@ -1271,6 +1291,10 @@ DecimalFormat::format(int32_t number,
                       UnicodeString& appendTo,
                       FieldPosition& fieldPosition) const
 {
+    UErrorCode status = U_ZERO_ERROR;
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, fieldPosition, status);
+    }
     return format((int64_t)number, appendTo, fieldPosition);
 }
 
@@ -1280,6 +1304,9 @@ DecimalFormat::format(int32_t number,
                       FieldPosition& fieldPosition,
                       UErrorCode& status) const
 {
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, fieldPosition, status);
+    }
     return format((int64_t)number, appendTo, fieldPosition, status);
 }
 
@@ -1289,6 +1316,9 @@ DecimalFormat::format(int32_t number,
                       FieldPositionIterator* posIter,
                       UErrorCode& status) const
 {
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, posIter, status);
+    }
     return format((int64_t)number, appendTo, posIter, status);
 }
 
@@ -1371,6 +1401,9 @@ DecimalFormat::format(int64_t number,
                       FieldPosition& fieldPosition) const
 {
     UErrorCode status = U_ZERO_ERROR; /* ignored */
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, fieldPosition, status);
+    }
     FieldPositionOnlyHandler handler(fieldPosition);
     return _format(number, appendTo, handler, status);
 }
@@ -1381,6 +1414,9 @@ DecimalFormat::format(int64_t number,
                       FieldPosition& fieldPosition,
                       UErrorCode& status) const
 {
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, fieldPosition, status);
+    }
     FieldPositionOnlyHandler handler(fieldPosition);
     return _format(number, appendTo, handler, status);
 }
@@ -1391,6 +1427,9 @@ DecimalFormat::format(int64_t number,
                       FieldPositionIterator* posIter,
                       UErrorCode& status) const
 {
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, posIter, status);
+    }
     FieldPositionIteratorHandler handler(posIter, status);
     return _format(number, appendTo, handler, status);
 }
@@ -1508,6 +1547,9 @@ DecimalFormat::format(  double number,
                         FieldPosition& fieldPosition) const
 {
     UErrorCode status = U_ZERO_ERROR; /* ignored */
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, fieldPosition, status);
+    }
     FieldPositionOnlyHandler handler(fieldPosition);
     return _format(number, appendTo, handler, status);
 }
@@ -1518,6 +1560,9 @@ DecimalFormat::format(  double number,
                         FieldPosition& fieldPosition,
                         UErrorCode& status) const
 {
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, fieldPosition, status);
+    }
     FieldPositionOnlyHandler handler(fieldPosition);
     return _format(number, appendTo, handler, status);
 }
@@ -1528,6 +1573,9 @@ DecimalFormat::format(  double number,
                         FieldPositionIterator* posIter,
                         UErrorCode& status) const
 {
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, posIter, status);
+    }
   FieldPositionIteratorHandler handler(posIter, status);
   return _format(number, appendTo, handler, status);
 }
@@ -1618,6 +1666,7 @@ DecimalFormat::format(const StringPiece &number,
         return toAppendTo;
     }
     FieldPositionIteratorHandler handler(posIter, status);
+    // TODO: Add DecimalFormat2
     _format(dnum, toAppendTo, handler, status);
     return toAppendTo;
 }
@@ -1628,6 +1677,9 @@ DecimalFormat::format(const DigitList &number,
                       UnicodeString &appendTo,
                       FieldPositionIterator *posIter,
                       UErrorCode &status) const {
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, posIter, status);
+    }
     FieldPositionIteratorHandler handler(posIter, status);
     _format(number, appendTo, handler, status);
     return appendTo;
@@ -1640,6 +1692,9 @@ DecimalFormat::format(const DigitList &number,
                      UnicodeString& appendTo,
                      FieldPosition& pos,
                      UErrorCode &status) const {
+    if (fUseDecimFmt2) {
+        return fDecimFmt2->format(number, appendTo, pos, status);
+    }
     FieldPositionOnlyHandler handler(pos);
     _format(number, appendTo, handler, status);
     return appendTo;
@@ -5106,6 +5161,7 @@ void DecimalFormat::setMaximumIntegerDigits(int32_t newValue) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setMaximumIntegerDigits(newValue);
 }
 
 /**
@@ -5118,6 +5174,7 @@ void DecimalFormat::setMinimumIntegerDigits(int32_t newValue) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setMinimumIntegerDigits(newValue);
 }
 
 /**
@@ -5130,6 +5187,7 @@ void DecimalFormat::setMaximumFractionDigits(int32_t newValue) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setMaximumFractionDigits(newValue);
 }
 
 /**
@@ -5142,6 +5200,7 @@ void DecimalFormat::setMinimumFractionDigits(int32_t newValue) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setMinimumFractionDigits(newValue);
 }
 
 int32_t DecimalFormat::getMinimumSignificantDigits() const {
@@ -5417,6 +5476,7 @@ void
 DecimalFormat::setGroupingUsed(UBool newValue) {
   NumberFormat::setGroupingUsed(newValue);
   handleChanged();
+  if (fDecimFmt2) fDecimFmt2->setGroupingUsed(newValue);
 }
 
 // this is only overridden to call handleChanged() for fastpath purposes.

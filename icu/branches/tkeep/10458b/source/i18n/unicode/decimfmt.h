@@ -59,6 +59,7 @@ class UnicodeSet;
 class FieldPositionHandler;
 class DecimalFormatStaticSets;
 class FixedDecimal;
+class DecimalFormat2;
 
 // explicit template instantiation. see digitlst.h
 #if defined (_MSC_VER)
@@ -662,6 +663,10 @@ template class U_I18N_API    EnumSet<UNumberFormatAttribute,
  */
 class U_I18N_API DecimalFormat: public NumberFormat {
 public:
+    void setUseDecimFmt2(UBool value) {
+        fUseDecimFmt2 = value;
+    }
+
     /**
      * Rounding mode.
      * @stable ICU 2.4
@@ -2408,6 +2413,9 @@ private:
 	
     // Currency Usage(STANDARD vs CASH)
     UCurrencyUsage fCurrencyUsage;
+
+    DecimalFormat2 *fDecimFmt2;
+    UBool fUseDecimFmt2;
 
 protected:
 

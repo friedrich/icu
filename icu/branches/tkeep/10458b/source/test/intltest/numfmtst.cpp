@@ -218,6 +218,7 @@ NumberFormatTest::TestAPI(void)
   logln("Test API");
   UErrorCode status = U_ZERO_ERROR;
   NumberFormat *test = NumberFormat::createInstance("root", status);
+  ((DecimalFormat *) test)->setUseDecimFmt2(TRUE);
   if(U_FAILURE(status)) {
     dataerrln("unable to create format object - %s", u_errorName(status));
   }
@@ -311,6 +312,7 @@ NumberFormatTest::TestPatterns(void)
     {
         status = U_ZERO_ERROR;
         DecimalFormat fmt(pat[i], sym, status);
+        fmt.setUseDecimFmt2(TRUE);
         if (U_FAILURE(status)) { errln((UnicodeString)"FAIL: DecimalFormat constructor failed for " + pat[i]); continue; }
         UnicodeString newp; fmt.toPattern(newp);
         if (!(newp == newpat[i]))
