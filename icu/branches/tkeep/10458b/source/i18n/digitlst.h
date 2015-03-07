@@ -364,7 +364,7 @@ public:
      * returned will be large enough to display at least minSigDigits digits.
      */
     DigitInterval& getSmallestInterval(
-            DigitInterval &result, int32_t minSigDigits=0) const;
+            DigitInterval &result, int32_t minSigDigits=0, const DigitInterval *zeroInterval=NULL) const;
 
     /**
      * Like getDigitValue, but the digit is identified by exponent.

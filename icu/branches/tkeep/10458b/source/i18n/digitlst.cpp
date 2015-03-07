@@ -953,10 +953,15 @@ DigitList::isZero() const
 // -------------------------------------
 DigitInterval &
 DigitList::getSmallestInterval(
-        DigitInterval &result, int32_t minSigDigits) const {
+        DigitInterval &result, int32_t minSigDigits, const DigitInterval *zeroInterval) const {
     int32_t intDigits = 0;
     int32_t fracDigits = 0;
-    if (!isZero()) {
+    if (isZero()) {
+        if (zeroInterval) {
+            intDigits = zeroInterval->getIntDigitCount();
+            fracDigits = zeroInterval->getFracDigitCount();
+        }
+    } else {
         intDigits = fDecNumber->digits + fDecNumber->exponent;
         fracDigits = -fDecNumber->exponent;
         if (intDigits < 0) {
@@ -1017,6 +1022,10 @@ DigitList::quantize(const DigitList &quantity, UErrorCode &status) {
 int32_t
 DigitList::getScientificExponent(
         int32_t minIntDigitCount, int32_t exponentMultiplier) const {
+    // The exponent for zero is always zero.
+    if (isZero()) {
+        return 0;
+    }
     int32_t intDigitCount = fDecNumber->digits + fDecNumber->exponent;
     int32_t exponent;
     if (intDigitCount >= minIntDigitCount) {

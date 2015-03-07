@@ -448,6 +448,7 @@ NumberFormatTest::TestExponential(void)
     for (int32_t p=0; p<pat_length; ++p)
     {
         DecimalFormat fmt(pat[p], sym, status);
+        fmt.setUseDecimFmt2(TRUE);
         if (U_FAILURE(status)) { errln("FAIL: Bad status returned by DecimalFormat ct"); continue; }
         UnicodeString pattern;
         logln((UnicodeString)"Pattern \"" + pat[p] + "\" -toPattern-> \"" +
