@@ -56,6 +56,13 @@ public:
     void shrinkToFitWithin(const DigitInterval &rhs);
 
     /**
+     * Expand this interval as necessary to the right of the decimal
+     * so that it includes at least minSignificantDigits significant
+     * digits.
+     */
+    void ensureSignificantDigits(int32_t minSignificantDigits);
+
+    /**
      * Changes the number of digits to the left of the decimal point that
      * this interval spans. If count is negative, it means span all digits
      * to the left of the decimal point.

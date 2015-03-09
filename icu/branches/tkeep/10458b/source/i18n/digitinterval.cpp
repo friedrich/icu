@@ -37,6 +37,16 @@ void DigitInterval::setFracDigitCount(int32_t count) {
     fSmallestInclusive = count < 0 ? INT32_MIN : -count;
 }
 
+void DigitInterval::ensureSignificantDigits(int32_t minSigDigits) {
+  if (minSigDigits <= 0) {
+    return;
+  }
+  int32_t requiredSmallestInclusive = fLargestExclusive - minSigDigits;
+  if (fSmallestInclusive > requiredSmallestInclusive) {
+    fSmallestInclusive = requiredSmallestInclusive;
+  }
+}
+
 
 U_NAMESPACE_END
 

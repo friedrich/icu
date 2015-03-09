@@ -384,28 +384,64 @@ void NumberFormat2Test::TestDigitListInterval() {
     {
         // Smallest interval already has 4 significant digits
         digitList.set(1000.00);
-        verifyInterval(digitList.getSmallestInterval(result, 4), 0, 4);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(4);
+        verifyInterval(result, 0, 4);
     }
     {
         // Smallest interval needs to expand to have 5 significant digits
         digitList.set(1000.00);
-        verifyInterval(digitList.getSmallestInterval(result, 5), -1, 4);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(5);
+        verifyInterval(result, -1, 4);
     }
     {
         digitList.set(43.125);
-        verifyInterval(digitList.getSmallestInterval(result, 5), -3, 2);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(5);
+        verifyInterval(result, -3, 2);
     }
     {
         digitList.set(43.125);
-        verifyInterval(digitList.getSmallestInterval(result, 7), -5, 2);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(4);
+        verifyInterval(result, -3, 2);
+    }
+    {
+        digitList.set(43.125);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(0);
+        verifyInterval(result, -3, 2);
+    }
+    {
+        digitList.set(43.125);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(-1);
+        verifyInterval(result, -3, 2);
+    }
+    {
+        digitList.set(43.125);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(7);
+        verifyInterval(result, -5, 2);
     }
     {
         digitList.set(.0078125);
-        verifyInterval(digitList.getSmallestInterval(result, 7), -7, 0);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(7);
+        verifyInterval(result, -7, 0);
     }
     {
         digitList.set(.0078125);
-        verifyInterval(digitList.getSmallestInterval(result, 8), -8, 0);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(8);
+        verifyInterval(result, -8, 0);
+    }
+    {
+        digitList.set(.0078125);
+        digitList.getSmallestInterval(result);
+        result.ensureSignificantDigits(6);
+        verifyInterval(result, -7, 0);
     }
 }
 

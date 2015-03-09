@@ -49,7 +49,8 @@ FixedPrecision::round(
 DigitInterval &
 FixedPrecision::getInterval(
         const DigitList &value, DigitInterval &interval) const {
-    value.getSmallestInterval(interval, fSignificant.getMin(), &fMin);
+    value.getSmallestInterval(interval, &fMin);
+    interval.ensureSignificantDigits(fSignificant.getMin());
     interval.expandToContain(fMin);
     interval.shrinkToFitWithin(fMax);
     return interval;

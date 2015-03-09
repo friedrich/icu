@@ -953,29 +953,26 @@ DigitList::isZero() const
 // -------------------------------------
 DigitInterval &
 DigitList::getSmallestInterval(
-        DigitInterval &result, int32_t minSigDigits, const DigitInterval *zeroInterval) const {
-    int32_t intDigits = 0;
-    int32_t fracDigits = 0;
+        DigitInterval &result, const DigitInterval *zeroInterval) const {
     if (isZero()) {
         if (zeroInterval) {
-            intDigits = zeroInterval->getIntDigitCount();
-            fracDigits = zeroInterval->getFracDigitCount();
+            result = *zeroInterval;
+        } else {
+            result.setIntDigitCount(0);
+            result.setFracDigitCount(0);
         }
     } else {
-        intDigits = fDecNumber->digits + fDecNumber->exponent;
-        fracDigits = -fDecNumber->exponent;
+        int32_t intDigits = fDecNumber->digits + fDecNumber->exponent;
+        int32_t fracDigits = -fDecNumber->exponent;
         if (intDigits < 0) {
             intDigits = 0;
         }
         if (fracDigits < 0) {
             fracDigits = 0;
         }
+        result.setIntDigitCount(intDigits);
+        result.setFracDigitCount(fracDigits);
     }
-    if (fracDigits < minSigDigits - intDigits) {
-        fracDigits = minSigDigits - intDigits;
-    }
-    result.setIntDigitCount(intDigits);
-    result.setFracDigitCount(fracDigits);
     return result;
 }
 

@@ -359,12 +359,15 @@ public:
     uint8_t     getDigitValue(int32_t i);
 
     /**
-     * Returns the smallest DigitInterval needed to display this
-     * DigitList in fixed point form. If minSigDigits is set then the interval
-     * returned will be large enough to display at least minSigDigits digits.
+     * Sets result to the smallest DigitInterval needed to display this
+     * DigitList in fixed point form and returns result.
+     * If this value is zero then result is set to zeroInterval. If this
+     * value is zero and zeroInterval is NULL then result is set to zero
+     * integer digits and zero fraction digits.
      */
     DigitInterval& getSmallestInterval(
-            DigitInterval &result, int32_t minSigDigits=0, const DigitInterval *zeroInterval=NULL) const;
+            DigitInterval &result,
+            const DigitInterval *zeroInterval=NULL) const;
 
     /**
      * Like getDigitValue, but the digit is identified by exponent.
