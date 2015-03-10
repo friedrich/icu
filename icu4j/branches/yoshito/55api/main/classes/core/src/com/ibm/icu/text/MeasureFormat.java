@@ -310,8 +310,7 @@ public class MeasureFormat extends UFormat {
      * @param pos Identifies a field in the formatted text.
      * @see java.text.Format#format(java.lang.Object, java.lang.StringBuffer, java.text.FieldPosition)
      * 
-     * @draft ICU53
-     * @provisional This API might change or be removed in a future release.
+     * @stable ICU53
      */
     @Override
     public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
@@ -347,7 +346,8 @@ public class MeasureFormat extends UFormat {
      * Parses text from a string to produce a <code>Measure</code>.
      * @see java.text.Format#parseObject(java.lang.String, java.text.ParsePosition)
      * @throws UnsupportedOperationException Not supported.
-     * @stable ICU 53
+     * @draft ICU 53 (Retain)
+     * @provisional This API might change or be removed in a future release.
      */
     @Override
     public Measure parseObject(String source, ParsePosition pos) {
