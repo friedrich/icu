@@ -431,6 +431,17 @@ DecimalFormat2::updatePrecisionForScientific() {
     result->fMin.setFracDigitCount(0);
     result->fSignificant.clear();
 
+    // Not in spec: maxIntDigitCount > 8 assume
+    // maxIntDigitCount = minIntDigitCount. Current DecimalFormat API has
+    // no provision for unsetting maxIntDigitCount which would be useful for
+    // scientific notation. The best we can do is assume that if
+    // maxIntDigitCount is the default of 2000000000 or is "big enough" then
+    // user did not intend to explicitly set it. The 8 was derived emperically
+    // by extensive testing of legacy code.
+    if (maxIntDigitCount > 8) {
+        maxIntDigitCount = minIntDigitCount;
+    }
+
     // Per the spec, exponent grouping happens if maxIntDigitCount is more
     // than 1 and more than minIntDigitCount.
     UBool bExponentGrouping = maxIntDigitCount > 1 && minIntDigitCount < maxIntDigitCount;

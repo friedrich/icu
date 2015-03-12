@@ -540,6 +540,7 @@ NumberFormatTest::TestScientific2() {
     // jb 2552
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormat* fmt = (DecimalFormat*)NumberFormat::createCurrencyInstance("en_US", status);
+    fmt->setUseDecimFmt2(TRUE);
     if (U_SUCCESS(status)) {
         double num = 12.34;
         expect(*fmt, num, "$12.34");
@@ -556,6 +557,7 @@ NumberFormatTest::TestScientificGrouping() {
     // jb 2552
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormat fmt("##0.00E0",status);
+    fmt.setUseDecimFmt2(TRUE);
     if (U_SUCCESS(status)) {
         expect(fmt, .01234, "12.3E-3");
         expect(fmt, .1234, "123E-3");
@@ -591,6 +593,7 @@ void
 NumberFormatTest::TestInt64() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormat fmt("#.#E0",status);
+    fmt.setUseDecimFmt2(TRUE);
     fmt.setMaximumFractionDigits(20);
     if (U_SUCCESS(status)) {
         expect(fmt, (Formattable)(int64_t)0, "0E0");
@@ -683,6 +686,7 @@ NumberFormatTest::TestQuotes(void)
     }
     pat = new UnicodeString("a'fo''o'b#");
     DecimalFormat *fmt = new DecimalFormat(*pat, *sym, status);
+    fmt->setUseDecimFmt2(TRUE);
     UnicodeString s;
     ((NumberFormat*)fmt)->format((int32_t)123, s);
     logln((UnicodeString)"Pattern \"" + *pat + "\"");
@@ -696,6 +700,7 @@ NumberFormatTest::TestQuotes(void)
 
     pat = new UnicodeString("a''b#");
     fmt = new DecimalFormat(*pat, *sym, status);
+    fmt->setUseDecimFmt2(TRUE);
     ((NumberFormat*)fmt)->format((int32_t)123, s);
     logln((UnicodeString)"Pattern \"" + *pat + "\"");
     logln((UnicodeString)" Format 123 -> " + escape(s));
@@ -725,6 +730,7 @@ NumberFormatTest::TestCurrencySign(void)
     pat.append(currency).append("#,##0.00;-").
         append(currency).append("#,##0.00");
     DecimalFormat *fmt = new DecimalFormat(pat, *sym, status);
+    fmt->setUseDecimFmt2(TRUE);
     UnicodeString s; ((NumberFormat*)fmt)->format(1234.56, s);
     pat.truncate(0);
     logln((UnicodeString)"Pattern \"" + fmt->toPattern(pat) + "\"");
@@ -742,6 +748,7 @@ NumberFormatTest::TestCurrencySign(void)
         append(currency).append(currency).
         append(" -#,##0.00");
     fmt = new DecimalFormat(pat, *sym, status);
+    fmt->setUseDecimFmt2(TRUE);
     s.truncate(0);
     ((NumberFormat*)fmt)->format(1234.56, s);
     logln((UnicodeString)"Pattern \"" + fmt->toPattern(pat) + "\"");
@@ -804,6 +811,7 @@ NumberFormatTest::TestCurrency(void)
 {
     UErrorCode status = U_ZERO_ERROR;
     NumberFormat* currencyFmt = NumberFormat::createCurrencyInstance(Locale::getCanadaFrench(), status);
+    ((DecimalFormat *) currencyFmt)->setUseDecimFmt2(TRUE);
     if (U_FAILURE(status)) {
         dataerrln("Error calling NumberFormat::createCurrencyInstance()");
         return;

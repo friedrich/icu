@@ -1665,8 +1665,10 @@ DecimalFormat::format(const StringPiece &number,
     if (U_FAILURE(status)) {
         return toAppendTo;
     }
+    if (fUseDecimFmt2) {
+      return fDecimFmt2->format(dnum, toAppendTo, posIter, status);
+    }
     FieldPositionIteratorHandler handler(posIter, status);
-    // TODO: Add DecimalFormat2
     _format(dnum, toAppendTo, handler, status);
     return toAppendTo;
 }
@@ -4125,6 +4127,7 @@ void DecimalFormat::setScientificNotation(UBool useScientific) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setScientificNotation(useScientific);
 }
 
 /**
