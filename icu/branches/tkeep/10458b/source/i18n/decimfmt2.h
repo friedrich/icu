@@ -104,6 +104,7 @@ int32_t getSecondaryGroupingSize() const { return fGrouping.fGrouping2; }
 int32_t getMinimumGroupingDigits() const { return fGrouping.fMinGrouping; }
 UBool isGroupingUsed() const { return fUseGrouping; }
 void setCurrency(const UChar *currency, UErrorCode &status);
+void applyPattern(const UnicodeString &pattern, UErrorCode &status);
 
 private:
 // These fields include what the user can see and set.

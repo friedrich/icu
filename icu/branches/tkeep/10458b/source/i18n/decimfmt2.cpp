@@ -351,6 +351,17 @@ DecimalFormat2::setCurrency(const UChar *currency, UErrorCode &status) {
 }
 
 void
+DecimalFormat2::applyPattern(
+        const UnicodeString &pattern, UErrorCode &status) {
+    UParseError perror;
+    if (U_FAILURE(status)) {
+        return;
+    }
+    // TODO: Consider updating everything except symbols.
+    parsePattern(pattern, perror, status);
+}
+
+void
 DecimalFormat2::parsePattern(
         const UnicodeString &pattern, UParseError &perror, UErrorCode &status) {
     if (U_FAILURE(status)) {

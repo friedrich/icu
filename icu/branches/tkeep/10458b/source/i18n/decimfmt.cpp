@@ -4234,6 +4234,7 @@ DecimalFormat::setSecondaryGroupingSize(int32_t newValue)
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setSecondaryGroupingSize(newValue);
 }
 
 //------------------------------------------------------------------------------
@@ -4983,6 +4984,7 @@ DecimalFormat::applyPattern(const UnicodeString& pattern, UErrorCode& status)
 {
     UParseError parseError;
     applyPattern(pattern, FALSE, parseError, status);
+    if (fDecimFmt2) fDecimFmt2->applyPattern(pattern, status);
 }
 
 //------------------------------------------------------------------------------
@@ -5305,6 +5307,7 @@ void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setCurrency(theCurrency, ec);
 }
 
 void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){

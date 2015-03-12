@@ -827,6 +827,7 @@ NumberFormatTest::TestCurrency(void)
     int len = uloc_canonicalize("de_DE_PREEURO", loc, 256, &status);
     (void)len;  // Suppress unused variable warning.
     currencyFmt = NumberFormat::createCurrencyInstance(Locale(loc),status);
+    ((DecimalFormat *) currencyFmt)->setUseDecimFmt2(TRUE);
     currencyFmt->format(1.50, s);
     logln((UnicodeString)"Un pauvre en Allemagne a.." + s);
     if (!(s==CharsToUnicodeString("1,50\\u00A0DM")))
@@ -835,6 +836,7 @@ NumberFormatTest::TestCurrency(void)
     s.truncate(0);
     len = uloc_canonicalize("fr_FR_PREEURO", loc, 256, &status);
     currencyFmt = NumberFormat::createCurrencyInstance(Locale(loc), status);
+    ((DecimalFormat *) currencyFmt)->setUseDecimFmt2(TRUE);
     currencyFmt->format(1.50, s);
     logln((UnicodeString)"Un pauvre en France a....." + s);
     if (!(s==CharsToUnicodeString("1,50\\u00A0F")))
@@ -852,6 +854,7 @@ NumberFormatTest::TestCurrency(void)
         char loc[256]={0};
         uloc_canonicalize(localeID, loc, 256, &status);
         currencyFmt = NumberFormat::createCurrencyInstance(Locale(loc), status);
+        ((DecimalFormat *) currencyFmt)->setUseDecimFmt2(TRUE);
         if(U_FAILURE(status)){
             errln("Could not create currency formatter for locale %s",localeID);
             continue;
@@ -878,6 +881,7 @@ void NumberFormatTest::TestCurrencyObject() {
     UErrorCode ec = U_ZERO_ERROR;
     NumberFormat* fmt =
         NumberFormat::createCurrencyInstance(Locale::getUS(), ec);
+    ((DecimalFormat *) fmt)->setUseDecimFmt2(TRUE);
 
     if (U_FAILURE(ec)) {
         dataerrln("FAIL: getCurrencyInstance(US) - %s", u_errorName(ec));
@@ -903,6 +907,7 @@ void NumberFormatTest::TestCurrencyObject() {
 
     delete fmt;
     fmt = NumberFormat::createCurrencyInstance(Locale::getFrance(), ec);
+    ((DecimalFormat *) fmt)->setUseDecimFmt2(TRUE);
 
     if (U_FAILURE(ec)) {
         errln("FAIL: getCurrencyInstance(FRANCE)");
@@ -1211,6 +1216,7 @@ NumberFormatTest::TestRounding487(void)
 {
     UErrorCode status = U_ZERO_ERROR;
     NumberFormat *nf = NumberFormat::createInstance(status);
+    ((DecimalFormat *) nf)->setUseDecimFmt2(TRUE);
     if (U_FAILURE(status)) {
         dataerrln("Error calling NumberFormat::createInstance()");
         return;
@@ -1236,6 +1242,7 @@ void NumberFormatTest::TestSecondaryGrouping(void) {
     CHECK(status, "DecimalFormatSymbols ct");
 
     DecimalFormat f("#,##,###", US, status);
+    f.setUseDecimFmt2(TRUE);
     CHECK(status, "DecimalFormat ct");
 
     expect2(f, (int32_t)123456789L, "12,34,56,789");
@@ -1247,6 +1254,7 @@ void NumberFormatTest::TestSecondaryGrouping(void) {
     expect2(f, (int32_t)123456789L, "12,3456,789");
     expectPat(f, "#,####,###");
     NumberFormat *g = NumberFormat::createInstance(Locale("hi", "IN"), status);
+    ((DecimalFormat *) g)->setUseDecimFmt2(TRUE);
     CHECK_DATA(status, "createInstance(hi_IN)");
 
     UnicodeString out;
@@ -1293,6 +1301,7 @@ void NumberFormatTest::TestWhiteSpaceParsing(void) {
     UErrorCode ec = U_ZERO_ERROR;
     DecimalFormatSymbols US(Locale::getUS(), ec);
     DecimalFormat fmt("a  b#0c  ", US, ec);
+    fmt.setUseDecimFmt2(TRUE);
     if (U_FAILURE(ec)) {
         errcheckln(ec, "FAIL: Constructor - %s", u_errorName(ec));
         return;
@@ -1344,8 +1353,10 @@ void NumberFormatTest::TestExponent(void) {
     DecimalFormatSymbols US(Locale::getUS(), status);
     CHECK(status, "DecimalFormatSymbols constructor");
     DecimalFormat fmt1(UnicodeString("0.###E0"), US, status);
+    fmt1.setUseDecimFmt2(TRUE);
     CHECK(status, "DecimalFormat(0.###E0)");
     DecimalFormat fmt2(UnicodeString("0.###E+0"), US, status);
+    fmt2.setUseDecimFmt2(TRUE);
     CHECK(status, "DecimalFormat(0.###E+0)");
     int32_t n = 1234;
     expect2(fmt1, n, "1.234E3");
