@@ -752,11 +752,11 @@ public class SimpleDateFormat extends DateFormat {
     //       A   B   C   D   E   F   G   H   I   J   K   L   M   N   O
         -1, 40, -1, -1, 20, 30, 30,  0, 50, -1, -1, 50, 20, 20, -1,  0,
     //   P   Q   R   S   T   U   V   W   X   Y   Z
-        -1, 20, -1, 80, -1, 10,  0, 30,  0, 10,  0, -1, -1, -1, -1, -1,
+        -1, 20, -1, 80, 40, 10,  0, 30,  0, 10,  0, -1, -1, -1, -1, -1,
     //       a   b   c   d   e   f   g   h   i   j   k   l   m   n   o
         -1, 40, -1, 30, 30, 30, -1,  0, 50, -1, -1, 50, -1, 60, -1, -1,
     //   p   q   r   s   t   u   v   w   x   y   z
-        -1, 20, -1, 70, -1, 10,  0, 20,  0, 10,  0, -1, -1, -1, -1, -1
+        -1, 20, -1, 70, 40, 10,  0, 20,  0, 10,  0, -1, -1, -1, -1, -1
     };
 
     // When calendar uses hebr numbering (i.e. he@calendar=hebrew),
@@ -1275,11 +1275,11 @@ public class SimpleDateFormat extends DateFormat {
     //       A   B   C   D   E   F   G   H   I   J   K   L   M   N   O
         -1, 22, -1, -1, 10,  9, 11,  0,  5, -1, -1, 16, 26,  2, -1, 31,
     //   P   Q   R   S   T   U   V   W   X   Y   Z
-        -1, 27, -1,  8, -1, 30, 29, 13, 32, 18, 23, -1, -1, -1, -1, -1,
+        -1, 27, -1,  8, 34, 30, 29, 13, 32, 18, 23, -1, -1, -1, -1, -1,
     //       a   b   c   d   e   f   g   h   i   j   k   l   m   n   o
         -1, 14, -1, 25,  3, 19, -1, 21, 15, -1, -1,  4, -1,  6, -1, -1,
     //   p   q   r   s   t   u   v   w   x   y   z
-        -1, 28, -1,  7, -1, 20, 24, 12, 33,  1, 17, -1, -1, -1, -1, -1
+        -1, 28, -1,  7, 35, 20, 24, 12, 33,  1, 17, -1, -1, -1, -1, -1
     };
 
     // Map pattern character index to Calendar field number
@@ -1301,6 +1301,7 @@ public class SimpleDateFormat extends DateFormat {
         /*U*/   Calendar.YEAR,
         /*O*/   Calendar.ZONE_OFFSET,
         /*Xx*/  Calendar.ZONE_OFFSET, Calendar.ZONE_OFFSET,
+        /*Tt*/  Calendar.AM_PM, Calendar.AM_PM
     };
 
     // Map pattern character index to DateFormat field number
@@ -1321,6 +1322,7 @@ public class SimpleDateFormat extends DateFormat {
         /*U*/   DateFormat.YEAR_NAME_FIELD,
         /*O*/   DateFormat.TIMEZONE_LOCALIZED_GMT_OFFSET_FIELD,
         /*Xx*/  DateFormat.TIMEZONE_ISO_FIELD, DateFormat.TIMEZONE_ISO_LOCAL_FIELD,
+        /*Tt*/  DateFormat.AM_PM_FIELD, DateFormat.AM_PM_FIELD
     };
 
     // Map pattern character index to DateFormat.Field
@@ -1341,6 +1343,7 @@ public class SimpleDateFormat extends DateFormat {
         /*U*/   DateFormat.Field.YEAR,
         /*O*/   DateFormat.Field.TIME_ZONE,
         /*Xx*/  DateFormat.Field.TIME_ZONE, DateFormat.Field.TIME_ZONE,
+        /*Tt*/  DateFormat.Field.AM_PM, DateFormat.Field.AM_PM
     };
 
     /**
@@ -1587,6 +1590,8 @@ public class SimpleDateFormat extends DateFormat {
             }
             break;
         case 14: // 'a' - AM_PM
+        case 34:
+        case 35:
             safeAppend(formatData.ampms, value, buf);
             break;
         case 15: // 'h' - HOUR (1..12)

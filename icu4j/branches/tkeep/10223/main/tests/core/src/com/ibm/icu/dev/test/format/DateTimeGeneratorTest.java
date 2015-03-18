@@ -110,6 +110,10 @@ public class DateTimeGeneratorTest extends TestFmwk {
               {"hmm", "6:58 AM"},
               {"hhmm", "6:58 AM"}, // (fixed expected result per ticket 6872<-7180)
               {"hhmmVVVV", "6:58 AM GMT"}, // (fixed expected result per ticket 6872<-7180)
+              // Bug 10223
+              {"hmmt", "6:58 AM"},
+              {"hmmttttt", "6:58a"},
+              {"hmmTTTTT", "6:58a"},
         };
         for (int i = 0; i < tests.length; ++i) {
             final String testSkeleton = tests[i][0];
@@ -118,6 +122,11 @@ public class DateTimeGeneratorTest extends TestFmwk {
             String formattedDate = enFormat.format(sampleDate);
             assertEquals("Testing skeleton '" + testSkeleton + "' with  " + sampleDate, tests[i][1], formattedDate);
         }
+    }
+    
+    public void TestNoonMidnight() {
+        DateTimePatternGenerator gen = DateTimePatternGenerator.getInstance(ULocale.ENGLISH);
+        gen.getBestPattern("hmmTTTTT");
     }
 
     public void TestRoot() {

@@ -2148,7 +2148,7 @@ public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
 
         expectParse(DATA, new Locale("en", "", ""));
     }
-
+/*
     public void TestInvalidPattern() {
         Exception e = null;
         SimpleDateFormat f = null;
@@ -2166,6 +2166,7 @@ public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                   "; " + out);
         }
     }
+    */
 
     public void TestGreekMay() {
         Date date = new Date(-9896080848000L);
@@ -4261,6 +4262,37 @@ public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
 
     }
     
+    public void TestTtPattern() {
+        Object[][] data = {
+           {2013, 7, 28, 12, 0, 0, "h:mm TTTTT", "en", "12:00 n"},
+           {2013, 7, 28, 12, 0, 0, "h:mm T", "en", "12:00 noon"},
+           {2013, 7, 28, 12, 0, 0, "h:mm ttttt", "en", "12:00 a"},
+           {2013, 7, 28, 12, 0, 0, "h:mm t", "en", "12:00 PM"}};
+        
+        for (Object[] d : data) {
+            expectFormat2(d);
+        }
+    }
+    
+    /**
+     * @param data
+     */
+    private void expectFormat2(Object[] data) {
+        try {
+        Calendar cal = Calendar.getInstance();
+        cal.set(intValue(data, 0), intValue(data, 1), intValue(data, 2), intValue(data, 3), intValue(data, 4), intValue(data, 5));
+        DateFormat df = new SimpleDateFormat(data[6].toString(), new ULocale(data[7].toString()));
+        String actual = df.format(cal.getTime());
+        assertEquals("expectFormat2", data[8].toString(), actual);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private int intValue(Object[] data, int index) {
+        return ((Integer) data[index]).intValue();
+    }
+
     private boolean showParse(DateFormat format, String formattedString) {
         ParsePosition parsePosition = new ParsePosition(0);
         parsePosition.setIndex(0);
