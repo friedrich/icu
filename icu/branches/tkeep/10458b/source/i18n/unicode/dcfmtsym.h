@@ -355,6 +355,13 @@ private:
 
 public:
     /**
+     * @internal For ICU use only
+     */
+    inline UBool isCustomCurrencySymbol() const {
+        return fIsCustomCurrencySymbol;
+    }
+
+    /**
      * _Internal_ function - more efficient version of getSymbol,
      * returning a const reference to one of the symbol strings.
      * The returned reference becomes invalid when the symbol is changed
@@ -408,6 +415,7 @@ private:
 
     UnicodeString currencySpcBeforeSym[UNUM_CURRENCY_SPACING_COUNT];
     UnicodeString currencySpcAfterSym[UNUM_CURRENCY_SPACING_COUNT];
+    UBool fIsCustomCurrencySymbol;
 };
 
 // -------------------------------------
@@ -443,6 +451,9 @@ DecimalFormatSymbols::getConstSymbol(ENumberFormatSymbol symbol) const {
 
 inline void
 DecimalFormatSymbols::setSymbol(ENumberFormatSymbol symbol, const UnicodeString &value, const UBool propogateDigits = TRUE) {
+    if (symbol == kCurrencySymbol) {
+        fIsCustomCurrencySymbol = TRUE;
+    }
     if(symbol<kFormatSymbolCount) {
         fSymbols[symbol]=value;
     }

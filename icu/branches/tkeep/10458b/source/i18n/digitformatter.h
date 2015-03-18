@@ -31,13 +31,15 @@ class IntDigitCountRange;
  */
 class U_I18N_API DigitFormatterOptions : public UMemory {
     public:
-    DigitFormatterOptions() : fAlwaysShowDecimal(FALSE) { }
+    DigitFormatterOptions() : fAlwaysShowDecimal(FALSE), fMonetary(FALSE) { }
 
     /**
      * Returns TRUE if this object equals rhs.
      */
     UBool equals(const DigitFormatterOptions &rhs) const {
-        return (fAlwaysShowDecimal == rhs.fAlwaysShowDecimal);
+        return (
+            fAlwaysShowDecimal == rhs.fAlwaysShowDecimal &&
+            fMonetary == rhs.fMonetary);
     }
 
     /**
@@ -45,7 +47,7 @@ class U_I18N_API DigitFormatterOptions : public UMemory {
      * integers.
      */
     UBool isFastFormattable() const {
-        return (fAlwaysShowDecimal == FALSE);
+        return (fAlwaysShowDecimal == FALSE && fMonetary == FALSE);
     }
 
     /**
@@ -53,6 +55,11 @@ class U_I18N_API DigitFormatterOptions : public UMemory {
      * digits. default is FALSE.
      */
     UBool fAlwaysShowDecimal;
+
+    /**
+     * If TRUE, format using monetary group separator and decimal separator.
+     */
+    UBool fMonetary;
 };
 
 /**
@@ -190,6 +197,8 @@ private:
 UChar32 fLocalizedDigits[10];
 UnicodeString fGroupingSeparator;
 UnicodeString fDecimal;
+UnicodeString fMonetaryGroupingSeparator;
+UnicodeString fMonetaryDecimal;
 UnicodeString fNegativeSign;
 UnicodeString fPositiveSign;
 UBool fIsStandardDigits;
@@ -203,6 +212,14 @@ UnicodeString &formatDigits(
         int32_t intField,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
+
+const UnicodeString &getEffectiveDecimalSeparator(UBool bMonetary) const {
+    return (bMonetary ? fMonetaryDecimal : fDecimal);
+}
+
+const UnicodeString &getEffectiveGroupingSeparator(UBool bMonetary) const {
+    return (bMonetary ? fMonetaryGroupingSeparator : fGroupingSeparator);
+}
 
 };
 

@@ -14,6 +14,7 @@
 #include "unicode/utypes.h"
 #include "unicode/uobject.h"
 #include "unicode/unistr.h"
+#include "unicode/utf16.h"
 #include "cmemory.h"
 
 U_NAMESPACE_BEGIN
@@ -48,6 +49,14 @@ public:
             fIdx = 0;
         }
         fBuffer[fIdx++] = x;
+    }
+
+    inline void append(UChar32 x) {
+        if (fIdx >= UPRV_LENGTHOF(fBuffer) - 1) {
+            fDest->append(fBuffer, 0, fIdx);
+            fIdx = 0;
+        }
+        U16_APPEND_UNSAFE(fBuffer, fIdx, x);
     }
 
     /**

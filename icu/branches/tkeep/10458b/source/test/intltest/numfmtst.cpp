@@ -1773,7 +1773,6 @@ void NumberFormatTest::TestSurrogateSupport(void) {
     status = U_ZERO_ERROR;
     expect2(new DecimalFormat("##0.000", custom, status),
            1.25, expStr, status);
-
     custom.setSymbol(DecimalFormatSymbols::kZeroDigitSymbol, (UChar)0x30);
     custom.setSymbol(DecimalFormatSymbols::kCurrencySymbol, "units of money");
     custom.setSymbol(DecimalFormatSymbols::kMonetarySeparatorSymbol, "money separator");
@@ -2533,6 +2532,7 @@ void NumberFormatTest::expect2(NumberFormat* fmt, const Formattable& n,
     if (fmt == NULL || U_FAILURE(status)) {
         dataerrln("FAIL: NumberFormat constructor");
     } else {
+        ((DecimalFormat *) fmt)->setUseDecimFmt2(TRUE);
         expect2(*fmt, n, exp);
     }
     delete fmt;
@@ -2656,6 +2656,7 @@ void NumberFormatTest::expect(NumberFormat* fmt, const Formattable& n,
     if (fmt == NULL || U_FAILURE(status)) {
         dataerrln("FAIL: NumberFormat constructor");
     } else {
+        ((DecimalFormat *) fmt)->setUseDecimFmt2(TRUE);
         expect(*fmt, n, exp, rt);
     }
     delete fmt;
@@ -7904,6 +7905,7 @@ void NumberFormatTest::TestFastPathConsistent11524() {
     assertEquals("", "0", fmt->format(123, appendTo));
     appendTo.remove();
     assertEquals("", "0", fmt->format(12345, appendTo));
+    delete fmt;
 }
 
 #endif /* #if !UCONFIG_NO_FORMATTING */

@@ -134,7 +134,7 @@ DigitGrouping fGrouping;
 UBool fUseGrouping;
 
 // Updating any of the following fields triggers updates on the following:
-// fUsesCurrency, fRules, fAffixParser, fSciFormatter, fFormatter
+// fOptions.fMantissa.fMonetary, fRules, fAffixParser, fSciFormatter, fFormatter
 // fAap.fPositivePrefiix, fAap.fPositiveSuffix,
 // fAap.fNegativePrefiix, fAap.fNegativeSuffix, and fAap.fWidth
 // We do this two phase update because localizing the affix patterns
@@ -147,9 +147,6 @@ AffixPattern fNegativeSuffixPattern;
 DecimalFormatSymbols *fSymbols;
 UChar fCurr[4];
 int32_t fFormatWidth;
-
-// TRUE if one or more affixes use currency.
-UBool fUsesCurrency;
 
 // Optional may be NULL
 PluralRules *fRules;
@@ -168,7 +165,15 @@ SciFormatter fSciFormatter;
 DigitFormatter fFormatter;
 DigitAffixesAndPadding fAap;
 
+// Scales for precent or permille symbols
 UnicodeString &formatDigitList(
+        DigitList &number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+// Does not scale for precent or permille symbols
+UnicodeString &formatAdjustedDigitList(
         DigitList &number,
         UnicodeString &appendTo,
         FieldPositionHandler &handler,

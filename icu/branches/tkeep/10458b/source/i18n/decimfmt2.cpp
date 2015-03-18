@@ -35,7 +35,7 @@ DecimalFormat2::DecimalFormat2(
         DecimalFormatSymbols *symbolsToAdopt,
         UParseError &parseError,
         UErrorCode &status)
-        : fSymbols(symbolsToAdopt), fUsesCurrency(FALSE), fRules(NULL) {
+        : fSymbols(symbolsToAdopt), fRules(NULL) {
     fCurr[0] = 0;
     parsePattern(pattern, parseError, status);
 }
@@ -58,7 +58,6 @@ DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           fNegativeSuffixPattern(other.fNegativeSuffixPattern),
           fSymbols(other.fSymbols),
           fFormatWidth(other.fFormatWidth),
-          fUsesCurrency(other.fUsesCurrency),
           fRules(other.fRules),
           fAffixParser(other.fAffixParser),
           fEffPrecision(other.fEffPrecision),
@@ -96,7 +95,6 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     fPositiveSuffixPattern = other.fPositiveSuffixPattern;
     fNegativeSuffixPattern = other.fNegativeSuffixPattern;
     fFormatWidth = other.fFormatWidth;
-    fUsesCurrency = other.fUsesCurrency;
     fAffixParser = other.fAffixParser;
     fEffPrecision = other.fEffPrecision;
     fEffGrouping = other.fEffGrouping;
@@ -163,6 +161,13 @@ DecimalFormat2::format(
         FieldPosition &pos,
         UErrorCode &status) const {
     FieldPositionOnlyHandler handler(pos);
+    int32_t scale = getScale();
+    if (scale > 0) {
+        DigitList digits;
+        digits.set(number);
+        digits.shiftDecimalRight(scale);
+        return formatAdjustedDigitList(digits, appendTo, handler, status);
+    }
     ValueFormatter vf;
     return fAap.formatInt32(
             number,
@@ -180,6 +185,13 @@ DecimalFormat2::format(
         FieldPositionIterator *posIter,
         UErrorCode &status) const {
     FieldPositionIteratorHandler handler(posIter, status);
+    int32_t scale = getScale();
+    if (scale > 0) {
+        DigitList digits;
+        digits.set(number);
+        digits.shiftDecimalRight(scale);
+        return formatAdjustedDigitList(digits, appendTo, handler, status);
+    }
     ValueFormatter vf;
     return fAap.formatInt32(
             number,
@@ -269,6 +281,15 @@ DecimalFormat2::formatDigitList(
         UErrorCode &status) const {
     number.reduce();
     number.shiftDecimalRight(getScale());
+    return formatAdjustedDigitList(number, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormat2::formatAdjustedDigitList(
+        DigitList &number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const {
     ValueFormatter vf;
     return fAap.format(
             number,
@@ -278,6 +299,7 @@ DecimalFormat2::formatDigitList(
             appendTo,
             status);
 }
+
 
 void
 DecimalFormat2::setMinimumIntegerDigits(int32_t newValue) {
@@ -552,8 +574,8 @@ DecimalFormat2::updateFormattingUsesCurrency(
             fPositiveSuffixPattern.usesCurrency() ||
             fNegativePrefixPattern.usesCurrency() ||
             fNegativeSuffixPattern.usesCurrency();
-    if (fUsesCurrency != newUsesCurrency) {
-        fUsesCurrency = newUsesCurrency;
+    if (fOptions.fMantissa.fMonetary != newUsesCurrency) {
+        fOptions.fMantissa.fMonetary = newUsesCurrency;
         changedFormattingFields |= kFormattingUsesCurrency;
     }
 }
@@ -562,14 +584,15 @@ void
 DecimalFormat2::updateFormattingPluralRules(
         int32_t &changedFormattingFields, UErrorCode &status) {
     if ((changedFormattingFields & (kFormattingSymbols | kFormattingUsesCurrency)) == 0) {
-        // No work to do if both fSymbols and fUsesCurrency fields are unchanged
+        // No work to do if both fSymbols and fOptions.fMantissa.fMonetary
+        // fields are unchanged
         return;
     }
     if (U_FAILURE(status)) {
         return;
     }
     PluralRules *newRules = NULL;
-    if (fUsesCurrency) {
+    if (fOptions.fMantissa.fMonetary) {
         newRules = PluralRules::forLocale(fSymbols->getLocale(), status);
         if (U_FAILURE(status)) {
             return;
@@ -599,7 +622,7 @@ DecimalFormat2::updateFormattingAffixParser(
         fAffixParser.setDecimalFormatSymbols(*fSymbols);
         changedFormattingFields |= kFormattingAffixParser;
     }
-    if (!fUsesCurrency) {
+    if (!fOptions.fMantissa.fMonetary) {
         if (fAffixParser.fCurrencyAffixInfo.isDefault()) {
             // In this case don't have to do any work
             return;
@@ -625,6 +648,12 @@ DecimalFormat2::updateFormattingAffixParser(
                 fSymbols->getLocale().getName(), fRules, currency, status);
         if (U_FAILURE(status)) {
             return;
+        }
+        // If DecimalFormatSymbols has custom currency symbol, prefer
+        // that over what we just read from the resource bundles
+        if (fSymbols->isCustomCurrencySymbol()) {
+            fAffixParser.fCurrencyAffixInfo.fSymbol =
+                    fSymbols->getConstSymbol(DecimalFormatSymbols::kCurrencySymbol);
         }
         changedFormattingFields |= kFormattingAffixParser;
         if (currency) {

@@ -170,7 +170,6 @@ private:
     void TestRounding();
     void TestRoundingIncrement();
     void TestDigitInterval();
-    void verifyInterval(const DigitInterval &, int32_t minInclusive, int32_t maxExclusive);
     void TestGroupingUsed();
     void TestBenchmark();
     void TestBenchmark2();
@@ -189,11 +188,13 @@ private:
     void TestDigitAffix();
     void TestDigitFormatterDefaultCtor();
     void TestDigitIntFormatter();
+    void TestDigitFormatterMonetary();
     void TestDigitFormatter();
     void TestSciFormatterDefaultCtor();
     void TestSciFormatter();
     void TestDigitListToFixedDecimal();
     void TestDataDriven();
+    void verifyInterval(const DigitInterval &, int32_t minInclusive, int32_t maxExclusive);
     void verifyFixedDecimal(
             const FixedDecimal &result,
             int64_t numerator,
@@ -242,6 +243,14 @@ private:
             const DigitInterval &interval,
             UBool alwaysShowDecimal,
             const NumberFormat2Test_Attributes *expectedAttributes);
+    void verifyDigitFormatter(
+            const UnicodeString &expected,
+            const DigitFormatter &formatter,
+            const DigitList &digits,
+            const DigitGrouping &grouping,
+            const DigitInterval &interval,
+            const DigitFormatterOptions &options,
+            const NumberFormat2Test_Attributes *expectedAttributes);
     void verifySciFormatter(
             const UnicodeString &expected,
             const SciFormatter &sciformatter,
@@ -283,6 +292,7 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestDigitListInterval);
     TESTCASE_AUTO(TestDigitFormatterDefaultCtor);
     TESTCASE_AUTO(TestDigitIntFormatter);
+    TESTCASE_AUTO(TestDigitFormatterMonetary);
     TESTCASE_AUTO(TestDigitFormatter);
     TESTCASE_AUTO(TestSciFormatterDefaultCtor);
     TESTCASE_AUTO(TestSciFormatter);
@@ -1097,6 +1107,43 @@ void NumberFormat2Test::TestDigitIntFormatter() {
     }
 }
 
+void NumberFormat2Test::TestDigitFormatterMonetary() {
+    UErrorCode status = U_ZERO_ERROR;
+    DecimalFormatSymbols symbols("en", status);
+    symbols.setSymbol(
+            DecimalFormatSymbols::kMonetarySeparatorSymbol,
+            "decimal separator");
+    symbols.setSymbol(
+            DecimalFormatSymbols::kMonetaryGroupingSeparatorSymbol,
+            "grouping separator");
+    DigitFormatter formatter(symbols);
+    DigitList digits;
+    DigitInterval interval;
+    DigitGrouping grouping;
+    DigitFormatterOptions options;
+    grouping.fGrouping = 3;
+    digits.set(43560.02);
+    {
+        verifyDigitFormatter(
+                "43,560.02",
+                formatter,
+                digits,
+                grouping,
+                digits.getSmallestInterval(interval),
+                options,
+                NULL);
+        options.fMonetary = TRUE;
+        verifyDigitFormatter(
+                "43grouping separator560decimal separator02",
+                formatter,
+                digits,
+                grouping,
+                digits.getSmallestInterval(interval),
+                options,
+                NULL);
+    }
+}
+
 void NumberFormat2Test::TestDigitFormatter() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
@@ -1493,6 +1540,9 @@ void NumberFormat2Test::TestValueFormatterIsFastFormattable() {
                 formatter, grouping, precision, options);
         assertTrue("5125", vf.isFastFormattable(5125));
         options.fAlwaysShowDecimal = TRUE;
+        assertFalse("5125", vf.isFastFormattable(5125));
+        options.fAlwaysShowDecimal = FALSE;
+        options.fMonetary = TRUE;
         assertFalse("5125", vf.isFastFormattable(5125));
     }
     {
@@ -2740,6 +2790,24 @@ void NumberFormat2Test::verifyDigitFormatter(
         const NumberFormat2Test_Attributes *expectedAttributes) {
     DigitFormatterOptions options;
     options.fAlwaysShowDecimal = alwaysShowDecimal;
+    verifyDigitFormatter(
+            expected,
+            formatter,
+            digits,
+            grouping,
+            interval,
+            options,
+            expectedAttributes);
+}
+
+void NumberFormat2Test::verifyDigitFormatter(
+        const UnicodeString &expected,
+        const DigitFormatter &formatter,
+        const DigitList &digits,
+        const DigitGrouping &grouping,
+        const DigitInterval &interval,
+        const DigitFormatterOptions &options,
+        const NumberFormat2Test_Attributes *expectedAttributes) {
     assertEquals(
             "",
             expected.countChar32(),
