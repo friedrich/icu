@@ -6,12 +6,12 @@
  */
 package com.ibm.icu.text;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 import java.util.MissingResourceException;
 
 import com.ibm.icu.impl.ICUCache;
 import com.ibm.icu.impl.ICUResourceBundle;
+import com.ibm.icu.impl.PluralMap;
 import com.ibm.icu.impl.SimpleCache;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
@@ -29,7 +29,6 @@ class CompactDecimalDataCache {
     private static final String PATTERN_LONG_PATH = "patternsLong/decimalFormat";
     private static final String PATTERNS_SHORT_PATH = "patternsShort/decimalFormat";
 
-    static final String OTHER = "other";
 
     /**
      * We can specify prefixes or suffixes for values with up to 15 digits,
@@ -63,11 +62,14 @@ class CompactDecimalDataCache {
      */
     static class Data {
         long[] divisors;
-        Map<String, DecimalFormat.Unit[]> units;
+        PluralMap<DecimalFormat.Unit[]> units;
+        // Only used to create units, becomes null once everything is finalized.
+        EnumMap<PluralMap.Variant, DecimalFormat.Unit[]> unitsBuilder;
 
-        Data(long[] divisors, Map<String, DecimalFormat.Unit[]> units) {
-            this.divisors = divisors;
-            this.units = units;
+        Data() {
+            this.divisors = new long[MAX_DIGITS];
+            this.units = null;
+            this.unitsBuilder = PluralMap.newEnumMap();
         }
     }
 
@@ -233,13 +235,13 @@ class CompactDecimalDataCache {
      */
     private static Data loadStyle(ICUResourceBundle r, ULocale locale, String style) {
         int size = r.getSize();
-        Data result = new Data(
-                new long[MAX_DIGITS],
-                new HashMap<String, DecimalFormat.Unit[]>());
+        Data result = new Data();
         for (int i = 0; i < size; i++) {
             populateData(r.get(i), locale, style, result);
         }
         fillInMissing(result);
+        result.units = PluralMap.valueOf(result.unitsBuilder);
+        result.unitsBuilder = null;
         return result;
     }
 
@@ -288,9 +290,10 @@ class CompactDecimalDataCache {
         // Loop over all the plural variants. e.g one, other.
         for (int i = 0; i < size; i++) {
             UResourceBundle pluralVariantData = divisorData.get(i);
-            String pluralVariant = pluralVariantData.getKey();
+            String pluralVariantStr = pluralVariantData.getKey();
+            PluralMap.Variant pluralVariant = PluralMap.Variant.valueOfName(pluralVariantStr);
             String template = pluralVariantData.getString();
-            if (pluralVariant.equals(OTHER)) {
+            if (pluralVariant == PluralMap.Variant.OTHER) {
                 otherVariantDefined = true;
             }
             int nz = populatePrefixSuffix(
@@ -298,7 +301,7 @@ class CompactDecimalDataCache {
             if (nz != numZeros) {
                 if (numZeros != 0) {
                     throw new IllegalArgumentException(
-                        "Plural variant '" + pluralVariant + "' template '" +
+                        "Plural variant '" + pluralVariantStr + "' template '" +
                         template + "' for 10^" + thisIndex +
                         " has wrong number of zeros in " + localeAndStyle(locale, style));
                 }
@@ -338,7 +341,7 @@ class CompactDecimalDataCache {
      * @return number of zeros found before any decimal point in template.
      */
     private static int populatePrefixSuffix(
-            String pluralVariant, int idx, String template, ULocale locale, String style,
+            PluralMap.Variant pluralVariant, int idx, String template, ULocale locale, String style,
             Data result) {
         int firstIdx = template.indexOf("0");
         int lastIdx = template.lastIndexOf("0");
@@ -350,7 +353,7 @@ class CompactDecimalDataCache {
         }
         String prefix = fixQuotes(template.substring(0, firstIdx));
         String suffix = fixQuotes(template.substring(lastIdx + 1));
-        saveUnit(new DecimalFormat.Unit(prefix, suffix), pluralVariant, idx, result.units);
+        saveUnit(new DecimalFormat.Unit(prefix, suffix), pluralVariant, idx, result.unitsBuilder);
 
         // If there is effectively no prefix or suffix, ignore the actual
         // number of 0's and act as if the number of 0's matches the size
@@ -429,28 +432,29 @@ class CompactDecimalDataCache {
         // Initially we assume that previous divisor is 1 with no prefix or suffix.
         long lastDivisor = 1L;
         for (int i = 0; i < result.divisors.length; i++) {
-            if (result.units.get(OTHER)[i] == null) {
+            if (result.unitsBuilder.get(PluralMap.Variant.OTHER)[i] == null) {
                 result.divisors[i] = lastDivisor;
-                copyFromPreviousIndex(i, result.units);
+                copyFromPreviousIndex(i, result.unitsBuilder);
             } else {
                 lastDivisor = result.divisors[i];
-                propagateOtherToMissing(i, result.units);
+                propagateOtherToMissing(i, result.unitsBuilder);
             }
         }
     }
 
     private static void propagateOtherToMissing(
-            int idx, Map<String, DecimalFormat.Unit[]> units) {
-        DecimalFormat.Unit otherVariantValue = units.get(OTHER)[idx];
-        for (DecimalFormat.Unit[] byBase : units.values()) {
+            int idx, EnumMap<PluralMap.Variant, DecimalFormat.Unit[]> unitsBuilder) {
+        DecimalFormat.Unit otherVariantValue = unitsBuilder.get(PluralMap.Variant.OTHER)[idx];
+        for (DecimalFormat.Unit[] byBase : unitsBuilder.values()) {
             if (byBase[idx] == null) {
                 byBase[idx] = otherVariantValue;
             }
         }
     }
 
-    private static void copyFromPreviousIndex(int idx, Map<String, DecimalFormat.Unit[]> units) {
-        for (DecimalFormat.Unit[] byBase : units.values()) {
+    private static void copyFromPreviousIndex(
+            int idx, EnumMap<PluralMap.Variant, DecimalFormat.Unit[]> unitsBuilder) {
+        for (DecimalFormat.Unit[] byBase : unitsBuilder.values()) {
             if (idx == 0) {
                 byBase[idx] = DecimalFormat.NULL_UNIT;
             } else {
@@ -460,12 +464,12 @@ class CompactDecimalDataCache {
     }
 
     private static void saveUnit(
-            DecimalFormat.Unit unit, String pluralVariant, int idx,
-            Map<String, DecimalFormat.Unit[]> units) {
-        DecimalFormat.Unit[] byBase = units.get(pluralVariant);
+            DecimalFormat.Unit unit, PluralMap.Variant pluralVariant, int idx,
+            EnumMap<PluralMap.Variant, DecimalFormat.Unit[]> unitsBuilder) {
+        DecimalFormat.Unit[] byBase = unitsBuilder.get(pluralVariant);
         if (byBase == null) {
             byBase = new DecimalFormat.Unit[MAX_DIGITS];
-            units.put(pluralVariant, byBase);
+            unitsBuilder.put(pluralVariant, byBase);
         }
         byBase[idx] = unit;
 
@@ -480,11 +484,8 @@ class CompactDecimalDataCache {
      * @return the prefix or suffix.
      */
     static DecimalFormat.Unit getUnit(
-            Map<String, DecimalFormat.Unit[]> units, String variant, int base) {
+            PluralMap<DecimalFormat.Unit[]> units, PluralMap.Variant variant, int base) {
         DecimalFormat.Unit[] byBase = units.get(variant);
-        if (byBase == null) {
-            byBase = units.get(CompactDecimalDataCache.OTHER);
-        }
         return byBase[base];
     }
 }

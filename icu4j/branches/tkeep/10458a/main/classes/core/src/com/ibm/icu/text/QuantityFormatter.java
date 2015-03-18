@@ -6,9 +6,9 @@
  */
 package com.ibm.icu.text;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
+import com.ibm.icu.impl.PluralMap;
 import com.ibm.icu.impl.SimplePatternFormatter;
 
 /**
@@ -21,21 +21,7 @@ import com.ibm.icu.impl.SimplePatternFormatter;
  */
 class QuantityFormatter {
     
-    private static final Map<String, Integer> INDEX_MAP = new HashMap<String, Integer>();
-    private static final int MAX_INDEX;
     
-    static {
-        int idx = 0;
-        // Other must be first.
-        INDEX_MAP.put("other", idx++);
-        INDEX_MAP.put("zero", idx++);
-        INDEX_MAP.put("one", idx++);
-        INDEX_MAP.put("two", idx++);
-        INDEX_MAP.put("few", idx++);
-        INDEX_MAP.put("many", idx++);
-        
-        MAX_INDEX = idx;
-    }
 
     /**
      * Builder builds a QuantityFormatter.
@@ -44,7 +30,8 @@ class QuantityFormatter {
      */
     static class Builder {
         
-        private SimplePatternFormatter[] templates;
+        private EnumMap<PluralMap.Variant, SimplePatternFormatter> templates =
+                        PluralMap.newEnumMap();
 
         /**
          * Adds a template.
@@ -57,17 +44,12 @@ class QuantityFormatter {
          *  if template has more than just the {0} placeholder.
          */
         public Builder add(String variant, String template) {
-            ensureCapacity();
-            Integer idx = INDEX_MAP.get(variant);
-            if (idx == null) {
-                throw new IllegalArgumentException(variant);
-            }
             SimplePatternFormatter newT = SimplePatternFormatter.compile(template);
             if (newT.getPlaceholderCount() > 1) {
                 throw new IllegalArgumentException(
                         "Extra placeholders: " + template);
             }
-            templates[idx.intValue()] = newT;
+            templates.put(PluralMap.Variant.valueOfName(variant), newT);
             return this;
         }
 
@@ -78,11 +60,8 @@ class QuantityFormatter {
          *  When throwing this exception, build leaves this builder in its current state.
          */
         public QuantityFormatter build() {
-            if (templates == null || templates[0] == null) {
-                throw new IllegalStateException("At least other variant must be set.");
-            }
-            QuantityFormatter result = new QuantityFormatter(templates);
-            templates = null;
+            QuantityFormatter result = new QuantityFormatter(PluralMap.valueOf(templates));
+            reset();
             return result;          
         }
 
@@ -90,21 +69,14 @@ class QuantityFormatter {
          * Resets this builder to its initial state.
          */
         public Builder reset() {
-            templates = null;
+            templates.clear();
             return this;
         }
-        
-        private void ensureCapacity() {
-            if (templates == null) {
-                templates = new SimplePatternFormatter[MAX_INDEX];
-            }
-        }
-
     }
 
-    private final SimplePatternFormatter[] templates;
+    private final PluralMap<SimplePatternFormatter> templates;
 
-    private QuantityFormatter(SimplePatternFormatter[] templates) {
+    private QuantityFormatter(PluralMap<SimplePatternFormatter> templates) {
         this.templates = templates;
     }
 
@@ -128,9 +100,7 @@ class QuantityFormatter {
      * @return the SimplePatternFormatter
      */
     public SimplePatternFormatter getByVariant(String variant) {
-        Integer idxObj = INDEX_MAP.get(variant);
-        SimplePatternFormatter template = templates[idxObj == null ? 0 : idxObj.intValue()];
-        return template == null ? templates[0] : template;
+        return templates.get(variant);
     }
  
     private String computeVariant(double quantity, NumberFormat numberFormat, PluralRules pluralRules) {
