@@ -37,7 +37,8 @@ DecimalFormat2::DecimalFormat2(
         UErrorCode &status)
         : fSymbols(symbolsToAdopt), fRules(NULL) {
     fCurr[0] = 0;
-    parsePattern(pattern, parseError, status);
+    applyPattern(pattern, FALSE, parseError, status);
+    updateAll(status);
 }
 
 DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
@@ -373,23 +374,75 @@ DecimalFormat2::setCurrency(const UChar *currency, UErrorCode &status) {
 }
 
 void
-DecimalFormat2::applyPattern(
-        const UnicodeString &pattern, UErrorCode &status) {
-    UParseError perror;
-    if (U_FAILURE(status)) {
-        return;
+DecimalFormat2::setRoundingIncrement(double d) {
+    if (d > 0.0) {
+        fEffPrecision.fMantissa.fRoundingIncrement.set(d);
+    } else {
+        fEffPrecision.fMantissa.fRoundingIncrement.set(0.0);
     }
-    // TODO: Consider updating everything except symbols.
-    parsePattern(pattern, perror, status);
+}
+
+double
+DecimalFormat2::getRoundingIncrement() const {
+    return fEffPrecision.fMantissa.fRoundingIncrement.getDouble();
 }
 
 void
-DecimalFormat2::parsePattern(
-        const UnicodeString &pattern, UParseError &perror, UErrorCode &status) {
+DecimalFormat2::setPositivePrefix(const UnicodeString &prefix) {
+    fPositivePrefixPattern.remove();
+    UErrorCode status = U_ZERO_ERROR;
+    AffixPattern::parseAffixString(
+            prefix,
+            fPositivePrefixPattern,
+            status);
+    updateFormatting(kFormattingPosPrefix, status);
+}
+
+void
+DecimalFormat2::adoptDecimalFormatSymbols(DecimalFormatSymbols *symbolsToAdopt) {
+    delete fSymbols;
+    fSymbols = symbolsToAdopt;
+    UErrorCode status = U_ZERO_ERROR;
+    updateFormatting(kFormattingSymbols, status);
+}
+
+void
+DecimalFormat2::applyPattern(
+        const UnicodeString &pattern, UErrorCode &status) {
+    UParseError perror;
+    applyPattern(pattern, FALSE, perror, status);
+    // TODO: Consider updating everything except symbols
+    updateAll(status);
+}
+
+void
+DecimalFormat2::applyPattern(
+        const UnicodeString &pattern,
+        UParseError &perror, UErrorCode &status) {
+    applyPattern(pattern, FALSE, perror, status);
+    // TODO: Consider updating everything except symbols
+    updateAll(status);
+}
+
+void
+DecimalFormat2::applyLocalizedPattern(
+        const UnicodeString &pattern, UErrorCode &status) {
+    UParseError perror;
+    applyPattern(pattern, TRUE, perror, status);
+    updateAll(status);
+}
+
+void
+DecimalFormat2::applyPattern(
+        const UnicodeString &pattern,
+        UBool localized, UParseError &perror, UErrorCode &status) {
     if (U_FAILURE(status)) {
         return;
     }
     DecimalFormatPatternParser patternParser;
+    if (localized) {
+        patternParser.useSymbols(*fSymbols);
+    }
     DecimalFormatPattern out;
     patternParser.applyPatternWithoutExpandAffix(
             pattern, out, perror, status);
@@ -435,7 +488,6 @@ DecimalFormat2::parsePattern(
     default:
         break;
     }
-    updateAll(status);
 }
 
 void

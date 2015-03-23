@@ -1640,6 +1640,7 @@ void NumberFormatTest::TestPad(void) {
 
     //testing the setPadCharacter(UnicodeString) and getPadCharacterString()
     DecimalFormat fmt("#", US, status);
+    fmt.setUseDecimFmt2(TRUE);
     CHECK(status, "DecimalFormat constructor");
     UnicodeString padString("P");
     fmt.setPadCharacter(padString);
@@ -1669,6 +1670,7 @@ void NumberFormatTest::TestPatterns2(void) {
     CHECK(status, "DecimalFormatSymbols constructor");
 
     DecimalFormat fmt("#", US, status);
+    fmt.setUseDecimFmt2(TRUE);
     CHECK(status, "DecimalFormat constructor");
 
     UChar hat = 0x005E; /*^*/
@@ -1798,6 +1800,7 @@ void NumberFormatTest::TestCurrencyPatterns(void) {
     for (i=0; i<locCount; ++i) {
         UErrorCode ec = U_ZERO_ERROR;
         NumberFormat* nf = NumberFormat::createCurrencyInstance(locs[i], ec);
+        ((DecimalFormat *) nf)->setUseDecimFmt2(TRUE);
         if (U_FAILURE(ec)) {
             errln("FAIL: Can't create NumberFormat(%s) - %s", locs[i].getName(), u_errorName(ec));
         } else {
@@ -2115,6 +2118,7 @@ void NumberFormatTest::TestAdoptDecimalFormatSymbols(void) {
     UnicodeString pat(" #,##0.00");
     pat.insert(0, (UChar)0x00A4);
     DecimalFormat fmt(pat, sym, ec);
+    fmt.setUseDecimFmt2(TRUE);
     if (U_FAILURE(ec)) {
         errln("Fail: DecimalFormat constructor");
         return;
@@ -2152,6 +2156,7 @@ void NumberFormatTest::TestAdoptDecimalFormatSymbols(void) {
         return;
     }
     DecimalFormat fmt2(pat, sym, ec);
+    fmt2.setUseDecimFmt2(TRUE);
     if (U_FAILURE(ec)) {
         errln("Fail: DecimalFormat constructor");
         return;
@@ -2178,6 +2183,7 @@ void NumberFormatTest::TestPerMill() {
     UErrorCode ec = U_ZERO_ERROR;
     UnicodeString str;
     DecimalFormat fmt(ctou("###.###\\u2030"), ec);
+    fmt.setUseDecimFmt2(TRUE);
     if (!assertSuccess("DecimalFormat ct", ec)) return;
     assertEquals("0.4857 x ###.###\\u2030",
                  ctou("485.7\\u2030"), fmt.format(0.4857, str));
@@ -2185,6 +2191,7 @@ void NumberFormatTest::TestPerMill() {
     DecimalFormatSymbols sym(Locale::getUS(), ec);
     sym.setSymbol(DecimalFormatSymbols::kPerMillSymbol, ctou("m"));
     DecimalFormat fmt2("", sym, ec);
+    fmt2.setUseDecimFmt2(TRUE);
     fmt2.applyLocalizedPattern("###.###m", ec);
     if (!assertSuccess("setup", ec)) return;
     str.truncate(0);
@@ -2211,6 +2218,7 @@ void NumberFormatTest::TestIllegalPatterns() {
         pat += 2;
         UErrorCode ec = U_ZERO_ERROR;
         DecimalFormat fmt(pat, ec); // locale doesn't matter here
+        fmt.setUseDecimFmt2(TRUE);
         if (U_SUCCESS(ec) == valid) {
             logln("Ok: pattern \"%s\": %s",
                   pat, u_errorName(ec));
@@ -2823,6 +2831,7 @@ void NumberFormatTest::TestJB3832(){
     UnicodeString expected(CharsToUnicodeString("1,150$50\\u00A0\\u200B")); // per cldrbug 7670
     UnicodeString s;
     NumberFormat* currencyFmt = NumberFormat::createCurrencyInstance(loc, status);
+    ((DecimalFormat *) currencyFmt)->setUseDecimFmt2(TRUE);
     if(U_FAILURE(status)){
         dataerrln("Could not create currency formatter for locale %s - %s", localeID, u_errorName(status));
         return;
@@ -2969,8 +2978,12 @@ void NumberFormatTest::TestCurrencyFormat()
 
 /* Port of ICU4J rounding test. */
 void NumberFormatTest::TestRounding() {
+// TODO: Is this test really testing rounding? Because verification is done
+// by parsing result instead of on actual result, rounding could be
+// completely broken and this test may still pass.
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormat *df = (DecimalFormat*)NumberFormat::createCurrencyInstance(Locale::getEnglish(), status);
+    df->setUseDecimFmt2(TRUE);
 
     if (U_FAILURE(status)) {
         dataerrln("Unable to create decimal formatter. - %s", u_errorName(status));
@@ -3009,11 +3022,17 @@ void NumberFormatTest::TestRoundingPattern() {
     UnicodeString result;
 
     DecimalFormat *df = (DecimalFormat*)NumberFormat::createCurrencyInstance(Locale::getEnglish(), status);
+    df->setUseDecimFmt2(TRUE);
     if (U_FAILURE(status)) {
         dataerrln("Unable to create decimal formatter. - %s", u_errorName(status));
         return;
     }
-
+    df->setRoundingIncrement(3.7);
+    df->setMinimumFractionDigits(3);
+    df->setMaximumFractionDigits(3);
+    df->setPositivePrefix("");
+    df->format(8.5, result);
+    assertEquals("", "7.400", result);
     for (int32_t i = 0; i < numOfTests; i++) {
         result.remove();
 

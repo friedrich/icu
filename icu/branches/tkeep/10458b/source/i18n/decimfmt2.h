@@ -38,6 +38,7 @@ DecimalFormat2(
 DecimalFormat2(const DecimalFormat2 &other);
 DecimalFormat2 &operator=(const DecimalFormat2 &other);
 ~DecimalFormat2();
+void adoptDecimalFormatSymbols(DecimalFormatSymbols *symbolsToAdopt);
 UnicodeString &format(
         int32_t number,
         UnicodeString &appendTo,
@@ -105,7 +106,12 @@ int32_t getMinimumGroupingDigits() const { return fGrouping.fMinGrouping; }
 UBool isGroupingUsed() const { return fUseGrouping; }
 void setCurrency(const UChar *currency, UErrorCode &status);
 void applyPattern(const UnicodeString &pattern, UErrorCode &status);
-
+void applyPattern(
+        const UnicodeString &pattern, UParseError &perror, UErrorCode &status);
+void applyLocalizedPattern(const UnicodeString &pattern, UErrorCode &status);
+void setRoundingIncrement(double d);
+double getRoundingIncrement() const;
+void setPositivePrefix(const UnicodeString &prefix);
 private:
 // These fields include what the user can see and set.
 // When the user updates these fields, it triggers automatic updates of
@@ -179,8 +185,9 @@ UnicodeString &formatAdjustedDigitList(
         FieldPositionHandler &handler,
         UErrorCode &status) const;
 
-void parsePattern(
-        const UnicodeString &pattern, UParseError &perror, UErrorCode &status);
+void applyPattern(
+        const UnicodeString &pattern,
+        UBool localized, UParseError &perror, UErrorCode &status);
 
 ValueFormatter &prepareValueFormatter(ValueFormatter &vf) const;
 int32_t getScale() const;

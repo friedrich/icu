@@ -3677,6 +3677,7 @@ DecimalFormat::adoptDecimalFormatSymbols(DecimalFormatSymbols* symbolsToAdopt)
     if (symbolsToAdopt == NULL) {
         return; // do not allow caller to set fSymbols to NULL
     }
+    if (fDecimFmt2) fDecimFmt2->adoptDecimalFormatSymbols(new DecimalFormatSymbols(*symbolsToAdopt));
 
     UBool sameSymbols = FALSE;
     if (fSymbols != NULL) {
@@ -3817,6 +3818,7 @@ DecimalFormat::setPositivePrefix(const UnicodeString& newValue)
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setPositivePrefix(newValue);
 }
 
 //------------------------------------------------------------------------------
@@ -3960,6 +3962,7 @@ double DecimalFormat::getRoundingIncrement() const {
  * @see #setRoundingMode
  */
 void DecimalFormat::setRoundingIncrement(double newValue) {
+    if (fDecimFmt2) fDecimFmt2->setRoundingIncrement(newValue);
     if (newValue > 0.0) {
         if (fRoundingIncrement == NULL) {
             fRoundingIncrement = new DigitList();
@@ -4995,6 +4998,7 @@ DecimalFormat::applyPattern(const UnicodeString& pattern,
                             UErrorCode& status)
 {
     applyPattern(pattern, FALSE, parseError, status);
+    if (fDecimFmt2) fDecimFmt2->applyPattern(pattern, parseError, status);
 }
 //------------------------------------------------------------------------------
 
@@ -5003,6 +5007,7 @@ DecimalFormat::applyLocalizedPattern(const UnicodeString& pattern, UErrorCode& s
 {
     UParseError parseError;
     applyPattern(pattern, TRUE,parseError,status);
+    if (fDecimFmt2) fDecimFmt2->applyLocalizedPattern(pattern, status);
 }
 
 //------------------------------------------------------------------------------
