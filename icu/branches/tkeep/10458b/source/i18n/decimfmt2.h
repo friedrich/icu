@@ -79,6 +79,11 @@ UnicodeString &format(
         UnicodeString &appendTo,
         FieldPositionIterator *posIter,
         UErrorCode &status) const;
+UnicodeString &format(
+        const StringPiece &number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const;
 
 void setMinimumIntegerDigits(int32_t newValue);
 void setMaximumIntegerDigits(int32_t newValue);
@@ -112,7 +117,11 @@ void applyLocalizedPattern(const UnicodeString &pattern, UErrorCode &status);
 void setRoundingIncrement(double d);
 double getRoundingIncrement() const;
 void setPositivePrefix(const UnicodeString &prefix);
+int32_t getMultiplier() const;
+void setMultiplier(int32_t m);
 private:
+DigitList fMultiplier;
+
 // These fields include what the user can see and set.
 // When the user updates these fields, it triggers automatic updates of
 // other fields that may be invisible to user
@@ -190,7 +199,9 @@ void applyPattern(
         UBool localized, UParseError &perror, UErrorCode &status);
 
 ValueFormatter &prepareValueFormatter(ValueFormatter &vf) const;
+void setScale(int32_t s);
 int32_t getScale() const;
+void getScale(int32_t s);
 
 // Updates everything
 void updateAll(UErrorCode &status);

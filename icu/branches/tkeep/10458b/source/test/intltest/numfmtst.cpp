@@ -3353,6 +3353,7 @@ NumberFormatTest::TestMultiCurrencySign() {
             }
 
             DecimalFormat* fmt = new DecimalFormat(pat, new DecimalFormatSymbols(*sym), status);
+            fmt->setUseDecimFmt2(TRUE);
             if (U_FAILURE(status)) {
                 errln("FAILED init DecimalFormat ");
                 delete fmt;
@@ -3531,6 +3532,7 @@ NumberFormatTest::TestCurrencyIsoPluralFormat() {
         Locale locale(localeString);
         UErrorCode status = U_ZERO_ERROR;
         NumberFormat* numFmt = NumberFormat::createInstance(locale, k, status);
+        ((DecimalFormat *) numFmt)->setUseDecimFmt2(TRUE);
         if (U_FAILURE(status)) {
             delete numFmt;
             dataerrln((UnicodeString)"can not create instance, locale:" + localeString + ", style: " + k + " - " + u_errorName(status));
@@ -3639,6 +3641,7 @@ for (;;) {
         Locale locale(localeString);
         UErrorCode status = U_ZERO_ERROR;
         NumberFormat* numFmt = NumberFormat::createInstance(locale, k, status);
+        ((DecimalFormat *) numFmt)->setUseDecimFmt2(TRUE);
         logln("#%d NumberFormat(%s, %s) Currency=%s\n",
               i, localeString, currencyStyleNames[kIndex], 
               currencyISOCode);
@@ -6367,6 +6370,7 @@ void NumberFormatTest::TestFieldPositionIterator() {
   FieldPosition pos;
 
   DecimalFormat *decFmt = (DecimalFormat *) NumberFormat::createInstance(status);
+  decFmt->setUseDecimFmt2(TRUE);
   if (failure(status, "NumberFormat::createInstance", TRUE)) return;
 
   double num = 1234.56;
@@ -6397,6 +6401,7 @@ void NumberFormatTest::TestFormatAttributes() {
   Locale locale("en_US");
   UErrorCode status = U_ZERO_ERROR;
   DecimalFormat *decFmt = (DecimalFormat *) NumberFormat::createInstance(locale, UNUM_CURRENCY, status);
+  decFmt->setUseDecimFmt2(TRUE);
     if (failure(status, "NumberFormat::createInstance", TRUE)) return;
   double val = 12345.67;
   
@@ -6430,6 +6435,7 @@ void NumberFormatTest::TestFormatAttributes() {
   delete decFmt;
 
   decFmt = (DecimalFormat *) NumberFormat::createInstance(locale, UNUM_SCIENTIFIC, status);
+  decFmt->setUseDecimFmt2(TRUE);
   val = -0.0000123;
   {
     int32_t expected[] = {
@@ -6556,6 +6562,7 @@ void NumberFormatTest::TestDecimal() {
     {
         UErrorCode status = U_ZERO_ERROR;
         NumberFormat *fmtr = NumberFormat::createInstance(Locale::getUS(), UNUM_DECIMAL, status);
+        ((DecimalFormat *) fmtr)->setUseDecimFmt2(TRUE);
         if (U_FAILURE(status) || fmtr == NULL) {
             dataerrln("Unable to create NumberFormat");
         } else {
@@ -6574,6 +6581,7 @@ void NumberFormatTest::TestDecimal() {
         // a critical interface that must work.
         UErrorCode status = U_ZERO_ERROR;
         NumberFormat *fmtr = NumberFormat::createInstance(Locale::getUS(), UNUM_DECIMAL, status);
+        ((DecimalFormat *) fmtr)->setUseDecimFmt2(TRUE);
         if (U_FAILURE(status) || fmtr == NULL) {
             dataerrln("Unable to create NumberFormat");
         } else {
@@ -6605,6 +6613,7 @@ void NumberFormatTest::TestDecimal() {
         // Check a parse with a formatter with a multiplier.
         UErrorCode status = U_ZERO_ERROR;
         NumberFormat *fmtr = NumberFormat::createInstance(Locale::getUS(), UNUM_PERCENT, status);
+        ((DecimalFormat *) fmtr)->setUseDecimFmt2(TRUE);
         if (U_FAILURE(status) || fmtr == NULL) {
             dataerrln("Unable to create NumberFormat");
         } else {
@@ -6627,6 +6636,7 @@ void NumberFormatTest::TestDecimal() {
         // Check that a parse returns a decimal number with full accuracy
         UErrorCode status = U_ZERO_ERROR;
         NumberFormat *fmtr = NumberFormat::createInstance(Locale::getUS(), UNUM_DECIMAL, status);
+        ((DecimalFormat *) fmtr)->setUseDecimFmt2(TRUE);
         if (U_FAILURE(status) || fmtr == NULL) {
             dataerrln("Unable to create NumberFormat");
         } else {

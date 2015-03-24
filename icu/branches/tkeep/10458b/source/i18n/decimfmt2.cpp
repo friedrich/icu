@@ -43,6 +43,7 @@ DecimalFormat2::DecimalFormat2(
 
 DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           UMemory(other),
+          fMultiplier(other.fMultiplier),
           fMinIntDigits(other.fMinIntDigits),
           fMaxIntDigits(other.fMaxIntDigits),
           fMinFracDigits(other.fMinFracDigits),
@@ -81,6 +82,7 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
         return (*this);
     }
     UMemory::operator=(other);
+    fMultiplier = other.fMultiplier;
     fMinIntDigits = other.fMinIntDigits;
     fMaxIntDigits = other.fMaxIntDigits;
     fMinFracDigits = other.fMinFracDigits;
@@ -153,7 +155,11 @@ DecimalFormat2::getScale() const {
     return 0;
 }
     
-
+void
+DecimalFormat2::setScale(int32_t scale) {
+    fMultiplier.set(1);
+    fMultiplier.shiftDecimalRight(scale);
+}
 
 UnicodeString &
 DecimalFormat2::format(
@@ -162,11 +168,10 @@ DecimalFormat2::format(
         FieldPosition &pos,
         UErrorCode &status) const {
     FieldPositionOnlyHandler handler(pos);
-    int32_t scale = getScale();
-    if (scale > 0) {
+    if (!fMultiplier.isZero()) {
         DigitList digits;
         digits.set(number);
-        digits.shiftDecimalRight(scale);
+        digits.mult(fMultiplier, status);
         return formatAdjustedDigitList(digits, appendTo, handler, status);
     }
     ValueFormatter vf;
@@ -186,11 +191,10 @@ DecimalFormat2::format(
         FieldPositionIterator *posIter,
         UErrorCode &status) const {
     FieldPositionIteratorHandler handler(posIter, status);
-    int32_t scale = getScale();
-    if (scale > 0) {
+    if (!fMultiplier.isZero()) {
         DigitList digits;
         digits.set(number);
-        digits.shiftDecimalRight(scale);
+        digits.mult(fMultiplier, status);
         return formatAdjustedDigitList(digits, appendTo, handler, status);
     }
     ValueFormatter vf;
@@ -273,6 +277,17 @@ DecimalFormat2::format(
     return formatDigitList(dl, appendTo, handler, status);
 }
 
+UnicodeString &
+DecimalFormat2::format(
+        const StringPiece &number,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const {
+    DigitList dl;
+    dl.set(number, status);
+    FieldPositionIteratorHandler handler(posIter, status);
+    return formatDigitList(dl, appendTo, handler, status);
+}
 
 UnicodeString &
 DecimalFormat2::formatDigitList(
@@ -280,8 +295,10 @@ DecimalFormat2::formatDigitList(
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
+    if (!fMultiplier.isZero()) {
+        number.mult(fMultiplier, status);
+    }
     number.reduce();
-    number.shiftDecimalRight(getScale());
     return formatAdjustedDigitList(number, appendTo, handler, status);
 }
 
@@ -385,6 +402,23 @@ DecimalFormat2::setRoundingIncrement(double d) {
 double
 DecimalFormat2::getRoundingIncrement() const {
     return fEffPrecision.fMantissa.fRoundingIncrement.getDouble();
+}
+
+int32_t
+DecimalFormat2::getMultiplier() const {
+    if (fMultiplier.isZero()) {
+        return 1;
+    }
+    return (int32_t) fMultiplier.getDouble();
+}
+
+void
+DecimalFormat2::setMultiplier(int32_t m) {
+    if (m == 0 || m == 1) {
+        fMultiplier.set(0);
+    } else {
+        fMultiplier.set(m);
+    }
 }
 
 void
@@ -747,6 +781,10 @@ DecimalFormat2::updateFormattingLocalizedAffixes(
     if (U_FAILURE(status)) {
         return;
     }
+    if ((changedFormattingFields & kFormattingAffixes) != 0) {
+        setScale(getScale());
+    }
+
     if (changedFormattingFields & (kFormattingPosPrefix | kFormattingAffixParser)) {
         fAap.fPositivePrefix.remove();
         fAffixParser.parse(

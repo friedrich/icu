@@ -1619,6 +1619,9 @@ DecimalFormat::format(const StringPiece &number,
                       FieldPositionIterator *posIter,
                       UErrorCode &status) const
 {
+if (fUseDecimFmt2) {
+    return fDecimFmt2->format(number, toAppendTo, posIter, status);
+}
 #if UCONFIG_FORMAT_FASTPATHS_49
   // don't bother if the int64 path is not optimized
   int32_t len    = number.length();
