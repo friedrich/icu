@@ -265,7 +265,7 @@ pattern	output
 0.####E0	0E0
 ##0.######E000	0E000
 
-test significant digits
+test significant digits manually set
 set locale en_US
 set pattern 0.0
 set useSigDigits 1
@@ -278,4 +278,9 @@ format	output	breaks
 0.001234	0.001234	K
 0.0012345	0.0012345	K
 0.00123456	0.0012346	K
+-43	-43.0	K
+-43.7	-43.7	K
+-43.76	-43.76	K
+-43.762	-43.762	K
+-43.7626	-43.763	K
 
