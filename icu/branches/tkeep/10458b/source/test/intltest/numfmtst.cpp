@@ -84,6 +84,15 @@ UBool NumberFormatTestDataDriven::isFormatPass(
         // Oops, we don't support this
         // fmt.setMinimumGroupingDigits(tuple.minGroupingDigits);
     }
+    if (tuple.useSigDigitsFlag) {
+        fmt.setSignificantDigitsUsed(tuple.useSigDigits != 0);
+    }
+    if (tuple.minSigDigitsFlag) {
+        fmt.setMinimumSignificantDigits(tuple.minSigDigits);
+    }
+    if (tuple.maxSigDigitsFlag) {
+        fmt.setMaximumSignificantDigits(tuple.maxSigDigits);
+    }
     UnicodeString appendTo;
     FieldPositionIterator posIter;
     CharString formatValue;
@@ -6661,6 +6670,7 @@ void NumberFormatTest::TestCurrencyFractionDigits() {
 
     // Create currenct instance
     NumberFormat* fmt = NumberFormat::createCurrencyInstance("ja_JP", status);
+    ((DecimalFormat *) fmt)->setUseDecimFmt2(TRUE);
     if (U_FAILURE(status) || fmt == NULL) {
         dataerrln("Unable to create NumberFormat");
     } else {
@@ -6737,6 +6747,7 @@ void NumberFormatTest::TestExplicitParents() {
         char loc[256]={0};
         uloc_canonicalize(localeID, loc, 256, &status);
         NumberFormat *fmt= NumberFormat::createInstance(Locale(loc), status);
+        ((DecimalFormat *) fmt)->setUseDecimFmt2(TRUE);
         if(U_FAILURE(status)){
             dataerrln("Could not create number formatter for locale %s - %s",localeID, u_errorName(status));
             continue;
@@ -6848,6 +6859,7 @@ void NumberFormatTest::TestFormatFastpaths() {
     {
         UErrorCode status=U_ZERO_ERROR;
         DecimalFormat df(UnicodeString("0000",""),status);
+        df.setUseDecimFmt2(TRUE);
         int64_t long_number = 1;
         UnicodeString expect = "0001";
         UnicodeString result;
@@ -6862,6 +6874,7 @@ void NumberFormatTest::TestFormatFastpaths() {
     {
         UErrorCode status=U_ZERO_ERROR;
         DecimalFormat df(UnicodeString("0000000000000000000",""),status);
+        df.setUseDecimFmt2(TRUE);
         int64_t long_number = U_INT64_MIN; // -9223372036854775808L;
         // uint8_t bits[8];
         // memcpy(bits,&long_number,8);
@@ -6881,6 +6894,7 @@ void NumberFormatTest::TestFormatFastpaths() {
     {
         UErrorCode status=U_ZERO_ERROR;
         DecimalFormat df(UnicodeString("0000000000000000000",""),status);
+        df.setUseDecimFmt2(TRUE);
         int64_t long_number = U_INT64_MAX; // -9223372036854775808L;
         // uint8_t bits[8];
         // memcpy(bits,&long_number,8);
@@ -6900,6 +6914,7 @@ void NumberFormatTest::TestFormatFastpaths() {
     {
         UErrorCode status=U_ZERO_ERROR;
         DecimalFormat df(UnicodeString("0000000000000000000",""),status);
+        df.setUseDecimFmt2(TRUE);
         int64_t long_number = 0;
         // uint8_t bits[8];
         // memcpy(bits,&long_number,8);
@@ -6919,6 +6934,7 @@ void NumberFormatTest::TestFormatFastpaths() {
     {
         UErrorCode status=U_ZERO_ERROR;
         DecimalFormat df(UnicodeString("0000000000000000000",""),status);
+        df.setUseDecimFmt2(TRUE);
         int64_t long_number = U_INT64_MIN + 1;
         UnicodeString expect = "-9223372036854775807";
         UnicodeString result;
@@ -7207,6 +7223,7 @@ void NumberFormatTest::TestSignificantDigits(void) {
     LocalPointer<DecimalFormat> numberFormat(static_cast<DecimalFormat*>(
             NumberFormat::createInstance(locale, status)));
     CHECK_DATA(status,"NumberFormat::createInstance")
+    ((DecimalFormat *) numberFormat.getAlias())->setUseDecimFmt2(TRUE);
 
     numberFormat->setSignificantDigitsUsed(TRUE);
     numberFormat->setMinimumSignificantDigits(3);

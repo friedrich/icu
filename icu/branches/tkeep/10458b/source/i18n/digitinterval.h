@@ -56,11 +56,17 @@ public:
     void shrinkToFitWithin(const DigitInterval &rhs);
 
     /**
-     * Expand this interval as necessary to the right of the decimal
-     * so that it includes at least minSignificantDigits significant
-     * digits.
+     * Expand this interval to the right of decimal as necessary so that
+     * it is at least minimumLength in length.
      */
-    void ensureSignificantDigits(int32_t minSignificantDigits);
+    void expandToLength(int32_t minimumLength);
+
+    /**
+     * Expand this interval as necessary to contain digit with given exponent
+     * After this method returns, this interval is guaranteed to contain
+     * digitExponent.
+     */
+    void expandToContainDigit(int32_t digitExponent);
 
     /**
      * Changes the number of digits to the left of the decimal point that

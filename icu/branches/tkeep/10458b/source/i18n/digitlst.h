@@ -359,15 +359,17 @@ public:
     uint8_t     getDigitValue(int32_t i);
 
     /**
+     * Gets the upper bound exponent for this value. For 987, returns 3
+     * because 10^3 is the smallest power of 10 that is just greater than
+     * 987. 
+     */
+    int32_t getUpperExponent() const;
+
+    /**
      * Sets result to the smallest DigitInterval needed to display this
      * DigitList in fixed point form and returns result.
-     * If this value is zero then result is set to zeroInterval. If this
-     * value is zero and zeroInterval is NULL then result is set to zero
-     * integer digits and zero fraction digits.
      */
-    DigitInterval& getSmallestInterval(
-            DigitInterval &result,
-            const DigitInterval *zeroInterval=NULL) const;
+    DigitInterval& getSmallestInterval(DigitInterval &result) const;
 
     /**
      * Like getDigitValue, but the digit is identified by exponent.

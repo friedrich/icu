@@ -4221,6 +4221,7 @@ DecimalFormat::setGroupingSize(int32_t newValue)
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setGroupingSize(newValue);
 }
 
 //------------------------------------------------------------------------------
@@ -5225,6 +5226,7 @@ int32_t DecimalFormat::getMaximumSignificantDigits() const {
 }
 
 void DecimalFormat::setMinimumSignificantDigits(int32_t min) {
+    if (fDecimFmt2) fDecimFmt2->setMinimumSignificantDigits(min);
     if (min < 1) {
         min = 1;
     }
@@ -5239,6 +5241,7 @@ void DecimalFormat::setMinimumSignificantDigits(int32_t min) {
 }
 
 void DecimalFormat::setMaximumSignificantDigits(int32_t max) {
+    if (fDecimFmt2) fDecimFmt2->setMaximumSignificantDigits(max);
     if (max < 1) {
         max = 1;
     }
@@ -5262,6 +5265,7 @@ void DecimalFormat::setSignificantDigitsUsed(UBool useSignificantDigits) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setSignificantDigitsUsed(useSignificantDigits);
 }
 
 void DecimalFormat::setCurrencyInternally(const UChar* theCurrency,

@@ -493,7 +493,7 @@ DigitList::getDouble() const
 int32_t DigitList::getLong() /*const*/
 {
     int32_t result = 0;
-    if (fDecNumber->digits + fDecNumber->exponent > 10) {
+    if (getUpperExponent() > 10) {
         // Overflow, absolute value too big.
         return result;
     }
@@ -523,7 +523,7 @@ int64_t DigitList::getInt64() /*const*/ {
     // Return 0 if out of range.
     // Range of in64_t is -9223372036854775808 to 9223372036854775807  (19 digits)
     //
-    if (fDecNumber->digits + fDecNumber->exponent > 19) {
+    if (getUpperExponent() > 19) {
         // Overflow, absolute value too big.
         return 0;
     }
@@ -537,7 +537,7 @@ int64_t DigitList::getInt64() /*const*/ {
     // TODO:  It would be faster to store a table of powers of ten to multiply by
     //        instead of looping over zero digits, multiplying each time.
 
-    int32_t numIntDigits = fDecNumber->digits + fDecNumber->exponent;
+    int32_t numIntDigits = getUpperExponent();
     uint64_t value = 0;
     for (int32_t i = 0; i < numIntDigits; i++) {
         // Loop is iterating over digits starting with the most significant.
@@ -612,7 +612,7 @@ DigitList::fitsIntoLong(UBool ignoreNegativeZero) /*const*/
         // Negative Zero, not ingored.  Cannot represent as a long.
         return FALSE;
     }
-    if (fDecNumber->digits + fDecNumber->exponent < 10) {
+    if (getUpperExponent() < 10) {
         // The number is 9 or fewer digits.
         // The max and min int32 are 10 digts, so this number fits.
         // This is the common case.
@@ -659,7 +659,7 @@ DigitList::fitsIntoInt64(UBool ignoreNegativeZero) /*const*/
         // Negative Zero, not ingored.  Cannot represent as a long.
         return FALSE;
     }
-    if (fDecNumber->digits + fDecNumber->exponent < 19) {
+    if (getUpperExponent() < 19) {
         // The number is 18 or fewer digits.
         // The max and min int64 are 19 digts, so this number fits.
         // This is the common case.
@@ -951,28 +951,25 @@ DigitList::isZero() const
 }
 
 // -------------------------------------
+
+int32_t
+DigitList::getUpperExponent() const {
+    return fDecNumber->digits + fDecNumber->exponent;
+}
+
+
 DigitInterval &
-DigitList::getSmallestInterval(
-        DigitInterval &result, const DigitInterval *zeroInterval) const {
-    if (isZero()) {
-        if (zeroInterval) {
-            result = *zeroInterval;
-        } else {
-            result.setIntDigitCount(0);
-            result.setFracDigitCount(0);
-        }
-    } else {
-        int32_t intDigits = fDecNumber->digits + fDecNumber->exponent;
-        int32_t fracDigits = -fDecNumber->exponent;
-        if (intDigits < 0) {
-            intDigits = 0;
-        }
-        if (fracDigits < 0) {
-            fracDigits = 0;
-        }
-        result.setIntDigitCount(intDigits);
-        result.setFracDigitCount(fracDigits);
+DigitList::getSmallestInterval(DigitInterval &result) const {
+    int32_t intDigits = getUpperExponent();
+    int32_t fracDigits = -fDecNumber->exponent;
+    if (intDigits < 0) {
+        intDigits = 0;
     }
+    if (fracDigits < 0) {
+        fracDigits = 0;
+    }
+    result.setIntDigitCount(intDigits);
+    result.setFracDigitCount(fracDigits);
     return result;
 }
 
@@ -989,7 +986,7 @@ void
 DigitList::roundAtExponent(int32_t exponent, int32_t maxSigDigits) {
     reduce();
     if (maxSigDigits < fDecNumber->digits) {
-        int32_t minExponent = fDecNumber->digits + fDecNumber->exponent - maxSigDigits;
+        int32_t minExponent = getUpperExponent() - maxSigDigits;
         if (exponent < minExponent) {
             exponent = minExponent;
         }
@@ -997,7 +994,7 @@ DigitList::roundAtExponent(int32_t exponent, int32_t maxSigDigits) {
     if (exponent <= fDecNumber->exponent) {
         return;
     }
-    int32_t digits = fDecNumber->digits + fDecNumber->exponent - exponent;
+    int32_t digits = getUpperExponent() - exponent;
     if (digits > 0) {
         round(digits);
     } else {
@@ -1023,7 +1020,7 @@ DigitList::getScientificExponent(
     if (isZero()) {
         return 0;
     }
-    int32_t intDigitCount = fDecNumber->digits + fDecNumber->exponent;
+    int32_t intDigitCount = getUpperExponent();
     int32_t exponent;
     if (intDigitCount >= minIntDigitCount) {
         int32_t maxAdjustment = intDigitCount - minIntDigitCount;

@@ -141,6 +141,15 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
     if (tuple.minGroupingDigitsFlag) {
         fmt.setMinimumGroupingDigits(tuple.minGroupingDigits);
     }
+    if (tuple.useSigDigitsFlag) {
+        fmt.setSignificantDigitsUsed(tuple.useSigDigits != 0);
+    }
+    if (tuple.minSigDigitsFlag) {
+        fmt.setMinimumSignificantDigits(tuple.minSigDigits);
+    }
+    if (tuple.maxSigDigitsFlag) {
+        fmt.setMaximumSignificantDigits(tuple.maxSigDigits);
+    }
     UnicodeString appendTo;
     CharString formatValue;
     formatValue.appendInvariantChars(tuple.format, status);
@@ -392,66 +401,52 @@ void NumberFormat2Test::TestDigitListInterval() {
         verifyInterval(digitList.getSmallestInterval(result), -7, 0);
     }
     {
-        // Smallest interval already has 4 significant digits
         digitList.set(1000.00);
         digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(4);
+        result.expandToContainDigit(3);
         verifyInterval(result, 0, 4);
     }
     {
-        // Smallest interval needs to expand to have 5 significant digits
         digitList.set(1000.00);
         digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(5);
+        result.expandToContainDigit(4);
+        verifyInterval(result, 0, 5);
+    }
+    {
+        digitList.set(1000.00);
+        digitList.getSmallestInterval(result);
+        result.expandToContainDigit(0);
+        verifyInterval(result, 0, 4);
+    }
+    {
+        digitList.set(1000.00);
+        digitList.getSmallestInterval(result);
+        result.expandToContainDigit(-1);
         verifyInterval(result, -1, 4);
     }
     {
         digitList.set(43.125);
         digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(5);
+        result.expandToContainDigit(1);
         verifyInterval(result, -3, 2);
     }
     {
         digitList.set(43.125);
         digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(4);
+        result.expandToContainDigit(2);
+        verifyInterval(result, -3, 3);
+    }
+    {
+        digitList.set(43.125);
+        digitList.getSmallestInterval(result);
+        result.expandToContainDigit(-3);
         verifyInterval(result, -3, 2);
     }
     {
         digitList.set(43.125);
         digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(0);
-        verifyInterval(result, -3, 2);
-    }
-    {
-        digitList.set(43.125);
-        digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(-1);
-        verifyInterval(result, -3, 2);
-    }
-    {
-        digitList.set(43.125);
-        digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(7);
-        verifyInterval(result, -5, 2);
-    }
-    {
-        digitList.set(.0078125);
-        digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(7);
-        verifyInterval(result, -7, 0);
-    }
-    {
-        digitList.set(.0078125);
-        digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(8);
-        verifyInterval(result, -8, 0);
-    }
-    {
-        digitList.set(.0078125);
-        digitList.getSmallestInterval(result);
-        result.ensureSignificantDigits(6);
-        verifyInterval(result, -7, 0);
+        result.expandToContainDigit(-4);
+        verifyInterval(result, -4, 2);
     }
 }
 

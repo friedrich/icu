@@ -89,6 +89,8 @@ void setMinimumIntegerDigits(int32_t newValue);
 void setMaximumIntegerDigits(int32_t newValue);
 void setMinimumFractionDigits(int32_t newValue);
 void setMaximumFractionDigits(int32_t newValue);
+void setMinimumSignificantDigits(int32_t newValue);
+void setMaximumSignificantDigits(int32_t newValue);
 void setScientificNotation(UBool newValue);
 void setSignificantDigitsUsed(UBool newValue);
 int32_t getMinimumIntegerDigits() const { 
@@ -99,6 +101,10 @@ int32_t getMinimumFractionDigits() const {
         return fMinFracDigits; }
 int32_t getMaximumFractionDigits() const { 
         return fMaxFracDigits; }
+int32_t getMinimumSignificantDigits() const { 
+        return fMinSigDigits; }
+int32_t getMaximumSignificantDigits() const { 
+        return fMaxSigDigits; }
 UBool isScientificNotation() const { return fUseScientific; }
 UBool areSignificantDigitsUsed() const { return fUseSigDigits; }
 void setGroupingSize(int32_t newValue);

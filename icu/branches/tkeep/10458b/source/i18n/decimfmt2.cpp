@@ -320,6 +320,18 @@ DecimalFormat2::formatAdjustedDigitList(
 
 
 void
+DecimalFormat2::setMinimumSignificantDigits(int32_t newValue) {
+    fMinSigDigits = newValue;
+    updatePrecision();
+}
+        
+void
+DecimalFormat2::setMaximumSignificantDigits(int32_t newValue) {
+    fMaxSigDigits = newValue;
+    updatePrecision();
+}
+        
+void
 DecimalFormat2::setMinimumIntegerDigits(int32_t newValue) {
     fMinIntDigits = newValue;
     updatePrecision();
@@ -603,7 +615,7 @@ DecimalFormat2::updatePrecisionForFixed() {
         result->fSignificant.clear();
     } else {
         extractSigDigits(result->fSignificant);
-        result->fMin.setIntDigitCount(0);
+        result->fMin.setIntDigitCount(1);
         result->fMin.setFracDigitCount(0);
         result->fMax.clear();
     }

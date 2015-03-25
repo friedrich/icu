@@ -27,6 +27,9 @@ enum ENumberFormatTestTupleField {
     kMaxFractionDigits,
     kMinGroupingDigits,
     kBreaks,
+    kUseSigDigits,
+    kMinSigDigits,
+    kMaxSigDigits,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -44,6 +47,9 @@ public:
     int32_t maxFractionDigits;
     int32_t minGroupingDigits;
     UnicodeString breaks;
+    int32_t useSigDigits;
+    int32_t minSigDigits;
+    int32_t maxSigDigits;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -57,6 +63,9 @@ public:
     UBool maxFractionDigitsFlag;
     UBool minGroupingDigitsFlag;
     UBool breaksFlag;
+    UBool useSigDigitsFlag;
+    UBool minSigDigitsFlag;
+    UBool maxSigDigitsFlag;
 
     NumberFormatTestTuple() {
         clear();
