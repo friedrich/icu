@@ -7248,6 +7248,7 @@ void NumberFormatTest::TestShowZero() {
     LocalPointer<DecimalFormat> numberFormat(static_cast<DecimalFormat*>(
             NumberFormat::createInstance(locale, status)));
     CHECK_DATA(status, "NumberFormat::createInstance")
+    ((DecimalFormat *) numberFormat.getAlias())->setUseDecimFmt2(TRUE);
 
     numberFormat->setSignificantDigitsUsed(TRUE);
     numberFormat->setMaximumSignificantDigits(3);
@@ -7268,6 +7269,7 @@ void NumberFormatTest::TestBug9936() {
         dataerrln("File %s, Line %d: status = %s.\n", __FILE__, __LINE__, u_errorName(status));
         return;
     }
+    ((DecimalFormat *) numberFormat.getAlias())->setUseDecimFmt2(TRUE);
         
     if (numberFormat->areSignificantDigitsUsed() == TRUE) {
         errln("File %s, Line %d: areSignificantDigitsUsed() was TRUE, expected FALSE.\n", __FILE__, __LINE__);

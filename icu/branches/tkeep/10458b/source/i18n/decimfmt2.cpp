@@ -322,12 +322,14 @@ DecimalFormat2::formatAdjustedDigitList(
 void
 DecimalFormat2::setMinimumSignificantDigits(int32_t newValue) {
     fMinSigDigits = newValue;
+    fUseSigDigits = TRUE; // ticket 9936
     updatePrecision();
 }
         
 void
 DecimalFormat2::setMaximumSignificantDigits(int32_t newValue) {
     fMaxSigDigits = newValue;
+    fUseSigDigits = TRUE; // ticket 9936
     updatePrecision();
 }
         

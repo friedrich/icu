@@ -5257,6 +5257,7 @@ void DecimalFormat::setMaximumSignificantDigits(int32_t max) {
 }
 
 UBool DecimalFormat::areSignificantDigitsUsed() const {
+    if (fUseDecimFmt2) return fDecimFmt2->areSignificantDigitsUsed();
     return fUseSignificantDigits;
 }
 
