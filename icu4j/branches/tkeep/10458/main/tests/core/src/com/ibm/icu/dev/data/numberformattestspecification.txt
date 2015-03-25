@@ -265,3 +265,17 @@ pattern	output
 0.####E0	0E0
 ##0.######E000	0E000
 
+test significant digits
+set locale en_US
+set pattern 0.0
+set useSigDigits 1
+set minSigDigits 3
+set maxSigDigits 5
+begin
+format	output	breaks
+0.0012	0.00120	K
+0.00123	0.00123	K
+0.001234	0.001234	K
+0.0012345	0.0012345	K
+0.00123456	0.0012346	K
+

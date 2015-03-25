@@ -67,6 +67,16 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.minGroupingDigits.isValue()) {
                         // Oops we don't support this.
                     }
+                    if (tuple.useSigDigits.isValue()) {
+                        fmt.setSignificantDigitsUsed(
+                                tuple.useSigDigits.getValue() != 0);
+                    }
+                    if (tuple.minSigDigits.isValue()) {
+                        fmt.setMinimumSignificantDigits(tuple.minSigDigits.getValue());
+                    }
+                    if (tuple.maxSigDigits.isValue()) {
+                        fmt.setMaximumSignificantDigits(tuple.maxSigDigits.getValue());
+                    }
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
@@ -100,6 +110,15 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     }
                     if (tuple.minGroupingDigits.isValue()) {
                         // Oops we don't support this.
+                    }
+                    if (tuple.useSigDigits.isValue()) {
+                        // Oops we don't support this
+                    }
+                    if (tuple.minSigDigits.isValue()) {
+                        // Oops we don't support this
+                    }
+                    if (tuple.maxSigDigits.isValue()) {
+                        // Oops we don't support this
                     }
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();

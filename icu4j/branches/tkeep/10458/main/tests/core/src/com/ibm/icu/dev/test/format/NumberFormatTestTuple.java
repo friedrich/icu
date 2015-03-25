@@ -81,6 +81,9 @@ public class NumberFormatTestTuple {
     public Maybe<Integer> minFractionDigits = Maybe.nothing();
     public Maybe<Integer> maxFractionDigits = Maybe.nothing();
     public Maybe<Integer> minGroupingDigits = Maybe.nothing();
+    public Maybe<Integer> useSigDigits = Maybe.nothing();
+    public Maybe<Integer> minSigDigits = Maybe.nothing();
+    public Maybe<Integer> maxSigDigits = Maybe.nothing();
     
     /**
      * nothing or empty means that test ought to work for both C and JAVA;
@@ -104,6 +107,9 @@ public class NumberFormatTestTuple {
         "maxFractionDigits",
         "minGroupingDigits",
         "breaks",
+        "useSigDigits",
+        "minSigDigits",
+        "maxSigDigits"
     };
     
     static {
@@ -164,6 +170,18 @@ public class NumberFormatTestTuple {
     
     public void setBreaks(String value) {
         breaks = Maybe.just(value);
+    }
+    
+    public void setUseSigDigits(String value) {
+        useSigDigits = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setMinSigDigits(String value) {
+        minSigDigits = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setMaxSigDigits(String value) {
+        maxSigDigits = Maybe.just(Integer.valueOf(value));
     }
     
     // end field setters.
