@@ -19,6 +19,7 @@ import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.Row;
 import com.ibm.icu.impl.Row.R2;
 import com.ibm.icu.impl.Row.R3;
+import com.ibm.icu.impl.Utility;
 
 /**
  * Provides a way to match the languages (locales) supported by a product to the
@@ -382,6 +383,29 @@ public class LocaleMatcher {
             }
             return result;
         }
+        
+        /* (non-Javadoc)
+        * @see java.lang.Object#equals(java.lang.Object)
+        */
+       @Override
+       public boolean equals(Object obj) {
+           LocalePatternMatcher other = (LocalePatternMatcher) obj;
+           return Utility.objectEquals(level, other.level)
+                   && Utility.objectEquals(lang, other.lang)
+                   && Utility.objectEquals(script, other.script)
+                   && Utility.objectEquals(region, other.region);
+       }
+       
+       /* (non-Javadoc)
+        * @see java.lang.Object#hashCode()
+        */
+       @Override
+       public int hashCode() {
+           return level.ordinal()
+                   ^ (lang == null ? 0 : lang.hashCode())
+                   ^ (script == null ? 0 : script.hashCode())
+                   ^ (region == null ? 0 : region.hashCode());
+       }
     }
 
     enum Level {
