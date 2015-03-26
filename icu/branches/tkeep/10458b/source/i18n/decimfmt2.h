@@ -122,6 +122,7 @@ int32_t getSecondaryGroupingSize() const { return fGrouping.fGrouping2; }
 int32_t getMinimumGroupingDigits() const { return fGrouping.fMinGrouping; }
 UBool isGroupingUsed() const { return fUseGrouping; }
 void setCurrency(const UChar *currency, UErrorCode &status);
+const UChar *getCurrency() const { return fCurr; }
 void applyPattern(const UnicodeString &pattern, UErrorCode &status);
 void applyPattern(
         const UnicodeString &pattern, UParseError &perror, UErrorCode &status);

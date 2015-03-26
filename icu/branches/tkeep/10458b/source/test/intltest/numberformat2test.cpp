@@ -93,6 +93,14 @@ private:
 
 };
 
+#define SET_AND_CHECK(fmt, fieldName, expr, errors) \
+    (fmt).set##fieldName(expr); \
+    if ((fmt).get##fieldName() != (expr)) { \
+        (errors).append(#fieldName); \
+        (errors).append(": set/get mismatch"); \
+    } \
+
+
 
 UBool NumberFormat2TestDataDriven::isFormatPass(
         const NumberFormatTestTuple &tuple,
@@ -115,40 +123,75 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
         return FALSE;
     }
     if (tuple.minIntegerDigitsFlag) {
-        fmt.setMinimumIntegerDigits(
-                tuple.minIntegerDigits < 0 ? 0 : tuple.minIntegerDigits);
+        SET_AND_CHECK(
+                fmt,
+                MinimumIntegerDigits,
+                tuple.minIntegerDigits,
+                appendErrorMessage);
     }
     if (tuple.maxIntegerDigitsFlag) {
-        fmt.setMaximumIntegerDigits(
-                tuple.maxIntegerDigits < 0 ? 0 : tuple.maxIntegerDigits);
+        SET_AND_CHECK(
+                fmt,
+                MaximumIntegerDigits,
+                tuple.maxIntegerDigits,
+                appendErrorMessage);
     }
     if (tuple.minFractionDigitsFlag) {
-        fmt.setMinimumFractionDigits(
-                tuple.minFractionDigits < 0 ? 0 : tuple.minFractionDigits);
+        SET_AND_CHECK(
+                fmt,
+                MinimumFractionDigits,
+                tuple.minFractionDigits,
+                appendErrorMessage);
     }
     if (tuple.maxFractionDigitsFlag) {
-        fmt.setMaximumFractionDigits(
-                tuple.maxFractionDigits < 0 ? 0 : tuple.maxFractionDigits);
+        SET_AND_CHECK(
+                fmt,
+                MaximumFractionDigits,
+                tuple.maxFractionDigits,
+                appendErrorMessage);
     }
     if (tuple.currencyFlag) {
         UnicodeString currency(tuple.currency);
-        fmt.setCurrency(currency.getTerminatedBuffer(), status);
+        const UChar *terminatedCurrency = currency.getTerminatedBuffer();
+        fmt.setCurrency(terminatedCurrency, status);
         if (U_FAILURE(status)) {
             appendErrorMessage.append("Error setting currency.");
             return FALSE;
         }
+        if (u_strcmp(fmt.getCurrency(), terminatedCurrency) != 0) {
+            appendErrorMessage.append("currency: get/set mismatch.");
+        }
     }
     if (tuple.minGroupingDigitsFlag) {
-        fmt.setMinimumGroupingDigits(tuple.minGroupingDigits);
+        SET_AND_CHECK(
+                fmt,
+                MinimumGroupingDigits,
+                tuple.minGroupingDigits,
+                appendErrorMessage);
     }
     if (tuple.useSigDigitsFlag) {
-        fmt.setSignificantDigitsUsed(tuple.useSigDigits != 0);
+        UBool newValue = tuple.useSigDigits != 0;
+        fmt.setSignificantDigitsUsed(newValue);
+        if (fmt.areSignificantDigitsUsed() != newValue) {
+                appendErrorMessage.append("SignificantDigitsUsed: get/set mismatch");
+        }
     }
     if (tuple.minSigDigitsFlag) {
-        fmt.setMinimumSignificantDigits(tuple.minSigDigits);
+        SET_AND_CHECK(
+                fmt,
+                MinimumSignificantDigits,
+                tuple.minSigDigits,
+                appendErrorMessage);
     }
     if (tuple.maxSigDigitsFlag) {
-        fmt.setMaximumSignificantDigits(tuple.maxSigDigits);
+        SET_AND_CHECK(
+                fmt,
+                MaximumSignificantDigits,
+                tuple.maxSigDigits,
+                appendErrorMessage);
+    }
+    if (appendErrorMessage.length() > 0) {
+        return FALSE;
     }
     UnicodeString appendTo;
     CharString formatValue;
