@@ -159,6 +159,9 @@ AffixPattern::add(ETokenType t, uint8_t count) {
     case kPerMill:
         hasPermillToken = TRUE;
         break;
+    default:
+        // Do nothing
+        break;
     }
     tokens.append(PACK_TOKEN_AND_LENGTH(t, count));
 }

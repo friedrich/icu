@@ -35,7 +35,8 @@ DecimalFormat2::DecimalFormat2(
         DecimalFormatSymbols *symbolsToAdopt,
         UParseError &parseError,
         UErrorCode &status)
-        : fSymbols(symbolsToAdopt), fRules(NULL) {
+        : fRoundingMode(DigitList::kRoundHalfEven),
+          fSymbols(symbolsToAdopt), fRules(NULL) {
     fCurr[0] = 0;
     applyPattern(pattern, FALSE, parseError, status);
     updateAll(status);
@@ -44,6 +45,7 @@ DecimalFormat2::DecimalFormat2(
 DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           UMemory(other),
           fMultiplier(other.fMultiplier),
+          fRoundingMode(other.fRoundingMode),
           fMinIntDigits(other.fMinIntDigits),
           fMaxIntDigits(other.fMaxIntDigits),
           fMinFracDigits(other.fMinFracDigits),
@@ -83,6 +85,7 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     }
     UMemory::operator=(other);
     fMultiplier = other.fMultiplier;
+    fRoundingMode = other.fRoundingMode;
     fMinIntDigits = other.fMinIntDigits;
     fMaxIntDigits = other.fMaxIntDigits;
     fMinFracDigits = other.fMinFracDigits;
@@ -308,6 +311,7 @@ DecimalFormat2::formatAdjustedDigitList(
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
+    number.setRoundingMode(fRoundingMode);
     ValueFormatter vf;
     return fAap.format(
             number,

@@ -204,6 +204,32 @@ static UBool U_CALLCONV decimfmtAffixValueComparator(UHashTok val1, UHashTok val
 static UBool U_CALLCONV decimfmtAffixPatternValueComparator(UHashTok val1, UHashTok val2);
 
 
+static DigitList::ERoundingMode fromDecimFmtRounding(
+        DecimalFormat::ERoundingMode mode) {
+    switch (mode) {
+        case DecimalFormat::kRoundCeiling:
+            return DigitList::kRoundCeiling;
+        case DecimalFormat::kRoundFloor:
+            return DigitList::kRoundFloor;
+        case DecimalFormat::kRoundDown:
+            return DigitList::kRoundDown;
+        case DecimalFormat::kRoundUp:
+            return DigitList::kRoundUp;
+        case DecimalFormat::kRoundHalfEven:
+            return DigitList::kRoundHalfEven;
+        case DecimalFormat::kRoundHalfDown:
+            return DigitList::kRoundHalfDown;
+        case DecimalFormat::kRoundHalfUp:
+            return DigitList::kRoundHalfUp;
+        case DecimalFormat::kRoundUnnecessary:
+            return DigitList::kRoundUnnecessary;
+        default:
+            U_ASSERT(FALSE);
+            return DigitList::kRoundUnnecessary;
+    }
+}
+
+
 static UBool
 U_CALLCONV decimfmtAffixValueComparator(UHashTok val1, UHashTok val2) {
     const AffixesForCurrency* affix_1 =
@@ -4008,6 +4034,8 @@ void DecimalFormat::setRoundingMode(ERoundingMode roundingMode) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setRoundingMode(
+            fromDecimFmtRounding(roundingMode));
 }
 
 /**

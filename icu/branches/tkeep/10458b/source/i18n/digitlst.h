@@ -126,6 +126,23 @@ enum EFastpathBits { kFastpathOk = 1, kNoDecimal = 2 };
  */
 class U_I18N_API DigitList : public UMemory { // Declare external to make compiler happy
 public:
+    enum ERoundingMode {
+        kRoundCeiling,  /**< Round towards positive infinity */
+        kRoundFloor,    /**< Round towards negative infinity */
+        kRoundDown,     /**< Round towards zero */
+        kRoundUp,       /**< Round away from zero */
+        kRoundHalfEven, /**< Round towards the nearest integer, or
+                             towards the nearest even integer if equidistant */
+        kRoundHalfDown, /**< Round towards the nearest integer, or
+                             towards zero if equidistant */
+        kRoundHalfUp,   /**< Round towards the nearest integer, or
+                             away from zero if equidistant */
+        /**
+          *  Return U_FORMAT_INEXACT_ERROR if number does not format exactly.
+          *  @stable ICU 4.8
+          */
+        kRoundUnnecessary
+    };
 
     DigitList();
     ~DigitList();
@@ -285,6 +302,7 @@ public:
     //  data structures.
 
     void setRoundingMode(DecimalFormat::ERoundingMode m); 
+    void setRoundingMode(ERoundingMode m); 
 
     /** Test a number for zero.
      * @return  TRUE if the number is zero

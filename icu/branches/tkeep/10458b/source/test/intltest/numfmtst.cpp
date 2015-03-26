@@ -7343,6 +7343,7 @@ void NumberFormatTest::TestCustomCurrencySignAndSeparator() {
 
     DecimalFormat fmt(pat, custom, status);
     CHECK(status, "DecimalFormat constructor");
+    fmt.setUseDecimFmt2(TRUE);
 
     UnicodeString numstr("* 1^234:56");
     expect2(fmt, (Formattable)((double)1234.56), numstr);
@@ -7485,6 +7486,7 @@ void NumberFormatTest::Test10419RoundingWith0FractionDigits() {
         dataerrln("Failure creating DecimalFormat %s", u_errorName(status));
         return;
     }
+    decfmt->setUseDecimFmt2(TRUE);
     for (int32_t i = 0; i < (int32_t) (sizeof(items) / sizeof(items[0])); ++i) {
         decfmt->setRoundingMode(items[i].mode);
         decfmt->setMaximumFractionDigits(0);

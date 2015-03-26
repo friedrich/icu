@@ -85,6 +85,12 @@ UnicodeString &format(
         FieldPositionIterator *posIter,
         UErrorCode &status) const;
 
+void setRoundingMode(DigitList::ERoundingMode mode) {
+    fRoundingMode = mode;
+}
+DigitList::ERoundingMode getRoundingMode() const {
+    return fRoundingMode;
+}
 void setMinimumIntegerDigits(int32_t newValue);
 void setMaximumIntegerDigits(int32_t newValue);
 void setMinimumFractionDigits(int32_t newValue);
@@ -127,6 +133,7 @@ int32_t getMultiplier() const;
 void setMultiplier(int32_t m);
 private:
 DigitList fMultiplier;
+DigitList::ERoundingMode fRoundingMode;
 
 // These fields include what the user can see and set.
 // When the user updates these fields, it triggers automatic updates of

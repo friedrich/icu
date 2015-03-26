@@ -272,6 +272,38 @@ DigitList::setRoundingMode(DecimalFormat::ERoundingMode m) {
   
 }
 
+// -------------------------------------
+//
+//  setRoundingMode()
+//    For most modes, the meaning and names are the same between the decNumber library
+//      (which DigitList follows) and the ICU Formatting Rounding Mode values.
+//      The flag constants are different, however.
+//
+//     Note that ICU's kRoundingUnnecessary is not implemented directly by DigitList.
+//     This mode, inherited from Java, means that numbers that would not format exactly
+//     will return an error when formatting is attempted.
+
+void 
+DigitList::setRoundingMode(ERoundingMode m) {
+    enum rounding r;
+
+    switch (m) {
+      case  kRoundCeiling:  r = DEC_ROUND_CEILING;   break;
+      case  kRoundFloor:    r = DEC_ROUND_FLOOR;     break;
+      case  kRoundDown:     r = DEC_ROUND_DOWN;      break;
+      case  kRoundUp:       r = DEC_ROUND_UP;        break;
+      case  kRoundHalfEven: r = DEC_ROUND_HALF_EVEN; break;
+      case  kRoundHalfDown: r = DEC_ROUND_HALF_DOWN; break;
+      case  kRoundHalfUp:   r = DEC_ROUND_HALF_UP;   break;
+      case  kRoundUnnecessary: r = DEC_ROUND_HALF_EVEN; break;
+      default:
+         // TODO: how to report the problem?
+         // Leave existing mode unchanged.
+         r = uprv_decContextGetRounding(&fContext);
+    }
+    uprv_decContextSetRounding(&fContext, r);
+  
+}
 
 // -------------------------------------
 
