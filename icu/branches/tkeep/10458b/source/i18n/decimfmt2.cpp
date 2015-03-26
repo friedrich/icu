@@ -402,6 +402,13 @@ DecimalFormat2::setGroupingUsed(UBool newValue) {
 }
 
 void
+DecimalFormat2::setFormatWidth(int32_t width) {
+    fFormatWidth = width;
+    UErrorCode status = U_ZERO_ERROR;
+    updateFormatting(kFormattingWidth, status);
+}
+
+void
 DecimalFormat2::setCurrency(const UChar *currency, UErrorCode &status) {
     if (currency == NULL) {
         fCurr[0] = 0;
@@ -463,6 +470,9 @@ DecimalFormat2::setPositivePrefix(const UnicodeString &prefix) {
 
 void
 DecimalFormat2::adoptDecimalFormatSymbols(DecimalFormatSymbols *symbolsToAdopt) {
+    if (symbolsToAdopt == NULL) {
+        return;
+    }
     delete fSymbols;
     fSymbols = symbolsToAdopt;
     UErrorCode status = U_ZERO_ERROR;

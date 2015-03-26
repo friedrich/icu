@@ -39,6 +39,9 @@ DecimalFormat2(const DecimalFormat2 &other);
 DecimalFormat2 &operator=(const DecimalFormat2 &other);
 ~DecimalFormat2();
 void adoptDecimalFormatSymbols(DecimalFormatSymbols *symbolsToAdopt);
+const DecimalFormatSymbols &getDecimalFormatSymbols() const {
+    return *fSymbols;
+}
 UnicodeString &format(
         int32_t number,
         UnicodeString &appendTo,
@@ -136,6 +139,8 @@ int32_t getMultiplier() const;
 void setMultiplier(int32_t m);
 UChar32 getPadCharacter() const { return fAap.fPadChar; }
 void setPadCharacter(UChar32 c) { fAap.fPadChar = c; }
+int32_t getFormatWidth() const { return fFormatWidth; }
+void setFormatWidth(int32_t x);
 private:
 DigitList fMultiplier;
 DigitList::ERoundingMode fRoundingMode;
