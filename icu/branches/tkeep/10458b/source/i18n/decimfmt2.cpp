@@ -36,7 +36,9 @@ DecimalFormat2::DecimalFormat2(
         UParseError &parseError,
         UErrorCode &status)
         : fRoundingMode(DigitList::kRoundHalfEven),
-          fSymbols(symbolsToAdopt), fRules(NULL) {
+          fSymbols(symbolsToAdopt),
+          fCurrencyUsage(UCURR_USAGE_STANDARD),
+          fRules(NULL) {
     fCurr[0] = 0;
     applyPattern(pattern, FALSE, parseError, status);
     updateAll(status);
@@ -62,6 +64,7 @@ DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           fNegativeSuffixPattern(other.fNegativeSuffixPattern),
           fSymbols(other.fSymbols),
           fFormatWidth(other.fFormatWidth),
+          fCurrencyUsage(other.fCurrencyUsage),
           fRules(other.fRules),
           fAffixParser(other.fAffixParser),
           fEffPrecision(other.fEffPrecision),
@@ -101,6 +104,7 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     fPositiveSuffixPattern = other.fPositiveSuffixPattern;
     fNegativeSuffixPattern = other.fNegativeSuffixPattern;
     fFormatWidth = other.fFormatWidth;
+    fCurrencyUsage = other.fCurrencyUsage;
     fAffixParser = other.fAffixParser;
     fEffPrecision = other.fEffPrecision;
     fEffGrouping = other.fEffGrouping;
@@ -405,6 +409,13 @@ DecimalFormat2::setCurrency(const UChar *currency, UErrorCode &status) {
         u_strncpy(fCurr, currency, UPRV_LENGTHOF(fCurr) - 1);
         fCurr[UPRV_LENGTHOF(fCurr) - 1] = 0;
     }
+    updateFormatting(kFormattingCurrency, status);
+}
+
+void
+DecimalFormat2::setCurrencyUsage(
+        UCurrencyUsage currencyUsage, UErrorCode &status) {
+    fCurrencyUsage = currencyUsage;
     updateFormatting(kFormattingCurrency, status);
 }
 
@@ -715,7 +726,9 @@ DecimalFormat2::updateFormattingPluralRules(
 void
 DecimalFormat2::updateFormattingAffixParser(
         int32_t &changedFormattingFields, UErrorCode &status) {
-    if ((changedFormattingFields & (kFormattingSymbols | kFormattingCurrency | kFormattingUsesCurrency | kFormattingPluralRules)) == 0) {
+    if ((changedFormattingFields & (
+            kFormattingSymbols | kFormattingCurrency |
+            kFormattingUsesCurrency | kFormattingPluralRules)) == 0) {
         // If all these fields are unchanged, no work to do.
         return;
     }
@@ -763,7 +776,7 @@ DecimalFormat2::updateFormattingAffixParser(
         if (currency) {
             FixedPrecision precision;
             CurrencyAffixInfo::adjustPrecision(
-                    currency, UCURR_USAGE_STANDARD, precision, status);
+                    currency, fCurrencyUsage, precision, status);
             if (U_FAILURE(status)) {
                 return;
             }

@@ -126,11 +126,15 @@ void applyPattern(const UnicodeString &pattern, UErrorCode &status);
 void applyPattern(
         const UnicodeString &pattern, UParseError &perror, UErrorCode &status);
 void applyLocalizedPattern(const UnicodeString &pattern, UErrorCode &status);
+void setCurrencyUsage(UCurrencyUsage usage, UErrorCode &status);
+UCurrencyUsage getCurrencyUsage() const { return fCurrencyUsage; }
 void setRoundingIncrement(double d);
 double getRoundingIncrement() const;
 void setPositivePrefix(const UnicodeString &prefix);
 int32_t getMultiplier() const;
 void setMultiplier(int32_t m);
+UChar32 getPadCharacter() const { return fAap.fPadChar; }
+void setPadCharacter(UChar32 c) { fAap.fPadChar = c; }
 private:
 DigitList fMultiplier;
 DigitList::ERoundingMode fRoundingMode;
@@ -175,6 +179,7 @@ AffixPattern fNegativeSuffixPattern;
 DecimalFormatSymbols *fSymbols;
 UChar fCurr[4];
 int32_t fFormatWidth;
+UCurrencyUsage fCurrencyUsage;
 
 // Optional may be NULL
 PluralRules *fRules;

@@ -4071,6 +4071,9 @@ void DecimalFormat::setFormatWidth(int32_t width) {
 }
 
 UnicodeString DecimalFormat::getPadCharacterString() const {
+    if (fUseDecimFmt2) {
+        return UnicodeString(fDecimFmt2->getPadCharacter());
+    }
     return UnicodeString(fPad);
 }
 
@@ -4084,6 +4087,7 @@ void DecimalFormat::setPadCharacter(const UnicodeString &padChar) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+    if (fDecimFmt2) fDecimFmt2->setPadCharacter(fPad);
 }
 
 /**
@@ -5352,6 +5356,7 @@ void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {
 }
 
 void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){
+    if (fDecimFmt2) fDecimFmt2->setCurrencyUsage(newContext, *ec);
     fCurrencyUsage = newContext;
 
     const UChar* theCurrency = getCurrency();
@@ -5370,6 +5375,7 @@ void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){
 }
 
 UCurrencyUsage DecimalFormat::getCurrencyUsage() const {
+    if (fUseDecimFmt2) return fDecimFmt2->getCurrencyUsage();
     return fCurrencyUsage;
 }
 

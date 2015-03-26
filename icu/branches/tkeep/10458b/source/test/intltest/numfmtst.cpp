@@ -7501,6 +7501,7 @@ void NumberFormatTest::Test10468ApplyPattern() {
     // Padding char of fmt is now 'a'
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormat fmt("'I''ll'*a###.##", status);
+    fmt.setUseDecimFmt2(TRUE);
 
     if (U_FAILURE(status)) {
         errcheckln(status, "DecimalFormat constructor failed - %s", u_errorName(status));
@@ -7529,6 +7530,7 @@ void NumberFormatTest::TestRoundingScientific10542() {
         errcheckln(status, "DecimalFormat constructor failed - %s", u_errorName(status));
         return;
     }
+    format.setUseDecimFmt2(TRUE);
         
     DecimalFormat::ERoundingMode roundingModes[] = {
             DecimalFormat::kRoundCeiling,
@@ -7698,6 +7700,7 @@ void NumberFormatTest::TestZeroScientific10547() {
     if (!assertSuccess("Formt creation", status)) {
         return;
     }
+    fmt.setUseDecimFmt2(TRUE);
     UnicodeString out;
     fmt.format(-0.0, out);
     assertEquals("format", "-0.00E0", out);
@@ -7796,6 +7799,7 @@ void NumberFormatTest::TestCurrencyUsage() {
             if (assertSuccess("en_US@currency=PKR/CURRENCY", status, TRUE) == FALSE) {
                 continue;
             }
+            fmt->setUseDecimFmt2(TRUE);
 
             UnicodeString original;
             fmt->format(agent,original);
@@ -7811,6 +7815,7 @@ void NumberFormatTest::TestCurrencyUsage() {
             if (assertSuccess("en_US@currency=PKR/CASH", status, TRUE) == FALSE) {
                 continue;
             }
+            fmt->setUseDecimFmt2(TRUE);
         }
 
         // must be usage = cash
@@ -7833,6 +7838,7 @@ void NumberFormatTest::TestCurrencyUsage() {
             if (assertSuccess("en_US@currency=CAD/CURRENCY", status, TRUE) == FALSE) {
                 continue;
             }
+            fmt->setUseDecimFmt2(TRUE);
 
             UnicodeString original_rounding;
             fmt->format(agent, original_rounding);
@@ -7840,6 +7846,7 @@ void NumberFormatTest::TestCurrencyUsage() {
             fmt->setCurrencyUsage(UCURR_USAGE_CASH, &status);
         }else{
             fmt = (DecimalFormat *) NumberFormat::createInstance(enUS_CAD, UNUM_CASH_CURRENCY, status); 
+            fmt->setUseDecimFmt2(TRUE);
             if (assertSuccess("en_US@currency=CAD/CASH", status, TRUE) == FALSE) {
                 continue;
             }
@@ -7861,12 +7868,14 @@ void NumberFormatTest::TestCurrencyUsage() {
             if (assertSuccess("en_US@currency=CAD/CURRENCY", status, TRUE) == FALSE) {
                 continue;
             }
+            fmt->setUseDecimFmt2(TRUE);
             fmt->setCurrencyUsage(UCURR_USAGE_CASH, &status);
         }else{
             fmt = (DecimalFormat *) NumberFormat::createInstance(enUS_CAD, UNUM_CASH_CURRENCY, status);
             if (assertSuccess("en_US@currency=CAD/CASH", status, TRUE) == FALSE) {
                 continue;
             }
+            fmt->setUseDecimFmt2(TRUE);
         }
 
         UnicodeString cur_original;
