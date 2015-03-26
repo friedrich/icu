@@ -336,6 +336,15 @@ public class LocaleMatcherTest extends TestFmwk {
         }
     }
 
+    public void testAsymmetry() {
+        LocaleMatcher matcher;
+        matcher = new LocaleMatcher("mul, nl");
+        assertEquals("nl", matcher.getBestMatch("af").toString()); // af => nl
+        
+        matcher = new LocaleMatcher("mul, af");
+        assertEquals("mul", matcher.getBestMatch("nl").toString()); // but nl !=> af
+    }
+
 
     //      public void testComputeDistance_monkeyTest() {
     //        RegionCode[] codes = RegionCode.values();
