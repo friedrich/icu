@@ -84,6 +84,14 @@ public class NumberFormatTestTuple {
     public Maybe<Integer> useSigDigits = Maybe.nothing();
     public Maybe<Integer> minSigDigits = Maybe.nothing();
     public Maybe<Integer> maxSigDigits = Maybe.nothing();
+    public Maybe<Integer> useGrouping = Maybe.nothing();
+    public Maybe<Integer> multiplier = Maybe.nothing();
+    public Maybe<Double> roundingIncrement = Maybe.nothing();
+    public Maybe<Integer> formatWidth = Maybe.nothing();
+    public Maybe<String> padCharacter = Maybe.nothing();
+    public Maybe<Integer> useScientific = Maybe.nothing();
+    public Maybe<Integer> grouping = Maybe.nothing();
+    public Maybe<Integer> grouping2 = Maybe.nothing();
     
     /**
      * nothing or empty means that test ought to work for both C and JAVA;
@@ -109,7 +117,15 @@ public class NumberFormatTestTuple {
         "breaks",
         "useSigDigits",
         "minSigDigits",
-        "maxSigDigits"
+        "maxSigDigits",
+        "useGrouping",
+        "multiplier",
+        "roundingIncrement",
+        "formatWidth",
+        "padCharacter",
+        "useScientific",
+        "grouping",
+        "grouping2"
     };
     
     static {
@@ -184,6 +200,38 @@ public class NumberFormatTestTuple {
         maxSigDigits = Maybe.just(Integer.valueOf(value));
     }
     
+    public void setUseGrouping(String value) {
+        useGrouping = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setMultiplier(String value) {
+        multiplier = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setRoundingIncrement(String value) {
+        roundingIncrement = Maybe.just(Double.valueOf(value));
+    }
+    
+    public void setFormatWidth(String value) {
+        formatWidth = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setPadCharacter(String value) {
+        padCharacter = Maybe.just(value);
+    }
+    
+    public void setUseScientific(String value) {
+        useScientific = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setGrouping(String value) {
+        grouping = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setGrouping2(String value) {
+        grouping2 = Maybe.just(Integer.valueOf(value));
+    }
+    
     // end field setters.
     
     // start of field clearers
@@ -192,6 +240,26 @@ public class NumberFormatTestTuple {
     
     public void clearBreaks() {
         breaks = Maybe.nothing();
+    }
+    
+    public void clearUseGrouping() {
+        useGrouping = Maybe.nothing();
+    }
+    
+    public void clearGrouping2() {
+        grouping2 = Maybe.nothing();
+    }
+    
+    public void clearGrouping() {
+        grouping = Maybe.nothing();
+    }
+    
+    public void clearMinGroupingDigits() {
+        minGroupingDigits = Maybe.nothing();
+    }
+    
+    public void clearUseScientific() {
+        useScientific = Maybe.nothing();
     }
     
     // end field clearers

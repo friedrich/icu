@@ -77,6 +77,31 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.maxSigDigits.isValue()) {
                         fmt.setMaximumSignificantDigits(tuple.maxSigDigits.getValue());
                     }
+                    if (tuple.useGrouping.isValue()) {
+                        fmt.setGroupingUsed(tuple.useGrouping.getValue() != 0);
+                    }
+                    if (tuple.multiplier.isValue()) {
+                        fmt.setMultiplier(tuple.multiplier.getValue());
+                    }
+                    if (tuple.roundingIncrement.isValue()) {
+                        fmt.setRoundingIncrement(tuple.roundingIncrement.getValue().doubleValue());
+                    }
+                    if (tuple.formatWidth.isValue()) {
+                        fmt.setFormatWidth(tuple.formatWidth.getValue());
+                    }
+                    if (tuple.padCharacter.isValue() && tuple.padCharacter.getValue().length() > 0) {
+                        fmt.setPadCharacter(tuple.padCharacter.getValue().charAt(0));
+                    }
+                    if (tuple.useScientific.isValue()) {
+                        fmt.setScientificNotation(tuple.useScientific.getValue() != 0);
+                    }
+                    if (tuple.grouping.isValue()) {
+                        fmt.setGroupingSize(tuple.grouping.getValue());
+                    }
+                    if (tuple.grouping2.isValue()) {
+                        fmt.setSecondaryGroupingSize(tuple.grouping2.getValue());
+                    }
+
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
@@ -120,6 +145,31 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.maxSigDigits.isValue()) {
                         // Oops we don't support this
                     }
+                    if (tuple.useGrouping.isValue()) {
+                        fmt.setGroupingUsed(tuple.useGrouping.getValue() != 0);
+                    }
+                    if (tuple.multiplier.isValue()) {
+                        fmt.setMultiplier(tuple.multiplier.getValue());
+                    }
+                    if (tuple.roundingIncrement.isValue()) {
+                        // Not supported
+                    }
+                    if (tuple.formatWidth.isValue()) {
+                        // Not supported
+                    }
+                    if (tuple.padCharacter.isValue() && tuple.padCharacter.getValue().length() > 0) {
+                        // Not supported
+                    }
+                    if (tuple.useScientific.isValue()) {
+                        // Not supported
+                    }
+                    if (tuple.grouping.isValue()) {
+                        fmt.setGroupingSize(tuple.grouping.getValue());
+                    }
+                    if (tuple.grouping2.isValue()) {
+                        // Not supported
+                    }
+                    
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {

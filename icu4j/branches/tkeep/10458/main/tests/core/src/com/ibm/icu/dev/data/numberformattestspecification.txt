@@ -284,3 +284,71 @@ format	output	breaks
 -43.762	-43.762	K
 -43.7626	-43.763	K
 
+test grouping used setters
+set locale en_US
+set pattern #,##0
+set format 12345
+begin
+output	useGrouping
+12,345
+12,345	1
+12345	0
+
+test grouping setters
+set locale en_US
+set pattern 0
+set format 123456789
+set useGrouping 1
+begin
+output	grouping	breaks	grouping2	minGroupingDigits
+1,2345,6789	4
+1,23,45,6789	4	K	2
+1,23,45,6789	4	K	2	2
+123,456789	6	K	6	3
+123456789	6	CJK	6	4
+
+test multiplier setters
+set locale en_US
+begin
+format	multiplier	output	breaks
+23	-12	-276
+23	-1	-23
+// ICU4J and JDK throw exception on zero multiplier. ICU4C does not.
+23	0	23	JK
+23	1	23
+23	12	276
+-23	12	-276
+-23	-12	276
+
+test rounding setters
+set locale en_US
+set pattern 0.0#
+set roundingIncrement 0.25
+begin
+format	output	breaks
+-0.35	-0.25	K
+0.35	0.25	K
+0.39	0.5	K
+0.62	0.5	K
+0.63	0.75	K
+
+test padding setters
+set locale en_US
+set pattern bill0
+set format 1357
+begin
+padCharacter	formatWidth	output	breaks
+*	8	bill1357	K
+*	9	*bill1357	K
+^	10	^^bill1357	K
+
+test use scientific setter
+set locale en_US
+set pattern 0.00
+set format 186283
+begin
+output	breaks	useScientific
+186283.00
+1.86E5	K	1
+186283.00	K	0
+
