@@ -139,8 +139,8 @@ int32_t getMultiplier() const;
 void setMultiplier(int32_t m);
 UChar32 getPadCharacter() const { return fAap.fPadChar; }
 void setPadCharacter(UChar32 c) { fAap.fPadChar = c; }
-int32_t getFormatWidth() const { return fFormatWidth; }
-void setFormatWidth(int32_t x);
+int32_t getFormatWidth() const { return fAap.fWidth; }
+void setFormatWidth(int32_t x) { fAap.fWidth = x; }
 private:
 DigitList fMultiplier;
 DigitList::ERoundingMode fRoundingMode;
@@ -174,7 +174,7 @@ UBool fUseGrouping;
 // Updating any of the following fields triggers updates on the following:
 // fOptions.fMantissa.fMonetary, fRules, fAffixParser, fSciFormatter, fFormatter
 // fAap.fPositivePrefiix, fAap.fPositiveSuffix,
-// fAap.fNegativePrefiix, fAap.fNegativeSuffix, and fAap.fWidth
+// fAap.fNegativePrefiix, fAap.fNegativeSuffix
 // We do this two phase update because localizing the affix patterns
 // and formatters can be expensive. Better to do it once with the setters
 // than each time within format.
@@ -184,7 +184,6 @@ AffixPattern fPositiveSuffixPattern;
 AffixPattern fNegativeSuffixPattern;
 DecimalFormatSymbols *fSymbols;
 UChar fCurr[4];
-int32_t fFormatWidth;
 UCurrencyUsage fCurrencyUsage;
 
 // Optional may be NULL

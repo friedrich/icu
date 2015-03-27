@@ -100,6 +100,20 @@ private:
         (errors).append(": set/get mismatch"); \
     } \
 
+#define SET_AND_CHECK_WITH_COND(fmt, fieldName, expr, cond, errors) \
+    (fmt).set##fieldName(expr); \
+    if ((cond) && (fmt).get##fieldName() != (expr)) { \
+        (errors).append(#fieldName); \
+        (errors).append(": set/get mismatch"); \
+    } \
+
+#define SET_AND_CHECK_BOOL(fmt, fieldName, expr, errors) \
+    (fmt).set##fieldName(expr); \
+    if ((fmt).is##fieldName() != (expr)) { \
+        (errors).append(#fieldName); \
+        (errors).append(": set/get mismatch"); \
+    } \
+
 
 
 UBool NumberFormat2TestDataDriven::isFormatPass(
@@ -190,6 +204,64 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
                 tuple.maxSigDigits,
                 appendErrorMessage);
     }
+    if (tuple.useGroupingFlag) {
+        SET_AND_CHECK_BOOL(
+                fmt,
+                GroupingUsed,
+                tuple.useGrouping != 0,
+                appendErrorMessage);
+    }
+    if (tuple.multiplierFlag) {
+        SET_AND_CHECK_WITH_COND(
+                fmt,
+                Multiplier,
+                tuple.multiplier,
+                tuple.multiplier != 0,
+                appendErrorMessage);
+    }
+    if (tuple.roundingIncrementFlag) {
+        SET_AND_CHECK(
+                fmt,
+                RoundingIncrement,
+                tuple.roundingIncrement,
+                appendErrorMessage);
+    }
+    if (tuple.formatWidthFlag) {
+        SET_AND_CHECK(
+                fmt,
+                FormatWidth,
+                tuple.formatWidth,
+                appendErrorMessage);
+    }
+    if (tuple.padCharacterFlag && tuple.padCharacter.length() > 0) {
+        SET_AND_CHECK(
+                fmt,
+                PadCharacter,
+                tuple.padCharacter.char32At(0),
+                appendErrorMessage);
+    }
+    if (tuple.useScientificFlag) {
+        SET_AND_CHECK_BOOL(
+                fmt,
+                ScientificNotation,
+                tuple.useScientific,
+                appendErrorMessage);
+    }
+    if (tuple.groupingFlag) {
+        SET_AND_CHECK(
+                fmt,
+                GroupingSize,
+                tuple.grouping,
+                appendErrorMessage);
+    }
+    if (tuple.grouping2Flag) {
+        SET_AND_CHECK(
+                fmt,
+                SecondaryGroupingSize,
+                tuple.grouping2,
+                appendErrorMessage);
+    }
+
     if (appendErrorMessage.length() > 0) {
         return FALSE;
     }

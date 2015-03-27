@@ -48,6 +48,27 @@ UBool isFormatPass(
 
 };
 
+#define SET_AND_CHECK(fmt, fieldName, expr, errors) \
+    (fmt).set##fieldName(expr); \
+    if (FALSE && (fmt).get##fieldName() != (expr)) { \
+        (errors).append(#fieldName); \
+        (errors).append(": set/get mismatch"); \
+    } \
+
+#define SET_AND_CHECK_WITH_COND(fmt, fieldName, expr, cond, errors) \
+    (fmt).set##fieldName(expr); \
+    if (FALSE && (cond) && (fmt).get##fieldName() != (expr)) { \
+        (errors).append(#fieldName); \
+        (errors).append(": set/get mismatch"); \
+    } \
+
+#define SET_AND_CHECK_BOOL(fmt, fieldName, expr, errors) \
+    (fmt).set##fieldName(expr); \
+    if (FALSE && (fmt).is##fieldName() != (expr)) { \
+        (errors).append(#fieldName); \
+        (errors).append(": set/get mismatch"); \
+    } \
+
 UBool NumberFormatTestDataDriven::isFormatPass(
         const NumberFormatTestTuple &tuple,
         UnicodeString &appendErrorMessage,
@@ -64,35 +85,129 @@ UBool NumberFormatTestDataDriven::isFormatPass(
         appendErrorMessage.append("Error creating DecimalFormat");
         return FALSE;
     }
+
     if (tuple.minIntegerDigitsFlag) {
-        fmt.setMinimumIntegerDigits(tuple.minIntegerDigits);
+        SET_AND_CHECK(
+                fmt,
+                MinimumIntegerDigits,
+                tuple.minIntegerDigits,
+                appendErrorMessage);
     }
     if (tuple.maxIntegerDigitsFlag) {
-        fmt.setMaximumIntegerDigits(tuple.maxIntegerDigits);
+        SET_AND_CHECK(
+                fmt,
+                MaximumIntegerDigits,
+                tuple.maxIntegerDigits,
+                appendErrorMessage);
     }
     if (tuple.minFractionDigitsFlag) {
-        fmt.setMinimumFractionDigits(tuple.minFractionDigits);
+        SET_AND_CHECK(
+                fmt,
+                MinimumFractionDigits,
+                tuple.minFractionDigits,
+                appendErrorMessage);
     }
     if (tuple.maxFractionDigitsFlag) {
-        fmt.setMaximumFractionDigits(tuple.maxFractionDigits);
+        SET_AND_CHECK(
+                fmt,
+                MaximumFractionDigits,
+                tuple.maxFractionDigits,
+                appendErrorMessage);
     }
     if (tuple.currencyFlag) {
         UnicodeString currency(tuple.currency);
-        fmt.setCurrency(currency.getTerminatedBuffer());
+        const UChar *terminatedCurrency = currency.getTerminatedBuffer();
+        fmt.setCurrency(terminatedCurrency, status);
+        if (U_FAILURE(status)) {
+            appendErrorMessage.append("Error setting currency.");
+            return FALSE;
+        }
+        if (u_strcmp(fmt.getCurrency(), terminatedCurrency) != 0) {
+            appendErrorMessage.append("currency: get/set mismatch.");
+        }
     }
     if (tuple.minGroupingDigitsFlag) {
-        // Oops, we don't support this
-        // fmt.setMinimumGroupingDigits(tuple.minGroupingDigits);
+        // Oops, not supported
     }
     if (tuple.useSigDigitsFlag) {
-        fmt.setSignificantDigitsUsed(tuple.useSigDigits != 0);
+        UBool newValue = tuple.useSigDigits != 0;
+        fmt.setSignificantDigitsUsed(newValue);
+        if (fmt.areSignificantDigitsUsed() != newValue) {
+                appendErrorMessage.append("SignificantDigitsUsed: get/set mismatch");
+        }
     }
     if (tuple.minSigDigitsFlag) {
-        fmt.setMinimumSignificantDigits(tuple.minSigDigits);
+        SET_AND_CHECK(
+                fmt,
+                MinimumSignificantDigits,
+                tuple.minSigDigits,
+                appendErrorMessage);
     }
     if (tuple.maxSigDigitsFlag) {
-        fmt.setMaximumSignificantDigits(tuple.maxSigDigits);
+        SET_AND_CHECK(
+                fmt,
+                MaximumSignificantDigits,
+                tuple.maxSigDigits,
+                appendErrorMessage);
     }
+    if (tuple.useGroupingFlag) {
+        SET_AND_CHECK_BOOL(
+                fmt,
+                GroupingUsed,
+                tuple.useGrouping != 0,
+                appendErrorMessage);
+    }
+    if (tuple.multiplierFlag) {
+        SET_AND_CHECK_WITH_COND(
+                fmt,
+                Multiplier,
+                tuple.multiplier,
+                tuple.multiplier != 0,
+                appendErrorMessage);
+    }
+    if (tuple.roundingIncrementFlag) {
+        SET_AND_CHECK(
+                fmt,
+                RoundingIncrement,
+                tuple.roundingIncrement,
+                appendErrorMessage);
+    }
+    if (tuple.formatWidthFlag) {
+        SET_AND_CHECK(
+                fmt,
+                FormatWidth,
+                tuple.formatWidth,
+                appendErrorMessage);
+    }
+    if (tuple.padCharacterFlag) {
+        fmt.setPadCharacter(tuple.padCharacter);
+    }
+    if (tuple.useScientificFlag) {
+        SET_AND_CHECK_BOOL(
+                fmt,
+                ScientificNotation,
+                tuple.useScientific,
+                appendErrorMessage);
+    }
+    if (tuple.groupingFlag) {
+        SET_AND_CHECK(
+                fmt,
+                GroupingSize,
+                tuple.grouping,
+                appendErrorMessage);
+    }
+    if (tuple.grouping2Flag) {
+        SET_AND_CHECK(
+                fmt,
+                SecondaryGroupingSize,
+                tuple.grouping2,
+                appendErrorMessage);
+    }
+
+    if (appendErrorMessage.length() > 0) {
+        return FALSE;
+    }
+
     UnicodeString appendTo;
     FieldPositionIterator posIter;
     CharString formatValue;

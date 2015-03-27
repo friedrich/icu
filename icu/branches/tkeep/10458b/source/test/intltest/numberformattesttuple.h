@@ -30,6 +30,14 @@ enum ENumberFormatTestTupleField {
     kUseSigDigits,
     kMinSigDigits,
     kMaxSigDigits,
+    kUseGrouping,
+    kMultiplier,
+    kRoundingIncrement,
+    kFormatWidth,
+    kPadCharacter,
+    kUseScientific,
+    kGrouping,
+    kGrouping2,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -50,6 +58,14 @@ public:
     int32_t useSigDigits;
     int32_t minSigDigits;
     int32_t maxSigDigits;
+    int32_t useGrouping;
+    int32_t multiplier;
+    double roundingIncrement;
+    int32_t formatWidth;
+    UnicodeString padCharacter;
+    int32_t useScientific;
+    int32_t grouping;
+    int32_t grouping2;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -66,6 +82,14 @@ public:
     UBool useSigDigitsFlag;
     UBool minSigDigitsFlag;
     UBool maxSigDigitsFlag;
+    UBool useGroupingFlag;
+    UBool multiplierFlag;
+    UBool roundingIncrementFlag;
+    UBool formatWidthFlag;
+    UBool padCharacterFlag;
+    UBool useScientificFlag;
+    UBool groupingFlag;
+    UBool grouping2Flag;
 
     NumberFormatTestTuple() {
         clear();

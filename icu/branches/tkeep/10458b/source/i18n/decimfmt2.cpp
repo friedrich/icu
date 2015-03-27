@@ -20,11 +20,10 @@ static const int32_t kFormattingPosSuffix = (1 << 2);
 static const int32_t kFormattingNegSuffix = (1 << 3);
 static const int32_t kFormattingSymbols = (1 << 4);
 static const int32_t kFormattingCurrency = (1 << 5);
-static const int32_t kFormattingWidth = (1 << 6);
-static const int32_t kFormattingUsesCurrency = (1 << 7);
-static const int32_t kFormattingPluralRules = (1 << 8);
-static const int32_t kFormattingAffixParser = (1 << 9);
-static const int32_t kFormattingAll = (1 << 10) - 1;
+static const int32_t kFormattingUsesCurrency = (1 << 6);
+static const int32_t kFormattingPluralRules = (1 << 7);
+static const int32_t kFormattingAffixParser = (1 << 8);
+static const int32_t kFormattingAll = (1 << 9) - 1;
 static const int32_t kFormattingAffixes =
         kFormattingPosPrefix | kFormattingNegPrefix |
         kFormattingNegPrefix | kFormattingNegSuffix;
@@ -63,7 +62,6 @@ DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           fPositiveSuffixPattern(other.fPositiveSuffixPattern),
           fNegativeSuffixPattern(other.fNegativeSuffixPattern),
           fSymbols(other.fSymbols),
-          fFormatWidth(other.fFormatWidth),
           fCurrencyUsage(other.fCurrencyUsage),
           fRules(other.fRules),
           fAffixParser(other.fAffixParser),
@@ -103,7 +101,6 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     fNegativePrefixPattern = other.fNegativePrefixPattern;
     fPositiveSuffixPattern = other.fPositiveSuffixPattern;
     fNegativeSuffixPattern = other.fNegativeSuffixPattern;
-    fFormatWidth = other.fFormatWidth;
     fCurrencyUsage = other.fCurrencyUsage;
     fAffixParser = other.fAffixParser;
     fEffPrecision = other.fEffPrecision;
@@ -402,13 +399,6 @@ DecimalFormat2::setGroupingUsed(UBool newValue) {
 }
 
 void
-DecimalFormat2::setFormatWidth(int32_t width) {
-    fFormatWidth = width;
-    UErrorCode status = U_ZERO_ERROR;
-    updateFormatting(kFormattingWidth, status);
-}
-
-void
 DecimalFormat2::setCurrency(const UChar *currency, UErrorCode &status) {
     if (currency == NULL) {
         fCurr[0] = 0;
@@ -544,7 +534,13 @@ DecimalFormat2::applyPattern(
     fNegativeSuffixPattern = out.fNegSuffixAffix;
     fPositivePrefixPattern = out.fPosPrefixAffix;
     fPositiveSuffixPattern = out.fPosSuffixAffix;
-    fFormatWidth = out.fFormatWidth;
+
+    // Work around. Pattern parsing code and DecimalFormat code don't agree
+    // on the definition of field width, so we have to translate from
+    // pattern field width to decimal format field width here.
+    fAap.fWidth = out.fFormatWidth == 0 ? 0 :
+            out.fFormatWidth + fPositivePrefixPattern.countChar32()
+            + fPositiveSuffixPattern.countChar32();
     switch (out.fPadPosition) {
     case DecimalFormatPattern::kPadBeforePrefix:
         fAap.fPadPosition = DigitAffixesAndPadding::kPadBeforePrefix;
@@ -684,7 +680,6 @@ DecimalFormat2::updateFormatting(
     updateFormattingAffixParser(changedFormattingFields, status);
     updateFormattingFormatters(changedFormattingFields);
     updateFormattingLocalizedAffixes(changedFormattingFields, status);
-    updateFormattingWidth(changedFormattingFields);
 }
 
 void
@@ -848,22 +843,6 @@ DecimalFormat2::updateFormattingLocalizedAffixes(
     }
 }
 
-void
-DecimalFormat2::updateFormattingWidth(int32_t &changedFormattingFields) {
-    if ((changedFormattingFields & (kFormattingWidth | kFormattingPosPrefix | kFormattingPosSuffix)) == 0) {
-        // No work to do if these fields are unchanged
-        return;
-    }
-    if (fFormatWidth == 0) {
-        fAap.fWidth = 0;
-        return;
-    }
-    fAap.fWidth =
-            fFormatWidth +
-            fPositivePrefixPattern.countChar32() +
-            fPositiveSuffixPattern.countChar32();
-}
-        
 
 void
 DecimalFormat2::updateAll(UErrorCode &status) {

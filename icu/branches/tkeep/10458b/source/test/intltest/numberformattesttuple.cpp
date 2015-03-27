@@ -94,6 +94,27 @@ static void intToStr(
     appendTo.append(buffer, 0, len);
 }
 
+static void strToDouble(
+        const UnicodeString &str, void *doublePtr, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    CharString buffer;
+    buffer.appendInvariantChars(str, status);
+    if (U_FAILURE(status)) {
+        return;
+    }
+    *static_cast<double *>(doublePtr) = atof(buffer.data());
+}
+
+static void doubleToStr(
+        const void *doublePtr, UnicodeString &appendTo) {
+    char buffer[256];
+    double x = *static_cast<const double *>(doublePtr);
+    sprintf(buffer, "%f", x);
+    appendTo.append(buffer);
+}
+
 struct NumberFormatTestTupleFieldOps {
     void (*toValue)(const UnicodeString &str, void *valPtr, UErrorCode &);
     void (*toString)(const void *valPtr, UnicodeString &appendTo);
@@ -102,6 +123,7 @@ struct NumberFormatTestTupleFieldOps {
 const NumberFormatTestTupleFieldOps gStrOps = {identVal, identStr};
 const NumberFormatTestTupleFieldOps gIntOps = {strToInt, intToStr};
 const NumberFormatTestTupleFieldOps gLocaleOps = {strToLocale, localeToStr};
+const NumberFormatTestTupleFieldOps gDoubleOps = {strToDouble, doubleToStr};
 
 struct NumberFormatTestTupleFieldData {
     const char *name;
@@ -127,6 +149,14 @@ const NumberFormatTestTupleFieldData gFieldData[] = {
     FIELD_INIT(useSigDigits, &gIntOps),
     FIELD_INIT(minSigDigits, &gIntOps),
     FIELD_INIT(maxSigDigits, &gIntOps),
+    FIELD_INIT(useGrouping, &gIntOps),
+    FIELD_INIT(multiplier, &gIntOps),
+    FIELD_INIT(roundingIncrement, &gDoubleOps),
+    FIELD_INIT(formatWidth, &gIntOps),
+    FIELD_INIT(padCharacter, &gStrOps),
+    FIELD_INIT(useScientific, &gIntOps),
+    FIELD_INIT(grouping, &gIntOps),
+    FIELD_INIT(grouping2, &gIntOps),
 };
 
 UBool
