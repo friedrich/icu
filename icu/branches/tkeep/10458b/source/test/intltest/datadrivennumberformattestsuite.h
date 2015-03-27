@@ -24,19 +24,32 @@ class DataDrivenNumberFormatTestSuite : public UObject {
 
  public:
      DataDrivenNumberFormatTestSuite(IntlTest *test)
-     : fTest(test), fFileLineNumber(0) { }
+     : fTest(test) {
+         for (int32_t i = 0; i < UPRV_LENGTHOF(fPreviousFormatters); ++i) {
+             fPreviousFormatters[i] = NULL;
+         }
+     }
      void run(const char *fileName, UBool runAllTests);
+     virtual ~DataDrivenNumberFormatTestSuite();
  protected:
     virtual UBool isFormatPass(
             const NumberFormatTestTuple &tuple,
             UnicodeString &appendErrorMessage,
             UErrorCode &status);
+    virtual UBool isFormatPass(
+            const NumberFormatTestTuple &tuple,
+            UObject *somePreviousFormatter,
+            UnicodeString &appendErrorMessage,
+            UErrorCode &status);
+    virtual UObject *newFormatter(UErrorCode &status);
  private:
     IntlTest *fTest;
     UnicodeString fFileLine;
     int32_t fFileLineNumber;
     UnicodeString fFileTestName;
     NumberFormatTestTuple fTuple;
+    int32_t fFormatTestNumber;
+    UObject *fPreviousFormatters[13];
 
     void setTupleField(UErrorCode &);
     int32_t splitBy(

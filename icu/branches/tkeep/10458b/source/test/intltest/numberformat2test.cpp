@@ -87,8 +87,10 @@ NumberFormat2TestDataDriven(IntlTest *t) : DataDrivenNumberFormatTestSuite(t) { 
 protected:
 UBool isFormatPass(
         const NumberFormatTestTuple &tuple,
+        UObject *somePreviousFormatter,
         UnicodeString &appendErrorMessage,
         UErrorCode &status);
+UObject *newFormatter(UErrorCode &status);
 private:
 
 };
@@ -114,28 +116,36 @@ private:
         (errors).append(": set/get mismatch"); \
     } \
 
-
-
-UBool NumberFormat2TestDataDriven::isFormatPass(
-        const NumberFormatTestTuple &tuple,
-        UnicodeString &appendErrorMessage,
+static DigitList &strToDigitList(
+        const UnicodeString &str,
+        DigitList &digitList,
         UErrorCode &status) {
     if (U_FAILURE(status)) {
-        return FALSE;
+        return digitList;
     }
-    Locale en("en");
-    DecimalFormatSymbols *symbols = new DecimalFormatSymbols(NFTT_GET_FIELD(tuple, locale, en), status);
-    if (symbols == NULL) {
-        appendErrorMessage.append("Error creating symbols.");
-        return FALSE;
-    }
-    UParseError perror;
-    DecimalFormat2 fmt(
-            NFTT_GET_FIELD(tuple, pattern, "0"), symbols, perror, status);
+    CharString formatValue;
+    formatValue.appendInvariantChars(str, status);
+    digitList.set(StringPiece(formatValue.data()), status, 0);
+    return digitList;
+}
+
+static UnicodeString &format(
+        const DecimalFormat2 &fmt,
+        const DigitList &digitList,
+        UnicodeString &appendTo,
+        UErrorCode &status) {
     if (U_FAILURE(status)) {
-        appendErrorMessage.append("Error creating DecimalFormat");
-        return FALSE;
+        return appendTo;
     }
+    FieldPosition fpos(FieldPosition::DONT_CARE);
+    return fmt.format(digitList, appendTo, fpos, status);
+}
+
+static void adjustDecimalFormat(
+        const NumberFormatTestTuple &tuple,
+        DecimalFormat2 &fmt,
+        UnicodeString &appendErrorMessage) {
+    UErrorCode status = U_ZERO_ERROR;
     if (tuple.minIntegerDigitsFlag) {
         SET_AND_CHECK(
                 fmt,
@@ -170,7 +180,6 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
         fmt.setCurrency(terminatedCurrency, status);
         if (U_FAILURE(status)) {
             appendErrorMessage.append("Error setting currency.");
-            return FALSE;
         }
         if (u_strcmp(fmt.getCurrency(), terminatedCurrency) != 0) {
             appendErrorMessage.append("currency: get/set mismatch.");
@@ -261,29 +270,87 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
                 tuple.grouping2,
                 appendErrorMessage);
     }
+}
 
+UObject *NumberFormat2TestDataDriven::newFormatter(UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    Locale en("en");
+    DecimalFormatSymbols *symbols = new DecimalFormatSymbols(en, status);
+    if (symbols == NULL) {
+        status = U_MEMORY_ALLOCATION_ERROR;
+        return NULL;
+    }
+    UParseError perror;
+    DecimalFormat2 *result = new DecimalFormat2(
+            "0", symbols, perror, status);
+    if (result == NULL) {
+        status = U_MEMORY_ALLOCATION_ERROR;
+    }
+    return result;
+}
+
+UBool NumberFormat2TestDataDriven::isFormatPass(
+        const NumberFormatTestTuple &tuple,
+        UObject *somePreviousFormatter, 
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    Locale en("en");
+    DecimalFormatSymbols *symbols = new DecimalFormatSymbols(NFTT_GET_FIELD(tuple, locale, en), status);
+    if (symbols == NULL) {
+        appendErrorMessage.append("Error creating symbols.");
+        return FALSE;
+    }
+    UParseError perror;
+    LocalPointer<DecimalFormat2> fmtPtr(new DecimalFormat2(
+            NFTT_GET_FIELD(tuple, pattern, "0"), symbols, perror, status));
+    if (U_FAILURE(status) || fmtPtr.isNull()) {
+        appendErrorMessage.append("Error creating DecimalFormat");
+        return FALSE;
+    }
+    adjustDecimalFormat(tuple, *fmtPtr, appendErrorMessage);
     if (appendErrorMessage.length() > 0) {
         return FALSE;
     }
-    UnicodeString appendTo;
-    CharString formatValue;
-    formatValue.appendInvariantChars(tuple.format, status);
     DigitList digitList;
-    digitList.set(StringPiece(formatValue.data()), status, 0);
-    FieldPosition fpos(FieldPosition::DONT_CARE);
-    fmt.format(digitList, appendTo, fpos, status);
+    strToDigitList(tuple.format, digitList, status);
+    UnicodeString baseLine;
+    format(*fmtPtr, digitList, baseLine, status);
+
+    // Replace with copy from copy constructor
+    fmtPtr.adoptInstead(new DecimalFormat2(*fmtPtr));
+    UnicodeString copyFormatted;
+    format(*fmtPtr, digitList, copyFormatted, status);
+    DecimalFormat2 *assignFormatter = (DecimalFormat2 *) somePreviousFormatter;
+    *assignFormatter = *fmtPtr;
+    UnicodeString assignFormatted;
+    format(*assignFormatter, digitList, assignFormatted, status);
+    
     if (U_FAILURE(status)) {
         appendErrorMessage.append("Error formatting.");
         return FALSE;
     }
-    if (appendTo != tuple.output) {
+    if (baseLine != tuple.output) {
         appendErrorMessage.append(
-                UnicodeString("Expected: ") + tuple.output + ", got: " + appendTo);
+                UnicodeString("Expected: ") + tuple.output + ", got: " + baseLine);
+        return FALSE;
+    }
+    if (baseLine != copyFormatted) {
+        appendErrorMessage.append(
+                UnicodeString("Copy ctor failed had before: ") + baseLine + ", but got: " + copyFormatted);
+        return FALSE;
+    }
+    if (baseLine != assignFormatted) {
+        appendErrorMessage.append(
+                UnicodeString("assignment failed had before: ") + baseLine + ", but got: " + assignFormatted);
         return FALSE;
     }
     return TRUE;
 }
-
 
 class NumberFormat2Test : public IntlTest {
 public:

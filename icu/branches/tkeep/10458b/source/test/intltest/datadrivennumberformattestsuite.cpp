@@ -19,7 +19,16 @@ static UBool isSpace(UChar c) { return c == 9 || c == 0x20 || c == 0x3000; }
 U_NAMESPACE_BEGIN
 
 void DataDrivenNumberFormatTestSuite::run(const char *fileName, UBool runAllTests) {
+    fFileLineNumber = 0;
+    fFormatTestNumber = 0;
     UErrorCode status = U_ZERO_ERROR;
+    for (int32_t i = 0; i < UPRV_LENGTHOF(fPreviousFormatters); ++i) {
+        delete fPreviousFormatters[i];
+        fPreviousFormatters[i] = newFormatter(status);
+    }
+    if (!fTest->assertSuccess("Can't create previous formatters", status)) {
+        return;
+    }
     CharString path(fTest->getSourceTestData(status), status);
     path.appendPathPart(fileName, status);
     const char *codePage = "UTF-8";
@@ -91,6 +100,12 @@ void DataDrivenNumberFormatTestSuite::run(const char *fileName, UBool runAllTest
             }
         }
         fFileLine.remove();
+    }
+}
+
+DataDrivenNumberFormatTestSuite::~DataDrivenNumberFormatTestSuite() {
+    for (int32_t i = 0; i < UPRV_LENGTHOF(fPreviousFormatters); ++i) {
+        delete fPreviousFormatters[i];
     }
 }
 
@@ -191,7 +206,13 @@ UBool DataDrivenNumberFormatTestSuite::isPass(
     }
     UBool result = FALSE;
     if (tuple.formatFlag && tuple.outputFlag) {
-        result = isFormatPass(tuple, appendErrorMessage, status);
+        ++fFormatTestNumber;
+        result = isFormatPass(
+                tuple,
+                fPreviousFormatters[
+                        fFormatTestNumber % UPRV_LENGTHOF(fPreviousFormatters)],
+                appendErrorMessage,
+                status);
     } else {
         appendErrorMessage.append("At least format and outputFlag must be set.");
         status = U_ILLEGAL_ARGUMENT_ERROR;
@@ -218,5 +239,19 @@ UBool DataDrivenNumberFormatTestSuite::isFormatPass(
     }
     return TRUE;
 }
+    
+UBool DataDrivenNumberFormatTestSuite::isFormatPass(
+        const NumberFormatTestTuple &tuple,
+        UObject * /* somePreviousFormatter */,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status) {
+    return isFormatPass(tuple, appendErrorMessage, status);
+}
+
+UObject *DataDrivenNumberFormatTestSuite::newFormatter(
+        UErrorCode & /*status*/) {
+    return NULL;
+}
+
     
 U_NAMESPACE_END

@@ -44,7 +44,7 @@ DecimalFormat2::DecimalFormat2(
 }
 
 DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
-          UMemory(other),
+          UObject(other),
           fMultiplier(other.fMultiplier),
           fRoundingMode(other.fRoundingMode),
           fMinIntDigits(other.fMinIntDigits),

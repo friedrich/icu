@@ -27,7 +27,7 @@ class FieldPosition;
 class ValueFormatter;
 class FieldPositionHandler;
 
-class DecimalFormat2 : public UMemory {
+class DecimalFormat2 : public UObject {
 public:
 
 DecimalFormat2(
@@ -37,7 +37,7 @@ DecimalFormat2(
         UErrorCode &status);
 DecimalFormat2(const DecimalFormat2 &other);
 DecimalFormat2 &operator=(const DecimalFormat2 &other);
-~DecimalFormat2();
+virtual ~DecimalFormat2();
 void adoptDecimalFormatSymbols(DecimalFormatSymbols *symbolsToAdopt);
 const DecimalFormatSymbols &getDecimalFormatSymbols() const {
     return *fSymbols;
