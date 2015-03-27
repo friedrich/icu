@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -632,6 +631,7 @@ public class LocaleMatcher {
          * @internal
          * @deprecated This API is ICU internal only.
          */
+        @SuppressWarnings("unused")
         @Deprecated
         private LanguageMatcherData addDistance(String desired, String supported, int percent) {
             return addDistance(desired, supported, percent, false, null);
