@@ -84,7 +84,7 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     if (this == &other) {
         return (*this);
     }
-    UMemory::operator=(other);
+    UObject::operator=(other);
     fMultiplier = other.fMultiplier;
     fRoundingMode = other.fRoundingMode;
     fMinIntDigits = other.fMinIntDigits;
@@ -121,6 +121,42 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     }
     u_strcpy(fCurr, other.fCurr);
     return *this;
+}
+
+UBool
+DecimalFormat2::operator==(const DecimalFormat2 &other) const {
+    if (this == &other) {
+        return TRUE;
+    }
+    return (fMultiplier == other.fMultiplier)
+            && (fRoundingMode == other.fRoundingMode)
+            && (fMinIntDigits == other.fMinIntDigits)
+            && (fMaxIntDigits == other.fMaxIntDigits)
+            && (fMinFracDigits == other.fMinFracDigits)
+            && (fMaxFracDigits == other.fMaxFracDigits)
+            && (fMinSigDigits == other.fMinSigDigits)
+            && (fMaxSigDigits == other.fMaxSigDigits)
+            && (fUseScientific == other.fUseScientific)
+            && (fUseSigDigits == other.fUseSigDigits)
+            && fGrouping.equals(other.fGrouping)
+            && fUseGrouping == other.fUseGrouping
+            && fPositivePrefixPattern.equals(other.fPositivePrefixPattern)
+            && fNegativePrefixPattern.equals(other.fNegativePrefixPattern)
+            && fPositiveSuffixPattern.equals(other.fPositiveSuffixPattern)
+            && fNegativeSuffixPattern.equals(other.fNegativeSuffixPattern)
+            && fCurrencyUsage == other.fCurrencyUsage
+            && fAffixParser.equals(other.fAffixParser)
+            && fEffPrecision.equals(other.fEffPrecision)
+            && fEffGrouping.equals(other.fEffGrouping)
+            && fOptions.equals(other.fOptions)
+            && fSciFormatter.equals(other.fSciFormatter)
+            && fFormatter.equals(other.fFormatter)
+            && fAap.equals(other.fAap)
+            && (*fSymbols == *other.fSymbols)
+            && ((fRules == other.fRules) || (
+                    (fRules != NULL) && (other.fRules != NULL)
+                    && (*fRules == *other.fRules)))
+            && u_strcmp(fCurr, other.fCurr) == 0;
 }
 
 DecimalFormat2::~DecimalFormat2() {

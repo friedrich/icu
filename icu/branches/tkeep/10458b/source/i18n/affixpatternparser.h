@@ -53,6 +53,13 @@ public:
      */
     PluralAffix fLong;
 
+    UBool
+    equals(const CurrencyAffixInfo &other) const {
+        return (fSymbol == other.fSymbol)
+                && (fISO == other.fISO)
+                && (fLong.equals(other.fLong));
+    }
+
     /**
      * Intializes this instance.
      *
@@ -207,6 +214,16 @@ public:
             const UnicodeString &affixStr,
             AffixPattern &appendTo,
             UErrorCode &status);
+
+    UBool equals(const AffixPattern &other) const {
+        return (tokens == other.tokens)
+                && (literals == other.literals)
+                && (hasCurrencyToken == other.hasCurrencyToken)
+                && (hasPercentToken == other.hasPercentToken)
+                && (hasPermillToken == other.hasPermillToken)
+                && (char32Count == other.char32Count);
+    }
+
 private:
     UnicodeString tokens;
     UnicodeString literals;
@@ -293,6 +310,12 @@ int32_t parse(
         const AffixPattern &affixPattern,
         PluralAffix &appendTo,
         UErrorCode &status) const;
+
+UBool equals(const AffixPatternParser &other) const {
+    return (fPercent == other.fPercent)
+            && (fPermill == other.fPermill)
+            && (fNegative == other.fNegative);
+}
 
 private:
 UnicodeString fPercent;

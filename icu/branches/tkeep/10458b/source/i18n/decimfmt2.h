@@ -88,6 +88,12 @@ UnicodeString &format(
         FieldPositionIterator *posIter,
         UErrorCode &status) const;
 
+UBool operator==(const DecimalFormat2 &) const;
+
+UBool operator!=(const DecimalFormat2 &other) const {
+    return !(*this == other);
+}
+
 void setRoundingMode(DigitList::ERoundingMode mode) {
     fRoundingMode = mode;
 }

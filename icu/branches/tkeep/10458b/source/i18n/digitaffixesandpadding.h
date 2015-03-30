@@ -100,6 +100,7 @@ UBool equals(const DigitAffixesAndPadding &rhs) const {
             fNegativePrefix.equals(rhs.fNegativePrefix) &&
             fNegativeSuffix.equals(rhs.fNegativeSuffix) &&
             fPadPosition == rhs.fPadPosition &&
+            fWidth == rhs.fWidth &&
             fPadChar == rhs.fPadChar);
 }
 

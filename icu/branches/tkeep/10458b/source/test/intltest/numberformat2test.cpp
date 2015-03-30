@@ -95,25 +95,53 @@ private:
 
 };
 
-#define SET_AND_CHECK(fmt, fieldName, expr, errors) \
-    (fmt).set##fieldName(expr); \
-    if ((fmt).get##fieldName() != (expr)) { \
+#define CHECK_EQUALITY(fmt, fmtCopy, fieldName, errors) \
+    if ((fmt).get##fieldName() != (fmtCopy).get##fieldName() && (fmt) == (fmtCopy)) { \
         (errors).append(#fieldName); \
-        (errors).append(": set/get mismatch"); \
+        (errors).append(": set/equality mismatch"); \
+    } \
+
+
+#define SET_AND_CHECK(fmt, fieldName, expr, errors) \
+    DecimalFormat2 fmtCopy(fmt); \
+    if (fmtCopy != (fmt)) { \
+        (errors).append("copy constructor equality mismatch"); \
+    } else { \
+        (fmt).set##fieldName(expr); \
+        if ((fmt).get##fieldName() != (expr)) { \
+            (errors).append(#fieldName); \
+            (errors).append(": set/get mismatch"); \
+        } \
+        CHECK_EQUALITY((fmt), (fmtCopy), fieldName, (errors)); \
     } \
 
 #define SET_AND_CHECK_WITH_COND(fmt, fieldName, expr, cond, errors) \
-    (fmt).set##fieldName(expr); \
-    if ((cond) && (fmt).get##fieldName() != (expr)) { \
-        (errors).append(#fieldName); \
-        (errors).append(": set/get mismatch"); \
+    DecimalFormat2 fmtCopy(fmt); \
+    if (fmtCopy != (fmt)) { \
+        (errors).append("copy constructor equality mismatch"); \
+    } else { \
+        (fmt).set##fieldName(expr); \
+        if ((cond) && (fmt).get##fieldName() != (expr)) { \
+            (errors).append(#fieldName); \
+            (errors).append(": set/get mismatch"); \
+        } \
+        CHECK_EQUALITY((fmt), (fmtCopy), fieldName, (errors)); \
     } \
 
 #define SET_AND_CHECK_BOOL(fmt, fieldName, expr, errors) \
-    (fmt).set##fieldName(expr); \
-    if ((fmt).is##fieldName() != (expr)) { \
-        (errors).append(#fieldName); \
-        (errors).append(": set/get mismatch"); \
+    DecimalFormat2 fmtCopy(fmt); \
+    if (fmtCopy != (fmt)) { \
+        (errors).append("copy constructor equality mismatch"); \
+    } else { \
+        (fmt).set##fieldName(expr); \
+        if ((fmt).is##fieldName() != (expr)) { \
+            (errors).append(#fieldName); \
+            (errors).append(": set/get mismatch"); \
+        } \
+        if ((fmt).is##fieldName() != (fmtCopy).is##fieldName() && (fmt) == (fmtCopy)) { \
+            (errors).append(#fieldName); \
+            (errors).append(": set/equality mismatch"); \
+        } \
     } \
 
 static DigitList &strToDigitList(
@@ -322,11 +350,26 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
     format(*fmtPtr, digitList, baseLine, status);
 
     // Replace with copy from copy constructor
-    fmtPtr.adoptInstead(new DecimalFormat2(*fmtPtr));
+    DecimalFormat2 *temp = new DecimalFormat2(*fmtPtr);
+    if (temp == NULL) {
+        appendErrorMessage.append("Error creating copy constructor formatter.");
+        return FALSE;
+    }
+    if (*fmtPtr != *temp) {
+        appendErrorMessage.append("Copy constructor equality mismatch.");
+        delete temp;
+        return FALSE;
+    }
+    fmtPtr.adoptInstead(temp);
     UnicodeString copyFormatted;
     format(*fmtPtr, digitList, copyFormatted, status);
     DecimalFormat2 *assignFormatter = (DecimalFormat2 *) somePreviousFormatter;
     *assignFormatter = *fmtPtr;
+    if (*fmtPtr != *assignFormatter) {
+        appendErrorMessage.append("assignment equality mismatch.");
+        return FALSE;
+    }
+    fmtPtr.adoptInstead(NULL);
     UnicodeString assignFormatted;
     format(*assignFormatter, digitList, assignFormatted, status);
     
