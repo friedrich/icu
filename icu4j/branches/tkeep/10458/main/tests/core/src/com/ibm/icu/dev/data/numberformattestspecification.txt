@@ -352,3 +352,22 @@ output	breaks	useScientific
 1.86E5	K	1
 186283.00	K	0
 
+test rounding mode setters
+set locale en_US
+set pattern 0.#
+set roundingIncrement 0.5
+begin
+format	roundingMode	output	breaks
+1.24	halfUp	1	K
+1.25	halfUp	1.5	K
+1.25	halfDown	1	K
+1.26	halfDown	1.5	K
+1.25	halfEven	1	K
+-1.01	up	-1.5	K
+-1.49	down	-1	K
+1.01	up	1.5	K
+1.49	down	1	K
+-1.01	ceiling	-1	K
+-1.49	floor	-1.5	K
+
+

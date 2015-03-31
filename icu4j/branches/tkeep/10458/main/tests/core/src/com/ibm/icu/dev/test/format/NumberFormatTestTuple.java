@@ -9,8 +9,11 @@ package com.ibm.icu.dev.test.format;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
+import com.ibm.icu.math.BigDecimal;
 import com.ibm.icu.util.Currency;
 import com.ibm.icu.util.ULocale;
 
@@ -92,6 +95,7 @@ public class NumberFormatTestTuple {
     public Maybe<Integer> useScientific = Maybe.nothing();
     public Maybe<Integer> grouping = Maybe.nothing();
     public Maybe<Integer> grouping2 = Maybe.nothing();
+    public Maybe<Integer> roundingMode = Maybe.nothing();
     
     /**
      * nothing or empty means that test ought to work for both C and JAVA;
@@ -99,6 +103,20 @@ public class NumberFormatTestTuple {
      * "CJ" means test is known to fail for both languages.
      */
     public Maybe<String> breaks = Maybe.nothing();
+    
+    private static Map<String, Integer> roundingModeMap =
+            new HashMap<String, Integer>();
+    
+    static {
+        roundingModeMap.put("ceiling", BigDecimal.ROUND_CEILING);
+        roundingModeMap.put("floor", BigDecimal.ROUND_FLOOR);
+        roundingModeMap.put("down", BigDecimal.ROUND_DOWN);
+        roundingModeMap.put("up", BigDecimal.ROUND_UP);
+        roundingModeMap.put("halfEven", BigDecimal.ROUND_HALF_EVEN);
+        roundingModeMap.put("halfDown", BigDecimal.ROUND_HALF_DOWN);
+        roundingModeMap.put("halfUp", BigDecimal.ROUND_HALF_UP);
+        roundingModeMap.put("unnecessary", BigDecimal.ROUND_UNNECESSARY);
+    }
     
     // Add any new fields here. On test failures, fields are printed in the same order they
     // appear here.
@@ -125,7 +143,8 @@ public class NumberFormatTestTuple {
         "padCharacter",
         "useScientific",
         "grouping",
-        "grouping2"
+        "grouping2",
+        "roundingMode"
     };
     
     static {
@@ -230,6 +249,14 @@ public class NumberFormatTestTuple {
     
     public void setGrouping2(String value) {
         grouping2 = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setRoundingMode(String value) {
+        Integer mode = roundingModeMap.get(value);
+        if (mode == null) {
+            throw new IllegalArgumentException("Bad rounding mode: "+ value);
+        }
+        roundingMode = Maybe.just(mode);
     }
     
     // end field setters.

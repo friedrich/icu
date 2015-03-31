@@ -101,7 +101,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.grouping2.isValue()) {
                         fmt.setSecondaryGroupingSize(tuple.grouping2.getValue());
                     }
-
+                    if (tuple.roundingMode.isValue()) {
+                        fmt.setRoundingMode(tuple.roundingMode.getValue());
+                    }
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
@@ -167,6 +169,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                         fmt.setGroupingSize(tuple.grouping.getValue());
                     }
                     if (tuple.grouping2.isValue()) {
+                        // Not supported
+                    }
+                    if (tuple.roundingMode.isValue()) {
                         // Not supported
                     }
                     
