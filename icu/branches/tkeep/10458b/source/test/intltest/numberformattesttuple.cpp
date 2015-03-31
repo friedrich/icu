@@ -10,6 +10,7 @@
 #include "charstr.h"
 #include "cstring.h"
 #include "cmemory.h"
+#include "digitlst.h"
 
 U_NAMESPACE_BEGIN
 
@@ -19,6 +20,55 @@ NumberFormatTestTuple *gNullPtr = NULL;
 #define FIELD_FLAG_OFFSET(fieldName) ((int32_t) (((char *) &gNullPtr->fieldName##Flag) - ((char *) gNullPtr)))
 
 #define FIELD_INIT(fieldName, fieldType) {#fieldName, FIELD_OFFSET(fieldName), FIELD_FLAG_OFFSET(fieldName), fieldType}
+
+struct Numberformattesttuple_EnumConversion {
+    const char *str;
+    int32_t value;
+};
+
+static Numberformattesttuple_EnumConversion gRoundingEnum[] = {
+    {"ceiling", DigitList::kRoundCeiling},
+    {"floor", DigitList::kRoundFloor},
+    {"down", DigitList::kRoundDown},
+    {"up", DigitList::kRoundUp},
+    {"halfEven", DigitList::kRoundHalfEven},
+    {"halfDown", DigitList::kRoundHalfDown},
+    {"halfUp", DigitList::kRoundHalfUp},
+    {"unnecessary", DigitList::kRoundUnnecessary}};
+
+static int32_t toEnum(
+        const Numberformattesttuple_EnumConversion *table,
+        int32_t tableLength,
+        const UnicodeString &str,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return 0;
+    }
+    CharString cstr;
+    cstr.appendInvariantChars(str, status);
+    if (U_FAILURE(status)) {
+        return 0;
+    }
+    for (int32_t i = 0; i < tableLength; ++i) {
+        if (uprv_strcmp(cstr.data(), table[i].str) == 0) {
+            return table[i].value;
+        }
+    }
+    status = U_ILLEGAL_ARGUMENT_ERROR;
+    return 0;
+}
+
+static void fromEnum(
+        const Numberformattesttuple_EnumConversion *table,
+        int32_t tableLength,
+        int32_t val,
+        UnicodeString &appendTo) {
+    for (int32_t i = 0; i < tableLength; ++i) {
+        if (table[i].value == val) {
+            appendTo.append(table[i].str);
+        }
+    }
+}
 
 static void identVal(
         const UnicodeString &str, void *strPtr, UErrorCode & /*status*/) {
@@ -115,6 +165,24 @@ static void doubleToStr(
     appendTo.append(buffer);
 }
 
+static void strToERounding(
+        const UnicodeString &str, void *roundPtr, UErrorCode &status) {
+    int32_t val = toEnum(
+            gRoundingEnum, UPRV_LENGTHOF(gRoundingEnum), str, status);
+    *static_cast<DigitList::ERoundingMode *>(roundPtr) = (DigitList::ERoundingMode) val;
+}
+
+static void eRoundingToStr(
+        const void *roundPtr, UnicodeString &appendTo) {
+    DigitList::ERoundingMode rounding = 
+            *static_cast<const DigitList::ERoundingMode *>(roundPtr);
+    fromEnum(
+            gRoundingEnum,
+            UPRV_LENGTHOF(gRoundingEnum),
+            rounding,
+            appendTo);
+}
+
 struct NumberFormatTestTupleFieldOps {
     void (*toValue)(const UnicodeString &str, void *valPtr, UErrorCode &);
     void (*toString)(const void *valPtr, UnicodeString &appendTo);
@@ -124,6 +192,7 @@ const NumberFormatTestTupleFieldOps gStrOps = {identVal, identStr};
 const NumberFormatTestTupleFieldOps gIntOps = {strToInt, intToStr};
 const NumberFormatTestTupleFieldOps gLocaleOps = {strToLocale, localeToStr};
 const NumberFormatTestTupleFieldOps gDoubleOps = {strToDouble, doubleToStr};
+const NumberFormatTestTupleFieldOps gERoundingOps = {strToERounding, eRoundingToStr};
 
 struct NumberFormatTestTupleFieldData {
     const char *name;
@@ -157,6 +226,7 @@ const NumberFormatTestTupleFieldData gFieldData[] = {
     FIELD_INIT(useScientific, &gIntOps),
     FIELD_INIT(grouping, &gIntOps),
     FIELD_INIT(grouping2, &gIntOps),
+    FIELD_INIT(roundingMode, &gERoundingOps),
 };
 
 UBool

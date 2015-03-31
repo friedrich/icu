@@ -298,6 +298,13 @@ static void adjustDecimalFormat(
                 tuple.grouping2,
                 appendErrorMessage);
     }
+    if (tuple.roundingModeFlag) {
+        SET_AND_CHECK(
+                fmt,
+                RoundingMode,
+                tuple.roundingMode,
+                appendErrorMessage);
+    }
 }
 
 UObject *NumberFormat2TestDataDriven::newFormatter(UErrorCode &status) {

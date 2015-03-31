@@ -38,6 +38,7 @@ enum ENumberFormatTestTupleField {
     kUseScientific,
     kGrouping,
     kGrouping2,
+    kRoundingMode,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -66,6 +67,7 @@ public:
     int32_t useScientific;
     int32_t grouping;
     int32_t grouping2;
+    DigitList::ERoundingMode roundingMode;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -90,6 +92,7 @@ public:
     UBool useScientificFlag;
     UBool groupingFlag;
     UBool grouping2Flag;
+    UBool roundingModeFlag;
 
     NumberFormatTestTuple() {
         clear();

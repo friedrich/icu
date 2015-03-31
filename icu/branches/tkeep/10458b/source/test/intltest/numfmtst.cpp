@@ -203,7 +203,36 @@ UBool NumberFormatTestDataDriven::isFormatPass(
                 tuple.grouping2,
                 appendErrorMessage);
     }
-
+    if (tuple.roundingModeFlag) {
+        switch (tuple.roundingMode) {
+        case DigitList::kRoundDown:
+            fmt.setRoundingMode(DecimalFormat::kRoundDown);
+            break;
+        case DigitList::kRoundUp:
+            fmt.setRoundingMode(DecimalFormat::kRoundUp);
+            break;
+        case DigitList::kRoundHalfDown:
+            fmt.setRoundingMode(DecimalFormat::kRoundHalfDown);
+            break;
+        case DigitList::kRoundHalfUp:
+            fmt.setRoundingMode(DecimalFormat::kRoundHalfUp);
+            break;
+        case DigitList::kRoundHalfEven:
+            fmt.setRoundingMode(DecimalFormat::kRoundHalfEven);
+            break;
+        case DigitList::kRoundCeiling:
+            fmt.setRoundingMode(DecimalFormat::kRoundCeiling);
+            break;
+        case DigitList::kRoundFloor:
+            fmt.setRoundingMode(DecimalFormat::kRoundFloor);
+            break;
+        case DigitList::kRoundUnnecessary:
+            fmt.setRoundingMode(DecimalFormat::kRoundUnnecessary);
+            break;
+        default:
+            appendErrorMessage.append("Bad rounding mode.");
+        }
+    }
     if (appendErrorMessage.length() > 0) {
         return FALSE;
     }
