@@ -1,0 +1,13 @@
+{
+  "name": "icu4c-data",
+  "version": "54.1.0",
+  "description": "ICU4C data (little endian)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "icu4c"
+  ],
+  "author": "The ICU Team; © 1997-2015 IBM Corporation and Others, All Rights Reserved",
+  "license": "MIT/X"
+}

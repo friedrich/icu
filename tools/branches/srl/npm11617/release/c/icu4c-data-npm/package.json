@@ -1,0 +1,14 @@
+{
+  "name": "icu4c-data-builder",
+  "version": "0.0.1",
+  "description": "ICU4C data generator",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "icu4c"
+  ],
+  "author": "The ICU Team; © 1997-2015 IBM Corporation and Others, All Rights Reserved",
+  "license": "MIT/X",
+  "main": "index.js"
+}
