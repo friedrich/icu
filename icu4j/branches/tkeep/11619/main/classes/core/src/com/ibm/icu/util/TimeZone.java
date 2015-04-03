@@ -746,38 +746,42 @@ abstract public class TimeZone implements Serializable, Cloneable, Freezable<Tim
      * @return the specified <code>TimeZone</code> or UNKNOWN_ZONE if the given ID
      * cannot be understood.
      */
-    private static TimeZone getTimeZone(String ID, int type, boolean frozen) {
+    private static TimeZone getTimeZone(String ID, int type, boolean frozen) {       
         TimeZone result;
         if (type == TIMEZONE_JDK) {
             result = JavaTimeZone.createTimeZone(ID);
             if (result != null) {
                 return frozen ? result.freeze() : result;
-            }
+            } 
+            result = getFrozenICUTimeZone(ID, false);
         } else {
-            /* We first try to lookup the zone ID in our system list.  If this
-             * fails, we try to parse it as a custom string GMT[+-]HH:mm.  If
-             * all else fails, we return GMT, which is probably not what the
-             * user wants, but at least is a functioning TimeZone object.
-             *
-             * We cannot return NULL, because that would break compatibility
-             * with the JDK.
-             */
-            if(ID==null){
-                throw new NullPointerException();
-            }
-            result = ZoneMeta.getSystemTimeZone(ID);
+            result = getFrozenICUTimeZone(ID, true);
         }
-
-        if (result == null) {
-            result = ZoneMeta.getCustomTimeZone(ID);
-        }
-
         if (result == null) {
             LOGGER.fine("\"" +ID + "\" is a bogus id so timezone is falling back to Etc/Unknown(GMT).");
             result = UNKNOWN_ZONE;
         }
-
         return frozen ? result : result.cloneAsThawed();
+    }
+    
+    /**
+     * Returns a frozen ICU type TimeZone object given a time zone ID.
+     * @param ID the time zone ID
+     * @param trySystem if true tries the system time zones first otherwise skip to the
+     *   custom time zones.
+     */
+    static BasicTimeZone getFrozenICUTimeZone(String ID, boolean trySystem) {
+        if(ID==null){
+            throw new NullPointerException();
+        }
+        BasicTimeZone result = null;
+        if (trySystem) {
+            result = ZoneMeta.getSystemTimeZone(ID);
+        }
+        if (result == null) {
+            result = ZoneMeta.getCustomTimeZone(ID);
+        }
+        return result;
     }
 
     /**
