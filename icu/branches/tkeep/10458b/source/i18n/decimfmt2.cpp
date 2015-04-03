@@ -708,6 +708,9 @@ DecimalFormat2::updateGrouping() {
 void
 DecimalFormat2::updateFormatting(
         int32_t changedFormattingFields, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
     // Each function updates one field. Order matters. For instance,
     // updatePluralRules comes before updateAffixParser because the fRules
     // field is needed to update the fAffixParser field.
@@ -882,6 +885,9 @@ DecimalFormat2::updateFormattingLocalizedAffixes(
 
 void
 DecimalFormat2::updateAll(UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
     updatePrecision();
     updateGrouping();
     updateFormatting(kFormattingAll, status);

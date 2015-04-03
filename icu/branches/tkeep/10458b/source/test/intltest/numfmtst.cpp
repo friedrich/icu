@@ -48,44 +48,81 @@ UBool isFormatPass(
 
 };
 
-#define SET_AND_CHECK(fmt, fieldName, expr, errors) \
-    (fmt).set##fieldName(expr); \
-    if (FALSE && (fmt).get##fieldName() != (expr)) { \
+#define CHECK_EQUALITY(fmt, fmtCopy, fieldName, getter, errors) \
+    if ((fmt).getter() != (fmtCopy).getter() && (fmt) == (fmtCopy)) { \
         (errors).append(#fieldName); \
-        (errors).append(": set/get mismatch"); \
+        (errors).append(": set/equality mismatch"); \
     } \
 
-#define SET_AND_CHECK_WITH_COND(fmt, fieldName, expr, cond, errors) \
-    (fmt).set##fieldName(expr); \
-    if (FALSE && (cond) && (fmt).get##fieldName() != (expr)) { \
-        (errors).append(#fieldName); \
-        (errors).append(": set/get mismatch"); \
+#define SET_AND_CHECK_WITH_STATUS_LONG(fmt, fieldName, setter, getter, expr, cond, errors) { \
+    DecimalFormat fmtCopy(fmt); \
+    if (fmtCopy != (fmt)) { \
+        (errors).append("copy constructor equality mismatch"); \
+    } else { \
+        UErrorCode status = U_ZERO_ERROR; \
+        (fmt).setter(expr, status); \
+        if (U_FAILURE(status)) { \
+            (errors).append(#fieldName); \
+            (errors).append(": error setting."); \
+        } else if ((cond) && (fmt).getter() != (expr)) { \
+            (errors).append(#fieldName); \
+            (errors).append(": set/get mismatch"); \
+        } \
+        CHECK_EQUALITY(fmt, fmtCopy, fieldName, getter, errors); \
     } \
+}
 
-#define SET_AND_CHECK_BOOL(fmt, fieldName, expr, errors) \
-    (fmt).set##fieldName(expr); \
-    if (FALSE && (fmt).is##fieldName() != (expr)) { \
-        (errors).append(#fieldName); \
-        (errors).append(": set/get mismatch"); \
+#define SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, setter, getter, expr, cond, errors) { \
+    DecimalFormat fmtCopy(fmt); \
+    if (fmtCopy != (fmt)) { \
+        (errors).append("copy constructor equality mismatch"); \
+    } else { \
+        (fmt).setter(expr); \
+        if ((cond) && (fmt).getter() != (expr)) { \
+            (errors).append(#fieldName); \
+            (errors).append(": set/get mismatch"); \
+        } \
+        CHECK_EQUALITY(fmt, fmtCopy, fieldName, getter, errors); \
     } \
+}
 
-UBool NumberFormatTestDataDriven::isFormatPass(
-        const NumberFormatTestTuple &tuple,
-        UnicodeString &appendErrorMessage,
+#define SET_AND_CHECK(fmt, fieldName, expr, errors) SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, set##fieldName, get##fieldName, expr, FALSE, errors)
+
+#define SET_AND_CHECK_WITH_STATUS(fmt, fieldName, expr, errors) SET_AND_CHECK_WITH_STATUS_LONG(fmt, fieldName, set##fieldName, get##fieldName, expr, FALSE, errors)
+
+#define SET_AND_CHECK_WITH_COND(fmt, fieldName, expr, cond, errors) SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, set##fieldName, get##fieldName, expr, FALSE, errors)
+
+#define SET_AND_CHECK_BOOL(fmt, fieldName, expr, errors) SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, set##fieldName, is##fieldName, expr, FALSE, errors)
+
+static DigitList &strToDigitList(
+        const UnicodeString &str,
+        DigitList &digitList,
         UErrorCode &status) {
     if (U_FAILURE(status)) {
-        return FALSE;
+        return digitList;
     }
-    Locale en("en");
-    DecimalFormat fmt(
-            NFTT_GET_FIELD(tuple, pattern, "0"),
-            new DecimalFormatSymbols(NFTT_GET_FIELD(tuple, locale, en), status),
-            status);
-    if (U_FAILURE(status)) {
-        appendErrorMessage.append("Error creating DecimalFormat");
-        return FALSE;
-    }
+    CharString formatValue;
+    formatValue.appendInvariantChars(str, status);
+    digitList.set(StringPiece(formatValue.data()), status, 0);
+    return digitList;
+}
 
+static UnicodeString &format(
+        const DecimalFormat &fmt,
+        const DigitList &digitList,
+        UnicodeString &appendTo,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return appendTo;
+    }
+    FieldPosition fpos(FieldPosition::DONT_CARE);
+    return fmt.format(digitList, appendTo, fpos, status);
+}
+
+static void adjustDecimalFormat(
+        const NumberFormatTestTuple &tuple,
+        DecimalFormat &fmt,
+        UnicodeString &appendErrorMessage) {
     if (tuple.minIntegerDigitsFlag) {
         SET_AND_CHECK(
                 fmt,
@@ -115,15 +152,12 @@ UBool NumberFormatTestDataDriven::isFormatPass(
                 appendErrorMessage);
     }
     if (tuple.currencyFlag) {
+        UErrorCode status = U_ZERO_ERROR;
         UnicodeString currency(tuple.currency);
         const UChar *terminatedCurrency = currency.getTerminatedBuffer();
         fmt.setCurrency(terminatedCurrency, status);
         if (U_FAILURE(status)) {
             appendErrorMessage.append("Error setting currency.");
-            return FALSE;
-        }
-        if (u_strcmp(fmt.getCurrency(), terminatedCurrency) != 0) {
-            appendErrorMessage.append("currency: get/set mismatch.");
         }
     }
     if (tuple.minGroupingDigitsFlag) {
@@ -131,10 +165,14 @@ UBool NumberFormatTestDataDriven::isFormatPass(
     }
     if (tuple.useSigDigitsFlag) {
         UBool newValue = tuple.useSigDigits != 0;
-        fmt.setSignificantDigitsUsed(newValue);
-        if (fmt.areSignificantDigitsUsed() != newValue) {
-                appendErrorMessage.append("SignificantDigitsUsed: get/set mismatch");
-        }
+        SET_AND_CHECK_WITH_COND_LONG(
+                fmt,
+                SignificantDigitsUsed,
+                setSignificantDigitsUsed,
+                areSignificantDigitsUsed,
+                newValue,
+                FALSE,
+                appendErrorMessage);
     }
     if (tuple.minSigDigitsFlag) {
         SET_AND_CHECK(
@@ -233,15 +271,39 @@ UBool NumberFormatTestDataDriven::isFormatPass(
             appendErrorMessage.append("Bad rounding mode.");
         }
     }
+    if (tuple.currencyUsageFlag) {
+        UErrorCode status = U_ZERO_ERROR;
+        fmt.setCurrencyUsage(tuple.currencyUsage, &status);
+        if (U_FAILURE(status)) {
+            appendErrorMessage.append("CurrencyUsage: error setting.");
+        }
+    }
+}
+
+UBool NumberFormatTestDataDriven::isFormatPass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    Locale en("en");
+    DecimalFormat fmt(
+            NFTT_GET_FIELD(tuple, pattern, "0"),
+            new DecimalFormatSymbols(NFTT_GET_FIELD(tuple, locale, en), status),
+            status);
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error creating DecimalFormat");
+        return FALSE;
+    }
+    adjustDecimalFormat(tuple, fmt, appendErrorMessage);
     if (appendErrorMessage.length() > 0) {
         return FALSE;
     }
-
+    DigitList digitList;
+    strToDigitList(tuple.format, digitList, status);
     UnicodeString appendTo;
-    FieldPositionIterator posIter;
-    CharString formatValue;
-    formatValue.appendInvariantChars(tuple.format, status);
-    fmt.format(StringPiece(formatValue.data()), appendTo, &posIter, status);
+    format(fmt, digitList, appendTo, status);
     if (U_FAILURE(status)) {
         appendErrorMessage.append("Error formatting.");
         return FALSE;

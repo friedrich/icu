@@ -9,6 +9,7 @@
 
 #include "unicode/utypes.h"
 #include "decimalformatpattern.h"
+#include "unicode/ucurr.h"
 
 #define NFTT_GET_FIELD(tuple, fieldName, defaultValue) ((tuple).fieldName##Flag ? (tuple).fieldName : (defaultValue))
 
@@ -39,6 +40,7 @@ enum ENumberFormatTestTupleField {
     kGrouping,
     kGrouping2,
     kRoundingMode,
+    kCurrencyUsage,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -68,6 +70,7 @@ public:
     int32_t grouping;
     int32_t grouping2;
     DigitList::ERoundingMode roundingMode;
+    UCurrencyUsage currencyUsage;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -93,6 +96,7 @@ public:
     UBool groupingFlag;
     UBool grouping2Flag;
     UBool roundingModeFlag;
+    UBool currencyUsageFlag;
 
     NumberFormatTestTuple() {
         clear();

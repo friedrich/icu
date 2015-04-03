@@ -95,54 +95,51 @@ private:
 
 };
 
-#define CHECK_EQUALITY(fmt, fmtCopy, fieldName, errors) \
-    if ((fmt).get##fieldName() != (fmtCopy).get##fieldName() && (fmt) == (fmtCopy)) { \
+#define CHECK_EQUALITY(fmt, fmtCopy, fieldName, getter, errors) \
+    if ((fmt).getter() != (fmtCopy).getter() && (fmt) == (fmtCopy)) { \
         (errors).append(#fieldName); \
         (errors).append(": set/equality mismatch"); \
     } \
 
-
-#define SET_AND_CHECK(fmt, fieldName, expr, errors) \
+#define SET_AND_CHECK_WITH_STATUS_LONG(fmt, fieldName, setter, getter, expr, cond, errors) { \
     DecimalFormat2 fmtCopy(fmt); \
     if (fmtCopy != (fmt)) { \
         (errors).append("copy constructor equality mismatch"); \
     } else { \
-        (fmt).set##fieldName(expr); \
-        if ((fmt).get##fieldName() != (expr)) { \
+        UErrorCode status = U_ZERO_ERROR; \
+        (fmt).setter(expr, status); \
+        if (U_FAILURE(status)) { \
+            (errors).append(#fieldName); \
+            (errors).append(": error setting."); \
+        } else if ((cond) && (fmt).getter() != (expr)) { \
             (errors).append(#fieldName); \
             (errors).append(": set/get mismatch"); \
         } \
-        CHECK_EQUALITY((fmt), (fmtCopy), fieldName, (errors)); \
+        CHECK_EQUALITY(fmt, fmtCopy, fieldName, getter, errors); \
     } \
+}
 
-#define SET_AND_CHECK_WITH_COND(fmt, fieldName, expr, cond, errors) \
+#define SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, setter, getter, expr, cond, errors) { \
     DecimalFormat2 fmtCopy(fmt); \
     if (fmtCopy != (fmt)) { \
         (errors).append("copy constructor equality mismatch"); \
     } else { \
-        (fmt).set##fieldName(expr); \
-        if ((cond) && (fmt).get##fieldName() != (expr)) { \
+        (fmt).setter(expr); \
+        if ((cond) && (fmt).getter() != (expr)) { \
             (errors).append(#fieldName); \
             (errors).append(": set/get mismatch"); \
         } \
-        CHECK_EQUALITY((fmt), (fmtCopy), fieldName, (errors)); \
+        CHECK_EQUALITY(fmt, fmtCopy, fieldName, getter, errors); \
     } \
+}
 
-#define SET_AND_CHECK_BOOL(fmt, fieldName, expr, errors) \
-    DecimalFormat2 fmtCopy(fmt); \
-    if (fmtCopy != (fmt)) { \
-        (errors).append("copy constructor equality mismatch"); \
-    } else { \
-        (fmt).set##fieldName(expr); \
-        if ((fmt).is##fieldName() != (expr)) { \
-            (errors).append(#fieldName); \
-            (errors).append(": set/get mismatch"); \
-        } \
-        if ((fmt).is##fieldName() != (fmtCopy).is##fieldName() && (fmt) == (fmtCopy)) { \
-            (errors).append(#fieldName); \
-            (errors).append(": set/equality mismatch"); \
-        } \
-    } \
+#define SET_AND_CHECK(fmt, fieldName, expr, errors) SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, set##fieldName, get##fieldName, expr, TRUE, errors)
+
+#define SET_AND_CHECK_WITH_STATUS(fmt, fieldName, expr, errors) SET_AND_CHECK_WITH_STATUS_LONG(fmt, fieldName, set##fieldName, get##fieldName, expr, TRUE, errors)
+
+#define SET_AND_CHECK_WITH_COND(fmt, fieldName, expr, cond, errors) SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, set##fieldName, get##fieldName, expr, cond, errors)
+
+#define SET_AND_CHECK_BOOL(fmt, fieldName, expr, errors) SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, set##fieldName, is##fieldName, expr, TRUE, errors)
 
 static DigitList &strToDigitList(
         const UnicodeString &str,
@@ -173,7 +170,6 @@ static void adjustDecimalFormat(
         const NumberFormatTestTuple &tuple,
         DecimalFormat2 &fmt,
         UnicodeString &appendErrorMessage) {
-    UErrorCode status = U_ZERO_ERROR;
     if (tuple.minIntegerDigitsFlag) {
         SET_AND_CHECK(
                 fmt,
@@ -203,14 +199,22 @@ static void adjustDecimalFormat(
                 appendErrorMessage);
     }
     if (tuple.currencyFlag) {
-        UnicodeString currency(tuple.currency);
-        const UChar *terminatedCurrency = currency.getTerminatedBuffer();
-        fmt.setCurrency(terminatedCurrency, status);
-        if (U_FAILURE(status)) {
-            appendErrorMessage.append("Error setting currency.");
-        }
-        if (u_strcmp(fmt.getCurrency(), terminatedCurrency) != 0) {
-            appendErrorMessage.append("currency: get/set mismatch.");
+        DecimalFormat2 fmtCopy(fmt);
+        if (fmtCopy != fmt) {
+            appendErrorMessage.append("Copy constructor equality mismatch.");
+        } else {
+            UErrorCode status = U_ZERO_ERROR;
+            UnicodeString currency(tuple.currency);
+            const UChar *terminatedCurrency = currency.getTerminatedBuffer();
+            fmt.setCurrency(terminatedCurrency, status);
+            if (U_FAILURE(status)) {
+                appendErrorMessage.append("Error setting currency.");
+            } else if (u_strcmp(fmt.getCurrency(), terminatedCurrency) != 0) {
+                appendErrorMessage.append("Currency: get/set mismatch.");
+            }
+            if (u_strcmp(fmt.getCurrency(), fmtCopy.getCurrency()) != 0 && fmt == fmtCopy) {
+                appendErrorMessage.append("Currency: set/equality mismatch.");
+            }
         }
     }
     if (tuple.minGroupingDigitsFlag) {
@@ -222,10 +226,14 @@ static void adjustDecimalFormat(
     }
     if (tuple.useSigDigitsFlag) {
         UBool newValue = tuple.useSigDigits != 0;
-        fmt.setSignificantDigitsUsed(newValue);
-        if (fmt.areSignificantDigitsUsed() != newValue) {
-                appendErrorMessage.append("SignificantDigitsUsed: get/set mismatch");
-        }
+        SET_AND_CHECK_WITH_COND_LONG(
+                fmt,
+                SignificantDigitsUsed,
+                setSignificantDigitsUsed,
+                areSignificantDigitsUsed,
+                newValue,
+                TRUE,
+                appendErrorMessage);
     }
     if (tuple.minSigDigitsFlag) {
         SET_AND_CHECK(
@@ -303,6 +311,13 @@ static void adjustDecimalFormat(
                 fmt,
                 RoundingMode,
                 tuple.roundingMode,
+                appendErrorMessage);
+    }
+    if (tuple.currencyUsageFlag) {
+        SET_AND_CHECK_WITH_STATUS(
+                fmt,
+                CurrencyUsage,
+                tuple.currencyUsage,
                 appendErrorMessage);
     }
 }

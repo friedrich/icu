@@ -36,6 +36,10 @@ static Numberformattesttuple_EnumConversion gRoundingEnum[] = {
     {"halfUp", DigitList::kRoundHalfUp},
     {"unnecessary", DigitList::kRoundUnnecessary}};
 
+static Numberformattesttuple_EnumConversion gCurrencyUsageEnum[] = {
+    {"standard", UCURR_USAGE_STANDARD},
+    {"cash", UCURR_USAGE_CASH}};
+
 static int32_t toEnum(
         const Numberformattesttuple_EnumConversion *table,
         int32_t tableLength,
@@ -183,6 +187,24 @@ static void eRoundingToStr(
             appendTo);
 }
 
+static void strToCurrencyUsage(
+        const UnicodeString &str, void *currencyUsagePtr, UErrorCode &status) {
+    int32_t val = toEnum(
+            gCurrencyUsageEnum, UPRV_LENGTHOF(gCurrencyUsageEnum), str, status);
+    *static_cast<UCurrencyUsage *>(currencyUsagePtr) = (UCurrencyUsage) val;
+}
+
+static void currencyUsageToStr(
+        const void *currencyUsagePtr, UnicodeString &appendTo) {
+    UCurrencyUsage currencyUsage = 
+            *static_cast<const UCurrencyUsage *>(currencyUsagePtr);
+    fromEnum(
+            gCurrencyUsageEnum,
+            UPRV_LENGTHOF(gCurrencyUsageEnum),
+            currencyUsage,
+            appendTo);
+}
+
 struct NumberFormatTestTupleFieldOps {
     void (*toValue)(const UnicodeString &str, void *valPtr, UErrorCode &);
     void (*toString)(const void *valPtr, UnicodeString &appendTo);
@@ -193,6 +215,7 @@ const NumberFormatTestTupleFieldOps gIntOps = {strToInt, intToStr};
 const NumberFormatTestTupleFieldOps gLocaleOps = {strToLocale, localeToStr};
 const NumberFormatTestTupleFieldOps gDoubleOps = {strToDouble, doubleToStr};
 const NumberFormatTestTupleFieldOps gERoundingOps = {strToERounding, eRoundingToStr};
+const NumberFormatTestTupleFieldOps gCurrencyUsageOps = {strToCurrencyUsage, currencyUsageToStr};
 
 struct NumberFormatTestTupleFieldData {
     const char *name;
@@ -227,6 +250,7 @@ const NumberFormatTestTupleFieldData gFieldData[] = {
     FIELD_INIT(grouping, &gIntOps),
     FIELD_INIT(grouping2, &gIntOps),
     FIELD_INIT(roundingMode, &gERoundingOps),
+    FIELD_INIT(currencyUsage, &gCurrencyUsageOps),
 };
 
 UBool
