@@ -96,6 +96,7 @@ public class NumberFormatTestTuple {
     public Maybe<Integer> grouping = Maybe.nothing();
     public Maybe<Integer> grouping2 = Maybe.nothing();
     public Maybe<Integer> roundingMode = Maybe.nothing();
+    public Maybe<Currency.CurrencyUsage> currencyUsage = Maybe.nothing();
     
     /**
      * nothing or empty means that test ought to work for both C and JAVA;
@@ -116,6 +117,14 @@ public class NumberFormatTestTuple {
         roundingModeMap.put("halfDown", BigDecimal.ROUND_HALF_DOWN);
         roundingModeMap.put("halfUp", BigDecimal.ROUND_HALF_UP);
         roundingModeMap.put("unnecessary", BigDecimal.ROUND_UNNECESSARY);
+    }
+    
+    private static Map<String, Currency.CurrencyUsage> currencyUsageMap =
+            new HashMap<String, Currency.CurrencyUsage>();
+    
+    static {
+        currencyUsageMap.put("standard", Currency.CurrencyUsage.STANDARD);
+        currencyUsageMap.put("cash", Currency.CurrencyUsage.CASH);
     }
     
     // Add any new fields here. On test failures, fields are printed in the same order they
@@ -144,7 +153,8 @@ public class NumberFormatTestTuple {
         "useScientific",
         "grouping",
         "grouping2",
-        "roundingMode"
+        "roundingMode",
+        "currencyUsage"
     };
     
     static {
@@ -154,6 +164,14 @@ public class NumberFormatTestTuple {
                 throw new ExceptionInInitializerError(s + "is a duplicate field.");    
             }
         }
+    }
+    
+    private static <T> T fromString(Map<String, T> map, String key) {
+        T value = map.get(key);
+        if (value == null) {
+            throw new IllegalArgumentException("Bad value: "+ key);
+        }
+        return value;
     }
     
     // start field setters.
@@ -252,11 +270,11 @@ public class NumberFormatTestTuple {
     }
     
     public void setRoundingMode(String value) {
-        Integer mode = roundingModeMap.get(value);
-        if (mode == null) {
-            throw new IllegalArgumentException("Bad rounding mode: "+ value);
-        }
-        roundingMode = Maybe.just(mode);
+        roundingMode = Maybe.just(fromString(roundingModeMap, value));
+    }
+    
+    public void setCurrencyUsage(String value) {
+        currencyUsage = Maybe.just(fromString(currencyUsageMap, value));
     }
     
     // end field setters.

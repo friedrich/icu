@@ -370,4 +370,13 @@ format	roundingMode	output	breaks
 -1.01	ceiling	-1	K
 -1.49	floor	-1.5	K
 
+test currency usage setters
+// TODO: Find a country and currency where standard and cash differ
+set locale NZ
+set currency NZD
+set pattern \u00a40
+begin
+format	currencyUsage	output	breaks
+0.37	standard	NZ$0.37	K
+0.37	cash	NZ$0.37	K
 

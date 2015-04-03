@@ -104,6 +104,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.roundingMode.isValue()) {
                         fmt.setRoundingMode(tuple.roundingMode.getValue());
                     }
+                    if (tuple.currencyUsage.isValue()) {
+                        fmt.setCurrencyUsage(tuple.currencyUsage.getValue());
+                    }
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
@@ -172,6 +175,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                         // Not supported
                     }
                     if (tuple.roundingMode.isValue()) {
+                        // Not supported
+                    }
+                    if (tuple.currencyUsage.isValue()) {
                         // Not supported
                     }
                     
