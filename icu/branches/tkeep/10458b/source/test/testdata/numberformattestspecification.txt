@@ -380,3 +380,20 @@ format	currencyUsage	output	breaks
 0.37	standard	NZ$0.37	K
 0.37	cash	NZ$0.37	K
 
+test exponent parameter setters
+set locale en_US
+set pattern 0.##E0
+set format 299792458
+begin
+decimalSeparatorAlwaysShown	exponentSignAlwaysShown	minimumExponentDigits	output	breaks
+0	0	2	3E08	K
+0	1	3	3E+008	K
+// ICU DecimalFormat both C and J do not honor decimalSeparatorAlwaysShown
+// for scientific notation. But JDK DecimalFormat does honor
+// decimalSeparatorAlwaysShown K=JDK; C=ICU4C; J=ICU4J
+// See ticket 11621
+1	0	2	3.E08	CJK
+1	1	3	3.E+008	CJK
+1	0	1	3.E8	CJ
+0	0	1	3E8
+

@@ -251,6 +251,9 @@ const NumberFormatTestTupleFieldData gFieldData[] = {
     FIELD_INIT(grouping2, &gIntOps),
     FIELD_INIT(roundingMode, &gERoundingOps),
     FIELD_INIT(currencyUsage, &gCurrencyUsageOps),
+    FIELD_INIT(minimumExponentDigits, &gIntOps),
+    FIELD_INIT(exponentSignAlwaysShown, &gIntOps),
+    FIELD_INIT(decimalSeparatorAlwaysShown, &gIntOps),
 };
 
 UBool

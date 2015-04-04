@@ -147,6 +147,24 @@ UChar32 getPadCharacter() const { return fAap.fPadChar; }
 void setPadCharacter(UChar32 c) { fAap.fPadChar = c; }
 int32_t getFormatWidth() const { return fAap.fWidth; }
 void setFormatWidth(int32_t x) { fAap.fWidth = x; }
+int32_t getMinimumExponentDigits() const {
+    return fOptions.fExponent.fMinDigits;
+}
+void setMinimumExponentDigits(int32_t x) {
+    fOptions.fExponent.fMinDigits = x;
+}
+UBool isExponentSignAlwaysShown() const {
+    return fOptions.fExponent.fAlwaysShowSign;
+}
+void setExponentSignAlwaysShown(UBool x) {
+    fOptions.fExponent.fAlwaysShowSign = x;
+}
+UBool isDecimalSeparatorAlwaysShown() const {
+    return fOptions.fMantissa.fAlwaysShowDecimal;
+}
+void setDecimalSeparatorAlwaysShown(UBool x) {
+    fOptions.fMantissa.fAlwaysShowDecimal = x;
+}
 private:
 DigitList fMultiplier;
 DigitList::ERoundingMode fRoundingMode;

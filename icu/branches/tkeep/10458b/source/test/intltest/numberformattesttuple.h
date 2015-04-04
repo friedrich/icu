@@ -41,6 +41,9 @@ enum ENumberFormatTestTupleField {
     kGrouping2,
     kRoundingMode,
     kCurrencyUsage,
+    kMinimumExponentDigits,
+    kExponentSignAlwaysShown,
+    kDecimalSeparatorAlwaysShown,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -71,6 +74,9 @@ public:
     int32_t grouping2;
     DigitList::ERoundingMode roundingMode;
     UCurrencyUsage currencyUsage;
+    int32_t minimumExponentDigits;
+    int32_t exponentSignAlwaysShown;
+    int32_t decimalSeparatorAlwaysShown;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -97,6 +103,9 @@ public:
     UBool grouping2Flag;
     UBool roundingModeFlag;
     UBool currencyUsageFlag;
+    UBool minimumExponentDigitsFlag;
+    UBool exponentSignAlwaysShownFlag;
+    UBool decimalSeparatorAlwaysShownFlag;
 
     NumberFormatTestTuple() {
         clear();

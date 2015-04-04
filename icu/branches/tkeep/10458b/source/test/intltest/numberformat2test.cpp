@@ -289,7 +289,7 @@ static void adjustDecimalFormat(
         SET_AND_CHECK_BOOL(
                 fmt,
                 ScientificNotation,
-                tuple.useScientific,
+                tuple.useScientific != 0,
                 appendErrorMessage);
     }
     if (tuple.groupingFlag) {
@@ -318,6 +318,27 @@ static void adjustDecimalFormat(
                 fmt,
                 CurrencyUsage,
                 tuple.currencyUsage,
+                appendErrorMessage);
+    }
+    if (tuple.minimumExponentDigitsFlag) {
+        SET_AND_CHECK(
+                fmt,
+                MinimumExponentDigits,
+                tuple.minimumExponentDigits,
+                appendErrorMessage);
+    }
+    if (tuple.exponentSignAlwaysShownFlag) {
+        SET_AND_CHECK_BOOL(
+                fmt,
+                ExponentSignAlwaysShown,
+                tuple.exponentSignAlwaysShown != 0,
+                appendErrorMessage);
+    }
+    if (tuple.decimalSeparatorAlwaysShownFlag) {
+        SET_AND_CHECK_BOOL(
+                fmt,
+                DecimalSeparatorAlwaysShown,
+                tuple.decimalSeparatorAlwaysShown != 0,
                 appendErrorMessage);
     }
 }
