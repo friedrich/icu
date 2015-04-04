@@ -97,6 +97,9 @@ public class NumberFormatTestTuple {
     public Maybe<Integer> grouping2 = Maybe.nothing();
     public Maybe<Integer> roundingMode = Maybe.nothing();
     public Maybe<Currency.CurrencyUsage> currencyUsage = Maybe.nothing();
+    public Maybe<Integer> minimumExponentDigits = Maybe.nothing();
+    public Maybe<Integer> exponentSignAlwaysShown = Maybe.nothing();
+    public Maybe<Integer> decimalSeparatorAlwaysShown = Maybe.nothing();
     
     /**
      * nothing or empty means that test ought to work for both C and JAVA;
@@ -154,7 +157,10 @@ public class NumberFormatTestTuple {
         "grouping",
         "grouping2",
         "roundingMode",
-        "currencyUsage"
+        "currencyUsage",
+        "minimumExponentDigits",
+        "exponentSignAlwaysShown",
+        "decimalSeparatorAlwaysShown",
     };
     
     static {
@@ -275,6 +281,18 @@ public class NumberFormatTestTuple {
     
     public void setCurrencyUsage(String value) {
         currencyUsage = Maybe.just(fromString(currencyUsageMap, value));
+    }
+    
+    public void setMinimumExponentDigits(String value) {
+        minimumExponentDigits = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setExponentSignAlwaysShown(String value) {
+        exponentSignAlwaysShown = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setDecimalSeparatorAlwaysShown(String value) {
+        decimalSeparatorAlwaysShown = Maybe.just(Integer.valueOf(value));
     }
     
     // end field setters.

@@ -107,6 +107,18 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.currencyUsage.isValue()) {
                         fmt.setCurrencyUsage(tuple.currencyUsage.getValue());
                     }
+                    if (tuple.minimumExponentDigits.isValue()) {
+                        fmt.setMinimumExponentDigits(
+                                tuple.minimumExponentDigits.getValue().byteValue());
+                    }
+                    if (tuple.exponentSignAlwaysShown.isValue()) {
+                        fmt.setExponentSignAlwaysShown(
+                                tuple.exponentSignAlwaysShown.getValue() != 0);
+                    }
+                    if (tuple.decimalSeparatorAlwaysShown.isValue()) {
+                        fmt.setDecimalSeparatorAlwaysShown(
+                                tuple.decimalSeparatorAlwaysShown.getValue() != 0);
+                    }
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
@@ -179,6 +191,16 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     }
                     if (tuple.currencyUsage.isValue()) {
                         // Not supported
+                    }
+                    if (tuple.minimumExponentDigits.isValue()) {
+                        // Not supported
+                    }
+                    if (tuple.exponentSignAlwaysShown.isValue()) {
+                        // Not supported
+                    }
+                    if (tuple.decimalSeparatorAlwaysShown.isValue()) {
+                        fmt.setDecimalSeparatorAlwaysShown(
+                                tuple.decimalSeparatorAlwaysShown.getValue() != 0);
                     }
                     
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
