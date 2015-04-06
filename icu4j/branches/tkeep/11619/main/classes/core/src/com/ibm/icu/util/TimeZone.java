@@ -740,25 +740,25 @@ abstract public class TimeZone implements Serializable, Cloneable, Freezable<Tim
 
     /**
      * Gets the <code>TimeZone</code> for the given ID and the timezone type.
-     * @param ID time zone ID
+     * @param id time zone ID
      * @param type time zone implementation type, TIMEZONE_JDK or TIMEZONE_ICU 
      * @param frozen specify if the returned object can be frozen
      * @return the specified <code>TimeZone</code> or UNKNOWN_ZONE if the given ID
      * cannot be understood.
      */
-    private static TimeZone getTimeZone(String ID, int type, boolean frozen) {       
+    private static TimeZone getTimeZone(String id, int type, boolean frozen) {
         TimeZone result;
         if (type == TIMEZONE_JDK) {
-            result = JavaTimeZone.createTimeZone(ID);
+            result = JavaTimeZone.createTimeZone(id);
             if (result != null) {
                 return frozen ? result.freeze() : result;
             } 
-            result = getFrozenICUTimeZone(ID, false);
+            result = getFrozenICUTimeZone(id, false);
         } else {
-            result = getFrozenICUTimeZone(ID, true);
+            result = getFrozenICUTimeZone(id, true);
         }
         if (result == null) {
-            LOGGER.fine("\"" +ID + "\" is a bogus id so timezone is falling back to Etc/Unknown(GMT).");
+            LOGGER.fine("\"" +id + "\" is a bogus id so timezone is falling back to Etc/Unknown(GMT).");
             result = UNKNOWN_ZONE;
         }
         return frozen ? result : result.cloneAsThawed();
@@ -766,20 +766,18 @@ abstract public class TimeZone implements Serializable, Cloneable, Freezable<Tim
     
     /**
      * Returns a frozen ICU type TimeZone object given a time zone ID.
-     * @param ID the time zone ID
+     * @param id the time zone ID
      * @param trySystem if true tries the system time zones first otherwise skip to the
      *   custom time zones.
+     * @return the frozen ICU TimeZone or null if one could not be created.
      */
-    static BasicTimeZone getFrozenICUTimeZone(String ID, boolean trySystem) {
-        if(ID==null){
-            throw new NullPointerException();
-        }
+    static BasicTimeZone getFrozenICUTimeZone(String id, boolean trySystem) {
         BasicTimeZone result = null;
         if (trySystem) {
-            result = ZoneMeta.getSystemTimeZone(ID);
+            result = ZoneMeta.getSystemTimeZone(id);
         }
         if (result == null) {
-            result = ZoneMeta.getCustomTimeZone(ID);
+            result = ZoneMeta.getCustomTimeZone(id);
         }
         return result;
     }
