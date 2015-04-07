@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import com.ibm.icu.math.BigDecimal;
+import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.util.Currency;
 import com.ibm.icu.util.ULocale;
 
@@ -100,6 +101,7 @@ public class NumberFormatTestTuple {
     public Maybe<Integer> minimumExponentDigits = Maybe.nothing();
     public Maybe<Integer> exponentSignAlwaysShown = Maybe.nothing();
     public Maybe<Integer> decimalSeparatorAlwaysShown = Maybe.nothing();
+    public Maybe<Integer> padPosition = Maybe.nothing();
     
     /**
      * nothing or empty means that test ought to work for both C and JAVA;
@@ -128,6 +130,17 @@ public class NumberFormatTestTuple {
     static {
         currencyUsageMap.put("standard", Currency.CurrencyUsage.STANDARD);
         currencyUsageMap.put("cash", Currency.CurrencyUsage.CASH);
+    }
+    
+    private static Map<String, Integer> padPositionMap =
+            new HashMap<String, Integer>();
+    
+    static {
+        // TODO: Fix so that it doesn't depend on DecimalFormat.
+        padPositionMap.put("beforePrefix", DecimalFormat.PAD_BEFORE_PREFIX);
+        padPositionMap.put("afterPrefix", DecimalFormat.PAD_AFTER_PREFIX);
+        padPositionMap.put("beforeSuffix", DecimalFormat.PAD_BEFORE_SUFFIX);
+        padPositionMap.put("afterSuffix", DecimalFormat.PAD_AFTER_SUFFIX);
     }
     
     // Add any new fields here. On test failures, fields are printed in the same order they
@@ -161,6 +174,7 @@ public class NumberFormatTestTuple {
         "minimumExponentDigits",
         "exponentSignAlwaysShown",
         "decimalSeparatorAlwaysShown",
+        "padPosition",
     };
     
     static {
@@ -293,6 +307,10 @@ public class NumberFormatTestTuple {
     
     public void setDecimalSeparatorAlwaysShown(String value) {
         decimalSeparatorAlwaysShown = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setPadPosition(String value) {
+        padPosition = Maybe.just(fromString(padPositionMap, value));
     }
     
     // end field setters.

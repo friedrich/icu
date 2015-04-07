@@ -119,6 +119,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                         fmt.setDecimalSeparatorAlwaysShown(
                                 tuple.decimalSeparatorAlwaysShown.getValue() != 0);
                     }
+                    if (tuple.padPosition.isValue()) {
+                        fmt.setPadPosition(tuple.padPosition.getValue());
+                    }
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
@@ -202,7 +205,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                         fmt.setDecimalSeparatorAlwaysShown(
                                 tuple.decimalSeparatorAlwaysShown.getValue() != 0);
                     }
-                    
+                    if (tuple.padPosition.isValue()) {
+                        // Not supported
+                    }
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
