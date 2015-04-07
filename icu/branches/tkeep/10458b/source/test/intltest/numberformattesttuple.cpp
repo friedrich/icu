@@ -40,6 +40,12 @@ static Numberformattesttuple_EnumConversion gCurrencyUsageEnum[] = {
     {"standard", UCURR_USAGE_STANDARD},
     {"cash", UCURR_USAGE_CASH}};
 
+static Numberformattesttuple_EnumConversion gPadPositionEnum[] = {
+    {"beforePrefix", DigitAffixesAndPadding::kPadBeforePrefix},
+    {"afterPrefix", DigitAffixesAndPadding::kPadAfterPrefix},
+    {"beforeSuffix", DigitAffixesAndPadding::kPadBeforeSuffix},
+    {"afterSuffix", DigitAffixesAndPadding::kPadAfterSuffix}};
+
 static int32_t toEnum(
         const Numberformattesttuple_EnumConversion *table,
         int32_t tableLength,
@@ -205,6 +211,25 @@ static void currencyUsageToStr(
             appendTo);
 }
 
+static void strToEPadPosition(
+        const UnicodeString &str, void *padPositionPtr, UErrorCode &status) {
+    int32_t val = toEnum(
+            gPadPositionEnum, UPRV_LENGTHOF(gPadPositionEnum), str, status);
+    *static_cast<DigitAffixesAndPadding::EPadPosition *>(padPositionPtr) =
+            (DigitAffixesAndPadding::EPadPosition) val;
+}
+
+static void ePadPositionToStr(
+        const void *padPositionPtr, UnicodeString &appendTo) {
+    DigitAffixesAndPadding::EPadPosition padPosition = 
+            *static_cast<const DigitAffixesAndPadding::EPadPosition *>(padPositionPtr);
+    fromEnum(
+            gPadPositionEnum,
+            UPRV_LENGTHOF(gPadPositionEnum),
+            padPosition,
+            appendTo);
+}
+
 struct NumberFormatTestTupleFieldOps {
     void (*toValue)(const UnicodeString &str, void *valPtr, UErrorCode &);
     void (*toString)(const void *valPtr, UnicodeString &appendTo);
@@ -216,6 +241,7 @@ const NumberFormatTestTupleFieldOps gLocaleOps = {strToLocale, localeToStr};
 const NumberFormatTestTupleFieldOps gDoubleOps = {strToDouble, doubleToStr};
 const NumberFormatTestTupleFieldOps gERoundingOps = {strToERounding, eRoundingToStr};
 const NumberFormatTestTupleFieldOps gCurrencyUsageOps = {strToCurrencyUsage, currencyUsageToStr};
+const NumberFormatTestTupleFieldOps gEPadPositionOps = {strToEPadPosition, ePadPositionToStr};
 
 struct NumberFormatTestTupleFieldData {
     const char *name;
@@ -254,6 +280,7 @@ const NumberFormatTestTupleFieldData gFieldData[] = {
     FIELD_INIT(minimumExponentDigits, &gIntOps),
     FIELD_INIT(exponentSignAlwaysShown, &gIntOps),
     FIELD_INIT(decimalSeparatorAlwaysShown, &gIntOps),
+    FIELD_INIT(padPosition, &gEPadPositionOps),
 };
 
 UBool

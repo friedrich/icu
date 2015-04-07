@@ -9,6 +9,7 @@
 
 #include "unicode/utypes.h"
 #include "decimalformatpattern.h"
+#include "digitaffixesandpadding.h"
 #include "unicode/ucurr.h"
 
 #define NFTT_GET_FIELD(tuple, fieldName, defaultValue) ((tuple).fieldName##Flag ? (tuple).fieldName : (defaultValue))
@@ -44,6 +45,7 @@ enum ENumberFormatTestTupleField {
     kMinimumExponentDigits,
     kExponentSignAlwaysShown,
     kDecimalSeparatorAlwaysShown,
+    kPadPosition,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -77,6 +79,7 @@ public:
     int32_t minimumExponentDigits;
     int32_t exponentSignAlwaysShown;
     int32_t decimalSeparatorAlwaysShown;
+    DigitAffixesAndPadding::EPadPosition padPosition;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -106,6 +109,7 @@ public:
     UBool minimumExponentDigitsFlag;
     UBool exponentSignAlwaysShownFlag;
     UBool decimalSeparatorAlwaysShownFlag;
+    UBool padPositionFlag;
 
     NumberFormatTestTuple() {
         clear();

@@ -147,6 +147,12 @@ UChar32 getPadCharacter() const { return fAap.fPadChar; }
 void setPadCharacter(UChar32 c) { fAap.fPadChar = c; }
 int32_t getFormatWidth() const { return fAap.fWidth; }
 void setFormatWidth(int32_t x) { fAap.fWidth = x; }
+DigitAffixesAndPadding::EPadPosition getPadPosition() const {
+    return fAap.fPadPosition;
+}
+void setPadPosition(DigitAffixesAndPadding::EPadPosition x) {
+    fAap.fPadPosition = x;
+}
 int32_t getMinimumExponentDigits() const {
     return fOptions.fExponent.fMinDigits;
 }

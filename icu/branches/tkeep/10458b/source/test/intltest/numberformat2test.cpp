@@ -341,6 +341,13 @@ static void adjustDecimalFormat(
                 tuple.decimalSeparatorAlwaysShown != 0,
                 appendErrorMessage);
     }
+    if (tuple.padPositionFlag) {
+        SET_AND_CHECK(
+                fmt,
+                PadPosition,
+                tuple.padPosition,
+                appendErrorMessage);
+    }
 }
 
 UObject *NumberFormat2TestDataDriven::newFormatter(UErrorCode &status) {

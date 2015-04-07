@@ -299,6 +299,24 @@ static void adjustDecimalFormat(
                 tuple.decimalSeparatorAlwaysShown != 0,
                 appendErrorMessage);
     }
+    if (tuple.padPositionFlag) {
+        switch (tuple.padPosition) {
+        case DigitAffixesAndPadding::kPadBeforePrefix:
+            fmt.setPadPosition(DecimalFormat::kPadBeforePrefix);
+            break;
+        case DigitAffixesAndPadding::kPadAfterPrefix:
+            fmt.setPadPosition(DecimalFormat::kPadAfterPrefix);
+            break;
+        case DigitAffixesAndPadding::kPadBeforeSuffix:
+            fmt.setPadPosition(DecimalFormat::kPadBeforeSuffix);
+            break;
+        case DigitAffixesAndPadding::kPadAfterSuffix:
+            fmt.setPadPosition(DecimalFormat::kPadAfterSuffix);
+            break;
+        default:
+            appendErrorMessage.append("Bad rounding mode.");
+        }
+    }
 }
 
 UBool NumberFormatTestDataDriven::isFormatPass(
