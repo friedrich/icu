@@ -211,6 +211,7 @@ public class DataDrivenNumberFormatTestSuite {
             if (ch == delimiter) {
                 result.add(
                         fileLine.substring(colStart, idx));
+                ++colIdx;
                 colStart = idx + 1;
             }
         }

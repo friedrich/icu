@@ -343,6 +343,10 @@ public class NumberFormatTestTuple {
         useScientific = Maybe.nothing();
     }
     
+    public void clearDecimalSeparatorAlwaysShown() {
+        decimalSeparatorAlwaysShown = Maybe.nothing();
+    }
+    
     // end field clearers
     
     public void setField(String fieldName, String valueString)
