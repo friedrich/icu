@@ -8099,7 +8099,7 @@ void NumberFormatTest::TestCurrencyUsage() {
 
         UnicodeString cash_rounding_currency;
         fmt->format(agent, cash_rounding_currency);
-        assertEquals("Test Currency Usage 4", UnicodeString("CA$123.57"), cash_rounding_currency);
+        assertEquals("Test Currency Usage 4", UnicodeString("CA$123.55"), cash_rounding_currency);
         delete fmt;
     }
 
@@ -8125,7 +8125,7 @@ void NumberFormatTest::TestCurrencyUsage() {
 
         UnicodeString cur_original;
         fmt->format(agent, cur_original);
-        assertEquals("Test Currency Usage 5", UnicodeString("CA$123.57"), cur_original);
+        assertEquals("Test Currency Usage 5", UnicodeString("CA$123.55"), cur_original);
 
         fmt->setCurrency(CUR_PKR, status);
         assertSuccess("Set currency to PKR", status);

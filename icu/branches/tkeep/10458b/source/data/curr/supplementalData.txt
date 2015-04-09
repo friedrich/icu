@@ -4757,13 +4757,13 @@ supplementalData:table(nofallback){
             2,
             0,
             2,
-            0,
+            5,
         }
         CHF:intvector{
             2,
             0,
             2,
-            0,
+            5,
         }
         CLF:intvector{
             4,
