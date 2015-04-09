@@ -446,7 +446,12 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
                             calendarField = Calendar.DATE;
                         } else if ( key.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.AM_PM]) ) {
                             calendarField = Calendar.AM_PM;    
-                        } else if ( key.equalsIgnoreCase(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR]) ) {
+                        } else if ( key.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR]) ) {
+                            calendarField = Calendar.HOUR;
+                            key = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
+                        } else if ( key.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR_OF_DAY]) ) {
+                            // HOUR_OF_DAY is 'H' for 24 hour clock; HOUR is 'h' for 12 hour clock. We use HOUR
+                            // here instead of HOUR_OF_DAY because setIntervalPatternInternally understand HOUR.
                             calendarField = Calendar.HOUR;
                             key = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
                         } else if ( key.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MINUTE]) ) {
