@@ -122,6 +122,18 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.padPosition.isValue()) {
                         fmt.setPadPosition(tuple.padPosition.getValue());
                     }
+                    if (tuple.positivePrefix.isValue()) {
+                        fmt.setPositivePrefix(tuple.positivePrefix.getValue());
+                    }
+                    if (tuple.positiveSuffix.isValue()) {
+                        fmt.setPositiveSuffix(tuple.positiveSuffix.getValue());
+                    }
+                    if (tuple.negativePrefix.isValue()) {
+                        fmt.setNegativePrefix(tuple.negativePrefix.getValue());
+                    }
+                    if (tuple.negativeSuffix.isValue()) {
+                        fmt.setNegativeSuffix(tuple.negativeSuffix.getValue());
+                    }
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
@@ -207,6 +219,18 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     }
                     if (tuple.padPosition.isValue()) {
                         // Not supported
+                    }
+                    if (tuple.positivePrefix.isValue()) {
+                        fmt.setPositivePrefix(tuple.positivePrefix.getValue());
+                    }
+                    if (tuple.positiveSuffix.isValue()) {
+                        fmt.setPositiveSuffix(tuple.positiveSuffix.getValue());
+                    }
+                    if (tuple.negativePrefix.isValue()) {
+                        fmt.setNegativePrefix(tuple.negativePrefix.getValue());
+                    }
+                    if (tuple.negativeSuffix.isValue()) {
+                        fmt.setNegativeSuffix(tuple.negativeSuffix.getValue());
                     }
                     String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
                     String expected = tuple.output.getValue();

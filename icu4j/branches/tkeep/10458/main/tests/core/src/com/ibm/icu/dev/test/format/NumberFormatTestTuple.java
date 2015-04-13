@@ -102,6 +102,10 @@ public class NumberFormatTestTuple {
     public Maybe<Integer> exponentSignAlwaysShown = Maybe.nothing();
     public Maybe<Integer> decimalSeparatorAlwaysShown = Maybe.nothing();
     public Maybe<Integer> padPosition = Maybe.nothing();
+    public Maybe<String> positivePrefix = Maybe.nothing();
+    public Maybe<String> positiveSuffix = Maybe.nothing();
+    public Maybe<String> negativePrefix = Maybe.nothing();
+    public Maybe<String> negativeSuffix = Maybe.nothing();
     
     /**
      * nothing or empty means that test ought to work for both C and JAVA;
@@ -175,6 +179,10 @@ public class NumberFormatTestTuple {
         "exponentSignAlwaysShown",
         "decimalSeparatorAlwaysShown",
         "padPosition",
+        "positivePrefix",
+        "positiveSuffix",
+        "negativePrefix",
+        "negativeSuffix"
     };
     
     static {
@@ -311,6 +319,22 @@ public class NumberFormatTestTuple {
     
     public void setPadPosition(String value) {
         padPosition = Maybe.just(fromString(padPositionMap, value));
+    }
+    
+    public void setPositivePrefix(String value) {
+        positivePrefix = Maybe.just(value);
+    }
+    
+    public void setPositiveSuffix(String value) {
+        positiveSuffix = Maybe.just(value);
+    }
+    
+    public void setNegativePrefix(String value) {
+        negativePrefix = Maybe.just(value);
+    }
+    
+    public void setNegativeSuffix(String value) {
+        negativeSuffix = Maybe.just(value);
     }
     
     // end field setters.
