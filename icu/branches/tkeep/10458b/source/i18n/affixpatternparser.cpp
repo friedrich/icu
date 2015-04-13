@@ -13,15 +13,17 @@
 #include "precision.h"
 #include "unicode/dcfmtsym.h"
 #include "uassert.h"
+#include "unistrappender.h"
 
-static const int32_t kMaxTokenLength = 0x0F;
         static UChar gDefaultSymbols[] = {0xa4, 0xa4, 0xa4};
 
-#define PACK_TOKEN_AND_LENGTH(t, l) ((UChar) (((t) << 8) | (l & 0x0F)))
+#define PACK_TOKEN_AND_LENGTH(t, l) ((UChar) (((t) << 8) | (l & 0xFF)))
 
-#define UNPACK_TOKEN(c) ((AffixPattern::ETokenType) ((c) >> 8))
+#define UNPACK_TOKEN(c) ((AffixPattern::ETokenType) (((c) >> 8) & 0x7F))
 
-#define UNPACK_LENGTH(c) ((c) & 0x0F)
+#define UNPACK_LONG(c) (((c) >> 8) & 0x80)
+
+#define UNPACK_LENGTH(c) ((c) & 0xFF)
 
 U_NAMESPACE_BEGIN
 
@@ -38,6 +40,26 @@ nextToken(const UChar *buffer, int32_t idx, int32_t len, UChar *token) {
         return i;
     }
     return 2;
+}
+
+static int32_t
+nextUserToken(const UChar *buffer, int32_t idx, int32_t len, UChar *token) {
+    *token = buffer[idx];
+    int32_t max;
+    switch (buffer[idx]) {
+    case 0x27:
+        max = 2;
+        break;
+    case 0xA4:
+        max = 3;
+        break;
+    default:
+        max = 1;
+        break;
+    }
+    int32_t i = 1;
+    for (; idx + i < len && i < max && buffer[idx + i] == buffer[idx]; ++i);
+    return i;
 }
 
 CurrencyAffixInfo::CurrencyAffixInfo() {
@@ -123,16 +145,32 @@ void
 AffixPattern::addLiteral(
         const UChar *literal, int32_t start, int32_t len) {
     char32Count += u_countChar32(literal + start, len);
-    int32_t leftToCopy = len;
-    int32_t copyStart = start;
-    while (leftToCopy > 0) {
-        int32_t copyLen =
-                leftToCopy > kMaxTokenLength ? kMaxTokenLength : leftToCopy;
-        literals.append(literal, copyStart, copyLen);
-        tokens.append(PACK_TOKEN_AND_LENGTH(kLiteral, copyLen));
-        copyStart += copyLen;
-        leftToCopy -= copyLen;
+    literals.append(literal, start, len);
+    int32_t tlen = tokens.length();
+    // Takes 4 UChars to encode maximum literal length.
+    UChar *tokenChars = tokens.getBuffer(tlen + 4);
+
+    // find start of literal size. May be tlen if there is no literal.
+    // While finding start of literal size, compute literal length
+    int32_t literalLength = 0;
+    int32_t tLiteralStart = tlen;
+    while (tLiteralStart > 0 && UNPACK_TOKEN(tokenChars[tLiteralStart - 1]) == kLiteral) {
+        tLiteralStart--;
+        literalLength <<= 8;
+        literalLength |= UNPACK_LENGTH(tokenChars[tLiteralStart]);
     }
+    // Add number of chars we just added to literal
+    literalLength += len;
+
+    // Now encode the new length starting at tLiteralStart
+    tlen = tLiteralStart;
+    tokenChars[tlen++] = PACK_TOKEN_AND_LENGTH(kLiteral, literalLength & 0xFF);
+    literalLength >>= 8;
+    while (literalLength) {
+        tokenChars[tlen++] = PACK_TOKEN_AND_LENGTH(kLiteral | 0x80, literalLength & 0xFF);
+        literalLength >>= 8;
+    }
+    tokens.releaseBuffer(tlen);
 }
 
 void
@@ -174,6 +212,169 @@ AffixPattern::remove() {
     hasPercentToken = FALSE;
     hasPermillToken = FALSE;
     char32Count = 0;
+}
+
+static void escapeLiteral(
+        const UnicodeString &literal, UnicodeStringAppender &appender) {
+    int32_t len = literal.length();
+    const UChar *buffer = literal.getBuffer();
+    appender.append((UChar) 0x27);
+    for (int32_t i = 0; i < len; ++i) {
+        UChar ch = buffer[i];
+        switch (ch) {
+            case 0x27:
+                appender.append((UChar) 0x27);
+                appender.append((UChar) 0x27);
+                break;
+            default:
+                appender.append(ch);
+                break;
+        }
+    }
+    appender.append((UChar) 0x27);
+}
+
+UnicodeString &
+AffixPattern::toUserString(UnicodeString &appendTo) const {
+    AffixPatternIterator iter;
+    iterator(iter);
+    UnicodeStringAppender appender(appendTo);
+    UnicodeString literal;
+    while (iter.nextToken()) {
+        switch (iter.getTokenType()) {
+        case kLiteral:
+            escapeLiteral(iter.getLiteral(literal), appender);
+            break;
+        case kPercent:
+            appender.append((UChar) 0x25);
+            break;
+        case kPerMill:
+            appender.append((UChar) 0x2030);
+            break;
+        case kCurrency:
+            {
+                int32_t cl = iter.getTokenLength();
+                for (int32_t i = 0; i < cl; ++i) {
+                    appender.append((UChar) 0xA4);
+                }
+            }
+            break;
+        case kNegative:
+            appender.append((UChar) 0x2D);
+            break;
+        default:
+            U_ASSERT(FALSE);
+            break;
+        }
+    }
+    return appendTo;
+}
+
+class AffixPatternAppender : public UMemory {
+public:
+    AffixPatternAppender(AffixPattern &dest) : fDest(&dest), fIdx(0) { }
+
+    inline void append(UChar x) {
+        if (fIdx == UPRV_LENGTHOF(fBuffer)) {
+            fDest->addLiteral(fBuffer, 0, fIdx);
+            fIdx = 0;
+        }
+        fBuffer[fIdx++] = x;
+    }
+
+    inline void append(UChar32 x) {
+        if (fIdx >= UPRV_LENGTHOF(fBuffer) - 1) {
+            fDest->addLiteral(fBuffer, 0, fIdx);
+            fIdx = 0;
+        }
+        U16_APPEND_UNSAFE(fBuffer, fIdx, x);
+    }
+
+    inline void flush() {
+        if (fIdx) {
+            fDest->addLiteral(fBuffer, 0, fIdx);
+        }
+        fIdx = 0;
+    }
+
+    /**
+     * flush the buffer when we go out of scope.
+     */
+    ~AffixPatternAppender() {
+        flush();
+    }
+private:
+    AffixPattern *fDest;
+    int32_t fIdx;
+    UChar fBuffer[32];
+    AffixPatternAppender(const AffixPatternAppender &other);
+    AffixPatternAppender &operator=(const AffixPatternAppender &other);
+};
+
+
+AffixPattern &
+AffixPattern::parseUserAffixString(
+        const UnicodeString &affixStr,
+        AffixPattern &appendTo, 
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return appendTo;
+    }
+    int32_t len = affixStr.length();
+    const UChar *buffer = affixStr.getBuffer();
+    // 0 = not quoted; 1 = quoted.
+    int32_t state = 0;
+    AffixPatternAppender appender(appendTo);
+    for (int32_t i = 0; i < len; ) {
+        UChar token;
+        int32_t tokenSize = nextUserToken(buffer, i, len, &token);
+        i += tokenSize;
+        if (token == 0x27 && tokenSize == 1) { // quote
+            state = 1 - state;
+            continue;
+        }
+        if (state == 0) {
+            switch (token) {
+            case 0x25:
+                appender.flush();
+                appendTo.add(kPercent, 1);
+                break;
+            case 0x27:  // double quote
+                appender.append((UChar) 0x27);
+                break;
+            case 0x2030:
+                appender.flush();
+                appendTo.add(kPerMill, 1);
+                break;
+            case 0x2D:
+                appender.flush();
+                appendTo.add(kNegative, 1);
+                break;
+            case 0xA4:
+                appender.flush();
+                appendTo.add(kCurrency, tokenSize);
+                break;
+            default:
+                appender.append(token);
+                break;
+            }
+        } else {
+            switch (token) {
+            case 0x27:  // double quote
+                appender.append((UChar) 0x27);
+                break;
+            case 0xA4: // included b/c tokenSize can be > 1
+                for (int32_t j = 0; j < tokenSize; ++j) {
+                    appender.append((UChar) 0xA4);
+                }
+                break;
+            default:
+                appender.append(token);
+                break;
+            }
+        }
+    }
+    return appendTo;
 }
 
 AffixPattern &
@@ -233,6 +434,7 @@ AffixPattern::parseAffixString(
 AffixPatternIterator &
 AffixPattern::iterator(AffixPatternIterator &result) const {
     result.nextLiteralIndex = 0;
+    result.lastLiteralLength = 0;
     result.nextTokenIndex = 0;
     result.tokens = &tokens;
     result.literals = &literals;
@@ -241,15 +443,28 @@ AffixPattern::iterator(AffixPatternIterator &result) const {
 
 UBool
 AffixPatternIterator::nextToken() {
-    if (nextTokenIndex == tokens->length()) {
+    int32_t tlen = tokens->length();
+    if (nextTokenIndex == tlen) {
         return FALSE;
     }
-    UChar packed = tokens->charAt(nextTokenIndex);
-    AffixPattern::ETokenType token = UNPACK_TOKEN(packed);
-    if (token == AffixPattern::kLiteral) {
-        nextLiteralIndex += UNPACK_LENGTH(packed);
-    }
     ++nextTokenIndex;
+    const UChar *tokenBuffer = tokens->getBuffer();
+    if (UNPACK_TOKEN(tokenBuffer[nextTokenIndex - 1]) ==
+            AffixPattern::kLiteral) {
+        while (nextTokenIndex < tlen &&
+                UNPACK_LONG(tokenBuffer[nextTokenIndex])) {
+            ++nextTokenIndex;
+        }
+        lastLiteralLength = 0;
+        int32_t i = nextTokenIndex - 1;
+        for (; UNPACK_LONG(tokenBuffer[i]); --i) {
+            lastLiteralLength <<= 8;
+            lastLiteralLength |= UNPACK_LENGTH(tokenBuffer[i]);
+        }
+        lastLiteralLength <<= 8;
+        lastLiteralLength |= UNPACK_LENGTH(tokenBuffer[i]);
+        nextLiteralIndex += lastLiteralLength;
+    }
     return TRUE;
 }
 
@@ -261,14 +476,15 @@ AffixPatternIterator::getTokenType() const {
 UnicodeString &
 AffixPatternIterator::getLiteral(UnicodeString &result) const {
     const UChar *buffer = literals->getBuffer();
-    int32_t len = UNPACK_LENGTH(tokens->charAt(nextTokenIndex - 1));
-    result.setTo(FALSE, buffer + (nextLiteralIndex - len), len);
+    result.setTo(buffer + (nextLiteralIndex - lastLiteralLength), lastLiteralLength);
     return result;
 }
 
 int32_t
 AffixPatternIterator::getTokenLength() const {
-    return UNPACK_LENGTH(tokens->charAt(nextTokenIndex - 1));
+    const UChar *tokenBuffer = tokens->getBuffer();
+    AffixPattern::ETokenType type = UNPACK_TOKEN(tokenBuffer[nextTokenIndex - 1]);
+    return type == AffixPattern::kLiteral ? lastLiteralLength : UNPACK_LENGTH(tokenBuffer[nextTokenIndex - 1]);
 }
 
 AffixPatternParser::AffixPatternParser()
@@ -289,27 +505,24 @@ AffixPatternParser::setDecimalFormatSymbols(
     fNegative = symbols.getConstSymbol(DecimalFormatSymbols::kMinusSignSymbol);
 }
 
-int32_t
+PluralAffix &
 AffixPatternParser::parse(
         const AffixPattern &affixPattern,
         PluralAffix &appendTo, 
         UErrorCode &status) const {
     if (U_FAILURE(status)) {
-        return 0;
+        return appendTo;
     }
     AffixPatternIterator iter;
     affixPattern.iterator(iter);
-    int32_t result = 0;
     UnicodeString literal;
     while (iter.nextToken()) {
         switch (iter.getTokenType()) {
         case AffixPattern::kPercent:
             appendTo.append(fPercent, UNUM_PERCENT_FIELD);
-            result = 2;
             break;
         case AffixPattern::kPerMill:
             appendTo.append(fPermill, UNUM_PERMILL_FIELD);
-            result = 3;
             break;
         case AffixPattern::kNegative:
             appendTo.append(fNegative, UNUM_SIGN_FIELD);
@@ -341,7 +554,7 @@ AffixPatternParser::parse(
             break;
         }
     }
-    return result;
+    return appendTo;
 }
 
 

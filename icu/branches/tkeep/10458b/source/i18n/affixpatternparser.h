@@ -183,6 +183,11 @@ public:
         return char32Count;
     }
 
+    /**
+     * Converts this AffixPattern back into a user string.
+     * It is the inverse of parseUserAffixString.
+     */
+    UnicodeString &toUserString(UnicodeString &appendTo) const;
 
     /**
      * Parses an affix pattern string appending it to an AffixPattern.
@@ -215,6 +220,22 @@ public:
             AffixPattern &appendTo,
             UErrorCode &status);
 
+    /**
+     * Parses an affix pattern string appending it to an AffixPattern.
+     * Parses affix pattern strings as the user would supply them.
+     * In this function, quoting makes special characters like normal
+     * characters whereas in parseAffixString, quoting makes special
+     * characters special.
+     *
+     * @param affixStr the string from the user
+     * @param appendTo parsed result appended here.
+     * @param status any error parsing returned here.
+     */
+    static AffixPattern &parseUserAffixString(
+            const UnicodeString &affixStr,
+            AffixPattern &appendTo,
+            UErrorCode &status);
+
     UBool equals(const AffixPattern &other) const {
         return (tokens == other.tokens)
                 && (literals == other.literals)
@@ -225,7 +246,26 @@ public:
     }
 
 private:
+    /*
+     * Tokens stored here. Each UChar generally stands for one token. A
+     * Each token is of form 'etttttttllllllll' llllllll is the length of
+     * the token and ranges from 0-255. ttttttt is the token type and ranges
+     * from 0-127. If e is set it means this is an extendo token (to be
+     * described later). To accomodate token lengths above 255, each normal
+     * token (e=0) can be followed by 0 or more extendo tokens (e=1) with
+     * the same type. Right now only kLiteral Tokens have extendo tokens.
+     * Each extendo token provides the next 8 higher bits for the length.
+     * If a kLiteral token is followed by 2 extendo tokens then, then the
+     * llllllll of the next extendo token contains bits 8-15 of the length
+     * and the last extendo token contains bits 16-23 of the length.
+     */
     UnicodeString tokens;
+
+    /*
+     * The characters of the kLiteral tokens are concatenated together here.
+     * The first characters go with the first kLiteral token, the next
+     * characters go with the next kLiteral token etc.
+     */
     UnicodeString literals;
     UBool hasCurrencyToken;
     UBool hasPercentToken;
@@ -246,7 +286,7 @@ public:
      * instance to initialize the iterator results in
      * undefined behavior.
      */
-    AffixPatternIterator() : nextLiteralIndex(0), nextTokenIndex(0), tokens(NULL), literals(NULL) { }
+    AffixPatternIterator() : nextLiteralIndex(0), lastLiteralLength(0), nextTokenIndex(0), tokens(NULL), literals(NULL) { }
     /**
      * Advances this iterator to the next token. Returns FALSE when there
      * are no more tokens. Calling the other methods after nextToken()
@@ -274,6 +314,7 @@ public:
     int32_t getTokenLength() const;
 private:
     int32_t nextLiteralIndex;
+    int32_t lastLiteralLength;
     int32_t nextTokenIndex;
     const UnicodeString *tokens;
     const UnicodeString *literals;
@@ -303,10 +344,9 @@ CurrencyAffixInfo fCurrencyAffixInfo;
  * @param affixPattern The affix pattern.
  * @param appendTo The result of parsing affixPattern is appended here.
  * @param status any error returned here.
- * @return 2 if there is a percent symbol in affixPattern; 3 if there
- *   is a permill symbol; 0 otherwise.
+ * @return appendTo.
  */
-int32_t parse(
+PluralAffix &parse(
         const AffixPattern &affixPattern,
         PluralAffix &appendTo,
         UErrorCode &status) const;

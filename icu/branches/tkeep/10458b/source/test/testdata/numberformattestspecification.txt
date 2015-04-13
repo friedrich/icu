@@ -11,6 +11,8 @@ pattern	output
 ###0.0000#	1234,5670
 00000.0000	01234,5670
 #,##0.00 \u00a4	1\u00a0234,57 \u20ac
+'tick''bitten '0.00	tick'bitten 1234,57
+'tick' 'bitten '0.00	tick bitten 1234,57
 
 
 test minimum and maximum fraction digits
@@ -421,4 +423,26 @@ format	padPosition	output	breaks
 -12.34	afterPrefix	((**12.34))	K
 -12.34	beforeSuffix	((12.34**))	K
 -12.34	afterSuffix	((12.34))**	K
+
+test affix setters
+set locale fr_FR
+set currency EUR
+set pattern 0.00
+begin
+format	positivePrefix	positiveSuffix	negativePrefix	negativeSuffix	output
+12.34	%				%12,34
+12.34		\u00a4\u00a4			12,34\u00a4\u00a4
+12.34			-	+	12,34
+-12.34			-	+	-12,34+
+-12.34			\u00a4		\u00a412,34
+12.34			\u00a4		12,34
+-12.34				%	12,34%
+12.34				%	12,34
+
+test more affix setters
+set locale fr_FR
+set pattern %0.00
+begin
+format	positivePrefix	negativePrefix	output
+0.648	booya	cooya	booya64,80
 

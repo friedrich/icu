@@ -25,7 +25,7 @@ static const int32_t kFormattingPluralRules = (1 << 7);
 static const int32_t kFormattingAffixParser = (1 << 8);
 static const int32_t kFormattingAll = (1 << 9) - 1;
 static const int32_t kFormattingAffixes =
-        kFormattingPosPrefix | kFormattingNegPrefix |
+        kFormattingPosPrefix | kFormattingPosSuffix |
         kFormattingNegPrefix | kFormattingNegSuffix;
 
 
@@ -484,14 +484,59 @@ DecimalFormat2::setMultiplier(int32_t m) {
 }
 
 void
-DecimalFormat2::setPositivePrefix(const UnicodeString &prefix) {
+DecimalFormat2::setPositivePrefix(const UnicodeString &str) {
     fPositivePrefixPattern.remove();
+    fPositivePrefixPattern.addLiteral(str.getBuffer(), 0, str.length());
     UErrorCode status = U_ZERO_ERROR;
-    AffixPattern::parseAffixString(
-            prefix,
-            fPositivePrefixPattern,
-            status);
     updateFormatting(kFormattingPosPrefix, status);
+}
+
+void
+DecimalFormat2::setPositiveSuffix(const UnicodeString &str) {
+    fPositiveSuffixPattern.remove();
+    fPositiveSuffixPattern.addLiteral(str.getBuffer(), 0, str.length());
+    UErrorCode status = U_ZERO_ERROR;
+    updateFormatting(kFormattingPosSuffix, status);
+}
+
+void
+DecimalFormat2::setNegativePrefix(const UnicodeString &str) {
+    fNegativePrefixPattern.remove();
+    fNegativePrefixPattern.addLiteral(str.getBuffer(), 0, str.length());
+    UErrorCode status = U_ZERO_ERROR;
+    updateFormatting(kFormattingNegPrefix, status);
+}
+
+void
+DecimalFormat2::setNegativeSuffix(const UnicodeString &str) {
+    fNegativeSuffixPattern.remove();
+    fNegativeSuffixPattern.addLiteral(str.getBuffer(), 0, str.length());
+    UErrorCode status = U_ZERO_ERROR;
+    updateFormatting(kFormattingNegSuffix, status);
+}
+
+UnicodeString &
+DecimalFormat2::getPositivePrefix(UnicodeString &result) const {
+    result = fAap.fPositivePrefix.getOtherVariant().toString();
+    return result;
+}
+
+UnicodeString &
+DecimalFormat2::getPositiveSuffix(UnicodeString &result) const {
+    result = fAap.fPositiveSuffix.getOtherVariant().toString();
+    return result;
+}
+
+UnicodeString &
+DecimalFormat2::getNegativePrefix(UnicodeString &result) const {
+    result = fAap.fNegativePrefix.getOtherVariant().toString();
+    return result;
+}
+
+UnicodeString &
+DecimalFormat2::getNegativeSuffix(UnicodeString &result) const {
+    result = fAap.fNegativeSuffix.getOtherVariant().toString();
+    return result;
 }
 
 void
@@ -856,10 +901,6 @@ DecimalFormat2::updateFormattingLocalizedAffixes(
     if (U_FAILURE(status)) {
         return;
     }
-    if ((changedFormattingFields & kFormattingAffixes) != 0) {
-        setScale(getScale());
-    }
-
     if (changedFormattingFields & (kFormattingPosPrefix | kFormattingAffixParser)) {
         fAap.fPositivePrefix.remove();
         fAffixParser.parse(
@@ -891,6 +932,7 @@ DecimalFormat2::updateAll(UErrorCode &status) {
     updatePrecision();
     updateGrouping();
     updateFormatting(kFormattingAll, status);
+    setScale(getScale());
 }
 
 U_NAMESPACE_END

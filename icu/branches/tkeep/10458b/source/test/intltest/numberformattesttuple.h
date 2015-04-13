@@ -46,6 +46,10 @@ enum ENumberFormatTestTupleField {
     kExponentSignAlwaysShown,
     kDecimalSeparatorAlwaysShown,
     kPadPosition,
+    kPositivePrefix,
+    kPositiveSuffix,
+    kNegativePrefix,
+    kNegativeSuffix,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -80,6 +84,10 @@ public:
     int32_t exponentSignAlwaysShown;
     int32_t decimalSeparatorAlwaysShown;
     DigitAffixesAndPadding::EPadPosition padPosition;
+    UnicodeString positivePrefix;
+    UnicodeString positiveSuffix;
+    UnicodeString negativePrefix;
+    UnicodeString negativeSuffix;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -110,6 +118,10 @@ public:
     UBool exponentSignAlwaysShownFlag;
     UBool decimalSeparatorAlwaysShownFlag;
     UBool padPositionFlag;
+    UBool positivePrefixFlag;
+    UBool positiveSuffixFlag;
+    UBool negativePrefixFlag;
+    UBool negativeSuffixFlag;
 
     NumberFormatTestTuple() {
         clear();

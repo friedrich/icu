@@ -348,6 +348,18 @@ static void adjustDecimalFormat(
                 tuple.padPosition,
                 appendErrorMessage);
     }
+    if (tuple.positivePrefixFlag) {
+        fmt.setPositivePrefix(tuple.positivePrefix);
+    }
+    if (tuple.positiveSuffixFlag) {
+        fmt.setPositiveSuffix(tuple.positiveSuffix);
+    }
+    if (tuple.negativePrefixFlag) {
+        fmt.setNegativePrefix(tuple.negativePrefix);
+    }
+    if (tuple.negativeSuffixFlag) {
+        fmt.setNegativeSuffix(tuple.negativeSuffix);
+    }
 }
 
 UObject *NumberFormat2TestDataDriven::newFormatter(UErrorCode &status) {
@@ -467,6 +479,8 @@ private:
     void TestValueFormatterIsFastFormattable();
     void TestValueFormatterScientific();
     void TestCurrencyAffixInfo();
+    void TestAffixPattern();
+    void TestAffixPatternDoubleQuote();
     void TestAffixPatternParser();
     void TestPluralAffix();
     void TestDigitAffix();
@@ -585,6 +599,8 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestSmallIntFormatter);
     TESTCASE_AUTO(TestPositiveIntDigitFormatter);
     TESTCASE_AUTO(TestCurrencyAffixInfo);
+    TESTCASE_AUTO(TestAffixPattern);
+    TESTCASE_AUTO(TestAffixPatternDoubleQuote);
     TESTCASE_AUTO(TestAffixPatternParser);
     TESTCASE_AUTO(TestPluralAffix);
     TESTCASE_AUTO(TestDigitAffix);
@@ -2066,6 +2082,58 @@ void NumberFormat2Test::TestCurrencyAffixInfo() {
     assertEquals("", expectedSymbols.unescape(), info.fLong.getByVariant("two").toString());
 }
 
+void NumberFormat2Test::TestAffixPattern() {
+    static UChar chars[500];
+    for (int32_t i = 0; i < UPRV_LENGTHOF(chars); ++i) {
+        chars[i] = (UChar) (i + 1);
+    }
+    AffixPattern first;
+    first.add(AffixPattern::kPercent);
+    first.addLiteral(chars, 0, 200);
+    first.addLiteral(chars, 200, 300);
+    first.addCurrency(2);
+    first.addLiteral(chars, 0, 256);
+    AffixPattern second;
+    second.add(AffixPattern::kPercent);
+    second.addLiteral(chars, 0, 300);
+    second.addLiteral(chars, 300, 200);
+    second.addCurrency(2);
+    second.addLiteral(chars, 0, 150);
+    second.addLiteral(chars, 150, 106);
+    assertTrue("", first.equals(second));
+    AffixPatternIterator iter;
+    second.remove();
+    assertFalse("", second.iterator(iter).nextToken());
+    assertTrue("", first.iterator(iter).nextToken());
+    assertEquals("", AffixPattern::kPercent, iter.getTokenType());
+    assertEquals("", 1, iter.getTokenLength());
+    assertTrue("", iter.nextToken());
+    UnicodeString str;
+    assertEquals("", 500, iter.getLiteral(str).length());
+    assertEquals("", AffixPattern::kLiteral, iter.getTokenType());
+    assertEquals("", 500, iter.getTokenLength());
+    assertTrue("", iter.nextToken());
+    assertEquals("", AffixPattern::kCurrency, iter.getTokenType());
+    assertEquals("", 2, iter.getTokenLength());
+    assertTrue("", iter.nextToken());
+    assertEquals("", 256, iter.getLiteral(str).length());
+    assertEquals("", AffixPattern::kLiteral, iter.getTokenType());
+    assertEquals("", 256, iter.getTokenLength());
+    assertFalse("", iter.nextToken());
+}
+
+void NumberFormat2Test::TestAffixPatternDoubleQuote() {
+    UnicodeString str("'Don''t'");
+    AffixPattern expected;
+    // Don't
+    static UChar chars[] = {0x44, 0x6F, 0x6E, 0x27, 0x74};
+    expected.addLiteral(chars, 0, UPRV_LENGTHOF(chars));
+    AffixPattern actual;
+    UErrorCode status = U_ZERO_ERROR;
+    AffixPattern::parseUserAffixString(str, actual, status);
+    assertTrue("", expected.equals(actual));
+}
+
 void NumberFormat2Test::TestAffixPatternParser() {
     UErrorCode status = U_ZERO_ERROR;
     static UChar USD[] = {0x55, 0x53, 0x44};
@@ -2078,13 +2146,24 @@ void NumberFormat2Test::TestAffixPatternParser() {
     str = str.unescape();
     assertSuccess("", status);
     AffixPattern affixPattern;
-    assertEquals(
-            "",
-            2,
-            parser.parse(
-                    AffixPattern::parseAffixString(str, affixPattern, status),
-                    affix,
-                    status));
+    parser.parse(
+            AffixPattern::parseAffixString(str, affixPattern, status),
+            affix,
+            status);
+    AffixPattern userAffixPattern;
+    UnicodeString userStr("-'-'y'''d'z%\u00a4\u00a4\u00a4'\u00a4' y \u00a4\u00a4\u00a4 or \u00a4\u00a4 but \u00a4");
+    AffixPattern::parseUserAffixString(userStr, userAffixPattern, status),
+    assertTrue("", affixPattern.equals(userAffixPattern));
+    AffixPattern userAffixPattern2;
+    UnicodeString formattedUserStr;
+    AffixPattern::parseUserAffixString(
+            userAffixPattern.toUserString(formattedUserStr),
+            userAffixPattern2,
+            status);
+    UnicodeString expectedFormattedUserStr(
+            "-'-y''dz'%\u00a4\u00a4\u00a4'\u00a4 y '\u00a4\u00a4\u00a4' or '\u00a4\u00a4' but '\u00a4");
+    assertEquals("", expectedFormattedUserStr.unescape(), formattedUserStr);
+    assertTrue("", userAffixPattern2.equals(userAffixPattern));
     assertSuccess("", status);
     assertTrue("", affixPattern.usesCurrency());
     assertTrue("", affixPattern.usesPercent());
@@ -2123,13 +2202,10 @@ void NumberFormat2Test::TestAffixPatternParser() {
     affix.remove();
     str = "%'-";
     affixPattern.remove();
-    assertEquals(
-            "",
-            0,
-            parser.parse(
-                    AffixPattern::parseAffixString(str, affixPattern, status),
-                    affix,
-                    status));
+    parser.parse(
+            AffixPattern::parseAffixString(str, affixPattern, status),
+            affix,
+            status);
     assertSuccess("", status);
     assertFalse("", affixPattern.usesCurrency());
     assertFalse("", affixPattern.usesPercent());
@@ -2159,13 +2235,10 @@ void NumberFormat2Test::TestAffixPatternParser() {
     str = str.unescape();
     affixPattern.remove();
     affix.remove();
-    assertEquals(
-            "",
-            3,
-            parser.parse(
-                    AffixPattern::parseAffixString(str, affixPattern, status),
-                    affix,
-                    status));
+    parser.parse(
+            AffixPattern::parseAffixString(str, affixPattern, status),
+            affix,
+            status);
     assertSuccess("", status);
     assertFalse("", affixPattern.usesCurrency());
     assertFalse("", affixPattern.usesPercent());

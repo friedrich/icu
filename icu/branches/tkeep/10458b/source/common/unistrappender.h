@@ -78,7 +78,6 @@ public:
 private:
     UnicodeString *fDest;
     int32_t fIdx;
-    int32_t fLen;
     UChar fBuffer[32];
     UnicodeStringAppender(const UnicodeStringAppender &other);
     UnicodeStringAppender &operator=(const UnicodeStringAppender &other);

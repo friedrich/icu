@@ -317,6 +317,18 @@ static void adjustDecimalFormat(
             appendErrorMessage.append("Bad rounding mode.");
         }
     }
+    if (tuple.positivePrefixFlag) {
+        fmt.setPositivePrefix(tuple.positivePrefix);
+    }
+    if (tuple.positiveSuffixFlag) {
+        fmt.setPositiveSuffix(tuple.positiveSuffix);
+    }
+    if (tuple.negativePrefixFlag) {
+        fmt.setNegativePrefix(tuple.negativePrefix);
+    }
+    if (tuple.negativeSuffixFlag) {
+        fmt.setNegativeSuffix(tuple.negativeSuffix);
+    }
 }
 
 UBool NumberFormatTestDataDriven::isFormatPass(

@@ -140,7 +140,6 @@ void setCurrencyUsage(UCurrencyUsage usage, UErrorCode &status);
 UCurrencyUsage getCurrencyUsage() const { return fCurrencyUsage; }
 void setRoundingIncrement(double d);
 double getRoundingIncrement() const;
-void setPositivePrefix(const UnicodeString &prefix);
 int32_t getMultiplier() const;
 void setMultiplier(int32_t m);
 UChar32 getPadCharacter() const { return fAap.fPadChar; }
@@ -171,6 +170,14 @@ UBool isDecimalSeparatorAlwaysShown() const {
 void setDecimalSeparatorAlwaysShown(UBool x) {
     fOptions.fMantissa.fAlwaysShowDecimal = x;
 }
+UnicodeString &getPositivePrefix(UnicodeString &result) const;
+UnicodeString &getPositiveSuffix(UnicodeString &result) const;
+UnicodeString &getNegativePrefix(UnicodeString &result) const;
+UnicodeString &getNegativeSuffix(UnicodeString &result) const;
+void setPositivePrefix(const UnicodeString &str);
+void setPositiveSuffix(const UnicodeString &str);
+void setNegativePrefix(const UnicodeString &str);
+void setNegativeSuffix(const UnicodeString &str);
 private:
 DigitList fMultiplier;
 DigitList::ERoundingMode fRoundingMode;
