@@ -31,6 +31,10 @@ class DecimalFormat2 : public UObject {
 public:
 
 DecimalFormat2(
+        const Locale &locale,
+        const UnicodeString &pattern,
+        UErrorCode &status);
+DecimalFormat2(
         const UnicodeString &pattern,
         DecimalFormatSymbols *symbolsToAdopt,
         UParseError &parseError,

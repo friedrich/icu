@@ -31,6 +31,28 @@ static const int32_t kFormattingAffixes =
 static const int32_t kFormattingAffixParserWithCurrency =
         kFormattingAffixParser | kFormattingCurrencyAffixInfo;
 
+DecimalFormat2::DecimalFormat2(
+        const Locale &locale,
+        const UnicodeString &pattern,
+        UErrorCode &status)
+        : fRoundingMode(DigitList::kRoundHalfEven),
+          fSymbols(NULL),
+          fCurrencyUsage(UCURR_USAGE_STANDARD),
+          fRules(NULL) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    fSymbols = new DecimalFormatSymbols(
+            locale, status);
+    if (fSymbols == NULL) {
+        status = U_MEMORY_ALLOCATION_ERROR;
+        return;
+    }
+    UParseError parseError;
+    fCurr[0] = 0;
+    applyPattern(pattern, FALSE, parseError, status);
+    updateAll(status);
+}
 
 DecimalFormat2::DecimalFormat2(
         const UnicodeString &pattern,

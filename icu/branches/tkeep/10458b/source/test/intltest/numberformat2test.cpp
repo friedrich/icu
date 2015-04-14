@@ -491,6 +491,7 @@ private:
     void TestSciFormatterDefaultCtor();
     void TestSciFormatter();
     void TestDigitListToFixedDecimal();
+    void TestGetAffixes();
     void TestDataDriven();
     void verifyInterval(const DigitInterval &, int32_t minInclusive, int32_t maxExclusive);
     void verifyFixedDecimal(
@@ -611,6 +612,7 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestPluralsAndRounding);
     TESTCASE_AUTO(TestPluralsAndRoundingScientific);
     TESTCASE_AUTO(TestDigitListToFixedDecimal);
+    TESTCASE_AUTO(TestGetAffixes);
     TESTCASE_AUTO(TestDataDriven);
  
     TESTCASE_AUTO_END;
@@ -2132,6 +2134,9 @@ void NumberFormat2Test::TestAffixPatternDoubleQuote() {
     UErrorCode status = U_ZERO_ERROR;
     AffixPattern::parseUserAffixString(str, actual, status);
     assertTrue("", expected.equals(actual));
+    UnicodeString formattedString;
+    assertEquals("", "'Don''t'", actual.toUserString(formattedString));
+    assertSuccess("", status);
 }
 
 void NumberFormat2Test::TestAffixPatternParser() {
@@ -2902,6 +2907,29 @@ void NumberFormat2Test::TestDigitListToFixedDecimal() {
         FixedDecimal result(digits, interval);
         verifyFixedDecimal(result, 123456, 100, FALSE, 18, 560000000000000000LL);
     }
+}
+
+void NumberFormat2Test::TestGetAffixes() {
+    UErrorCode status = U_ZERO_ERROR;
+    UnicodeString pattern("\\u00a4\\u00a4\\u00a4 0.00 %\\u00a4\\u00a4");
+    pattern = pattern.unescape();
+    DecimalFormat2 fmt("en_US", pattern, status);
+    assertSuccess("", status);
+    UnicodeString affixStr;
+    assertEquals("", "US dollars ", fmt.getPositivePrefix(affixStr));
+    assertEquals("", " %USD", fmt.getPositiveSuffix(affixStr));
+    assertEquals("", "-US dollars ", fmt.getNegativePrefix(affixStr));
+    assertEquals("", " %USD", fmt.getNegativeSuffix(affixStr));
+    fmt.setPositivePrefix("Don't");
+    fmt.setPositiveSuffix("do");
+    UnicodeString someAffix("be''eet\\u00a4\\u00a4\\u00a4 it.");
+    someAffix = someAffix.unescape();
+    fmt.setNegativePrefix(someAffix);
+    fmt.setNegativeSuffix("%");
+    assertEquals("", "Don't", fmt.getPositivePrefix(affixStr));
+    assertEquals("", "do", fmt.getPositiveSuffix(affixStr));
+    assertEquals("", someAffix, fmt.getNegativePrefix(affixStr));
+    assertEquals("", "%", fmt.getNegativeSuffix(affixStr));
 }
 
 void NumberFormat2Test::TestDataDriven() {

@@ -472,6 +472,7 @@ void NumberFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &n
   TESTCASE_AUTO(TestNumberFormatTestTuple);
   TESTCASE_AUTO(TestDataDrivenSpecification);
   TESTCASE_AUTO(TestFastPathConsistent11524);
+  TESTCASE_AUTO(TestGetAffixes);
   TESTCASE_AUTO_END;
 }
 
@@ -8222,6 +8223,38 @@ void NumberFormatTest::TestFastPathConsistent11524() {
     appendTo.remove();
     assertEquals("", "0", fmt->format(12345, appendTo));
     delete fmt;
+}
+
+void NumberFormatTest::TestGetAffixes() {
+    UErrorCode status = U_ZERO_ERROR;
+    DecimalFormatSymbols *symbols = new DecimalFormatSymbols("en_US", status);
+    if (symbols == NULL) {
+         status = U_MEMORY_ALLOCATION_ERROR;
+    }
+    if (!assertSuccess("", status)) {
+        return;
+    }
+    UnicodeString pattern("\\u00a4\\u00a4\\u00a4 0.00 %\\u00a4\\u00a4");
+    pattern = pattern.unescape();
+    DecimalFormat fmt(pattern, symbols, status);
+    assertSuccess("", status);
+    UnicodeString affixStr;
+// TODO: Known to fail. See ICU ticket 11640.
+//    assertEquals("", "US dollars ", fmt.getPositivePrefix(affixStr));
+    assertEquals("", " %USD", fmt.getPositiveSuffix(affixStr));
+// TODO: Known to fail. See ICU ticket 11640.
+//    assertEquals("", "-US dollars ", fmt.getNegativePrefix(affixStr));
+    assertEquals("", " %USD", fmt.getNegativeSuffix(affixStr));
+    fmt.setPositivePrefix("Don't");
+    fmt.setPositiveSuffix("do");
+    UnicodeString someAffix("be''eet\\u00a4\\u00a4\\u00a4 it.");
+    someAffix = someAffix.unescape();
+    fmt.setNegativePrefix(someAffix);
+    fmt.setNegativeSuffix("%");
+    assertEquals("", "Don't", fmt.getPositivePrefix(affixStr));
+    assertEquals("", "do", fmt.getPositiveSuffix(affixStr));
+    assertEquals("", someAffix, fmt.getNegativePrefix(affixStr));
+    assertEquals("", "%", fmt.getNegativeSuffix(affixStr));
 }
 
 #endif /* #if !UCONFIG_NO_FORMATTING */

@@ -190,6 +190,7 @@ class NumberFormatTest: public CalendarTimeZoneTest {
     void TestNumberFormatTestTuple();
     void TestDataDrivenSpecification();
     void TestFastPathConsistent11524();
+    void TestGetAffixes();
  private:
     UBool testFormattableAsUFormattable(const char *file, int line, Formattable &f);
 
