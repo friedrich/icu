@@ -334,20 +334,16 @@ AffixPatternParser(const DecimalFormatSymbols &symbols);
 void setDecimalFormatSymbols(const DecimalFormatSymbols &symbols);
 
 /**
- * Contains the currency forms. Only needs to be initialized if the affix
- * patterns being parsed contain the currency symbol (U+00a4).
- */
-CurrencyAffixInfo fCurrencyAffixInfo;
-
-/**
  * Parses affixPattern appending the result to appendTo.
  * @param affixPattern The affix pattern.
+ * @param currencyAffixInfo contains the currency forms.
  * @param appendTo The result of parsing affixPattern is appended here.
  * @param status any error returned here.
  * @return appendTo.
  */
 PluralAffix &parse(
         const AffixPattern &affixPattern,
+        const CurrencyAffixInfo &currencyAffixInfo,
         PluralAffix &appendTo,
         UErrorCode &status) const;
 

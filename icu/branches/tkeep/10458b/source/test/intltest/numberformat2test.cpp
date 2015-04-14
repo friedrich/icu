@@ -2140,7 +2140,8 @@ void NumberFormat2Test::TestAffixPatternParser() {
     LocalPointer<PluralRules> rules(PluralRules::forLocale("en", status));
     DecimalFormatSymbols symbols("en", status);
     AffixPatternParser parser(symbols);
-    parser.fCurrencyAffixInfo.set("en", rules.getAlias(), USD, status);
+    CurrencyAffixInfo currencyAffixInfo;
+    currencyAffixInfo.set("en", rules.getAlias(), USD, status);
     PluralAffix affix;
     UnicodeString str("'--y'''dz'%'\u00a4\u00a4\u00a4\u00a4 y '\u00a4\u00a4\u00a4 or '\u00a4\u00a4 but '\u00a4");
     str = str.unescape();
@@ -2148,6 +2149,7 @@ void NumberFormat2Test::TestAffixPatternParser() {
     AffixPattern affixPattern;
     parser.parse(
             AffixPattern::parseAffixString(str, affixPattern, status),
+            currencyAffixInfo,
             affix,
             status);
     AffixPattern userAffixPattern;
@@ -2204,6 +2206,7 @@ void NumberFormat2Test::TestAffixPatternParser() {
     affixPattern.remove();
     parser.parse(
             AffixPattern::parseAffixString(str, affixPattern, status),
+            currencyAffixInfo,
             affix,
             status);
     assertSuccess("", status);
@@ -2237,6 +2240,7 @@ void NumberFormat2Test::TestAffixPatternParser() {
     affix.remove();
     parser.parse(
             AffixPattern::parseAffixString(str, affixPattern, status),
+            currencyAffixInfo,
             affix,
             status);
     assertSuccess("", status);

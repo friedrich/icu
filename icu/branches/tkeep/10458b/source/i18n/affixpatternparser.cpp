@@ -508,6 +508,7 @@ AffixPatternParser::setDecimalFormatSymbols(
 PluralAffix &
 AffixPatternParser::parse(
         const AffixPattern &affixPattern,
+        const CurrencyAffixInfo &currencyAffixInfo,
         PluralAffix &appendTo, 
         UErrorCode &status) const {
     if (U_FAILURE(status)) {
@@ -531,15 +532,15 @@ AffixPatternParser::parse(
             switch (iter.getTokenLength()) {
                 case 1:
                     appendTo.append(
-                            fCurrencyAffixInfo.fSymbol, UNUM_CURRENCY_FIELD);
+                            currencyAffixInfo.fSymbol, UNUM_CURRENCY_FIELD);
                     break;
                 case 2:
                     appendTo.append(
-                            fCurrencyAffixInfo.fISO, UNUM_CURRENCY_FIELD);
+                            currencyAffixInfo.fISO, UNUM_CURRENCY_FIELD);
                     break;
                 case 3:
                     appendTo.append(
-                            fCurrencyAffixInfo.fLong, UNUM_CURRENCY_FIELD, status);
+                            currencyAffixInfo.fLong, UNUM_CURRENCY_FIELD, status);
                     break;
                 default:
                     U_ASSERT(FALSE);

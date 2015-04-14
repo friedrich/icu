@@ -209,8 +209,8 @@ DigitGrouping fGrouping;
 UBool fUseGrouping;
 
 // Updating any of the following fields triggers updates on the following:
-// fOptions.fMantissa.fMonetary, fRules, fAffixParser, fSciFormatter, fFormatter
-// fAap.fPositivePrefiix, fAap.fPositiveSuffix,
+// fOptions.fMantissa.fMonetary, fRules, fAffixParser, fCurrencyAffixInfo,
+// fSciFormatter, fFormatter, fAap.fPositivePrefiix, fAap.fPositiveSuffix,
 // fAap.fNegativePrefiix, fAap.fNegativeSuffix
 // We do this two phase update because localizing the affix patterns
 // and formatters can be expensive. Better to do it once with the setters
@@ -226,9 +226,10 @@ UCurrencyUsage fCurrencyUsage;
 // Optional may be NULL
 PluralRules *fRules;
 
-// This field is totally hidden from user and is used to derive the affixes
+// These fields are totally hidden from user and are used to derive the affixes
 // in fAap below from the four affix patterns above.
 AffixPatternParser fAffixParser;
+CurrencyAffixInfo fCurrencyAffixInfo;
 
 // The actual precision used when formatting
 ScientificPrecision fEffPrecision;
@@ -285,14 +286,19 @@ void extractSigDigits(SignificantDigitInterval &sig) const;
 void updateFormattingUsesCurrency(int32_t &changedFormattingFields);
 void updateFormattingPluralRules(
         int32_t &changedFormattingFields, UErrorCode &status);
-void updateFormattingAffixParser(
+void updateFormattingAffixParser(int32_t &changedFormattingFields);
+void updateFormattingCurrencyAffixInfo(
         int32_t &changedFormattingFields, UErrorCode &status);
 void updateFormattingFormatters(
         int32_t &changedFormattingFields);
-void updateFormattingLocalizedAffixes(
+void updateFormattingLocalizedPositivePrefix(
         int32_t &changedFormattingFields, UErrorCode &status);
-void updateFormattingWidth(int32_t &changedFormattingFields);
-
+void updateFormattingLocalizedPositiveSuffix(
+        int32_t &changedFormattingFields, UErrorCode &status);
+void updateFormattingLocalizedNegativePrefix(
+        int32_t &changedFormattingFields, UErrorCode &status);
+void updateFormattingLocalizedNegativeSuffix(
+        int32_t &changedFormattingFields, UErrorCode &status);
 };
 
 

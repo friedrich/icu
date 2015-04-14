@@ -23,10 +23,13 @@ static const int32_t kFormattingCurrency = (1 << 5);
 static const int32_t kFormattingUsesCurrency = (1 << 6);
 static const int32_t kFormattingPluralRules = (1 << 7);
 static const int32_t kFormattingAffixParser = (1 << 8);
-static const int32_t kFormattingAll = (1 << 9) - 1;
+static const int32_t kFormattingCurrencyAffixInfo = (1 << 9);
+static const int32_t kFormattingAll = (1 << 10) - 1;
 static const int32_t kFormattingAffixes =
         kFormattingPosPrefix | kFormattingPosSuffix |
         kFormattingNegPrefix | kFormattingNegSuffix;
+static const int32_t kFormattingAffixParserWithCurrency =
+        kFormattingAffixParser | kFormattingCurrencyAffixInfo;
 
 
 DecimalFormat2::DecimalFormat2(
@@ -65,6 +68,7 @@ DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           fCurrencyUsage(other.fCurrencyUsage),
           fRules(other.fRules),
           fAffixParser(other.fAffixParser),
+          fCurrencyAffixInfo(other.fCurrencyAffixInfo),
           fEffPrecision(other.fEffPrecision),
           fEffGrouping(other.fEffGrouping),
           fOptions(other.fOptions),
@@ -103,6 +107,7 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     fNegativeSuffixPattern = other.fNegativeSuffixPattern;
     fCurrencyUsage = other.fCurrencyUsage;
     fAffixParser = other.fAffixParser;
+    fCurrencyAffixInfo = other.fCurrencyAffixInfo;
     fEffPrecision = other.fEffPrecision;
     fEffGrouping = other.fEffGrouping;
     fOptions = other.fOptions;
@@ -146,6 +151,7 @@ DecimalFormat2::operator==(const DecimalFormat2 &other) const {
             && fNegativeSuffixPattern.equals(other.fNegativeSuffixPattern)
             && fCurrencyUsage == other.fCurrencyUsage
             && fAffixParser.equals(other.fAffixParser)
+            && fCurrencyAffixInfo.equals(other.fCurrencyAffixInfo)
             && fEffPrecision.equals(other.fEffPrecision)
             && fEffGrouping.equals(other.fEffGrouping)
             && fOptions.equals(other.fOptions)
@@ -757,13 +763,21 @@ DecimalFormat2::updateFormatting(
         return;
     }
     // Each function updates one field. Order matters. For instance,
-    // updatePluralRules comes before updateAffixParser because the fRules
-    // field is needed to update the fAffixParser field.
+    // updatePluralRules comes before updateCurrencyAffixInfo because the
+    // fRules field is needed to update the fCurrencyAffixInfo field.
+    updateFormattingFormatters(changedFormattingFields);
+    updateFormattingAffixParser(changedFormattingFields);
     updateFormattingUsesCurrency(changedFormattingFields);
     updateFormattingPluralRules(changedFormattingFields, status);
-    updateFormattingAffixParser(changedFormattingFields, status);
-    updateFormattingFormatters(changedFormattingFields);
-    updateFormattingLocalizedAffixes(changedFormattingFields, status);
+    updateFormattingCurrencyAffixInfo(changedFormattingFields, status);
+    updateFormattingLocalizedPositivePrefix(
+            changedFormattingFields, status);
+    updateFormattingLocalizedPositiveSuffix(
+            changedFormattingFields, status);
+    updateFormattingLocalizedNegativePrefix(
+            changedFormattingFields, status);
+    updateFormattingLocalizedNegativeSuffix(
+            changedFormattingFields, status);
 }
 
 void
@@ -813,7 +827,7 @@ DecimalFormat2::updateFormattingPluralRules(
 }
 
 void
-DecimalFormat2::updateFormattingAffixParser(
+DecimalFormat2::updateFormattingCurrencyAffixInfo(
         int32_t &changedFormattingFields, UErrorCode &status) {
     if ((changedFormattingFields & (
             kFormattingSymbols | kFormattingCurrency |
@@ -824,20 +838,16 @@ DecimalFormat2::updateFormattingAffixParser(
     if (U_FAILURE(status)) {
         return;
     }
-    if (changedFormattingFields & kFormattingSymbols) {
-        fAffixParser.setDecimalFormatSymbols(*fSymbols);
-        changedFormattingFields |= kFormattingAffixParser;
-    }
     if (!fOptions.fMantissa.fMonetary) {
-        if (fAffixParser.fCurrencyAffixInfo.isDefault()) {
+        if (fCurrencyAffixInfo.isDefault()) {
             // In this case don't have to do any work
             return;
         }
-        fAffixParser.fCurrencyAffixInfo.set(NULL, NULL, NULL, status);
+        fCurrencyAffixInfo.set(NULL, NULL, NULL, status);
         if (U_FAILURE(status)) {
             return;
         }
-        changedFormattingFields |= kFormattingAffixParser;
+        changedFormattingFields |= kFormattingCurrencyAffixInfo;
     } else {
         UChar currencyBuf[4];
         const UChar *currency = fCurr;
@@ -850,7 +860,7 @@ DecimalFormat2::updateFormattingAffixParser(
                 status = U_ZERO_ERROR;
             }
         }
-        fAffixParser.fCurrencyAffixInfo.set(
+        fCurrencyAffixInfo.set(
                 fSymbols->getLocale().getName(), fRules, currency, status);
         if (U_FAILURE(status)) {
             return;
@@ -858,10 +868,10 @@ DecimalFormat2::updateFormattingAffixParser(
         // If DecimalFormatSymbols has custom currency symbol, prefer
         // that over what we just read from the resource bundles
         if (fSymbols->isCustomCurrencySymbol()) {
-            fAffixParser.fCurrencyAffixInfo.fSymbol =
+            fCurrencyAffixInfo.fSymbol =
                     fSymbols->getConstSymbol(DecimalFormatSymbols::kCurrencySymbol);
         }
-        changedFormattingFields |= kFormattingAffixParser;
+        changedFormattingFields |= kFormattingCurrencyAffixInfo;
         if (currency) {
             FixedPrecision precision;
             CurrencyAffixInfo::adjustPrecision(
@@ -891,38 +901,91 @@ DecimalFormat2::updateFormattingFormatters(
 }
 
 void
-DecimalFormat2::updateFormattingLocalizedAffixes(
-        int32_t &changedFormattingFields, UErrorCode &status) {
-    if ((changedFormattingFields & (kFormattingAffixes | kFormattingAffixParser)) == 0) {
-        // No work to do if all affixes and fAffixParser fields are
-        // unchanged
+DecimalFormat2::updateFormattingAffixParser(
+        int32_t &changedFormattingFields) {
+    if ((changedFormattingFields & kFormattingSymbols) == 0) {
+        // No work to do if fSymbols is unchanged
         return;
     }
+    fAffixParser.setDecimalFormatSymbols(*fSymbols);
+    changedFormattingFields |= kFormattingAffixParser;
+}
+
+void
+DecimalFormat2::updateFormattingLocalizedPositivePrefix(
+        int32_t &changedFormattingFields, UErrorCode &status) {
     if (U_FAILURE(status)) {
         return;
     }
-    if (changedFormattingFields & (kFormattingPosPrefix | kFormattingAffixParser)) {
-        fAap.fPositivePrefix.remove();
-        fAffixParser.parse(
-                fPositivePrefixPattern, fAap.fPositivePrefix, status);
+    if ((changedFormattingFields & (
+            kFormattingPosPrefix | kFormattingAffixParserWithCurrency)) == 0) {
+        // No work to do
+        return;
     }
-    if (changedFormattingFields & (kFormattingNegPrefix | kFormattingAffixParser)) {
-        fAap.fNegativePrefix.remove();
-        fAffixParser.parse(
-                fNegativePrefixPattern, fAap.fNegativePrefix, status);
-    }
-    if (changedFormattingFields & (kFormattingPosSuffix | kFormattingAffixParser)) {
-        fAap.fPositiveSuffix.remove();
-        fAffixParser.parse(
-                fPositiveSuffixPattern, fAap.fPositiveSuffix, status);
-    }
-    if (changedFormattingFields & (kFormattingNegSuffix | kFormattingAffixParser)) {
-        fAap.fNegativeSuffix.remove();
-        fAffixParser.parse(
-                fNegativeSuffixPattern, fAap.fNegativeSuffix, status);
-    }
+    fAap.fPositivePrefix.remove();
+    fAffixParser.parse(
+            fPositivePrefixPattern,
+            fCurrencyAffixInfo,
+            fAap.fPositivePrefix,
+            status);
 }
 
+void
+DecimalFormat2::updateFormattingLocalizedPositiveSuffix(
+        int32_t &changedFormattingFields, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    if ((changedFormattingFields & (
+            kFormattingPosSuffix | kFormattingAffixParserWithCurrency)) == 0) {
+        // No work to do
+        return;
+    }
+    fAap.fPositiveSuffix.remove();
+    fAffixParser.parse(
+            fPositiveSuffixPattern,
+            fCurrencyAffixInfo,
+            fAap.fPositiveSuffix,
+            status);
+}
+
+void
+DecimalFormat2::updateFormattingLocalizedNegativePrefix(
+        int32_t &changedFormattingFields, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    if ((changedFormattingFields & (
+            kFormattingNegPrefix | kFormattingAffixParserWithCurrency)) == 0) {
+        // No work to do
+        return;
+    }
+    fAap.fNegativePrefix.remove();
+    fAffixParser.parse(
+            fNegativePrefixPattern,
+            fCurrencyAffixInfo,
+            fAap.fNegativePrefix,
+            status);
+}
+
+void
+DecimalFormat2::updateFormattingLocalizedNegativeSuffix(
+        int32_t &changedFormattingFields, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    if ((changedFormattingFields & (
+            kFormattingNegSuffix | kFormattingAffixParserWithCurrency)) == 0) {
+        // No work to do
+        return;
+    }
+    fAap.fNegativeSuffix.remove();
+    fAffixParser.parse(
+            fNegativeSuffixPattern,
+            fCurrencyAffixInfo,
+            fAap.fNegativeSuffix,
+            status);
+}
 
 void
 DecimalFormat2::updateAll(UErrorCode &status) {
