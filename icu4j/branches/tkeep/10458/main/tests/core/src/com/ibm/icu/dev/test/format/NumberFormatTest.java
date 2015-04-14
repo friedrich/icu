@@ -3932,6 +3932,27 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
     
+    public void TestGetAffixes() {
+        DecimalFormatSymbols symbols = 
+                new DecimalFormatSymbols(new ULocale("en_US"));
+        String pattern = "\u00a4\u00a4\u00a4 0.00 %\u00a4\u00a4";
+        DecimalFormat fmt = new DecimalFormat(pattern, symbols);
+        // TODO: Known to fail. See ICU ticket 11640
+        // assertEquals("", "US dollars ", fmt.getPositivePrefix());
+        assertEquals("", " %USD", fmt.getPositiveSuffix());
+        // TODO: Known to fail. See ICU ticket 11640
+        // assertEquals("", "-US dollars ", fmt.getNegativePrefix());
+        assertEquals("", " %USD", fmt.getNegativeSuffix());
+        fmt.setPositivePrefix("Don't");
+        fmt.setPositiveSuffix("do");
+        fmt.setNegativePrefix("be''eet\u00a4\u00a4\u00a4 it.");
+        fmt.setNegativeSuffix("%");
+        assertEquals("", "Don't", fmt.getPositivePrefix());
+        assertEquals("", "do", fmt.getPositiveSuffix());
+        assertEquals("", "be''eet\u00a4\u00a4\u00a4 it.", fmt.getNegativePrefix());
+        assertEquals("", "%", fmt.getNegativeSuffix());
+    }
+
     public void TestDataDrivenICU() {
         DataDrivenNumberFormatTestSuite.runSuite(
                 this, "numberformattestspecification.txt", ICU, 'J');
