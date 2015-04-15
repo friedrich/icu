@@ -492,6 +492,7 @@ private:
     void TestSciFormatter();
     void TestDigitListToFixedDecimal();
     void TestGetAffixes();
+    void TestApplyPatternResets();
     void TestDataDriven();
     void verifyInterval(const DigitInterval &, int32_t minInclusive, int32_t maxExclusive);
     void verifyFixedDecimal(
@@ -613,6 +614,7 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestPluralsAndRoundingScientific);
     TESTCASE_AUTO(TestDigitListToFixedDecimal);
     TESTCASE_AUTO(TestGetAffixes);
+    TESTCASE_AUTO(TestApplyPatternResets);
     TESTCASE_AUTO(TestDataDriven);
  
     TESTCASE_AUTO_END;
@@ -2141,7 +2143,7 @@ void NumberFormat2Test::TestAffixPatternDoubleQuote() {
 
 void NumberFormat2Test::TestAffixPatternParser() {
     UErrorCode status = U_ZERO_ERROR;
-    static UChar USD[] = {0x55, 0x53, 0x44};
+    static UChar USD[] = {0x55, 0x53, 0x44, 0x0};
     LocalPointer<PluralRules> rules(PluralRules::forLocale("en", status));
     DecimalFormatSymbols symbols("en", status);
     AffixPatternParser parser(symbols);
@@ -2962,6 +2964,52 @@ void NumberFormat2Test::TestGetAffixes() {
     assertEquals("", someAffix, fmt.getNegativePrefix(affixStr));
     assertEquals("", "%", fmt.getNegativeSuffix(affixStr));
 }
+
+void NumberFormat2Test::TestApplyPatternResets() {
+    // TODO: Known to fail. See ticket 11645
+/*
+    UErrorCode status = U_ZERO_ERROR;
+    UnicodeString pattern("#,###0.0");
+    DecimalFormat2 fmt("en", pattern, status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
+    {
+        DecimalFormat2 fmtCopy(fmt);
+        fmtCopy.setMultiplier(37);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("multiplier", fmt == fmtCopy);
+    }
+    {
+        DecimalFormat2 fmtCopy(fmt);
+        fmtCopy.setRoundingMode(DigitList::kRoundCeiling);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("roundingMode", fmt == fmtCopy);
+    }
+    {
+        DecimalFormat2 fmtCopy(fmt);
+        assertFalse("", fmtCopy.isDecimalSeparatorAlwaysShown());
+        fmtCopy.setDecimalSeparatorAlwaysShown(TRUE);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("decimalSeparatorAlwaysShown", fmt == fmtCopy);
+    }
+    {
+        DecimalFormat2 fmtCopy(fmt);
+        static UChar funnyCurrency[] = {0x45, 0x41, 0x54, 0x0}; // EAT
+        fmtCopy.setCurrency(funnyCurrency, status);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("currency", fmt == fmtCopy);
+    }
+    {
+        DecimalFormat2 fmtCopy(fmt);
+        fmtCopy.setCurrencyUsage(UCURR_USAGE_CASH, status);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("currencyUsage", fmt == fmtCopy);
+    }
+    assertSuccess("", status);
+*/
+}
+
 
 void NumberFormat2Test::TestDataDriven() {
     NumberFormat2TestDataDriven dd(this);

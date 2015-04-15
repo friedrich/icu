@@ -473,6 +473,7 @@ void NumberFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &n
   TESTCASE_AUTO(TestDataDrivenSpecification);
   TESTCASE_AUTO(TestFastPathConsistent11524);
   TESTCASE_AUTO(TestGetAffixes);
+  TESTCASE_AUTO(TestApplyPatternResets);
   TESTCASE_AUTO_END;
 }
 
@@ -8245,6 +8246,38 @@ void NumberFormatTest::TestGetAffixes() {
 // TODO: Known to fail. See ICU ticket 11640.
 //    assertEquals("", "-US dollars ", fmt.getNegativePrefix(affixStr));
     assertEquals("", " %USD", fmt.getNegativeSuffix(affixStr));
+
+    // Test equality with affixes. set affix methods can't capture special
+    // characters which is why equality should fail.
+    {    
+        DecimalFormat fmtCopy(fmt);
+        assertTrue("", fmt == fmtCopy);
+        UnicodeString someAffix;
+        fmtCopy.setPositivePrefix(fmtCopy.getPositivePrefix(someAffix));
+        assertTrue("", fmt != fmtCopy);
+    }    
+    {    
+        DecimalFormat fmtCopy(fmt);
+        assertTrue("", fmt == fmtCopy);
+        UnicodeString someAffix;
+        fmtCopy.setPositiveSuffix(fmtCopy.getPositiveSuffix(someAffix));
+        assertTrue("", fmt != fmtCopy);
+    }    
+    {    
+        DecimalFormat fmtCopy(fmt);
+        assertTrue("", fmt == fmtCopy);
+        UnicodeString someAffix;
+        fmtCopy.setNegativePrefix(fmtCopy.getNegativePrefix(someAffix));
+        assertTrue("", fmt != fmtCopy);
+    }    
+    {    
+        DecimalFormat fmtCopy(fmt);
+        assertTrue("", fmt == fmtCopy);
+        UnicodeString someAffix;
+        fmtCopy.setNegativeSuffix(fmtCopy.getNegativeSuffix(someAffix));
+        assertTrue("", fmt != fmtCopy);
+    }    
+
     fmt.setPositivePrefix("Don't");
     fmt.setPositiveSuffix("do");
     UnicodeString someAffix("be''eet\\u00a4\\u00a4\\u00a4 it.");
@@ -8255,6 +8288,52 @@ void NumberFormatTest::TestGetAffixes() {
     assertEquals("", "do", fmt.getPositiveSuffix(affixStr));
     assertEquals("", someAffix, fmt.getNegativePrefix(affixStr));
     assertEquals("", "%", fmt.getNegativeSuffix(affixStr));
+}
+
+void NumberFormatTest::TestApplyPatternResets() {
+    // TODO: Known to fail. See ticket 11645
+/*
+    UErrorCode status = U_ZERO_ERROR;
+    LocalPointer<DecimalFormat> fmt((DecimalFormat *) NumberFormat::createInstance("en", status));
+    if (!assertSuccess("", status)) {
+        return;
+    }
+    UnicodeString pattern("#,###0.0");
+    fmt->applyPattern(pattern, status);
+    {
+        DecimalFormat fmtCopy(*fmt);
+        fmtCopy.setMultiplier(37);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("multiplier", *fmt == fmtCopy);
+    }
+    {
+        DecimalFormat fmtCopy(*fmt);
+        fmtCopy.setRoundingMode(DecimalFormat::kRoundCeiling);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("roundingMode", *fmt == fmtCopy);
+    }
+    {
+        DecimalFormat fmtCopy(*fmt);
+        assertFalse("", fmtCopy.isDecimalSeparatorAlwaysShown());
+        fmtCopy.setDecimalSeparatorAlwaysShown(TRUE);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("decimalSeparatorAlwaysShown", *fmt == fmtCopy);
+    }
+    {
+        DecimalFormat fmtCopy(*fmt);
+        static UChar funnyCurrency[] = {0x45, 0x41, 0x54, 0x0}; // EAT
+        fmtCopy.setCurrency(funnyCurrency, status);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("currency", *fmt == fmtCopy);
+    }
+    {
+        DecimalFormat fmtCopy(*fmt);
+        fmtCopy.setCurrencyUsage(UCURR_USAGE_CASH, &status);
+        fmtCopy.applyPattern(pattern, status);
+        assertTrue("currencyUsage", *fmt == fmtCopy);
+    }
+    assertSuccess("", status);
+*/
 }
 
 #endif /* #if !UCONFIG_NO_FORMATTING */
