@@ -37,6 +37,7 @@ import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.NumberFormat.NumberFormatFactory;
 import com.ibm.icu.text.NumberFormat.SimpleNumberFormatFactory;
 import com.ibm.icu.util.Currency;
+import com.ibm.icu.util.Currency.CurrencyUsage;
 import com.ibm.icu.util.CurrencyAmount;
 import com.ibm.icu.util.ULocale;
 
@@ -3943,6 +3944,36 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         // TODO: Known to fail. See ICU ticket 11640
         // assertEquals("", "-US dollars ", fmt.getNegativePrefix());
         assertEquals("", " %USD", fmt.getNegativeSuffix());
+        
+        // Test equality with affixes. set affix methods can't capture special
+        // characters which is why equality should fail.
+        // TODO: known to fail. See ticket 11646.
+        /*
+        {   
+            DecimalFormat fmtCopy = (DecimalFormat) fmt.clone();
+            assertEquals("", fmt, fmtCopy);
+            fmtCopy.setPositivePrefix(fmtCopy.getPositivePrefix());
+            assertNotEquals("", fmt, fmtCopy);
+        }   
+        {   
+            DecimalFormat fmtCopy = (DecimalFormat) fmt.clone();
+            assertEquals("", fmt, fmtCopy);
+            fmtCopy.setPositiveSuffix(fmtCopy.getPositiveSuffix());
+            assertNotEquals("", fmt, fmtCopy);
+        } 
+        {   
+            DecimalFormat fmtCopy = (DecimalFormat) fmt.clone();
+            assertEquals("", fmt, fmtCopy);
+            fmtCopy.setNegativePrefix(fmtCopy.getNegativePrefix());
+            assertNotEquals("", fmt, fmtCopy);
+        }   
+        {   
+            DecimalFormat fmtCopy = (DecimalFormat) fmt.clone();
+            assertEquals("", fmt, fmtCopy);
+            fmtCopy.setNegativeSuffix(fmtCopy.getNegativeSuffix());
+            assertNotEquals("", fmt, fmtCopy);
+        }
+        */
         fmt.setPositivePrefix("Don't");
         fmt.setPositiveSuffix("do");
         fmt.setNegativePrefix("be''eet\u00a4\u00a4\u00a4 it.");
@@ -3951,6 +3982,48 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         assertEquals("", "do", fmt.getPositiveSuffix());
         assertEquals("", "be''eet\u00a4\u00a4\u00a4 it.", fmt.getNegativePrefix());
         assertEquals("", "%", fmt.getNegativeSuffix());
+    }
+    
+    public void TestApplyPatternResets() {
+        // TODO: Known to fail. See ticket 11645
+        /*
+    
+        DecimalFormat fmt = (DecimalFormat)
+                NumberFormat.getInstance(new ULocale("en"));
+        String pattern = "#,###0.0";
+        fmt.applyPattern(pattern);
+        {
+            DecimalFormat fmtCopy = (DecimalFormat) fmt.clone();
+            fmtCopy.setMultiplier(37);
+            fmtCopy.applyPattern(pattern);
+            assertEquals("multiplier", fmt, fmtCopy);
+        }
+        {
+            DecimalFormat fmtCopy = (DecimalFormat) fmt.clone();
+            fmtCopy.setRoundingMode(BigDecimal.ROUND_CEILING);
+            fmtCopy.applyPattern(pattern);
+            assertEquals("roundingMode", fmt, fmtCopy);
+        }
+        {
+            DecimalFormat fmtCopy = (DecimalFormat) fmt.clone();
+            assertFalse("", fmtCopy.isDecimalSeparatorAlwaysShown());
+            fmtCopy.setDecimalSeparatorAlwaysShown(true);
+            fmtCopy.applyPattern(pattern);
+            assertEquals("decimalSeparatorAlwaysShown", fmt, fmtCopy);
+        }
+        {
+            DecimalFormat fmtCopy = (DecimalFormat) fmt.clone();
+            fmtCopy.setCurrency(Currency.getInstance("EAT"));
+            fmtCopy.applyPattern(pattern);
+            assertEquals("currency", fmt, fmtCopy);
+        }
+        {
+            DecimalFormat fmtCopy = (DecimalFormat) fmt.clone();
+            fmtCopy.setCurrencyUsage(CurrencyUsage.CASH);
+            fmtCopy.applyPattern(pattern);
+            assertEquals("currencyUsage", fmt, fmtCopy);
+        }
+        */
     }
 
     public void TestDataDrivenICU() {
