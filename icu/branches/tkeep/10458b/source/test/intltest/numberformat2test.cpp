@@ -2920,6 +2920,37 @@ void NumberFormat2Test::TestGetAffixes() {
     assertEquals("", " %USD", fmt.getPositiveSuffix(affixStr));
     assertEquals("", "-US dollars ", fmt.getNegativePrefix(affixStr));
     assertEquals("", " %USD", fmt.getNegativeSuffix(affixStr));
+
+    // Test equality with affixes. set affix methods can't capture special
+    // characters which is why equality should fail.
+    {
+        DecimalFormat2 fmtCopy(fmt);
+        assertTrue("", fmt == fmtCopy);
+        UnicodeString someAffix;
+        fmtCopy.setPositivePrefix(fmtCopy.getPositivePrefix(someAffix));
+        assertTrue("", fmt != fmtCopy);
+    }
+    {
+        DecimalFormat2 fmtCopy(fmt);
+        assertTrue("", fmt == fmtCopy);
+        UnicodeString someAffix;
+        fmtCopy.setPositiveSuffix(fmtCopy.getPositiveSuffix(someAffix));
+        assertTrue("", fmt != fmtCopy);
+    }
+    {
+        DecimalFormat2 fmtCopy(fmt);
+        assertTrue("", fmt == fmtCopy);
+        UnicodeString someAffix;
+        fmtCopy.setNegativePrefix(fmtCopy.getNegativePrefix(someAffix));
+        assertTrue("", fmt != fmtCopy);
+    }
+    {
+        DecimalFormat2 fmtCopy(fmt);
+        assertTrue("", fmt == fmtCopy);
+        UnicodeString someAffix;
+        fmtCopy.setNegativeSuffix(fmtCopy.getNegativeSuffix(someAffix));
+        assertTrue("", fmt != fmtCopy);
+    }
     fmt.setPositivePrefix("Don't");
     fmt.setPositiveSuffix("do");
     UnicodeString someAffix("be''eet\\u00a4\\u00a4\\u00a4 it.");
