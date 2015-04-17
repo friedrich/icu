@@ -12,6 +12,8 @@
 package com.ibm.icu.impl;
 
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.ibm.icu.util.Freezable;
 import com.ibm.icu.util.ICUCloneNotSupportedException;
 
@@ -217,7 +219,7 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
             // Should never happen.
             throw new ICUCloneNotSupportedException(e);
         }
-        c.bFrozen = false;
+        c.bFrozen = new AtomicBoolean(false);
         c.freezeValueFields();
         return c;   
     }
@@ -226,7 +228,7 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
      * Returns whether or not this object is frozen according to the contract of Freezable.
      */
     public final boolean isFrozen() {
-        return bFrozen;
+        return bFrozen.get();
     }
     
     /**
@@ -242,10 +244,9 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
      */
     @SuppressWarnings("unchecked")
     public final T freeze() { 
-        if (!bFrozen) {
+        if (bFrozen.compareAndSet(false, true)) {
             freezeValueFields();
         }
-        bFrozen = true;
         return (T) this;
     }
     
@@ -305,5 +306,5 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
         return fieldToBeMutated.cloneAsThawed();
     }
 
-    private volatile boolean bFrozen = false;
+    private AtomicBoolean bFrozen = new AtomicBoolean(false);
 }
