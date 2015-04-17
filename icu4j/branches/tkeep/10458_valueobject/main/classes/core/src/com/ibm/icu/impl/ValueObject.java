@@ -19,7 +19,7 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
 
 /**
  * ValueObject is the base class of objects that are designed mimic C++ value objects
- * (objects that override the assignment operator).
+ * (objects that override the copy and assignment operator).
  * ValueObject and its subclasses follow the contract of the Freezable interface.
  * ValueObject adds on the following features to the Freezable interface:<br>
  * <ul>
@@ -50,7 +50,8 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *   <li>Other mutable types</li>
  * </ol><br>
  * <p>
- * The code below is a sample subclass of ValueObject.<br>
+ * The code below is a sample subclass of ValueObject that has fields falling into each
+ * of the four categories above.<br>
  * <p>
  * <pre>
  * public class MyClass extends ValueObject<MyClass> {
@@ -81,8 +82,10 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *       // Modify an optional ValueOjbect.
  *       if (optionalValue != null) {
  *           optionalValue = thaw(optionalValue);
- *           optionalValue.setFoo(11);
+ *       } else {
+ *           optionalValue = new ValueObjectClass();
  *       }
+ *       optionalValue.setFoo(11);
  *       
  *       // Modify a Freezable field. Freezable fields must ALWAYS be frozen within
  *       // a ValueObject. 
@@ -178,9 +181,9 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *   }
  *   
  *   // If MyClass contained no ordinary mutable fields,
- *   // then it would not be necessary to override clone.
- *   public MyClass clone() {
- *      MyClass result = super.clone();
+ *   // then it would not be necessary to override cloneAsThawed.
+ *   public MyClass cloneAsThawed() {
+ *      MyClass result = super.cloneAsThawed();
  *      // Clone only the mutable fields. The base class clone takes care of freezing
  *      // any ValueObject fields. Other Freezable fields are already frozen.
  *      result.pojo = result.pojo.clone();
@@ -205,23 +208,15 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
     /** Initially not frozen */
     public ValueObject() {}
 
-    /** Returns a thawed clone.
-     * Subclasses override only if they contain plain old mutable fields that are not
-     * Freezable.
+    /** 
+     * clone this object.
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public T clone() {
-        T c;
-        try {
-            c = (T)super.clone();
-        } catch (CloneNotSupportedException e) {
-            // Should never happen.
-            throw new ICUCloneNotSupportedException(e);
+    public final Object clone() {
+        if (isFrozen()) {
+            return this;
         }
-        c.bFrozen = new AtomicBoolean(false);
-        c.freezeValueFields();
-        return c;   
+        return cloneAsThawed();
     }
     
     /**
@@ -233,10 +228,19 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
     
     /**
      * Returns a thawed clone according to the contract of the Freezable interface.
-     * Same as clone().
      */
-    public final T cloneAsThawed() {
-        return clone();
+    @SuppressWarnings("unchecked")
+    public T cloneAsThawed() {
+        T c;
+        try {
+            c = (T)super.clone();
+        } catch (CloneNotSupportedException e) {
+            // Should never happen.
+            throw new ICUCloneNotSupportedException(e);
+        }
+        c.bFrozen = new AtomicBoolean(false);
+        c.freezeValueFields();
+        return c;   
     }
     
     /**
