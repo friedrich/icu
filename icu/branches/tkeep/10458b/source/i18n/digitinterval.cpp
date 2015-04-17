@@ -37,17 +37,6 @@ void DigitInterval::setFracDigitCount(int32_t count) {
     fSmallestInclusive = count < 0 ? INT32_MIN : -count;
 }
 
-void DigitInterval::expandToLength(int32_t minLength) {
-  if (minLength <= 0) {
-    return;
-  }
-  int32_t requiredSmallestInclusive = fLargestExclusive - minLength;
-  if (fSmallestInclusive > requiredSmallestInclusive) {
-    fSmallestInclusive = requiredSmallestInclusive;
-  }
-}
-
-
 void DigitInterval::expandToContainDigit(int32_t digitExponent) {
   if (fLargestExclusive <= digitExponent) {
       fLargestExclusive = digitExponent + 1;

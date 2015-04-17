@@ -56,12 +56,6 @@ public:
     void shrinkToFitWithin(const DigitInterval &rhs);
 
     /**
-     * Expand this interval to the right of decimal as necessary so that
-     * it is at least minimumLength in length.
-     */
-    void expandToLength(int32_t minimumLength);
-
-    /**
      * Expand this interval as necessary to contain digit with given exponent
      * After this method returns, this interval is guaranteed to contain
      * digitExponent.

@@ -51,7 +51,9 @@ FixedPrecision::getInterval(
         const DigitList &value, DigitInterval &interval) const {
     if (value.isZero()) {
         interval = fMin;
-        interval.expandToLength(fSignificant.getMin());
+        if (fSignificant.getMin() > 0) {
+            interval.expandToContainDigit(interval.getIntDigitCount() - fSignificant.getMin());
+        }
     } else {
         value.getSmallestInterval(interval);
         if (fSignificant.getMin() > 0) {
