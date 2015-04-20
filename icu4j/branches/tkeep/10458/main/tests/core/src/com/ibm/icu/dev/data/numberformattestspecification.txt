@@ -446,3 +446,33 @@ begin
 format	positivePrefix	negativePrefix	output
 0.648	booya	cooya	booya64,80
 
+test nan and infinity
+set locale en_US
+set pattern [0.00];(#)
+begin
+format	output	breaks
+Inf	[\u221e]	K
+-Inf	(\u221e)	K
+NaN	NaN	K
+
+test nan and infinity with padding
+set locale en_US
+set pattern $$$0.00$
+set formatWidth 7
+// We must explicitly set because C and J don't agree on a default
+// see icu ticket 11652.
+set padCharacter *
+begin
+format	padPosition	output	breaks
+Inf	beforePrefix	**$$$\u221e$	K
+Inf	afterPrefix	$$$**\u221e$	K
+Inf	beforeSuffix	$$$\u221e**$	K
+Inf	afterSuffix	$$$\u221e$**	K
+NaN	beforePrefix	****NaN	K
+NaN	afterPrefix	****NaN	K
+NaN	beforeSuffix	NaN****	K
+NaN	afterSuffix	NaN****	K
+
+
+
+

@@ -135,7 +135,16 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.negativeSuffix.isValue()) {
                         fmt.setNegativeSuffix(tuple.negativeSuffix.getValue());
                     }
-                    String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
+                    String actual;
+                    if (tuple.format.getValue().equals("NaN")) {
+                        actual = fmt.format(Double.NaN);
+                    } else if (tuple.format.getValue().equals("-Inf")) {
+                        actual = fmt.format(Double.NEGATIVE_INFINITY);
+                    } else if (tuple.format.getValue().equals("Inf")) {
+                        actual = fmt.format(Double.POSITIVE_INFINITY);
+                    } else {
+                        actual = fmt.format(new BigDecimal(tuple.format.getValue()));
+                    }
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
                         return "Expected " + expected + ", got " + actual;
@@ -233,7 +242,16 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.negativeSuffix.isValue()) {
                         fmt.setNegativeSuffix(tuple.negativeSuffix.getValue());
                     }
-                    String actual = fmt.format(new BigDecimal(tuple.format.getValue()));
+                    String actual;
+                    if (tuple.format.getValue().equals("NaN")) {
+                        actual = fmt.format(Double.NaN);
+                    } else if (tuple.format.getValue().equals("-Inf")) {
+                        actual = fmt.format(Double.NEGATIVE_INFINITY);
+                    } else if (tuple.format.getValue().equals("Inf")) {
+                        actual = fmt.format(Double.POSITIVE_INFINITY);
+                    } else {
+                        actual = fmt.format(new BigDecimal(tuple.format.getValue()));
+                    }
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
                         return "Expected " + expected + ", got " + actual;
