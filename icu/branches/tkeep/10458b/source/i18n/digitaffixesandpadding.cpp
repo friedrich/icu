@@ -57,6 +57,25 @@ DigitAffixesAndPadding::formatInt32(
     return suffix->format(handler, appendTo);
 }
 
+static UnicodeString &
+formatAffix(
+        const DigitAffix *affix,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) {
+    if (affix) {
+        affix->format(handler, appendTo);
+    }
+    return appendTo;
+}
+
+static int32_t
+countAffixChar32(const DigitAffix *affix) {
+    if (affix) {
+        return affix->countChar32();
+    }
+    return 0;
+}
+
 UnicodeString &
 DigitAffixesAndPadding::format(
         DigitList &value,
@@ -69,48 +88,49 @@ DigitAffixesAndPadding::format(
     if (U_FAILURE(status)) {
         return appendTo;
     }
-    UBool bPositive = value.isPositive();
-    const PluralAffix *pluralPrefix = bPositive ? &fPositivePrefix : &fNegativePrefix;
-    const PluralAffix *pluralSuffix = bPositive ? &fPositiveSuffix : &fNegativeSuffix;
-    
-    const DigitAffix *prefix;
-    const DigitAffix *suffix;
-    if (optPluralRules == NULL) {
-        prefix = &pluralPrefix->getOtherVariant();
-        suffix = &pluralSuffix->getOtherVariant();
-    } else {
-        UnicodeString count(formatter.select(*optPluralRules, value));
-        prefix = &pluralPrefix->getByVariant(count);
-        suffix = &pluralSuffix->getByVariant(count);
+    const DigitAffix *prefix = NULL;
+    const DigitAffix *suffix = NULL;
+    if (!value.isNaN()) {
+        UBool bPositive = value.isPositive();
+        const PluralAffix *pluralPrefix = bPositive ? &fPositivePrefix : &fNegativePrefix;
+        const PluralAffix *pluralSuffix = bPositive ? &fPositiveSuffix : &fNegativeSuffix;
+        if (optPluralRules == NULL || value.isInfinite()) {
+            prefix = &pluralPrefix->getOtherVariant();
+            suffix = &pluralSuffix->getOtherVariant();
+        } else {
+            UnicodeString count(formatter.select(*optPluralRules, value));
+            prefix = &pluralPrefix->getByVariant(count);
+            suffix = &pluralSuffix->getByVariant(count);
+        }
+        value.setPositive(TRUE);
     }
-    value.setPositive(TRUE);
     if (fWidth <= 0) {
-        prefix->format(handler, appendTo);
+        formatAffix(prefix, handler, appendTo);
         formatter.format(value, handler, appendTo);
-        return suffix->format(handler, appendTo);
+        return formatAffix(suffix, handler, appendTo);
     }
-    int32_t codePointCount = prefix->countChar32() + formatter.countChar32(value) + suffix->countChar32();
+    int32_t codePointCount = countAffixChar32(prefix) + formatter.countChar32(value) + countAffixChar32(suffix);
     int32_t paddingCount = fWidth - codePointCount;
     switch (fPadPosition) {
     case kPadBeforePrefix:
         appendPadding(paddingCount, appendTo);
-        prefix->format(handler, appendTo);
+        formatAffix(prefix, handler, appendTo);
         formatter.format(value, handler, appendTo);
-        return suffix->format(handler, appendTo);
+        return formatAffix(suffix, handler, appendTo);
     case kPadAfterPrefix:
-        prefix->format(handler, appendTo);
+        formatAffix(prefix, handler, appendTo);
         appendPadding(paddingCount, appendTo);
         formatter.format(value, handler, appendTo);
-        return suffix->format(handler, appendTo);
+        return formatAffix(suffix, handler, appendTo);
     case kPadBeforeSuffix:
-        prefix->format(handler, appendTo);
+        formatAffix(prefix, handler, appendTo);
         formatter.format(value, handler, appendTo);
         appendPadding(paddingCount, appendTo);
-        return suffix->format(handler, appendTo);
+        return formatAffix(suffix, handler, appendTo);
     case kPadAfterSuffix:
-        prefix->format(handler, appendTo);
+        formatAffix(prefix, handler, appendTo);
         formatter.format(value, handler, appendTo);
-        suffix->format(handler, appendTo);
+        formatAffix(suffix, handler, appendTo);
         return appendPadding(paddingCount, appendTo);
     default:
         U_ASSERT(FALSE);

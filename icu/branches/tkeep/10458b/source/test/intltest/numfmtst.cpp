@@ -101,6 +101,18 @@ static DigitList &strToDigitList(
     if (U_FAILURE(status)) {
         return digitList;
     }
+    if (str == "NaN") {
+        digitList.set(uprv_getNaN());
+        return digitList;
+    }
+    if (str == "-Inf") {
+        digitList.set(-1*uprv_getInfinity());
+        return digitList;
+    }
+    if (str == "Inf") {
+        digitList.set(uprv_getInfinity());
+        return digitList;
+    }
     CharString formatValue;
     formatValue.appendInvariantChars(str, status);
     digitList.set(StringPiece(formatValue.data()), status, 0);

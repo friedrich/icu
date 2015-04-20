@@ -15,6 +15,7 @@
 #include "unicode/utypes.h"
 #include "unicode/uobject.h"
 #include "unicode/unistr.h"
+#include "digitaffix.h"
 
 U_NAMESPACE_BEGIN
 
@@ -139,6 +140,44 @@ UnicodeString &format(
         UnicodeString &appendTo) const;
 
 /**
+ * Formats NaN.
+ * @param handler records field positions
+ * @param appendTo formatted value appended here.
+ * @return appendTo
+ */
+UnicodeString &formatNaN(
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    return fNan.format(handler, appendTo);
+}
+
+/**
+ * Counts code points for NaN.
+ */
+int32_t countChar32ForNaN() const {
+    return fNan.toString().countChar32();
+}
+
+/**
+ * Formats positive infinity.
+ * @param handler records field positions
+ * @param appendTo formatted value appended here.
+ * @return appendTo
+ */
+UnicodeString &formatInfinity(
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    return fInfinity.format(handler, appendTo);
+}
+
+/**
+ * Counts code points for positive infinity.
+ */
+int32_t countChar32ForInfinity() const {
+    return fInfinity.toString().countChar32();
+}
+
+/**
  * Fixed point formatting of integers.
  * Always performed with no grouping and no decimal point.
  *
@@ -201,6 +240,8 @@ UnicodeString fMonetaryGroupingSeparator;
 UnicodeString fMonetaryDecimal;
 UnicodeString fNegativeSign;
 UnicodeString fPositiveSign;
+DigitAffix fInfinity;
+DigitAffix fNan;
 UBool fIsStandardDigits;
 
 UBool isStandardDigits() const;

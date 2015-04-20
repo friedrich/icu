@@ -84,6 +84,9 @@ ValueFormatter::isFastFormattable(int32_t value) const {
 
 DigitList &
 ValueFormatter::round(DigitList &value, UErrorCode &status) const {
+    if (value.isNaN() || value.isInfinite()) {
+        return value;
+    }
     switch (fType) {
     case kFixedDecimal:
         return fFixedPrecision->round(value, 0, status);
@@ -95,7 +98,6 @@ ValueFormatter::round(DigitList &value, UErrorCode &status) const {
     }
     return value;
 }
-
 
 UnicodeString &
 ValueFormatter::formatInt32(
@@ -128,6 +130,12 @@ ValueFormatter::format(
         const DigitList &value,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
+    if (value.isNaN()) {
+        return fDigitFormatter->formatNaN(handler, appendTo);
+    }
+    if (value.isInfinite()) {
+        return fDigitFormatter->formatInfinity(handler, appendTo);
+    }
     switch (fType) {
     case kFixedDecimal:
         {
@@ -165,6 +173,12 @@ ValueFormatter::format(
 
 int32_t
 ValueFormatter::countChar32(const DigitList &value) const {
+    if (value.isNaN()) {
+        return fDigitFormatter->countChar32ForNaN();
+    }
+    if (value.isInfinite()) {
+        return fDigitFormatter->countChar32ForInfinity();
+    }
     switch (fType) {
     case kFixedDecimal:
         {

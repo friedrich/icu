@@ -47,7 +47,7 @@ public:
     /**
      * Rounds the value according to how it will be formatted.
      * Round must be called to adjust value before calling select.
-     * value is expected to be real e.g not Infinity or NaN.
+     * If value is NaN or infinite, round does nothing.
      *
      * @param value this value is rounded in place.
      * @param status any error returned here.
@@ -62,7 +62,9 @@ public:
 
     /**
      * Return the plural form to use for a given value.
-     * Value should have already been adjusted with round.
+     * @param rules the plural rules.
+     * @param value should have been adjusted with round.
+     *   value must be real, not infinite or NaN.
      * @return 'zero', 'one', 'two', 'few', 'many', or 'other'
      */
     UnicodeString select(
@@ -71,7 +73,9 @@ public:
 
     /**
      * formats positiveValue and appends to appendTo. Returns appendTo.
-     * value must be positive.
+     * @param positiveValue must be positive. May be positive infinity or NaN.
+     * @param handler stores the field positions
+     * @param appendTo formatted value appended here.
      */
     UnicodeString &format(
         const DigitList &positiveValue,
@@ -90,8 +94,8 @@ public:
         UnicodeString &appendTo) const;
 
     /**
-     * Returns the number of code points needed.
-     * value must be positive.
+     * Returns the number of code points needed to format.
+     * @param positiveValue must be positive. May be positive infinity or NaN.
      */
     int32_t countChar32(const DigitList &positiveValue) const;
   

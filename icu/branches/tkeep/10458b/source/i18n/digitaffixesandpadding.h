@@ -114,7 +114,7 @@ UBool needsPluralRules() const;
 /**
  * Formats value and appends to appendTo.
  *
- * @param value the value to format.
+ * @param value the value to format. May be NaN or ininite.
  * @param formatter handles the details of formatting the actual value.
  * @param handler records field positions
  * @param optPluralRules the plural rules, but may be NULL if
