@@ -16,8 +16,7 @@ public:
     virtual  ~SimpleThread();
     int32_t   start(void);        // start the thread
     UBool     isRunning();        // return true if a started thread has exited.
-    void      join() {while (isRunning()) sleep(1);}; // Wait until thread finishes.
-                                  // TODO: add a real implementation.  Ticket #11643
+    void      join();             // All threads should be joined before deleting their SimpleThread.
 
     virtual void run(void) = 0;   // Override this to provide the code to run
                                   //   in the thread.

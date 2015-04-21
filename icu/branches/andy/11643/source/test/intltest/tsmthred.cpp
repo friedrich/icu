@@ -235,24 +235,65 @@ void MultithreadTest::runIndexedTest( int32_t index, UBool exec,
 //   TestThreads -- see if threads really work at all.
 //
 //   Set up N threads pointing at N chars. When they are started, they will
-//   each sleep 1 second and then set their chars. At the end we make sure they
-//   are all set.
+//   set their chars. At the end we make sure they are all set.
 //
 //-----------------------------------------------------------------------------------
-#define THREADTEST_NRTHREADS 8
-#define ARABICSHAPE_THREADTEST 30
 
 class TestThreadsThread : public SimpleThread
 {
 public:
     TestThreadsThread(char* whatToChange) { fWhatToChange = whatToChange; }
-    virtual void run() { SimpleThread::sleep(1000);
-                         Mutex m;
+    virtual void run() { Mutex m;
                          *fWhatToChange = '*';
     }
 private:
     char *fWhatToChange;
 };
+
+
+void MultithreadTest::TestThreads()
+{
+    static const int32_t THREADTEST_NRTHREADS = 8;
+    char threadTestChars[THREADTEST_NRTHREADS + 1];
+    SimpleThread *threads[THREADTEST_NRTHREADS];
+    int32_t numThreadsStarted = 0;
+
+    int32_t i;
+    for(i=0;i<THREADTEST_NRTHREADS;i++)
+    {
+        threadTestChars[i] = ' ';
+        threads[i] = new TestThreadsThread(&threadTestChars[i]);
+    }
+    threadTestChars[THREADTEST_NRTHREADS] = '\0';
+
+    logln("->" + UnicodeString(threadTestChars) + "<- Firing off threads.. ");
+    for(i=0;i<THREADTEST_NRTHREADS;i++)
+    {
+        if (threads[i]->start() != 0) {
+            errln("Error starting thread %d", i);
+        }
+        else {
+            numThreadsStarted++;
+        }
+        logln(" Subthread started.");
+    }
+
+    if (numThreadsStarted != THREADTEST_NRTHREADS) {
+        errln("Not all threads could be started for testing!");
+        return;
+    }
+
+    logln("Waiting for threads to be set..");
+    for(i=0; i<THREADTEST_NRTHREADS; i++) {
+        threads[i]->join();
+        if (threadTestChars[i] != '*') {
+            errln("%s:%d Thread %d failed.", __FILE__, __LINE__, i);
+        }
+        delete threads[i];
+    }
+}
+
+
 //-----------------------------------------------------------------------------------
 //
 //   TestArabicShapeThreads -- see if calls to u_shapeArabic in many threads works successfully
@@ -263,6 +304,9 @@ private:
 //   This is a unit test for ticket 9473
 //
 //-----------------------------------------------------------------------------------
+
+static const int32_t ARABICSHAPE_THREADTEST = 30;
+
 class TestArabicShapeThreads : public SimpleThread
 {
 public:
@@ -322,75 +366,6 @@ private:
 	
 
 };
-
-void MultithreadTest::TestThreads()
-{
-    char threadTestChars[THREADTEST_NRTHREADS + 1];
-    SimpleThread *threads[THREADTEST_NRTHREADS];
-    int32_t numThreadsStarted = 0;
-
-    int32_t i;
-    for(i=0;i<THREADTEST_NRTHREADS;i++)
-    {
-        threadTestChars[i] = ' ';
-        threads[i] = new TestThreadsThread(&threadTestChars[i]);
-    }
-    threadTestChars[THREADTEST_NRTHREADS] = '\0';
-
-    logln("->" + UnicodeString(threadTestChars) + "<- Firing off threads.. ");
-    for(i=0;i<THREADTEST_NRTHREADS;i++)
-    {
-        if (threads[i]->start() != 0) {
-            errln("Error starting thread %d", i);
-        }
-        else {
-            numThreadsStarted++;
-        }
-        SimpleThread::sleep(100);
-        logln(" Subthread started.");
-    }
-
-    logln("Waiting for threads to be set..");
-    if (numThreadsStarted == 0) {
-        errln("No threads could be started for testing!");
-        return;
-    }
-
-    int32_t patience = 40; // seconds to wait
-
-    while(patience--)
-    {
-        int32_t count = 0;
-        umtx_lock(NULL);
-        for(i=0;i<THREADTEST_NRTHREADS;i++)
-        {
-            if(threadTestChars[i] == '*')
-            {
-                count++;
-            }
-        }
-        umtx_unlock(NULL);
-
-        if(count == THREADTEST_NRTHREADS)
-        {
-            logln("->" + UnicodeString(threadTestChars) + "<- Got all threads! cya");
-            for(i=0;i<THREADTEST_NRTHREADS;i++)
-            {
-                delete threads[i];
-            }
-            return;
-        }
-
-        logln("->" + UnicodeString(threadTestChars) + "<- Waiting..");
-        SimpleThread::sleep(500);
-    }
-
-    errln("->" + UnicodeString(threadTestChars) + "<- PATIENCE EXCEEDED!! Still missing some.");
-    for(i=0;i<THREADTEST_NRTHREADS;i++)
-    {
-        delete threads[i];
-    }
-}
 
 
 void MultithreadTest::TestArabicShapingThreads()
@@ -1045,10 +1020,7 @@ private:
 
 void MultithreadTest::TestThreadedIntl()
 {
-    int i;
     UnicodeString theErr;
-    UBool   haveDisplayedInfo[kFormatThreadThreads];
-    static const int32_t PATIENCE_SECONDS = 45;
 
     UErrorCode threadSafeErr = U_ZERO_ERROR;
 
@@ -1060,8 +1032,9 @@ void MultithreadTest::TestThreadedIntl()
     //
     logln("Spawning: %d threads * %d iterations each.",
                 kFormatThreadThreads, kFormatThreadIterations);
-    LocalArray<FormatThreadTest> tests(new FormatThreadTest[kFormatThreadThreads]);
-    for(int32_t j = 0; j < kFormatThreadThreads; j++) {
+    FormatThreadTest tests[kFormatThreadThreads];
+    int32_t j;
+    for(j = 0; j < UPRV_LENGTHOF(tests); j++) {
         tests[j].fNum = j;
         int32_t threadStatus = tests[j].start();
         if (threadStatus != 0) {
@@ -1069,51 +1042,16 @@ void MultithreadTest::TestThreadedIntl()
             SimpleThread::errorFunc();
             return;
         }
-        haveDisplayedInfo[j] = FALSE;
     }
 
 
-    // Spin, waiting for the test threads to finish.
-    UBool   stillRunning;
-    UDate startTime, endTime;
-    startTime = Calendar::getNow();
-    double lastComplaint = 0;
-    do {
-        /*  Spin until the test threads  complete. */
-        stillRunning = FALSE;
-        endTime = Calendar::getNow();
-        double elapsedSeconds =  ((int32_t)(endTime - startTime)/U_MILLIS_PER_SECOND);
-        if (elapsedSeconds > PATIENCE_SECONDS) {
-            errln("Patience exceeded. Test is taking too long.");
-            return;
-        } else if((elapsedSeconds-lastComplaint) > 2.0) {
-            infoln("%.1f seconds elapsed (still waiting..)", elapsedSeconds);
-            lastComplaint = elapsedSeconds;
+    for (j=0; j<UPRV_LENGTHOF(tests); j++) {
+        tests[j].join();
+        logln("Thread # %d is complete..", j);
+        if(tests[j].getError(theErr)) {
+            dataerrln(UnicodeString("#") + j + ": " + theErr);
         }
-        /*
-         The following sleep must be here because the *BSD operating systems
-         have a brain dead thread scheduler. They starve the child threads from
-         CPU time.
-        */
-        SimpleThread::sleep(1); // yield
-        for(i=0;i<kFormatThreadThreads;i++) {
-            if (tests[i].isRunning()) {
-                stillRunning = TRUE;
-            } else if (haveDisplayedInfo[i] == FALSE) {
-                logln("Thread # %d is complete..", i);
-                if(tests[i].getError(theErr)) {
-                    dataerrln(UnicodeString("#") + i + ": " + theErr);
-                    SimpleThread::errorFunc();
-                }
-                haveDisplayedInfo[i] = TRUE;
-            }
-        }
-    } while (stillRunning);
-
-    //
-    //  All threads have finished.
-    //
-    assertSuccess("finalizing ThreadSafeFormat", threadSafeErr, TRUE);
+    }
 }
 #endif /* #if !UCONFIG_NO_FORMATTING */
 
@@ -1703,6 +1641,10 @@ void MultithreadTest::TestConditionVariables() {
         if (!threads[i]->fFinished) {
             errln("File %s, Line %d: Error, threads[%d]->fFinished == false", __FILE__, __LINE__, i);
         }
+    }
+
+    for (i=0; i<NUMTHREADS; ++i) {
+        threads[i]->join();
         delete threads[i];
     }
 }
@@ -1768,12 +1710,6 @@ void UnifiedCacheThread::run() {
       gThisTest->errln("Expected %s, got %s", fLoc, item->value);
     }
     item->removeRef();
-
-    // Mark this thread as finished
-    umtx_lock(&gCTMutex);
-    ++gFinishedThreads;
-    umtx_condBroadcast(&gCTConditionVar);
-    umtx_unlock(&gCTMutex);
 }
 
 void MultithreadTest::TestUnifiedCache() {
@@ -1792,14 +1728,13 @@ void MultithreadTest::TestUnifiedCache() {
             threads[i][j]->start();
         }
     }
-    // Wait on all the threads to complete verify that LENGTHOF(gCacheLocales)
-    // objects were created.
-    umtx_lock(&gCTMutex);
-    while (gFinishedThreads < CACHE_LOAD*UPRV_LENGTHOF(gCacheLocales)) {
-        umtx_condWait(&gCTConditionVar, &gCTMutex);
+
+    for (int32_t i=0; i<CACHE_LOAD; ++i) {
+        for (int32_t j=0; j<UPRV_LENGTHOF(gCacheLocales); ++j) {
+            threads[i][j]->join();
+        }
     }
     assertEquals("Objects created", UPRV_LENGTHOF(gCacheLocales), gObjectsCreated);
-    umtx_unlock(&gCTMutex);
 
     // clean up threads
     for (int32_t i=0; i<CACHE_LOAD; ++i) {

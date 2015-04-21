@@ -104,31 +104,6 @@
 #endif
 
 
-#if (ICU_USE_THREADS==0)
-    SimpleThread::SimpleThread()
-    {}
-
-    SimpleThread::~SimpleThread()
-    {}
-
-    int32_t 
-    SimpleThread::start()
-    { return -1; }
-
-    void 
-    SimpleThread::run()
-    {}
-
-    void 
-    SimpleThread::sleep(int32_t millis)
-    {}
-
-    UBool  
-    SimpleThread::isRunning() {
-        return FALSE;
-    }
-#else
-
 #include "unicode/putil.h"
 
 /* for mthreadtest*/
@@ -254,46 +229,18 @@ UBool  SimpleThread::isRunning() {
     return (threadExitCode == STILL_ACTIVE);
 }
 
+void SimpleThread::join() {
+    Win32ThreadImplementation *imp = (Win32ThreadImplementation*)fImplementation;
+    if (imp->fHandle == 0) {
+        // No handle, thread must not be running.
+        return;
+    }
+    WaitForSingleObject(threadHandle, INFINITE);
+}
 
 void SimpleThread::sleep(int32_t millis)
 {
     ::Sleep(millis);
-}
-
-//-----------------------------------------------------------------------------------
-//
-//   class SimpleThread   NULL  Implementation
-//
-//-----------------------------------------------------------------------------------
-#elif U_PLATFORM == U_PF_CLASSIC_MACOS
-
-// since the Mac has no preemptive threading (at least on MacOS 8), only
-// cooperative threading, threads are a no-op.  We have no yield() calls
-// anywhere in the ICU, so we are guaranteed to be thread-safe.
-
-#define HAVE_IMP
-
-SimpleThread::SimpleThread()
-{}
-
-SimpleThread::~SimpleThread()
-{}
-
-int32_t 
-SimpleThread::start()
-{ return 0; }
-
-void 
-SimpleThread::run()
-{}
-
-void 
-SimpleThread::sleep(int32_t millis)
-{}
-
-UBool  
-SimpleThread::isRunning() {
-    return FALSE;
 }
 
 #endif
@@ -357,9 +304,6 @@ SimpleThread::SimpleThread()
 SimpleThread::~SimpleThread()
 {
     PosixThreadImplementation *imp = (PosixThreadImplementation*)fImplementation;
-    if (imp->fRan) {
-        pthread_join(imp->fThread, NULL);
-    }
     delete imp;
     fImplementation = (void *)0xdeadbeef;
 }
@@ -408,6 +352,11 @@ int32_t SimpleThread::start()
     }
 
     return rc;
+}
+
+void SimpleThread::join() {
+    PosixThreadImplementation *imp = (PosixThreadImplementation*)fImplementation;
+    pthread_join(imp->fThread, NULL);
 }
 
 
@@ -478,5 +427,3 @@ private:
     int32_t fErrors;
     UnicodeString fErrorString;
 };
-
-#endif // ICU_USE_THREADS
