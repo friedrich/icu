@@ -204,12 +204,7 @@ void SimpleThread::join() {
         // No handle, thread must not be running.
         return;
     }
-    WaitForSingleObject(threadHandle, INFINITE);
-}
-
-void SimpleThread::sleep(int32_t millis)
-{
-    ::Sleep(millis);
+    WaitForSingleObject(imp->fHandle, INFINITE);
 }
 
 #endif
