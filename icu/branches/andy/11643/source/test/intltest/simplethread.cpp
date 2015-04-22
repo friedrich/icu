@@ -62,15 +62,7 @@
 #if defined(POSIX)
 #define HAVE_IMP
 
-#if (ICU_USE_THREADS == 1)
 #include <pthread.h>
-#endif
-
-#if defined(__hpux) && defined(HPUX_CMA)
-# if defined(read)  // read being defined as cma_read causes trouble with iostream::read
-#  undef read
-# endif
-#endif
 
 #if U_PLATFORM == U_PF_OS390
 #include <sys/types.h>
@@ -221,31 +213,19 @@ void SimpleThread::join() {
 struct PosixThreadImplementation
 {
     pthread_t        fThread;
-    UBool            fRunning;
-    UBool            fRan;          // True if the thread was successfully started
 };
 
 extern "C" void* SimpleThreadProc(void *arg)
 {
     // This is the code that is run in the new separate thread.
     SimpleThread *This = (SimpleThread *)arg;
-    This->run();      // Run the user code.
-
-    // The user function has returned.  Set the flag indicating that this thread
-    // is done.  Need a mutex for memory barrier purposes only, so that other thread
-    //   will reliably see that the flag has changed.
-    PosixThreadImplementation *imp = (PosixThreadImplementation*)This->fImplementation;
-    umtx_lock(NULL);
-    imp->fRunning = FALSE;
-    umtx_unlock(NULL);
+    This->run();
     return 0;
 }
 
 SimpleThread::SimpleThread() 
 {
     PosixThreadImplementation *imp = new PosixThreadImplementation;
-    imp->fRunning   = FALSE;
-    imp->fRan       = FALSE;
     fImplementation = imp;
 }
 
@@ -263,16 +243,7 @@ int32_t SimpleThread::start()
     static UBool attrIsInitialized = FALSE;
 
     PosixThreadImplementation *imp = (PosixThreadImplementation*)fImplementation;
-    imp->fRunning = TRUE;
-    imp->fRan     = TRUE;
 
-#ifdef HPUX_CMA
-    if (attrIsInitialized == FALSE) {
-        rc = pthread_attr_create(&attr);
-        attrIsInitialized = TRUE;
-    }
-    rc = pthread_create(&(imp->fThread),attr,&SimpleThreadProc,(void*)this);
-#else
     if (attrIsInitialized == FALSE) {
         rc = pthread_attr_init(&attr);
 #if U_PLATFORM == U_PF_OS390
@@ -290,13 +261,10 @@ int32_t SimpleThread::start()
 #endif
         attrIsInitialized = TRUE;
     }
-    rc = pthread_create(&(imp->fThread),&attr,&SimpleThreadProc,(void*)this);
-#endif
+    rc = pthread_create(&(imp->fThread), &attr, &SimpleThreadProc, (void*)this);
     
     if (rc != 0) {
         // some kind of error occured, the thread did not start.
-        imp->fRan     = FALSE;
-        imp->fRunning = FALSE;
     }
 
     return rc;
@@ -313,28 +281,4 @@ void SimpleThread::join() {
 
 #ifndef HAVE_IMP
 #error  No implementation for threads! Cannot test.
-0 = 216; //die
 #endif
-
-//-------------------------------------------------------------------------------------------
-//
-// class ThreadWithStatus - a thread that we can check the status and error condition of
-//
-//-------------------------------------------------------------------------------------------
-class ThreadWithStatus : public SimpleThread
-{
-public:
-    UBool  getError() { return (fErrors > 0); } 
-    UBool  getError(UnicodeString& fillinError) { fillinError = fErrorString; return (fErrors > 0); } 
-    virtual ~ThreadWithStatus(){}
-protected:
-    ThreadWithStatus() :  fErrors(0) {}
-    void error(const UnicodeString &error) { 
-        fErrors++; fErrorString = error; 
-        SimpleThread::errorFunc();  
-    }
-    void error() { error("An error occured."); }
-private:
-    int32_t fErrors;
-    UnicodeString fErrorString;
-};

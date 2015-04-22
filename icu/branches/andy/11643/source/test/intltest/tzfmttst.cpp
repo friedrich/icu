@@ -678,11 +678,7 @@ TimeZoneFormatTest::TestTimeRoundTrip(void) {
     data.END_TIME = END_TIME;
     data.numDone = 0;
 
-#if (ICU_USE_THREADS==0)
-    TestTimeRoundTripThread fakeThread(*this, data, 0);
-    fakeThread.run();
-#else
-    TestTimeRoundTripThread **threads = new TestTimeRoundTripThread*[threadCount];
+    TestTimeRoundTripThread **threads = new TestTimeRoundTripThread*[nThreads];
     int32_t i;
     for (i = 0; i < nThreads; i++) {
         threads[i] = new TestTimeRoundTripThread(*this, data, i);
@@ -703,7 +699,6 @@ TimeZoneFormatTest::TestTimeRoundTrip(void) {
     }
     delete [] threads;
 
-#endif
     UDate total = 0;
     logln("### Elapsed time by patterns ###");
     for (int32_t i = 0; i < NUM_PATTERNS; i++) {

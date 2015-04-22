@@ -11,19 +11,16 @@
 
 class U_EXPORT SimpleThread
 {
-public:
+  public:
     SimpleThread();
     virtual  ~SimpleThread();
     int32_t   start(void);        // start the thread. Return 0 if successfull.
-    void      join();             // All threads should be joined before deleting their SimpleThread.
+    void      join();             // A thread must be joined before deleting its SimpleThread.
 
     virtual void run(void) = 0;   // Override this to provide the code to run
                                   //   in the thread.
+  private:
     void *fImplementation;
-
-public:
-    static void errorFunc();      // Empty function, provides a single convenient place
-                                  //   to break on errors.
 };
 
 #endif

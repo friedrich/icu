@@ -55,9 +55,6 @@ MultithreadTest::~MultithreadTest()
 #include "unicode/calendar.h"
 #include "ucaconf.h"
 
-void SimpleThread::errorFunc() {
-    // *(char *)0 = 3;            // Force entry into a debugger via a crash;
-}
 
 void MultithreadTest::runIndexedTest( int32_t index, UBool exec,
                 const char* &name, char* /*par*/ ) {
@@ -389,32 +386,7 @@ void MultithreadTest::TestMutex()
 
 //-------------------------------------------------------------------------------------------
 //
-// class ThreadWithStatus - a thread that we can check the status and error condition of
-//
-//-------------------------------------------------------------------------------------------
-class ThreadWithStatus : public SimpleThread
-{
-public:
-    UBool  getError() { return (fErrors > 0); }
-    UBool  getError(UnicodeString& fillinError) { fillinError = fErrorString; return (fErrors > 0); }
-    virtual ~ThreadWithStatus(){}
-protected:
-    ThreadWithStatus() :  fErrors(0) {}
-    void error(const UnicodeString &error) {
-        fErrors++; fErrorString = error;
-        SimpleThread::errorFunc();
-    }
-    void error() { error("An error occured."); }
-private:
-    int32_t fErrors;
-    UnicodeString fErrorString;
-};
-
-
-
-//-------------------------------------------------------------------------------------------
-//
-//   TestMultithreadedIntl.  Test ICU Formatting n a multi-threaded environment
+//   TestMultithreadedIntl.  Test ICU Formatting in a multi-threaded environment
 //
 //-------------------------------------------------------------------------------------------
 
@@ -446,8 +418,6 @@ UnicodeString showDifference(const UnicodeString& expected, const UnicodeString&
 
     return res;
 }
-
-
 
 
 //-------------------------------------------------------------------------------------------
@@ -613,7 +583,7 @@ UBool U_CALLCONV isAcceptable(void *, const char *, const char *, const UDataInf
 //static UMTX gDebugMutex;
 
 
-class FormatThreadTest : public ThreadWithStatus
+class FormatThreadTest : public SimpleThread
 {
 public:
     int     fNum;
@@ -622,7 +592,7 @@ public:
     LocalPointer<ThreadSafeFormat> fTSF;
 
     FormatThreadTest() // constructor is NOT multithread safe.
-        : ThreadWithStatus(),
+        : SimpleThread(),
         fNum(0),
         fTraceInfo(0),
         fTSF(NULL),
@@ -719,17 +689,19 @@ public:
         status = U_ZERO_ERROR;
         LocalPointer<NumberFormat> formatter(NumberFormat::createInstance(Locale::getEnglish(),status));
         if(U_FAILURE(status)) {
-            error("Error on NumberFormat::createInstance().");
+            IntlTest::gTest->errln("%s:%d Error %s on NumberFormat::createInstance().",
+                    __FILE__, __LINE__, u_errorName(status));
             goto cleanupAndReturn;
         }
 
         percentFormatter.adoptInstead(NumberFormat::createPercentInstance(Locale::getFrench(),status));
         if(U_FAILURE(status))             {
-            error("Error on NumberFormat::createPercentInstance().");
+            IntlTest::gTest->errln("%s:%d Error %s on NumberFormat::createPercentInstance().",
+                    __FILE__, __LINE__, u_errorName(status));
             goto cleanupAndReturn;
         }
 
-        for(iteration = 0;!getError() && iteration<kFormatThreadIterations;iteration++)
+        for(iteration = 0;!IntlTest::gTest->getErrors() && iteration<kFormatThreadIterations;iteration++)
         {
 
             int32_t whichLine = (iteration + fOffset)%kNumberFormatTestDataLength;
@@ -739,7 +711,7 @@ public:
             formatter->format(kNumberFormatTestData[whichLine].number, output);
 
             if(0 != output.compare(kNumberFormatTestData[whichLine].string)) {
-                error("format().. expected " + kNumberFormatTestData[whichLine].string
+                IntlTest::gTest->errln("format().. expected " + kNumberFormatTestData[whichLine].string
                         + " got " + output);
                 goto cleanupAndReturn;
             }
@@ -751,7 +723,7 @@ public:
             percentFormatter->format(kPercentFormatTestData[whichLine].number, output);
             if(0 != output.compare(kPercentFormatTestData[whichLine].string))
             {
-                error("percent format().. \n" +
+                IntlTest::gTest->errln("percent format().. \n" +
                         showDifference(kPercentFormatTestData[whichLine].string,output));
                 goto cleanupAndReturn;
             }
@@ -814,20 +786,20 @@ public:
             if(U_FAILURE(status))
             {
                 UnicodeString tmp(u_errorName(status));
-                error("Failure on message format, pattern=" + patternToCheck +
+                IntlTest::gTest->errln("Failure on message format, pattern=" + patternToCheck +
                         ", error = " + tmp);
                 goto cleanupAndReturn;
             }
 
             if(result != expected)
             {
-                error("PatternFormat: \n" + showDifference(expected,result));
+                IntlTest::gTest->errln("PatternFormat: \n" + showDifference(expected,result));
                 goto cleanupAndReturn;
             }
             // test the Thread Safe Format
             UnicodeString appendErr;
             if(!fTSF->doStuff(fNum, appendErr, status)) {
-              error(appendErr);
+              IntlTest::gTest->errln(appendErr);
               goto cleanupAndReturn;
             }
         }   /*  end of for loop */
@@ -864,8 +836,8 @@ void MultithreadTest::TestThreadedIntl()
         tests[j].fNum = j;
         int32_t threadStatus = tests[j].start();
         if (threadStatus != 0) {
-            errln("System Error %d starting thread number %d.", threadStatus, j);
-            SimpleThread::errorFunc();
+            errln("%s:%d System Error %d starting thread number %d.",
+                    __FILE__, __LINE__, threadStatus, j);
             return;
         }
     }
@@ -874,9 +846,6 @@ void MultithreadTest::TestThreadedIntl()
     for (j=0; j<UPRV_LENGTHOF(tests); j++) {
         tests[j].join();
         logln("Thread # %d is complete..", j);
-        if(tests[j].getError(theErr)) {
-            dataerrln(UnicodeString("#") + j + ": " + theErr);
-        }
     }
 }
 #endif /* #if !UCONFIG_NO_FORMATTING */
@@ -917,7 +886,7 @@ normalizeResult(int32_t result) {
     return result<0 ? UCOL_LESS : result==0 ? UCOL_EQUAL : UCOL_GREATER;
 }
 
-class CollatorThreadTest : public ThreadWithStatus
+class CollatorThreadTest : public SimpleThread
 {
 private:
     const Collator *coll;
@@ -925,7 +894,7 @@ private:
     int32_t noLines;
     UBool isAtLeastUCA62;
 public:
-    CollatorThreadTest()  : ThreadWithStatus(),
+    CollatorThreadTest()  : SimpleThread(),
         coll(NULL),
         lines(NULL),
         noLines(0),
@@ -959,12 +928,12 @@ public:
                 int32_t cmpres2 = coll->compare(lines[i].buff, lines[i].buflen, lines[prev].buff, lines[prev].buflen);
 
                 if(cmpres != -cmpres2) {
-                    error(UnicodeString("Compare result not symmetrical on line ") + (i + 1));
+                    IntlTest::gTest->errln(UnicodeString("Compare result not symmetrical on line ") + (i + 1));
                     break;
                 }
 
                 if(cmpres != normalizeResult(skres)) {
-                    error(UnicodeString("Difference between coll->compare and sortkey compare on line ") + (i + 1));
+                    IntlTest::gTest->errln(UnicodeString("Difference between coll->compare and sortkey compare on line ") + (i + 1));
                     break;
                 }
 
@@ -978,7 +947,7 @@ public:
                     // which we do via setting strength=identical.
                 }
                 if(res > 0) {
-                    error(UnicodeString("Line is not greater or equal than previous line, for line ") + (i + 1));
+                    IntlTest::gTest->errln(UnicodeString("Line is not greater or equal than previous line, for line ") + (i + 1));
                     break;
                 }
             }
@@ -1116,10 +1085,6 @@ void MultithreadTest::TestCollators()
     for(int32_t i=0;i<kCollatorThreadThreads;i++) {
         tests[i].join();
         //logln(UnicodeString("Test #") + i + " is complete.. ");
-        UnicodeString theErr;
-        if(tests[i].getError(theErr)) {
-            errln(UnicodeString("#") + i + ": " + theErr);
-        }
     }
 }
 
@@ -1138,7 +1103,7 @@ const int kStringThreadIterations = 2500;// # of iterations per thread
 const int kStringThreadThreads    = 10;  // # of threads to spawn
 
 
-class StringThreadTest2 : public ThreadWithStatus
+class StringThreadTest2 : public SimpleThread
 {
 public:
     int                 fNum;
@@ -1146,7 +1111,7 @@ public:
     static const UnicodeString *gSharedString;
 
     StringThreadTest2() // constructor is NOT multithread safe.
-        : ThreadWithStatus(),
+        : SimpleThread(),
         fTraceInfo(0)
     {
     };
