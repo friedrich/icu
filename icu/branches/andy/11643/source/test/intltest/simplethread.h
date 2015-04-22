@@ -14,8 +14,7 @@ class U_EXPORT SimpleThread
 public:
     SimpleThread();
     virtual  ~SimpleThread();
-    int32_t   start(void);        // start the thread
-    UBool     isRunning();        // return true if a started thread has exited.
+    int32_t   start(void);        // start the thread. Return 0 if successfull.
     void      join();             // All threads should be joined before deleting their SimpleThread.
 
     virtual void run(void) = 0;   // Override this to provide the code to run
@@ -23,7 +22,6 @@ public:
     void *fImplementation;
 
 public:
-    static void sleep(int32_t millis); // probably shouldn't go here but oh well.
     static void errorFunc();      // Empty function, provides a single convenient place
                                   //   to break on errors.
 };

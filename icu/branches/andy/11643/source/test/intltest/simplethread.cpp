@@ -198,37 +198,6 @@ int32_t SimpleThread::start()
 }
 
 
-UBool  SimpleThread::isRunning() {
-    //
-    //  Test whether the thread associated with the SimpleThread object is
-    //    still actually running.  
-    //
-    //  NOTE:  on Win64 on Itanium processors, a crashes
-    //    occur if the main thread of a process exits concurrently with some
-    //    other thread(s) exiting.  To avoid the possibility, we wait until the
-    //    OS indicates that all threads have  terminated, rather than waiting
-    //    only until the end of the user's Run function has been reached.
-    //
-    //   I don't know whether the crashes represent a Windows bug, or whether
-    //    main() programs are supposed to have to wait for their threads.
-    //
-    Win32ThreadImplementation *imp = (Win32ThreadImplementation*)fImplementation;
-    
-    bool      success;
-    DWORD     threadExitCode;
-
-    if (imp->fHandle == 0) {
-        // No handle, thread must not be running.
-        return FALSE;
-    }
-    success = GetExitCodeThread(imp->fHandle,   &threadExitCode) != 0;
-    if (! success) {
-        // Can't get status, thread must not be running.
-        return FALSE;
-    }
-    return (threadExitCode == STILL_ACTIVE);
-}
-
 void SimpleThread::join() {
     Win32ThreadImplementation *imp = (Win32ThreadImplementation*)fImplementation;
     if (imp->fHandle == 0) {
@@ -249,22 +218,6 @@ void SimpleThread::sleep(int32_t millis)
 //-----------------------------------------------------------------------------------
 //
 //   class SimpleThread   POSIX implementation
-//
-//        A note on the POSIX vs the Windows implementations of this class..
-//        On Windows, the main thread must verify that other threads have finished
-//        before exiting, or crashes occasionally occur.  (Seen on Itanium Win64 only)
-//        The function SimpleThread::isRunning() is used for this purpose.
-//
-//        On POSIX, there is NO reliable non-blocking mechanism to determine
-//        whether a thread has exited.  pthread_kill(thread, 0) almost works,
-//        but the system can recycle thread ids immediately, so seeing that a
-//        thread exists with this call could mean that the original thread has
-//        finished and a new one started with the same ID.  Useless.
-//
-//        So we need to do the check with user code, by setting a flag just before
-//        the thread function returns.  A technique that is guaranteed to fail
-//        on Windows, because it indicates that the thread is done before all
-//        system level cleanup has happened.
 //
 //-----------------------------------------------------------------------------------
 #if defined(POSIX)
@@ -357,43 +310,6 @@ int32_t SimpleThread::start()
 void SimpleThread::join() {
     PosixThreadImplementation *imp = (PosixThreadImplementation*)fImplementation;
     pthread_join(imp->fThread, NULL);
-}
-
-
-UBool  
-SimpleThread::isRunning() {
-    // Note:  Mutex functions are used here not for synchronization, 
-    //        but to force memory barriors to exist, to ensure that one thread
-    //        can see changes made by another when running on processors
-    //        with memory models having weak coherency.
-    PosixThreadImplementation *imp = (PosixThreadImplementation*)fImplementation;
-    umtx_lock(NULL);
-    UBool retVal = imp->fRunning;
-    umtx_unlock(NULL);
-    return retVal;
-}
-
-
-void SimpleThread::sleep(int32_t millis)
-{
-#if U_PLATFORM == U_PF_SOLARIS
-    sigignore(SIGALRM);
-#endif
-
-#ifdef HPUX_CMA
-    cma_sleep(millis/100);
-#elif U_PLATFORM == U_PF_HPUX || U_PLATFORM == U_PF_OS390
-    millis *= 1000;
-    while(millis >= 1000000) {
-        usleep(999999);
-        millis -= 1000000;
-    }
-    if(millis > 0) {
-        usleep(millis);
-    }
-#else
-    usleep(millis * 1000);
-#endif
 }
 
 #endif

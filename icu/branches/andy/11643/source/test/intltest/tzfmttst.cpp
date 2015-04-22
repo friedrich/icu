@@ -691,16 +691,11 @@ TimeZoneFormatTest::TestTimeRoundTrip(void) {
         }
     }
 
-    UBool done = false;
-    while (true) {
-        umtx_lock(NULL);
-        if (data.numDone == nLocales) {
-            done = true;
-        }
-        umtx_unlock(NULL);
-        if (done)
-            break;
-        SimpleThread::sleep(1000);
+    for (i = 0; i < nThreads; i++) {
+        threads[i]->join();
+    }
+    if (data.numDone != nLocales) {
+        errln("%s:%d data.numDone = %d, nLocales = %d", __FILE__, __LINE__, data.numDone, nLocales);
     }
 
     for (i = 0; i < nThreads; i++) {
