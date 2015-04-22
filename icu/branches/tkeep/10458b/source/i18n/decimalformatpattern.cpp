@@ -91,7 +91,7 @@ DecimalFormatPattern::DecimalFormatPattern()
           fFormatWidth(0),
           fRoundingIncrementUsed(FALSE),
           fRoundingIncrement(),
-          fPad(kPatternPadEscape),
+          fPad(kDefaultPad),
           fNegPatternsBogus(TRUE),
           fPosPatternsBogus(TRUE),
           fNegPrefixPattern(),

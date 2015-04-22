@@ -7789,7 +7789,7 @@ void NumberFormatTest::Test10468ApplyPattern() {
     fmt.applyPattern("AA#,##0.00ZZ", status);
 
     // Oops this still prints 'a' even though we changed the pattern. 
-    if (fmt.getPadCharacterString() != UnicodeString("*")) {
+    if (fmt.getPadCharacterString() != UnicodeString(" ")) {
         errln("applyPattern did not clear padding character.");
     }
 }
