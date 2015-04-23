@@ -51,6 +51,7 @@ Unicode 8.0 update for ICU 56
 
 ICU_ROOT=~/svn.icu/trunk
 ICU_SRC_DIR=$ICU_ROOT/src
+ICUDT=icudt56b
 export LD_LIBRARY_PATH=$ICU_ROOT/dbg/lib
 SRC_DATA_IN=$ICU_SRC_DIR/source/data/in
 UNIDATA=$ICU_SRC_DIR/source/data/unidata
@@ -199,15 +200,62 @@ http://www.unicode.org/reports/tr44/tr44-15.html
 - Unicode 6.0..8.0: U+2260, U+226E, U+226F
 - nothing new in 8.0, no test file to update
 
+* run & fix ICU4C tests
+- bad Cherokee case folding due to difference in fallbacks:
+  UCD case folding falls back to no mapping,
+  ICU runtime case folding falls back to lowercasing;
+  fixed casepropsbuilder.cpp to generate scf mappings to self
+  when there is an slc mapping but no scf
+- Andy handles RBBI & spoof check test failures
+
+* collation: CLDR collation root, UCA DUCET
+
+- UCA DUCET goes into Mark's Unicode tools, see
+  https://sites.google.com/site/unicodetools/home#TOC-UCA
+- CLDR root data files are checked into (CLDR UCA branch)/common/uca/
+- cd (CLDR UCA branch)/common/uca/
+- update source/data/unidata/FractionalUCA.txt with FractionalUCA_SHORT.txt
+  cp FractionalUCA_SHORT.txt $ICU_SRC_DIR/source/data/unidata/FractionalUCA.txt
+- update source/data/unidata/UCARules.txt with UCA_Rules_SHORT.txt
+    cp $ICU_SRC_DIR/source/data/unidata/UCARules.txt /tmp/UCARules-old.txt
+    (note removing the underscore before "Rules")
+    cp UCA_Rules_SHORT.txt $ICU_SRC_DIR/source/data/unidata/UCARules.txt
+- restore TODO diffs in UCARules.txt
+    meld /tmp/UCARules-old.txt $ICU_SRC_DIR/source/data/unidata/UCARules.txt
+- update (ICU4C)/source/test/testdata/CollationTest_*.txt
+  and (ICU4J)/main/tests/collate/src/com/ibm/icu/dev/data/CollationTest_*.txt
+  from the CLDR root files (..._CLDR_..._SHORT.txt)
+    cp CollationTest_CLDR_NON_IGNORABLE_SHORT.txt $ICU_SRC_DIR/source/test/testdata/CollationTest_NON_IGNORABLE_SHORT.txt
+    cp CollationTest_CLDR_SHIFTED_SHORT.txt $ICU_SRC_DIR/source/test/testdata/CollationTest_SHIFTED_SHORT.txt
+    cp $ICU_SRC_DIR/source/test/testdata/CollationTest_*.txt ~/svn.icu4j/trunk/src/main/tests/collate/src/com/ibm/icu/dev/data
+- run genuca, see command line above;
+  deal with
+    Error: Unknown script for first-primary sample character U+07d8 on line 23005 of /home/mscherer/svn.icu/trunk/src/source/data/unidata/FractionalUCA.txt
+        (add the character to genuca.cpp sampleCharsToScripts[])
+  + look up the script for the new sample characters
+    (e.g., in FractionalUCA.txt)
+  + *add* mappings to sampleCharsToScripts[], do not replace them
+    (in case the script sample characters flip-flop)
+  + insert new scripts in DUCET script order, see the top_byte table
+    at the beginning of FractionalUCA.txt
+- rebuild ICU4C
+
+* run & fix ICU4C tests, now with new CLDR collation root data
+- run all tests with the collation test data *_SHORT.txt or the full files
+  (the full ones have comments, useful for debugging)
+- note on intltest: if collate/UCAConformanceTest fails, then
+  utility/MultithreadTest/TestCollators will fail as well;
+  fix the conformance test before looking into the multi-thread test
+- fixed bug in CollationWeights::getWeightRanges()
+  exposed by new data and CollationTest::TestRootElements
+
 TODO
 
-* run & fix ICU4C tests
-
 * update Java data files
-- refresh just the UCD-related files, just to be safe
+- refresh just the UCD/UCA-related files, just to be safe
 - see (ICU4C)/source/data/icu4j-readme.txt
 - mkdir /tmp/icu4j
-- ~/svn.icu/uni70/dbg$ make ICU4J_ROOT=/tmp/icu4j icu4j-data-install
+- ~/svn.icu/trunk/dbg$ make ICU4J_ROOT=/tmp/icu4j icu4j-data-install
   output:
     ...
     Unicode .icu files built to ./out/build/icudt53l
@@ -226,18 +274,24 @@ TODO
     make[1]: Leaving directory `/home/mscherer/svn.icu/uni70/dbg/data'
 - copy the big-endian Unicode data files to another location,
   separate from the other data files
-    ICUDT=icudt54b
     mkdir -p /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/coll
     mkdir -p /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/brkitr
-    cd ~/svn.icu/uni70/dbg/data/out/icu4j
+    cd ~/svn.icu/trunk/dbg/data/out/icu4j
     cp com/ibm/icu/impl/data/$ICUDT/confusables.cfu /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT
     cp com/ibm/icu/impl/data/$ICUDT/*.icu /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT
     rm /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/cnvalias.icu
     cp com/ibm/icu/impl/data/$ICUDT/*.nrm /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT
     cp com/ibm/icu/impl/data/$ICUDT/coll/*.icu /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/coll
+    cp com/ibm/icu/impl/data/$ICUDT/coll/* /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/coll
     cp com/ibm/icu/impl/data/$ICUDT/brkitr/* /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/brkitr
 - refresh ICU4J
-    ~/svn.icu/uni70/dbg/data/out/icu4j$ jar uf ~/svn.icu4j/trunk/src/main/shared/data/icudata.jar -C /tmp/icu4j com/ibm/icu/impl/data/$ICUDT
+    ~/svn.icu/trunk/dbg/data/out/icu4j$ jar uf ~/svn.icu4j/trunk/src/main/shared/data/icudata.jar -C /tmp/icu4j com/ibm/icu/impl/data/$ICUDT
+
+* When refreshing all of ICU4J data from ICU4C
+- ~/svn.icu/trunk/dbg$ make ICU4J_ROOT=/tmp/icu4j icu4j-data-install
+- cp /tmp/icu4j/main/shared/data/icudata.jar ~/svn.icu4j/trunk/src/main/shared/data
+or
+- ~/svn.icu/trunk/dbg$ make ICU4J_ROOT=~/svn.icu4j/trunk/src icu4j-data-install
 
 * update CollationFCD.java
   + copy & paste the initializers of lcccIndex[] etc. from
@@ -250,54 +304,7 @@ TODO
     cp confusables.txt confusablesWholeScript.txt NormalizationCorrections.txt NormalizationTest.txt SpecialCasing.txt UnicodeData.txt ~/svn.icu4j/trunk/src/main/tests/core/src/com/ibm/icu/dev/data/unicode
     cd ../../test/testdata
     cp BidiCharacterTest.txt BidiTest.txt ~/svn.icu4j/trunk/src/main/tests/core/src/com/ibm/icu/dev/data/unicode
-    cp ~/unidata/uni70/20140409/ucd/CompositionExclusions.txt ~/svn.icu4j/trunk/src/main/tests/core/src/com/ibm/icu/dev/data/unicode
-
-* UCA
-
-- download UCA files (mostly allkeys.txt) from http://www.unicode.org/Public/UCA/<beta version>/
-- run desuffixucd.py (see https://sites.google.com/site/unicodetools/inputdata)
-- update the input files for Mark's UCA tools, in ~/svn.unitools/trunk/data/uca/7.0.0/
-- run Mark's UCA Main: https://sites.google.com/site/unicodetools/home#TOC-UCA
-- output files are in ~/svn.unitools/Generated/uca/7.0.0/
-- review data; compare files, use blankweights.sed or similar
-  ~/svn.unitools$ sed -r -f blankweights.sed Generated/uca/7.0.0/CollationAuxiliary/FractionalUCA.txt > frac-7.0.txt
-- cd ~/svn.unitools/Generated/uca/7.0.0/
-- update source/data/unidata/FractionalUCA.txt with FractionalUCA_SHORT.txt
-  cp CollationAuxiliary/FractionalUCA_SHORT.txt $ICU_SRC_DIR/source/data/unidata/FractionalUCA.txt
-- update source/data/unidata/UCARules.txt with UCA_Rules_SHORT.txt
-    cp $ICU_SRC_DIR/source/data/unidata/UCARules.txt /tmp/UCARules-old.txt
-    (note removing the underscore before "Rules")
-    cp CollationAuxiliary/UCA_Rules_SHORT.txt $ICU_SRC_DIR/source/data/unidata/UCARules.txt
-- restore TODO diffs in UCARules.txt
-    meld /tmp/UCARules-old.txt $ICU_SRC_DIR/source/data/unidata/UCARules.txt
-- update (ICU4C)/source/test/testdata/CollationTest_*.txt
-  and (ICU4J)/main/tests/collate/src/com/ibm/icu/dev/data/CollationTest_*.txt
-  with output from Mark's Unicode tools (..._CLDR_..._SHORT.txt)
-    cp CollationAuxiliary/CollationTest_CLDR_NON_IGNORABLE_SHORT.txt $ICU_SRC_DIR/source/test/testdata/CollationTest_NON_IGNORABLE_SHORT.txt
-    cp CollationAuxiliary/CollationTest_CLDR_SHIFTED_SHORT.txt $ICU_SRC_DIR/source/test/testdata/CollationTest_SHIFTED_SHORT.txt
-    cp $ICU_SRC_DIR/source/test/testdata/CollationTest_*.txt ~/svn.icu4j/trunk/src/main/tests/collate/src/com/ibm/icu/dev/data
-- run genuca, see command line above
-- rebuild ICU4C
-- refresh ICU4J collation data:
-  (subset of instructions above for properties data refresh, except copies all coll/*)
-    ICUDT=icudt54b
-    ~/svn.icu/uni70/dbg$ make ICU4J_ROOT=/tmp/icu4j icu4j-data-install
-    ~/svn.icu/uni70/dbg$ mkdir -p /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/coll
-    ~/svn.icu/uni70/dbg/data/out/icu4j$ cp com/ibm/icu/impl/data/$ICUDT/coll/* /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/coll
-    ~/svn.icu/uni70/dbg/data/out/icu4j$ jar uf ~/svn.icu4j/trunk/src/main/shared/data/icudata.jar -C /tmp/icu4j com/ibm/icu/impl/data/$ICUDT
-- run all tests with the *_SHORT.txt or the full files (the full ones have comments, useful for debugging)
-- note on intltest: if collate/UCAConformanceTest fails, then
-  utility/MultithreadTest/TestCollators will fail as well;
-  fix the conformance test before looking into the multi-thread test
-- copy all output from Mark's UCA tool to unicode.org for review & staging by Ken & editors
-- copy most of ~/svn.unitools/Generated/uca/7.0.0/CollationAuxiliary/* to CLDR branch
-  ~/svn.unitools$ cp Generated/uca/7.0.0/CollationAuxiliary/* ~/svn.cldr/trunk/common/uca/
-
-* When refreshing all of ICU4J data from ICU4C
-- ~/svn.icu/uni70/dbg$ make ICU4J_ROOT=/tmp/icu4j icu4j-data-install
-- cp /tmp/icu4j/main/shared/data/icudata.jar ~/svn.icu4j/trunk/src/main/shared/data
-or
-- ~/svn.icu/uni70/dbg$ make ICU4J_ROOT=~/svn.icu4j/trunk/src icu4j-data-install
+    cp ~/unidata/uni80/20150415/ucd/CompositionExclusions.txt ~/svn.icu4j/trunk/src/main/tests/core/src/com/ibm/icu/dev/data/unicode
 
 * run & fix ICU4J tests
 
@@ -330,6 +337,9 @@ or
 *** merge the Unicode update branches back onto the trunk
 - do not merge the icudata.jar and testdata.jar,
   instead rebuild them from merged & tested ICU4C
+- make sure that changes to Unicode tools & ICU tools are checked in
+  http://www.unicode.org/utility/trac/log/trunk/unicodetools
+  http://bugs.icu-project.org/trac/log/tools/trunk
 
 ---------------------------------------------------------------------------- ***
 
