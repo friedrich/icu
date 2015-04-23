@@ -249,43 +249,40 @@ http://www.unicode.org/reports/tr44/tr44-15.html
 - fixed bug in CollationWeights::getWeightRanges()
   exposed by new data and CollationTest::TestRootElements
 
-TODO
-
 * update Java data files
-- refresh just the UCD/UCA-related files, just to be safe
+- refresh just the UCD/UCA-related/derived files, just to be safe
 - see (ICU4C)/source/data/icu4j-readme.txt
 - mkdir /tmp/icu4j
 - ~/svn.icu/trunk/dbg$ make ICU4J_ROOT=/tmp/icu4j icu4j-data-install
   output:
     ...
-    Unicode .icu files built to ./out/build/icudt53l
+    Unicode .icu files built to ./out/build/icudt56l
     echo timestamp > uni-core-data
-    mkdir -p ./out/icu4j/com/ibm/icu/impl/data/icudt53b
-    mkdir -p ./out/icu4j/tzdata/com/ibm/icu/impl/data/icudt53b
-    echo pnames.icu ubidi.icu ucase.icu uprops.icu > ./out/icu4j/add.txt
-    LD_LIBRARY_PATH=../lib:../stubdata:../tools/ctestfw:$LD_LIBRARY_PATH  ../bin/icupkg ./out/tmp/icudt53l.dat ./out/icu4j/icudt53b.dat -a ./out/icu4j/add.txt -s ./out/build/icudt53l -x '*' -tb -d ./out/icu4j/com/ibm/icu/impl/data/icudt53b
-    mv ./out/icu4j/"com/ibm/icu/impl/data/icudt53b/zoneinfo64.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt53b/metaZones.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt53b/timezoneTypes.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt53b/windowsZones.res" "./out/icu4j/tzdata/com/ibm/icu/impl/data/icudt53b"
-    jar cf ./out/icu4j/icudata.jar -C ./out/icu4j com/ibm/icu/impl/data/icudt53b/
+    mkdir -p ./out/icu4j/com/ibm/icu/impl/data/icudt56b
+    mkdir -p ./out/icu4j/tzdata/com/ibm/icu/impl/data/icudt56b
+    echo pnames.icu uprops.icu ucase.icu ubidi.icu nfc.nrm > ./out/icu4j/add.txt
+    LD_LIBRARY_PATH=../lib:../stubdata:../tools/ctestfw:$LD_LIBRARY_PATH  ../bin/icupkg ./out/tmp/icudt56l.dat ./out/icu4j/icudt56b.dat -a ./out/icu4j/add.txt -s ./out/build/icudt56l -x '*' -tb -d ./out/icu4j/com/ibm/icu/impl/data/icudt56b
+    mv ./out/icu4j/"com/ibm/icu/impl/data/icudt56b/zoneinfo64.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt56b/metaZones.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt56b/timezoneTypes.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt56b/windowsZones.res" "./out/icu4j/tzdata/com/ibm/icu/impl/data/icudt56b"
+    jar cf ./out/icu4j/icudata.jar -C ./out/icu4j com/ibm/icu/impl/data/icudt56b/
     mkdir -p /tmp/icu4j/main/shared/data
     cp ./out/icu4j/icudata.jar /tmp/icu4j/main/shared/data
-    jar cf ./out/icu4j/icutzdata.jar -C ./out/icu4j/tzdata com/ibm/icu/impl/data/icudt53b/
+    jar cf ./out/icu4j/icutzdata.jar -C ./out/icu4j/tzdata com/ibm/icu/impl/data/icudt56b/
     mkdir -p /tmp/icu4j/main/shared/data
     cp ./out/icu4j/icutzdata.jar /tmp/icu4j/main/shared/data
-    make[1]: Leaving directory `/home/mscherer/svn.icu/uni70/dbg/data'
+    make[1]: Leaving directory `/home/mscherer/svn.icu/trunk/dbg/data'
 - copy the big-endian Unicode data files to another location,
-  separate from the other data files
+  separate from the other data files,
+  and then refresh ICU4J
+    cd ~/svn.icu/trunk/dbg/data/out/icu4j
     mkdir -p /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/coll
     mkdir -p /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/brkitr
-    cd ~/svn.icu/trunk/dbg/data/out/icu4j
     cp com/ibm/icu/impl/data/$ICUDT/confusables.cfu /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT
     cp com/ibm/icu/impl/data/$ICUDT/*.icu /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT
     rm /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/cnvalias.icu
     cp com/ibm/icu/impl/data/$ICUDT/*.nrm /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT
-    cp com/ibm/icu/impl/data/$ICUDT/coll/*.icu /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/coll
     cp com/ibm/icu/impl/data/$ICUDT/coll/* /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/coll
     cp com/ibm/icu/impl/data/$ICUDT/brkitr/* /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/brkitr
-- refresh ICU4J
-    ~/svn.icu/trunk/dbg/data/out/icu4j$ jar uf ~/svn.icu4j/trunk/src/main/shared/data/icudata.jar -C /tmp/icu4j com/ibm/icu/impl/data/$ICUDT
+    jar uf ~/svn.icu4j/trunk/src/main/shared/data/icudata.jar -C /tmp/icu4j com/ibm/icu/impl/data/$ICUDT
 
 * When refreshing all of ICU4J data from ICU4C
 - ~/svn.icu/trunk/dbg$ make ICU4J_ROOT=/tmp/icu4j icu4j-data-install
@@ -308,6 +305,8 @@ or
 
 * run & fix ICU4J tests
 
+TODO: decide if we still need to update the layout engine files
+
 *** LayoutEngine script information
 
 (For details see the Unicode 5.2 change log below.)
@@ -318,9 +317,6 @@ or
   (It also generates ScriptRunData.cpp, which is no longer needed.)
 
   The generated files have a current copyright date and "@stable" statement.
-  ICU 54: Fixed tools/misc/src/com/ibm/icu/dev/tool/layout/ScriptIDModuleWriter.java
-  for "born stable" Unicode API constants, and to stop parsing ICU version numbers
-  which may not contain dots any more.
 
 - diff current <icu>/source/layout files vs. generated ones
     ~/svn.icu4j/trunk/src$ meld $ICU_SRC_DIR/source/layout tools/misc/src/com/ibm/icu/dev/tool/layout
