@@ -26,14 +26,14 @@ void DataDrivenNumberFormatTestSuite::run(const char *fileName, UBool runAllTest
         delete fPreviousFormatters[i];
         fPreviousFormatters[i] = newFormatter(status);
     }
-    if (!fTest->assertSuccess("Can't create previous formatters", status)) {
+    if (!IntlTest::gTest->assertSuccess("Can't create previous formatters", status)) {
         return;
     }
-    CharString path(fTest->getSourceTestData(status), status);
+    CharString path(IntlTest::gTest->getSourceTestData(status), status);
     path.appendPathPart(fileName, status);
     const char *codePage = "UTF-8";
     LocalUCHARBUFPointer f(ucbuf_open(path.data(), &codePage, TRUE, FALSE, &status));
-    if (!fTest->assertSuccess("Can't open data file", status)) {
+    if (!IntlTest::gTest->assertSuccess("Can't open data file", status)) {
         return;
     }
     UnicodeString columnValues[kNumberFormatTestTupleFieldCount];
@@ -156,12 +156,12 @@ DataDrivenNumberFormatTestSuite::splitBy(
 
 void DataDrivenNumberFormatTestSuite::showLineInfo() {
     UnicodeString indent("    ");
-    fTest->infoln(indent + fFileTestName);
-    fTest->infoln(indent + fFileLine);
+    IntlTest::gTest->infoln(indent + fFileTestName);
+    IntlTest::gTest->infoln(indent + fFileLine);
 }
 
 void DataDrivenNumberFormatTestSuite::showError(const char *message) {
-    fTest->errln("line %d: %s", (int) fFileLineNumber, message);
+    IntlTest::gTest->errln("line %d: %s", (int) fFileLineNumber, message);
     showLineInfo();
 }
 
@@ -170,8 +170,8 @@ void DataDrivenNumberFormatTestSuite::showFailure(const UnicodeString &message) 
     uprv_itou(
             lineStr, UPRV_LENGTHOF(lineStr), (uint32_t) fFileLineNumber, 10, 1);
     UnicodeString fullMessage("line ");
-    fTest->errln(fullMessage.append(lineStr).append(": ")
-            .append(fTest->prettify(message)));
+    IntlTest::gTest->errln(fullMessage.append(lineStr).append(": ")
+            .append(IntlTest::gTest->prettify(message)));
     showLineInfo();
 }
 
@@ -181,7 +181,7 @@ UBool DataDrivenNumberFormatTestSuite::readLine(
     const UChar *line = ucbuf_readline(f, &lineLength, &status);
     if(line == NULL || U_FAILURE(status)) {
         if (U_FAILURE(status)) {
-            fTest->errln("Error reading line from file.");
+            IntlTest::gTest->errln("Error reading line from file.");
         }
         fFileLine.remove();
         return FALSE;

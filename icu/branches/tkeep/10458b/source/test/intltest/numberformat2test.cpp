@@ -82,8 +82,6 @@ UBool NumberFormat2Test_FieldPositionHandler::isRecording() const {
 }
 
 class NumberFormat2TestDataDriven : public icu::DataDrivenNumberFormatTestSuite {
-public:
-NumberFormat2TestDataDriven(IntlTest *t) : DataDrivenNumberFormatTestSuite(t) { }
 protected:
 UBool isFormatPass(
         const NumberFormatTestTuple &tuple,
@@ -3024,7 +3022,7 @@ void NumberFormat2Test::TestApplyPatternResets() {
 
 
 void NumberFormat2Test::TestDataDriven() {
-    NumberFormat2TestDataDriven dd(this);
+    NumberFormat2TestDataDriven dd;
 //    dd.run("dumb.txt", FALSE);
     dd.run("numberformattestspecification.txt", TRUE);
 }

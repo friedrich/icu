@@ -23,8 +23,7 @@ U_NAMESPACE_BEGIN
 class DataDrivenNumberFormatTestSuite : public UObject {
 
  public:
-     DataDrivenNumberFormatTestSuite(IntlTest *test)
-     : fTest(test) {
+     DataDrivenNumberFormatTestSuite() {
          for (int32_t i = 0; i < UPRV_LENGTHOF(fPreviousFormatters); ++i) {
              fPreviousFormatters[i] = NULL;
          }
@@ -43,7 +42,6 @@ class DataDrivenNumberFormatTestSuite : public UObject {
             UErrorCode &status);
     virtual UObject *newFormatter(UErrorCode &status);
  private:
-    IntlTest *fTest;
     UnicodeString fFileLine;
     int32_t fFileLineNumber;
     UnicodeString fFileTestName;

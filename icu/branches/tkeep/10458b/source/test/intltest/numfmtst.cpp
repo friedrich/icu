@@ -38,8 +38,6 @@
 #include "datadrivennumberformattestsuite.h"
 
 class NumberFormatTestDataDriven : public icu::DataDrivenNumberFormatTestSuite {
-public:
-NumberFormatTestDataDriven(IntlTest *t) : DataDrivenNumberFormatTestSuite(t) { }
 protected:
 UBool isFormatPass(
         const NumberFormatTestTuple &tuple,
@@ -8223,7 +8221,7 @@ void NumberFormatTest::TestNumberFormatTestTuple() {
 
 void
 NumberFormatTest::TestDataDrivenSpecification() {
-    NumberFormatTestDataDriven dd(this);
+    NumberFormatTestDataDriven dd;
     dd.run("numberformattestspecification.txt", FALSE);
 }
 
