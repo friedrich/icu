@@ -1086,12 +1086,34 @@ public class SpoofChecker {
                     SPUString smapString = stringPool.addString(mapString.toString());
 
                     // Add the char . string mapping to the appropriate table.
-                    Hashtable<Integer, SPUString> table = matcher.start(3) >= 0 ? fSLTable
-                            : matcher.start(4) >= 0 ? fSATable : matcher.start(5) >= 0 ? fMLTable
-                                    : matcher.start(6) >= 0 ? fMATable : null;
-                                    assert (table != null);
-                                    table.put(keyChar, smapString);
-                                    fKeySet.add(keyChar);
+                    Hashtable<Integer, SPUString> table = 
+                            matcher.start(3) >= 0 ? fSLTable :
+                            matcher.start(4) >= 0 ? fSATable :
+                            matcher.start(5) >= 0 ? fMLTable :
+                            matcher.start(6) >= 0 ? fMATable :
+                            null;
+                    assert (table != null);
+
+                    // For Unicode 8, the SL, SA and ML tables have been discontinued.
+                    //                All input data from confusables.txt is tagged MA.
+                    //                ICU spoof check functions should ignore the specified table and always
+                    //                use this MA Data.
+                    //                For now, implement by populating the MA data into all four tables, and
+                    //                keep the multiple table implementation in place, in case it comes back
+                    //                at some time in the future.
+                    //                There is no run time size penalty to keeping the four table implementation -
+                    //                the data is shared when it's the same betweeen tables.
+
+                    if (table != fMATable) {
+                        throw new ParseException("Confusables, line " + fLineNum + ": Table must be 'MA'.", 0);
+                    }
+                    // table.put(keyChar, smapString);
+                    fSLTable.put(keyChar, smapString);
+                    fSATable.put(keyChar, smapString);
+                    fMLTable.put(keyChar, smapString);
+                    fMATable.put(keyChar, smapString);
+
+                    fKeySet.add(keyChar);
                 }
 
                 // Input data is now all parsed and collected.
