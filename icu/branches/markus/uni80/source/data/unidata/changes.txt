@@ -305,27 +305,32 @@ or
 
 * run & fix ICU4J tests
 
-TODO: decide if we still need to update the layout engine files
-
 *** LayoutEngine script information
 
 (For details see the Unicode 5.2 change log below.)
+
+* ICU 56: Modify ScriptIDModuleWriter.java to not output @stable tags any more,
+  because the layout engine was deprecated in ICU 54.
+  Modify ScriptIDModuleWriter.java and ScriptTagModuleWriter.java
+  to write lines that we used to add manually.
 
 * Run icu4j-tools: com.ibm.icu.dev.tool.layout.ScriptNameBuilder.
   This generates LEScripts.h, LELanguages.h, ScriptAndLanguageTags.h and ScriptAndLanguageTags.cpp
   in the working directory.
   (It also generates ScriptRunData.cpp, which is no longer needed.)
+  It also reads and regenerates tools/misc/src/com/ibm/icu/dev/tool/layout/ScriptAndLanguages
+  (a plain text file)
+  which maps ICU versions to the numbers of script/language constants
+  that were added then.
+  (It is probably obsolete since we do not print "@stable ICU xy" any more.)
 
-  The generated files have a current copyright date and "@stable" statement.
+  The generated files have a current copyright date and "@deprecated" statement.
 
-- diff current <icu>/source/layout files vs. generated ones
-    ~/svn.icu4j/trunk/src$ meld $ICU_SRC_DIR/source/layout tools/misc/src/com/ibm/icu/dev/tool/layout
-  review and manually merge desired changes;
-  fix gratuitous changes, incorrect @draft/@stable and missing aliases;
-  Unicode-derived script codes should be "born stable" like constants in uchar.h, uscript.h etc.
-- if you just copy the above files, then
-  fix mixed line endings, review the diffs as above and restore changes to API tags etc.;
-  manually re-add the "Indic script xyz v.2" tags in ScriptAndLanguageTags.h
+* Review changes, fix Java tool if necessary, and copy to ICU4C
+  cd ~/svn.icu4j/trunk/src
+  meld $ICU_SRC_DIR/source/layout tools/misc/src/com/ibm/icu/dev/tool/layout
+  cp tools/misc/src/com/ibm/icu/dev/tool/layout/*.h $ICU_SRC_DIR/source/layout
+  cp tools/misc/src/com/ibm/icu/dev/tool/layout/ScriptAndLanguageTags.cpp $ICU_SRC_DIR/source/layout
 
 *** API additions
 - send notice to icu-design about new born-@stable API (enum constants etc.)
