@@ -3371,6 +3371,7 @@ int32_t RBBILineMonkey::next(int32_t startPos) {
 
         // LB 22
         if ((fAL->contains(prevChar) && fIN->contains(thisChar)) ||
+            (fEX->contains(prevChar) && fIN->contains(thisChar)) ||
             (fHL->contains(prevChar) && fIN->contains(thisChar)) ||
             (fID->contains(prevChar) && fIN->contains(thisChar)) ||
             (fIN->contains(prevChar) && fIN->contains(thisChar)) ||

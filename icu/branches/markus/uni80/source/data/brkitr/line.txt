@@ -352,6 +352,7 @@ $SYcm $HLcm;
 # LB 22
 ($ALcm | $HLcm) $INcm;
 $CM+     $INcm;     #  by rule 10, any otherwise unattached CM behaves as AL
+$EXcm    $INcm;
 $IDcm    $INcm;
 $INcm    $INcm;
 $NUcm    $INcm;
@@ -587,6 +588,7 @@ $CM* $HL $CM* $SY;
 
 # LB 22
 $CM* $IN $CM* ($ALPlus | $HL);
+$CM* $IN $CM* $EX;
 $CM* $IN $CM* $ID;
 $CM* $IN $CM* $IN;
 $CM* $IN $CM* $NU;
