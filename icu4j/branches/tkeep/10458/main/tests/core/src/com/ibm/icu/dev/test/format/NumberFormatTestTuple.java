@@ -106,6 +106,8 @@ public class NumberFormatTestTuple {
     public Maybe<String> positiveSuffix = Maybe.nothing();
     public Maybe<String> negativePrefix = Maybe.nothing();
     public Maybe<String> negativeSuffix = Maybe.nothing();
+    public Maybe<String> localizedPattern = Maybe.nothing();
+    
     
     /**
      * nothing or empty means that test ought to work for both C and JAVA;
@@ -182,7 +184,8 @@ public class NumberFormatTestTuple {
         "positivePrefix",
         "positiveSuffix",
         "negativePrefix",
-        "negativeSuffix"
+        "negativeSuffix",
+        "localizedPattern"
     };
     
     static {
@@ -335,6 +338,10 @@ public class NumberFormatTestTuple {
     
     public void setNegativeSuffix(String value) {
         negativeSuffix = Maybe.just(value);
+    }
+    
+    public void setLocalizedPattern(String value) {
+        localizedPattern = Maybe.just(value);
     }
     
     // end field setters.

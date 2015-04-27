@@ -135,6 +135,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.negativeSuffix.isValue()) {
                         fmt.setNegativeSuffix(tuple.negativeSuffix.getValue());
                     }
+                    if (tuple.localizedPattern.isValue()) {
+                        fmt.applyLocalizedPattern(tuple.localizedPattern.getValue());
+                    }
                     String actual;
                     if (tuple.format.getValue().equals("NaN")) {
                         actual = fmt.format(Double.NaN);
@@ -241,6 +244,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     }
                     if (tuple.negativeSuffix.isValue()) {
                         fmt.setNegativeSuffix(tuple.negativeSuffix.getValue());
+                    }
+                    if (tuple.localizedPattern.isValue()) {
+                        fmt.applyLocalizedPattern(tuple.localizedPattern.getValue());
                     }
                     String actual;
                     if (tuple.format.getValue().equals("NaN")) {
