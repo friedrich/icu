@@ -228,6 +228,9 @@ http://www.unicode.org/reports/tr44/tr44-15.html
     cp CollationTest_CLDR_NON_IGNORABLE_SHORT.txt $ICU_SRC_DIR/source/test/testdata/CollationTest_NON_IGNORABLE_SHORT.txt
     cp CollationTest_CLDR_SHIFTED_SHORT.txt $ICU_SRC_DIR/source/test/testdata/CollationTest_SHIFTED_SHORT.txt
     cp $ICU_SRC_DIR/source/test/testdata/CollationTest_*.txt ~/svn.icu4j/trunk/src/main/tests/collate/src/com/ibm/icu/dev/data
+- if CLDR common/uca/unihan-index.txt changes, then update
+  CLDR common/collation/root.xml <collation type="private-unihan">
+  and regenerate (or update in parallel) $ICU_SRC_DIR/source/data/coll/root.txt
 - run genuca, see command line above;
   deal with
     Error: Unknown script for first-primary sample character U+07d8 on line 23005 of /home/mscherer/svn.icu/trunk/src/source/data/unidata/FractionalUCA.txt
@@ -307,8 +310,6 @@ or
 
 *** LayoutEngine script information
 
-(For details see the Unicode 5.2 change log below.)
-
 * ICU 56: Modify ScriptIDModuleWriter.java to not output @stable tags any more,
   because the layout engine was deprecated in ICU 54.
   Modify ScriptIDModuleWriter.java and ScriptTagModuleWriter.java
@@ -317,12 +318,14 @@ or
 * Run icu4j-tools: com.ibm.icu.dev.tool.layout.ScriptNameBuilder.
   This generates LEScripts.h, LELanguages.h, ScriptAndLanguageTags.h and ScriptAndLanguageTags.cpp
   in the working directory.
+
   (It also generates ScriptRunData.cpp, which is no longer needed.)
+
   It also reads and regenerates tools/misc/src/com/ibm/icu/dev/tool/layout/ScriptAndLanguages
   (a plain text file)
   which maps ICU versions to the numbers of script/language constants
   that were added then.
-  (It is probably obsolete since we do not print "@stable ICU xy" any more.)
+  (This mapping is probably obsolete since we do not print "@stable ICU xy" any more.)
 
   The generated files have a current copyright date and "@deprecated" statement.
 
