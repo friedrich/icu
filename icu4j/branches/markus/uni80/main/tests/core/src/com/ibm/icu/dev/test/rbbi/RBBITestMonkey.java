@@ -1,6 +1,6 @@
 /*
  *******************************************************************************
- * Copyright (C) 2003-2014 International Business Machines Corporation and
+ * Copyright (C) 2003-2015 International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -949,6 +949,7 @@ public class RBBITestMonkey extends TestFmwk {
                 
                // LB 22
                 if (fAL.contains(prevChar) && fIN.contains(thisChar) ||
+                        fEX.contains(prevChar) && fIN.contains(thisChar) ||
                         fHL.contains(prevChar) && fIN.contains(thisChar) ||
                         fID.contains(prevChar) && fIN.contains(thisChar) ||
                         fIN.contains(prevChar) && fIN.contains(thisChar) ||
