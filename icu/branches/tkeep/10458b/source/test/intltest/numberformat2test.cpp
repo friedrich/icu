@@ -370,6 +370,13 @@ static void adjustDecimalFormat(
     if (tuple.negativeSuffixFlag) {
         fmt.setNegativeSuffix(tuple.negativeSuffix);
     }
+    if (tuple.localizedPatternFlag) {
+        UErrorCode status = U_ZERO_ERROR;
+        fmt.applyLocalizedPattern(tuple.localizedPattern, status);
+        if (U_FAILURE(status)) {
+            appendErrorMessage.append("Error setting localized pattern.");
+        }
+    }
 }
 
 UObject *NumberFormat2TestDataDriven::newFormatter(UErrorCode &status) {
