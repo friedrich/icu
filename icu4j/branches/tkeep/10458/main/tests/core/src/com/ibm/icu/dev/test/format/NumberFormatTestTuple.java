@@ -107,6 +107,9 @@ public class NumberFormatTestTuple {
     public Maybe<String> negativePrefix = Maybe.nothing();
     public Maybe<String> negativeSuffix = Maybe.nothing();
     public Maybe<String> localizedPattern = Maybe.nothing();
+    public Maybe<String> toPattern = Maybe.nothing();
+    public Maybe<String> toLocalizedPattern = Maybe.nothing();
+    
     
     
     /**
@@ -185,7 +188,9 @@ public class NumberFormatTestTuple {
         "positiveSuffix",
         "negativePrefix",
         "negativeSuffix",
-        "localizedPattern"
+        "localizedPattern",
+        "toPattern",
+        "toLocalizedPattern"
     };
     
     static {
@@ -342,6 +347,14 @@ public class NumberFormatTestTuple {
     
     public void setLocalizedPattern(String value) {
         localizedPattern = Maybe.just(value);
+    }
+    
+    public void setToPattern(String value) {
+        toPattern = Maybe.just(value);
+    }
+    
+    public void setToLocalizedPattern(String value) {
+        toLocalizedPattern = Maybe.just(value);
     }
     
     // end field setters.

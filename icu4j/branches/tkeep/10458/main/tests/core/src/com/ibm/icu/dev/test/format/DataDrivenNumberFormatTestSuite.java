@@ -35,6 +35,16 @@ public class DataDrivenNumberFormatTestSuite {
         public String format(NumberFormatTestTuple tuple) {
             return null;
         }
+        
+        /**
+         *  Runs a single toPattern test. On success, returns null.
+         *  On failure, returns the error. This implementation just returns null.
+         *  Subclasses should override.
+         *  @param tuple contains the parameters of the format test.
+         */
+        public String toPattern(NumberFormatTestTuple tuple) {
+            return null;
+        }
     }
     
     private final TestFmwk fmwk;
@@ -241,6 +251,11 @@ public class DataDrivenNumberFormatTestSuite {
         StringBuilder result = new StringBuilder();
         if (tuple.format.isValue() && tuple.output.isValue()) {
             String errorMessage = codeUnderTest.format(tuple);
+            if (errorMessage != null) {
+                result.append(errorMessage);
+            }
+        } else if (tuple.toPattern.isValue() || tuple.toLocalizedPattern.isValue()) {
+            String errorMessage = codeUnderTest.toPattern(tuple);
             if (errorMessage != null) {
                 result.append(errorMessage);
             }

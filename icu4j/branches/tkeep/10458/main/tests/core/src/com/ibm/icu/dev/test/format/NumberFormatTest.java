@@ -45,11 +45,66 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         
     private DataDrivenNumberFormatTestSuite.CodeUnderTest ICU =
             new DataDrivenNumberFormatTestSuite.CodeUnderTest() {
+                @Override
                 public String format(NumberFormatTestTuple tuple) {
+                    DecimalFormat fmt = newDecimalFormat(tuple);
+                    String actual;
+                    if (tuple.format.getValue().equals("NaN")) {
+                        actual = fmt.format(Double.NaN);
+                    } else if (tuple.format.getValue().equals("-Inf")) {
+                        actual = fmt.format(Double.NEGATIVE_INFINITY);
+                    } else if (tuple.format.getValue().equals("Inf")) {
+                        actual = fmt.format(Double.POSITIVE_INFINITY);
+                    } else {
+                        actual = fmt.format(new BigDecimal(tuple.format.getValue()));
+                    }
+                    String expected = tuple.output.getValue();
+                    if (!expected.equals(actual)) {
+                        return "Expected " + expected + ", got " + actual;
+                    }
+                    return null;
+                }
+
+                @Override
+                public String toPattern(NumberFormatTestTuple tuple) {
+                    DecimalFormat fmt = newDecimalFormat(tuple);
+                    StringBuilder result = new StringBuilder();
+                    if (tuple.toPattern.isValue()) {
+                        String expected = tuple.toPattern.getValue();
+                        String actual = fmt.toPattern();
+                        if (!expected.equals(actual)) {
+                            result.append("Expected toPattern=" + expected + ", got " + actual);
+                        }
+                    }
+                    if (tuple.toLocalizedPattern.isValue()) {
+                        String expected = tuple.toLocalizedPattern.getValue();
+                        String actual = fmt.toLocalizedPattern();
+                        if (!expected.equals(actual)) {
+                            result.append("Expected toLocalizedPattern=" + expected + ", got " + actual);
+                        }
+                    }
+                    return result.length() == 0 ? null : result.toString();
+                }
+                
+                /**
+                 * @param tuple
+                 * @return
+                 */
+                private DecimalFormat newDecimalFormat(NumberFormatTestTuple tuple) {
                     ULocale en = new ULocale("en");
                     DecimalFormat fmt = new DecimalFormat(
                             tuple.pattern.getValue("0"),
                             new DecimalFormatSymbols(tuple.locale.getValue(en)));
+                    adjustDecimalFormat(tuple, fmt);
+                    return fmt;
+                }
+                
+
+                /**
+                 * @param tuple
+                 * @param fmt
+                 */
+                private void adjustDecimalFormat(NumberFormatTestTuple tuple, DecimalFormat fmt) {
                     if (tuple.minIntegerDigits.isValue()) {
                         fmt.setMinimumIntegerDigits(tuple.minIntegerDigits.getValue());
                     }
@@ -138,6 +193,14 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.localizedPattern.isValue()) {
                         fmt.applyLocalizedPattern(tuple.localizedPattern.getValue());
                     }
+                }
+    };
+    
+    private DataDrivenNumberFormatTestSuite.CodeUnderTest JDK =
+            new DataDrivenNumberFormatTestSuite.CodeUnderTest() {
+                @Override
+                public String format(NumberFormatTestTuple tuple) {
+                    java.text.DecimalFormat fmt = newDecimalFormat(tuple);
                     String actual;
                     if (tuple.format.getValue().equals("NaN")) {
                         actual = fmt.format(Double.NaN);
@@ -154,15 +217,46 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     }
                     return null;
                 }
-    };
-    
-    private DataDrivenNumberFormatTestSuite.CodeUnderTest JDK =
-            new DataDrivenNumberFormatTestSuite.CodeUnderTest() {
-                public String format(NumberFormatTestTuple tuple) {
+                
+                @Override
+                public String toPattern(NumberFormatTestTuple tuple) {
+                    java.text.DecimalFormat fmt = newDecimalFormat(tuple);
+                    StringBuilder result = new StringBuilder();
+                    if (tuple.toPattern.isValue()) {
+                        String expected = tuple.toPattern.getValue();
+                        String actual = fmt.toPattern();
+                        if (!expected.equals(actual)) {
+                            result.append("Expected toPattern=" + expected + ", got " + actual);
+                        }
+                    }
+                    if (tuple.toLocalizedPattern.isValue()) {
+                        String expected = tuple.toLocalizedPattern.getValue();
+                        String actual = fmt.toLocalizedPattern();
+                        if (!expected.equals(actual)) {
+                            result.append("Expected toLocalizedPattern=" + expected + ", got " + actual);
+                        }
+                    }
+                    return result.length() == 0 ? null : result.toString();
+                }
+
+                /**
+                 * @param tuple
+                 * @return
+                 */
+                private java.text.DecimalFormat newDecimalFormat(NumberFormatTestTuple tuple) {
                     ULocale en = new ULocale("en");
                     java.text.DecimalFormat fmt = new java.text.DecimalFormat(
                             tuple.pattern.getValue("0"),
                             new java.text.DecimalFormatSymbols(tuple.locale.getValue(en).toLocale()));
+                    adjustDecimalFormat(tuple, fmt);
+                    return fmt;
+                }
+
+                /**
+                 * @param tuple
+                 * @param fmt
+                 */
+                private void adjustDecimalFormat(NumberFormatTestTuple tuple, java.text.DecimalFormat fmt) {
                     if (tuple.minIntegerDigits.isValue()) {
                         fmt.setMinimumIntegerDigits(tuple.minIntegerDigits.getValue());
                     }
@@ -248,21 +342,6 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                     if (tuple.localizedPattern.isValue()) {
                         fmt.applyLocalizedPattern(tuple.localizedPattern.getValue());
                     }
-                    String actual;
-                    if (tuple.format.getValue().equals("NaN")) {
-                        actual = fmt.format(Double.NaN);
-                    } else if (tuple.format.getValue().equals("-Inf")) {
-                        actual = fmt.format(Double.NEGATIVE_INFINITY);
-                    } else if (tuple.format.getValue().equals("Inf")) {
-                        actual = fmt.format(Double.POSITIVE_INFINITY);
-                    } else {
-                        actual = fmt.format(new BigDecimal(tuple.format.getValue()));
-                    }
-                    String expected = tuple.output.getValue();
-                    if (!expected.equals(actual)) {
-                        return "Expected " + expected + ", got " + actual;
-                    }
-                    return null;
                 }
     };
 
