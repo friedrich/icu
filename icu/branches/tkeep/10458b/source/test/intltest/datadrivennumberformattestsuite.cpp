@@ -213,6 +213,9 @@ UBool DataDrivenNumberFormatTestSuite::isPass(
                         fFormatTestNumber % UPRV_LENGTHOF(fPreviousFormatters)],
                 appendErrorMessage,
                 status);
+    }
+    else if (tuple.toPatternFlag || tuple.toLocalizedPatternFlag) {
+        result = isToPatternPass(tuple, appendErrorMessage, status);
     } else {
         appendErrorMessage.append("At least format and outputFlag must be set.");
         status = U_ILLEGAL_ARGUMENT_ERROR;
@@ -253,5 +256,14 @@ UObject *DataDrivenNumberFormatTestSuite::newFormatter(
     return NULL;
 }
 
-    
+UBool DataDrivenNumberFormatTestSuite::isToPatternPass(
+        const NumberFormatTestTuple & /* tuple */,
+        UnicodeString & /*appendErrorMessage*/,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
 U_NAMESPACE_END

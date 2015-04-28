@@ -286,6 +286,8 @@ const NumberFormatTestTupleFieldData gFieldData[] = {
     FIELD_INIT(negativePrefix, &gStrOps),
     FIELD_INIT(negativeSuffix, &gStrOps),
     FIELD_INIT(localizedPattern, &gStrOps),
+    FIELD_INIT(toPattern, &gStrOps),
+    FIELD_INIT(toLocalizedPattern, &gStrOps),
 };
 
 UBool

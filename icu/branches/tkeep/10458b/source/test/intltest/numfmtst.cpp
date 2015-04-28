@@ -43,6 +43,10 @@ UBool isFormatPass(
         const NumberFormatTestTuple &tuple,
         UnicodeString &appendErrorMessage,
         UErrorCode &status);
+UBool isToPatternPass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status);
 
 };
 
@@ -348,6 +352,43 @@ static void adjustDecimalFormat(
     }
 }
 
+static DecimalFormat *newDecimalFormat(
+        const Locale &locale,
+        const UnicodeString &pattern,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    LocalPointer<DecimalFormatSymbols> symbols(
+            new DecimalFormatSymbols(locale, status), status);
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    UParseError perror;
+    LocalPointer<DecimalFormat> result(new DecimalFormat(
+            pattern, symbols.getAlias(), perror, status), status);
+    if (!result.isNull()) {
+        symbols.orphan();
+    }
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    return result.orphan();
+}
+
+static DecimalFormat *newDecimalFormat(
+        const NumberFormatTestTuple &tuple,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    Locale en("en");
+    return newDecimalFormat(
+            NFTT_GET_FIELD(tuple, locale, en),
+            NFTT_GET_FIELD(tuple, pattern, "0"),
+            status);
+}
+
 UBool NumberFormatTestDataDriven::isFormatPass(
         const NumberFormatTestTuple &tuple,
         UnicodeString &appendErrorMessage,
@@ -355,23 +396,19 @@ UBool NumberFormatTestDataDriven::isFormatPass(
     if (U_FAILURE(status)) {
         return FALSE;
     }
-    Locale en("en");
-    DecimalFormat fmt(
-            NFTT_GET_FIELD(tuple, pattern, "0"),
-            new DecimalFormatSymbols(NFTT_GET_FIELD(tuple, locale, en), status),
-            status);
+    LocalPointer<DecimalFormat> fmtPtr(newDecimalFormat(tuple, status));
     if (U_FAILURE(status)) {
-        appendErrorMessage.append("Error creating DecimalFormat");
+        appendErrorMessage.append("Error creating DecimalFormat.");
         return FALSE;
     }
-    adjustDecimalFormat(tuple, fmt, appendErrorMessage);
+    adjustDecimalFormat(tuple, *fmtPtr, appendErrorMessage);
     if (appendErrorMessage.length() > 0) {
         return FALSE;
     }
     DigitList digitList;
     strToDigitList(tuple.format, digitList, status);
     UnicodeString appendTo;
-    format(fmt, digitList, appendTo, status);
+    format(*fmtPtr, digitList, appendTo, status);
     if (U_FAILURE(status)) {
         appendErrorMessage.append("Error formatting.");
         return FALSE;
@@ -383,6 +420,42 @@ UBool NumberFormatTestDataDriven::isFormatPass(
     }
     return TRUE;
 }
+
+UBool NumberFormatTestDataDriven::isToPatternPass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    LocalPointer<DecimalFormat> fmtPtr(newDecimalFormat(tuple, status));
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error creating DecimalFormat.");
+        return FALSE;
+    }
+    adjustDecimalFormat(tuple, *fmtPtr, appendErrorMessage);
+    if (appendErrorMessage.length() > 0) {
+        return FALSE;
+    }
+    if (tuple.toPatternFlag) {
+        UnicodeString actual;
+        fmtPtr->toPattern(actual);
+        if (actual != tuple.toPattern) {
+            appendErrorMessage.append(
+                    UnicodeString("Expected: ") + tuple.toPattern + ", got: " + actual + ". ");
+        }
+    }
+    if (tuple.toLocalizedPatternFlag) {
+        UnicodeString actual;
+        fmtPtr->toLocalizedPattern(actual);
+        if (actual != tuple.toLocalizedPattern) {
+            appendErrorMessage.append(
+                    UnicodeString("Expected: ") + tuple.toLocalizedPattern + ", got: " + actual + ". ");
+        }
+    }
+    return appendErrorMessage.length() == 0;
+}
+
     
 U_DEFINE_LOCAL_OPEN_POINTER(LocalUCHARBUFPointer, UCHARBUF, ucbuf_close);
 

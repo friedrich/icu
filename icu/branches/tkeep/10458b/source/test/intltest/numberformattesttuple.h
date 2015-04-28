@@ -51,6 +51,8 @@ enum ENumberFormatTestTupleField {
     kNegativePrefix,
     kNegativeSuffix,
     kLocalizedPattern,
+    kToPattern,
+    kToLocalizedPattern,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -90,6 +92,8 @@ public:
     UnicodeString negativePrefix;
     UnicodeString negativeSuffix;
     UnicodeString localizedPattern;
+    UnicodeString toPattern;
+    UnicodeString toLocalizedPattern;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -125,6 +129,8 @@ public:
     UBool negativePrefixFlag;
     UBool negativeSuffixFlag;
     UBool localizedPatternFlag;
+    UBool toPatternFlag;
+    UBool toLocalizedPatternFlag;
 
     NumberFormatTestTuple() {
         clear();

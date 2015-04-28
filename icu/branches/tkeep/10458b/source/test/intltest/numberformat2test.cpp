@@ -379,23 +379,50 @@ static void adjustDecimalFormat(
     }
 }
 
-UObject *NumberFormat2TestDataDriven::newFormatter(UErrorCode &status) {
+static DecimalFormat2 *newDecimalFormat(
+        const Locale &locale,
+        const UnicodeString &pattern,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    LocalPointer<DecimalFormatSymbols> symbols(
+            new DecimalFormatSymbols(locale, status), status);
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    UParseError perror;
+    LocalPointer<DecimalFormat2> result(new DecimalFormat2(
+            pattern, symbols.getAlias(), perror, status), status);
+    if (!result.isNull()) {
+        symbols.orphan();
+    }
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    return result.orphan();
+}
+
+static DecimalFormat2 *newDecimalFormat(
+        const NumberFormatTestTuple &tuple,
+        UErrorCode &status) {
     if (U_FAILURE(status)) {
         return NULL;
     }
     Locale en("en");
-    DecimalFormatSymbols *symbols = new DecimalFormatSymbols(en, status);
-    if (symbols == NULL) {
-        status = U_MEMORY_ALLOCATION_ERROR;
+    return newDecimalFormat(
+            NFTT_GET_FIELD(tuple, locale, en),
+            NFTT_GET_FIELD(tuple, pattern, "0"),
+            status);
+}
+
+UObject *NumberFormat2TestDataDriven::newFormatter(UErrorCode &status) {
+    if (U_FAILURE(status)) {
         return NULL;
     }
-    UParseError perror;
-    DecimalFormat2 *result = new DecimalFormat2(
-            "0", symbols, perror, status);
-    if (result == NULL) {
-        status = U_MEMORY_ALLOCATION_ERROR;
-    }
-    return result;
+    UnicodeString pattern("0");
+    Locale en("en");
+    return newDecimalFormat(en, pattern, status);
 }
 
 UBool NumberFormat2TestDataDriven::isFormatPass(
@@ -406,17 +433,9 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
     if (U_FAILURE(status)) {
         return FALSE;
     }
-    Locale en("en");
-    DecimalFormatSymbols *symbols = new DecimalFormatSymbols(NFTT_GET_FIELD(tuple, locale, en), status);
-    if (symbols == NULL) {
-        appendErrorMessage.append("Error creating symbols.");
-        return FALSE;
-    }
-    UParseError perror;
-    LocalPointer<DecimalFormat2> fmtPtr(new DecimalFormat2(
-            NFTT_GET_FIELD(tuple, pattern, "0"), symbols, perror, status));
-    if (U_FAILURE(status) || fmtPtr.isNull()) {
-        appendErrorMessage.append("Error creating DecimalFormat");
+    LocalPointer<DecimalFormat2> fmtPtr(newDecimalFormat(tuple, status));
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error creating DecimalFormat.");
         return FALSE;
     }
     adjustDecimalFormat(tuple, *fmtPtr, appendErrorMessage);

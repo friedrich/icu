@@ -31,6 +31,9 @@ class DataDrivenNumberFormatTestSuite : public UObject {
      void run(const char *fileName, UBool runAllTests);
      virtual ~DataDrivenNumberFormatTestSuite();
  protected:
+    // Subclass can either override this method or to test copy and assignment,
+    // subclass may override the next isFormatPass AND newFormatter.
+    // Subclasses must not override both isFormatPass methods.
     virtual UBool isFormatPass(
             const NumberFormatTestTuple &tuple,
             UnicodeString &appendErrorMessage,
@@ -41,6 +44,10 @@ class DataDrivenNumberFormatTestSuite : public UObject {
             UnicodeString &appendErrorMessage,
             UErrorCode &status);
     virtual UObject *newFormatter(UErrorCode &status);
+    virtual UBool isToPatternPass(
+            const NumberFormatTestTuple &tuple,
+            UnicodeString &appendErrorMessage,
+            UErrorCode &status);
  private:
     UnicodeString fFileLine;
     int32_t fFileLineNumber;
