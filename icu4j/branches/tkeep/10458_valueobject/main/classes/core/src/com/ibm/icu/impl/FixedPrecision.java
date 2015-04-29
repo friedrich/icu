@@ -28,7 +28,7 @@ public class FixedPrecision extends ValueObject<FixedPrecision> {
     }
     public void setMin(DigitInterval interval) {
         checkThawed();
-        this.min = interval.freeze();
+        this.min = interval.clone();
     }
     
     public DigitInterval getMax() { return max; }
@@ -39,7 +39,7 @@ public class FixedPrecision extends ValueObject<FixedPrecision> {
     }
     public void setMax(DigitInterval interval) {
         checkThawed();
-        this.max = interval.freeze();
+        this.max = interval.clone();
     }
     
     public SignificantDigitInterval getSig() { return sig; }
@@ -50,7 +50,7 @@ public class FixedPrecision extends ValueObject<FixedPrecision> {
     }
     public void setSig(SignificantDigitInterval interval) {
         checkThawed();
-        this.sig = interval.freeze();
+        this.sig = interval.clone();
     }
     
     @Override

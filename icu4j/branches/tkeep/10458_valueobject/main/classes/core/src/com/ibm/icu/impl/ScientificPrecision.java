@@ -21,7 +21,7 @@ public class ScientificPrecision extends ValueObject<ScientificPrecision> {
     }
     public void setMantissa(FixedPrecision m) {
         checkThawed();
-        this.mantissa = m.freeze();
+        this.mantissa = m.clone();
     }
     
     @Override

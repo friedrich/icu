@@ -134,12 +134,11 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *       return value;
  *   }
  *   
- *   // Setters of ValueObject fields always freeze their parameter to
- *   // help prevent shared, unfrozen objects.
+ *   // Setters of ValueObject fields should do defensive copying by cloning
  *   public void setValue(ValueObjectClass v) {
  *       // Be sure this object is not frozen.
  *       checkThawed();
- *       this.value = v.freeze();
+ *       this.value = v.clone();
  *   }
  *   
  *   // Optional ValueObject fields work just like required ones except that their is
@@ -148,8 +147,7 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *    
  *   public void setOptionalValue(ValueObjectClass v) {
  *       checkThawed();
- *       // We use optFreeze since v may be null.
- *       this.optionalValue = optFreeze(v);
+ *       this.optionalValue = v == null ? null : v.clone();
  *   }
  *   
  *   // getXXX methods for Freezable fields return a direct reference to that field.
@@ -158,11 +156,12 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *   // contract of Freezable does not mandate this constraint.
  *   public FreezableClass getFreezable() { return freezable; }
  *   
- *   // Setters of Freezable fields always freeze their parameter.
+ *   // Setters of Freezable fields must always freeze their parameter
+ *   // after defensive copying
  *   public void setFreezable(FreezableClass f) {
  *       checkThawed();
- *       // If this field were optional, we would use optFreeze() here.
- *       this.freezable = f.freeze();
+ *       // If this field were optional, would have to check for null.
+ *       this.freezable = f.clone().freeze();
  *   }
  *   
  *   // A plain old mutable field getter must always return either clone of the
@@ -177,7 +176,7 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *   // A setter of a plain old mutable field always makes a defensive copy.
  *   public void setPojo(MutableClass o) {
  *       checkThawed();
- *       pojo = o.clone();
+ *       pojo = (MutableClass) o.clone();
  *   }
  *   
  *   // If MyClass contained no ordinary mutable fields,
@@ -211,10 +210,11 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
     /** 
      * clone this object.
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public final Object clone() {
+    public final T clone() {
         if (isFrozen()) {
-            return this;
+            return (T)this;
         }
         return cloneAsThawed();
     }
@@ -278,18 +278,16 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
     }
     
     /**
-     * Call within the freezeFields method or a setXXX method.
-     * to freeze an optional, Freezable field.
+     * Call within the freezeFields method to freeze an optional, Freezable field.
      * See coding example in documentation.
      * @param value The value to freeze. value may be null.
-     * @return value itself
      */
-    protected static <U extends Freezable<U>> U optFreeze(U value) {
+    protected static <U extends Freezable<U>> void optFreeze(U value) {
         if (value != null) {
-            return value.freeze();
+            value.freeze();
         }
-        return value;
     }
+    
     
     /**
      * Call from a mutating method to thaw a ValueObject field so that it can be
@@ -312,3 +310,4 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
 
     private AtomicBoolean bFrozen = new AtomicBoolean(false);
 }
+

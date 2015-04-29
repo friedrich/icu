@@ -23,7 +23,7 @@ public class ScientificPrecisionDriver {
         sciPrecision2.setMantissa(sciPrecision.getMantissa());
         sciPrecision2.getMutableMantissa().getMutableSig().setMax(4);
         sciPrecision2.getMutableMantissa().getMutableMax().setFracDigitCount(7);
-        ScientificPrecision sciPrecision3 = sciPrecision2.cloneAsThawed();
+        ScientificPrecision sciPrecision3 = sciPrecision2.clone();
         sciPrecision3.getMutableMantissa().getMutableSig().setMax(6);
         System.out.println(sciPrecision);
         System.out.println(sciPrecision2);
