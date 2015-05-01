@@ -2755,8 +2755,9 @@ int32_t RBBISentMonkey::next(int32_t prevPos) {
             continue;
         }
 
-        // Rule (7).  Upper ATerm  x  Uppper
-        if (fUpperSet->contains(c0) && fATermSet->contains(c1) && fUpperSet->contains(c2)) {
+        // Rule (7).  (Upper | Lower) ATerm  x  Uppper
+        if ((fUpperSet->contains(c0) || fLowerSet->contains(c0)) &&
+                fATermSet->contains(c1) && fUpperSet->contains(c2)) {
             continue;
         }
 

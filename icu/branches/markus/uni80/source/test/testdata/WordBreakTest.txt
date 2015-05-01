@@ -1,5 +1,5 @@
-﻿# WordBreakTest-8.0.0.txt
-# Date: 2015-02-13, 13:47:26 GMT [MD]
+# WordBreakTest-8.0.0.txt
+# Date: 2015-04-30, 09:40:16 GMT [MD]
 #
 # Unicode Character Database
 # Copyright (c) 1991-2015 Unicode, Inc.
@@ -1395,12 +1395,13 @@
 ÷ 1F1F7 × 1F1FA × 1F1F8 ÷	#  ÷ [0.2] REGIONAL INDICATOR SYMBOL LETTER R (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER U (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER S (Regional_Indicator) ÷ [0.3]
 ÷ 1F1F7 × 1F1FA × 1F1F8 × 1F1EA ÷	#  ÷ [0.2] REGIONAL INDICATOR SYMBOL LETTER R (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER U (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER S (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER E (Regional_Indicator) ÷ [0.3]
 ÷ 1F1F7 × 1F1FA ÷ 200B ÷ 1F1F8 × 1F1EA ÷	#  ÷ [0.2] REGIONAL INDICATOR SYMBOL LETTER R (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER U (Regional_Indicator) ÷ [999.0] ZERO WIDTH SPACE (Other) ÷ [999.0] REGIONAL INDICATOR SYMBOL LETTER S (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER E (Regional_Indicator) ÷ [0.3]
+÷ 05D0 × 0022 × 05D0 ÷	#  ÷ [0.2] HEBREW LETTER ALEF (Hebrew_Letter) × [7.2] QUOTATION MARK (Double_Quote) × [7.3] HEBREW LETTER ALEF (Hebrew_Letter) ÷ [0.3]
 ÷ 1F1E6 × 1F1E7 × 1F1E8 ÷	#  ÷ [0.2] REGIONAL INDICATOR SYMBOL LETTER A (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER B (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER C (Regional_Indicator) ÷ [0.3]
 ÷ 1F1E6 × 200D × 1F1E7 × 1F1E8 ÷	#  ÷ [0.2] REGIONAL INDICATOR SYMBOL LETTER A (Regional_Indicator) × [4.0] ZERO WIDTH JOINER (Extend_FE) × [13.3] REGIONAL INDICATOR SYMBOL LETTER B (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER C (Regional_Indicator) ÷ [0.3]
 ÷ 1F1E6 × 1F1E7 × 200D × 1F1E8 ÷	#  ÷ [0.2] REGIONAL INDICATOR SYMBOL LETTER A (Regional_Indicator) × [13.3] REGIONAL INDICATOR SYMBOL LETTER B (Regional_Indicator) × [4.0] ZERO WIDTH JOINER (Extend_FE) × [13.3] REGIONAL INDICATOR SYMBOL LETTER C (Regional_Indicator) ÷ [0.3]
 ÷ 0020 × 200D ÷ 0646 ÷	#  ÷ [0.2] SPACE (Other) × [4.0] ZERO WIDTH JOINER (Extend_FE) ÷ [999.0] ARABIC LETTER NOON (ALetter) ÷ [0.3]
 ÷ 0646 × 200D ÷ 0020 ÷	#  ÷ [0.2] ARABIC LETTER NOON (ALetter) × [4.0] ZERO WIDTH JOINER (Extend_FE) ÷ [999.0] SPACE (Other) ÷ [0.3]
 #
-# Lines: 1380
+# Lines: 1381
 #
 # EOF
