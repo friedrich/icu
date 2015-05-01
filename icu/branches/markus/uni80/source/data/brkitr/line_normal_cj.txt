@@ -5,7 +5,7 @@
 #
 #         Line Breaking Rules
 #         Implement default line breaking as defined by 
-#         Unicode Standard Annex #14 Revision 29 for Unicode 6.2
+#         Unicode Standard Annex #14 Revision 34 for Unicode 8.0
 #         http://www.unicode.org/reports/tr14/
 #         tailored as noted in 2nd paragraph below..
 #
