@@ -204,6 +204,28 @@ AffixPattern::add(ETokenType t, uint8_t count) {
     tokens.append(PACK_TOKEN_AND_LENGTH(t, count));
 }
 
+AffixPattern &
+AffixPattern::append(const AffixPattern &other) {
+    AffixPatternIterator iter;
+    other.iterator(iter);
+    UnicodeString literal;
+    while (iter.nextToken()) {
+        switch (iter.getTokenType()) {
+        case kLiteral:
+            iter.getLiteral(literal);
+            addLiteral(literal.getBuffer(), 0, literal.length());
+            break;
+        case kCurrency:
+            addCurrency(iter.getTokenLength());
+            break;
+        default:
+            add(iter.getTokenType());
+            break;
+        }
+    }
+    return *this;
+}
+
 void
 AffixPattern::remove() {
     tokens.remove();
@@ -218,7 +240,6 @@ static void escapeLiteral(
         const UnicodeString &literal, UnicodeStringAppender &appender) {
     int32_t len = literal.length();
     const UChar *buffer = literal.getBuffer();
-    appender.append((UChar) 0x27);
     for (int32_t i = 0; i < len; ++i) {
         UChar ch = buffer[i];
         switch (ch) {
@@ -226,12 +247,31 @@ static void escapeLiteral(
                 appender.append((UChar) 0x27);
                 appender.append((UChar) 0x27);
                 break;
+            case 0x25:
+                appender.append((UChar) 0x27);
+                appender.append((UChar) 0x25);
+                appender.append((UChar) 0x27);
+                break;
+            case 0x2030:
+                appender.append((UChar) 0x27);
+                appender.append((UChar) 0x2030);
+                appender.append((UChar) 0x27);
+                break;
+            case 0xA4:
+                appender.append((UChar) 0x27);
+                appender.append((UChar) 0xA4);
+                appender.append((UChar) 0x27);
+                break;
+            case 0x2D:
+                appender.append((UChar) 0x27);
+                appender.append((UChar) 0x2D);
+                appender.append((UChar) 0x27);
+                break;
             default:
                 appender.append(ch);
                 break;
         }
     }
-    appender.append((UChar) 0x27);
 }
 
 UnicodeString &

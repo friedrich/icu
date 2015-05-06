@@ -478,11 +478,21 @@ en	0%	0.4376	44%
 fa	\u06f0\u066a	0.4376	\u06f4\u06f4\u066a	K
 
 test toPattern
+set locale en
 begin
-locale	pattern	toPattern	toLocalizedPattern	breaks
-en	**####,##,##0.0##;(#)	**#,##,##,##0.0##;**(##,##,##0.0##)	**#,##,##,##0.0##;**(##,##,##0.0##)	K
-fa	**####,##,##0.0##;(#)	**#,##,##,##0.0##;**(##,##,##0.0##)	**#\u066c##\u066c##\u066c##\u06f0\u066b\u06f0##\u061b**(##\u066c##\u066c##\u06f0\u066b\u06f0##)	K
-
-
-
+pattern	toPattern	breaks
+// JDK doesn't support any patterns with padding or both negative prefix and suffix
+// Breaks ICU4C and ICU4J See ticket 11671
+**0,000	**0,000		CJK
+**##0,000	**##0,000	K
+**###0,000	**###0,000	K
+**####0,000	**#,##0,000	K
+###,000.	#,000.
+0,000	#0,000
+.00	#.00
+000	#000
+000,000	#,000,000
+pp#,000	pp#,000
+pp#,000;(#)	pp#,000;(#,000)	K
+**####,##,##0.0##;(#)	**#,##,##,##0.0##;**(##,##,##0.0##)	K
 

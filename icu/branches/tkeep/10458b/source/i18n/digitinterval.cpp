@@ -45,6 +45,10 @@ void DigitInterval::expandToContainDigit(int32_t digitExponent) {
   }
 }
 
+UBool DigitInterval::contains(int32_t x) const {
+    return (x < fLargestExclusive && x >= fSmallestInclusive);
+}
+
 
 U_NAMESPACE_END
 

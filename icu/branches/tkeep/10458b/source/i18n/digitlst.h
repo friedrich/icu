@@ -384,6 +384,12 @@ public:
     int32_t getUpperExponent() const;
 
     /**
+     * Gets the lower bound exponent for this value. For 98.7, returns -1
+     * because the right most digit, is the 10^-1 place.
+     */
+    int32_t getLowerExponent() const { return fDecNumber->exponent; }
+
+    /**
      * Sets result to the smallest DigitInterval needed to display this
      * DigitList in fixed point form and returns result.
      */

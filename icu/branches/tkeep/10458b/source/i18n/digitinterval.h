@@ -38,6 +38,11 @@ public:
     }
 
     /**
+     * Returns TRUE if this interval contains this digit position.
+     */
+    UBool contains(int32_t digitPosition) const;
+
+    /**
      * Returns true if this object is the same as rhs.
      */
     UBool equals(const DigitInterval &rhs) const {

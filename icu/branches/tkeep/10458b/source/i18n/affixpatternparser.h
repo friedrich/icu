@@ -184,6 +184,13 @@ public:
     }
 
     /**
+     * Appends other to this instance mutating this instance in place.
+     * @param other The pattern appended to the end of this one.
+     * @return a reference to this instance for chaining.
+     */
+    AffixPattern &append(const AffixPattern &other);
+
+    /**
      * Converts this AffixPattern back into a user string.
      * It is the inverse of parseUserAffixString.
      */

@@ -9,6 +9,7 @@
 #include "unicode/plurrule.h"
 #include "unicode/ustring.h"
 #include "decimalformatpattern.h"
+#include "decimalformatpatternimpl.h"
 #include "valueformatter.h"
 #include "fphdlimp.h"
 
@@ -1019,6 +1020,251 @@ DecimalFormat2::updateAll(UErrorCode &status) {
     updateFormatting(kFormattingAll, status);
     setScale(getScale());
 }
+
+static int32_t
+getMinimumLengthToDescribeGrouping(const DigitGrouping &grouping) {
+    if (grouping.fGrouping <= 0) {
+        return 0;
+    }
+    if (grouping.fGrouping2 <= 0) {
+        return grouping.fGrouping + 1;
+    }
+    return grouping.fGrouping + grouping.fGrouping2 + 1;
+}
+
+/**
+ * Given a grouping policy, calculates how many digits are needed left of
+ * the decimal point to achieve a desired length left of the
+ * decimal point.
+ * @param grouping the grouping policy
+ * @param desiredLength number of characters needed left of decimal point
+ * @param minLeftDigits at least this many digits is returned
+ * @param leftDigits the number of digits needed stored here
+ *  which is >= minLeftDigits.
+ * @return true if a perfect fit or false if having leftDigits would exceed
+ *   desiredLength
+ */
+static UBool
+getLeftDigitsForLeftLength(
+        const DigitGrouping &grouping,
+        int32_t desiredLength,
+        int32_t minLeftDigits,
+        int32_t &leftDigits) {
+    leftDigits = minLeftDigits;
+    int32_t lengthSoFar = leftDigits + grouping.getSeparatorCount(leftDigits);
+    while (lengthSoFar < desiredLength) {
+        lengthSoFar += grouping.isSeparatorAt(leftDigits + 1, leftDigits) ? 2 : 1;
+        ++leftDigits;
+    }
+    return (lengthSoFar == desiredLength);
+}
+
+int32_t
+DecimalFormat2::computeExponentPatternLength() const {
+    if (fUseScientific) {
+        return 1 + (fOptions.fExponent.fAlwaysShowSign ? 1 : 0) + fOptions.fExponent.fMinDigits;
+    }
+    return 0;
+}
+
+int32_t
+DecimalFormat2::countFractionDigitAndDecimalPatternLength(
+        int32_t fracDigitCount) const {
+    if (!fOptions.fMantissa.fAlwaysShowDecimal && fracDigitCount == 0) {
+        return 0;
+    }
+    return fracDigitCount + 1;
+}
+
+UnicodeString&
+DecimalFormat2::toNumberPattern(
+        UBool hasPadding, int32_t minimumLength, UnicodeString& result) const {
+    // Get a grouping policy like the one in this object that does not
+    // have minimum grouping since toPattern doesn't support it.
+    DigitGrouping grouping(fEffGrouping);
+    grouping.fMinGrouping = 0;
+
+    // Only for fixed digits, these are the digits that get 0's.
+    DigitInterval minInterval;
+
+    // Only for fixed digits, these are the digits that get #'s.
+    DigitInterval maxInterval;
+
+    // Only for significant digits
+    int32_t sigMin;
+    int32_t sigMax;
+
+    // These are all the digits to be displayed. For significant digits,
+    // this interval always starts at the 1's place an extends left.
+    DigitInterval fullInterval;
+
+    // Digit range of rounding increment. If rounding increment is .025.
+    // then roundingIncrementLowerExp = -3 and roundingIncrementUpperExp = -1
+    int32_t roundingIncrementLowerExp = 0;
+    int32_t roundingIncrementUpperExp = 0;
+
+    UBool useSigDig =
+            !fEffPrecision.fMantissa.fSignificant.isNoConstraints();
+    if (useSigDig) {
+        sigMax = fEffPrecision.fMantissa.fSignificant.getMax();
+        sigMin = fEffPrecision.fMantissa.fSignificant.getMin();
+        fullInterval.setFracDigitCount(0);
+        fullInterval.setIntDigitCount(sigMax);
+    } else {
+        minInterval = fEffPrecision.fMantissa.fMin;
+        maxInterval = minInterval;
+        if (!hasPadding) {
+            maxInterval.setIntDigitCount(minInterval.getIntDigitCount() + 1);
+        }
+        maxInterval.expandToContainDigit(
+                fEffPrecision.fMantissa.fMax.getLeastSignificantInclusive());
+        if (!fEffPrecision.fMantissa.fRoundingIncrement.isZero()) {
+            roundingIncrementLowerExp = 
+                    fEffPrecision.fMantissa.fRoundingIncrement.getLowerExponent();
+            roundingIncrementUpperExp = 
+                    fEffPrecision.fMantissa.fRoundingIncrement.getUpperExponent();
+            // We have to include the rounding increment in what we display
+            maxInterval.expandToContainDigit(roundingIncrementLowerExp);
+            maxInterval.expandToContainDigit(roundingIncrementUpperExp - 1);
+        }
+        fullInterval = maxInterval;
+    }
+    // We have to include enough digits to show grouping strategy
+    int32_t minLengthToDescribeGrouping =
+           getMinimumLengthToDescribeGrouping(grouping);
+    if (minLengthToDescribeGrouping > 0) {
+        fullInterval.expandToContainDigit(
+                getMinimumLengthToDescribeGrouping(grouping) - 1);
+    }
+
+    // If we have a minimum length, we have to add digits to the left to
+    // depict padding.
+    if (hasPadding) {
+        // For non scientific notation,
+        //  minimumLengthForMantissa = minimumLength
+        int32_t minimumLengthForMantissa = 
+                minimumLength - computeExponentPatternLength();
+        int32_t mininumLengthForMantissaIntPart =
+                minimumLengthForMantissa
+                - countFractionDigitAndDecimalPatternLength(
+                        fullInterval.getFracDigitCount());
+        // Because of grouping, we may need fewer than expected digits to
+        // achieve the length we need.
+        int32_t digitsNeeded;
+        if (getLeftDigitsForLeftLength(
+                grouping,
+                mininumLengthForMantissaIntPart,
+                fullInterval.getIntDigitCount(),
+                digitsNeeded)) {
+
+            // In this case, we achieved the exact length that we want.
+            fullInterval.setIntDigitCount(digitsNeeded);
+        } else if (digitsNeeded > fullInterval.getIntDigitCount()) {
+
+            // Having digitsNeeded digits goes over desired length which
+            // means that to have desired length would mean starting on a
+            // grouping sepearator e.g ,###,### so add a '#' and use one
+            // less digit. This trick gives ####,### but that is the best
+            // we can do.
+            result.append(kPatternDigit);
+            fullInterval.setIntDigitCount(digitsNeeded - 1);
+        }
+    }
+    int32_t maxDigitPos = fullInterval.getMostSignificantExclusive();
+    int32_t minDigitPos = fullInterval.getLeastSignificantInclusive();
+    for (int32_t i = maxDigitPos - 1; i >= minDigitPos; --i) {
+        if (!fOptions.fMantissa.fAlwaysShowDecimal && i == -1) {
+            result.append(kPatternDecimalSeparator);
+        }
+        if (useSigDig) {
+            // Use digit symbol
+            if (i >= sigMax || i < sigMax - sigMin) {
+                result.append(kPatternDigit);
+            } else {
+                result.append(kPatternSignificantDigit);
+            }
+        } else {
+            if (i < roundingIncrementUpperExp && i >= roundingIncrementLowerExp) {
+                result.append(fEffPrecision.fMantissa.fRoundingIncrement.getDigitByExponent(i));
+            } else if (minInterval.contains(i)) {
+                result.append(kPatternZeroDigit);
+            } else {
+                result.append(kPatternDigit);
+            }
+        }
+        if (grouping.isSeparatorAt(i + 1, i)) {
+            result.append(kPatternGroupingSeparator);
+        }
+        if (fOptions.fMantissa.fAlwaysShowDecimal && i == 0) {
+            result.append(kPatternDecimalSeparator);
+        }
+    }
+    if (fUseScientific) {
+        result.append(kPatternExponent);
+        if (fOptions.fExponent.fAlwaysShowSign) {
+            result.append(kPatternPlus);
+        }
+        for (int32_t i = 0; i < fOptions.fExponent.fMinDigits; ++i) {
+            result.append(kPatternZeroDigit);
+        }
+    }
+    return result;
+}
+
+UnicodeString&
+DecimalFormat2::toPattern(UnicodeString& result) const {
+    result.remove();
+    UnicodeString padSpec;
+    if (fAap.fWidth > 0) {
+        padSpec.append(kPatternPadEscape);
+        padSpec.append(fAap.fPadChar);
+    }
+    if (fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix) {
+        result.append(padSpec);
+    }
+    fPositivePrefixPattern.toUserString(result);
+    if (fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix) {
+        result.append(padSpec);
+    }
+    toNumberPattern(
+            fAap.fWidth > 0,
+            fAap.fWidth - fPositivePrefixPattern.countChar32() - fPositiveSuffixPattern.countChar32(),
+            result);
+    if (fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix) {
+        result.append(padSpec);
+    }
+    fPositiveSuffixPattern.toUserString(result);
+    if (fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix) {
+        result.append(padSpec);
+    }
+    AffixPattern withNegative;
+    withNegative.add(AffixPattern::kNegative);
+    withNegative.append(fPositivePrefixPattern);
+    if (!fPositiveSuffixPattern.equals(fNegativeSuffixPattern) ||
+            !withNegative.equals(fNegativePrefixPattern)) {
+        result.append(kPatternSeparator);
+        if (fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix) {
+            result.append(padSpec);
+        }
+        fNegativePrefixPattern.toUserString(result);
+        if (fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix) {
+            result.append(padSpec);
+        }
+        toNumberPattern(
+                fAap.fWidth > 0,
+                fAap.fWidth - fNegativePrefixPattern.countChar32() - fNegativeSuffixPattern.countChar32(),
+                result);
+        if (fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix) {
+            result.append(padSpec);
+        }
+        fNegativeSuffixPattern.toUserString(result);
+        if (fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix) {
+            result.append(padSpec);
+        }
+    }
+    return result;
+}
+
 
 U_NAMESPACE_END
 

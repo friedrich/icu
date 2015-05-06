@@ -182,6 +182,7 @@ void setPositivePrefix(const UnicodeString &str);
 void setPositiveSuffix(const UnicodeString &str);
 void setNegativePrefix(const UnicodeString &str);
 void setNegativeSuffix(const UnicodeString &str);
+UnicodeString &toPattern(UnicodeString& result) const;
 private:
 DigitList fMultiplier;
 DigitList::ERoundingMode fRoundingMode;
@@ -303,6 +304,11 @@ void updateFormattingLocalizedNegativePrefix(
         int32_t &changedFormattingFields, UErrorCode &status);
 void updateFormattingLocalizedNegativeSuffix(
         int32_t &changedFormattingFields, UErrorCode &status);
+
+int32_t computeExponentPatternLength() const;
+int32_t countFractionDigitAndDecimalPatternLength(int32_t fracDigitCount) const;
+UnicodeString &toNumberPattern(
+        UBool hasPadding, int32_t minimumLength, UnicodeString& result) const;
 };
 
 

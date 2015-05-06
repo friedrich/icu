@@ -89,6 +89,10 @@ UBool isFormatPass(
         UnicodeString &appendErrorMessage,
         UErrorCode &status);
 UObject *newFormatter(UErrorCode &status);
+UBool isToPatternPass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status);
 private:
 
 };
@@ -493,12 +497,40 @@ UBool NumberFormat2TestDataDriven::isFormatPass(
     return TRUE;
 }
 
+UBool NumberFormat2TestDataDriven::isToPatternPass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    LocalPointer<DecimalFormat2> fmtPtr(newDecimalFormat(tuple, status));
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error creating DecimalFormat.");
+        return FALSE;
+    }
+    adjustDecimalFormat(tuple, *fmtPtr, appendErrorMessage);
+    if (appendErrorMessage.length() > 0) {
+        return FALSE;
+    }
+    if (tuple.toPatternFlag) {
+        UnicodeString actual;
+        fmtPtr->toPattern(actual);
+        if (actual != tuple.toPattern) {
+            appendErrorMessage.append(
+                    UnicodeString("Expected: ") + tuple.toPattern + ", got: " + actual + ". ");
+        }
+    }
+    return appendErrorMessage.length() == 0;
+}
+
 class NumberFormat2Test : public IntlTest {
 public:
     void runIndexedTest(int32_t index, UBool exec, const char *&name, char *par=0);
 private:
     void TestQuantize();
     void TestConvertScientificNotation();
+    void TestLowerUpperExponent();
     void TestRounding();
     void TestRoundingIncrement();
     void TestDigitInterval();
@@ -516,6 +548,8 @@ private:
     void TestValueFormatterScientific();
     void TestCurrencyAffixInfo();
     void TestAffixPattern();
+    void TestAffixPatternAppend();
+    void TestAffixPatternAppendAjoiningLiterals();
     void TestAffixPatternDoubleQuote();
     void TestAffixPatternParser();
     void TestPluralAffix();
@@ -621,6 +655,7 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO_BEGIN;
     TESTCASE_AUTO(TestQuantize);
     TESTCASE_AUTO(TestConvertScientificNotation);
+    TESTCASE_AUTO(TestLowerUpperExponent);
     TESTCASE_AUTO(TestRounding);
     TESTCASE_AUTO(TestRoundingIncrement);
     TESTCASE_AUTO(TestDigitInterval);
@@ -638,6 +673,8 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestPositiveIntDigitFormatter);
     TESTCASE_AUTO(TestCurrencyAffixInfo);
     TESTCASE_AUTO(TestAffixPattern);
+    TESTCASE_AUTO(TestAffixPatternAppend);
+    TESTCASE_AUTO(TestAffixPatternAppendAjoiningLiterals);
     TESTCASE_AUTO(TestAffixPatternDoubleQuote);
     TESTCASE_AUTO(TestAffixPatternParser);
     TESTCASE_AUTO(TestPluralAffix);
@@ -689,6 +726,31 @@ void NumberFormat2Test::TestDigitInterval() {
         verifyInterval(result, 0, INT32_MAX);
         result.setFracDigitCount(-1);
         verifyInterval(result, INT32_MIN, INT32_MAX);
+    }
+    {
+        DigitInterval result;
+        result.setIntDigitCount(3);
+        result.setFracDigitCount(1);
+        result.expandToContainDigit(0);
+        result.expandToContainDigit(-1);
+        result.expandToContainDigit(2);
+        verifyInterval(result, -1, 3);
+        result.expandToContainDigit(3);
+        verifyInterval(result, -1, 4);
+        result.expandToContainDigit(-2);
+        verifyInterval(result, -2, 4);
+        result.expandToContainDigit(15);
+        result.expandToContainDigit(-15);
+        verifyInterval(result, -15, 16);
+    }
+    {
+        DigitInterval result;
+        result.setIntDigitCount(3);
+        result.setFracDigitCount(1);
+        assertTrue("", result.contains(2));
+        assertTrue("", result.contains(-1));
+        assertFalse("", result.contains(3));
+        assertFalse("", result.contains(-2));
     }
 }
 
@@ -887,6 +949,14 @@ void NumberFormat2Test::TestConvertScientificNotation() {
                 "43561000000",
                 digits);
     }
+}
+
+void NumberFormat2Test::TestLowerUpperExponent() {
+    DigitList digits;
+
+    digits.set(98.7);
+    assertEquals("", -1, digits.getLowerExponent());
+    assertEquals("", 2, digits.getUpperExponent());
 }
 
 void NumberFormat2Test::TestRounding() {
@@ -2173,7 +2243,7 @@ void NumberFormat2Test::TestAffixPatternDoubleQuote() {
     AffixPattern::parseUserAffixString(str, actual, status);
     assertTrue("", expected.equals(actual));
     UnicodeString formattedString;
-    assertEquals("", "'Don''t'", actual.toUserString(formattedString));
+    assertEquals("", "Don''t", actual.toUserString(formattedString));
     assertSuccess("", status);
 }
 
@@ -2206,7 +2276,7 @@ void NumberFormat2Test::TestAffixPatternParser() {
             userAffixPattern2,
             status);
     UnicodeString expectedFormattedUserStr(
-            "-'-y''dz'%\u00a4\u00a4\u00a4'\u00a4 y '\u00a4\u00a4\u00a4' or '\u00a4\u00a4' but '\u00a4");
+            "-'-'y''dz%\u00a4\u00a4\u00a4'\u00a4' y \u00a4\u00a4\u00a4 or \u00a4\u00a4 but \u00a4");
     assertEquals("", expectedFormattedUserStr.unescape(), formattedUserStr);
     assertTrue("", userAffixPattern2.equals(userAffixPattern));
     assertSuccess("", status);
@@ -2307,10 +2377,49 @@ void NumberFormat2Test::TestAffixPatternParser() {
                 affix.getOtherVariant(),
                 expectedAttributes);
     }
-  
-
 }
 
+void NumberFormat2Test::TestAffixPatternAppend() {
+  AffixPattern pattern;
+  UErrorCode status = U_ZERO_ERROR;
+  UnicodeString patternStr("%\u2030");
+  AffixPattern::parseUserAffixString(
+          patternStr.unescape(), pattern, status);
+
+  AffixPattern appendPattern;
+  UnicodeString appendPatternStr("-\u00a4\u00a4*");
+  AffixPattern::parseUserAffixString(
+          appendPatternStr.unescape(), appendPattern, status);
+
+  AffixPattern expectedPattern;
+  UnicodeString expectedPatternStr("%\u2030-\u00a4\u00a4*");
+  AffixPattern::parseUserAffixString(
+          expectedPatternStr, expectedPattern, status);
+  
+  assertTrue("", pattern.append(appendPattern).equals(expectedPattern));
+  assertSuccess("", status);
+}
+
+void NumberFormat2Test::TestAffixPatternAppendAjoiningLiterals() {
+  AffixPattern pattern;
+  UErrorCode status = U_ZERO_ERROR;
+  UnicodeString patternStr("%baaa");
+  AffixPattern::parseUserAffixString(
+          patternStr, pattern, status);
+
+  AffixPattern appendPattern;
+  UnicodeString appendPatternStr("caa%");
+  AffixPattern::parseUserAffixString(
+          appendPatternStr, appendPattern, status);
+
+  AffixPattern expectedPattern;
+  UnicodeString expectedPatternStr("%baaacaa%");
+  AffixPattern::parseUserAffixString(
+          expectedPatternStr, expectedPattern, status);
+  
+  assertTrue("", pattern.append(appendPattern).equals(expectedPattern));
+  assertSuccess("", status);
+}
 
 void NumberFormat2Test::TestDigitAffixesAndPadding() {
     UErrorCode status = U_ZERO_ERROR;
