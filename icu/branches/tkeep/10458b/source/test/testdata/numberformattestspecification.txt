@@ -82,6 +82,11 @@ pattern	format	output	breaks
 // This should round to nearest 0.05E4 but instead round to nearest 0.05
 0.05E0	12301.2	1,25E4	CJK
 ##0.000#E0	0.17	170,0E-3
+// JDK doesn't support significant digits in exponents
+@@@E0	6235	6,24E3	K
+@@@#E0	6200	6,20E3	K
+@@@#E0	6201	6,201E3	K
+@@@#E0	6201.7	6,202E3	K
 
 test percents
 set locale fr
@@ -493,6 +498,13 @@ pattern	toPattern	breaks
 000	#000
 000,000	#,000,000
 pp#,000	pp#,000
+00.##	#00.##
+#,#00.025	#,#00.025
+// No secondary grouping in JDK
+#,##,###.02500	#,##,###.02500	K
 pp#,000;(#)	pp#,000;(#,000)	K
 **####,##,##0.0##;(#)	**#,##,##,##0.0##;**(##,##,##0.0##)	K
+// No significant digits in JDK
+@@###	@@###	K
+@,@#,###	@,@#,###	K
 

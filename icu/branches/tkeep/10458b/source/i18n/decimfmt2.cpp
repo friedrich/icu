@@ -680,6 +680,18 @@ DecimalFormat2::updatePrecision() {
 
 void
 DecimalFormat2::updatePrecisionForScientific() {
+    FixedPrecision *result = &fEffPrecision.fMantissa;
+    result->fMax.clear();
+    result->fMin.setIntDigitCount(0);
+    result->fMin.setFracDigitCount(0);
+    result->fSignificant.clear();
+
+    if (fUseSigDigits) {
+        extractSigDigits(result->fSignificant);
+        result->fMin.setIntDigitCount(1);
+        result->fMax.setIntDigitCount(1);
+        return;
+    }
     DigitInterval max;
     DigitInterval min;
     extractMinMaxDigits(min, max);
@@ -689,11 +701,6 @@ DecimalFormat2::updatePrecisionForScientific() {
     int32_t maxFracDigitCount = max.getFracDigitCount();
     int32_t minFracDigitCount = min.getFracDigitCount();
 
-    FixedPrecision *result = &fEffPrecision.fMantissa;
-    result->fMax.clear();
-    result->fMin.setIntDigitCount(0);
-    result->fMin.setFracDigitCount(0);
-    result->fSignificant.clear();
 
     // Not in spec: maxIntDigitCount > 8 assume
     // maxIntDigitCount = minIntDigitCount. Current DecimalFormat API has
@@ -1185,7 +1192,7 @@ DecimalFormat2::toNumberPattern(
             }
         } else {
             if (i < roundingIncrementUpperExp && i >= roundingIncrementLowerExp) {
-                result.append(fEffPrecision.fMantissa.fRoundingIncrement.getDigitByExponent(i));
+                result.append(fEffPrecision.fMantissa.fRoundingIncrement.getDigitByExponent(i) + kPatternZeroDigit);
             } else if (minInterval.contains(i)) {
                 result.append(kPatternZeroDigit);
             } else {
