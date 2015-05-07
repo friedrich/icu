@@ -564,6 +564,7 @@ private:
     void TestGetAffixes();
     void TestApplyPatternResets();
     void TestDataDriven();
+    void TestToPatternScientific11648();
     void verifyInterval(const DigitInterval &, int32_t minInclusive, int32_t maxExclusive);
     void verifyFixedDecimal(
             const FixedDecimal &result,
@@ -689,6 +690,7 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestGetAffixes);
     TESTCASE_AUTO(TestApplyPatternResets);
     TESTCASE_AUTO(TestDataDriven);
+    TESTCASE_AUTO(TestToPatternScientific11648);
  
     TESTCASE_AUTO_END;
 }
@@ -3160,6 +3162,19 @@ void NumberFormat2Test::TestDataDriven() {
     NumberFormat2TestDataDriven dd;
 //    dd.run("dumb.txt", FALSE);
     dd.run("numberformattestspecification.txt", TRUE);
+}
+
+void NumberFormat2Test::TestToPatternScientific11648() {
+    UErrorCode status = U_ZERO_ERROR;
+    Locale en("en");
+    DecimalFormat2 fmt(en, "0.00", status);
+    fmt.setScientificNotation(TRUE);
+    UnicodeString pattern;
+    // Fails, produces "0.00E"
+    assertEquals("", "0.00E0", fmt.toPattern(pattern));
+    DecimalFormat fmt2(pattern, status);
+    // Fails, bad pattern.
+    assertSuccess("", status);
 }
 
 

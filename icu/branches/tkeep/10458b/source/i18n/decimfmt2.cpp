@@ -15,6 +15,8 @@
 
 U_NAMESPACE_BEGIN
 
+static const int32_t kMaxScientificIntegerDigits = 8;
+
 static const int32_t kFormattingPosPrefix = (1 << 0);
 static const int32_t kFormattingNegPrefix = (1 << 1);
 static const int32_t kFormattingPosSuffix = (1 << 2);
@@ -678,24 +680,17 @@ DecimalFormat2::updatePrecision() {
     }
 }
 
-void
-DecimalFormat2::updatePrecisionForScientific() {
-    FixedPrecision *result = &fEffPrecision.fMantissa;
-    result->fMax.clear();
-    result->fMin.setIntDigitCount(0);
-    result->fMin.setFracDigitCount(0);
-    result->fSignificant.clear();
-
-    if (fUseSigDigits) {
-        extractSigDigits(result->fSignificant);
-        result->fMin.setIntDigitCount(1);
-        result->fMax.setIntDigitCount(1);
-        return;
-    }
-    DigitInterval max;
-    DigitInterval min;
-    extractMinMaxDigits(min, max);
-
+static void updatePrecisionForScientificMinMax(
+        const DigitInterval &min,
+        const DigitInterval &max,
+        DigitInterval &resultMin,
+        DigitInterval &resultMax,
+        SignificantDigitInterval &resultSignificant) {
+    resultMin.setIntDigitCount(0);
+    resultMin.setFracDigitCount(0);
+    resultSignificant.clear();
+    resultMax.clear();
+    
     int32_t maxIntDigitCount = max.getIntDigitCount();
     int32_t minIntDigitCount = min.getIntDigitCount();
     int32_t maxFracDigitCount = max.getFracDigitCount();
@@ -717,11 +712,11 @@ DecimalFormat2::updatePrecisionForScientific() {
     // than 1 and more than minIntDigitCount.
     UBool bExponentGrouping = maxIntDigitCount > 1 && minIntDigitCount < maxIntDigitCount;
     if (bExponentGrouping) {
-        result->fMax.setIntDigitCount(maxIntDigitCount);
+        resultMax.setIntDigitCount(maxIntDigitCount);
 
         // For exponent grouping minIntDigits is always treated as 1 even
         // if it wasn't set to 1!
-        result->fMin.setIntDigitCount(1);
+        resultMin.setIntDigitCount(1);
     } else {
         // Fixed digit count left of decimal. minIntDigitCount doesn't have
         // to equal maxIntDigitCount i.e minIntDigitCount == 0 while
@@ -734,17 +729,37 @@ DecimalFormat2::updatePrecisionForScientific() {
         if (fixedIntDigitCount == 0 && (minFracDigitCount == 0 || maxFracDigitCount == 0)) {
             fixedIntDigitCount = 1;
         }
-        result->fMax.setIntDigitCount(fixedIntDigitCount);
-        result->fMin.setIntDigitCount(fixedIntDigitCount);
+        resultMax.setIntDigitCount(fixedIntDigitCount);
+        resultMin.setIntDigitCount(fixedIntDigitCount);
     }
     // Spec says this is how we compute significant digits. 0 means
     // unlimited significant digits.
     int32_t maxSigDigits = minIntDigitCount + maxFracDigitCount;
     if (maxSigDigits > 0) {
         int32_t minSigDigits = minIntDigitCount + minFracDigitCount;
-        result->fSignificant.setMin(minSigDigits);
-        result->fSignificant.setMax(maxSigDigits);
+        resultSignificant.setMin(minSigDigits);
+        resultSignificant.setMax(maxSigDigits);
     }
+}
+
+void
+DecimalFormat2::updatePrecisionForScientific() {
+    FixedPrecision *result = &fEffPrecision.fMantissa;
+    if (fUseSigDigits) {
+        result->fMax.setFracDigitCount(-1);
+        result->fMax.setIntDigitCount(1);
+        result->fMin.setFracDigitCount(0);
+        result->fMin.setIntDigitCount(1);
+        result->fSignificant.clear();
+        extractSigDigits(result->fSignificant);
+        return;
+    }
+    DigitInterval max;
+    DigitInterval min;
+    extractMinMaxDigits(min, max);
+    updatePrecisionForScientificMinMax(
+            min, max,
+            result->fMin, result->fMax, result->fSignificant);
 }
 
 void
@@ -1110,21 +1125,28 @@ DecimalFormat2::toNumberPattern(
     int32_t roundingIncrementLowerExp = 0;
     int32_t roundingIncrementUpperExp = 0;
 
-    UBool useSigDig =
-            !fEffPrecision.fMantissa.fSignificant.isNoConstraints();
-    if (useSigDig) {
-        sigMax = fEffPrecision.fMantissa.fSignificant.getMax();
-        sigMin = fEffPrecision.fMantissa.fSignificant.getMin();
+    if (fUseSigDigits) {
+        SignificantDigitInterval sigInterval;
+        extractSigDigits(sigInterval);
+        sigMax = sigInterval.getMax();
+        sigMin = sigInterval.getMin();
         fullInterval.setFracDigitCount(0);
         fullInterval.setIntDigitCount(sigMax);
     } else {
-        minInterval = fEffPrecision.fMantissa.fMin;
-        maxInterval = minInterval;
-        if (!hasPadding) {
+        extractMinMaxDigits(minInterval, maxInterval);
+        if (fUseScientific) {
+           if (maxInterval.getIntDigitCount() > kMaxScientificIntegerDigits) {
+               maxInterval.setIntDigitCount(1);
+               minInterval.shrinkToFitWithin(maxInterval);
+           }
+        } else if (hasPadding) {
+            // Make max int digits match min int digits for now, we
+            // compute necessary padding later.
+            maxInterval.setIntDigitCount(minInterval.getIntDigitCount());
+        } else {
+            // For some reason toPattern adds at least one leading '#'
             maxInterval.setIntDigitCount(minInterval.getIntDigitCount() + 1);
         }
-        maxInterval.expandToContainDigit(
-                fEffPrecision.fMantissa.fMax.getLeastSignificantInclusive());
         if (!fEffPrecision.fMantissa.fRoundingIncrement.isZero()) {
             roundingIncrementLowerExp = 
                     fEffPrecision.fMantissa.fRoundingIncrement.getLowerExponent();
@@ -1183,7 +1205,7 @@ DecimalFormat2::toNumberPattern(
         if (!fOptions.fMantissa.fAlwaysShowDecimal && i == -1) {
             result.append(kPatternDecimalSeparator);
         }
-        if (useSigDig) {
+        if (fUseSigDigits) {
             // Use digit symbol
             if (i >= sigMax || i < sigMax - sigMin) {
                 result.append(kPatternDigit);
@@ -1211,7 +1233,7 @@ DecimalFormat2::toNumberPattern(
         if (fOptions.fExponent.fAlwaysShowSign) {
             result.append(kPatternPlus);
         }
-        for (int32_t i = 0; i < fOptions.fExponent.fMinDigits; ++i) {
+        for (int32_t i = 0; i < 1 || i < fOptions.fExponent.fMinDigits; ++i) {
             result.append(kPatternZeroDigit);
         }
     }
