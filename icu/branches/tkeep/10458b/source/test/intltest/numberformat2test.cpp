@@ -1071,95 +1071,32 @@ void NumberFormat2Test::TestRounding() {
     }
 }
 void NumberFormat2Test::TestBenchmark() {
-/*
     UErrorCode status = U_ZERO_ERROR;
-    DecimalFormatSymbols symbols("en", status);
-    DigitFormatter formatter(symbols);
-    FieldPosition fpos(FieldPosition::DONT_CARE);
-    IntDigitCountRange range;
     clock_t start = clock();
-    for (int32_t i = 0; i < 10000000; ++i) {
-        UnicodeString appendTo;
-        FieldPositionOnlyHandler handler(fpos);
-        formatter.formatPositiveInt32(
-                627894, range, handler, appendTo);
+    Locale en("en");
+    DecimalFormat2 fmt(en, "0.0000000", status);
+    FieldPosition fpos(0);
+    for (int32_t i = 0; i < 1000000; ++i) {
+        UnicodeString append;
+        fmt.format(4.6692016, append, fpos, status);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
-    ScientificPrecision precision;
-    SciFormatter sciformatter(symbols);
-    DigitFormatterOptions options;
-    SciFormatterOptions scioptions;
-    DigitGrouping grouping;
-    ValueFormatter vf;
-    DigitAffixesAndPadding aap;
-    aap.fNegativePrefix.append("-", UNUM_SIGN_FIELD);
-    precision.fMantissa.fMin.setIntDigitCount(1);
-    precision.fMantissa.fMax.setIntDigitCount(1);
-    precision.fMantissa.fMax.setFracDigitCount(5);
-    start = clock();
-    for (int32_t i = 0; i < 10000000; ++i) {
-        UnicodeString appendTo;
-        FieldPositionOnlyHandler handler(fpos);
-        vf.prepareFixedDecimalFormatting(
-                formatter, grouping, precision.fMantissa, options);
-//        vf.prepareScientificFormatting(
-//                sciformatter, formatter, precision, scioptions);
-//        DigitList digits;
-//        digits.set(299792458);
-        aap.formatInt32(
-//                digits,
-                379894,
-                vf,
-                handler,
-                NULL,
-                appendTo,
-                status);
-    }
-    errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
-*/
+    assertSuccess("", status);
 }
 
 void NumberFormat2Test::TestBenchmark2() {
-/*
     UErrorCode status = U_ZERO_ERROR;
-    UParseError perror;
-    NumberFormat *nf = NumberFormat::createInstance("en", status);
-    nf->setGroupingUsed(FALSE);
-    FieldPosition fpos(FieldPosition::DONT_CARE);
     clock_t start = clock();
-    for (int32_t i = 0; i < 10000000; ++i) {
-        UnicodeString appendTo;
-        nf->format(627894, appendTo, fpos);
-    }
-    errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
-    return;
-    UErrorCode status = U_ZERO_ERROR;
-    NumberFormat *nf = NumberFormat::createScientificInstance("en", status);
-    nf->setMaximumFractionDigits(6);
-    FieldPosition fpos(FieldPosition::DONT_CARE);
-    clock_t start = clock();
+    Locale en("en");
+    DecimalFormatSymbols *sym = new DecimalFormatSymbols(en, status);
+    DecimalFormat fmt("0.0000000", sym, status);
+    FieldPosition fpos(0);
     for (int32_t i = 0; i < 1000000; ++i) {
-        UnicodeString appendTo;
-        DigitList digits;
-        digits.set(299792458);
-        nf->format(digits, appendTo, fpos, status);
+        UnicodeString append;
+        fmt.format(4.6692016, append, fpos, status);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
-    UErrorCode status = U_ZERO_ERROR;
-    UParseError perror;
-    DecimalFormatSymbols symbols("en", status);
-    DecimalFormatPatternParser parser;
-    parser.useSymbols(symbols);
-    UnicodeString pattern("\u00a4\u00a4% 0.00;\u00a4\u00a4 (-#)");
-    pattern = pattern.unescape();
-    DecimalFormatPattern out;
-    parser.applyPatternWithoutExpandAffix(
-            pattern, out, perror, status);
     assertSuccess("", status);
-    errln(out.fPosPrefixPattern);
-    errln(out.fNegPrefixPattern);
-    errln(out.fNegSuffixPattern);
-*/
 }
 
 void NumberFormat2Test::TestSmallIntFormatter() {
