@@ -253,7 +253,7 @@ public class DataDrivenNumberFormatTestSuite {
                 break;
             }
         }
-        fileLine = idx < line.length() ? line.substring(0, idx) : line;
+        fileLine = idx == 0 ? "" : line;
         return true;
     }
     
