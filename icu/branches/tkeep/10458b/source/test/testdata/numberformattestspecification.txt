@@ -676,3 +676,50 @@ parse	output	breaks
 // JDK parses as -1945
 (1,945d1)	fail	K
 
+test parse strange prefix
+set locale en
+set positivePrefix dd
+set negativePrefix ddd
+begin
+parse	output
+dd4582	4582
+ddd4582	-4582
+
+test parse strange suffix
+set locale en
+set positiveSuffix dd
+set negativePrefix 
+set negativeSuffix ddd
+begin
+parse	output
+4582dd	4582
+4582ddd	-4582
+
+test really strange suffix
+set locale en
+set positiveSuffix 9K
+set negativePrefix 
+set negativeSuffix 9N
+begin
+parse	output	breaks
+// C consumes the '9' as a digit and assumes number is negative
+// J and JDK bail
+6549K	654	CJK
+// C consumes the '9' as a digit and assumes number is negative
+// J and JDK bail
+6549N	-654	CJK
+
+test really strange prefix
+set locale en
+set positivePrefix 82
+set negativePrefix 28
+begin
+parse	output
+8245	45
+2845	-45
+
+
+
+
+
+
