@@ -42,22 +42,24 @@ import com.ibm.icu.util.CurrencyAmount;
 import com.ibm.icu.util.ULocale;
 
 public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
+    
+    private static Number toNumber(String s) {
+        if (s.equals("NaN")) {
+            return Double.NaN;
+        } else if (s.equals("-Inf")) {
+            return Double.NEGATIVE_INFINITY;
+        } else if (s.equals("Inf")) {
+            return Double.POSITIVE_INFINITY;
+        } 
+        return new BigDecimal(s);
+    }
         
     private DataDrivenNumberFormatTestSuite.CodeUnderTest ICU =
             new DataDrivenNumberFormatTestSuite.CodeUnderTest() {
                 @Override
                 public String format(NumberFormatTestTuple tuple) {
                     DecimalFormat fmt = newDecimalFormat(tuple);
-                    String actual;
-                    if (tuple.format.getValue().equals("NaN")) {
-                        actual = fmt.format(Double.NaN);
-                    } else if (tuple.format.getValue().equals("-Inf")) {
-                        actual = fmt.format(Double.NEGATIVE_INFINITY);
-                    } else if (tuple.format.getValue().equals("Inf")) {
-                        actual = fmt.format(Double.POSITIVE_INFINITY);
-                    } else {
-                        actual = fmt.format(new BigDecimal(tuple.format.getValue()));
-                    }
+                    String actual = fmt.format(toNumber(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
                         return "Expected " + expected + ", got " + actual;
@@ -84,6 +86,29 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                         }
                     }
                     return result.length() == 0 ? null : result.toString();
+                }
+                
+                @Override
+                public String parse(NumberFormatTestTuple tuple) {
+                    DecimalFormat fmt = newDecimalFormat(tuple);
+                    fmt.setParseStrict(tuple.lenient.getValue(1) == 0 ? true : false);
+                    ParsePosition ppos = new ParsePosition(0);
+                    Number actual = fmt.parse(tuple.parse.getValue(), ppos);
+                    if (ppos.getIndex() == 0) {
+                        if (!tuple.output.getValue().equals("fail")) {
+                            return "Parse error expected.";
+                        }
+                        return null;
+                    }
+                    if (tuple.output.getValue().equals("fail")) {
+                        return "Parse succeeded, but was expected to fail.";
+                    }
+                    Number expected = toNumber(tuple.output.getValue());
+                    // number types cannot be compared, this is the best we can do.
+                    if (expected.doubleValue() != (actual.doubleValue())) {
+                        return "Expected: " + expected + ", got: " + actual;
+                    }
+                    return null;                  
                 }
                 
                 /**
@@ -201,16 +226,7 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 @Override
                 public String format(NumberFormatTestTuple tuple) {
                     java.text.DecimalFormat fmt = newDecimalFormat(tuple);
-                    String actual;
-                    if (tuple.format.getValue().equals("NaN")) {
-                        actual = fmt.format(Double.NaN);
-                    } else if (tuple.format.getValue().equals("-Inf")) {
-                        actual = fmt.format(Double.NEGATIVE_INFINITY);
-                    } else if (tuple.format.getValue().equals("Inf")) {
-                        actual = fmt.format(Double.POSITIVE_INFINITY);
-                    } else {
-                        actual = fmt.format(new BigDecimal(tuple.format.getValue()));
-                    }
+                    String actual = fmt.format(toNumber(tuple.format.getValue()));
                     String expected = tuple.output.getValue();
                     if (!expected.equals(actual)) {
                         return "Expected " + expected + ", got " + actual;
@@ -237,6 +253,28 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                         }
                     }
                     return result.length() == 0 ? null : result.toString();
+                }
+                
+                @Override
+                public String parse(NumberFormatTestTuple tuple) {
+                    java.text.DecimalFormat fmt = newDecimalFormat(tuple);
+                    ParsePosition ppos = new ParsePosition(0);
+                    Number actual = fmt.parse(tuple.parse.getValue(), ppos);
+                    if (ppos.getIndex() == 0) {
+                        if (!tuple.output.getValue().equals("fail")) {
+                            return "Parse error expected.";
+                        }
+                        return null;
+                    }
+                    if (tuple.output.getValue().equals("fail")) {
+                        return "Parse succeeded: "+actual+", but was expected to fail.";
+                    }
+                    Number expected = toNumber(tuple.output.getValue());
+                    // number types cannot be compared, this is the best we can do.
+                    if (expected.doubleValue() != actual.doubleValue()) {
+                        return "Expected: " + expected + ", got: " + actual;
+                    }
+                    return null;                  
                 }
 
                 /**

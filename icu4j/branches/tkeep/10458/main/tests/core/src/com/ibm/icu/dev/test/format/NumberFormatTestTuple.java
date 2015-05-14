@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.ibm.icu.math.BigDecimal;
 import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.Currency;
 import com.ibm.icu.util.ULocale;
 
@@ -109,6 +110,9 @@ public class NumberFormatTestTuple {
     public Maybe<String> localizedPattern = Maybe.nothing();
     public Maybe<String> toPattern = Maybe.nothing();
     public Maybe<String> toLocalizedPattern = Maybe.nothing();
+    public Maybe<Integer> style = Maybe.nothing();
+    public Maybe<String> parse = Maybe.nothing();
+    public Maybe<Integer> lenient = Maybe.nothing();
     
     
     
@@ -152,6 +156,20 @@ public class NumberFormatTestTuple {
         padPositionMap.put("afterSuffix", DecimalFormat.PAD_AFTER_SUFFIX);
     }
     
+    private static Map<String, Integer> formatStyleMap =
+            new HashMap<String, Integer>();
+    
+    static {
+        formatStyleMap.put("decimal", NumberFormat.NUMBERSTYLE);
+        formatStyleMap.put("currency", NumberFormat.CURRENCYSTYLE);
+        formatStyleMap.put("percent", NumberFormat.PERCENTSTYLE);
+        formatStyleMap.put("scientific", NumberFormat.SCIENTIFICSTYLE);
+        formatStyleMap.put("currencyIso", NumberFormat.ISOCURRENCYSTYLE);
+        formatStyleMap.put("currencyPlural", NumberFormat.PLURALCURRENCYSTYLE);
+        formatStyleMap.put("currencyAccounting", NumberFormat.ACCOUNTINGCURRENCYSTYLE);
+        formatStyleMap.put("cashCurrency", NumberFormat.CASHCURRENCYSTYLE);
+    }
+    
     // Add any new fields here. On test failures, fields are printed in the same order they
     // appear here.
     private static String[] fieldOrdering = {
@@ -190,7 +208,10 @@ public class NumberFormatTestTuple {
         "negativeSuffix",
         "localizedPattern",
         "toPattern",
-        "toLocalizedPattern"
+        "toLocalizedPattern",
+        "style",
+        "parse",
+        "lenient"
     };
     
     static {
@@ -355,6 +376,18 @@ public class NumberFormatTestTuple {
     
     public void setToLocalizedPattern(String value) {
         toLocalizedPattern = Maybe.just(value);
+    }
+    
+    public void setStyle(String value) {
+        style = Maybe.just(fromString(formatStyleMap, value));
+    }
+    
+    public void setParse(String value) {
+        parse = Maybe.just(value);
+    }
+    
+    public void setLenient(String value) {
+        lenient = Maybe.just(Integer.valueOf(value));
     }
     
     // end field setters.

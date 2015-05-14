@@ -45,6 +45,16 @@ public class DataDrivenNumberFormatTestSuite {
         public String toPattern(NumberFormatTestTuple tuple) {
             return null;
         }
+        
+        /**
+         *  Runs a single parse test. On success, returns null.
+         *  On failure, returns the error. This implementation just returns null.
+         *  Subclasses should override.
+         *  @param tuple contains the parameters of the format test.
+         */
+        public String parse(NumberFormatTestTuple tuple) {
+            return null;
+        }
     }
     
     private final TestFmwk fmwk;
@@ -259,8 +269,13 @@ public class DataDrivenNumberFormatTestSuite {
             if (errorMessage != null) {
                 result.append(errorMessage);
             }
+        } else if (tuple.parse.isValue() && tuple.output.isValue()) {
+            String errorMessage = codeUnderTest.parse(tuple);
+            if (errorMessage != null) {
+                result.append(errorMessage);
+            }
         } else {
-            result.append("At least format and output must be set.");
+            result.append("Unrecognized test type.");
         }
         if (result.length() > 0) {
             result.append(": ");

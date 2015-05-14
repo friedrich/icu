@@ -534,5 +534,145 @@ pp#,000;(#)	pp#,000;(#,000)	K
 000.00E00	000.00E00
 ###0.00#E00	###0.00#E00
 
+test parse
+set locale en
+set pattern +#,##0.0###;(#)
+begin
+parse	output	breaks
++5,347.25	5347.25
++5,347,.25	5347.25
++5,347,	5347
++5347,,,	5347
++5347,,,d8	5347
+(5,347.25)	-5347.25
+// J requires prefix and suffix for lenient parsing, but C doesn't
+5,347.25	5347.25	JK
+(5,347.25	-5347.25	J
+-5,347.25	fail
++3.52E4	35200
+(34.8E-3)	-0.0348
+// JDK stops parsing at the spaces. JDK doesn't see space as a grouping separator
+(34  25E-1)	-342.5	K
+(34,,25E-1)	-342.5
+// J doesn't allow trailing separators before E but C does
+(34,,25,E-1)	-342.5	J
+(34  25 E-1)	-342.5	JK
+(34,,25 E-1)	-3425	J
+// Spaces are not allowed after exponent symbol
+// C parses up to the E but J bails
+(34  25E -1)	-3425	JK
++3.52EE4	3.52
++1,234,567.8901	1234567.8901
++1,23,4567.8901	1234567.8901
++1,23,4567.89,01	1234567.89
++1,23,456.78.9	123456.78
++12.34,56	12.34
++79,,20,3	79203
++79  20 3	79203	K
+// Parsing stops at comma as it is different from other separators
++79  20,3	7920	K
++79,,20 3	7920
++  79	79	K
++,79,,20,3	79203
++7920d3	7920
+// Whitespace immediately after prefix doesn't count as digit separator
+// in C but is does in J
++ ,79,,20,3	79203	JK
+(  19 45)	-1945	K
+// C allows trailing separators when there is a prefix and suffix.
+// J allows trailing separators only when there is just a prefix.
+// In this case, J just bails
+(  19 45 )	-1945	JK
+(,,19,45)	-1945
+// C parses to the space, but J bails
+(,,19 45)	-19	J
+// J bails b/c comma different separator than space. C doesn't treat leading spaces
+// as a separator.
+(  19,45)	-1945	JK
+// J bails. Doesn't allow trailing separators when there is prefix and suffix.
+(,,19,45,)	-1945	J
+// J bails on next 4 because J doesn't allow letters inside prefix and suffix.
+// C will parse up to the letter.
+(,,19,45,d1)	-1945	J
+(,,19,45d1)	-1945	J
+(  19 45 d1)	-1945	JK
+(  19 45d1)	-1945	JK
+// J does allow trailing separator before a decimal point
+(19,45,.25)	-1945.25
+// 2nd decimal points are ignored
++4.12.926	4.12
 
+test parse suffix
+set locale en
+set pattern #,##0.0###+;#-
+begin
+parse	output	breaks
+// C sees this as -3426, don't understand why
+3426	-3426	JK
+3426+	3426
+// J bails, but JDK will parse up to the space and get 34.
+// C sees -34
+34 d1+	-34	JK
+// JDK sees this as -1234 for some reason
+// J bails b/c of trailing separators
+// C parses until trailing separators, but sees -1234
+1,234,,,+	-1234	JK
+1,234-	-1234
+// J bails because of trailing separators
+1,234,-	-1234	J
+// J bails here too
+1234  -	-1234	J
+
+
+
+test parse strict
+set locale en
+set pattern +#,##0.0###;(#)
+set lenient 0
+begin
+parse	output	breaks
++123d5	123
++5347.25	5347.25
+// separators in wrong place cause failure, no separators ok.
++5,347.25	5347.25
+(5347.25)	-5347.25
+(5,347.25)	-5347.25
+// JDK does allow separators in the wrong place and parses as -5347.25
+(53,47.25)	fail	K
+// strict requires prefix or suffix
+5,347.25	fail
++3.52E4	35200
+(34.8E-3)	-0.0348
+(3425E-1)	-342.5
+// Strict doesn't allow separators in sci notation.
+(3,425)	-3425
+// JDK allows separators in sci notation and parses as -342.5
+(3,425E-1)	fail	K
+// Both prefix and suffix needed for strict.
+// JDK accepts this and parses as -342.5
+(3425E-1	fail	K
++3.52EE4	3.52
++1,234,567.8901	1234567.8901
+// With strict digit separators don't have to be the right type
+// JDK doesn't acknowledge space as a separator
++1 234 567.8901	1234567.8901	K
+// In general the grouping separators have to match their expected
+// location exactly. The only exception is when string being parsed
+// have no separators at all.
++1,234,567.8901	1234567.8901
+// JDK doesn't require separators to be in the right place
++1,23,4567.8901	fail	K
++1234,567.8901	fail	K
++1,234567.8901	fail	K
++1234567.8901	1234567.8901
+// Comma after decimal means parse to a comma
++123,456.78,9	123456.78
+// A decimal after a decimal means bail
+// JDK parses as 123456.78
++123,456.78.9	fail	K
++79	79
++79	79
++ 79	fail
+// JDK parses as -1945
+(1,945d1)	fail	K
 
