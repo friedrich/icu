@@ -216,8 +216,10 @@ UBool DataDrivenNumberFormatTestSuite::isPass(
     }
     else if (tuple.toPatternFlag || tuple.toLocalizedPatternFlag) {
         result = isToPatternPass(tuple, appendErrorMessage, status);
+    } else if (tuple.parseFlag && tuple.outputFlag) {
+        result = isParsePass(tuple, appendErrorMessage, status);
     } else {
-        appendErrorMessage.append("At least format and outputFlag must be set.");
+        appendErrorMessage.append("Unrecognized test type.");
         status = U_ILLEGAL_ARGUMENT_ERROR;
     }
     if (!result) {
@@ -257,6 +259,16 @@ UObject *DataDrivenNumberFormatTestSuite::newFormatter(
 }
 
 UBool DataDrivenNumberFormatTestSuite::isToPatternPass(
+        const NumberFormatTestTuple & /* tuple */,
+        UnicodeString & /*appendErrorMessage*/,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+UBool DataDrivenNumberFormatTestSuite::isParsePass(
         const NumberFormatTestTuple & /* tuple */,
         UnicodeString & /*appendErrorMessage*/,
         UErrorCode &status) {

@@ -46,6 +46,24 @@ static Numberformattesttuple_EnumConversion gPadPositionEnum[] = {
     {"beforeSuffix", DigitAffixesAndPadding::kPadBeforeSuffix},
     {"afterSuffix", DigitAffixesAndPadding::kPadAfterSuffix}};
 
+static Numberformattesttuple_EnumConversion gFormatStyleEnum[] = {
+    {"patternDecimal", UNUM_PATTERN_DECIMAL},
+    {"decimal", UNUM_DECIMAL},
+    {"currency", UNUM_CURRENCY},
+    {"percent", UNUM_PERCENT},
+    {"scientific", UNUM_SCIENTIFIC},
+    {"spellout", UNUM_SPELLOUT},
+    {"ordinal", UNUM_ORDINAL},
+    {"duration", UNUM_DURATION},
+    {"numberingSystem", UNUM_NUMBERING_SYSTEM},
+    {"patternRuleBased", UNUM_PATTERN_RULEBASED},
+    {"currencyIso", UNUM_CURRENCY_ISO},
+    {"currencyPlural", UNUM_CURRENCY_PLURAL},
+    {"currencyAccounting", UNUM_CURRENCY_ACCOUNTING},
+    {"cashCurrency", UNUM_CASH_CURRENCY},
+    {"default", UNUM_DEFAULT},
+    {"ignore", UNUM_IGNORE}};
+
 static int32_t toEnum(
         const Numberformattesttuple_EnumConversion *table,
         int32_t tableLength,
@@ -230,6 +248,24 @@ static void ePadPositionToStr(
             appendTo);
 }
 
+static void strToFormatStyle(
+        const UnicodeString &str, void *formatStylePtr, UErrorCode &status) {
+    int32_t val = toEnum(
+            gFormatStyleEnum, UPRV_LENGTHOF(gFormatStyleEnum), str, status);
+    *static_cast<UNumberFormatStyle *>(formatStylePtr) = (UNumberFormatStyle) val;
+}
+
+static void formatStyleToStr(
+        const void *formatStylePtr, UnicodeString &appendTo) {
+    UNumberFormatStyle formatStyle = 
+            *static_cast<const UNumberFormatStyle *>(formatStylePtr);
+    fromEnum(
+            gFormatStyleEnum,
+            UPRV_LENGTHOF(gFormatStyleEnum),
+            formatStyle,
+            appendTo);
+}
+
 struct NumberFormatTestTupleFieldOps {
     void (*toValue)(const UnicodeString &str, void *valPtr, UErrorCode &);
     void (*toString)(const void *valPtr, UnicodeString &appendTo);
@@ -242,6 +278,7 @@ const NumberFormatTestTupleFieldOps gDoubleOps = {strToDouble, doubleToStr};
 const NumberFormatTestTupleFieldOps gERoundingOps = {strToERounding, eRoundingToStr};
 const NumberFormatTestTupleFieldOps gCurrencyUsageOps = {strToCurrencyUsage, currencyUsageToStr};
 const NumberFormatTestTupleFieldOps gEPadPositionOps = {strToEPadPosition, ePadPositionToStr};
+const NumberFormatTestTupleFieldOps gFormatStyleOps = {strToFormatStyle, formatStyleToStr};
 
 struct NumberFormatTestTupleFieldData {
     const char *name;
@@ -288,6 +325,9 @@ const NumberFormatTestTupleFieldData gFieldData[] = {
     FIELD_INIT(localizedPattern, &gStrOps),
     FIELD_INIT(toPattern, &gStrOps),
     FIELD_INIT(toLocalizedPattern, &gStrOps),
+    FIELD_INIT(style, &gFormatStyleOps),
+    FIELD_INIT(parse, &gStrOps),
+    FIELD_INIT(lenient, &gIntOps)
 };
 
 UBool

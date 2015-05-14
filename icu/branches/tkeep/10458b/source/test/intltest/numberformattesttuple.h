@@ -53,6 +53,9 @@ enum ENumberFormatTestTupleField {
     kLocalizedPattern,
     kToPattern,
     kToLocalizedPattern,
+    kStyle,
+    kParse,
+    kLenient,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -94,6 +97,9 @@ public:
     UnicodeString localizedPattern;
     UnicodeString toPattern;
     UnicodeString toLocalizedPattern;
+    UNumberFormatStyle style;
+    UnicodeString parse;
+    int32_t lenient;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -131,6 +137,9 @@ public:
     UBool localizedPatternFlag;
     UBool toPatternFlag;
     UBool toLocalizedPatternFlag;
+    UBool styleFlag;
+    UBool parseFlag;
+    UBool lenientFlag;
 
     NumberFormatTestTuple() {
         clear();
