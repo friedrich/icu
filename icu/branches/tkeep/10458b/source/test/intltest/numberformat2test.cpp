@@ -93,6 +93,10 @@ UBool isToPatternPass(
         const NumberFormatTestTuple &tuple,
         UnicodeString &appendErrorMessage,
         UErrorCode &status);
+UBool isSelectPass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status);
 private:
 
 };
@@ -520,6 +524,39 @@ UBool NumberFormat2TestDataDriven::isToPatternPass(
             appendErrorMessage.append(
                     UnicodeString("Expected: ") + tuple.toPattern + ", got: " + actual + ". ");
         }
+    }
+    return appendErrorMessage.length() == 0;
+}
+
+UBool NumberFormat2TestDataDriven::isSelectPass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    LocalPointer<DecimalFormat2> fmtPtr(newDecimalFormat(tuple, status));
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error creating DecimalFormat.");
+        return FALSE;
+    }
+    adjustDecimalFormat(tuple, *fmtPtr, appendErrorMessage);
+    if (appendErrorMessage.length() > 0) {
+        return FALSE;
+    }
+    DigitList digitList;
+    strToDigitList(tuple.format, digitList, status);
+    Locale en("en");
+    LocalPointer<PluralRules> rules(PluralRules::forLocale(
+            NFTT_GET_FIELD(tuple, locale, en), status));
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error creating plural rules.");
+        return FALSE;
+    }
+    UnicodeString actual = fmtPtr->select(digitList, *rules);
+    if (actual != tuple.plural) {
+        appendErrorMessage.append(
+                UnicodeString("Expected: ") + tuple.plural + ", got: " + actual + ". ");
     }
     return appendErrorMessage.length() == 0;
 }
@@ -1071,32 +1108,36 @@ void NumberFormat2Test::TestRounding() {
     }
 }
 void NumberFormat2Test::TestBenchmark() {
+/*
     UErrorCode status = U_ZERO_ERROR;
-    clock_t start = clock();
     Locale en("en");
     DecimalFormat2 fmt(en, "0.0000000", status);
     FieldPosition fpos(0);
+    clock_t start = clock();
     for (int32_t i = 0; i < 1000000; ++i) {
-        UnicodeString append;
-        fmt.format(4.6692016, append, fpos, status);
+       UnicodeString append;
+       fmt.format(1234567.8901, append, fpos, status);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
+*/
 }
 
 void NumberFormat2Test::TestBenchmark2() {
+/*
     UErrorCode status = U_ZERO_ERROR;
-    clock_t start = clock();
     Locale en("en");
     DecimalFormatSymbols *sym = new DecimalFormatSymbols(en, status);
     DecimalFormat fmt("0.0000000", sym, status);
     FieldPosition fpos(0);
+    clock_t start = clock();
     for (int32_t i = 0; i < 1000000; ++i) {
         UnicodeString append;
-        fmt.format(4.6692016, append, fpos, status);
+        fmt.format(1234567.8901, append, fpos, status);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
+*/
 }
 
 void NumberFormat2Test::TestSmallIntFormatter() {

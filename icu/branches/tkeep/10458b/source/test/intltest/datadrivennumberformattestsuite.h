@@ -52,7 +52,10 @@ class DataDrivenNumberFormatTestSuite : public UObject {
             const NumberFormatTestTuple &tuple,
             UnicodeString &appendErrorMessage,
             UErrorCode &status);
-
+    virtual UBool isSelectPass(
+            const NumberFormatTestTuple &tuple,
+            UnicodeString &appendErrorMessage,
+            UErrorCode &status);
  private:
     UnicodeString fFileLine;
     int32_t fFileLineNumber;

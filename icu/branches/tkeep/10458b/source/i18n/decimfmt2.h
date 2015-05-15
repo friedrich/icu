@@ -183,6 +183,8 @@ void setPositiveSuffix(const UnicodeString &str);
 void setNegativePrefix(const UnicodeString &str);
 void setNegativeSuffix(const UnicodeString &str);
 UnicodeString &toPattern(UnicodeString& result) const;
+UnicodeString select(double value, const PluralRules &rules) const;
+UnicodeString select(DigitList &number, const PluralRules &rules) const;
 private:
 DigitList fMultiplier;
 DigitList::ERoundingMode fRoundingMode;

@@ -56,6 +56,7 @@ enum ENumberFormatTestTupleField {
     kStyle,
     kParse,
     kLenient,
+    kPlural,
     kNumberFormatTestTupleFieldCount,
 };
 
@@ -100,6 +101,7 @@ public:
     UNumberFormatStyle style;
     UnicodeString parse;
     int32_t lenient;
+    UnicodeString plural;
 
     UBool localeFlag;
     UBool currencyFlag;
@@ -140,6 +142,7 @@ public:
     UBool styleFlag;
     UBool parseFlag;
     UBool lenientFlag;
+    UBool pluralFlag;
 
     NumberFormatTestTuple() {
         clear();

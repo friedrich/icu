@@ -218,6 +218,8 @@ UBool DataDrivenNumberFormatTestSuite::isPass(
         result = isToPatternPass(tuple, appendErrorMessage, status);
     } else if (tuple.parseFlag && tuple.outputFlag) {
         result = isParsePass(tuple, appendErrorMessage, status);
+    } else if (tuple.pluralFlag) {
+        result = isSelectPass(tuple, appendErrorMessage, status);
     } else {
         appendErrorMessage.append("Unrecognized test type.");
         status = U_ILLEGAL_ARGUMENT_ERROR;
@@ -269,6 +271,16 @@ UBool DataDrivenNumberFormatTestSuite::isToPatternPass(
 }
 
 UBool DataDrivenNumberFormatTestSuite::isParsePass(
+        const NumberFormatTestTuple & /* tuple */,
+        UnicodeString & /*appendErrorMessage*/,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+UBool DataDrivenNumberFormatTestSuite::isSelectPass(
         const NumberFormatTestTuple & /* tuple */,
         UnicodeString & /*appendErrorMessage*/,
         UErrorCode &status) {

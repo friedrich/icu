@@ -479,6 +479,15 @@ Inf	[\u221e]	K
 -Inf	(\u221e)	K
 NaN	NaN	K
 
+test nan and infinity with multiplication
+set locale en
+set multiplier 100
+begin
+format	output
+Inf	\u221e
+-Inf	-\u221e
+NaN	NaN
+
 test nan and infinity with padding
 set locale en_US
 set pattern $$$0.00$
@@ -718,8 +727,20 @@ parse	output
 8245	45
 2845	-45
 
-
-
-
+test select
+set locale sr
+begin
+format	pattern	plural
+Inf	0	other
+-Inf	0	other
+NaN	0	other
+Inf	0.0	other
+-Inf	0.0	other
+NaN	0.0	other
+1	0	one
+1	0.0	other
+2	0	few
+2	0.0	other
+2	0E0	other
 
 

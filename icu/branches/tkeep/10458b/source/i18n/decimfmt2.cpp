@@ -390,6 +390,23 @@ DecimalFormat2::formatAdjustedDigitList(
             status);
 }
 
+UnicodeString
+DecimalFormat2::select(double number, const PluralRules &rules) const {
+    DigitList dl;
+    dl.set(number);
+    return select(dl, rules);
+}
+
+UnicodeString
+DecimalFormat2::select(DigitList &number, const PluralRules &rules) const {
+    if (!fMultiplier.isZero()) {
+        UErrorCode status = U_ZERO_ERROR;
+        number.mult(fMultiplier, status);
+        number.reduce();
+    }
+    ValueFormatter vf;
+    return prepareValueFormatter(vf).select(rules, number);
+}
 
 void
 DecimalFormat2::setMinimumSignificantDigits(int32_t newValue) {
