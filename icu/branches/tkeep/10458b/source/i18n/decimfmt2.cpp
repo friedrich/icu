@@ -284,6 +284,9 @@ DecimalFormat2::format(
         UnicodeString &appendTo,
         FieldPosition &pos,
         UErrorCode &status) const {
+    if (number >= -2147483648LL && number <= 2147483647LL) {
+        return format((int32_t) number, appendTo, pos, status);
+    }
     DigitList dl;
     dl.set(number);
     FieldPositionOnlyHandler handler(pos);
@@ -398,14 +401,17 @@ DecimalFormat2::select(double number, const PluralRules &rules) const {
 }
 
 UnicodeString
-DecimalFormat2::select(DigitList &number, const PluralRules &rules) const {
+DecimalFormat2::select(
+        DigitList &number, const PluralRules &rules) const {
+    UErrorCode status = U_ZERO_ERROR;
     if (!fMultiplier.isZero()) {
-        UErrorCode status = U_ZERO_ERROR;
         number.mult(fMultiplier, status);
-        number.reduce();
     }
+    number.reduce();
     ValueFormatter vf;
-    return prepareValueFormatter(vf).select(rules, number);
+    prepareValueFormatter(vf);
+    vf.round(number, status);
+    return vf.select(rules, number);
 }
 
 void

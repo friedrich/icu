@@ -742,5 +742,6 @@ NaN	0.0	other
 2	0	few
 2	0.0	other
 2	0E0	other
-
+5.1	0.0	one
+5.09	0.0	one
 
