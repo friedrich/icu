@@ -20,8 +20,9 @@
 U_NAMESPACE_BEGIN
 
 DigitFormatter::DigitFormatter()
-        : fGroupingSeparator(","), fDecimal("."),
-          fNegativeSign("-"), fPositiveSign("+"), fIsStandardDigits(TRUE) {
+        : fGroupingSeparator(",", -1, US_INV), fDecimal(".", -1, US_INV),
+          fNegativeSign("-", -1, US_INV), fPositiveSign("+", -1, US_INV),
+          fIsStandardDigits(TRUE) {
     for (int32_t i = 0; i < 10; ++i) {
         fLocalizedDigits[i] = (UChar32) (0x30 + i);
     }
