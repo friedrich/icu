@@ -113,6 +113,7 @@ public class NumberFormatTestTuple {
     public Maybe<Integer> style = Maybe.nothing();
     public Maybe<String> parse = Maybe.nothing();
     public Maybe<Integer> lenient = Maybe.nothing();
+    public Maybe<String> plural = Maybe.nothing();
     
     
     
@@ -211,7 +212,8 @@ public class NumberFormatTestTuple {
         "toLocalizedPattern",
         "style",
         "parse",
-        "lenient"
+        "lenient",
+        "plural",
     };
     
     static {
@@ -388,6 +390,10 @@ public class NumberFormatTestTuple {
     
     public void setLenient(String value) {
         lenient = Maybe.just(Integer.valueOf(value));
+    }
+    
+    public void setPlural(String value) {
+        plural = Maybe.just(value);
     }
     
     // end field setters.
