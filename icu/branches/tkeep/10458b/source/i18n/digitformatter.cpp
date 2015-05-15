@@ -21,7 +21,6 @@ U_NAMESPACE_BEGIN
 
 DigitFormatter::DigitFormatter()
         : fGroupingSeparator(","), fDecimal("."),
-          fMonetaryGroupingSeparator(","), fMonetaryDecimal("."),
           fNegativeSign("-"), fPositiveSign("+"), fIsStandardDigits(TRUE) {
     for (int32_t i = 0; i < 10; ++i) {
         fLocalizedDigits[i] = (UChar32) (0x30 + i);
@@ -33,7 +32,7 @@ DigitFormatter::DigitFormatter(const DecimalFormatSymbols &symbols) {
 }
 
 void
-DigitFormatter::setDecimalFormatSymbols(
+DigitFormatter::setOtherDecimalFormatSymbols(
         const DecimalFormatSymbols &symbols) {
     fLocalizedDigits[0] = symbols.getConstSymbol(DecimalFormatSymbols::kZeroDigitSymbol).char32At(0);
     fLocalizedDigits[1] = symbols.getConstSymbol(DecimalFormatSymbols::kOneDigitSymbol).char32At(0);
@@ -46,16 +45,28 @@ DigitFormatter::setDecimalFormatSymbols(
     fLocalizedDigits[8] = symbols.getConstSymbol(DecimalFormatSymbols::kEightDigitSymbol).char32At(0);
     fLocalizedDigits[9] = symbols.getConstSymbol(DecimalFormatSymbols::kNineDigitSymbol).char32At(0);
     fIsStandardDigits = isStandardDigits();
-    fGroupingSeparator = symbols.getConstSymbol(DecimalFormatSymbols::kGroupingSeparatorSymbol);
-    fDecimal = symbols.getConstSymbol(DecimalFormatSymbols::kDecimalSeparatorSymbol);
-    fMonetaryGroupingSeparator = symbols.getConstSymbol(DecimalFormatSymbols::kMonetaryGroupingSeparatorSymbol);
-    fMonetaryDecimal = symbols.getConstSymbol(DecimalFormatSymbols::kMonetarySeparatorSymbol);
     fNegativeSign = symbols.getConstSymbol(DecimalFormatSymbols::kMinusSignSymbol);
     fPositiveSign = symbols.getConstSymbol(DecimalFormatSymbols::kPlusSignSymbol);
     fInfinity.remove();
     fInfinity.append(symbols.getConstSymbol(DecimalFormatSymbols::kInfinitySymbol), UNUM_INTEGER_FIELD);
     fNan.remove();
     fNan.append(symbols.getConstSymbol(DecimalFormatSymbols::kNaNSymbol), UNUM_INTEGER_FIELD);
+}
+
+void
+DigitFormatter::setDecimalFormatSymbolsForMonetary(
+        const DecimalFormatSymbols &symbols) {
+    setOtherDecimalFormatSymbols(symbols);
+    fGroupingSeparator = symbols.getConstSymbol(DecimalFormatSymbols::kMonetaryGroupingSeparatorSymbol);
+    fDecimal = symbols.getConstSymbol(DecimalFormatSymbols::kMonetarySeparatorSymbol);
+}
+
+void
+DigitFormatter::setDecimalFormatSymbols(
+        const DecimalFormatSymbols &symbols) {
+    setOtherDecimalFormatSymbols(symbols);
+    fGroupingSeparator = symbols.getConstSymbol(DecimalFormatSymbols::kGroupingSeparatorSymbol);
+    fDecimal = symbols.getConstSymbol(DecimalFormatSymbols::kDecimalSeparatorSymbol);
 }
 
 static void appendField(
@@ -82,9 +93,9 @@ int32_t DigitFormatter::countChar32(
         result = 1;
     }
     if (options.fAlwaysShowDecimal || interval.getLeastSignificantInclusive() < 0) {
-        result += getEffectiveDecimalSeparator(options.fMonetary).countChar32();
+        result += fDecimal.countChar32();
     }
-    result += grouping.getSeparatorCount(interval.getIntDigitCount()) * getEffectiveGroupingSeparator(options.fMonetary).countChar32();
+    result += grouping.getSeparatorCount(interval.getIntDigitCount()) * fGroupingSeparator.countChar32();
     return result;
 }
 
@@ -107,7 +118,7 @@ UnicodeString &DigitFormatter::format(
         if (options.fAlwaysShowDecimal) {
             appendField(
                     UNUM_DECIMAL_SEPARATOR_FIELD,
-                    getEffectiveDecimalSeparator(options.fMonetary),
+                    fDecimal,
                     handler,
                     appendTo);
         }
@@ -120,7 +131,7 @@ UnicodeString &DigitFormatter::format(
                 appender.flush();
                 appendField(
                         UNUM_DECIMAL_SEPARATOR_FIELD,
-                        getEffectiveDecimalSeparator(options.fMonetary),
+                        fDecimal,
                         handler,
                         appendTo);
                 fracBegin = appendTo.length();
@@ -130,7 +141,7 @@ UnicodeString &DigitFormatter::format(
                 appender.flush();
                 appendField(
                         UNUM_GROUPING_SEPARATOR_FIELD,
-                        getEffectiveGroupingSeparator(options.fMonetary),
+                        fGroupingSeparator,
                         handler,
                         appendTo);
             }
@@ -145,7 +156,7 @@ UnicodeString &DigitFormatter::format(
             appender.flush();
             appendField(
                     UNUM_DECIMAL_SEPARATOR_FIELD,
-                    getEffectiveDecimalSeparator(options.fMonetary),
+                    fDecimal,
                     handler,
                     appendTo);
         }
@@ -294,8 +305,6 @@ UBool
 DigitFormatter::equals(const DigitFormatter &rhs) const {
     UBool result = (fGroupingSeparator == rhs.fGroupingSeparator) &&
                    (fDecimal == rhs.fDecimal) &&
-                   (fMonetaryGroupingSeparator == rhs.fMonetaryGroupingSeparator) &&
-                   (fMonetaryDecimal == rhs.fMonetaryDecimal) &&
                    (fNegativeSign == rhs.fNegativeSign) &&
                    (fPositiveSign == rhs.fPositiveSign) &&
                    (fIsStandardDigits == rhs.fIsStandardDigits);

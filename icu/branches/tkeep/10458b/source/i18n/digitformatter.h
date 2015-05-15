@@ -32,15 +32,14 @@ class IntDigitCountRange;
  */
 class U_I18N_API DigitFormatterOptions : public UMemory {
     public:
-    DigitFormatterOptions() : fAlwaysShowDecimal(FALSE), fMonetary(FALSE) { }
+    DigitFormatterOptions() : fAlwaysShowDecimal(FALSE) { }
 
     /**
      * Returns TRUE if this object equals rhs.
      */
     UBool equals(const DigitFormatterOptions &rhs) const {
         return (
-            fAlwaysShowDecimal == rhs.fAlwaysShowDecimal &&
-            fMonetary == rhs.fMonetary);
+            fAlwaysShowDecimal == rhs.fAlwaysShowDecimal);
     }
 
     /**
@@ -48,7 +47,7 @@ class U_I18N_API DigitFormatterOptions : public UMemory {
      * integers.
      */
     UBool isFastFormattable() const {
-        return (fAlwaysShowDecimal == FALSE && fMonetary == FALSE);
+        return (fAlwaysShowDecimal == FALSE);
     }
 
     /**
@@ -56,11 +55,6 @@ class U_I18N_API DigitFormatterOptions : public UMemory {
      * digits. default is FALSE.
      */
     UBool fAlwaysShowDecimal;
-
-    /**
-     * If TRUE, format using monetary group separator and decimal separator.
-     */
-    UBool fMonetary;
 };
 
 /**
@@ -118,6 +112,13 @@ DigitFormatter(const DecimalFormatSymbols &symbols);
  * according to symbols.
  */
 void setDecimalFormatSymbols(const DecimalFormatSymbols &symbols);
+
+/**
+ * Change what this instance uses for digits, decimal separator,
+ * plus and mius sign, grouping separator, and possibly other settings
+ * according to symbols in the context of monetary amounts.
+ */
+void setDecimalFormatSymbolsForMonetary(const DecimalFormatSymbols &symbols);
 
 /**
  * Fixed point formatting.
@@ -236,8 +237,6 @@ private:
 UChar32 fLocalizedDigits[10];
 UnicodeString fGroupingSeparator;
 UnicodeString fDecimal;
-UnicodeString fMonetaryGroupingSeparator;
-UnicodeString fMonetaryDecimal;
 UnicodeString fNegativeSign;
 UnicodeString fPositiveSign;
 DigitAffix fInfinity;
@@ -254,15 +253,10 @@ UnicodeString &formatDigits(
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
 
-const UnicodeString &getEffectiveDecimalSeparator(UBool bMonetary) const {
-    return (bMonetary ? fMonetaryDecimal : fDecimal);
-}
-
-const UnicodeString &getEffectiveGroupingSeparator(UBool bMonetary) const {
-    return (bMonetary ? fMonetaryGroupingSeparator : fGroupingSeparator);
-}
+void setOtherDecimalFormatSymbols(const DecimalFormatSymbols &symbols);
 
 };
+
 
 U_NAMESPACE_END
 

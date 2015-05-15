@@ -216,7 +216,7 @@ DigitGrouping fGrouping;
 UBool fUseGrouping;
 
 // Updating any of the following fields triggers updates on the following:
-// fOptions.fMantissa.fMonetary, fRules, fAffixParser, fCurrencyAffixInfo,
+// fMonetary, fRules, fAffixParser, fCurrencyAffixInfo,
 // fSciFormatter, fFormatter, fAap.fPositivePrefiix, fAap.fPositiveSuffix,
 // fAap.fNegativePrefiix, fAap.fNegativeSuffix
 // We do this two phase update because localizing the affix patterns
@@ -235,6 +235,7 @@ PluralRules *fRules;
 
 // These fields are totally hidden from user and are used to derive the affixes
 // in fAap below from the four affix patterns above.
+UBool fMonetary;
 AffixPatternParser fAffixParser;
 CurrencyAffixInfo fCurrencyAffixInfo;
 
@@ -296,7 +297,9 @@ void updateFormattingPluralRules(
 void updateFormattingAffixParser(int32_t &changedFormattingFields);
 void updateFormattingCurrencyAffixInfo(
         int32_t &changedFormattingFields, UErrorCode &status);
-void updateFormattingFormatters(
+void updateFormattingFixedPointFormatter(
+        int32_t &changedFormattingFields);
+void updateFormattingScientificFormatter(
         int32_t &changedFormattingFields);
 void updateFormattingLocalizedPositivePrefix(
         int32_t &changedFormattingFields, UErrorCode &status);

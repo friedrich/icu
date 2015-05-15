@@ -1508,7 +1508,7 @@ void NumberFormat2Test::TestDigitFormatterMonetary() {
                 digits.getSmallestInterval(interval),
                 options,
                 NULL);
-        options.fMonetary = TRUE;
+        formatter.setDecimalFormatSymbolsForMonetary(symbols);
         verifyDigitFormatter(
                 "43grouping separator560decimal separator02",
                 formatter,
@@ -1918,8 +1918,7 @@ void NumberFormat2Test::TestValueFormatterIsFastFormattable() {
         options.fAlwaysShowDecimal = TRUE;
         assertFalse("5125", vf.isFastFormattable(5125));
         options.fAlwaysShowDecimal = FALSE;
-        options.fMonetary = TRUE;
-        assertFalse("5125", vf.isFastFormattable(5125));
+        assertTrue("5125", vf.isFastFormattable(5125));
     }
     {
         // test fraction digits

@@ -41,7 +41,8 @@ DecimalFormat2::DecimalFormat2(
         : fRoundingMode(DigitList::kRoundHalfEven),
           fSymbols(NULL),
           fCurrencyUsage(UCURR_USAGE_STANDARD),
-          fRules(NULL) {
+          fRules(NULL),
+          fMonetary(FALSE) {
     if (U_FAILURE(status)) {
         return;
     }
@@ -65,7 +66,8 @@ DecimalFormat2::DecimalFormat2(
         : fRoundingMode(DigitList::kRoundHalfEven),
           fSymbols(symbolsToAdopt),
           fCurrencyUsage(UCURR_USAGE_STANDARD),
-          fRules(NULL) {
+          fRules(NULL),
+          fMonetary(FALSE) {
     fCurr[0] = 0;
     applyPattern(pattern, FALSE, parseError, status);
     updateAll(status);
@@ -92,6 +94,7 @@ DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           fSymbols(other.fSymbols),
           fCurrencyUsage(other.fCurrencyUsage),
           fRules(other.fRules),
+          fMonetary(other.fMonetary),
           fAffixParser(other.fAffixParser),
           fCurrencyAffixInfo(other.fCurrencyAffixInfo),
           fEffPrecision(other.fEffPrecision),
@@ -131,6 +134,7 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
     fPositiveSuffixPattern = other.fPositiveSuffixPattern;
     fNegativeSuffixPattern = other.fNegativeSuffixPattern;
     fCurrencyUsage = other.fCurrencyUsage;
+    fMonetary = other.fMonetary;
     fAffixParser = other.fAffixParser;
     fCurrencyAffixInfo = other.fCurrencyAffixInfo;
     fEffPrecision = other.fEffPrecision;
@@ -187,6 +191,7 @@ DecimalFormat2::operator==(const DecimalFormat2 &other) const {
             && ((fRules == other.fRules) || (
                     (fRules != NULL) && (other.fRules != NULL)
                     && (*fRules == *other.fRules)))
+            && (fMonetary == other.fMonetary)
             && u_strcmp(fCurr, other.fCurr) == 0;
 }
 
@@ -833,9 +838,10 @@ DecimalFormat2::updateFormatting(
     // Each function updates one field. Order matters. For instance,
     // updatePluralRules comes before updateCurrencyAffixInfo because the
     // fRules field is needed to update the fCurrencyAffixInfo field.
-    updateFormattingFormatters(changedFormattingFields);
-    updateFormattingAffixParser(changedFormattingFields);
     updateFormattingUsesCurrency(changedFormattingFields);
+    updateFormattingFixedPointFormatter(changedFormattingFields);
+    updateFormattingScientificFormatter(changedFormattingFields);
+    updateFormattingAffixParser(changedFormattingFields);
     updateFormattingPluralRules(changedFormattingFields, status);
     updateFormattingCurrencyAffixInfo(changedFormattingFields, status);
     updateFormattingLocalizedPositivePrefix(
@@ -860,8 +866,8 @@ DecimalFormat2::updateFormattingUsesCurrency(
             fPositiveSuffixPattern.usesCurrency() ||
             fNegativePrefixPattern.usesCurrency() ||
             fNegativeSuffixPattern.usesCurrency();
-    if (fOptions.fMantissa.fMonetary != newUsesCurrency) {
-        fOptions.fMantissa.fMonetary = newUsesCurrency;
+    if (fMonetary != newUsesCurrency) {
+        fMonetary = newUsesCurrency;
         changedFormattingFields |= kFormattingUsesCurrency;
     }
 }
@@ -870,7 +876,7 @@ void
 DecimalFormat2::updateFormattingPluralRules(
         int32_t &changedFormattingFields, UErrorCode &status) {
     if ((changedFormattingFields & (kFormattingSymbols | kFormattingUsesCurrency)) == 0) {
-        // No work to do if both fSymbols and fOptions.fMantissa.fMonetary
+        // No work to do if both fSymbols and fMonetary
         // fields are unchanged
         return;
     }
@@ -878,7 +884,7 @@ DecimalFormat2::updateFormattingPluralRules(
         return;
     }
     PluralRules *newRules = NULL;
-    if (fOptions.fMantissa.fMonetary) {
+    if (fMonetary) {
         newRules = PluralRules::forLocale(fSymbols->getLocale(), status);
         if (U_FAILURE(status)) {
             return;
@@ -906,7 +912,7 @@ DecimalFormat2::updateFormattingCurrencyAffixInfo(
     if (U_FAILURE(status)) {
         return;
     }
-    if (!fOptions.fMantissa.fMonetary) {
+    if (!fMonetary) {
         if (fCurrencyAffixInfo.isDefault()) {
             // In this case don't have to do any work
             return;
@@ -958,14 +964,28 @@ DecimalFormat2::updateFormattingCurrencyAffixInfo(
 }
 
 void
-DecimalFormat2::updateFormattingFormatters(
+DecimalFormat2::updateFormattingScientificFormatter(
         int32_t &changedFormattingFields) {
     if ((changedFormattingFields & kFormattingSymbols) == 0) {
         // No work to do if fSymbols is unchanged
         return;
     }
     fSciFormatter.setDecimalFormatSymbols(*fSymbols);
-    fFormatter.setDecimalFormatSymbols(*fSymbols);
+}
+
+
+void
+DecimalFormat2::updateFormattingFixedPointFormatter(
+        int32_t &changedFormattingFields) {
+    if ((changedFormattingFields & (kFormattingSymbols | kFormattingUsesCurrency)) == 0) {
+        // No work to do if fSymbols is unchanged
+        return;
+    }
+    if (fMonetary) {
+        fFormatter.setDecimalFormatSymbolsForMonetary(*fSymbols);
+    } else {
+        fFormatter.setDecimalFormatSymbols(*fSymbols);
+    }
 }
 
 void
