@@ -1,4 +1,4 @@
-# WordBreakTest-8.0.0.txt
+﻿# WordBreakTest-8.0.0.txt
 # Date: 2015-05-02, 14:48:55 GMT [MD]
 #
 # Unicode Character Database

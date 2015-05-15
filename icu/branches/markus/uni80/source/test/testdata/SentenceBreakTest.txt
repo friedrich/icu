@@ -1,4 +1,4 @@
-# SentenceBreakTest-8.0.0.txt
+﻿# SentenceBreakTest-8.0.0.txt
 # Date: 2015-04-30, 09:40:15 GMT [MD]
 #
 # Unicode Character Database

@@ -74,6 +74,7 @@ http://www.unicode.org/reports/tr44/tr44-15.html
 - branches/markus/uni80 at r11518 from trunk at r11517
 
 - cldrbug 8109: Unicode 8.0 script metadata
+- cldrbug 8418: Updated segmentation for Unicode 8.0
 
 *** Unicode version numbers
 - makedata.mak

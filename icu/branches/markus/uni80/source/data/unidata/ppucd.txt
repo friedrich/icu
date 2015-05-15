@@ -4173,7 +4173,7 @@ cp;0BA4;IDS;InSC=Consonant;na=TAMIL LETTER TA;XIDS
 cp;0BA5..0BA7;age=NA;-Alpha;gc=Cn;-Gr_Base;-IDC;lb=XX;SB=XX;sc=Zzzz;WB=XX;-XIDC
 cp;0BA8;IDS;InSC=Consonant;na=TAMIL LETTER NA;XIDS
 cp;0BA9;IDS;InSC=Consonant;na=TAMIL LETTER NNNA;XIDS
-cp;0BAA;IDS;InSC=Consonant;na=TAMIL LETTER PA;XIDS
+cp;0BAA;IDS;InSC=Consonant;na=TAMIL LETTER PA;scx=Gran Taml;XIDS
 cp;0BAB..0BAD;age=NA;-Alpha;gc=Cn;-Gr_Base;-IDC;lb=XX;SB=XX;sc=Zzzz;WB=XX;-XIDC
 cp;0BAE;IDS;InSC=Consonant;na=TAMIL LETTER MA;XIDS
 cp;0BAF;IDS;InSC=Consonant;na=TAMIL LETTER YA;XIDS
@@ -4182,7 +4182,7 @@ cp;0BB1;IDS;InSC=Consonant;na=TAMIL LETTER RRA;XIDS
 cp;0BB2;IDS;InSC=Consonant;na=TAMIL LETTER LA;XIDS
 cp;0BB3;IDS;InSC=Consonant;na=TAMIL LETTER LLA;XIDS
 cp;0BB4;IDS;InSC=Consonant;na=TAMIL LETTER LLLA;XIDS
-cp;0BB5;IDS;InSC=Consonant;na=TAMIL LETTER VA;XIDS
+cp;0BB5;IDS;InSC=Consonant;na=TAMIL LETTER VA;scx=Gran Taml;XIDS
 cp;0BB6;age=4.1;IDS;InSC=Consonant;na=TAMIL LETTER SHA;XIDS
 cp;0BB7;IDS;InSC=Consonant;na=TAMIL LETTER SSA;XIDS
 cp;0BB8;IDS;InSC=Consonant;na=TAMIL LETTER SA;XIDS
@@ -23782,7 +23782,7 @@ cp;1163C;gc=Mc;GCB=SM;-IDS;InPC=Right;InSC=Vowel_Dependent;lb=CM;na=MODI VOWEL S
 cp;1163D;bc=NSM;CI;gc=Mn;GCB=EX;-Gr_Base;Gr_Ext;-IDS;InPC=Top;InSC=Bindu;jt=T;lb=CM;na=MODI SIGN ANUSVARA;SB=EX;WB=Extend;-XIDS
 cp;1163E;gc=Mc;GCB=SM;-IDS;InPC=Right;InSC=Visarga;lb=CM;na=MODI SIGN VISARGA;SB=EX;WB=Extend;-XIDS
 cp;1163F;-Alpha;bc=NSM;ccc=9;CI;Dia;gc=Mn;GCB=EX;-Gr_Base;Gr_Ext;Gr_Link;-IDS;InPC=Bottom;InSC=Virama;jt=T;lb=CM;na=MODI SIGN VIRAMA;SB=EX;WB=Extend;-XIDS
-cp;11640;bc=NSM;CI;gc=Mn;GCB=EX;-Gr_Base;Gr_Ext;-IDS;InPC=Top;InSC=Other;jt=T;lb=CM;na=MODI SIGN ARDHACANDRA;SB=EX;WB=Extend;-XIDS
+cp;11640;bc=NSM;CI;gc=Mn;GCB=EX;-Gr_Base;Gr_Ext;-IDS;InPC=Top;InSC=Vowel_Dependent;jt=T;lb=CM;na=MODI SIGN ARDHACANDRA;SB=EX;WB=Extend;-XIDS
 # Punctuation
 cp;11641;-Alpha;gc=Po;-IDC;-IDS;InSC=Other;lb=BA;na=MODI DANDA;SB=ST;STerm;Term;WB=XX;-XIDC;-XIDS
 cp;11642;-Alpha;gc=Po;-IDC;-IDS;InSC=Other;lb=BA;na=MODI DOUBLE DANDA;SB=ST;STerm;Term;WB=XX;-XIDC;-XIDS
@@ -28927,7 +28927,7 @@ cp;1D355;na=TETRAGRAM FOR LABOURING
 cp;1D356;na=TETRAGRAM FOR FOSTERING
 cp;1D357..1D35F;age=NA;bc=L;gc=Cn;-Gr_Base;lb=XX;sc=Zzzz
 
-block;1D360..1D37F;age=5.0;blk=Counting_Rod;gc=No;Gr_Base;lb=AL;nt=Nu;sc=Zyyy
+block;1D360..1D37F;age=5.0;blk=Counting_Rod;gc=No;Gr_Base;lb=AL;nt=Nu;sc=Zyyy;scx=Hani
 # 1D360..1D37F Counting Rod Numerals
 # Counting rod units
 cp;1D360;na=COUNTING ROD UNIT DIGIT ONE;nv=1
@@ -28948,7 +28948,7 @@ cp;1D36E;na=COUNTING ROD TENS DIGIT SIX;nv=60
 cp;1D36F;na=COUNTING ROD TENS DIGIT SEVEN;nv=70
 cp;1D370;na=COUNTING ROD TENS DIGIT EIGHT;nv=80
 cp;1D371;na=COUNTING ROD TENS DIGIT NINE;nv=90
-cp;1D372..1D37F;age=NA;gc=Cn;-Gr_Base;lb=XX;nt=None;sc=Zzzz
+cp;1D372..1D37F;age=NA;gc=Cn;-Gr_Base;lb=XX;nt=None;sc=Zzzz;scx=<script>
 
 block;1D400..1D7FF;age=3.1;Alpha;blk=Math_Alphanum;Cased;CWKCF;dt=Font;gc=Ll;Gr_Base;IDC;IDS;lb=AL;Math;NFKC_CF=0064;NFKC_QC=N;NFKD_QC=N;SB=LO;sc=Zyyy;WB=LE;XIDC;XIDS
 # 1D400..1D7FF Mathematical Alphanumeric Symbols
