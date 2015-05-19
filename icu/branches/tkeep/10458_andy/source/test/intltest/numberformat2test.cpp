@@ -33,6 +33,7 @@
 #include "charstr.h"
 #include "smallintformatter.h"
 #include "decimfmt2.h"
+#include "numericvalue.h"
 
 static const int32_t kIntField = 4938;
 static const int32_t kSignField = 5770;
@@ -617,7 +618,7 @@ private:
     void verifyValueFormatter(
             const UnicodeString &expected,
             const ValueFormatter &formatter,
-            DigitList &digits,
+            const DigitList &digits,
             const NumberFormat2Test_Attributes *expectedAttributes);
     void verifyAffixesAndPadding(
             const UnicodeString &expected,
@@ -1108,23 +1109,20 @@ void NumberFormat2Test::TestRounding() {
     }
 }
 void NumberFormat2Test::TestBenchmark() {
-/*
     UErrorCode status = U_ZERO_ERROR;
     Locale en("en");
     DecimalFormat2 fmt(en, "0.0000000", status);
     FieldPosition fpos(0);
     clock_t start = clock();
-    for (int32_t i = 0; i < 1000000; ++i) {
-       UnicodeString append;
-       fmt.format(1234567.8901, append, fpos, status);
+    for (int32_t i = 0; i < 20000; ++i) {
+        UnicodeString append;
+        fmt.format(1234567.8901, append, fpos, status);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
-*/
 }
 
 void NumberFormat2Test::TestBenchmark2() {
-/*
     UErrorCode status = U_ZERO_ERROR;
     Locale en("en");
     DecimalFormatSymbols *sym = new DecimalFormatSymbols(en, status);
@@ -1137,7 +1135,6 @@ void NumberFormat2Test::TestBenchmark2() {
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
-*/
 }
 
 void NumberFormat2Test::TestSmallIntFormatter() {
@@ -3242,22 +3239,23 @@ void NumberFormat2Test::verifyAffix(
 void NumberFormat2Test::verifyValueFormatter(
         const UnicodeString &expected,
         const ValueFormatter &formatter,
-        DigitList &digits,
+        const DigitList &digits,
         const NumberFormat2Test_Attributes *expectedAttributes) {
     UErrorCode status = U_ZERO_ERROR;
-    formatter.round(digits, status);
+    NumericValue value;
+    formatter.initNumericValue(digits, value, status);
     assertSuccess("", status);
     assertEquals(
             "",
             expected.countChar32(),
-            formatter.countChar32(digits));
+            formatter.countChar32(value));
     UnicodeString appendTo;
     NumberFormat2Test_FieldPositionHandler handler;
     assertEquals(
             "",
             expected,
             formatter.format(
-                    digits,
+                    value,
                     handler,
                     appendTo));
     if (expectedAttributes != NULL) {

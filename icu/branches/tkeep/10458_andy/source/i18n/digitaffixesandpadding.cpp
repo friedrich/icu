@@ -12,6 +12,7 @@
 #include "valueformatter.h"
 #include "uassert.h"
 #include "charstr.h"
+#include "numericvalue.h"
 
 U_NAMESPACE_BEGIN
 
@@ -49,6 +50,9 @@ DigitAffixesAndPadding::formatInt32(
     UBool bPositive = value >= 0;
     const DigitAffix *prefix = bPositive ? &fPositivePrefix.getOtherVariant() : &fNegativePrefix.getOtherVariant();
     const DigitAffix *suffix = bPositive ? &fPositiveSuffix.getOtherVariant() : &fNegativeSuffix.getOtherVariant();
+
+    // This is safe because if value == INT32_MIN then it won't be fast
+    // formattable and won't get here because it will return up above.
     if (value < 0) {
         value = -value;
     }
@@ -78,13 +82,14 @@ countAffixChar32(const DigitAffix *affix) {
 
 UnicodeString &
 DigitAffixesAndPadding::format(
-        DigitList &value,
+        DigitList &digitList,
         const ValueFormatter &formatter,
         FieldPositionHandler &handler,
         const PluralRules *optPluralRules,
         UnicodeString &appendTo,
         UErrorCode &status) const {
-    formatter.round(value, status);
+    NumericValue value;
+    formatter.initNumericValue(digitList, value, status);
     if (U_FAILURE(status)) {
         return appendTo;
     }
@@ -98,11 +103,10 @@ DigitAffixesAndPadding::format(
             prefix = &pluralPrefix->getOtherVariant();
             suffix = &pluralSuffix->getOtherVariant();
         } else {
-            UnicodeString count(formatter.select(*optPluralRules, value));
+            UnicodeString count(value.select(*optPluralRules));
             prefix = &pluralPrefix->getByVariant(count);
             suffix = &pluralSuffix->getByVariant(count);
         }
-        value.setPositive(TRUE);
     }
     if (fWidth <= 0) {
         formatAffix(prefix, handler, appendTo);

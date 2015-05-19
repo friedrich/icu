@@ -12,6 +12,7 @@
 #include "unicode/dcfmtsym.h"
 #include "unicode/unum.h"
 #include "fphdlimp.h"
+#include "numericvalue.h"
 
 U_NAMESPACE_BEGIN
 
@@ -26,6 +27,29 @@ void
 SciFormatter::setDecimalFormatSymbols(
         const DecimalFormatSymbols &symbols) {
 fExponent = symbols.getConstSymbol(DecimalFormatSymbols::kExponentialSymbol);
+}
+
+UnicodeString &
+SciFormatter::format(
+        const NumericValue &value,
+        const DigitFormatter &formatter,
+        const SciFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    if (value.isNaN()) {
+        return formatter.formatNaN(handler, appendTo);
+    }
+    if (value.isInfinite()) {
+        return formatter.formatInfinity(handler, appendTo);
+    }
+    return format(
+            value.fValue,
+            value.fExponent,
+            formatter,
+            value.fInterval,
+            options,
+            handler,
+            appendTo);
 }
 
 UnicodeString &
@@ -56,6 +80,20 @@ SciFormatter::format(
             UNUM_EXPONENT_FIELD,
             handler,
             appendTo);
+}
+
+int32_t
+SciFormatter::countChar32(
+        const NumericValue &value,
+        const DigitFormatter &formatter,
+        const SciFormatterOptions &options) const {
+    if (value.isNaN()) {
+        return formatter.countChar32ForNaN();
+    }
+    if (value.isInfinite()) {
+        return formatter.countChar32ForInfinity();
+    }
+    return countChar32(value.fExponent, formatter, value.fInterval, options);
 }
 
 int32_t

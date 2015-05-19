@@ -26,6 +26,7 @@ class DigitInterval;
 class UnicodeString;
 class FieldPositionHandler;
 class IntDigitCountRange;
+class NumericValue;
 
 /**
  * Various options for formatting in fixed point.
@@ -140,6 +141,13 @@ UnicodeString &format(
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
 
+UnicodeString &format(
+        const NumericValue &value,
+        const DigitGrouping &grouping,
+        const DigitFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
 /**
  * Formats NaN.
  * @param handler records field positions
@@ -219,6 +227,11 @@ UnicodeString &formatInt32(
 int32_t countChar32(
         const DigitGrouping &grouping,
         const DigitInterval &interval,
+        const DigitFormatterOptions &options) const;
+
+int32_t countChar32(
+        const NumericValue &value,
+        const DigitGrouping &grouping,
         const DigitFormatterOptions &options) const;
 
 /**

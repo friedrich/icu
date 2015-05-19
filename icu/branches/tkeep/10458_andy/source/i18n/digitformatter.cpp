@@ -16,6 +16,7 @@
 #include "fphdlimp.h"
 #include "smallintformatter.h"
 #include "unistrappender.h"
+#include "numericvalue.h"
 
 U_NAMESPACE_BEGIN
 
@@ -84,6 +85,19 @@ static void appendField(
 }
 
 int32_t DigitFormatter::countChar32(
+        const NumericValue &value,
+        const DigitGrouping &grouping,
+        const DigitFormatterOptions &options) const {
+    if (value.isNaN()) {
+        return countChar32ForNaN();
+    }
+    if (value.isInfinite()) {
+        return countChar32ForInfinity();
+    }
+    return countChar32(grouping, value.fInterval, options);
+}
+
+int32_t DigitFormatter::countChar32(
         const DigitGrouping &grouping,
         const DigitInterval &interval,
         const DigitFormatterOptions &options) const {
@@ -98,6 +112,27 @@ int32_t DigitFormatter::countChar32(
     }
     result += grouping.getSeparatorCount(interval.getIntDigitCount()) * fGroupingSeparator.countChar32();
     return result;
+}
+
+UnicodeString &DigitFormatter::format(
+        const NumericValue &value,
+        const DigitGrouping &grouping,
+        const DigitFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    if (value.isNaN()) {
+        return formatNaN(handler, appendTo);
+    }
+    if (value.isInfinite()) {
+        return formatInfinity(handler, appendTo);
+    }
+    return format(
+            value.fValue,
+            grouping,
+            value.fInterval,
+            options,
+            handler,
+            appendTo);
 }
 
 UnicodeString &DigitFormatter::format(

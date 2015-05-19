@@ -18,7 +18,6 @@
 U_NAMESPACE_BEGIN
 
 class UnicodeString;
-class DigitList;
 class FieldPositionHandler;
 class DigitGrouping;
 class PluralRules;
@@ -28,6 +27,8 @@ class DigitFormatterOptions;
 class ScientificPrecision;
 class SciFormatter;
 class SciFormatterOptions;
+class NumericValue;
+class DigitList;
 
 
 /**
@@ -44,15 +45,10 @@ public:
     ValueFormatter() : fType(kFormatTypeCount) {
     }
 
-    /**
-     * Rounds the value according to how it will be formatted.
-     * Round must be called to adjust value before calling select.
-     * If value is NaN or infinite, round does nothing.
-     *
-     * @param value this value is rounded in place.
-     * @param status any error returned here.
-     */
-    DigitList &round(DigitList &value, UErrorCode &status) const;
+    NumericValue &initNumericValue(
+            const DigitList &digitList,
+            NumericValue &value,
+            UErrorCode &status) const;
 
     /**
      * Returns TRUE if the absolute value of value can be fast formatted
@@ -61,24 +57,13 @@ public:
     UBool isFastFormattable(int32_t value) const;
 
     /**
-     * Return the plural form to use for a given value.
-     * @param rules the plural rules.
-     * @param value should have been adjusted with round.
-     *   value must be real, not infinite or NaN.
-     * @return 'zero', 'one', 'two', 'few', 'many', or 'other'
-     */
-    UnicodeString select(
-        const PluralRules &rules,
-        const DigitList &value) const;
-
-    /**
      * formats positiveValue and appends to appendTo. Returns appendTo.
      * @param positiveValue must be positive. May be positive infinity or NaN.
      * @param handler stores the field positions
      * @param appendTo formatted value appended here.
      */
     UnicodeString &format(
-        const DigitList &positiveValue,
+        const NumericValue &value,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
 
@@ -97,7 +82,7 @@ public:
      * Returns the number of code points needed to format.
      * @param positiveValue must be positive. May be positive infinity or NaN.
      */
-    int32_t countChar32(const DigitList &positiveValue) const;
+    int32_t countChar32(const NumericValue &value) const;
   
     /**
      * Prepares this instance for fixed decimal formatting.

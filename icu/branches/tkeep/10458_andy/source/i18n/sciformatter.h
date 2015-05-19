@@ -71,6 +71,13 @@ SciFormatter(const DecimalFormatSymbols &symbols);
  */
 void setDecimalFormatSymbols(const DecimalFormatSymbols &symbols);
 
+UnicodeString &format(
+        const NumericValue &value,
+        const DigitFormatter &formatter,
+        const SciFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
 /**
  * formats in scientifc notation.
  * @param positiveMantissa the mantissa to format.
@@ -89,6 +96,11 @@ UnicodeString &format(
         const SciFormatterOptions &options,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
+
+int32_t countChar32(
+        const NumericValue &value,
+        const DigitFormatter &formatter,
+        const SciFormatterOptions &options) const;
 
 /**
  * Counts how many code points are needed for the formatting.

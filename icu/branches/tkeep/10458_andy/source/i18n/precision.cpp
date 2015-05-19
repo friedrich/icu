@@ -7,6 +7,7 @@
 
 #include "unicode/utypes.h"
 
+#include "numericvalue.h"
 #include "precision.h"
 #include "digitlst.h"
 
@@ -71,6 +72,28 @@ FixedPrecision::isFastFormattable() const {
     return (fMin.getFracDigitCount() == 0 && fSignificant.isNoConstraints() && fRoundingIncrement.isZero());
 }
 
+NumericValue &
+FixedPrecision::initNumericValue(
+        const DigitList &digitList,
+        NumericValue &value,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return value;
+    }
+    value.fValue = digitList;
+    if (value.fValue.isNaN() || value.fValue.isInfinite()) {
+        return value;
+    }
+    round(value.fValue, 0, status);
+    if (U_FAILURE(status)) {
+        return value;
+    }
+    getInterval(value.fValue, value.fInterval);
+    value.fExponent = 0;
+    value.fIsScientific = FALSE;
+    return value;
+}
+
 DigitList &
 ScientificPrecision::round(DigitList &value, UErrorCode &status) const {
     if (U_FAILURE(status)) {
@@ -96,6 +119,32 @@ ScientificPrecision::getMultiplier() const {
     int32_t multiplier =
         maxIntDigitCount - fMantissa.fMin.getIntDigitCount() + 1;
     return (multiplier < 1 ? 1 : multiplier);
+}
+
+NumericValue &
+ScientificPrecision::initNumericValue(
+        const DigitList &digitList,
+        NumericValue &value,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return value;
+    }
+    value.fValue = digitList;
+    if (value.fValue.isNaN() || value.fValue.isInfinite()) {
+        return value;
+    }
+    int32_t exponentMultiplier = getMultiplier();
+    int32_t exponent = value.fValue.getScientificExponent(
+            fMantissa.fMin.getIntDigitCount(), exponentMultiplier);
+    fMantissa.round(value.fValue, exponent, status);
+    if (U_FAILURE(status)) {
+        return value;
+    }
+    value.fExponent = value.fValue.toScientific(
+            fMantissa.fMin.getIntDigitCount(), exponentMultiplier);
+    fMantissa.getInterval(value.fValue, value.fInterval);
+    value.fIsScientific = TRUE;
+    return value;
 }
 
 

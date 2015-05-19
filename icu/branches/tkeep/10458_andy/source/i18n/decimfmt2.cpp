@@ -12,6 +12,7 @@
 #include "decimalformatpatternimpl.h"
 #include "valueformatter.h"
 #include "fphdlimp.h"
+#include "numericvalue.h"
 
 U_NAMESPACE_BEGIN
 
@@ -415,8 +416,9 @@ DecimalFormat2::select(
     number.reduce();
     ValueFormatter vf;
     prepareValueFormatter(vf);
-    vf.round(number, status);
-    return vf.select(rules, number);
+    NumericValue value;
+    vf.initNumericValue(number, value, status);
+    return value.select(rules);
 }
 
 void

@@ -27,29 +27,6 @@ U_NAMESPACE_BEGIN
 
 const UChar gOther[] = {0x6f, 0x74, 0x68, 0x65, 0x72, 0x0};
 
-UnicodeString
-ValueFormatter::select(
-        const PluralRules &rules,
-        const DigitList &value) const {
-    switch (fType) {
-    case kFixedDecimal:
-        {
-            DigitInterval interval;
-            return rules.select(
-                    FixedDecimal(
-                            value,
-                            fFixedPrecision->getInterval(value, interval)));
-        }
-        break;
-    case kScientificNotation:
-        return UnicodeString(TRUE, gOther, -1);
-    default:
-        U_ASSERT(FALSE);
-        break;
-    }
-    return UnicodeString();
-}
-
 static UBool isNoGrouping(
         const DigitGrouping &grouping,
         int32_t value,
@@ -82,23 +59,6 @@ ValueFormatter::isFastFormattable(int32_t value) const {
     return FALSE;
 }
 
-DigitList &
-ValueFormatter::round(DigitList &value, UErrorCode &status) const {
-    if (value.isNaN() || value.isInfinite()) {
-        return value;
-    }
-    switch (fType) {
-    case kFixedDecimal:
-        return fFixedPrecision->round(value, 0, status);
-    case kScientificNotation:
-        return fScientificPrecision->round(value, status);
-    default:
-        U_ASSERT(FALSE);
-        break;
-    }
-    return value;
-}
-
 UnicodeString &
 ValueFormatter::formatInt32(
         int32_t value,
@@ -125,25 +85,41 @@ ValueFormatter::formatInt32(
     return appendTo;
 }
 
-UnicodeString &
-ValueFormatter::format(
-        const DigitList &value,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const {
-    if (value.isNaN()) {
-        return fDigitFormatter->formatNaN(handler, appendTo);
-    }
-    if (value.isInfinite()) {
-        return fDigitFormatter->formatInfinity(handler, appendTo);
-    }
+NumericValue &
+ValueFormatter::initNumericValue(
+        const DigitList &digitList,
+        NumericValue &value,
+        UErrorCode &status) const {
     switch (fType) {
     case kFixedDecimal:
         {
-            DigitInterval interval;
+            return fFixedPrecision->initNumericValue(digitList, value, status);
+        }
+        break;
+    case kScientificNotation:
+        {
+            return fScientificPrecision->initNumericValue(
+                    digitList, value, status);
+        }
+        break;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return value;
+}
+
+UnicodeString &
+ValueFormatter::format(
+        const NumericValue &value,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    switch (fType) {
+    case kFixedDecimal:
+        {
             return fDigitFormatter->format(
                     value,
                     *fGrouping,
-                    fFixedPrecision->getInterval(value, interval),
                     *fFixedOptions,
                     handler,
                     appendTo);
@@ -151,14 +127,9 @@ ValueFormatter::format(
         break;
     case kScientificNotation:
         {
-            DigitList mantissa(value);
-            int32_t exponent = fScientificPrecision->toScientific(mantissa);
-            DigitInterval interval;
             return fSciFormatter->format(
-                    mantissa,
-                    exponent,
+                    value,
                     *fDigitFormatter,
-                    fScientificPrecision->fMantissa.getInterval(mantissa, interval),
                     *fScientificOptions,
                     handler,
                     appendTo);
@@ -172,32 +143,21 @@ ValueFormatter::format(
 }
 
 int32_t
-ValueFormatter::countChar32(const DigitList &value) const {
-    if (value.isNaN()) {
-        return fDigitFormatter->countChar32ForNaN();
-    }
-    if (value.isInfinite()) {
-        return fDigitFormatter->countChar32ForInfinity();
-    }
+ValueFormatter::countChar32(const NumericValue &value) const {
     switch (fType) {
     case kFixedDecimal:
         {
-            DigitInterval interval;
             return fDigitFormatter->countChar32(
+                    value,
                     *fGrouping,
-                    fFixedPrecision->getInterval(value, interval),
                     *fFixedOptions);
         }
         break;
     case kScientificNotation:
         {
-            DigitList mantissa(value);
-            int32_t exponent = fScientificPrecision->toScientific(mantissa);
-            DigitInterval interval;
             return fSciFormatter->countChar32(
-                    exponent,
+                    value,
                     *fDigitFormatter,
-                    fScientificPrecision->fMantissa.getInterval(mantissa, interval),
                     *fScientificOptions);
         }
         break;

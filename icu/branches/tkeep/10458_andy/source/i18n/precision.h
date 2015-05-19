@@ -20,6 +20,8 @@
 
 U_NAMESPACE_BEGIN
 
+class NumericValue;
+
 
 /**
  * A precision manager for values to be formatted as fixed point.
@@ -88,6 +90,11 @@ DigitInterval &getInterval(
  * Returns TRUE if this instance allows for fast formatting of integers.
  */
 UBool isFastFormattable() const;
+
+NumericValue &initNumericValue(
+        const DigitList &digitList,
+        NumericValue &value,
+        UErrorCode &status) const;
 };
 
 /**
@@ -121,6 +128,11 @@ public:
     UBool equals(const ScientificPrecision &rhs) const {
         return fMantissa.equals(rhs.fMantissa);
     }
+
+    NumericValue &initNumericValue(
+            const DigitList &digitList,
+            NumericValue &value,
+            UErrorCode &status) const;
 private:
     int32_t getMultiplier() const;
 
