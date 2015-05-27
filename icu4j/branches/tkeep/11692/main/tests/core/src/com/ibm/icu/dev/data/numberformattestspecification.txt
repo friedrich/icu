@@ -1,3 +1,11 @@
+// This file is divided into test suites separated by whitespace. Each test
+// suite starts with the name of the test followed by global field settings
+// for that test suite. After the global settings, comes "begin", the
+// per-test field names, and finally the test specific field values, 1 test
+// per line.
+// For more information on the format of this file, including all the available
+// field names, please see
+// https://docs.google.com/document/d/1T2P0p953_Lh1pRwo-5CuPVrHlIBa_wcXElG-Hhg_WHM/edit?usp=sharing
 test basic patterns
 set locale fr_FR
 set format 1234.567
@@ -404,8 +412,8 @@ set pattern \u00a4\u00a4 0
 begin
 format	currencyUsage	output	breaks
 0.37	standard	CHF 0.37	K
-// TODO: Get the rounding data into ICU4J so that J is not broken
-0.37	cash	CHF 0.35	JK
+// TODO: Get the rounding data into ICU4C and ICU4J
+0.37	cash	CHF 0.35	CJK
 
 test exponent parameter setters
 set locale en_US
@@ -477,6 +485,15 @@ begin
 format	output	breaks
 Inf	[\u221e]	K
 -Inf	(\u221e)	K
+NaN	NaN	K
+
+test nan and infinity with multiplication
+set locale en
+set multiplier 100
+begin
+format	output	breaks
+Inf	\u221e
+-Inf	-\u221e
 NaN	NaN	K
 
 test nan and infinity with padding
@@ -718,8 +735,21 @@ parse	output
 8245	45
 2845	-45
 
-
-
-
-
+test select
+set locale sr
+begin
+format	pattern	plural
+Inf	0	other
+-Inf	0	other
+NaN	0	other
+Inf	0.0	other
+-Inf	0.0	other
+NaN	0.0	other
+1	0	one
+1	0.0	other
+2	0	few
+2	0.0	other
+2	0E0	other
+5.1	0.0	one
+5.09	0.0	one
 
