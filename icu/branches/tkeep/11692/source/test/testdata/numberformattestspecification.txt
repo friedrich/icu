@@ -1,4 +1,11 @@
-// For more information on the format of this file, please see https://docs.google.com/document/d/1T2P0p953_Lh1pRwo-5CuPVrHlIBa_wcXElG-Hhg_WHM/edit?usp=sharing
+// This file is divided into test suites separated by whitespace. Each test
+// suite starts with the name of the test followed by global field settings
+// for that test suite. After the global settings, comes "begin", the
+// per-test field names, and finally the test specific field values, 1 test
+// per line.
+// For more information on the format of this file, including all the available
+// field names, please see
+// https://docs.google.com/document/d/1T2P0p953_Lh1pRwo-5CuPVrHlIBa_wcXElG-Hhg_WHM/edit?usp=sharing
 test basic patterns
 set locale fr_FR
 set format 1234.567
