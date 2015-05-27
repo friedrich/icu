@@ -11,16 +11,15 @@
 #include "unicode/uobject.h"
 #include "unicode/unistr.h"
 #include "numberformattesttuple.h"
+#include "intltest.h"
 
 struct UCHARBUF;
 class IntlTest;
 
-U_NAMESPACE_BEGIN
-
 /**
  * Performs various in-depth test on NumberFormat
  **/
-class DataDrivenNumberFormatTestSuite : public UObject {
+class DataDrivenNumberFormatTestSuite : IntlTest {
 
  public:
      DataDrivenNumberFormatTestSuite() {
@@ -127,7 +126,5 @@ class DataDrivenNumberFormatTestSuite : public UObject {
             UnicodeString &appendErrorMessage,
             UErrorCode &status);
 };
-
-U_NAMESPACE_END
 
 #endif // _DATADRIVENNUMBERFORMATTESTSUITE_

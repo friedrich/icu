@@ -35,7 +35,7 @@
 #include "numberformattesttuple.h"
 #include "datadrivennumberformattestsuite.h"
 
-class NumberFormatTestDataDriven : public icu::DataDrivenNumberFormatTestSuite {
+class NumberFormatTestDataDriven : public DataDrivenNumberFormatTestSuite {
 protected:
 UBool isFormatPass(
         const NumberFormatTestTuple &tuple,

@@ -328,7 +328,6 @@ private:
 
     const char* proplines[kMaxProps];
     int32_t     numProps;
-    friend class DataDrivenNumberFormatTestSuite;
 
 protected:
 

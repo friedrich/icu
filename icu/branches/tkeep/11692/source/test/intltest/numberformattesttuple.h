@@ -14,7 +14,7 @@
 
 #define NFTT_GET_FIELD(tuple, fieldName, defaultValue) ((tuple).fieldName##Flag ? (tuple).fieldName : (defaultValue))
 
-U_NAMESPACE_BEGIN
+U_NAMESPACE_USE
 
 enum ENumberFormatTestTupleField {
     kLocale,
@@ -60,7 +60,20 @@ enum ENumberFormatTestTupleField {
     kNumberFormatTestTupleFieldCount,
 };
 
-class NumberFormatTestTuple : UMemory {
+/**
+ * NumberFormatTestTuple represents the data for a single data driven test.
+ * It consist of named fields each of which may or may not be set. Each field
+ * has a particular meaning in the test. For more information on what each
+ * field means and how the data drive tests work, please see
+ * https://docs.google.com/document/d/1T2P0p953_Lh1pRwo-5CuPVrHlIBa_wcXElG-Hhg_WHM/edit?usp=sharing
+ * Each field is optional. That is, a certain field may be unset for a given
+ * test. The UBool fields ending in "Flag" indicate whether the corrresponding
+ * field is set or not. TRUE means set; FALSE means unset. An unset field
+ * generally means that the corresponding setter method is not called on
+ * the NumberFormat object.
+ */
+
+class NumberFormatTestTuple {
 public:
     Locale locale;
     UnicodeString currency;
@@ -147,15 +160,47 @@ public:
     NumberFormatTestTuple() {
         clear();
     }
+
+    /**
+     * Sets a particular field using the string representation of that field.
+     * @param field the field to set.
+     * @param fieldValue the string representation of the field value.
+     * @param status error returned here such as when the string representation
+     *  of the field value cannot be parsed.
+     * @return TRUE on success or FALSE if an error was set in status.
+     */
     UBool setField(
             ENumberFormatTestTupleField field,
             const UnicodeString &fieldValue,
             UErrorCode &status);
+    /**
+     * Clears a particular field.
+     * @param field the field to clear.
+     * @param status error set here.
+     * @return TRUE on success or FALSE if error was set.
+     */
     UBool clearField(
             ENumberFormatTestTupleField field,
             UErrorCode &status);
+    /**
+     * Clears every field.
+     */
     void clear();
+
+    /**
+     * Returns the string representation of the test case this object
+     * currently represents.
+     * @param appendTo the result appended here.
+     * @return appendTo
+     */
     UnicodeString &toString(UnicodeString &appendTo) const;
+
+    /**
+     * Converts the name of a field to the corresponding enum value.
+     * @param name the name of the field as a string.
+     * @return the corresponding enum value or kNumberFormatTestFieldCount
+     *   if name does not map to any recognized field name.
+     */
     static ENumberFormatTestTupleField getFieldByName(const UnicodeString &name);
 private:
     const void *getFieldAddress(int32_t fieldId) const;
@@ -164,6 +209,5 @@ private:
     UBool isFlag(int32_t fieldId) const;
 };
 
-U_NAMESPACE_END
 
 #endif

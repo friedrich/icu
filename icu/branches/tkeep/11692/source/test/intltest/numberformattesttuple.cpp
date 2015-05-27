@@ -12,9 +12,7 @@
 #include "cmemory.h"
 #include "digitlst.h"
 
-U_NAMESPACE_BEGIN
-
-NumberFormatTestTuple *gNullPtr = NULL;
+static NumberFormatTestTuple *gNullPtr = NULL;
 
 #define FIELD_OFFSET(fieldName) ((int32_t) (((char *) &gNullPtr->fieldName) - ((char *) gNullPtr)))
 #define FIELD_FLAG_OFFSET(fieldName) ((int32_t) (((char *) &gNullPtr->fieldName##Flag) - ((char *) gNullPtr)))
@@ -439,5 +437,4 @@ NumberFormatTestTuple::isFlag(int32_t fieldId) const {
     return *static_cast<const UBool *>(flagAddr);
 }
 
-U_NAMESPACE_END
 

@@ -1,3 +1,4 @@
+// For more information on the format of this file, please see https://docs.google.com/document/d/1T2P0p953_Lh1pRwo-5CuPVrHlIBa_wcXElG-Hhg_WHM/edit?usp=sharing
 test basic patterns
 set locale fr_FR
 set format 1234.567
