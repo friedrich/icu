@@ -491,10 +491,10 @@ test nan and infinity with multiplication
 set locale en
 set multiplier 100
 begin
-format	output
+format	output	breaks
 Inf	\u221e
 -Inf	-\u221e
-NaN	NaN
+NaN	NaN	K
 
 test nan and infinity with padding
 set locale en_US
