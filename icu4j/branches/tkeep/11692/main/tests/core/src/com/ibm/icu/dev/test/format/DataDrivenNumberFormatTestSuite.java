@@ -17,15 +17,25 @@ import com.ibm.icu.impl.Utility;
 
 /**
  * A collection of methods to run the data driven number format test suite.
- * Right now supports only those tests that test formatting. May add methods to test parsing
- * later.
  */
-public class DataDrivenNumberFormatTestSuite {
+public class DataDrivenNumberFormatTestSuite extends TestFmwk {
     
     /**
      * Base class for code under test.
      */
     public static abstract class CodeUnderTest {
+        
+        /**
+         * Returns the ID of the code under test. This ID is used to identify
+         * tests that are known to fail for this particular code under test.
+         * This implementation returns null which means that by default all
+         * tests should work with this code under test.
+         * @return 'J' means ICU4J, 'K' means JDK
+         */
+        public Character Id() {
+            return null;
+        }
+        
         /**
          *  Runs a single formatting test. On success, returns null.
          *  On failure, returns the error. This implementation just returns null.
@@ -67,47 +77,55 @@ public class DataDrivenNumberFormatTestSuite {
         }
     }
     
-    private final TestFmwk fmwk;
+    private static enum RunMode {
+        SKIP_KNOWN_FAILURES,
+        INCLUDE_KNOWN_FAILURES     
+    }
+    
     private final CodeUnderTest codeUnderTest;
     private String fileLine = null;
     private int fileLineNumber = 0;
-    private String fileTestName = "";
+    private String fileTestName = "";   
     private NumberFormatTestTuple tuple = new NumberFormatTestTuple();
       
     /**
-     * Runs all the tests in the data driven test suite that should pass.
-     * @param fmwk the test framework.
+     * Runs all the tests in the data driven test suite against codeUnderTest.
+     * @param params this.params from TestFmwk.
      * @param fileName The name of the test file. A relative file name under
      *   com/ibm/icu/dev/data such as "data.txt"
-     * @param code indicates the source of code under test. e.g 'J' or 'K'.
-     *   'J' for ICU, and 'K' for JDK. Used to exclude tests that are known to fail.
+     * @param codeUnderTest the code under test
      */
     static void runSuite(
-            com.ibm.icu.dev.test.TestFmwk fmwk, String fileName, CodeUnderTest codeUnderTest, char code) {
-        new DataDrivenNumberFormatTestSuite(
-                fmwk, codeUnderTest).run(fileName, Character.toUpperCase(code));
+            TestParams params, String fileName, CodeUnderTest codeUnderTest) {
+        new DataDrivenNumberFormatTestSuite(params, codeUnderTest)
+                .run(fileName, RunMode.SKIP_KNOWN_FAILURES);
     }
     
     /**
-     * Runs every format test in data driven test suite including those that are known to
-     * fail.
+     * Runs every format test in data driven test suite including those
+     * that are known to fail.
      * 
-     * @param fmwk the test framework.
-     * @param fileName The name of the test file.
+     * @param params this.params from TestFmwk
+     * @param fileName The name of the test file. A relative file name under
+     *   com/ibm/icu/dev/data such as "data.txt"
+     * @param codeUnderTest the code under test
      */
     static void runFormatSuiteIncludingKnownFailures(
-            com.ibm.icu.dev.test.TestFmwk fmwk, String fileName, CodeUnderTest codeUnderTest) {
-        new DataDrivenNumberFormatTestSuite(
-                fmwk, codeUnderTest).run(fileName, (char) 0);
+            TestParams params, String fileName, CodeUnderTest codeUnderTest) {
+        new DataDrivenNumberFormatTestSuite(params, codeUnderTest)
+                .run(fileName, RunMode.INCLUDE_KNOWN_FAILURES);
     }
     
     private DataDrivenNumberFormatTestSuite(
-            TestFmwk fmwk, CodeUnderTest codeUnderTest) {
-        this.fmwk = fmwk;
+            TestParams params, CodeUnderTest codeUnderTest) {
+        this.params = params;
         this.codeUnderTest = codeUnderTest;
     }
        
-    private void run(String fileName, char code) {
+    private void run(String fileName, RunMode runMode) {
+        Character codeUnderTestIdObj = codeUnderTest.Id();
+        char codeUnderTestId =
+                codeUnderTestIdObj == null ? 0 : Character.toUpperCase(codeUnderTestIdObj.charValue());
         BufferedReader in = null;
         try {
             in = TestUtil.getDataReader("numberformattestspecification.txt", "UTF-8");
@@ -140,7 +158,9 @@ public class DataDrivenNumberFormatTestSuite {
                         fileTestName = fileLine;
                         tuple = new NumberFormatTestTuple();
                     } else if (fileLine.startsWith("set ")) {
-                        setTupleField();
+                        if (!setTupleField()) {
+                            return;
+                        }
                     } else if(fileLine.startsWith("begin")) {
                         state = 1;
                     } else {
@@ -157,12 +177,17 @@ public class DataDrivenNumberFormatTestSuite {
                     columnValues = splitBy(columnNamesSize, (char) 0x09);
                     int columnValuesSize = columnValues.size();
                     for (int i = 0; i < columnValuesSize; ++i) {
-                        setField(columnNames.get(i), columnValues.get(i));
+                        if (!setField(columnNames.get(i), columnValues.get(i))) {
+                            return;
+                        }
                     }
                     for (int i = columnValuesSize; i < columnNamesSize; ++i) {
-                        clearField(columnNames.get(i));
+                        if (!clearField(columnNames.get(i))) {
+                            return;
+                        }
                     }
-                    if (code == 0 || !breaks(code)) {
+                    if (runMode == RunMode.INCLUDE_KNOWN_FAILURES
+                            || !breaks(codeUnderTestId)) {
                         String errorMessage = isPass(tuple);
                         if (errorMessage != null) {
                             showError(errorMessage);
@@ -171,11 +196,9 @@ public class DataDrivenNumberFormatTestSuite {
                 }
                 fileLine = null;
             }
-        } catch (DataDrivenException e) {
-            // swallow
         } catch (Exception e) {
-           showError(e.getMessage());
-           e.printStackTrace();
+            showError(e.toString());
+            e.printStackTrace();
         } finally {
             try {
                 if (in != null) {
@@ -195,37 +218,37 @@ public class DataDrivenNumberFormatTestSuite {
         return (c == 0x09 || c == 0x20 || c == 0x3000);
     }
     
-    private void setTupleField() {
+    private boolean setTupleField() {
         List<String> parts = splitBy(3, (char) 0x20);
         if (parts.size() < 3) {
             showError("Set expects 2 parameters");
-            throw new DataDrivenException();
+            return false;
         }
-        setField(parts.get(1), parts.get(2));
+        return setField(parts.get(1), parts.get(2));
     }
     
-    private void setField(String name, String value) {
+    private boolean setField(String name, String value) {
         try {
             tuple.setField(name,  Utility.unescape(value));
+            return true;
         } catch (Exception e) {
             showError("No such field: " + name + ", or bad value: " + value);
-            throw new DataDrivenException();
+            return false;
         }
     }
     
-    private void clearField(String name) {
+    private boolean clearField(String name) {
         try {
             tuple.clearField(name);
+            return true;
         } catch (Exception e) {
             showError("Field cannot be clared: " + name);
-            throw new DataDrivenException();
+            return false;
         }
     }
     
     private void showError(String message) {
-        fmwk.errln(String.format("line %d: %s", fileLineNumber, Utility.escape(message)));
-        fmwk.errln("    " + fileTestName);
-        fmwk.errln("    " + fileLine);
+        errln(String.format("line %d: %s\n%s\n%s", fileLineNumber, Utility.escape(message), fileTestName,fileLine));
     }
    
     private List<String> splitBy(char delimiter) {
@@ -300,8 +323,4 @@ public class DataDrivenNumberFormatTestSuite {
         }
         return null;
     }
-    
-    private class DataDrivenException extends RuntimeException {
-    }
-
 }

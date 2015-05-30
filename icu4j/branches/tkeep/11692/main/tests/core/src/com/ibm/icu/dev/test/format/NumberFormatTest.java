@@ -57,6 +57,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     private DataDrivenNumberFormatTestSuite.CodeUnderTest ICU =
             new DataDrivenNumberFormatTestSuite.CodeUnderTest() {
                 @Override
+                public Character Id() { return 'J'; }
+        
+                @Override
                 public String format(NumberFormatTestTuple tuple) {
                     DecimalFormat fmt = newDecimalFormat(tuple);
                     String actual = fmt.format(toNumber(tuple.format.getValue()));
@@ -221,6 +224,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     
     private DataDrivenNumberFormatTestSuite.CodeUnderTest JDK =
             new DataDrivenNumberFormatTestSuite.CodeUnderTest() {
+                @Override
+                public Character Id() { return 'K'; }
+        
                 @Override
                 public String format(NumberFormatTestTuple tuple) {
                     java.text.DecimalFormat fmt = newDecimalFormat(tuple);
@@ -4069,12 +4075,12 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     
     public void TestDataDrivenICU() {
         DataDrivenNumberFormatTestSuite.runSuite(
-                this, "numberformattestspecification.txt", ICU, 'J');
+                this.params, "numberformattestspecification.txt", ICU);
     }
 
     public void TestDataDrivenJDK() {
         DataDrivenNumberFormatTestSuite.runSuite(
-                this, "numberformattestspecification.txt", JDK, 'K');
+                this.params, "numberformattestspecification.txt", JDK);
     }
 
 
