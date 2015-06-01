@@ -42,6 +42,8 @@ import com.ibm.icu.util.ULocale;
 
 public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     
+    private static ULocale EN = new ULocale("en");
+    
     private static Number toNumber(String s) {
         if (s.equals("NaN")) {
             return Double.NaN;
@@ -62,8 +64,8 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 @Override
                 public String format(NumberFormatTestTuple tuple) {
                     DecimalFormat fmt = newDecimalFormat(tuple);
-                    String actual = fmt.format(toNumber(tuple.format.getValue()));
-                    String expected = tuple.output.getValue();
+                    String actual = fmt.format(toNumber(tuple.format));
+                    String expected = tuple.output;
                     if (!expected.equals(actual)) {
                         return "Expected " + expected + ", got " + actual;
                     }
@@ -74,15 +76,15 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 public String toPattern(NumberFormatTestTuple tuple) {
                     DecimalFormat fmt = newDecimalFormat(tuple);
                     StringBuilder result = new StringBuilder();
-                    if (tuple.toPattern.isValue()) {
-                        String expected = tuple.toPattern.getValue();
+                    if (tuple.toPattern != null) {
+                        String expected = tuple.toPattern;
                         String actual = fmt.toPattern();
                         if (!expected.equals(actual)) {
                             result.append("Expected toPattern=" + expected + ", got " + actual);
                         }
                     }
-                    if (tuple.toLocalizedPattern.isValue()) {
-                        String expected = tuple.toLocalizedPattern.getValue();
+                    if (tuple.toLocalizedPattern != null) {
+                        String expected = tuple.toLocalizedPattern;
                         String actual = fmt.toLocalizedPattern();
                         if (!expected.equals(actual)) {
                             result.append("Expected toLocalizedPattern=" + expected + ", got " + actual);
@@ -94,19 +96,20 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 @Override
                 public String parse(NumberFormatTestTuple tuple) {
                     DecimalFormat fmt = newDecimalFormat(tuple);
-                    fmt.setParseStrict(tuple.lenient.getValue(1) == 0 ? true : false);
+                    int lenient = tuple.lenient == null ? 1 : tuple.lenient.intValue();
+                    fmt.setParseStrict(lenient == 0 ? true : false);
                     ParsePosition ppos = new ParsePosition(0);
-                    Number actual = fmt.parse(tuple.parse.getValue(), ppos);
+                    Number actual = fmt.parse(tuple.parse, ppos);
                     if (ppos.getIndex() == 0) {
-                        if (!tuple.output.getValue().equals("fail")) {
+                        if (!tuple.output.equals("fail")) {
                             return "Parse error expected.";
                         }
                         return null;
                     }
-                    if (tuple.output.getValue().equals("fail")) {
+                    if (tuple.output.equals("fail")) {
                         return "Parse succeeded, but was expected to fail.";
                     }
-                    Number expected = toNumber(tuple.output.getValue());
+                    Number expected = toNumber(tuple.output);
                     // number types cannot be compared, this is the best we can do.
                     if (expected.doubleValue() != (actual.doubleValue())) {
                         return "Expected: " + expected + ", got: " + actual;
@@ -119,10 +122,10 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                  * @return
                  */
                 private DecimalFormat newDecimalFormat(NumberFormatTestTuple tuple) {
-                    ULocale en = new ULocale("en");
+             
                     DecimalFormat fmt = new DecimalFormat(
-                            tuple.pattern.getValue("0"),
-                            new DecimalFormatSymbols(tuple.locale.getValue(en)));
+                            tuple.pattern == null ? "0" : tuple.pattern,
+                            new DecimalFormatSymbols(tuple.locale == null ? EN : tuple.locale));
                     adjustDecimalFormat(tuple, fmt);
                     return fmt;
                 }
@@ -131,92 +134,92 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                  * @param fmt
                  */
                 private void adjustDecimalFormat(NumberFormatTestTuple tuple, DecimalFormat fmt) {
-                    if (tuple.minIntegerDigits.isValue()) {
-                        fmt.setMinimumIntegerDigits(tuple.minIntegerDigits.getValue());
+                    if (tuple.minIntegerDigits != null) {
+                        fmt.setMinimumIntegerDigits(tuple.minIntegerDigits);
                     }
-                    if (tuple.maxIntegerDigits.isValue()) {
-                        fmt.setMaximumIntegerDigits(tuple.maxIntegerDigits.getValue());
+                    if (tuple.maxIntegerDigits != null) {
+                        fmt.setMaximumIntegerDigits(tuple.maxIntegerDigits);
                     }
-                    if (tuple.minFractionDigits.isValue()) {
-                        fmt.setMinimumFractionDigits(tuple.minFractionDigits.getValue());
+                    if (tuple.minFractionDigits != null) {
+                        fmt.setMinimumFractionDigits(tuple.minFractionDigits);
                     }
-                    if (tuple.maxFractionDigits.isValue()) {
-                        fmt.setMaximumFractionDigits(tuple.maxFractionDigits.getValue());
+                    if (tuple.maxFractionDigits != null) {
+                        fmt.setMaximumFractionDigits(tuple.maxFractionDigits);
                     }
-                    if (tuple.currency.isValue()) {
-                        fmt.setCurrency(tuple.currency.getValue());
+                    if (tuple.currency != null) {
+                        fmt.setCurrency(tuple.currency);
                     }
-                    if (tuple.minGroupingDigits.isValue()) {
+                    if (tuple.minGroupingDigits != null) {
                         // Oops we don't support this.
                     }
-                    if (tuple.useSigDigits.isValue()) {
+                    if (tuple.useSigDigits != null) {
                         fmt.setSignificantDigitsUsed(
-                                tuple.useSigDigits.getValue() != 0);
+                                tuple.useSigDigits != 0);
                     }
-                    if (tuple.minSigDigits.isValue()) {
-                        fmt.setMinimumSignificantDigits(tuple.minSigDigits.getValue());
+                    if (tuple.minSigDigits != null) {
+                        fmt.setMinimumSignificantDigits(tuple.minSigDigits);
                     }
-                    if (tuple.maxSigDigits.isValue()) {
-                        fmt.setMaximumSignificantDigits(tuple.maxSigDigits.getValue());
+                    if (tuple.maxSigDigits != null) {
+                        fmt.setMaximumSignificantDigits(tuple.maxSigDigits);
                     }
-                    if (tuple.useGrouping.isValue()) {
-                        fmt.setGroupingUsed(tuple.useGrouping.getValue() != 0);
+                    if (tuple.useGrouping != null) {
+                        fmt.setGroupingUsed(tuple.useGrouping != 0);
                     }
-                    if (tuple.multiplier.isValue()) {
-                        fmt.setMultiplier(tuple.multiplier.getValue());
+                    if (tuple.multiplier != null) {
+                        fmt.setMultiplier(tuple.multiplier);
                     }
-                    if (tuple.roundingIncrement.isValue()) {
-                        fmt.setRoundingIncrement(tuple.roundingIncrement.getValue().doubleValue());
+                    if (tuple.roundingIncrement != null) {
+                        fmt.setRoundingIncrement(tuple.roundingIncrement.doubleValue());
                     }
-                    if (tuple.formatWidth.isValue()) {
-                        fmt.setFormatWidth(tuple.formatWidth.getValue());
+                    if (tuple.formatWidth != null) {
+                        fmt.setFormatWidth(tuple.formatWidth);
                     }
-                    if (tuple.padCharacter.isValue() && tuple.padCharacter.getValue().length() > 0) {
-                        fmt.setPadCharacter(tuple.padCharacter.getValue().charAt(0));
+                    if (tuple.padCharacter != null && tuple.padCharacter.length() > 0) {
+                        fmt.setPadCharacter(tuple.padCharacter.charAt(0));
                     }
-                    if (tuple.useScientific.isValue()) {
-                        fmt.setScientificNotation(tuple.useScientific.getValue() != 0);
+                    if (tuple.useScientific != null) {
+                        fmt.setScientificNotation(tuple.useScientific != 0);
                     }
-                    if (tuple.grouping.isValue()) {
-                        fmt.setGroupingSize(tuple.grouping.getValue());
+                    if (tuple.grouping != null) {
+                        fmt.setGroupingSize(tuple.grouping);
                     }
-                    if (tuple.grouping2.isValue()) {
-                        fmt.setSecondaryGroupingSize(tuple.grouping2.getValue());
+                    if (tuple.grouping2 != null) {
+                        fmt.setSecondaryGroupingSize(tuple.grouping2);
                     }
-                    if (tuple.roundingMode.isValue()) {
-                        fmt.setRoundingMode(tuple.roundingMode.getValue());
+                    if (tuple.roundingMode != null) {
+                        fmt.setRoundingMode(tuple.roundingMode);
                     }
-                    if (tuple.currencyUsage.isValue()) {
-                        fmt.setCurrencyUsage(tuple.currencyUsage.getValue());
-                    }                    if (tuple.minimumExponentDigits.isValue()) {
+                    if (tuple.currencyUsage != null) {
+                        fmt.setCurrencyUsage(tuple.currencyUsage);
+                    }                    if (tuple.minimumExponentDigits != null) {
                         fmt.setMinimumExponentDigits(
-                                tuple.minimumExponentDigits.getValue().byteValue());
+                                tuple.minimumExponentDigits.byteValue());
                     }
-                    if (tuple.exponentSignAlwaysShown.isValue()) {
+                    if (tuple.exponentSignAlwaysShown != null) {
                         fmt.setExponentSignAlwaysShown(
-                                tuple.exponentSignAlwaysShown.getValue() != 0);
+                                tuple.exponentSignAlwaysShown != 0);
                     }
-                    if (tuple.decimalSeparatorAlwaysShown.isValue()) {
+                    if (tuple.decimalSeparatorAlwaysShown != null) {
                         fmt.setDecimalSeparatorAlwaysShown(
-                                tuple.decimalSeparatorAlwaysShown.getValue() != 0);
+                                tuple.decimalSeparatorAlwaysShown != 0);
                     }
-                    if (tuple.padPosition.isValue()) {
-                        fmt.setPadPosition(tuple.padPosition.getValue());
+                    if (tuple.padPosition != null) {
+                        fmt.setPadPosition(tuple.padPosition);
                     }
-                    if (tuple.positivePrefix.isValue()) {
-                        fmt.setPositivePrefix(tuple.positivePrefix.getValue());
+                    if (tuple.positivePrefix != null) {
+                        fmt.setPositivePrefix(tuple.positivePrefix);
                     }
-                    if (tuple.positiveSuffix.isValue()) {
-                        fmt.setPositiveSuffix(tuple.positiveSuffix.getValue());
+                    if (tuple.positiveSuffix != null) {
+                        fmt.setPositiveSuffix(tuple.positiveSuffix);
                     }
-                    if (tuple.negativePrefix.isValue()) {
-                        fmt.setNegativePrefix(tuple.negativePrefix.getValue());
+                    if (tuple.negativePrefix != null) {
+                        fmt.setNegativePrefix(tuple.negativePrefix);
                     }
-                    if (tuple.negativeSuffix.isValue()) {
-                        fmt.setNegativeSuffix(tuple.negativeSuffix.getValue());
+                    if (tuple.negativeSuffix != null) {
+                        fmt.setNegativeSuffix(tuple.negativeSuffix);
                     }
-                    if (tuple.localizedPattern.isValue()) {
-                        fmt.applyLocalizedPattern(tuple.localizedPattern.getValue());
+                    if (tuple.localizedPattern != null) {
+                        fmt.applyLocalizedPattern(tuple.localizedPattern);
                     }
                 }
     };
@@ -230,8 +233,8 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 @Override
                 public String format(NumberFormatTestTuple tuple) {
                     java.text.DecimalFormat fmt = newDecimalFormat(tuple);
-                    String actual = fmt.format(toNumber(tuple.format.getValue()));
-                    String expected = tuple.output.getValue();
+                    String actual = fmt.format(toNumber(tuple.format));
+                    String expected = tuple.output;
                     if (!expected.equals(actual)) {
                         return "Expected " + expected + ", got " + actual;
                     }
@@ -242,15 +245,15 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 public String toPattern(NumberFormatTestTuple tuple) {
                     java.text.DecimalFormat fmt = newDecimalFormat(tuple);
                     StringBuilder result = new StringBuilder();
-                    if (tuple.toPattern.isValue()) {
-                        String expected = tuple.toPattern.getValue();
+                    if (tuple.toPattern != null) {
+                        String expected = tuple.toPattern;
                         String actual = fmt.toPattern();
                         if (!expected.equals(actual)) {
                             result.append("Expected toPattern=" + expected + ", got " + actual);
                         }
                     }
-                    if (tuple.toLocalizedPattern.isValue()) {
-                        String expected = tuple.toLocalizedPattern.getValue();
+                    if (tuple.toLocalizedPattern != null) {
+                        String expected = tuple.toLocalizedPattern;
                         String actual = fmt.toLocalizedPattern();
                         if (!expected.equals(actual)) {
                             result.append("Expected toLocalizedPattern=" + expected + ", got " + actual);
@@ -263,17 +266,17 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 public String parse(NumberFormatTestTuple tuple) {
                     java.text.DecimalFormat fmt = newDecimalFormat(tuple);
                     ParsePosition ppos = new ParsePosition(0);
-                    Number actual = fmt.parse(tuple.parse.getValue(), ppos);
+                    Number actual = fmt.parse(tuple.parse, ppos);
                     if (ppos.getIndex() == 0) {
-                        if (!tuple.output.getValue().equals("fail")) {
+                        if (!tuple.output.equals("fail")) {
                             return "Parse error expected.";
                         }
                         return null;
                     }
-                    if (tuple.output.getValue().equals("fail")) {
+                    if (tuple.output.equals("fail")) {
                         return "Parse succeeded: "+actual+", but was expected to fail.";
                     }
-                    Number expected = toNumber(tuple.output.getValue());
+                    Number expected = toNumber(tuple.output);
                     // number types cannot be compared, this is the best we can do.
                     if (expected.doubleValue() != actual.doubleValue()) {
                         return "Expected: " + expected + ", got: " + actual;
@@ -286,10 +289,10 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                  * @return
                  */
                 private java.text.DecimalFormat newDecimalFormat(NumberFormatTestTuple tuple) {
-                    ULocale en = new ULocale("en");
                     java.text.DecimalFormat fmt = new java.text.DecimalFormat(
-                            tuple.pattern.getValue("0"),
-                            new java.text.DecimalFormatSymbols(tuple.locale.getValue(en).toLocale()));
+                            tuple.pattern == null ? "0" : tuple.pattern,
+                            new java.text.DecimalFormatSymbols(
+                                    (tuple.locale == null ? EN : tuple.locale).toLocale()));
                     adjustDecimalFormat(tuple, fmt);
                     return fmt;
                 }
@@ -299,90 +302,90 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                  * @param fmt
                  */
                 private void adjustDecimalFormat(NumberFormatTestTuple tuple, java.text.DecimalFormat fmt) {
-                    if (tuple.minIntegerDigits.isValue()) {
-                        fmt.setMinimumIntegerDigits(tuple.minIntegerDigits.getValue());
+                    if (tuple.minIntegerDigits != null) {
+                        fmt.setMinimumIntegerDigits(tuple.minIntegerDigits);
                     }
-                    if (tuple.maxIntegerDigits.isValue()) {
-                        fmt.setMaximumIntegerDigits(tuple.maxIntegerDigits.getValue());
+                    if (tuple.maxIntegerDigits != null) {
+                        fmt.setMaximumIntegerDigits(tuple.maxIntegerDigits);
                     }
-                    if (tuple.minFractionDigits.isValue()) {
-                        fmt.setMinimumFractionDigits(tuple.minFractionDigits.getValue());
+                    if (tuple.minFractionDigits != null) {
+                        fmt.setMinimumFractionDigits(tuple.minFractionDigits);
                     }
-                    if (tuple.maxFractionDigits.isValue()) {
-                        fmt.setMaximumFractionDigits(tuple.maxFractionDigits.getValue());
+                    if (tuple.maxFractionDigits != null) {
+                        fmt.setMaximumFractionDigits(tuple.maxFractionDigits);
                     }
-                    if (tuple.currency.isValue()) {
-                        fmt.setCurrency(java.util.Currency.getInstance(tuple.currency.getValue().toString()));
+                    if (tuple.currency != null) {
+                        fmt.setCurrency(java.util.Currency.getInstance(tuple.currency.toString()));
                     }
-                    if (tuple.minGroupingDigits.isValue()) {
+                    if (tuple.minGroupingDigits != null) {
                         // Oops we don't support this.
                     }
-                    if (tuple.useSigDigits.isValue()) {
+                    if (tuple.useSigDigits != null) {
                         // Oops we don't support this
                     }
-                    if (tuple.minSigDigits.isValue()) {
+                    if (tuple.minSigDigits != null) {
                         // Oops we don't support this
                     }
-                    if (tuple.maxSigDigits.isValue()) {
+                    if (tuple.maxSigDigits != null) {
                         // Oops we don't support this
                     }
-                    if (tuple.useGrouping.isValue()) {
-                        fmt.setGroupingUsed(tuple.useGrouping.getValue() != 0);
+                    if (tuple.useGrouping != null) {
+                        fmt.setGroupingUsed(tuple.useGrouping != 0);
                     }
-                    if (tuple.multiplier.isValue()) {
-                        fmt.setMultiplier(tuple.multiplier.getValue());
+                    if (tuple.multiplier != null) {
+                        fmt.setMultiplier(tuple.multiplier);
                     }
-                    if (tuple.roundingIncrement.isValue()) {
+                    if (tuple.roundingIncrement != null) {
                         // Not supported
                     }
-                    if (tuple.formatWidth.isValue()) {
+                    if (tuple.formatWidth != null) {
                         // Not supported
                     }
-                    if (tuple.padCharacter.isValue() && tuple.padCharacter.getValue().length() > 0) {
+                    if (tuple.padCharacter != null && tuple.padCharacter.length() > 0) {
                         // Not supported
                     }
-                    if (tuple.useScientific.isValue()) {
+                    if (tuple.useScientific != null) {
                         // Not supported
                     }
-                    if (tuple.grouping.isValue()) {
-                        fmt.setGroupingSize(tuple.grouping.getValue());
+                    if (tuple.grouping != null) {
+                        fmt.setGroupingSize(tuple.grouping);
                     }
-                    if (tuple.grouping2.isValue()) {
+                    if (tuple.grouping2 != null) {
                         // Not supported
                     }
-                    if (tuple.roundingMode.isValue()) {
+                    if (tuple.roundingMode != null) {
                         // Not supported
                     }
-                    if (tuple.currencyUsage.isValue()) {
+                    if (tuple.currencyUsage != null) {
                         // Not supported
                     }
-                    if (tuple.minimumExponentDigits.isValue()) {
+                    if (tuple.minimumExponentDigits != null) {
                         // Not supported
                     }
-                    if (tuple.exponentSignAlwaysShown.isValue()) {
+                    if (tuple.exponentSignAlwaysShown != null) {
                         // Not supported
                     }
-                    if (tuple.decimalSeparatorAlwaysShown.isValue()) {
+                    if (tuple.decimalSeparatorAlwaysShown != null) {
                         fmt.setDecimalSeparatorAlwaysShown(
-                                tuple.decimalSeparatorAlwaysShown.getValue() != 0);
+                                tuple.decimalSeparatorAlwaysShown != 0);
                     }
-                    if (tuple.padPosition.isValue()) {
+                    if (tuple.padPosition != null) {
                         // Not supported
                     }
-                    if (tuple.positivePrefix.isValue()) {
-                        fmt.setPositivePrefix(tuple.positivePrefix.getValue());
+                    if (tuple.positivePrefix != null) {
+                        fmt.setPositivePrefix(tuple.positivePrefix);
                     }
-                    if (tuple.positiveSuffix.isValue()) {
-                        fmt.setPositiveSuffix(tuple.positiveSuffix.getValue());
+                    if (tuple.positiveSuffix != null) {
+                        fmt.setPositiveSuffix(tuple.positiveSuffix);
                     }
-                    if (tuple.negativePrefix.isValue()) {
-                        fmt.setNegativePrefix(tuple.negativePrefix.getValue());
+                    if (tuple.negativePrefix != null) {
+                        fmt.setNegativePrefix(tuple.negativePrefix);
                     }
-                    if (tuple.negativeSuffix.isValue()) {
-                        fmt.setNegativeSuffix(tuple.negativeSuffix.getValue());
+                    if (tuple.negativeSuffix != null) {
+                        fmt.setNegativeSuffix(tuple.negativeSuffix);
                     }
-                    if (tuple.localizedPattern.isValue()) {
-                        fmt.applyLocalizedPattern(tuple.localizedPattern.getValue());
+                    if (tuple.localizedPattern != null) {
+                        fmt.applyLocalizedPattern(tuple.localizedPattern);
                     }
                 }
     };

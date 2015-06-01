@@ -25,9 +25,8 @@ import com.ibm.icu.util.ULocale;
  * The purpose of this class is to hide the details of the data driven test file from the
  * main testing code.
  * <p>
- * This class contains fields describing an attribute of the test. Each attribute may
- * contain either nothing (no specific value specified in data driven test file)
- * or just some value. The name of each attribute corresponds to the name used in the
+ * This class contains fields describing an attribute of the test that may or may
+ * not be set. The name of each attribute corresponds to the name used in the
  * data driven test file.
  * <p>
  * <b>Adding new attributes</b>
@@ -43,8 +42,8 @@ import com.ibm.icu.util.ULocale;
  * In addition each attribute is listed in the fieldOrdering static array which specifies
  * The order that attributes are printed whenever there is a test failure.
  * <p> 
- * To add a new attribute, first create a public field for it of type Maybe<T> where T
- * is the type of the attribute. Next, add the attribute name to the fieldOrdering array.
+ * To add a new attribute, first create a public field for it.
+ * Next, add the attribute name to the fieldOrdering array.
  * Finally, create a setter method for it.
  * 
  * @author rocketman
@@ -54,66 +53,66 @@ public class NumberFormatTestTuple {
     /**
      * The locale.
      */
-    public Maybe<ULocale> locale = Maybe.nothing();
+    public ULocale locale = null;
     
     /**
      * The currency.
      */
-    public Maybe<Currency> currency = Maybe.nothing();
+    public Currency currency = null;
     
     /**
      * The pattern to initialize the formatter, for example 0.00"
      */
-    public Maybe<String> pattern = Maybe.nothing();
+    public String pattern = null;
     
     /**
      * The value to format as a string. For example 1234.5 would be "1234.5"
      */
-    public Maybe<String> format = Maybe.nothing();
+    public String format = null;
     
     /**
      * The formatted value.
      */
-    public Maybe<String> output = Maybe.nothing();
+    public String output = null;
     
     /**
      * Field for arbitrary comments.
      */
-    public Maybe<String> comment = Maybe.nothing();
+    public String comment = null;
     
-    public Maybe<Integer> minIntegerDigits = Maybe.nothing();
-    public Maybe<Integer> maxIntegerDigits = Maybe.nothing();
-    public Maybe<Integer> minFractionDigits = Maybe.nothing();
-    public Maybe<Integer> maxFractionDigits = Maybe.nothing();
-    public Maybe<Integer> minGroupingDigits = Maybe.nothing();
-    public Maybe<Integer> useSigDigits = Maybe.nothing();
-    public Maybe<Integer> minSigDigits = Maybe.nothing();
-    public Maybe<Integer> maxSigDigits = Maybe.nothing();
-    public Maybe<Integer> useGrouping = Maybe.nothing();
-    public Maybe<Integer> multiplier = Maybe.nothing();
-    public Maybe<Double> roundingIncrement = Maybe.nothing();
-    public Maybe<Integer> formatWidth = Maybe.nothing();
-    public Maybe<String> padCharacter = Maybe.nothing();
-    public Maybe<Integer> useScientific = Maybe.nothing();
-    public Maybe<Integer> grouping = Maybe.nothing();
-    public Maybe<Integer> grouping2 = Maybe.nothing();
-    public Maybe<Integer> roundingMode = Maybe.nothing();
-    public Maybe<Currency.CurrencyUsage> currencyUsage = Maybe.nothing();
-    public Maybe<Integer> minimumExponentDigits = Maybe.nothing();
-    public Maybe<Integer> exponentSignAlwaysShown = Maybe.nothing();
-    public Maybe<Integer> decimalSeparatorAlwaysShown = Maybe.nothing();
-    public Maybe<Integer> padPosition = Maybe.nothing();
-    public Maybe<String> positivePrefix = Maybe.nothing();
-    public Maybe<String> positiveSuffix = Maybe.nothing();
-    public Maybe<String> negativePrefix = Maybe.nothing();
-    public Maybe<String> negativeSuffix = Maybe.nothing();
-    public Maybe<String> localizedPattern = Maybe.nothing();
-    public Maybe<String> toPattern = Maybe.nothing();
-    public Maybe<String> toLocalizedPattern = Maybe.nothing();
-    public Maybe<Integer> style = Maybe.nothing();
-    public Maybe<String> parse = Maybe.nothing();
-    public Maybe<Integer> lenient = Maybe.nothing();
-    public Maybe<String> plural = Maybe.nothing();
+    public Integer minIntegerDigits = null;
+    public Integer maxIntegerDigits = null;
+    public Integer minFractionDigits = null;
+    public Integer maxFractionDigits = null;
+    public Integer minGroupingDigits = null;
+    public Integer useSigDigits = null;
+    public Integer minSigDigits = null;
+    public Integer maxSigDigits = null;
+    public Integer useGrouping = null;
+    public Integer multiplier = null;
+    public Double roundingIncrement = null;
+    public Integer formatWidth = null;
+    public String padCharacter = null;
+    public Integer useScientific = null;
+    public Integer grouping = null;
+    public Integer grouping2 = null;
+    public Integer roundingMode = null;
+    public Currency.CurrencyUsage currencyUsage = null;
+    public Integer minimumExponentDigits = null;
+    public Integer exponentSignAlwaysShown = null;
+    public Integer decimalSeparatorAlwaysShown = null;
+    public Integer padPosition = null;
+    public String positivePrefix = null;
+    public String positiveSuffix = null;
+    public String negativePrefix = null;
+    public String negativeSuffix = null;
+    public String localizedPattern = null;
+    public String toPattern = null;
+    public String toLocalizedPattern = null;
+    public Integer style = null;
+    public String parse = null;
+    public Integer lenient = null;
+    public String plural = null;
     
     
     
@@ -122,7 +121,7 @@ public class NumberFormatTestTuple {
      * "C" means test is known to fail in C. "J" means test is known to fail in JAVA.
      * "CJ" means test is known to fail for both languages.
      */
-    public Maybe<String> breaks = Maybe.nothing();
+    public String breaks = null;
     
     private static Map<String, Integer> roundingModeMap =
             new HashMap<String, Integer>();
@@ -237,163 +236,163 @@ public class NumberFormatTestTuple {
     // add setter for each new field in this block.
     
     public void setLocale(String value) {
-        locale = Maybe.just(new ULocale(value));
+        locale = new ULocale(value);
     }
     
     public void setCurrency(String value) {
-        currency = Maybe.just(Currency.getInstance(value));
+        currency = Currency.getInstance(value);
     }
     
     public void setPattern(String value) {
-        pattern = Maybe.just(value);
+        pattern = value;
     }
     
     public void setFormat(String value) {
-        format = Maybe.just(value);
+        format = value;
     }
     
     public void setOutput(String value) {
-        output = Maybe.just(value);
+        output = value;
     }
     
     public void setComment(String value) {
-        comment = Maybe.just(value);
+        comment = value;
     }
     
     public void setMinIntegerDigits(String value) {
-        minIntegerDigits = Maybe.just(Integer.valueOf(value));
+        minIntegerDigits = Integer.valueOf(value);
     }
     
     public void setMaxIntegerDigits(String value) {
-        maxIntegerDigits = Maybe.just(Integer.valueOf(value));
+        maxIntegerDigits = Integer.valueOf(value);
     }
     
     public void setMinFractionDigits(String value) {
-        minFractionDigits = Maybe.just(Integer.valueOf(value));
+        minFractionDigits = Integer.valueOf(value);
     }
     
     public void setMaxFractionDigits(String value) {
-        maxFractionDigits = Maybe.just(Integer.valueOf(value));
+        maxFractionDigits = Integer.valueOf(value);
     }
     
     public void setMinGroupingDigits(String value) {
-        minGroupingDigits = Maybe.just(Integer.valueOf(value));
+        minGroupingDigits = Integer.valueOf(value);
     }
     
     public void setBreaks(String value) {
-        breaks = Maybe.just(value);
+        breaks = value;
     }
     
     public void setUseSigDigits(String value) {
-        useSigDigits = Maybe.just(Integer.valueOf(value));
+        useSigDigits = Integer.valueOf(value);
     }
     
     public void setMinSigDigits(String value) {
-        minSigDigits = Maybe.just(Integer.valueOf(value));
+        minSigDigits = Integer.valueOf(value);
     }
     
     public void setMaxSigDigits(String value) {
-        maxSigDigits = Maybe.just(Integer.valueOf(value));
+        maxSigDigits = Integer.valueOf(value);
     }
     
     public void setUseGrouping(String value) {
-        useGrouping = Maybe.just(Integer.valueOf(value));
+        useGrouping = Integer.valueOf(value);
     }
     
     public void setMultiplier(String value) {
-        multiplier = Maybe.just(Integer.valueOf(value));
+        multiplier = Integer.valueOf(value);
     }
     
     public void setRoundingIncrement(String value) {
-        roundingIncrement = Maybe.just(Double.valueOf(value));
+        roundingIncrement = Double.valueOf(value);
     }
     
     public void setFormatWidth(String value) {
-        formatWidth = Maybe.just(Integer.valueOf(value));
+        formatWidth = Integer.valueOf(value);
     }
     
     public void setPadCharacter(String value) {
-        padCharacter = Maybe.just(value);
+        padCharacter = value;
     }
     
     public void setUseScientific(String value) {
-        useScientific = Maybe.just(Integer.valueOf(value));
+        useScientific = Integer.valueOf(value);
     }
     
     public void setGrouping(String value) {
-        grouping = Maybe.just(Integer.valueOf(value));
+        grouping = Integer.valueOf(value);
     }
     
     public void setGrouping2(String value) {
-        grouping2 = Maybe.just(Integer.valueOf(value));
+        grouping2 = Integer.valueOf(value);
     }
     
     public void setRoundingMode(String value) {
-        roundingMode = Maybe.just(fromString(roundingModeMap, value));
+        roundingMode = fromString(roundingModeMap, value);
     }
     
     public void setCurrencyUsage(String value) {
-        currencyUsage = Maybe.just(fromString(currencyUsageMap, value));
+        currencyUsage = fromString(currencyUsageMap, value);
     }
     
     public void setMinimumExponentDigits(String value) {
-        minimumExponentDigits = Maybe.just(Integer.valueOf(value));
+        minimumExponentDigits = Integer.valueOf(value);
     }
     
     public void setExponentSignAlwaysShown(String value) {
-        exponentSignAlwaysShown = Maybe.just(Integer.valueOf(value));
+        exponentSignAlwaysShown = Integer.valueOf(value);
     }
     
     public void setDecimalSeparatorAlwaysShown(String value) {
-        decimalSeparatorAlwaysShown = Maybe.just(Integer.valueOf(value));
+        decimalSeparatorAlwaysShown = Integer.valueOf(value);
     }
     
     public void setPadPosition(String value) {
-        padPosition = Maybe.just(fromString(padPositionMap, value));
+        padPosition = fromString(padPositionMap, value);
     }
     
     public void setPositivePrefix(String value) {
-        positivePrefix = Maybe.just(value);
+        positivePrefix = value;
     }
     
     public void setPositiveSuffix(String value) {
-        positiveSuffix = Maybe.just(value);
+        positiveSuffix = value;
     }
     
     public void setNegativePrefix(String value) {
-        negativePrefix = Maybe.just(value);
+        negativePrefix = value;
     }
     
     public void setNegativeSuffix(String value) {
-        negativeSuffix = Maybe.just(value);
+        negativeSuffix = value;
     }
     
     public void setLocalizedPattern(String value) {
-        localizedPattern = Maybe.just(value);
+        localizedPattern = value;
     }
     
     public void setToPattern(String value) {
-        toPattern = Maybe.just(value);
+        toPattern = value;
     }
     
     public void setToLocalizedPattern(String value) {
-        toLocalizedPattern = Maybe.just(value);
+        toLocalizedPattern = value;
     }
     
     public void setStyle(String value) {
-        style = Maybe.just(fromString(formatStyleMap, value));
+        style = fromString(formatStyleMap, value);
     }
     
     public void setParse(String value) {
-        parse = Maybe.just(value);
+        parse = value;
     }
     
     public void setLenient(String value) {
-        lenient = Maybe.just(Integer.valueOf(value));
+        lenient = Integer.valueOf(value);
     }
     
     public void setPlural(String value) {
-        plural = Maybe.just(value);
+        plural = value;
     }
     
     // end field setters.
@@ -403,31 +402,31 @@ public class NumberFormatTestTuple {
     // in the next i.e the breaks field.
     
     public void clearBreaks() {
-        breaks = Maybe.nothing();
+        breaks = null;
     }
     
     public void clearUseGrouping() {
-        useGrouping = Maybe.nothing();
+        useGrouping = null;
     }
     
     public void clearGrouping2() {
-        grouping2 = Maybe.nothing();
+        grouping2 = null;
     }
     
     public void clearGrouping() {
-        grouping = Maybe.nothing();
+        grouping = null;
     }
     
     public void clearMinGroupingDigits() {
-        minGroupingDigits = Maybe.nothing();
+        minGroupingDigits = null;
     }
     
     public void clearUseScientific() {
-        useScientific = Maybe.nothing();
+        useScientific = null;
     }
     
     public void clearDecimalSeparatorAlwaysShown() {
-        decimalSeparatorAlwaysShown = Maybe.nothing();
+        decimalSeparatorAlwaysShown = null;
     }
     
     // end field clearers
@@ -464,8 +463,8 @@ public class NumberFormatTestTuple {
         for (String fieldName : fieldOrdering) {
             try {
                 Field field = getClass().getField(fieldName);
-                Maybe<?> maybeValue = (Maybe<?>) field.get(this);
-                if (maybeValue.isNothing()) {
+                Object optionalValue = field.get(this);
+                if (optionalValue == null) {
                     continue;
                 }
                 if (!first) {
@@ -474,7 +473,7 @@ public class NumberFormatTestTuple {
                 first = false;
                 result.append(fieldName);
                 result.append(": ");
-                result.append(maybeValue.getValue());
+                result.append(optionalValue);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException(e);
             } catch (SecurityException e) {

@@ -211,7 +211,8 @@ public class DataDrivenNumberFormatTestSuite extends TestFmwk {
     }
 
     private boolean breaks(char code) {
-       return (tuple.breaks.getValue("").toUpperCase().indexOf(code) != -1);
+       String breaks = tuple.breaks == null ? "" : tuple.breaks;
+       return (breaks.toUpperCase().indexOf(code) != -1);
     }
 
     private static boolean isSpace(char c) {
@@ -293,22 +294,22 @@ public class DataDrivenNumberFormatTestSuite extends TestFmwk {
     
     private String isPass(NumberFormatTestTuple tuple) {
         StringBuilder result = new StringBuilder();
-        if (tuple.format.isValue() && tuple.output.isValue()) {
+        if (tuple.format != null && tuple.output != null) {
             String errorMessage = codeUnderTest.format(tuple);
             if (errorMessage != null) {
                 result.append(errorMessage);
             }
-        } else if (tuple.toPattern.isValue() || tuple.toLocalizedPattern.isValue()) {
+        } else if (tuple.toPattern != null || tuple.toLocalizedPattern != null) {
             String errorMessage = codeUnderTest.toPattern(tuple);
             if (errorMessage != null) {
                 result.append(errorMessage);
             }
-        } else if (tuple.parse.isValue() && tuple.output.isValue()) {
+        } else if (tuple.parse != null && tuple.output != null) {
             String errorMessage = codeUnderTest.parse(tuple);
             if (errorMessage != null) {
                 result.append(errorMessage);
             }
-        } else if (tuple.plural.isValue()) {
+        } else if (tuple.plural != null) {
             String errorMessage = codeUnderTest.select(tuple);
             if (errorMessage != null) {
                 result.append(errorMessage);
