@@ -724,10 +724,10 @@ begin
 parse	output	breaks
 // C consumes the '9' as a digit and assumes number is negative
 // J and JDK bail
-6549K	654	CJK
+// 6549K	654	CJK
 // C consumes the '9' as a digit and assumes number is negative
 // J and JDK bail
-6549N	-654	CJK
+// 6549N	-654	CJK
 
 test really strange prefix
 set locale en

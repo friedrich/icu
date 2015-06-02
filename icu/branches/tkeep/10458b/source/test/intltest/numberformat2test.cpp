@@ -98,6 +98,10 @@ UBool isSelectPass(
         const NumberFormatTestTuple &tuple,
         UnicodeString &appendErrorMessage,
         UErrorCode &status);
+UBool isParsePass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status);
 private:
 
 };
@@ -603,6 +607,53 @@ UBool NumberFormat2TestDataDriven::isSelectPass(
     }
     return appendErrorMessage.length() == 0;
 }
+
+UBool NumberFormat2TestDataDriven::isParsePass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    LocalPointer<DecimalFormat2> fmtPtr(newDecimalFormat(tuple, status));
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error creating DecimalFormat.");
+        return FALSE;
+    }
+    adjustDecimalFormat(tuple, *fmtPtr, appendErrorMessage);
+    if (appendErrorMessage.length() > 0) {
+        return FALSE;
+    }
+    fmtPtr->setLenient(NFTT_GET_FIELD(tuple, lenient, 1) != 0 ? TRUE : FALSE);
+    Formattable result;
+    ParsePosition ppos;
+    fmtPtr->parse(tuple.parse, result, ppos);
+    if (ppos.getIndex() == 0) {
+        if (tuple.output != "fail") {
+            appendErrorMessage.append("Parse error expected.");
+            return FALSE;
+        }
+        return TRUE;
+    }
+    UnicodeString resultStr(UnicodeString::fromUTF8(result.getDecimalNumber(status)));
+    if (tuple.output == "fail") {
+        appendErrorMessage.append(UnicodeString("Parse succeeded: ") + resultStr + ", but was expected to fail.");
+        return FALSE;
+    }
+    DigitList expected;
+    strToDigitList(tuple.output, expected, status);
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error parsing.");
+        return FALSE;
+    }
+    if (expected != *result.getDigitList()) {
+        appendErrorMessage.append(
+                    UnicodeString("Expected: ") + tuple.output + ", got: " + resultStr + ". ");
+        return FALSE;
+    }
+    return TRUE;
+}
+
 
 class NumberFormat2Test : public IntlTest {
 public:
