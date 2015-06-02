@@ -26,6 +26,7 @@ class UnicodeString;
 class FieldPosition;
 class ValueFormatter;
 class FieldPositionHandler;
+class DecimalFormatStaticSets;
 
 class DecimalFormat2 : public UObject {
 public:
@@ -185,9 +186,32 @@ void setNegativeSuffix(const UnicodeString &str);
 UnicodeString &toPattern(UnicodeString& result) const;
 UnicodeString select(double value, const PluralRules &rules) const;
 UnicodeString select(DigitList &number, const PluralRules &rules) const;
+UBool isLenient() const { return fLenient; }
+void setLenient(UBool b) { fLenient = b; }
+void parse(const UnicodeString& text,
+           Formattable& result,
+           ParsePosition& parsePosition) const;
+void parse(const UnicodeString& text,
+           Formattable& result,
+           ParsePosition& parsePosition,
+           UChar* currency) const;
+UBool isParseIntegerOnly() const { return fParseIntegerOnly; }
+void setParseIntegerOnly(UBool b) { fParseIntegerOnly = b; }
+void getEffectiveCurrency(UChar *result, UErrorCode &status) const;
+
 private:
+   enum {
+        fgStatusInfinite,
+        fgStatusLength      // Leave last in list.
+    } StatusFlags;
+
 DigitList fMultiplier;
 DigitList::ERoundingMode fRoundingMode;
+UBool fLenient;
+const DecimalFormatStaticSets *fStaticSets;
+UBool fParseDecimalMarkRequired;
+UBool fParseNoExponent;
+UBool fParseIntegerOnly;
 
 // These fields include what the user can see and set.
 // When the user updates these fields, it triggers automatic updates of
@@ -314,6 +338,66 @@ int32_t computeExponentPatternLength() const;
 int32_t countFractionDigitAndDecimalPatternLength(int32_t fracDigitCount) const;
 UnicodeString &toNumberPattern(
         UBool hasPadding, int32_t minimumLength, UnicodeString& result) const;
+
+int32_t getOldFormatWidth() const;
+const UnicodeString &getConstSymbol(
+        DecimalFormatSymbols::ENumberFormatSymbol symbol) const;
+UBool isParseFastpath() const;
+int32_t skipPadding(const UnicodeString& text, int32_t position) const;
+static int32_t skipUWhiteSpace(const UnicodeString& text, int32_t pos);
+UBool parseForCurrency(const UnicodeString& text,
+                      ParsePosition& parsePosition,
+                      DigitList& digits,
+                      UBool* status,
+                      UChar* currency) const;
+UBool subparse(const UnicodeString& text,
+               const UnicodeString* negPrefix,
+               const UnicodeString* negSuffix,
+               const UnicodeString* posPrefix,
+               const UnicodeString* posSuffix,
+               UBool complexCurrencyParsing,
+               int8_t type,
+               ParsePosition& parsePosition,
+               DigitList& digits, UBool* status,
+               UChar* currency) const;
+static UBool matchGrouping(UChar32 groupingChar,
+                    UBool sawGrouping, UChar32 sawGroupingChar,
+                    const UnicodeSet *sset,
+                    UChar32 /*decimalChar*/, const UnicodeSet *decimalSet,
+                    UChar32 schar);
+int32_t compareAffix(const UnicodeString& text,
+                     int32_t pos,
+                     UBool isNegative,
+                     UBool isPrefix,
+                     const UnicodeString* affixPat,
+                     UBool complexCurrencyParsing,
+                     int8_t type,
+                     UChar* currency) const;
+static UBool matchDecimal(
+        UChar32 symbolChar,
+        UBool sawDecimal,  UChar32 sawDecimalChar,
+        const UnicodeSet *sset, UChar32 schar);
+int32_t compareComplexAffix(const UnicodeString& affixPat,
+                            const UnicodeString& text,
+                            int32_t pos,
+                            int8_t type,
+                            UChar* currency) const;
+UBool equalWithSignCompatibility(
+        UChar32 lhs, UChar32 rhs) const;
+int32_t compareSimpleAffix(
+        const UnicodeString& affix,
+        const UnicodeString& input,
+        int32_t pos,
+        UBool lenient) const;
+static int32_t skipPatternWhiteSpace(
+        const UnicodeString& text, int32_t pos);
+static int32_t skipUWhiteSpaceAndMarks(const UnicodeString& text, int32_t pos);
+static int32_t match(const UnicodeString& text, int32_t pos, UChar32 ch);
+static int32_t skipBidiMarks(const UnicodeString& text, int32_t pos);
+static UnicodeString& trimMarksFromAffix(const UnicodeString& affix, UnicodeString& trimmedAffix);
+static UBool matchSymbol(const UnicodeString &text, int32_t position, int32_t length, const UnicodeString &symbol, UnicodeSet *sset, UChar32 schar);
+static int32_t match(const UnicodeString& text, int32_t pos, const UnicodeString& str);
+
 };
 
 
