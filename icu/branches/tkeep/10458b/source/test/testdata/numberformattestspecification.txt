@@ -1,3 +1,14 @@
+// Copyright (C) 2015, International Business Machines
+// Corporation and others.  All Rights Reserved.
+//
+// This file is divided into test suites separated by whitespace. Each test
+// suite starts with the name of the test followed by global field settings
+// for that test suite. After the global settings, comes "begin", the
+// per-test field names, and finally the test specific field values, 1 test
+// per line.
+// For more information on the format of this file, including all the available
+// field names, please see
+// https://docs.google.com/document/d/1T2P0p953_Lh1pRwo-5CuPVrHlIBa_wcXElG-Hhg_WHM/edit?usp=sharing
 test basic patterns
 set locale fr_FR
 set format 1234.567
@@ -109,7 +120,7 @@ test permille
 set locale fr
 begin
 pattern	format	output	breaks
-0.0\u2030	0.573	573,0\u2030
+0.0\u2030	0.573	573,0‰
 \u20300.0	0.573	\u2030573,0
 p\u2030p0.0	0.573	p\u2030p573,0
 p'\u2030'p0.0	0.573	p\u2030p0,6
@@ -404,8 +415,8 @@ set pattern \u00a4\u00a4 0
 begin
 format	currencyUsage	output	breaks
 0.37	standard	CHF 0.37	K
-// TODO: Get the rounding data into ICU4J so that J is not broken
-0.37	cash	CHF 0.35	JK
+// TODO: Get the rounding data into ICU4C and ICU4J
+0.37	cash	CHF 0.35	CJK
 
 test exponent parameter setters
 set locale en_US
@@ -483,10 +494,10 @@ test nan and infinity with multiplication
 set locale en
 set multiplier 100
 begin
-format	output
+format	output	breaks
 Inf	\u221e
 -Inf	-\u221e
-NaN	NaN
+NaN	NaN	K
 
 test nan and infinity with padding
 set locale en_US
