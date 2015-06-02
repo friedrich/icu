@@ -5,7 +5,6 @@
  ********************************************************************/
 
 #include "datadrivennumberformattestsuite.h"
-#include "intltest.h"
 #include "charstr.h"
 #include "ucbuf.h"
 #include "unicode/localpointer.h"
@@ -16,8 +15,6 @@ U_DEFINE_LOCAL_OPEN_POINTER(LocalUCHARBUFPointer, UCHARBUF, ucbuf_close);
 static UBool isCROrLF(UChar c) { return c == 0xa || c == 0xd; }
 static UBool isSpace(UChar c) { return c == 9 || c == 0x20 || c == 0x3000; }
 
-U_NAMESPACE_BEGIN
-
 void DataDrivenNumberFormatTestSuite::run(const char *fileName, UBool runAllTests) {
     fFileLineNumber = 0;
     fFormatTestNumber = 0;
@@ -26,14 +23,14 @@ void DataDrivenNumberFormatTestSuite::run(const char *fileName, UBool runAllTest
         delete fPreviousFormatters[i];
         fPreviousFormatters[i] = newFormatter(status);
     }
-    if (!IntlTest::gTest->assertSuccess("Can't create previous formatters", status)) {
+    if (!assertSuccess("Can't create previous formatters", status)) {
         return;
     }
-    CharString path(IntlTest::gTest->getSourceTestData(status), status);
+    CharString path(getSourceTestData(status), status);
     path.appendPathPart(fileName, status);
     const char *codePage = "UTF-8";
     LocalUCHARBUFPointer f(ucbuf_open(path.data(), &codePage, TRUE, FALSE, &status));
-    if (!IntlTest::gTest->assertSuccess("Can't open data file", status)) {
+    if (!assertSuccess("Can't open data file", status)) {
         return;
     }
     UnicodeString columnValues[kNumberFormatTestTupleFieldCount];
@@ -156,12 +153,12 @@ DataDrivenNumberFormatTestSuite::splitBy(
 
 void DataDrivenNumberFormatTestSuite::showLineInfo() {
     UnicodeString indent("    ");
-    IntlTest::gTest->infoln(indent + fFileTestName);
-    IntlTest::gTest->infoln(indent + fFileLine);
+    infoln(indent + fFileTestName);
+    infoln(indent + fFileLine);
 }
 
 void DataDrivenNumberFormatTestSuite::showError(const char *message) {
-    IntlTest::gTest->errln("line %d: %s", (int) fFileLineNumber, message);
+    errln("line %d: %s", (int) fFileLineNumber, message);
     showLineInfo();
 }
 
@@ -170,8 +167,8 @@ void DataDrivenNumberFormatTestSuite::showFailure(const UnicodeString &message) 
     uprv_itou(
             lineStr, UPRV_LENGTHOF(lineStr), (uint32_t) fFileLineNumber, 10, 1);
     UnicodeString fullMessage("line ");
-    IntlTest::gTest->errln(fullMessage.append(lineStr).append(": ")
-            .append(IntlTest::gTest->prettify(message)));
+    errln(fullMessage.append(lineStr).append(": ")
+            .append(prettify(message)));
     showLineInfo();
 }
 
@@ -181,7 +178,7 @@ UBool DataDrivenNumberFormatTestSuite::readLine(
     const UChar *line = ucbuf_readline(f, &lineLength, &status);
     if(line == NULL || U_FAILURE(status)) {
         if (U_FAILURE(status)) {
-            IntlTest::gTest->errln("Error reading line from file.");
+            errln("Error reading line from file.");
         }
         fFileLine.remove();
         return FALSE;
@@ -290,4 +287,3 @@ UBool DataDrivenNumberFormatTestSuite::isSelectPass(
     return TRUE;
 }
 
-U_NAMESPACE_END

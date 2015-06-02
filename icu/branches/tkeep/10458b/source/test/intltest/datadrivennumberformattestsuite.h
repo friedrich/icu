@@ -11,16 +11,15 @@
 #include "unicode/uobject.h"
 #include "unicode/unistr.h"
 #include "numberformattesttuple.h"
+#include "intltest.h"
 
 struct UCHARBUF;
 class IntlTest;
 
-U_NAMESPACE_BEGIN
-
 /**
  * Performs various in-depth test on NumberFormat
  **/
-class DataDrivenNumberFormatTestSuite : public UObject {
+class DataDrivenNumberFormatTestSuite : IntlTest {
 
  public:
      DataDrivenNumberFormatTestSuite() {
@@ -28,30 +27,78 @@ class DataDrivenNumberFormatTestSuite : public UObject {
              fPreviousFormatters[i] = NULL;
          }
      }
+
+     /**
+      * Runs the data driven test suite.
+      *
+      * @param fileName is the name of the file in the source/test/testdata.
+      *  This should be just a filename such as "numberformattest.txt"
+      * @param runAllTests If TRUE, runs every test in fileName. if FALSE,
+      *  skips the tests that are known to break for ICU4C.
+      */
      void run(const char *fileName, UBool runAllTests);
      virtual ~DataDrivenNumberFormatTestSuite();
  protected:
-    // Subclass can either override this method or to test copy and assignment,
-    // subclass may override the next isFormatPass AND newFormatter.
-    // Subclasses must not override both isFormatPass methods.
+    /**
+     * Subclasses override this method to test formatting numbers.
+     * Subclasses must not override both isFormatPass methods.
+     * @param tuple the test data for current test. The format method can
+     *   assume that the format and output fields are populated.
+     * @param appendErrorMessage any message describing failures appended
+     *   here.
+     * @param status any error returned here.
+     * @return TRUE if test passed or FALSE if test failed.
+     */
     virtual UBool isFormatPass(
             const NumberFormatTestTuple &tuple,
             UnicodeString &appendErrorMessage,
             UErrorCode &status);
+
+    
+    /**
+     * Subclasses override this method to test formatting numbers.
+     * Along with copy and assignment operators.
+     * @param tuple the test data for current test. The format method can
+     *   assume that the format and output fields are populated.
+     * @param somePreviousFormatter A pointer to a previous formatter
+     *  that the test framework owns. This formatter changes as tests
+     *  are run. Subclasses should initialize a formatter and assign
+     *  the newly initialized formatter to this formatter. In this way,
+     *  assignment gets tested with multiple previous states.
+     * @param appendErrorMessage any message describing failures appended
+     *   here.
+     * @param status any error returned here.
+     * @return TRUE if test passed or FALSE if test failed.
+     */
     virtual UBool isFormatPass(
             const NumberFormatTestTuple &tuple,
             UObject *somePreviousFormatter,
             UnicodeString &appendErrorMessage,
             UErrorCode &status);
+    /**
+     * If subclass is testing formatting with copy and assignmet, it
+     * needs to override this method to return a newly allocated formatter.
+     */
     virtual UObject *newFormatter(UErrorCode &status);
+
+    /**
+     * Tests toPattern method.
+     */
     virtual UBool isToPatternPass(
             const NumberFormatTestTuple &tuple,
             UnicodeString &appendErrorMessage,
             UErrorCode &status);
+    /**
+     * Test parsing.
+     */
     virtual UBool isParsePass(
             const NumberFormatTestTuple &tuple,
             UnicodeString &appendErrorMessage,
             UErrorCode &status);
+
+    /**
+     * Test plural selection.
+     */
     virtual UBool isSelectPass(
             const NumberFormatTestTuple &tuple,
             UnicodeString &appendErrorMessage,
@@ -79,7 +126,5 @@ class DataDrivenNumberFormatTestSuite : public UObject {
             UnicodeString &appendErrorMessage,
             UErrorCode &status);
 };
-
-U_NAMESPACE_END
 
 #endif // _DATADRIVENNUMBERFORMATTESTSUITE_

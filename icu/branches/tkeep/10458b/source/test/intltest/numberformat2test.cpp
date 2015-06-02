@@ -82,7 +82,7 @@ UBool NumberFormat2Test_FieldPositionHandler::isRecording() const {
     return bRecording;
 }
 
-class NumberFormat2TestDataDriven : public icu::DataDrivenNumberFormatTestSuite {
+class NumberFormat2TestDataDriven : public DataDrivenNumberFormatTestSuite {
 protected:
 UBool isFormatPass(
         const NumberFormatTestTuple &tuple,
