@@ -37,7 +37,7 @@
 #include "ustrfmt.h"
 #include "datadrivennumberformattestsuite.h"
 
-class NumberFormatTestDataDriven : public icu::DataDrivenNumberFormatTestSuite {
+class NumberFormatTestDataDriven : public DataDrivenNumberFormatTestSuite {
 protected:
 UBool isFormatPass(
         const NumberFormatTestTuple &tuple,
@@ -51,54 +51,7 @@ UBool isParsePass(
         const NumberFormatTestTuple &tuple,
         UnicodeString &appendErrorMessage,
         UErrorCode &status);
-
 };
-
-#define CHECK_EQUALITY(fmt, fmtCopy, fieldName, getter, errors) \
-    if ((fmt).getter() != (fmtCopy).getter() && (fmt) == (fmtCopy)) { \
-        (errors).append(#fieldName); \
-        (errors).append(": set/equality mismatch"); \
-    } \
-
-#define SET_AND_CHECK_WITH_STATUS_LONG(fmt, fieldName, setter, getter, expr, cond, errors) { \
-    DecimalFormat fmtCopy(fmt); \
-    if (fmtCopy != (fmt)) { \
-        (errors).append("copy constructor equality mismatch"); \
-    } else { \
-        UErrorCode status = U_ZERO_ERROR; \
-        (fmt).setter(expr, status); \
-        if (U_FAILURE(status)) { \
-            (errors).append(#fieldName); \
-            (errors).append(": error setting."); \
-        } else if ((cond) && (fmt).getter() != (expr)) { \
-            (errors).append(#fieldName); \
-            (errors).append(": set/get mismatch"); \
-        } \
-        CHECK_EQUALITY(fmt, fmtCopy, fieldName, getter, errors); \
-    } \
-}
-
-#define SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, setter, getter, expr, cond, errors) { \
-    DecimalFormat fmtCopy(fmt); \
-    if (fmtCopy != (fmt)) { \
-        (errors).append("copy constructor equality mismatch"); \
-    } else { \
-        (fmt).setter(expr); \
-        if ((cond) && (fmt).getter() != (expr)) { \
-            (errors).append(#fieldName); \
-            (errors).append(": set/get mismatch"); \
-        } \
-        CHECK_EQUALITY(fmt, fmtCopy, fieldName, getter, errors); \
-    } \
-}
-
-#define SET_AND_CHECK(fmt, fieldName, expr, errors) SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, set##fieldName, get##fieldName, expr, FALSE, errors)
-
-#define SET_AND_CHECK_WITH_STATUS(fmt, fieldName, expr, errors) SET_AND_CHECK_WITH_STATUS_LONG(fmt, fieldName, set##fieldName, get##fieldName, expr, FALSE, errors)
-
-#define SET_AND_CHECK_WITH_COND(fmt, fieldName, expr, cond, errors) SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, set##fieldName, get##fieldName, expr, FALSE, errors)
-
-#define SET_AND_CHECK_BOOL(fmt, fieldName, expr, errors) SET_AND_CHECK_WITH_COND_LONG(fmt, fieldName, set##fieldName, is##fieldName, expr, FALSE, errors)
 
 static DigitList &strToDigitList(
         const UnicodeString &str,
@@ -142,32 +95,16 @@ static void adjustDecimalFormat(
         DecimalFormat &fmt,
         UnicodeString &appendErrorMessage) {
     if (tuple.minIntegerDigitsFlag) {
-        SET_AND_CHECK(
-                fmt,
-                MinimumIntegerDigits,
-                tuple.minIntegerDigits,
-                appendErrorMessage);
+        fmt.setMinimumIntegerDigits(tuple.minIntegerDigits);
     }
     if (tuple.maxIntegerDigitsFlag) {
-        SET_AND_CHECK(
-                fmt,
-                MaximumIntegerDigits,
-                tuple.maxIntegerDigits,
-                appendErrorMessage);
+        fmt.setMaximumIntegerDigits(tuple.maxIntegerDigits);
     }
     if (tuple.minFractionDigitsFlag) {
-        SET_AND_CHECK(
-                fmt,
-                MinimumFractionDigits,
-                tuple.minFractionDigits,
-                appendErrorMessage);
+        fmt.setMinimumFractionDigits(tuple.minFractionDigits);
     }
     if (tuple.maxFractionDigitsFlag) {
-        SET_AND_CHECK(
-                fmt,
-                MaximumFractionDigits,
-                tuple.maxFractionDigits,
-                appendErrorMessage);
+        fmt.setMaximumFractionDigits(tuple.maxFractionDigits);
     }
     if (tuple.currencyFlag) {
         UErrorCode status = U_ZERO_ERROR;
@@ -182,112 +119,40 @@ static void adjustDecimalFormat(
         // Oops, not supported
     }
     if (tuple.useSigDigitsFlag) {
-        UBool newValue = tuple.useSigDigits != 0;
-        SET_AND_CHECK_WITH_COND_LONG(
-                fmt,
-                SignificantDigitsUsed,
-                setSignificantDigitsUsed,
-                areSignificantDigitsUsed,
-                newValue,
-                FALSE,
-                appendErrorMessage);
+        fmt.setSignificantDigitsUsed(tuple.useSigDigits != 0);
     }
     if (tuple.minSigDigitsFlag) {
-        SET_AND_CHECK(
-                fmt,
-                MinimumSignificantDigits,
-                tuple.minSigDigits,
-                appendErrorMessage);
+        fmt.setMinimumSignificantDigits(tuple.minSigDigits);
     }
     if (tuple.maxSigDigitsFlag) {
-        SET_AND_CHECK(
-                fmt,
-                MaximumSignificantDigits,
-                tuple.maxSigDigits,
-                appendErrorMessage);
+        fmt.setMaximumSignificantDigits(tuple.maxSigDigits);
     }
     if (tuple.useGroupingFlag) {
-        SET_AND_CHECK_BOOL(
-                fmt,
-                GroupingUsed,
-                tuple.useGrouping != 0,
-                appendErrorMessage);
+        fmt.setGroupingUsed(tuple.useGrouping != 0);
     }
     if (tuple.multiplierFlag) {
-        SET_AND_CHECK_WITH_COND(
-                fmt,
-                Multiplier,
-                tuple.multiplier,
-                tuple.multiplier != 0,
-                appendErrorMessage);
+        fmt.setMultiplier(tuple.multiplier);
     }
     if (tuple.roundingIncrementFlag) {
-        SET_AND_CHECK(
-                fmt,
-                RoundingIncrement,
-                tuple.roundingIncrement,
-                appendErrorMessage);
+        fmt.setRoundingIncrement(tuple.roundingIncrement);
     }
     if (tuple.formatWidthFlag) {
-        SET_AND_CHECK(
-                fmt,
-                FormatWidth,
-                tuple.formatWidth,
-                appendErrorMessage);
+        fmt.setFormatWidth(tuple.formatWidth);
     }
     if (tuple.padCharacterFlag) {
         fmt.setPadCharacter(tuple.padCharacter);
     }
     if (tuple.useScientificFlag) {
-        SET_AND_CHECK_BOOL(
-                fmt,
-                ScientificNotation,
-                tuple.useScientific != 0,
-                appendErrorMessage);
+        fmt.setScientificNotation(tuple.useScientific != 0);
     }
     if (tuple.groupingFlag) {
-        SET_AND_CHECK(
-                fmt,
-                GroupingSize,
-                tuple.grouping,
-                appendErrorMessage);
+        fmt.setGroupingSize(tuple.grouping);
     }
     if (tuple.grouping2Flag) {
-        SET_AND_CHECK(
-                fmt,
-                SecondaryGroupingSize,
-                tuple.grouping2,
-                appendErrorMessage);
+        fmt.setSecondaryGroupingSize(tuple.grouping2);
     }
     if (tuple.roundingModeFlag) {
-        switch (tuple.roundingMode) {
-        case DigitList::kRoundDown:
-            fmt.setRoundingMode(DecimalFormat::kRoundDown);
-            break;
-        case DigitList::kRoundUp:
-            fmt.setRoundingMode(DecimalFormat::kRoundUp);
-            break;
-        case DigitList::kRoundHalfDown:
-            fmt.setRoundingMode(DecimalFormat::kRoundHalfDown);
-            break;
-        case DigitList::kRoundHalfUp:
-            fmt.setRoundingMode(DecimalFormat::kRoundHalfUp);
-            break;
-        case DigitList::kRoundHalfEven:
-            fmt.setRoundingMode(DecimalFormat::kRoundHalfEven);
-            break;
-        case DigitList::kRoundCeiling:
-            fmt.setRoundingMode(DecimalFormat::kRoundCeiling);
-            break;
-        case DigitList::kRoundFloor:
-            fmt.setRoundingMode(DecimalFormat::kRoundFloor);
-            break;
-        case DigitList::kRoundUnnecessary:
-            fmt.setRoundingMode(DecimalFormat::kRoundUnnecessary);
-            break;
-        default:
-            appendErrorMessage.append("Bad rounding mode.");
-        }
+        fmt.setRoundingMode(tuple.roundingMode);
     }
     if (tuple.currencyUsageFlag) {
         UErrorCode status = U_ZERO_ERROR;
@@ -297,43 +162,17 @@ static void adjustDecimalFormat(
         }
     }
     if (tuple.minimumExponentDigitsFlag) {
-        SET_AND_CHECK(
-                fmt,
-                MinimumExponentDigits,
-                tuple.minimumExponentDigits,
-                appendErrorMessage);
+        fmt.setMinimumExponentDigits(tuple.minimumExponentDigits);
     }
     if (tuple.exponentSignAlwaysShownFlag) {
-        SET_AND_CHECK_BOOL(
-                fmt,
-                ExponentSignAlwaysShown,
-                tuple.exponentSignAlwaysShown != 0,
-                appendErrorMessage);
+        fmt.setExponentSignAlwaysShown(tuple.exponentSignAlwaysShown != 0);
     }
     if (tuple.decimalSeparatorAlwaysShownFlag) {
-        SET_AND_CHECK_BOOL(
-                fmt,
-                DecimalSeparatorAlwaysShown,
-                tuple.decimalSeparatorAlwaysShown != 0,
-                appendErrorMessage);
+        fmt.setDecimalSeparatorAlwaysShown(
+                tuple.decimalSeparatorAlwaysShown != 0);
     }
     if (tuple.padPositionFlag) {
-        switch (tuple.padPosition) {
-        case DigitAffixesAndPadding::kPadBeforePrefix:
-            fmt.setPadPosition(DecimalFormat::kPadBeforePrefix);
-            break;
-        case DigitAffixesAndPadding::kPadAfterPrefix:
-            fmt.setPadPosition(DecimalFormat::kPadAfterPrefix);
-            break;
-        case DigitAffixesAndPadding::kPadBeforeSuffix:
-            fmt.setPadPosition(DecimalFormat::kPadBeforeSuffix);
-            break;
-        case DigitAffixesAndPadding::kPadAfterSuffix:
-            fmt.setPadPosition(DecimalFormat::kPadAfterSuffix);
-            break;
-        default:
-            appendErrorMessage.append("Bad rounding mode.");
-        }
+        fmt.setPadPosition(tuple.padPosition);
     }
     if (tuple.positivePrefixFlag) {
         fmt.setPositivePrefix(tuple.positivePrefix);
@@ -506,7 +345,6 @@ UBool NumberFormatTestDataDriven::isParsePass(
     return TRUE;
 }
 
-
     
 U_DEFINE_LOCAL_OPEN_POINTER(LocalUCHARBUFPointer, UCHARBUF, ucbuf_close);
 
@@ -611,7 +449,7 @@ void NumberFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &n
   TESTCASE_AUTO(TestEquality);
   TESTCASE_AUTO(TestCurrencyUsage);
   TESTCASE_AUTO(TestNumberFormatTestTuple);
-  TESTCASE_AUTO(TestDataDrivenSpecification);
+  TESTCASE_AUTO(TestDataDriven);
   TESTCASE_AUTO(TestFastPathConsistent11524);
   TESTCASE_AUTO(TestGetAffixes);
   TESTCASE_AUTO(TestApplyPatternResets);
@@ -8351,7 +8189,7 @@ void NumberFormatTest::TestNumberFormatTestTuple() {
 }
 
 void
-NumberFormatTest::TestDataDrivenSpecification() {
+NumberFormatTest::TestDataDriven() {
     NumberFormatTestDataDriven dd;
     dd.run("numberformattestspecification.txt", FALSE);
 }

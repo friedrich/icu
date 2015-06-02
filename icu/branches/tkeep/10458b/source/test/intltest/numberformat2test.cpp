@@ -33,6 +33,7 @@
 #include "charstr.h"
 #include "smallintformatter.h"
 #include "decimfmt2.h"
+#include "uassert.h"
 
 static const int32_t kIntField = 4938;
 static const int32_t kSignField = 5770;
@@ -184,6 +185,48 @@ static UnicodeString &format(
     return fmt.format(digitList, appendTo, fpos, status);
 }
 
+static DigitList::ERoundingMode convertRoundingMode(
+        DecimalFormat::ERoundingMode mode) {
+    switch (mode) {
+    case DecimalFormat::kRoundCeiling:
+        return DigitList::kRoundCeiling;
+    case DecimalFormat::kRoundFloor:
+        return DigitList::kRoundFloor;
+    case DecimalFormat::kRoundDown:
+        return DigitList::kRoundDown;
+    case DecimalFormat::kRoundUp:
+        return DigitList::kRoundUp;
+    case DecimalFormat::kRoundHalfEven:
+        return DigitList::kRoundHalfEven;
+    case DecimalFormat::kRoundHalfDown:
+        return DigitList::kRoundHalfDown;
+    case DecimalFormat::kRoundHalfUp:
+        return DigitList::kRoundHalfUp;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return DigitList::kRoundHalfUp;
+}
+
+static DigitAffixesAndPadding::EPadPosition convertPadPosition(
+        DecimalFormat::EPadPosition position) {
+    switch (position) {
+    case DecimalFormat::kPadBeforePrefix:
+        return DigitAffixesAndPadding::kPadBeforePrefix;
+    case DecimalFormat::kPadAfterPrefix:
+        return DigitAffixesAndPadding::kPadAfterPrefix;
+    case DecimalFormat::kPadBeforeSuffix:
+        return DigitAffixesAndPadding::kPadBeforeSuffix;
+    case DecimalFormat::kPadAfterSuffix:
+        return DigitAffixesAndPadding::kPadAfterSuffix;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return DigitAffixesAndPadding::kPadBeforePrefix;
+}
+
 static void adjustDecimalFormat(
         const NumberFormatTestTuple &tuple,
         DecimalFormat2 &fmt,
@@ -328,7 +371,7 @@ static void adjustDecimalFormat(
         SET_AND_CHECK(
                 fmt,
                 RoundingMode,
-                tuple.roundingMode,
+                convertRoundingMode(tuple.roundingMode),
                 appendErrorMessage);
     }
     if (tuple.currencyUsageFlag) {
@@ -363,7 +406,7 @@ static void adjustDecimalFormat(
         SET_AND_CHECK(
                 fmt,
                 PadPosition,
-                tuple.padPosition,
+                convertPadPosition(tuple.padPosition),
                 appendErrorMessage);
     }
     if (tuple.positivePrefixFlag) {

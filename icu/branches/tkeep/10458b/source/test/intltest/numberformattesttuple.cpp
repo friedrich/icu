@@ -1,6 +1,6 @@
 /*
 *******************************************************************************
-* Copyright (C) 1997-2014, International Business Machines Corporation and    *
+* Copyright (C) 2015, International Business Machines Corporation and         *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 */
@@ -12,9 +12,7 @@
 #include "cmemory.h"
 #include "digitlst.h"
 
-U_NAMESPACE_BEGIN
-
-NumberFormatTestTuple *gNullPtr = NULL;
+static NumberFormatTestTuple *gNullPtr = NULL;
 
 #define FIELD_OFFSET(fieldName) ((int32_t) (((char *) &gNullPtr->fieldName) - ((char *) gNullPtr)))
 #define FIELD_FLAG_OFFSET(fieldName) ((int32_t) (((char *) &gNullPtr->fieldName##Flag) - ((char *) gNullPtr)))
@@ -27,24 +25,24 @@ struct Numberformattesttuple_EnumConversion {
 };
 
 static Numberformattesttuple_EnumConversion gRoundingEnum[] = {
-    {"ceiling", DigitList::kRoundCeiling},
-    {"floor", DigitList::kRoundFloor},
-    {"down", DigitList::kRoundDown},
-    {"up", DigitList::kRoundUp},
-    {"halfEven", DigitList::kRoundHalfEven},
-    {"halfDown", DigitList::kRoundHalfDown},
-    {"halfUp", DigitList::kRoundHalfUp},
-    {"unnecessary", DigitList::kRoundUnnecessary}};
+    {"ceiling", DecimalFormat::kRoundCeiling},
+    {"floor", DecimalFormat::kRoundFloor},
+    {"down", DecimalFormat::kRoundDown},
+    {"up", DecimalFormat::kRoundUp},
+    {"halfEven", DecimalFormat::kRoundHalfEven},
+    {"halfDown", DecimalFormat::kRoundHalfDown},
+    {"halfUp", DecimalFormat::kRoundHalfUp},
+    {"unnecessary", DecimalFormat::kRoundUnnecessary}};
 
 static Numberformattesttuple_EnumConversion gCurrencyUsageEnum[] = {
     {"standard", UCURR_USAGE_STANDARD},
     {"cash", UCURR_USAGE_CASH}};
 
 static Numberformattesttuple_EnumConversion gPadPositionEnum[] = {
-    {"beforePrefix", DigitAffixesAndPadding::kPadBeforePrefix},
-    {"afterPrefix", DigitAffixesAndPadding::kPadAfterPrefix},
-    {"beforeSuffix", DigitAffixesAndPadding::kPadBeforeSuffix},
-    {"afterSuffix", DigitAffixesAndPadding::kPadAfterSuffix}};
+    {"beforePrefix", DecimalFormat::kPadBeforePrefix},
+    {"afterPrefix", DecimalFormat::kPadAfterPrefix},
+    {"beforeSuffix", DecimalFormat::kPadBeforeSuffix},
+    {"afterSuffix", DecimalFormat::kPadAfterSuffix}};
 
 static Numberformattesttuple_EnumConversion gFormatStyleEnum[] = {
     {"patternDecimal", UNUM_PATTERN_DECIMAL},
@@ -197,13 +195,13 @@ static void strToERounding(
         const UnicodeString &str, void *roundPtr, UErrorCode &status) {
     int32_t val = toEnum(
             gRoundingEnum, UPRV_LENGTHOF(gRoundingEnum), str, status);
-    *static_cast<DigitList::ERoundingMode *>(roundPtr) = (DigitList::ERoundingMode) val;
+    *static_cast<DecimalFormat::ERoundingMode *>(roundPtr) = (DecimalFormat::ERoundingMode) val;
 }
 
 static void eRoundingToStr(
         const void *roundPtr, UnicodeString &appendTo) {
-    DigitList::ERoundingMode rounding = 
-            *static_cast<const DigitList::ERoundingMode *>(roundPtr);
+    DecimalFormat::ERoundingMode rounding = 
+            *static_cast<const DecimalFormat::ERoundingMode *>(roundPtr);
     fromEnum(
             gRoundingEnum,
             UPRV_LENGTHOF(gRoundingEnum),
@@ -233,14 +231,14 @@ static void strToEPadPosition(
         const UnicodeString &str, void *padPositionPtr, UErrorCode &status) {
     int32_t val = toEnum(
             gPadPositionEnum, UPRV_LENGTHOF(gPadPositionEnum), str, status);
-    *static_cast<DigitAffixesAndPadding::EPadPosition *>(padPositionPtr) =
-            (DigitAffixesAndPadding::EPadPosition) val;
+    *static_cast<DecimalFormat::EPadPosition *>(padPositionPtr) =
+            (DecimalFormat::EPadPosition) val;
 }
 
 static void ePadPositionToStr(
         const void *padPositionPtr, UnicodeString &appendTo) {
-    DigitAffixesAndPadding::EPadPosition padPosition = 
-            *static_cast<const DigitAffixesAndPadding::EPadPosition *>(padPositionPtr);
+    DecimalFormat::EPadPosition padPosition = 
+            *static_cast<const DecimalFormat::EPadPosition *>(padPositionPtr);
     fromEnum(
             gPadPositionEnum,
             UPRV_LENGTHOF(gPadPositionEnum),
@@ -439,5 +437,4 @@ NumberFormatTestTuple::isFlag(int32_t fieldId) const {
     return *static_cast<const UBool *>(flagAddr);
 }
 
-U_NAMESPACE_END
 

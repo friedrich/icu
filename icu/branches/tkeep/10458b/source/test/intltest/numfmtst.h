@@ -188,7 +188,7 @@ class NumberFormatTest: public CalendarTimeZoneTest {
 
     void TestCurrencyUsage();
     void TestNumberFormatTestTuple();
-    void TestDataDrivenSpecification();
+    void TestDataDriven();
     void TestFastPathConsistent11524();
     void TestGetAffixes();
     void TestApplyPatternResets();
