@@ -1410,9 +1410,12 @@ DecimalFormat2::getConstSymbol(
 
 UBool
 DecimalFormat2::isParseFastpath() const {
+    AffixPattern negative;
+    negative.add(AffixPattern::kNegative);
+
     return fAap.fWidth == 0 &&
     fPositivePrefixPattern.countChar32() == 0 &&
-    fNegativePrefixPattern.countChar32() == 0 &&
+    fNegativePrefixPattern.equals(negative) &&
     fPositiveSuffixPattern.countChar32() == 0 &&
     fNegativeSuffixPattern.countChar32() == 0;
 }

@@ -197,6 +197,19 @@ void parse(const UnicodeString& text,
            UChar* currency) const;
 UBool isParseIntegerOnly() const { return fParseIntegerOnly; }
 void setParseIntegerOnly(UBool b) { fParseIntegerOnly = b; }
+UBool isDecimalPatternMatchRequired() const {
+    return fParseDecimalMarkRequired;
+}
+void setDecimalPatternMatchRequired(UBool b) {
+    fParseDecimalMarkRequired = b;
+}
+UBool isParseNoExponent() const {
+    return fParseNoExponent;
+}
+void setParseNoExponent(UBool b) {
+    fParseNoExponent = b;
+}
+
 void getEffectiveCurrency(UChar *result, UErrorCode &status) const;
 
 private:

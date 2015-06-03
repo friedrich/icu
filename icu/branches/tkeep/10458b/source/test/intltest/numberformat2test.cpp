@@ -432,6 +432,32 @@ static void adjustDecimalFormat(
             appendErrorMessage.append("Error setting localized pattern.");
         }
     }
+    SET_AND_CHECK_BOOL(
+            fmt,
+            Lenient,
+            NFTT_GET_FIELD(tuple, lenient, 1) != 0,
+            appendErrorMessage);
+    if (tuple.parseIntegerOnlyFlag) {
+        SET_AND_CHECK_BOOL(
+                fmt,
+                ParseIntegerOnly,
+                tuple.parseIntegerOnly != 0,
+                appendErrorMessage);
+    }
+    if (tuple.decimalPatternMatchRequiredFlag) {
+        SET_AND_CHECK_BOOL(
+                fmt,
+                DecimalPatternMatchRequired,
+                tuple.decimalPatternMatchRequired != 0,
+                appendErrorMessage);
+    }
+    if (tuple.parseNoExponentFlag) {
+        SET_AND_CHECK_BOOL(
+                fmt,
+                ParseNoExponent,
+                tuple.parseNoExponent != 0,
+                appendErrorMessage);
+    }
 }
 
 static DecimalFormat2 *newDecimalFormat(
@@ -624,13 +650,12 @@ UBool NumberFormat2TestDataDriven::isParsePass(
     if (appendErrorMessage.length() > 0) {
         return FALSE;
     }
-    fmtPtr->setLenient(NFTT_GET_FIELD(tuple, lenient, 1) != 0 ? TRUE : FALSE);
     Formattable result;
     ParsePosition ppos;
     fmtPtr->parse(tuple.parse, result, ppos);
     if (ppos.getIndex() == 0) {
         if (tuple.output != "fail") {
-            appendErrorMessage.append("Parse error expected.");
+            appendErrorMessage.append("Parse failed but was expected to succeed.");
             return FALSE;
         }
         return TRUE;
