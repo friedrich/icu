@@ -1,0 +1,46 @@
+#
+# defines go at top, before rules. This allows tailorings to put their defines after
+# base defines, making them all visible.
+
+# tailorings have a redefine, provides safety check that a define is actuall replacing one
+# that is already defined in the base.
+
+# maybe let builder sort out ordering, tailorings may splatter things around.
+
+# Rule labels sort in code point order, allowing tailorings to insert.
+# Flag error if source rules not in order.
+
+define CR = [\u000d];
+define LF = [\u000a];
+
+define Control            = [\p{Grapheme_Cluster_Break = Control}];
+define Extend             = [\p{Grapheme_Cluster_Break = Extend}];
+define Regional_Indicator = [\p{Grapheme_Cluster_Break = Regional_Indicator}];
+define Prepend            = [];
+define SpacingMark        = [\p{Grapheme_Cluster_Break = SpacingMark}];
+
+#
+# Korean Syllable Definitions
+#
+L       = [\p{Grapheme_Cluster_Break = L}];
+V       = [\p{Grapheme_Cluster_Break = V}];
+T       = [\p{Grapheme_Cluster_Break = T}];
+
+LV      = [\p{Grapheme_Cluster_Break = LV}];
+LVT     = [\p{Grapheme_Cluster_Break = LVT}];
+
+GB03:     CR LF;
+GB04:     (Control | CR | LF) ÷;
+GB05:     . ÷ (Control | CR | LF);
+
+GB06:     L (L | V | LV | LVT);
+GB07:     (LV | V) (V | T);
+GB08:     (LVT | T) T;
+
+GB08a:    Regional_Indicator Regional Indicator;
+GB09:     . Extend;
+
+GB09a:    . SpacingMark;
+GB09b:    Prepend .;
+
+GB10:     . ÷
