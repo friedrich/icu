@@ -39,7 +39,8 @@ ExtFmt         = [Extend Format];
 
 WB3:   CR LF;
 WB3a:  (Newline | CR | LF) ÷;
-WB3b:  . ÷ (Newline | CR | LF);
+WB3b:  . ÷ (Newline | CR | LF);   # actually redundant? No other rule combines.
+                                  # (but needed with UAX treat-as scheme.)
 
 WB5:    AHLetter ExtFmt* AHLetter;
 
@@ -56,5 +57,10 @@ WB10:   Numeric ExtFmt* AHLetter;
 WB11:   Numeric ExtFmt* (MidNum | MidLetQ) ExtFmt* Numeric;    # includes WB12
 WB13:   Katakana ExtFmt* Katakana;
 
-WB13a:  (AHLetter | Numeric | Katakana) ExtendNumLet xxxxxx
+WB13a:  (AHLetter | Numeric | Katakana | ExtendNumLet) ExtFmt* ExtendNumLet;
+WB13b:  ExtendNumLet ExtFmt* (AHLetter | Numeric | Katakana);
 
+WB13c:  Regional_Indicator ExtFmt* Regional_Indicator;
+        # TODO: this matches UAX, but do we really want to allow Extend & Format between them?
+
+WB14:   . ExtFmt* ÷;
