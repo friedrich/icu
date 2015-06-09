@@ -197,6 +197,12 @@ public:
     UnicodeString &toUserString(UnicodeString &appendTo) const;
 
     /**
+     * Converts this AffixPattern back into a string.
+     * It is the inverse of parseAffixString.
+     */
+    UnicodeString &toString(UnicodeString &appendTo) const;
+
+    /**
      * Parses an affix pattern string appending it to an AffixPattern.
      * Parses affix pattern strings produced from using
      * DecimalFormatPatternParser to parse a format pattern. Affix patterns

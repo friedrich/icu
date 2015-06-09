@@ -236,6 +236,29 @@ AffixPattern::remove() {
     char32Count = 0;
 }
 
+// escapes literals for strings where special characters are NOT escaped
+// except for apostrophe.
+static void escapeApostropheInLiteral(
+        const UnicodeString &literal, UnicodeStringAppender &appender) {
+    int32_t len = literal.length();
+    const UChar *buffer = literal.getBuffer();
+    for (int32_t i = 0; i < len; ++i) {
+        UChar ch = buffer[i];
+        switch (ch) {
+            case 0x27:
+                appender.append((UChar) 0x27);
+                appender.append((UChar) 0x27);
+                break;
+            default:
+                appender.append(ch);
+                break;
+        }
+    }
+}
+
+
+// escapes literals for user strings where special characters in literals
+// are escaped with apostrophe.
 static void escapeLiteral(
         const UnicodeString &literal, UnicodeStringAppender &appender) {
     int32_t len = literal.length();
@@ -272,6 +295,46 @@ static void escapeLiteral(
                 break;
         }
     }
+}
+
+UnicodeString &
+AffixPattern::toString(UnicodeString &appendTo) const {
+    AffixPatternIterator iter;
+    iterator(iter);
+    UnicodeStringAppender appender(appendTo);
+    UnicodeString literal;
+    while (iter.nextToken()) {
+        switch (iter.getTokenType()) {
+        case kLiteral:
+            escapeApostropheInLiteral(iter.getLiteral(literal), appender);
+            break;
+        case kPercent:
+            appender.append((UChar) 0x27);
+            appender.append((UChar) 0x25);
+            break;
+        case kPerMill:
+            appender.append((UChar) 0x27);
+            appender.append((UChar) 0x2030);
+            break;
+        case kCurrency:
+            {
+                appender.append((UChar) 0x27);
+                int32_t cl = iter.getTokenLength();
+                for (int32_t i = 0; i < cl; ++i) {
+                    appender.append((UChar) 0xA4);
+                }
+            }
+            break;
+        case kNegative:
+            appender.append((UChar) 0x27);
+            appender.append((UChar) 0x2D);
+            break;
+        default:
+            U_ASSERT(FALSE);
+            break;
+        }
+    }
+    return appendTo;
 }
 
 UnicodeString &

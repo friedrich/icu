@@ -102,6 +102,10 @@ UBool isParsePass(
         const NumberFormatTestTuple &tuple,
         UnicodeString &appendErrorMessage,
         UErrorCode &status);
+UBool isParseCurrencyPass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status);
 private:
 
 };
@@ -632,6 +636,58 @@ UBool NumberFormat2TestDataDriven::isSelectPass(
                 UnicodeString("Expected: ") + tuple.plural + ", got: " + actual + ". ");
     }
     return appendErrorMessage.length() == 0;
+}
+
+UBool NumberFormat2TestDataDriven::isParseCurrencyPass(
+        const NumberFormatTestTuple &tuple,
+        UnicodeString &appendErrorMessage,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
+    LocalPointer<DecimalFormat2> fmtPtr(newDecimalFormat(tuple, status));
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error creating DecimalFormat.");
+        return FALSE;
+    }
+    adjustDecimalFormat(tuple, *fmtPtr, appendErrorMessage);
+    if (appendErrorMessage.length() > 0) {
+        return FALSE;
+    }
+    ParsePosition ppos;
+    LocalPointer<CurrencyAmount> currAmt(
+            fmtPtr->parseCurrency(tuple.parse, ppos));
+    if (ppos.getIndex() == 0) {
+        if (tuple.output != "fail") {
+            appendErrorMessage.append("Parse failed but was expected to succeed.");
+            return FALSE;
+        }
+        return TRUE;
+    }
+    UnicodeString currStr(currAmt->getISOCurrency());
+    Formattable resultFormattable(currAmt->getNumber());
+    UnicodeString resultStr(UnicodeString::fromUTF8(resultFormattable.getDecimalNumber(status)));
+    if (tuple.output == "fail") {
+        appendErrorMessage.append(UnicodeString("Parse succeeded: ") + resultStr + ", but was expected to fail.");
+        return FALSE;
+    }
+    DigitList expected;
+    strToDigitList(tuple.output, expected, status);
+    if (U_FAILURE(status)) {
+        appendErrorMessage.append("Error parsing.");
+        return FALSE;
+    }
+    if (expected != *currAmt->getNumber().getDigitList()) {
+        appendErrorMessage.append(
+                    UnicodeString("Expected: ") + tuple.output + ", got: " + resultStr + ". ");
+        return FALSE;
+    }
+    if (currStr != tuple.outputCurrency) {
+        appendErrorMessage.append(UnicodeString(
+                "Expected currency: ") + tuple.outputCurrency + ", got: " + currStr + ". ");
+        return FALSE;
+    }
+    return TRUE;
 }
 
 UBool NumberFormat2TestDataDriven::isParsePass(
@@ -1230,12 +1286,15 @@ void NumberFormat2Test::TestBenchmark() {
 /*
     UErrorCode status = U_ZERO_ERROR;
     Locale en("en");
+    DecimalFormatSymbols *sym = new DecimalFormatSymbols(en, status);
     DecimalFormat2 fmt(en, "0.0000000", status);
     FieldPosition fpos(0);
     clock_t start = clock();
-    for (int32_t i = 0; i < 1000000; ++i) {
-       UnicodeString append;
-       fmt.format(1234567.8901, append, fpos, status);
+    for (int32_t i = 0; i < 100000; ++i) {
+       UParseError perror;
+       DecimalFormat2 fmt2("0.0000000", new DecimalFormatSymbols(*sym), perror, status);
+//       UnicodeString append;
+//       fmt.format(4.6692016, append, fpos, status);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
@@ -1250,9 +1309,11 @@ void NumberFormat2Test::TestBenchmark2() {
     DecimalFormat fmt("0.0000000", sym, status);
     FieldPosition fpos(0);
     clock_t start = clock();
-    for (int32_t i = 0; i < 1000000; ++i) {
-        UnicodeString append;
-        fmt.format(1234567.8901, append, fpos, status);
+    for (int32_t i = 0; i < 100000; ++i) {
+      UParseError perror;
+      DecimalFormat fmt("0.0000000", new DecimalFormatSymbols(*sym), perror, status);
+//        UnicodeString append;
+//        fmt.format(4.6692016, append, fpos, status);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
@@ -2363,6 +2424,11 @@ void NumberFormat2Test::TestAffixPatternParser() {
             currencyAffixInfo,
             affix,
             status);
+    UnicodeString formattedStr;
+    affixPattern.toString(formattedStr);
+    UnicodeString expectedFormattedStr("'--y''dz'%'\u00a4\u00a4\u00a4\u00a4 y '\u00a4\u00a4\u00a4 or '\u00a4\u00a4 but '\u00a4");
+    expectedFormattedStr = expectedFormattedStr.unescape();
+    assertEquals("", expectedFormattedStr, formattedStr);
     AffixPattern userAffixPattern;
     UnicodeString userStr("-'-'y'''d'z%\u00a4\u00a4\u00a4'\u00a4' y \u00a4\u00a4\u00a4 or \u00a4\u00a4 but \u00a4");
     AffixPattern::parseUserAffixString(userStr, userAffixPattern, status),

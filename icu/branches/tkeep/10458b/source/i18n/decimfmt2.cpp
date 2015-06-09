@@ -19,6 +19,11 @@
 #include "unicode/uniset.h"
 #include "patternprops.h"
 #include "ucurrimp.h"
+#include "unicode/numsys.h"
+#include "hash.h"
+#include "uresimp.h"
+#include "cstring.h"
+#include "unicode/currpinf.h"
 
 U_NAMESPACE_BEGIN
 
@@ -37,6 +42,97 @@ static const UnicodeString dbg_null("<NULL>","");
 #define debugout(x)
 #define debug(x)
 #endif
+
+const char DecimalFormat2::fgNumberPatterns[]="NumberPatterns"; // Deprecated - not used
+static const char fgNumberElements[]="NumberElements";
+static const char fgLatn[]="latn";
+static const char fgPatterns[]="patterns";
+static const char fgCurrencyFormat[]="currencyFormat";
+
+
+inline int32_t _min(int32_t a, int32_t b) { return (a<b) ? a : b; }
+inline int32_t _max(int32_t a, int32_t b) { return (a<b) ? b : a; }
+
+/* For currency parsing purose,
+ * Need to remember all prefix patterns and suffix patterns of
+ * every currency format pattern,
+ * including the pattern of default currecny style
+ * and plural currency style. And the patterns are set through applyPattern.
+ */
+struct AffixPatternsForCurrency : public UMemory {
+        // negative prefix pattern
+        UnicodeString negPrefixPatternForCurrency;
+        // negative suffix pattern
+        UnicodeString negSuffixPatternForCurrency;
+        // positive prefix pattern
+        UnicodeString posPrefixPatternForCurrency;
+        // positive suffix pattern
+        UnicodeString posSuffixPatternForCurrency;
+        int8_t patternType;
+
+        AffixPatternsForCurrency(const UnicodeString& negPrefix,
+                                                         const UnicodeString& negSuffix,
+                                                         const UnicodeString& posPrefix,
+                                                         const UnicodeString& posSuffix,
+                                                         int8_t type) {
+                negPrefixPatternForCurrency = negPrefix;
+                negSuffixPatternForCurrency = negSuffix;
+                posPrefixPatternForCurrency = posPrefix;
+                posSuffixPatternForCurrency = posSuffix;
+                patternType = type;
+        }
+};
+
+
+U_CDECL_BEGIN
+
+static UBool U_CALLCONV decimfmtAffixPatternValueComparator(UHashTok val1, UHashTok val2) {
+    const AffixPatternsForCurrency* affix_1 =
+        (AffixPatternsForCurrency*)val1.pointer;
+    const AffixPatternsForCurrency* affix_2 =
+        (AffixPatternsForCurrency*)val2.pointer;
+    return affix_1->negPrefixPatternForCurrency ==
+           affix_2->negPrefixPatternForCurrency &&
+           affix_1->negSuffixPatternForCurrency ==
+           affix_2->negSuffixPatternForCurrency &&
+           affix_1->posPrefixPatternForCurrency ==
+           affix_2->posPrefixPatternForCurrency &&
+           affix_1->posSuffixPatternForCurrency ==
+           affix_2->posSuffixPatternForCurrency &&
+           affix_1->patternType == affix_2->patternType;
+
+}
+
+U_CDECL_END
+
+static Hashtable*
+initHashForAffixPattern(UErrorCode& status) {
+    if ( U_FAILURE(status) ) {
+        return NULL;
+    }
+    Hashtable* hTable;
+    if ( (hTable = new Hashtable(TRUE, status)) == NULL ) {
+        status = U_MEMORY_ALLOCATION_ERROR;
+        return NULL;
+    }
+    if ( U_FAILURE(status) ) {
+        delete hTable;
+        return NULL;
+    }
+    hTable->setValueComparator(decimfmtAffixPatternValueComparator);
+    return hTable;
+}
+
+template <class T>
+static void _clone_ptr(T** pdest, const T* source) {
+    delete *pdest;
+    if (source == NULL) {
+        *pdest = NULL;
+    } else {
+        *pdest = static_cast<T*>(source->clone());
+    }
+}
+
 
 static const int32_t kMaxScientificIntegerDigits = 8;
 
@@ -65,6 +161,8 @@ DecimalFormat2::DecimalFormat2(
           fParseDecimalMarkRequired(FALSE),
           fParseNoExponent(FALSE),
           fParseIntegerOnly(FALSE),
+          fAffixPatternsForCurrency(NULL),
+          fCurrencyPluralInfo(NULL),
           fSymbols(NULL),
           fCurrencyUsage(UCURR_USAGE_STANDARD),
           fRules(NULL),
@@ -95,6 +193,8 @@ DecimalFormat2::DecimalFormat2(
           fParseDecimalMarkRequired(FALSE),
           fParseNoExponent(FALSE),
           fParseIntegerOnly(FALSE),
+          fAffixPatternsForCurrency(NULL),
+          fCurrencyPluralInfo(NULL),
           fSymbols(symbolsToAdopt),
           fCurrencyUsage(UCURR_USAGE_STANDARD),
           fRules(NULL),
@@ -114,6 +214,8 @@ DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
           fParseDecimalMarkRequired(other.fParseDecimalMarkRequired),
           fParseNoExponent(other.fParseNoExponent),
           fParseIntegerOnly(other.fParseIntegerOnly),
+          fAffixPatternsForCurrency(NULL),
+          fCurrencyPluralInfo(NULL),
           fMinIntDigits(other.fMinIntDigits),
           fMaxIntDigits(other.fMaxIntDigits),
           fMinFracDigits(other.fMinFracDigits),
@@ -145,6 +247,12 @@ DecimalFormat2::DecimalFormat2(const DecimalFormat2 &other) :
         fRules = new PluralRules(*fRules);
     }
     u_strcpy(fCurr, other.fCurr);
+    _clone_ptr(&fCurrencyPluralInfo, other.fCurrencyPluralInfo);
+    if (other.fAffixPatternsForCurrency) {
+        UErrorCode status = U_ZERO_ERROR;
+        fAffixPatternsForCurrency = initHashForAffixPattern(status);
+        copyHashForAffixPattern(other.fAffixPatternsForCurrency, fAffixPatternsForCurrency, status);
+    }
 }
 
 
@@ -196,6 +304,13 @@ DecimalFormat2::operator=(const DecimalFormat2 &other) {
         }
     }
     u_strcpy(fCurr, other.fCurr);
+    _clone_ptr(&fCurrencyPluralInfo, other.fCurrencyPluralInfo);
+    deleteHashForAffixPattern();
+    if (other.fAffixPatternsForCurrency) {
+        UErrorCode status = U_ZERO_ERROR;
+        fAffixPatternsForCurrency = initHashForAffixPattern(status);
+        copyHashForAffixPattern(other.fAffixPatternsForCurrency, fAffixPatternsForCurrency, status);
+    }
     return *this;
 }
 
@@ -244,6 +359,8 @@ DecimalFormat2::operator==(const DecimalFormat2 &other) const {
 DecimalFormat2::~DecimalFormat2() {
     delete fSymbols;
     delete fRules;
+    delete fCurrencyPluralInfo;
+    deleteHashForAffixPattern();
 }
 
 ValueFormatter &
@@ -898,6 +1015,7 @@ DecimalFormat2::updateFormatting(
             changedFormattingFields, status);
     updateFormattingLocalizedNegativeSuffix(
             changedFormattingFields, status);
+    updateCurrencyPluralInfoAndPatterns(changedFormattingFields, status);
 }
 
 void
@@ -915,6 +1033,25 @@ DecimalFormat2::updateFormattingUsesCurrency(
     if (fMonetary != newUsesCurrency) {
         fMonetary = newUsesCurrency;
         changedFormattingFields |= kFormattingUsesCurrency;
+    }
+}
+
+void
+DecimalFormat2::updateCurrencyPluralInfoAndPatterns(
+        int32_t &changedFormattingFields, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    if ((changedFormattingFields & kFormattingUsesCurrency) == 0) {
+       // If uses currency didn't change we have no work to do.
+       return;
+    }
+    if (fCurrencyPluralInfo == NULL) {
+        fCurrencyPluralInfo = new CurrencyPluralInfo(fSymbols->getLocale(), status);
+        if (U_FAILURE(status)) {
+            return;
+        }
+        setupCurrencyAffixPatterns(status);
     }
 }
 
@@ -1427,6 +1564,25 @@ DecimalFormat2::parse(const UnicodeString& text,
     parse(text, result, parsePosition, NULL);
 }
 
+CurrencyAmount* DecimalFormat2::parseCurrency(
+        const UnicodeString& text, ParsePosition& pos) const {
+    Formattable parseResult;
+    int32_t start = pos.getIndex();
+    UChar curbuf[4] = {};
+    parse(text, parseResult, pos, curbuf);
+    if (pos.getIndex() != start) {
+        UErrorCode ec = U_ZERO_ERROR;
+        LocalPointer<CurrencyAmount> currAmt(new CurrencyAmount(parseResult, curbuf, ec), ec);
+        if (U_FAILURE(ec)) {
+            pos.setIndex(start); // indicate failure
+        } else {
+            return currAmt.orphan();
+        }
+    }
+    return NULL;
+}
+
+
 /**
  * Parses the given text as a number, optionally providing a currency amount.
  * @param text the string to parse
@@ -1543,12 +1699,22 @@ void DecimalFormat2::parse(const UnicodeString& text,
 
 
 
+
 UBool
 DecimalFormat2::parseForCurrency(const UnicodeString& text,
                                 ParsePosition& parsePosition,
                                 DigitList& digits,
                                 UBool* status,
                                 UChar* currency) const {
+    UnicodeString positivePrefix;
+    UnicodeString positiveSuffix;
+    UnicodeString negativePrefix;
+    UnicodeString negativeSuffix;
+    fPositivePrefixPattern.toString(positivePrefix);
+    fPositiveSuffixPattern.toString(positiveSuffix);
+    fNegativePrefixPattern.toString(negativePrefix);
+    fNegativeSuffixPattern.toString(negativeSuffix);
+
     int origPos = parsePosition.getIndex();
     int maxPosIndex = origPos;
     int maxErrorPos = -1;
@@ -1560,14 +1726,20 @@ DecimalFormat2::parseForCurrency(const UnicodeString& text,
     ParsePosition tmpPos(origPos);
     DigitList tmpDigitList;
     UBool found;
-    // TODO: Figure out how to tell if we are using long form currency anywhere.
-    found = subparse(text,
-                     &fAap.fNegativePrefix.getOtherVariant().toString(),
-                     &fAap.fNegativeSuffix.getOtherVariant().toString(),
-                     &fAap.fPositivePrefix.getOtherVariant().toString(),
-                     &fAap.fPositiveSuffix.getOtherVariant().toString(),
-                     TRUE, UCURR_SYMBOL_NAME,
-                     tmpPos, tmpDigitList, tmpStatus, currency);
+//    if (fStyle == UNUM_CURRENCY_PLURAL) {
+    if (FALSE) {
+        found = subparse(text,
+                         &negativePrefix, &negativeSuffix,
+                         &positivePrefix, &positiveSuffix,
+                         TRUE, UCURR_LONG_NAME,
+                         tmpPos, tmpDigitList, tmpStatus, currency);
+    } else {
+        found = subparse(text,
+                         &negativePrefix, &negativeSuffix,
+                         &positivePrefix, &positiveSuffix,
+                         TRUE, UCURR_SYMBOL_NAME,
+                         tmpPos, tmpDigitList, tmpStatus, currency);
+    }
     if (found) {
         if (tmpPos.getIndex() > maxPosIndex) {
             maxPosIndex = tmpPos.getIndex();
@@ -1579,8 +1751,38 @@ DecimalFormat2::parseForCurrency(const UnicodeString& text,
     } else {
         maxErrorPos = tmpPos.getErrorIndex();
     }
+    // Then, parse against affix patterns.
+    // Those are currency patterns and currency plural patterns.
+    int32_t pos = UHASH_FIRST;
+    const UHashElement* element = NULL;
+    while ( (element = fAffixPatternsForCurrency->nextElement(pos)) != NULL ) {
+        const UHashTok valueTok = element->value;
+        const AffixPatternsForCurrency* affixPtn = (AffixPatternsForCurrency*)valueTok.pointer;
+        UBool tmpStatus[fgStatusLength];
+        ParsePosition tmpPos(origPos);
+        DigitList tmpDigitList;
 
-    // TODO: Consider old fCurrencyAffixPatterns hash table
+        UBool result = subparse(text,
+                                &affixPtn->negPrefixPatternForCurrency,
+                                &affixPtn->negSuffixPatternForCurrency,
+                                &affixPtn->posPrefixPatternForCurrency,
+                                &affixPtn->posSuffixPatternForCurrency,
+                                TRUE, affixPtn->patternType,
+                                tmpPos, tmpDigitList, tmpStatus, currency);
+        if (result) {
+            found = true;
+            if (tmpPos.getIndex() > maxPosIndex) {
+                maxPosIndex = tmpPos.getIndex();
+                for (int32_t i = 0; i < fgStatusLength; ++i) {
+                    status[i] = tmpStatus[i];
+                }
+                digits = tmpDigitList;
+            }
+        } else {
+            maxErrorPos = (tmpPos.getErrorIndex() > maxErrorPos) ?
+                          tmpPos.getErrorIndex() : maxErrorPos;
+        }
+    }
 
     // Finally, parse against simple affix to find the match.
     // For example, in TestMonster suite,
@@ -2726,6 +2928,167 @@ UBool DecimalFormat2::matchGrouping(UChar32 groupingChar,
     } else {
         return FALSE;
     }
+}
+
+static void
+applyPatternWithoutExpandAffix(
+        const UnicodeString& pattern,
+        UParseError& parseError,
+        UnicodeString &negPrefix,
+        UnicodeString &negSuffix,
+        UnicodeString &posPrefix,
+        UnicodeString &posSuffix,
+        UErrorCode& status) {
+        if (U_FAILURE(status))
+    {   
+        return;
+    }
+    DecimalFormatPatternParser patternParser;
+    DecimalFormatPattern out;
+    patternParser.applyPatternWithoutExpandAffix(
+        pattern,
+        out,
+        parseError,
+        status);
+    if (U_FAILURE(status)) {
+      return;
+    }
+    negPrefix = out.fNegPrefixPattern;
+    negSuffix = out.fNegSuffixPattern;
+    posPrefix = out.fPosPrefixPattern;
+    posSuffix = out.fPosSuffixPattern;
+}
+
+
+void
+DecimalFormat2::setupCurrencyAffixPatterns(UErrorCode& status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    UParseError parseErr;
+    fAffixPatternsForCurrency = initHashForAffixPattern(status);
+    if (U_FAILURE(status)) {
+        return;
+    }    
+
+    NumberingSystem *ns = NumberingSystem::createInstance(fSymbols->getLocale(),status);
+    if (U_FAILURE(status)) {
+        return;
+    }    
+
+    // Save the default currency patterns of this locale.
+    // Here, chose onlyApplyPatternWithoutExpandAffix without
+    // expanding the affix patterns into affixes.
+    UnicodeString currencyPattern;
+    UErrorCode error = U_ZERO_ERROR;   
+    
+    UResourceBundle *resource = ures_open(NULL, fSymbols->getLocale().getName(), &error);
+    UResourceBundle *numElements = ures_getByKeyWithFallback(resource, fgNumberElements, NULL, &error);
+    resource = ures_getByKeyWithFallback(numElements, ns->getName(), resource, &error);
+    resource = ures_getByKeyWithFallback(resource, fgPatterns, resource, &error);
+    int32_t patLen = 0; 
+    const UChar *patResStr = ures_getStringByKeyWithFallback(resource, fgCurrencyFormat,  &patLen, &error);
+    if ( error == U_MISSING_RESOURCE_ERROR && uprv_strcmp(ns->getName(),fgLatn)) {
+        error = U_ZERO_ERROR;
+        resource = ures_getByKeyWithFallback(numElements, fgLatn, resource, &error);
+        resource = ures_getByKeyWithFallback(resource, fgPatterns, resource, &error);
+        patResStr = ures_getStringByKeyWithFallback(resource, fgCurrencyFormat,  &patLen, &error);
+    }    
+    ures_close(numElements);
+    ures_close(resource);
+    delete ns;
+
+    if (U_SUCCESS(error)) {
+        UnicodeString negPrefix;
+        UnicodeString negSuffix;
+        UnicodeString posPrefix;
+        UnicodeString posSuffix;
+        applyPatternWithoutExpandAffix(UnicodeString(patResStr, patLen),
+                                       parseErr,
+                negPrefix, negSuffix, posPrefix, posSuffix,  status);
+        AffixPatternsForCurrency* affixPtn = new AffixPatternsForCurrency(
+                                                    negPrefix,
+                                                    negSuffix,
+                                                    posPrefix,
+                                                    posSuffix,
+                                                    UCURR_SYMBOL_NAME);
+        fAffixPatternsForCurrency->put(UNICODE_STRING("default", 7), affixPtn, status);      
+    }
+
+    // save the unique currency plural patterns of this locale.
+    Hashtable* pluralPtn = fCurrencyPluralInfo->fPluralCountToCurrencyUnitPattern;
+    const UHashElement* element = NULL;
+    int32_t pos = UHASH_FIRST;
+    Hashtable pluralPatternSet;
+    while ((element = pluralPtn->nextElement(pos)) != NULL) {
+        const UHashTok valueTok = element->value;
+        const UnicodeString* value = (UnicodeString*)valueTok.pointer;
+        const UHashTok keyTok = element->key;
+        const UnicodeString* key = (UnicodeString*)keyTok.pointer;
+        if (pluralPatternSet.geti(*value) != 1) {
+            UnicodeString negPrefix;
+            UnicodeString negSuffix;
+            UnicodeString posPrefix;
+            UnicodeString posSuffix;
+            pluralPatternSet.puti(*value, 1, status);
+            applyPatternWithoutExpandAffix(
+                    *value, parseErr,
+                    negPrefix, negSuffix, posPrefix, posSuffix, status);
+            AffixPatternsForCurrency* affixPtn = new AffixPatternsForCurrency(
+                                                    negPrefix,
+                                                    negSuffix,
+                                                    posPrefix,
+                                                    posSuffix,
+                                                    UCURR_LONG_NAME);
+            fAffixPatternsForCurrency->put(*key, affixPtn, status);
+        }
+    }
+}
+
+void
+DecimalFormat2::copyHashForAffixPattern(const Hashtable* source,
+                                       Hashtable* target,
+                                       UErrorCode& status) {
+    if ( U_FAILURE(status) ) {
+        return;
+    }
+    int32_t pos = UHASH_FIRST;
+    const UHashElement* element = NULL;
+    if ( source ) {
+        while ( (element = source->nextElement(pos)) != NULL ) {
+            const UHashTok keyTok = element->key;
+            const UnicodeString* key = (UnicodeString*)keyTok.pointer;
+            const UHashTok valueTok = element->value;
+            const AffixPatternsForCurrency* value = (AffixPatternsForCurrency*)valueTok.pointer;
+            AffixPatternsForCurrency* copy = new AffixPatternsForCurrency(
+                value->negPrefixPatternForCurrency,
+                value->negSuffixPatternForCurrency,
+                value->posPrefixPatternForCurrency,
+                value->posSuffixPatternForCurrency,
+                value->patternType);
+            target->put(UnicodeString(*key), copy, status);
+            if ( U_FAILURE(status) ) {
+                return;
+            }
+        }
+    }
+}
+
+void
+DecimalFormat2::deleteHashForAffixPattern()
+{
+    if ( fAffixPatternsForCurrency == NULL ) {
+        return;
+    }
+    int32_t pos = UHASH_FIRST;
+    const UHashElement* element = NULL;
+    while ( (element = fAffixPatternsForCurrency->nextElement(pos)) != NULL ) {
+        const UHashTok valueTok = element->value;
+        const AffixPatternsForCurrency* value = (AffixPatternsForCurrency*)valueTok.pointer;
+        delete value;
+    }
+    delete fAffixPatternsForCurrency;
+    fAffixPatternsForCurrency = NULL;
 }
 
 
