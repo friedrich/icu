@@ -34,6 +34,7 @@
 #include "mutex.h"
 #include "putilimp.h"
 #include "uassert.h"
+#include "digitinterval.h" 
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
@@ -492,7 +493,7 @@ DigitList::getDouble() const
 int32_t DigitList::getLong() /*const*/
 {
     int32_t result = 0;
-    if (fDecNumber->digits + fDecNumber->exponent > 10) {
+    if (getUpperExponent() > 10) { 
         // Overflow, absolute value too big.
         return result;
     }
@@ -522,7 +523,7 @@ int64_t DigitList::getInt64() /*const*/ {
     // Return 0 if out of range.
     // Range of in64_t is -9223372036854775808 to 9223372036854775807  (19 digits)
     //
-    if (fDecNumber->digits + fDecNumber->exponent > 19) {
+    if (getUpperExponent() > 19) { 
         // Overflow, absolute value too big.
         return 0;
     }
@@ -536,7 +537,7 @@ int64_t DigitList::getInt64() /*const*/ {
     // TODO:  It would be faster to store a table of powers of ten to multiply by
     //        instead of looping over zero digits, multiplying each time.
 
-    int32_t numIntDigits = fDecNumber->digits + fDecNumber->exponent;
+    int32_t numIntDigits = getUpperExponent(); 
     uint64_t value = 0;
     for (int32_t i = 0; i < numIntDigits; i++) {
         // Loop is iterating over digits starting with the most significant.
@@ -611,7 +612,7 @@ DigitList::fitsIntoLong(UBool ignoreNegativeZero) /*const*/
         // Negative Zero, not ingored.  Cannot represent as a long.
         return FALSE;
     }
-    if (fDecNumber->digits + fDecNumber->exponent < 10) {
+    if (getUpperExponent() < 10) { 
         // The number is 9 or fewer digits.
         // The max and min int32 are 10 digts, so this number fits.
         // This is the common case.
@@ -658,7 +659,7 @@ DigitList::fitsIntoInt64(UBool ignoreNegativeZero) /*const*/
         // Negative Zero, not ingored.  Cannot represent as a long.
         return FALSE;
     }
-    if (fDecNumber->digits + fDecNumber->exponent < 19) {
+    if (getUpperExponent() < 19) { 
         // The number is 18 or fewer digits.
         // The max and min int64 are 19 digts, so this number fits.
         // This is the common case.
@@ -832,6 +833,9 @@ DigitList::set(double source)
  */
 void
 DigitList::mult(const DigitList &other, UErrorCode &status) {
+    if (U_FAILURE(status)) { 
+        return; 
+    } 
     fContext.status = 0;
     int32_t requiredDigits = this->digits() + other.digits();
     if (requiredDigits > fContext.digits) {
@@ -902,18 +906,23 @@ DigitList::ensureCapacity(int32_t requestedCapacity, UErrorCode &status) {
 void
 DigitList::round(int32_t maximumDigits)
 {
+    reduce(); 
+    if (maximumDigits >= fDecNumber->digits) { 
+        return; 
+    } 
     int32_t savedDigits  = fContext.digits;
     fContext.digits = maximumDigits;
     uprv_decNumberPlus(fDecNumber, fDecNumber, &fContext);
     fContext.digits = savedDigits;
     uprv_decNumberTrim(fDecNumber);
+    reduce(); 
     internalClear();
 }
 
 
 void
 DigitList::roundFixedPoint(int32_t maximumFractionDigits) {
-    trim();        // Remove trailing zeros.
+    reduce();        // Remove trailing zeros. 
     if (fDecNumber->exponent >= -maximumFractionDigits) {
         return;
     }
@@ -923,7 +932,7 @@ DigitList::roundFixedPoint(int32_t maximumFractionDigits) {
     scale.lsu[0] = 1;
     
     uprv_decNumberQuantize(fDecNumber, fDecNumber, &scale, &fContext);
-    trim();
+    reduce(); 
     internalClear();
 }
 
@@ -940,6 +949,101 @@ UBool
 DigitList::isZero() const
 {
     return decNumberIsZero(fDecNumber);
+}
+
+// -------------------------------------
+int32_t
+DigitList::getUpperExponent() const {
+    return fDecNumber->digits + fDecNumber->exponent;
+}
+
+DigitInterval &
+DigitList::getSmallestInterval(DigitInterval &result) const {
+    int32_t intDigits = getUpperExponent();
+    int32_t fracDigits = -fDecNumber->exponent;
+    if (intDigits < 0) {
+        intDigits = 0;
+    }
+    if (fracDigits < 0) {
+        fracDigits = 0;
+    }
+    result.setIntDigitCount(intDigits);
+    result.setFracDigitCount(fracDigits);
+    return result;
+}
+
+uint8_t
+DigitList::getDigitByExponent(int32_t exponent) const {
+    int32_t idx = exponent - fDecNumber->exponent;
+    if (idx < 0 || idx >= fDecNumber->digits) {
+        return 0;
+    }
+    return fDecNumber->lsu[idx];
+}
+
+void
+DigitList::roundAtExponent(int32_t exponent, int32_t maxSigDigits) {
+    reduce();
+    if (maxSigDigits < fDecNumber->digits) {
+        int32_t minExponent = getUpperExponent() - maxSigDigits;
+        if (exponent < minExponent) {
+            exponent = minExponent;
+        }
+    }
+    if (exponent <= fDecNumber->exponent) {
+        return;
+    }
+    int32_t digits = getUpperExponent() - exponent;
+    if (digits > 0) {
+        round(digits);
+    } else {
+        roundFixedPoint(-exponent);
+    }
+}
+
+void
+DigitList::quantize(const DigitList &quantity, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    div(quantity, status);
+    roundAtExponent(0);
+    mult(quantity, status);
+    reduce();
+}
+
+int32_t
+DigitList::getScientificExponent(
+        int32_t minIntDigitCount, int32_t exponentMultiplier) const {
+    // The exponent for zero is always zero.
+    if (isZero()) {
+        return 0;
+    }
+    int32_t intDigitCount = getUpperExponent();
+    int32_t exponent;
+    if (intDigitCount >= minIntDigitCount) {
+        int32_t maxAdjustment = intDigitCount - minIntDigitCount;
+        exponent = (maxAdjustment / exponentMultiplier) * exponentMultiplier;
+    } else {
+        int32_t minAdjustment = minIntDigitCount - intDigitCount;
+        exponent = ((minAdjustment + exponentMultiplier - 1) / exponentMultiplier) * -exponentMultiplier;
+    }
+    return exponent;
+}
+
+int32_t
+DigitList::toScientific(
+        int32_t minIntDigitCount, int32_t exponentMultiplier) {
+    int32_t exponent = getScientificExponent(
+            minIntDigitCount, exponentMultiplier);
+    shiftDecimalRight(-exponent);
+    return exponent;
+}
+
+void
+DigitList::shiftDecimalRight(int32_t n) {
+    fDecNumber->exponent += n;
+    internalClear();
 }
 
 U_NAMESPACE_END

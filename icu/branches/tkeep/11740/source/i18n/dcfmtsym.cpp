@@ -126,6 +126,7 @@ DecimalFormatSymbols::operator=(const DecimalFormatSymbols& rhs)
         locale = rhs.locale;
         uprv_strcpy(validLocale, rhs.validLocale);
         uprv_strcpy(actualLocale, rhs.actualLocale);
+        fIsCustomCurrencySymbol = rhs.fIsCustomCurrencySymbol; 
     }
     return *this;
 }
@@ -138,6 +139,9 @@ DecimalFormatSymbols::operator==(const DecimalFormatSymbols& that) const
     if (this == &that) {
         return TRUE;
     }
+    if (fIsCustomCurrencySymbol != that.fIsCustomCurrencySymbol) { 
+        return FALSE; 
+    } 
     for(int32_t i = 0; i < (int32_t)kFormatSymbolCount; ++i) {
         if(fSymbols[(ENumberFormatSymbol)i] != that.fSymbols[(ENumberFormatSymbol)i]) {
             return FALSE;
@@ -422,6 +426,8 @@ DecimalFormatSymbols::initialize() {
     fSymbols[kSignificantDigitSymbol] = (UChar)0x0040;  // '@' significant digit
     fSymbols[kMonetaryGroupingSeparatorSymbol].remove(); // 
     fSymbols[kExponentMultiplicationSymbol] = (UChar)0xd7; // 'x' multiplication symbol for exponents
+    fIsCustomCurrencySymbol = FALSE; 
+
 }
 
 Locale

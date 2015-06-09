@@ -67,6 +67,8 @@ extern IntlTest *createRelativeDateTimeFormatterTest();
 extern IntlTest *createMeasureFormatTest();
 extern IntlTest *createNumberFormatSpecificationTest();
 extern IntlTest *createScientificNumberFormatterTest();
+extern IntlTest *createNumberFormat2Test(); 
+
 
 #define TESTCLASS(id, TestClass)          \
     case id:                              \
@@ -201,6 +203,15 @@ void IntlTestFormat::runIndexedTest( int32_t index, UBool exec, const char* &nam
             callTest(*test, par);
           }
           break;
+      case 50: 
+        name = "NumberFormat2Test"; 
+          if (exec) { 
+            logln("NumberFormat2Test test---"); 
+            logln((UnicodeString)""); 
+            LocalPointer<IntlTest> test(createNumberFormat2Test()); 
+            callTest(*test, par); 
+          } 
+          break; 
         default: name = ""; break; //needed to end loop
     }
     if (exec) {
