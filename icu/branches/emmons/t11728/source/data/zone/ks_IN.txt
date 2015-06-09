@@ -6,6 +6,9 @@
 // * Source File: <path>/icu-locale-deprecates.xml & build.xml
 // *
 // ***************************************************************************
+/**
+ * generated alias target
+ */
 ks_IN{
-    "%%ALIAS"{"ks_Arab_IN"}
+    ___{""}
 }

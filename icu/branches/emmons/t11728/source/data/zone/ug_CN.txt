@@ -6,6 +6,9 @@
 // * Source File: <path>/icu-locale-deprecates.xml & build.xml
 // *
 // ***************************************************************************
+/**
+ * generated alias target
+ */
 ug_CN{
-    "%%ALIAS"{"ug_Arab_CN"}
+    ___{""}
 }

@@ -6,6 +6,9 @@
 // * Source File: <path>/icu-locale-deprecates.xml & build.xml
 // *
 // ***************************************************************************
+/**
+ * generated alias target
+ */
 mn_MN{
-    "%%ALIAS"{"mn_Cyrl_MN"}
+    ___{""}
 }

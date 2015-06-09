@@ -6,6 +6,9 @@
 // * Source File: <path>/icu-locale-deprecates.xml & build.xml
 // *
 // ***************************************************************************
+/**
+ * generated alias target
+ */
 ha_NG{
-    "%%ALIAS"{"ha_Latn_NG"}
+    ___{""}
 }

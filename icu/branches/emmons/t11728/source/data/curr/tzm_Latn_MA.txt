@@ -6,9 +6,6 @@
 // * Source File: <path>/icu-locale-deprecates.xml & build.xml
 // *
 // ***************************************************************************
-/**
- * generated alias target
- */
 tzm_Latn_MA{
-    ___{""}
+    "%%ALIAS"{"tzm_MA"}
 }

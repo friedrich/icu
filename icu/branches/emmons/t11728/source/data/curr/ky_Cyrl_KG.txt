@@ -6,9 +6,6 @@
 // * Source File: <path>/icu-locale-deprecates.xml & build.xml
 // *
 // ***************************************************************************
-/**
- * generated alias target
- */
 ky_Cyrl_KG{
-    ___{""}
+    "%%ALIAS"{"ky_KG"}
 }

@@ -6,6 +6,9 @@
 // * Source File: <path>/icu-locale-deprecates.xml & build.xml
 // *
 // ***************************************************************************
+/**
+ * generated alias target
+ */
 ms_BN{
-    "%%ALIAS"{"ms_Latn_BN"}
+    ___{""}
 }

@@ -6,9 +6,6 @@
 // * Source File: <path>/icu-locale-deprecates.xml & build.xml
 // *
 // ***************************************************************************
-/**
- * generated alias target
- */
 kk_Cyrl_KZ{
-    ___{""}
+    "%%ALIAS"{"kk_KZ"}
 }
