@@ -27,16 +27,14 @@ GENRB_CLDR_VERSION = %version%
 
 # Aliases without a corresponding xx.xml file (see icu-config.xml & build.xml)
 GENRB_SYNTHETIC_ALIAS = az_AZ.txt bs_BA.txt en_NH.txt en_RH.txt\
- ha_Latn_GH.txt ha_Latn_NE.txt ha_Latn_NG.txt in.txt in_ID.txt\
- iw.txt iw_IL.txt ja_JP_TRADITIONAL.txt kk_Cyrl_KZ.txt ks_Arab_IN.txt\
- ky_Cyrl_KG.txt mn_Cyrl_MN.txt mo.txt ms_Latn_BN.txt ms_Latn_MY.txt\
- ms_Latn_SG.txt no.txt no_NO.txt no_NO_NY.txt pa_IN.txt\
+ in.txt in_ID.txt iw.txt iw_IL.txt ja_JP_TRADITIONAL.txt\
+ mo.txt no.txt no_NO.txt no_NO_NY.txt pa_IN.txt\
  pa_PK.txt sh.txt sh_BA.txt sh_CS.txt sh_YU.txt\
  shi_MA.txt sr_BA.txt sr_CS.txt sr_Cyrl_CS.txt sr_Cyrl_YU.txt\
  sr_Latn_CS.txt sr_Latn_YU.txt sr_ME.txt sr_RS.txt sr_XK.txt\
- sr_YU.txt th_TH_TRADITIONAL.txt tl.txt tl_PH.txt tzm_Latn_MA.txt\
- ug_Arab_CN.txt uz_AF.txt uz_UZ.txt vai_LR.txt zh_CN.txt\
- zh_HK.txt zh_MO.txt zh_SG.txt zh_TW.txt
+ sr_YU.txt th_TH_TRADITIONAL.txt tl.txt tl_PH.txt uz_AF.txt\
+ uz_UZ.txt vai_LR.txt zh_CN.txt zh_HK.txt zh_MO.txt\
+ zh_SG.txt zh_TW.txt
 
 
 # All aliases (to not be included under 'installed'), but not including root.
