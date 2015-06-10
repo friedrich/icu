@@ -108,10 +108,13 @@ DecimalFormat::ERoundingMode getRoundingMode() const {
 }
 void setMinimumIntegerDigits(int32_t newValue);
 void setMaximumIntegerDigits(int32_t newValue);
+void setMinMaxIntegerDigits(int32_t min, int32_t max);
 void setMinimumFractionDigits(int32_t newValue);
 void setMaximumFractionDigits(int32_t newValue);
+void setMinMaxFractionDigits(int32_t min, int32_t max);
 void setMinimumSignificantDigits(int32_t newValue);
 void setMaximumSignificantDigits(int32_t newValue);
+void setMinMaxSignificantDigits(int32_t min, int32_t max);
 void setScientificNotation(UBool newValue);
 void setSignificantDigitsUsed(UBool newValue);
 int32_t getMinimumIntegerDigits() const { 

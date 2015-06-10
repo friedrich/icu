@@ -595,7 +595,15 @@ DecimalFormatImpl::setMaximumSignificantDigits(int32_t newValue) {
     fUseSigDigits = TRUE; // ticket 9936
     updatePrecision();
 }
-        
+
+void
+DecimalFormatImpl::setMinMaxSignificantDigits(int32_t min, int32_t max) {
+    fMinSigDigits = min;
+    fMaxSigDigits = max;
+    fUseSigDigits = TRUE; // ticket 9936
+    updatePrecision();
+}
+
 void
 DecimalFormatImpl::setMinimumIntegerDigits(int32_t newValue) {
     fMinIntDigits = newValue;
@@ -605,6 +613,13 @@ DecimalFormatImpl::setMinimumIntegerDigits(int32_t newValue) {
 void
 DecimalFormatImpl::setMaximumIntegerDigits(int32_t newValue) {
     fMaxIntDigits = newValue;
+    updatePrecision();
+}
+
+void
+DecimalFormatImpl::setMinMaxIntegerDigits(int32_t min, int32_t max) {
+    fMinIntDigits = min;
+    fMaxIntDigits = max;
     updatePrecision();
 }
         
@@ -617,6 +632,13 @@ DecimalFormatImpl::setMinimumFractionDigits(int32_t newValue) {
 void
 DecimalFormatImpl::setMaximumFractionDigits(int32_t newValue) {
     fMaxFracDigits = newValue;
+    updatePrecision();
+}
+
+void
+DecimalFormatImpl::setMinMaxFractionDigits(int32_t min, int32_t max) {
+    fMinFracDigits = min;
+    fMaxFracDigits = max;
     updatePrecision();
 }
 

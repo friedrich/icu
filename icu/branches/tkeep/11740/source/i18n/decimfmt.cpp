@@ -448,7 +448,6 @@ DecimalFormat::construct(UErrorCode&            status,
                          DecimalFormatSymbols*  symbolsToAdopt)
 {
     fSymbols = symbolsToAdopt; // Do this BEFORE aborting on status failure!!!
-        
     fRoundingIncrement = NULL;
     fRoundingMode = kRoundHalfEven;
     fPad = kDefaultPad;
@@ -458,13 +457,12 @@ DecimalFormat::construct(UErrorCode&            status,
 
     fPosPrefixPattern = fPosSuffixPattern = NULL;
     fNegPrefixPattern = fNegSuffixPattern = NULL;
-    setMultiplier(1);
     fGroupingSize = 3;
     fGroupingSize2 = 0;
     fDecimalSeparatorAlwaysShown = FALSE;
     fUseExponentialNotation = FALSE;
     fMinExponentDigits = 0;
-
+        
     if (fSymbols == NULL)
     {
         fSymbols = new DecimalFormatSymbols(Locale::getDefault(), status);
@@ -483,6 +481,7 @@ DecimalFormat::construct(UErrorCode&            status,
         status = nsStatus;
         return;
     }
+
 
     UnicodeString str;
     // Uses the default locale's number format pattern if there isn't
@@ -508,6 +507,17 @@ DecimalFormat::construct(UErrorCode&            status,
         ures_close(resource);
         ures_close(top);
     }
+
+    // TODO(refactor): Just have this adopt symbolsToAdopt instead of copy it once
+    // fSymbols goes away.
+    fImpl = new DecimalFormatImpl(*pattern, new DecimalFormatSymbols(*fSymbols), parseErr, status);
+    if (fImpl == NULL && U_SUCCESS(status)) {
+        status = U_MEMORY_ALLOCATION_ERROR;
+    }
+    if (U_FAILURE(status)) {
+        return;
+    }
+    setMultiplier(1);
 
     delete ns;
 
@@ -584,12 +594,6 @@ DecimalFormat::construct(UErrorCode&            status,
     data.fFastParseStatus = kFastpathNO; // allow it to be calculated
     handleChanged();
 #endif
-    // TODO: Just have this adopt symbolsToAdopt instead of copy it once
-    // fSymbols goes away.
-    fImpl = new DecimalFormatImpl(*pattern, new DecimalFormatSymbols(*fSymbols), parseErr, status);
-    if (fImpl == NULL && U_SUCCESS(status)) {
-        status = U_MEMORY_ALLOCATION_ERROR;
-    }
 }
 
 
@@ -791,6 +795,11 @@ DecimalFormat::operator=(const DecimalFormat& rhs)
     if(this != &rhs) {
         UErrorCode status = U_ZERO_ERROR;
         NumberFormat::operator=(rhs);
+        if (fImpl == NULL) {
+            fImpl = new DecimalFormatImpl(*rhs.fImpl);
+        } else {
+            *fImpl = *rhs.fImpl;
+        }
         fStaticSets     = DecimalFormatStaticSets::getStaticSets(status);
         fPositivePrefix = rhs.fPositivePrefix;
         fPositiveSuffix = rhs.fPositiveSuffix;
@@ -846,11 +855,6 @@ DecimalFormat::operator=(const DecimalFormat& rhs)
             UErrorCode status = U_ZERO_ERROR;
             fPluralAffixesForCurrency = initHashForAffixPattern(status);
             copyHashForAffix(rhs.fPluralAffixesForCurrency, fPluralAffixesForCurrency, status);
-        }
-        if (fImpl == NULL) {
-            fImpl = new DecimalFormatImpl(*rhs.fImpl);
-        } else {
-            *fImpl = *rhs.fImpl;
         }
 #if UCONFIG_FORMAT_FASTPATHS_49
         DecimalFormatInternal &data    = internalData(fReserved);
@@ -3621,6 +3625,8 @@ DecimalFormat::adoptDecimalFormatSymbols(DecimalFormatSymbols* symbolsToAdopt)
     if (symbolsToAdopt == NULL) {
         return; // do not allow caller to set fSymbols to NULL
     }
+    //TODO(refactor): Just adopt, don't copy
+    fImpl->adoptDecimalFormatSymbols(new DecimalFormatSymbols(*symbolsToAdopt));
 
     UBool sameSymbols = FALSE;
     if (fSymbols != NULL) {
@@ -3755,6 +3761,7 @@ DecimalFormat::getPositivePrefix(UnicodeString& result) const
 void
 DecimalFormat::setPositivePrefix(const UnicodeString& newValue)
 {
+    fImpl->setPositivePrefix(newValue);
     fPositivePrefix = newValue;
     delete fPosPrefixPattern;
     fPosPrefixPattern = 0;
@@ -3779,6 +3786,7 @@ DecimalFormat::getNegativePrefix(UnicodeString& result) const
 void
 DecimalFormat::setNegativePrefix(const UnicodeString& newValue)
 {
+    fImpl->setNegativePrefix(newValue);
     fNegativePrefix = newValue;
     delete fNegPrefixPattern;
     fNegPrefixPattern = 0;
@@ -3803,6 +3811,7 @@ DecimalFormat::getPositiveSuffix(UnicodeString& result) const
 void
 DecimalFormat::setPositiveSuffix(const UnicodeString& newValue)
 {
+    fImpl->setPositiveSuffix(newValue);
     fPositiveSuffix = newValue;
     delete fPosSuffixPattern;
     fPosSuffixPattern = 0;
@@ -3827,6 +3836,7 @@ DecimalFormat::getNegativeSuffix(UnicodeString& result) const
 void
 DecimalFormat::setNegativeSuffix(const UnicodeString& newValue)
 {
+    fImpl->setNegativeSuffix(newValue);
     fNegativeSuffix = newValue;
     delete fNegSuffixPattern;
     fNegSuffixPattern = 0;
@@ -3856,6 +3866,7 @@ DecimalFormat::getMultiplier() const
 void
 DecimalFormat::setMultiplier(int32_t newValue)
 {
+    fImpl->setMultiplier(newValue);
 //  if (newValue == 0) {
 //      throw new IllegalArgumentException("Bad multiplier: " + newValue);
 //  }
@@ -3904,6 +3915,7 @@ double DecimalFormat::getRoundingIncrement() const {
  * @see #setRoundingMode
  */
 void DecimalFormat::setRoundingIncrement(double newValue) {
+    fImpl->setRoundingIncrement(newValue);
     if (newValue > 0.0) {
         if (fRoundingIncrement == NULL) {
             fRoundingIncrement = new DigitList();
@@ -3942,6 +3954,7 @@ DecimalFormat::ERoundingMode DecimalFormat::getRoundingMode() const {
  * @see #getRoundingMode
  */
 void DecimalFormat::setRoundingMode(ERoundingMode roundingMode) {
+    fImpl->setRoundingMode(roundingMode);
     fRoundingMode = roundingMode;
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
@@ -3975,6 +3988,7 @@ int32_t DecimalFormat::getFormatWidth() const {
  */
 void DecimalFormat::setFormatWidth(int32_t width) {
     fFormatWidth = (width > 0) ? width : 0;
+    fImpl->setFormatWidth(fFormatWidth);
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
@@ -3991,6 +4005,7 @@ void DecimalFormat::setPadCharacter(const UnicodeString &padChar) {
     else {
         fPad = kDefaultPad;
     }
+    fImpl->setPadCharacter(fPad);
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
@@ -4017,6 +4032,23 @@ DecimalFormat::EPadPosition DecimalFormat::getPadPosition() const {
     return fPadPosition;
 }
 
+static DigitAffixesAndPadding::EPadPosition toPadPosition(DecimalFormat::EPadPosition padPos) {
+    switch (padPos) {
+    case DecimalFormat::kPadBeforePrefix:
+        return DigitAffixesAndPadding::kPadBeforePrefix;
+    case DecimalFormat::kPadAfterPrefix:
+        return DigitAffixesAndPadding::kPadAfterPrefix;
+    case DecimalFormat::kPadBeforeSuffix:
+        return DigitAffixesAndPadding::kPadBeforeSuffix;
+    case DecimalFormat::kPadAfterSuffix:
+        return DigitAffixesAndPadding::kPadAfterSuffix;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return DigitAffixesAndPadding::kPadBeforePrefix;
+}
+
 /**
  * <strong><font face=helvetica color=red>NEW</font></strong>
  * Set the position at which padding will take place.  This is the location
@@ -4037,6 +4069,7 @@ DecimalFormat::EPadPosition DecimalFormat::getPadPosition() const {
  * @see #kPadAfterSuffix
  */
 void DecimalFormat::setPadPosition(EPadPosition padPos) {
+    fImpl->setPadPosition(toPadPosition(padPos));
     fPadPosition = padPos;
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
@@ -4067,6 +4100,7 @@ UBool DecimalFormat::isScientificNotation() const {
  * @see #setExponentSignAlwaysShown
  */
 void DecimalFormat::setScientificNotation(UBool useScientific) {
+    fImpl->setScientificNotation(useScientific);
     fUseExponentialNotation = useScientific;
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
@@ -4099,6 +4133,7 @@ int8_t DecimalFormat::getMinimumExponentDigits() const {
  */
 void DecimalFormat::setMinimumExponentDigits(int8_t minExpDig) {
     fMinExponentDigits = (int8_t)((minExpDig > 0) ? minExpDig : 1);
+    fImpl->setMinimumExponentDigits(fMinExponentDigits);
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
@@ -4132,6 +4167,7 @@ UBool DecimalFormat::isExponentSignAlwaysShown() const {
  * @see #isExponentSignAlwaysShown
  */
 void DecimalFormat::setExponentSignAlwaysShown(UBool expSignAlways) {
+    fImpl->setExponentSignAlwaysShown(expSignAlways);
     fExponentSignAlwaysShown = expSignAlways;
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
@@ -4154,6 +4190,7 @@ DecimalFormat::getGroupingSize() const
 void
 DecimalFormat::setGroupingSize(int32_t newValue)
 {
+    fImpl->setGroupingSize(newValue);
     fGroupingSize = newValue;
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
@@ -4173,6 +4210,7 @@ DecimalFormat::getSecondaryGroupingSize() const
 void
 DecimalFormat::setSecondaryGroupingSize(int32_t newValue)
 {
+    fImpl->setSecondaryGroupingSize(newValue);
     fGroupingSize2 = newValue;
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
@@ -4194,6 +4232,7 @@ DecimalFormat::isDecimalSeparatorAlwaysShown() const
 void
 DecimalFormat::setDecimalSeparatorAlwaysShown(UBool newValue)
 {
+    fImpl->setDecimalSeparatorAlwaysShown(newValue);
     fDecimalSeparatorAlwaysShown = newValue;
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
@@ -4935,6 +4974,7 @@ DecimalFormat::applyPattern(const UnicodeString& pattern,
                             UParseError& parseError,
                             UErrorCode& status)
 {
+    fImpl->applyPattern(pattern, status);
     applyPattern(pattern, FALSE, parseError, status);
 }
 //------------------------------------------------------------------------------
@@ -4942,6 +4982,7 @@ DecimalFormat::applyPattern(const UnicodeString& pattern,
 void
 DecimalFormat::applyLocalizedPattern(const UnicodeString& pattern, UErrorCode& status)
 {
+    fImpl->applyLocalizedPattern(pattern, status);
     UParseError parseError;
     applyPattern(pattern, TRUE,parseError,status);
 }
@@ -5101,7 +5142,11 @@ DecimalFormat::applyPatternInternally(const UnicodeString& pluralCount,
  * @see NumberFormat#setMaximumIntegerDigits
  */
 void DecimalFormat::setMaximumIntegerDigits(int32_t newValue) {
-    NumberFormat::setMaximumIntegerDigits(_min(newValue, gDefaultMaxIntegerDigits));
+    newValue = _min(newValue, gDefaultMaxIntegerDigits);
+    NumberFormat::setMaximumIntegerDigits(newValue);
+    fImpl->setMinMaxIntegerDigits(
+            NumberFormat::getMinimumIntegerDigits(),
+            NumberFormat::getMaximumIntegerDigits());
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
@@ -5113,7 +5158,11 @@ void DecimalFormat::setMaximumIntegerDigits(int32_t newValue) {
  * @see NumberFormat#setMinimumIntegerDigits
  */
 void DecimalFormat::setMinimumIntegerDigits(int32_t newValue) {
-    NumberFormat::setMinimumIntegerDigits(_min(newValue, kDoubleIntegerDigits));
+    newValue = _min(newValue, kDoubleIntegerDigits);
+    NumberFormat::setMinimumIntegerDigits(newValue);
+    fImpl->setMinMaxIntegerDigits(
+            NumberFormat::getMinimumIntegerDigits(),
+            NumberFormat::getMaximumIntegerDigits());
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
@@ -5125,7 +5174,11 @@ void DecimalFormat::setMinimumIntegerDigits(int32_t newValue) {
  * @see NumberFormat#setMaximumFractionDigits
  */
 void DecimalFormat::setMaximumFractionDigits(int32_t newValue) {
-    NumberFormat::setMaximumFractionDigits(_min(newValue, kDoubleFractionDigits));
+    newValue = _min(newValue, kDoubleFractionDigits);
+    NumberFormat::setMaximumFractionDigits(newValue);
+    fImpl->setMinMaxFractionDigits(
+            NumberFormat::getMinimumFractionDigits(),
+            NumberFormat::getMaximumFractionDigits());
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
@@ -5137,7 +5190,11 @@ void DecimalFormat::setMaximumFractionDigits(int32_t newValue) {
  * @see NumberFormat#setMinimumFractionDigits
  */
 void DecimalFormat::setMinimumFractionDigits(int32_t newValue) {
-    NumberFormat::setMinimumFractionDigits(_min(newValue, kDoubleFractionDigits));
+    newValue = _min(newValue, kDoubleFractionDigits);
+    NumberFormat::setMinimumFractionDigits(newValue);
+    fImpl->setMinMaxFractionDigits(
+            NumberFormat::getMinimumFractionDigits(),
+            NumberFormat::getMaximumFractionDigits());
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
@@ -5156,7 +5213,8 @@ void DecimalFormat::setMinimumSignificantDigits(int32_t min) {
         min = 1;
     }
     // pin max sig dig to >= min
-    int32_t max = _max(fMaxSignificantDigits, min);
+    int32_t max = _max(fImpl->fMaxSigDigits, min);
+    fImpl->setMinMaxSignificantDigits(min, max);
     fMinSignificantDigits = min;
     fMaxSignificantDigits = max;
     fUseSignificantDigits = TRUE;
@@ -5170,8 +5228,9 @@ void DecimalFormat::setMaximumSignificantDigits(int32_t max) {
         max = 1;
     }
     // pin min sig dig to 1..max
-    U_ASSERT(fMinSignificantDigits >= 1);
-    int32_t min = _min(fMinSignificantDigits, max);
+    U_ASSERT(fImpl->fMinSigDigits >= 1);
+    int32_t min = _min(fImpl->fMinSigDigits, max);
+    fImpl->setMinMaxSignificantDigits(min, max);
     fMinSignificantDigits = min;
     fMaxSignificantDigits = max;
     fUseSignificantDigits = TRUE;
@@ -5185,6 +5244,7 @@ UBool DecimalFormat::areSignificantDigitsUsed() const {
 }
 
 void DecimalFormat::setSignificantDigitsUsed(UBool useSignificantDigits) {
+    fImpl->setSignificantDigitsUsed(useSignificantDigits);
     fUseSignificantDigits = useSignificantDigits;
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
@@ -5231,6 +5291,7 @@ void DecimalFormat::setCurrencyInternally(const UChar* theCurrency,
 void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {
     // set the currency before compute affixes to get the right currency names
     NumberFormat::setCurrency(theCurrency, ec);
+    fImpl->setCurrency(theCurrency, ec);
     if (fFormatPattern.indexOf(fgTripleCurrencySign, 3, 0) != -1) {
         UnicodeString savedPtn = fFormatPattern;
         setupCurrencyAffixes(fFormatPattern, TRUE, TRUE, ec);
@@ -5245,6 +5306,7 @@ void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {
 }
 
 void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){
+//    fImpl->setCurrencyUsage(newContext, *ec);
     fCurrencyUsage = newContext;
 
     const UChar* theCurrency = getCurrency();
@@ -5415,6 +5477,7 @@ DecimalFormat::copyHashForAffixPattern(const Hashtable* source,
 void
 DecimalFormat::setGroupingUsed(UBool newValue) {
   NumberFormat::setGroupingUsed(newValue);
+  fImpl->setGroupingUsed(newValue);
   handleChanged();
 }
 
