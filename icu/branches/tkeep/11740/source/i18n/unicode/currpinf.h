@@ -191,6 +191,7 @@ public:
 
 private:
     friend class DecimalFormat;
+    friend class DecimalFormatImpl;
 
     void initialize(const Locale& loc, UErrorCode& status);
    

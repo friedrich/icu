@@ -73,6 +73,7 @@
 #include "plurrule_impl.h"
 #include "decimalformatpattern.h"
 #include "fmtableimp.h"
+#include "decimfmtimpl.h"
 
 /*
  * On certain platforms, round is a macro defined in math.h
@@ -432,6 +433,7 @@ DecimalFormat::init() {
     data.fFastParseStatus=kFastpathUNKNOWN; // don't try to calculate the fastpath until later.
 #endif
     fStaticSets = NULL;
+    fImpl = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -446,6 +448,7 @@ DecimalFormat::construct(UErrorCode&            status,
                          DecimalFormatSymbols*  symbolsToAdopt)
 {
     fSymbols = symbolsToAdopt; // Do this BEFORE aborting on status failure!!!
+        
     fRoundingIncrement = NULL;
     fRoundingMode = kRoundHalfEven;
     fPad = kDefaultPad;
@@ -581,6 +584,12 @@ DecimalFormat::construct(UErrorCode&            status,
     data.fFastParseStatus = kFastpathNO; // allow it to be calculated
     handleChanged();
 #endif
+    // TODO: Just have this adopt symbolsToAdopt instead of copy it once
+    // fSymbols goes away.
+    fImpl = new DecimalFormatImpl(*pattern, new DecimalFormatSymbols(*fSymbols), parseErr, status);
+    if (fImpl == NULL && U_SUCCESS(status)) {
+        status = U_MEMORY_ALLOCATION_ERROR;
+    }
 }
 
 
@@ -739,6 +748,7 @@ DecimalFormat::~DecimalFormat()
     deleteHashForAffix(fAffixesForCurrency);
     deleteHashForAffix(fPluralAffixesForCurrency);
     delete fCurrencyPluralInfo;
+    delete fImpl;
 }
 
 //------------------------------------------------------------------------------
@@ -837,12 +847,18 @@ DecimalFormat::operator=(const DecimalFormat& rhs)
             fPluralAffixesForCurrency = initHashForAffixPattern(status);
             copyHashForAffix(rhs.fPluralAffixesForCurrency, fPluralAffixesForCurrency, status);
         }
+        if (fImpl == NULL) {
+            fImpl = new DecimalFormatImpl(*rhs.fImpl);
+        } else {
+            *fImpl = *rhs.fImpl;
+        }
 #if UCONFIG_FORMAT_FASTPATHS_49
         DecimalFormatInternal &data    = internalData(fReserved);
         const DecimalFormatInternal &rhsData = internalData(rhs.fReserved);
         data = rhsData;
 #endif
     }
+
     return *this;
 }
 
@@ -1092,7 +1108,8 @@ DecimalFormat::operator==(const Format& that) const
          (fCurrencyPluralInfo != NULL && other->fCurrencyPluralInfo != NULL &&
          *fCurrencyPluralInfo == *(other->fCurrencyPluralInfo))) &&
 
-        fCurrencyUsage == other->fCurrencyUsage
+        fCurrencyUsage == other->fCurrencyUsage &&
+        *fImpl == *other->fImpl
 
         // depending on other settings we may also need to compare
         // fCurrencyChoice (mostly deprecated?),

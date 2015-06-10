@@ -59,6 +59,7 @@ class UnicodeSet;
 class FieldPositionHandler;
 class DecimalFormatStaticSets;
 class FixedDecimal;
+class DecimalFormatImpl;
 
 // explicit template instantiation. see digitlst.h
 #if defined (_MSC_VER)
@@ -2239,6 +2240,8 @@ private:
                            UnicodeString& appendTo,
                            FieldPositionHandler& handler,
                            UErrorCode &status) const;
+
+    DecimalFormatImpl *fImpl;
 
     /**
      * Constants.
