@@ -1955,8 +1955,8 @@ UnicodeString MessageFormat::PluralSelectorProvider::select(void *ctx, double nu
     context.formatter->format(context.number, context.numberString, ec);
     const DecimalFormat *decFmt = dynamic_cast<const DecimalFormat *>(context.formatter);
     if(decFmt != NULL) {
-        FixedDecimal dec = decFmt->getFixedDecimal(context.number, ec);
-        return rules->select(dec);
+        UnicodeString count;
+        return decFmt->select(context.number, *rules, count, ec);
     } else {
         return rules->select(number);
     }

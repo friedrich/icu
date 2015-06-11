@@ -413,12 +413,14 @@ UnicodeString
 DecimalFormatImpl::select(double number, const PluralRules &rules) const {
     DigitList dl;
     dl.set(number);
+    dl.setRoundingMode(fRoundingMode);
     return select(dl, rules);
 }
 
 UnicodeString
 DecimalFormatImpl::select(
         DigitList &number, const PluralRules &rules) const {
+    number.setRoundingMode(fRoundingMode);
     UErrorCode status = U_ZERO_ERROR;
     if (!fMultiplier.isZero()) {
         number.mult(fMultiplier, status);

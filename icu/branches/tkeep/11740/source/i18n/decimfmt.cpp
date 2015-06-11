@@ -1172,6 +1172,57 @@ DecimalFormat::getFixedDecimal(double number, UErrorCode &status) const {
     return result;
 }
 
+UnicodeString
+DecimalFormat::select(
+        double number,
+        const PluralRules &rules) const {
+    return fImpl->select(number, rules);
+}
+
+
+UnicodeString &
+DecimalFormat::select(
+        const Formattable &number,
+        const PluralRules &rules,
+        UnicodeString &result,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return result;
+    }
+    if (!number.isNumeric()) {
+        status = U_ILLEGAL_ARGUMENT_ERROR;
+        return result;
+    }
+
+    DigitList *dl = number.getDigitList();
+    if (dl != NULL) {
+        result = fImpl->select(*dl, rules);
+        return result;
+    }
+
+    Formattable::Type type = number.getType();
+    if (type == Formattable::kDouble || type == Formattable::kLong) { 
+        result = fImpl->select(number.getDouble(status), rules);
+        return result;
+    }
+
+    if (type == Formattable::kInt64 && number.getInt64() <= MAX_INT64_IN_DOUBLE &&
+                                       number.getInt64() >= -MAX_INT64_IN_DOUBLE) {
+        result = fImpl->select(number.getDouble(status), rules);
+        return result;
+    }
+
+    // The only case left is type==int64_t, with a value with more digits than a double can represent.
+    // Any formattable originating as a big decimal will have had a pre-existing digit list.
+    // Any originating as a double or int32 will have been handled as a double.
+
+    U_ASSERT(type == Formattable::kInt64);
+    DigitList digits;
+    digits.set(number.getInt64());
+    result = fImpl->select(digits, rules);
+    return result;
+}
+
 FixedDecimal
 DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) const {
     if (U_FAILURE(status)) {

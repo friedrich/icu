@@ -60,6 +60,7 @@ class FieldPositionHandler;
 class DecimalFormatStaticSets;
 class FixedDecimal;
 class DecimalFormatImpl;
+class PluralRules;
 
 // explicit template instantiation. see digitlst.h
 #if defined (_MSC_VER)
@@ -1974,6 +1975,22 @@ public:
      * @stable ICU 2.0
      */
     virtual UClassID getDynamicClassID(void) const;
+
+    /**
+     * @internal for ICU use only.
+     */
+    UnicodeString &select(
+            const Formattable &value,
+            const PluralRules &rules,
+            UnicodeString &result,
+            UErrorCode &status) const;
+
+    /**
+     * @internal for ICU use only.
+     */
+    UnicodeString select(
+            double value,
+            const PluralRules &rules) const;
 
 private:
 

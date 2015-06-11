@@ -11,7 +11,6 @@
 #include "unicode/unistr.h"
 #include "unicode/decimfmt.h"
 #include "cstring.h"
-#include "plurrule_impl.h"
 #include "unicode/plurrule.h"
 #include "charstr.h"
 #include "unicode/fmtable.h"
@@ -138,11 +137,10 @@ UnicodeString &QuantityFormatter::format(
     UnicodeString count;
     const DecimalFormat *decFmt = dynamic_cast<const DecimalFormat *>(&fmt);
     if (decFmt != NULL) {
-        FixedDecimal fd = decFmt->getFixedDecimal(quantity, status);
+        decFmt->select(quantity, rules, count, status);
         if (U_FAILURE(status)) {
             return appendTo;
         }
-        count = rules.select(fd);
     } else {
         if (quantity.getType() == Formattable::kDouble) {
             count = rules.select(quantity.getDouble());
