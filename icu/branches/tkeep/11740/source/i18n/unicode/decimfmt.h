@@ -2045,23 +2045,6 @@ private:
     void expandAffixAdjustWidth(const UnicodeString* pluralCount);
 
 
-    /**
-     * Do the work of formatting a number, either a double or a long.
-     *
-     * @param appendTo       Output parameter to receive result.
-     *                       Result is appended to existing contents.
-     * @param handler        Records information about field positions.
-     * @param digits         the digits to be formatted.
-     * @param isInteger      if TRUE format the digits as Integer.
-     * @return               Reference to 'appendTo' parameter.
-     */
-    UnicodeString& subformat(UnicodeString& appendTo,
-                             FieldPositionHandler& handler,
-                             DigitList&     digits,
-                             UBool          isInteger,
-                             UErrorCode &status) const;
-
-
     void parse(const UnicodeString& text,
                Formattable& result,
                ParsePosition& pos,
@@ -2178,10 +2161,6 @@ private:
                      const UnicodeString* pluralCount) const;
 
     void expandAffixes(const UnicodeString* pluralCount);
-
-    void addPadding(UnicodeString& appendTo,
-                    FieldPositionHandler& handler,
-                    int32_t prefixLen, int32_t suffixLen) const;
 
     UBool isGroupingPosition(int32_t pos) const;
 
