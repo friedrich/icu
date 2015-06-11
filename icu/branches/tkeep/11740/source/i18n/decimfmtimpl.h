@@ -27,7 +27,6 @@ class UnicodeString;
 class FieldPosition;
 class ValueFormatter;
 class FieldPositionHandler;
-class DecimalFormatStaticSets;
 
 class DecimalFormatImpl : public UObject {
 public:
@@ -195,69 +194,13 @@ void setNegativeSuffix(const UnicodeString &str);
 UnicodeString &toPattern(UnicodeString& result) const;
 UnicodeString select(double value, const PluralRules &rules) const;
 UnicodeString select(DigitList &number, const PluralRules &rules) const;
-UBool isLenient() const { return fLenient; }
-void setLenient(UBool b) { fLenient = b; }
-void parse(const UnicodeString& text,
-           Formattable& result,
-           ParsePosition& parsePosition) const;
-void parse(const UnicodeString& text,
-           Formattable& result,
-           ParsePosition& parsePosition,
-           UChar* currency) const;
-CurrencyAmount* parseCurrency(
-        const UnicodeString& text, ParsePosition& pos) const;
-UBool isParseIntegerOnly() const { return fParseIntegerOnly; }
-void setParseIntegerOnly(UBool b) { fParseIntegerOnly = b; }
-UBool isDecimalPatternMatchRequired() const {
-    return fParseDecimalMarkRequired;
-}
-void setDecimalPatternMatchRequired(UBool b) {
-    fParseDecimalMarkRequired = b;
-}
-UBool isParseNoExponent() const {
-    return fParseNoExponent;
-}
-void setParseNoExponent(UBool b) {
-    fParseNoExponent = b;
-}
-
-void getEffectiveCurrency(UChar *result, UErrorCode &status) const;
-
-static const char fgNumberPatterns[];
 
 private:
-   enum {
-        fgStatusInfinite,
-        fgStatusLength      // Leave last in list.
-    } StatusFlags;
 
 DigitList fMultiplier;
 int32_t fScale;
 
 DecimalFormat::ERoundingMode fRoundingMode;
-UBool fLenient;
-const DecimalFormatStaticSets *fStaticSets;
-UBool fParseDecimalMarkRequired;
-UBool fParseNoExponent;
-UBool fParseIntegerOnly;
-    // Affix pattern set for currency.
-    // It is a set of AffixPatternsForCurrency,
-    // each element of the set saves the negative prefix pattern,
-    // negative suffix pattern, positive prefix pattern,
-    // and positive suffix  pattern of a pattern.
-    // It is used for currency mixed style parsing.
-    // It is actually is a set.
-    // The set contains the default currency pattern from the locale,
-    // and the currency plural patterns.
-    // Since it is a set, it does not contain duplicated items.
-    // For example, if 2 currency plural patterns are the same, only one pattern
-    // is included in the set. When parsing, we do not check whether the plural
-    // count match or not.
-    Hashtable* fAffixPatternsForCurrency;
-
-    // Information needed for DecimalFormat to format/parse currency plural.
-    CurrencyPluralInfo* fCurrencyPluralInfo;
-
 
 // These fields include what the user can see and set.
 // When the user updates these fields, it triggers automatic updates of
@@ -386,8 +329,6 @@ void updateFormattingLocalizedNegativePrefix(
         int32_t &changedFormattingFields, UErrorCode &status);
 void updateFormattingLocalizedNegativeSuffix(
         int32_t &changedFormattingFields, UErrorCode &status);
-void updateCurrencyPluralInfoAndPatterns(
-        int32_t &changedFormattingFields, UErrorCode &status);
 
 int32_t computeExponentPatternLength() const;
 int32_t countFractionDigitAndDecimalPatternLength(int32_t fracDigitCount) const;
@@ -398,65 +339,6 @@ int32_t getOldFormatWidth() const;
 const UnicodeString &getConstSymbol(
         DecimalFormatSymbols::ENumberFormatSymbol symbol) const;
 UBool isParseFastpath() const;
-int32_t skipPadding(const UnicodeString& text, int32_t position) const;
-static int32_t skipUWhiteSpace(const UnicodeString& text, int32_t pos);
-UBool parseForCurrency(const UnicodeString& text,
-                      ParsePosition& parsePosition,
-                      DigitList& digits,
-                      UBool* status,
-                      UChar* currency) const;
-UBool subparse(const UnicodeString& text,
-               const UnicodeString* negPrefix,
-               const UnicodeString* negSuffix,
-               const UnicodeString* posPrefix,
-               const UnicodeString* posSuffix,
-               UBool complexCurrencyParsing,
-               int8_t type,
-               ParsePosition& parsePosition,
-               DigitList& digits, UBool* status,
-               UChar* currency) const;
-static UBool matchGrouping(UChar32 groupingChar,
-                    UBool sawGrouping, UChar32 sawGroupingChar,
-                    const UnicodeSet *sset,
-                    UChar32 /*decimalChar*/, const UnicodeSet *decimalSet,
-                    UChar32 schar);
-int32_t compareAffix(const UnicodeString& text,
-                     int32_t pos,
-                     UBool isNegative,
-                     UBool isPrefix,
-                     const UnicodeString* affixPat,
-                     UBool complexCurrencyParsing,
-                     int8_t type,
-                     UChar* currency) const;
-static UBool matchDecimal(
-        UChar32 symbolChar,
-        UBool sawDecimal,  UChar32 sawDecimalChar,
-        const UnicodeSet *sset, UChar32 schar);
-int32_t compareComplexAffix(const UnicodeString& affixPat,
-                            const UnicodeString& text,
-                            int32_t pos,
-                            int8_t type,
-                            UChar* currency) const;
-UBool equalWithSignCompatibility(
-        UChar32 lhs, UChar32 rhs) const;
-int32_t compareSimpleAffix(
-        const UnicodeString& affix,
-        const UnicodeString& input,
-        int32_t pos,
-        UBool lenient) const;
-static int32_t skipPatternWhiteSpace(
-        const UnicodeString& text, int32_t pos);
-static int32_t skipUWhiteSpaceAndMarks(const UnicodeString& text, int32_t pos);
-static int32_t match(const UnicodeString& text, int32_t pos, UChar32 ch);
-static int32_t skipBidiMarks(const UnicodeString& text, int32_t pos);
-static UnicodeString& trimMarksFromAffix(const UnicodeString& affix, UnicodeString& trimmedAffix);
-static UBool matchSymbol(const UnicodeString &text, int32_t position, int32_t length, const UnicodeString &symbol, UnicodeSet *sset, UChar32 schar);
-static int32_t match(const UnicodeString& text, int32_t pos, const UnicodeString& str);
-
-void setupCurrencyAffixPatterns(UErrorCode& status);
-static void copyHashForAffixPattern(
-        const Hashtable* source, Hashtable* target, UErrorCode& status);
-void deleteHashForAffixPattern();
 
 friend class DecimalFormat;
 
