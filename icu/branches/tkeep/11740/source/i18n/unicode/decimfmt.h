@@ -1997,16 +1997,6 @@ private:
                    );
 
     /**
-     * Does the real work of generating a pattern.
-     *
-     * @param result     Output param which will receive the pattern.
-     *                   Previous contents are deleted.
-     * @param localized  TRUE return localized pattern.
-     * @return           A reference to 'result'.
-     */
-    UnicodeString& toPattern(UnicodeString& result, UBool localized) const;
-
-    /**
      * Does the real work of applying a pattern.
      * @param pattern    The pattern to be applied.
      * @param localized  If true, the pattern is localized; else false.
