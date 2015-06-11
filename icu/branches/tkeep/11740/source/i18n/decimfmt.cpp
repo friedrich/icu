@@ -598,6 +598,34 @@ DecimalFormat::construct(UErrorCode&            status,
 #endif
 }
 
+static void 
+applyPatternWithNoSideEffects(
+        const UnicodeString& pattern,
+        UParseError& parseError,
+        UnicodeString &negPrefix,
+        UnicodeString &negSuffix,
+        UnicodeString &posPrefix,
+        UnicodeString &posSuffix,
+        UErrorCode& status) {
+        if (U_FAILURE(status))
+    {    
+        return;
+    }    
+    DecimalFormatPatternParser patternParser;
+    DecimalFormatPattern out; 
+    patternParser.applyPatternWithoutExpandAffix(
+        pattern,
+        out, 
+        parseError,
+        status);
+    if (U_FAILURE(status)) {
+      return;
+    }    
+    negPrefix = out.fNegPrefixPattern;
+    negSuffix = out.fNegSuffixPattern;
+    posPrefix = out.fPosPrefixPattern;
+    posSuffix = out.fPosSuffixPattern;
+}
 
 void
 DecimalFormat::setupCurrencyAffixPatterns(UErrorCode& status) {
@@ -638,13 +666,18 @@ DecimalFormat::setupCurrencyAffixPatterns(UErrorCode& status) {
     delete ns;
 
     if (U_SUCCESS(error)) {
-        applyPatternWithoutExpandAffix(UnicodeString(patResStr, patLen), false,
-                                       parseErr, status);
+        UnicodeString negPrefix;
+        UnicodeString negSuffix;
+        UnicodeString posPrefix;
+        UnicodeString posSuffix;
+        applyPatternWithNoSideEffects(UnicodeString(patResStr, patLen),
+                                       parseErr,
+                negPrefix, negSuffix, posPrefix, posSuffix,  status);
         AffixPatternsForCurrency* affixPtn = new AffixPatternsForCurrency(
-                                                    *fNegPrefixPattern,
-                                                    *fNegSuffixPattern,
-                                                    *fPosPrefixPattern,
-                                                    *fPosSuffixPattern,
+                                                    negPrefix,
+                                                    negSuffix,
+                                                    posPrefix,
+                                                    posSuffix,
                                                     UCURR_SYMBOL_NAME);
         fAffixPatternsForCurrency->put(UNICODE_STRING("default", 7), affixPtn, status);
     }
@@ -660,13 +693,19 @@ DecimalFormat::setupCurrencyAffixPatterns(UErrorCode& status) {
         const UHashTok keyTok = element->key;
         const UnicodeString* key = (UnicodeString*)keyTok.pointer;
         if (pluralPatternSet.geti(*value) != 1) {
+            UnicodeString negPrefix;
+            UnicodeString negSuffix;
+            UnicodeString posPrefix;
+            UnicodeString posSuffix;
             pluralPatternSet.puti(*value, 1, status);
-            applyPatternWithoutExpandAffix(*value, false, parseErr, status);
+            applyPatternWithNoSideEffects(
+                    *value, parseErr,
+                    negPrefix, negSuffix, posPrefix, posSuffix, status);
             AffixPatternsForCurrency* affixPtn = new AffixPatternsForCurrency(
-                                                    *fNegPrefixPattern,
-                                                    *fNegSuffixPattern,
-                                                    *fPosPrefixPattern,
-                                                    *fPosSuffixPattern,
+                                                    negPrefix,
+                                                    negSuffix,
+                                                    posPrefix,
+                                                    posSuffix,
                                                     UCURR_LONG_NAME);
             fAffixPatternsForCurrency->put(*key, affixPtn, status);
         }
@@ -2533,7 +2572,7 @@ int32_t DecimalFormat::compareAffix(const UnicodeString& text,
 {
     const UnicodeString *patternToCompare;
     if (fCurrencyChoice != NULL || currency != NULL ||
-        (fCurrencySignCount != fgCurrencySignCountZero && complexCurrencyParsing)) {
+        (fImpl->fMonetary && complexCurrencyParsing)) {
 
         if (affixPat != NULL) {
             return compareComplexAffix(*affixPat, text, pos, type, currency);
@@ -2542,18 +2581,18 @@ int32_t DecimalFormat::compareAffix(const UnicodeString& text,
 
     if (isNegative) {
         if (isPrefix) {
-            patternToCompare = &fNegativePrefix;
+            patternToCompare = &fImpl->fAap.fNegativePrefix.getOtherVariant().toString();
         }
         else {
-            patternToCompare = &fNegativeSuffix;
+            patternToCompare = &fImpl->fAap.fNegativeSuffix.getOtherVariant().toString();
         }
     }
     else {
         if (isPrefix) {
-            patternToCompare = &fPositivePrefix;
+            patternToCompare = &fImpl->fAap.fPositivePrefix.getOtherVariant().toString();
         }
         else {
-            patternToCompare = &fPositiveSuffix;
+            patternToCompare = &fImpl->fAap.fPositiveSuffix.getOtherVariant().toString();
         }
     }
     return compareSimpleAffix(*patternToCompare, text, pos, isLenient());
@@ -2826,7 +2865,7 @@ int32_t DecimalFormat::compareComplexAffix(const UnicodeString& affixPat,
     int32_t start = pos;
     U_ASSERT(currency != NULL ||
              (fCurrencyChoice != NULL && *getCurrency() != 0) ||
-             fCurrencySignCount != fgCurrencySignCountZero);
+             fImpl->fMonetary);
 
     for (int32_t i=0;
          i<affixPat.length() && pos >= 0; ) {
@@ -2891,16 +2930,16 @@ int32_t DecimalFormat::compareComplexAffix(const UnicodeString& affixPat,
                 continue;
             }
             case kPatternPercent:
-                affix = &getConstSymbol(DecimalFormatSymbols::kPercentSymbol);
+                affix = &fImpl->getConstSymbol(DecimalFormatSymbols::kPercentSymbol);
                 break;
             case kPatternPerMill:
-                affix = &getConstSymbol(DecimalFormatSymbols::kPerMillSymbol);
+                affix = &fImpl->getConstSymbol(DecimalFormatSymbols::kPerMillSymbol);
                 break;
             case kPatternPlus:
-                affix = &getConstSymbol(DecimalFormatSymbols::kPlusSignSymbol);
+                affix = &fImpl->getConstSymbol(DecimalFormatSymbols::kPlusSignSymbol);
                 break;
             case kPatternMinus:
-                affix = &getConstSymbol(DecimalFormatSymbols::kMinusSignSymbol);
+                affix = &fImpl->getConstSymbol(DecimalFormatSymbols::kMinusSignSymbol);
                 break;
             default:
                 // fall through to affix!=0 test, which will fail
