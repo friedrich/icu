@@ -1638,10 +1638,12 @@ void DecimalFormat::parse(const UnicodeString& text,
     }
 
     // Handle NaN as a special case:
+    int32_t formatWidth = fImpl->getOldFormatWidth();
 
     // Skip padding characters, if around prefix
-    if (fFormatWidth > 0 && (fPadPosition == kPadBeforePrefix ||
-                             fPadPosition == kPadAfterPrefix)) {
+    if (formatWidth > 0 && (
+            fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix ||
+            fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix)) {
         i = skipPadding(text, i);
     }
 
@@ -1651,13 +1653,12 @@ void DecimalFormat::parse(const UnicodeString& text,
     }
 
     // If the text is composed of the representation of NaN, returns NaN.length
-    const UnicodeString *nan = &getConstSymbol(DecimalFormatSymbols::kNaNSymbol);
+    const UnicodeString *nan = &fImpl->getConstSymbol(DecimalFormatSymbols::kNaNSymbol);
     int32_t nanLen = (text.compare(i, nan->length(), *nan)
                       ? 0 : nan->length());
     if (nanLen) {
         i += nanLen;
-        if (fFormatWidth > 0 && (fPadPosition == kPadBeforeSuffix ||
-                                 fPadPosition == kPadAfterSuffix)) {
+        if (formatWidth > 0 && (fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix || fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix)) {
             i = skipPadding(text, i);
         }
         parsePosition.setIndex(i);
@@ -1677,15 +1678,17 @@ void DecimalFormat::parse(const UnicodeString& text,
         return;    // no way to report error from here.
     }
 
-    if (fCurrencySignCount != fgCurrencySignCountZero) {
+    if (fImpl->fMonetary) {
         if (!parseForCurrency(text, parsePosition, *digits,
                               status, currency)) {
           return;
         }
     } else {
         if (!subparse(text,
-                      fNegPrefixPattern, fNegSuffixPattern,
-                      fPosPrefixPattern, fPosSuffixPattern,
+                      &fImpl->fAap.fNegativePrefix.getOtherVariant().toString(),
+                      &fImpl->fAap.fNegativeSuffix.getOtherVariant().toString(),
+                      &fImpl->fAap.fPositivePrefix.getOtherVariant().toString(),
+                      &fImpl->fAap.fPositiveSuffix.getOtherVariant().toString(),
                       FALSE, UCURR_SYMBOL_NAME,
                       parsePosition, *digits, status, currency)) {
             debug("!subparse(...) - rewind");
@@ -1703,21 +1706,21 @@ void DecimalFormat::parse(const UnicodeString& text,
 
     else {
 
-        if (fMultiplier != NULL) {
+        if (!fImpl->fMultiplier.isZero()) {
             UErrorCode ec = U_ZERO_ERROR;
-            digits->div(*fMultiplier, ec);
+            digits->div(fImpl->fMultiplier, ec);
         }
 
-        if (fScale != 0) {
+        if (fImpl->fScale != 0) {
             DigitList ten;
             ten.set((int32_t)10);
-            if (fScale > 0) {
-                for (int32_t i = fScale; i > 0; i--) {
+            if (fImpl->fScale > 0) {
+                for (int32_t i = fImpl->fScale; i > 0; i--) {
                     UErrorCode ec = U_ZERO_ERROR;
                     digits->div(ten,ec);
                 }
             } else {
-                for (int32_t i = fScale; i < 0; i++) {
+                for (int32_t i = fImpl->fScale; i < 0; i++) {
                     UErrorCode ec = U_ZERO_ERROR;
                     digits->mult(ten,ec);
                 }
@@ -1742,6 +1745,15 @@ DecimalFormat::parseForCurrency(const UnicodeString& text,
                                 DigitList& digits,
                                 UBool* status,
                                 UChar* currency) const {
+    UnicodeString positivePrefix;
+    UnicodeString positiveSuffix;
+    UnicodeString negativePrefix;
+    UnicodeString negativeSuffix;
+    fImpl->fPositivePrefixPattern.toString(positivePrefix);
+    fImpl->fPositiveSuffixPattern.toString(positiveSuffix);
+    fImpl->fNegativePrefixPattern.toString(negativePrefix);
+    fImpl->fNegativeSuffixPattern.toString(negativeSuffix);
+
     int origPos = parsePosition.getIndex();
     int maxPosIndex = origPos;
     int maxErrorPos = -1;
@@ -1755,14 +1767,14 @@ DecimalFormat::parseForCurrency(const UnicodeString& text,
     UBool found;
     if (fStyle == UNUM_CURRENCY_PLURAL) {
         found = subparse(text,
-                         fNegPrefixPattern, fNegSuffixPattern,
-                         fPosPrefixPattern, fPosSuffixPattern,
+                         &negativePrefix, &negativeSuffix,
+                         &positivePrefix, &positiveSuffix,
                          TRUE, UCURR_LONG_NAME,
                          tmpPos, tmpDigitList, tmpStatus, currency);
     } else {
         found = subparse(text,
-                         fNegPrefixPattern, fNegSuffixPattern,
-                         fPosPrefixPattern, fPosSuffixPattern,
+                         &negativePrefix, &negativeSuffix,
+                         &positivePrefix, &positiveSuffix,
                          TRUE, UCURR_SYMBOL_NAME,
                          tmpPos, tmpDigitList, tmpStatus, currency);
     }
@@ -1834,8 +1846,10 @@ DecimalFormat::parseForCurrency(const UnicodeString& text,
 
     // Disable complex currency parsing and try it again.
     UBool result = subparse(text,
-                            &fNegativePrefix, &fNegativeSuffix,
-                            &fPositivePrefix, &fPositiveSuffix,
+                            &fImpl->fAap.fNegativePrefix.getOtherVariant().toString(),
+                            &fImpl->fAap.fNegativeSuffix.getOtherVariant().toString(),
+                            &fImpl->fAap.fPositivePrefix.getOtherVariant().toString(),
+                            &fImpl->fAap.fPositiveSuffix.getOtherVariant().toString(),
                             FALSE /* disable complex currency parsing */, UCURR_SYMBOL_NAME,
                             tmpPos_2, tmpDigitList_2, tmpStatus_2,
                             currency);
@@ -1906,13 +1920,14 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     int32_t oldStart = position;
     int32_t textLength = text.length(); // One less pointer to follow
     UBool strictParse = !isLenient();
-    UChar32 zero = getConstSymbol(DecimalFormatSymbols::kZeroDigitSymbol).char32At(0);
-    const UnicodeString *groupingString = &getConstSymbol(fCurrencySignCount == fgCurrencySignCountZero ?
-        DecimalFormatSymbols::kGroupingSeparatorSymbol : DecimalFormatSymbols::kMonetaryGroupingSeparatorSymbol);
+    UChar32 zero = fImpl->getConstSymbol(DecimalFormatSymbols::kZeroDigitSymbol).char32At(0);
+    const UnicodeString *groupingString = &fImpl->getConstSymbol(
+            !fImpl->fMonetary ?
+            DecimalFormatSymbols::kGroupingSeparatorSymbol : DecimalFormatSymbols::kMonetaryGroupingSeparatorSymbol);
     UChar32 groupingChar = groupingString->char32At(0);
     int32_t groupingStringLength = groupingString->length();
     int32_t groupingCharLength   = U16_LENGTH(groupingChar);
-    UBool   groupingUsed = isGroupingUsed();
+    UBool   groupingUsed = fImpl->isGroupingUsed();
 #ifdef FMT_DEBUG
     UChar dbgbuf[300];
     UnicodeString s(dbgbuf,0,300);;
@@ -1928,10 +1943,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
 
     UBool fastParseOk = false; /* TRUE iff fast parse is OK */
     // UBool fastParseHadDecimal = FALSE; /* true if fast parse saw a decimal point. */
-    const DecimalFormatInternal &data = internalData(fReserved);
-    if((data.fFastParseStatus==kFastpathYES) &&
-       fCurrencySignCount == fgCurrencySignCountZero &&
-       //       (negPrefix!=NULL&&negPrefix->isEmpty()) ||
+    if((fImpl->isParseFastpath()) && !fImpl->fMonetary &&
        text.length()>0 &&
        text.length()<32 &&
        (posPrefix==NULL||posPrefix->isEmpty()) &&
@@ -1943,7 +1955,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
       int l=text.length();
       int digitCount=0;
       UChar32 ch = text.char32At(j);
-      const UnicodeString *decimalString = &getConstSymbol(DecimalFormatSymbols::kDecimalSeparatorSymbol);
+      const UnicodeString *decimalString = &fImpl->getConstSymbol(DecimalFormatSymbols::kDecimalSeparatorSymbol);
       UChar32 decimalChar = 0;
       UBool intOnly = FALSE;
       UChar32 lookForGroup = (groupingUsed&&intOnly&&strictParse)?groupingChar:0;
@@ -2037,14 +2049,18 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
 #endif
     }
 
+  UnicodeString formatPattern;
+  toPattern(formatPattern);
+
   if(!fastParseOk 
 #if UCONFIG_HAVE_PARSEALLINPUT
      && fParseAllInput!=UNUM_YES
 #endif
      ) 
   {
+    int32_t formatWidth = fImpl->getOldFormatWidth();
     // Match padding before prefix
-    if (fFormatWidth > 0 && fPadPosition == kPadBeforePrefix) {
+    if (formatWidth > 0 && fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix) {
         position = skipPadding(text, position);
     }
 
@@ -2073,7 +2089,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     }
 
     // Match padding before prefix
-    if (fFormatWidth > 0 && fPadPosition == kPadAfterPrefix) {
+    if (formatWidth > 0 && fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix) {
         position = skipPadding(text, position);
     }
 
@@ -2082,7 +2098,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     }
 
     // process digits or Inf, find decimal position
-    const UnicodeString *inf = &getConstSymbol(DecimalFormatSymbols::kInfinitySymbol);
+    const UnicodeString *inf = &fImpl->getConstSymbol(DecimalFormatSymbols::kInfinitySymbol);
     int32_t infLen = (text.compare(position, inf->length(), *inf)
         ? 0 : inf->length());
     position += infLen; // infLen is non-zero when it does equal to infinity
@@ -2102,13 +2118,13 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
         UBool strictFail = FALSE; // did we exit with a strict parse failure?
         int32_t lastGroup = -1; // where did we last see a grouping separator?
         int32_t digitStart = position;
-        int32_t gs2 = fGroupingSize2 == 0 ? fGroupingSize : fGroupingSize2;
+        int32_t gs2 = fImpl->fEffGrouping.fGrouping2 == 0 ? fImpl->fEffGrouping.fGrouping : fImpl->fEffGrouping.fGrouping2;
 
         const UnicodeString *decimalString;
-        if (fCurrencySignCount != fgCurrencySignCountZero) {
-            decimalString = &getConstSymbol(DecimalFormatSymbols::kMonetarySeparatorSymbol);
+        if (fImpl->fMonetary) {
+            decimalString = &fImpl->getConstSymbol(DecimalFormatSymbols::kMonetarySeparatorSymbol);
         } else {
-            decimalString = &getConstSymbol(DecimalFormatSymbols::kDecimalSeparatorSymbol);
+            decimalString = &fImpl->getConstSymbol(DecimalFormatSymbols::kDecimalSeparatorSymbol);
         }
         UChar32 decimalChar = decimalString->char32At(0);
         int32_t decimalStringLength = decimalString->length();
@@ -2172,11 +2188,11 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
             // is not a "standard" Unicode digit.
             if ( (digit < 0 || digit > 9) && u_charDigitValue(zero) != 0) {
                 digit = 0;
-                if ( getConstSymbol((DecimalFormatSymbols::ENumberFormatSymbol)(DecimalFormatSymbols::kZeroDigitSymbol)).char32At(0) == ch ) {
+                if ( fImpl->getConstSymbol((DecimalFormatSymbols::ENumberFormatSymbol)(DecimalFormatSymbols::kZeroDigitSymbol)).char32At(0) == ch ) {
                     break;
                 }
                 for (digit = 1 ; digit < 10 ; digit++ ) {
-                    if ( getConstSymbol((DecimalFormatSymbols::ENumberFormatSymbol)(DecimalFormatSymbols::kOneDigitSymbol+digit-1)).char32At(0) == ch ) {
+                    if ( fImpl->getConstSymbol((DecimalFormatSymbols::ENumberFormatSymbol)(DecimalFormatSymbols::kOneDigitSymbol+digit-1)).char32At(0) == ch ) {
                         break;
                     }
                 }
@@ -2248,7 +2264,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
             {
                 if (strictParse) {
                     if (backup != -1 ||
-                        (lastGroup != -1 && position - lastGroup != fGroupingSize + 1)) {
+                        (lastGroup != -1 && position - lastGroup != fImpl->fEffGrouping.fGrouping + 1)) {
                         strictFail = TRUE;
                         break;
                     }
@@ -2272,7 +2288,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
                 if(!fBoolFlags.contains(UNUM_PARSE_NO_EXPONENT) || // don't parse if this is set unless..
                    isScientificNotation()) { // .. it's an exponent format - ignore setting and parse anyways
                     const UnicodeString *tmp;
-                    tmp = &getConstSymbol(DecimalFormatSymbols::kExponentialSymbol);
+                    tmp = &fImpl->getConstSymbol(DecimalFormatSymbols::kExponentialSymbol);
                     // TODO: CASE
                     if (!text.caseCompare(position, tmp->length(), *tmp, U_FOLD_CASE_DEFAULT))    // error code is set below if !sawDigit 
                     {
@@ -2282,13 +2298,13 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
 
                         if (pos < textLength)
                         {
-                            tmp = &getConstSymbol(DecimalFormatSymbols::kPlusSignSymbol);
+                            tmp = &fImpl->getConstSymbol(DecimalFormatSymbols::kPlusSignSymbol);
                             if (!text.compare(pos, tmp->length(), *tmp))
                             {
                                 pos += tmp->length();
                             }
                             else {
-                                tmp = &getConstSymbol(DecimalFormatSymbols::kMinusSignSymbol);
+                                tmp = &fImpl->getConstSymbol(DecimalFormatSymbols::kMinusSignSymbol);
                                 if (!text.compare(pos, tmp->length(), *tmp))
                                 {
                                     exponentSign = '-';
@@ -2335,7 +2351,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
         // if we didn't see a decimal and it is required, check to see if the pattern had one
         if(!sawDecimal && isDecimalPatternMatchRequired()) 
         {
-            if(fFormatPattern.indexOf(DecimalFormatSymbols::kDecimalSeparatorSymbol) != 0) 
+            if(formatPattern.indexOf(DecimalFormatSymbols::kDecimalSeparatorSymbol) != 0) 
             {
                 parsePosition.setIndex(oldStart);
                 parsePosition.setErrorIndex(position);
@@ -2350,7 +2366,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
         }
 
         if (strictParse && !sawDecimal) {
-            if (lastGroup != -1 && position - lastGroup != fGroupingSize + 1) {
+            if (lastGroup != -1 && position - lastGroup != fImpl->fEffGrouping.fGrouping + 1) {
                 strictFail = TRUE;
             }
         }
@@ -2382,7 +2398,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     }
 
     // Match padding before suffix
-    if (fFormatWidth > 0 && fPadPosition == kPadBeforeSuffix) {
+    if (formatWidth > 0 && fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix) {
         position = skipPadding(text, position);
     }
 
@@ -2413,7 +2429,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     position += (posSuffixMatch >= 0 ? posSuffixMatch : (negSuffixMatch >= 0 ? negSuffixMatch : 0));
 
     // Match padding before suffix
-    if (fFormatWidth > 0 && fPadPosition == kPadAfterSuffix) {
+    if (formatWidth > 0 && fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix) {
         position = skipPadding(text, position);
     }
 
@@ -2461,7 +2477,7 @@ printf("PP -> %d, SLOW = [%s]!    pp=%d, os=%d, err=%s\n", position, parsedNum.d
     // check if we missed a required decimal point
     if(fastParseOk && isDecimalPatternMatchRequired()) 
     {
-        if(fFormatPattern.indexOf(DecimalFormatSymbols::kDecimalSeparatorSymbol) != 0) 
+        if(formatPattern.indexOf(DecimalFormatSymbols::kDecimalSeparatorSymbol) != 0) 
         {
             parsePosition.setIndex(oldStart);
             parsePosition.setErrorIndex(position);
