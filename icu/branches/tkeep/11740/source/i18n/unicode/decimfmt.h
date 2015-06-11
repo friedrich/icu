@@ -2408,20 +2408,6 @@ protected:
      */
     static const int32_t  kMaxScientificIntegerDigits;
 
-#if UCONFIG_FORMAT_FASTPATHS_49
- private:
-    /**
-     * Internal state.
-     * @internal
-     */
-    uint8_t fReserved[UNUM_DECIMALFORMAT_INTERNAL_SIZE];
-
-
-    /**
-     * Called whenever any state changes. Recomputes whether fastpath is OK to use.
-     */
-    void handleChanged();
-#endif
 };
 
 inline const UnicodeString &
