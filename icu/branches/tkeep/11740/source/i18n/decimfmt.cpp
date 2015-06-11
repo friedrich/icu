@@ -2991,7 +2991,7 @@ UBool DecimalFormat::matchGrouping(UChar32 groupingChar,
 const DecimalFormatSymbols*
 DecimalFormat::getDecimalFormatSymbols() const
 {
-    return fSymbols;
+    return &fImpl->getDecimalFormatSymbols();
 }
 
 //------------------------------------------------------------------------------
@@ -3129,8 +3129,7 @@ DecimalFormat::setCurrencyForSymbols() {
 UnicodeString&
 DecimalFormat::getPositivePrefix(UnicodeString& result) const
 {
-    result = fPositivePrefix;
-    return result;
+    return fImpl->getPositivePrefix(result);
 }
 
 //------------------------------------------------------------------------------
@@ -3154,8 +3153,7 @@ DecimalFormat::setPositivePrefix(const UnicodeString& newValue)
 UnicodeString&
 DecimalFormat::getNegativePrefix(UnicodeString& result) const
 {
-    result = fNegativePrefix;
-    return result;
+    return fImpl->getNegativePrefix(result);
 }
 
 //------------------------------------------------------------------------------
@@ -3179,8 +3177,7 @@ DecimalFormat::setNegativePrefix(const UnicodeString& newValue)
 UnicodeString&
 DecimalFormat::getPositiveSuffix(UnicodeString& result) const
 {
-    result = fPositiveSuffix;
-    return result;
+    return fImpl->getPositiveSuffix(result);
 }
 
 //------------------------------------------------------------------------------
@@ -3204,8 +3201,7 @@ DecimalFormat::setPositiveSuffix(const UnicodeString& newValue)
 UnicodeString&
 DecimalFormat::getNegativeSuffix(UnicodeString& result) const
 {
-    result = fNegativeSuffix;
-    return result;
+    return fImpl->getNegativeSuffix(result);
 }
 
 //------------------------------------------------------------------------------
@@ -3232,11 +3228,7 @@ DecimalFormat::setNegativeSuffix(const UnicodeString& newValue)
 int32_t 
 DecimalFormat::getMultiplier() const
 {
-    if (fMultiplier == NULL) {
-        return 1;
-    } else {
-        return fMultiplier->getLong();
-    }
+    return fImpl->getMultiplier();
 }
 
 //------------------------------------------------------------------------------
@@ -3276,11 +3268,7 @@ DecimalFormat::setMultiplier(int32_t newValue)
  * @see #setRoundingMode
  */
 double DecimalFormat::getRoundingIncrement() const {
-    if (fRoundingIncrement == NULL) {
-        return 0.0;
-    } else {
-        return fRoundingIncrement->getDouble();
-    }
+    return fImpl->getRoundingIncrement();
 }
 
 /**
@@ -3320,7 +3308,7 @@ void DecimalFormat::setRoundingIncrement(double newValue) {
  * @see #setRoundingMode
  */
 DecimalFormat::ERoundingMode DecimalFormat::getRoundingMode() const {
-    return fRoundingMode;
+    return fImpl->getRoundingMode();
 }
 
 /**
@@ -3349,7 +3337,7 @@ void DecimalFormat::setRoundingMode(ERoundingMode roundingMode) {
  * @see #setPadPosition
  */
 int32_t DecimalFormat::getFormatWidth() const {
-    return fFormatWidth;
+    return fImpl->getFormatWidth();
 }
 
 /**
@@ -3373,7 +3361,7 @@ void DecimalFormat::setFormatWidth(int32_t width) {
 }
 
 UnicodeString DecimalFormat::getPadCharacterString() const {
-    return UnicodeString(fPad);
+    return UnicodeString(fImpl->getPadCharacter());
 }
 
 void DecimalFormat::setPadCharacter(const UnicodeString &padChar) {
@@ -3387,6 +3375,23 @@ void DecimalFormat::setPadCharacter(const UnicodeString &padChar) {
 #if UCONFIG_FORMAT_FASTPATHS_49
     handleChanged();
 #endif
+}
+
+static DecimalFormat::EPadPosition fromPadPosition(DigitAffixesAndPadding::EPadPosition padPos) {
+    switch (padPos) {
+    case DigitAffixesAndPadding::kPadBeforePrefix:
+        return DecimalFormat::kPadBeforePrefix;
+    case DigitAffixesAndPadding::kPadAfterPrefix:
+        return DecimalFormat::kPadAfterPrefix;
+    case DigitAffixesAndPadding::kPadBeforeSuffix:
+        return DecimalFormat::kPadBeforeSuffix;
+    case DigitAffixesAndPadding::kPadAfterSuffix:
+        return DecimalFormat::kPadAfterSuffix;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return DecimalFormat::kPadBeforePrefix;
 }
 
 /**
@@ -3407,7 +3412,7 @@ void DecimalFormat::setPadCharacter(const UnicodeString &padChar) {
  * @see #kPadAfterSuffix
  */
 DecimalFormat::EPadPosition DecimalFormat::getPadPosition() const {
-    return fPadPosition;
+    return fromPadPosition(fImpl->getPadPosition());
 }
 
 static DigitAffixesAndPadding::EPadPosition toPadPosition(DecimalFormat::EPadPosition padPos) {
@@ -3464,7 +3469,7 @@ void DecimalFormat::setPadPosition(EPadPosition padPos) {
  * @see #setExponentSignAlwaysShown
  */
 UBool DecimalFormat::isScientificNotation() const {
-    return fUseExponentialNotation;
+    return fImpl->isScientificNotation();
 }
 
 /**
@@ -3495,7 +3500,7 @@ void DecimalFormat::setScientificNotation(UBool useScientific) {
  * @see #setExponentSignAlwaysShown
  */
 int8_t DecimalFormat::getMinimumExponentDigits() const {
-    return fMinExponentDigits;
+    return fImpl->getMinimumExponentDigits();
 }
 
 /**
@@ -3529,7 +3534,7 @@ void DecimalFormat::setMinimumExponentDigits(int8_t minExpDig) {
  * @see #setExponentSignAlwaysShown
  */
 UBool DecimalFormat::isExponentSignAlwaysShown() const {
-    return fExponentSignAlwaysShown;
+    return fImpl->isExponentSignAlwaysShown();
 }
 
 /**
@@ -3559,7 +3564,7 @@ void DecimalFormat::setExponentSignAlwaysShown(UBool expSignAlways) {
 int32_t
 DecimalFormat::getGroupingSize() const
 {
-    return fGroupingSize;
+    return fImpl->getGroupingSize();
 }
 
 //------------------------------------------------------------------------------
@@ -3580,7 +3585,7 @@ DecimalFormat::setGroupingSize(int32_t newValue)
 int32_t
 DecimalFormat::getSecondaryGroupingSize() const
 {
-    return fGroupingSize2;
+    return fImpl->getSecondaryGroupingSize();
 }
 
 //------------------------------------------------------------------------------
@@ -3601,7 +3606,7 @@ DecimalFormat::setSecondaryGroupingSize(int32_t newValue)
 UBool
 DecimalFormat::isDecimalSeparatorAlwaysShown() const
 {
-    return fDecimalSeparatorAlwaysShown;
+    return fImpl->isDecimalSeparatorAlwaysShown();
 }
 
 //------------------------------------------------------------------------------
@@ -4346,11 +4351,11 @@ void DecimalFormat::setMinimumFractionDigits(int32_t newValue) {
 }
 
 int32_t DecimalFormat::getMinimumSignificantDigits() const {
-    return fMinSignificantDigits;
+    return fImpl->getMinimumSignificantDigits();
 }
 
 int32_t DecimalFormat::getMaximumSignificantDigits() const {
-    return fMaxSignificantDigits;
+    return fImpl->getMaximumSignificantDigits();
 }
 
 void DecimalFormat::setMinimumSignificantDigits(int32_t min) {
@@ -4385,7 +4390,7 @@ void DecimalFormat::setMaximumSignificantDigits(int32_t max) {
 }
 
 UBool DecimalFormat::areSignificantDigitsUsed() const {
-    return fUseSignificantDigits;
+    return fImpl->areSignificantDigitsUsed();
 }
 
 void DecimalFormat::setSignificantDigitsUsed(UBool useSignificantDigits) {
@@ -4451,7 +4456,7 @@ void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {
 }
 
 void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){
-//    fImpl->setCurrencyUsage(newContext, *ec);
+    fImpl->setCurrencyUsage(newContext, *ec);
     fCurrencyUsage = newContext;
 
     const UChar* theCurrency = getCurrency();
@@ -4470,7 +4475,7 @@ void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){
 }
 
 UCurrencyUsage DecimalFormat::getCurrencyUsage() const {
-    return fCurrencyUsage;
+    return fImpl->getCurrencyUsage();
 }
 
 // Deprecated variant with no UErrorCode parameter
