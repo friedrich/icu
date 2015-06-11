@@ -1400,111 +1400,6 @@ DecimalFormat::format(int64_t number,
     return fImpl->format(number, appendTo, posIter, status);
 }
 
-UnicodeString&
-DecimalFormat::_format(int64_t number,
-                       UnicodeString& appendTo,
-                       FieldPositionHandler& handler,
-                       UErrorCode &status) const
-{
-    // Bottleneck function for formatting int64_t
-    if (U_FAILURE(status)) {
-        return appendTo;
-    }
-
-#if UCONFIG_FORMAT_FASTPATHS_49
-  // const UnicodeString *posPrefix = fPosPrefixPattern;
-  // const UnicodeString *posSuffix = fPosSuffixPattern;
-  // const UnicodeString *negSuffix = fNegSuffixPattern;
-
-  const DecimalFormatInternal &data = internalData(fReserved);
-
-#ifdef FMT_DEBUG
-  data.dump();
-  printf("fastpath? [%d]\n", number);
-#endif
-    
-  if( data.fFastFormatStatus==kFastpathYES || 
-      data.fFastFormatStatus==kFastpathMAYBE) {
-    int32_t noGroupingThreshold = 0;
-
-#define kZero 0x0030
-    const int32_t MAX_IDX = MAX_DIGITS+2;
-    UChar outputStr[MAX_IDX];
-    int32_t destIdx = MAX_IDX;
-    outputStr[--destIdx] = 0;  // term
-
-    if (data.fFastFormatStatus==kFastpathMAYBE) {
-      noGroupingThreshold = destIdx - fGroupingSize;
-    }
-    int64_t  n = number;
-    if (number < 1) {
-      // Negative numbers are slightly larger than positive
-      // output the first digit (or the leading zero)
-      outputStr[--destIdx] = (-(n % 10) + kZero);
-      n /= -10;
-    }
-    // get any remaining digits
-    while (n > 0) {
-      if (destIdx == noGroupingThreshold) {
-        goto slowPath;
-      }
-      outputStr[--destIdx] = (n % 10) + kZero;
-      n /= 10;
-    }
-
-        // Slide the number to the start of the output str
-    U_ASSERT(destIdx >= 0);
-    int32_t length = MAX_IDX - destIdx -1;
-    /*int32_t prefixLen = */ appendAffix(appendTo, static_cast<double>(number), handler, number<0, TRUE);
-
-    // This will be at least 0 even if it was set to a negative number.
-    int32_t maxIntDig = getMaximumIntegerDigits();
-    int32_t destlength = length<=maxIntDig?length:maxIntDig; // dest length pinned to max int digits
-
-    if(length>maxIntDig && fBoolFlags.contains(UNUM_FORMAT_FAIL_IF_MORE_THAN_MAX_DIGITS)) {
-      status = U_ILLEGAL_ARGUMENT_ERROR;
-    }
-
-    int32_t minDigits = getMinimumIntegerDigits();
-
-    // We always want at least one digit, even if it is just a 0.
-    int32_t prependZero = (minDigits < 1 ? 1 : minDigits) - destlength;
-
-#ifdef FMT_DEBUG
-    printf("prependZero=%d, length=%d, minintdig=%d maxintdig=%d destlength=%d skip=%d\n", prependZero, length, getMinimumIntegerDigits(), maxIntDig, destlength, length-destlength);
-#endif    
-    int32_t intBegin = appendTo.length();
-
-    while((prependZero--)>0) {
-      appendTo.append((UChar)0x0030); // '0'
-    }
-
-    appendTo.append(outputStr+destIdx+
-                    (length-destlength), // skip any leading digits
-                    destlength);
-    handler.addAttribute(kIntegerField, intBegin, appendTo.length());
-
-    /*int32_t suffixLen =*/ appendAffix(appendTo, static_cast<double>(number), handler, number<0, FALSE);
-
-    //outputStr[length]=0;
-    
-#ifdef FMT_DEBUG
-        printf("Writing [%s] length [%d] max %d for [%d]\n", outputStr+destIdx, length, MAX_IDX, number);
-#endif
-
-#undef kZero
-
-    return appendTo;
-  } // end fastpath
-#endif
-  slowPath:
-
-  // Else the slow way - via DigitList
-    DigitList digits;
-    digits.set(number);
-    return _format(digits, appendTo, handler, status);
-}
-
 //------------------------------------------------------------------------------
 
 UnicodeString&
@@ -1534,36 +1429,6 @@ DecimalFormat::format(  double number,
     return fImpl->format(number, appendTo, posIter, status);
 }
 
-UnicodeString&
-DecimalFormat::_format( double number,
-                        UnicodeString& appendTo,
-                        FieldPositionHandler& handler,
-                        UErrorCode &status) const
-{
-    if (U_FAILURE(status)) {
-        return appendTo;
-    }
-    // Special case for NaN, sets the begin and end index to be the
-    // the string length of localized name of NaN.
-    // TODO:  let NaNs go through DigitList.
-    if (uprv_isNaN(number))
-    {
-        int begin = appendTo.length();
-        appendTo += getConstSymbol(DecimalFormatSymbols::kNaNSymbol);
-
-        handler.addAttribute(kIntegerField, begin, appendTo.length());
-
-        addPadding(appendTo, handler, 0, 0);
-        return appendTo;
-    }
-
-    DigitList digits;
-    digits.set(number);
-    _format(digits, appendTo, handler, status);
-    // No way to return status from here.
-    return appendTo;
-}
-
 //------------------------------------------------------------------------------
 
 
@@ -1573,55 +1438,7 @@ DecimalFormat::format(const StringPiece &number,
                       FieldPositionIterator *posIter,
                       UErrorCode &status) const
 {
-#if UCONFIG_FORMAT_FASTPATHS_49
-  // don't bother if the int64 path is not optimized
-  int32_t len    = number.length();
-
-  if(len>0&&len<10) { /* 10 or more digits may not be an int64 */
-    const char *data = number.data();
-    int64_t num = 0;
-    UBool neg = FALSE;
-    UBool ok = TRUE;
-    
-    int32_t start  = 0;
-
-    if(data[start]=='+') {
-      start++;
-    } else if(data[start]=='-') {
-      neg=TRUE;
-      start++;
-    }
-
-    int32_t place = 1; /* 1, 10, ... */
-    for(int32_t i=len-1;i>=start;i--) {
-      if(data[i]>='0'&&data[i]<='9') {
-        num+=place*(int64_t)(data[i]-'0');
-      } else {
-        ok=FALSE;
-        break;
-      }
-      place *= 10;
-    }
-
-    if(ok) {
-      if(neg) {
-        num = -num;// add minus bit
-      }
-      // format as int64_t
-      return format(num, toAppendTo, posIter, status);
-    }
-    // else fall through
-  }
-#endif
-
-    DigitList   dnum;
-    dnum.set(number, status);
-    if (U_FAILURE(status)) {
-        return toAppendTo;
-    }
-    FieldPositionIteratorHandler handler(posIter, status);
-    _format(dnum, toAppendTo, handler, status);
-    return toAppendTo;
+  return fImpl->format(number, toAppendTo, posIter, status);
 }
 
 
@@ -1630,9 +1447,7 @@ DecimalFormat::format(const DigitList &number,
                       UnicodeString &appendTo,
                       FieldPositionIterator *posIter,
                       UErrorCode &status) const {
-    FieldPositionIteratorHandler handler(posIter, status);
-    _format(number, appendTo, handler, status);
-    return appendTo;
+    return fImpl->format(number, appendTo, posIter, status);
 }
 
 
@@ -1642,9 +1457,7 @@ DecimalFormat::format(const DigitList &number,
                      UnicodeString& appendTo,
                      FieldPosition& pos,
                      UErrorCode &status) const {
-    FieldPositionOnlyHandler handler(pos);
-    _format(number, appendTo, handler, status);
-    return appendTo;
+    return fImpl->format(number, appendTo, pos, status);
 }
 
 DigitList&
@@ -1745,53 +1558,6 @@ DecimalFormat::_round(const DigitList &number, DigitList &adjustedNum, UBool& is
         return adjustedNum;
     }
     return adjustedNum;
-}
-
-UnicodeString&
-DecimalFormat::_format(const DigitList &number,
-                        UnicodeString& appendTo,
-                        FieldPositionHandler& handler,
-                        UErrorCode &status) const
-{
-    if (U_FAILURE(status)) {
-        return appendTo;
-    }
-
-    // Special case for NaN, sets the begin and end index to be the
-    // the string length of localized name of NaN.
-    if (number.isNaN())
-    {
-        int begin = appendTo.length();
-        appendTo += getConstSymbol(DecimalFormatSymbols::kNaNSymbol);
-
-        handler.addAttribute(kIntegerField, begin, appendTo.length());
-
-        addPadding(appendTo, handler, 0, 0);
-        return appendTo;
-    }
-
-    DigitList adjustedNum;
-    UBool isNegative;
-    _round(number, adjustedNum, isNegative, status);
-    if (U_FAILURE(status)) {
-        return appendTo;
-    }
-
-    // Special case for INFINITE,
-    if (adjustedNum.isInfinite()) {
-        int32_t prefixLen = appendAffix(appendTo, adjustedNum.getDouble(), handler, isNegative, TRUE);
-
-        int begin = appendTo.length();
-        appendTo += getConstSymbol(DecimalFormatSymbols::kInfinitySymbol);
-
-        handler.addAttribute(kIntegerField, begin, appendTo.length());
-
-        int32_t suffixLen = appendAffix(appendTo, adjustedNum.getDouble(), handler, isNegative, FALSE);
-
-        addPadding(appendTo, handler, prefixLen, suffixLen);
-        return appendTo;
-    }
-    return subformat(appendTo, handler, adjustedNum, FALSE, status);
 }
 
 /**
