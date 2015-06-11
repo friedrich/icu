@@ -551,6 +551,8 @@ DecimalFormat::construct(UErrorCode&            status,
         // plural count. If not, the right pattern need to be re-applied
         // during format.
         fCurrencyPluralInfo->getCurrencyPluralPattern(UNICODE_STRING("other", 5), currencyPluralPatternForOther);
+        // TODO(refactor): Revisit, we are setting the pattern twice.
+        fImpl->applyPattern(currencyPluralPatternForOther, status);
         patternUsed = &currencyPluralPatternForOther;
         // TODO: not needed?
         setCurrencyForSymbols();
@@ -1276,7 +1278,8 @@ DecimalFormat::format(int32_t number,
                       UnicodeString& appendTo,
                       FieldPosition& fieldPosition) const
 {
-    return format((int64_t)number, appendTo, fieldPosition);
+    UErrorCode status = U_ZERO_ERROR;
+    return fImpl->format(number, appendTo, fieldPosition, status);
 }
 
 UnicodeString&
@@ -1285,7 +1288,7 @@ DecimalFormat::format(int32_t number,
                       FieldPosition& fieldPosition,
                       UErrorCode& status) const
 {
-    return format((int64_t)number, appendTo, fieldPosition, status);
+    return fImpl->format(number, appendTo, fieldPosition, status);
 }
 
 UnicodeString&
@@ -1294,7 +1297,7 @@ DecimalFormat::format(int32_t number,
                       FieldPositionIterator* posIter,
                       UErrorCode& status) const
 {
-    return format((int64_t)number, appendTo, posIter, status);
+    return fImpl->format(number, appendTo, posIter, status);
 }
 
 
@@ -1376,8 +1379,7 @@ DecimalFormat::format(int64_t number,
                       FieldPosition& fieldPosition) const
 {
     UErrorCode status = U_ZERO_ERROR; /* ignored */
-    FieldPositionOnlyHandler handler(fieldPosition);
-    return _format(number, appendTo, handler, status);
+    return fImpl->format(number, appendTo, fieldPosition, status);
 }
 
 UnicodeString&
@@ -1386,8 +1388,7 @@ DecimalFormat::format(int64_t number,
                       FieldPosition& fieldPosition,
                       UErrorCode& status) const
 {
-    FieldPositionOnlyHandler handler(fieldPosition);
-    return _format(number, appendTo, handler, status);
+    return fImpl->format(number, appendTo, fieldPosition, status);
 }
 
 UnicodeString&
@@ -1396,8 +1397,7 @@ DecimalFormat::format(int64_t number,
                       FieldPositionIterator* posIter,
                       UErrorCode& status) const
 {
-    FieldPositionIteratorHandler handler(posIter, status);
-    return _format(number, appendTo, handler, status);
+    return fImpl->format(number, appendTo, posIter, status);
 }
 
 UnicodeString&
@@ -1513,8 +1513,7 @@ DecimalFormat::format(  double number,
                         FieldPosition& fieldPosition) const
 {
     UErrorCode status = U_ZERO_ERROR; /* ignored */
-    FieldPositionOnlyHandler handler(fieldPosition);
-    return _format(number, appendTo, handler, status);
+    return fImpl->format(number, appendTo, fieldPosition, status);
 }
 
 UnicodeString&
@@ -1523,8 +1522,7 @@ DecimalFormat::format(  double number,
                         FieldPosition& fieldPosition,
                         UErrorCode& status) const
 {
-    FieldPositionOnlyHandler handler(fieldPosition);
-    return _format(number, appendTo, handler, status);
+    return fImpl->format(number, appendTo, fieldPosition, status);
 }
 
 UnicodeString&
@@ -1533,8 +1531,7 @@ DecimalFormat::format(  double number,
                         FieldPositionIterator* posIter,
                         UErrorCode& status) const
 {
-  FieldPositionIteratorHandler handler(posIter, status);
-  return _format(number, appendTo, handler, status);
+    return fImpl->format(number, appendTo, posIter, status);
 }
 
 UnicodeString&
@@ -4963,6 +4960,7 @@ DecimalFormat::toPattern(UnicodeString& result, UBool localized) const
 void
 DecimalFormat::applyPattern(const UnicodeString& pattern, UErrorCode& status)
 {
+    fImpl->applyPattern(pattern, status);
     UParseError parseError;
     applyPattern(pattern, FALSE, parseError, status);
 }
@@ -4994,6 +4992,7 @@ DecimalFormat::applyLocalizedPattern(const UnicodeString& pattern,
                                      UParseError& parseError,
                                      UErrorCode& status)
 {
+    fImpl->applyLocalizedPattern(pattern, status);
     applyPattern(pattern, TRUE,parseError,status);
 }
 
@@ -5595,12 +5594,16 @@ DecimalFormat& DecimalFormat::setAttribute( UNumberFormatAttribute attr,
       if(!fBoolFlags.isValidValue(newValue)) {
           status = U_ILLEGAL_ARGUMENT_ERROR;
       } else {
+          if (attr == UNUM_FORMAT_FAIL_IF_MORE_THAN_MAX_DIGITS) {
+              fImpl->setFailIfMoreThanMaxDigits((UBool) newValue);
+          }
           fBoolFlags.set(attr, newValue);
       }
       break;
 
     case UNUM_SCALE:
         fScale = newValue;
+        fImpl->setScale(newValue);
         break;
 
     case UNUM_CURRENCY_USAGE:

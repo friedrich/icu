@@ -12,7 +12,7 @@
 
 U_NAMESPACE_BEGIN
 
-FixedPrecision::FixedPrecision() {
+FixedPrecision::FixedPrecision() : fExactOnly(FALSE), fFailIfOverMax(FALSE) {
     fMin.setIntDigitCount(1);
     fMin.setFracDigitCount(0);
 }
@@ -23,6 +23,7 @@ FixedPrecision::round(
     if (U_FAILURE(status)) {
         return value;
     }
+    value .fContext.status &= ~DEC_Inexact;
     if (!fRoundingIncrement.isZero()) {
         if (exponent == 0) {
             value.quantize(fRoundingIncrement, status);
@@ -42,6 +43,27 @@ FixedPrecision::round(
         value.roundAtExponent(
                 exponent + leastSig,
                 fSignificant.getMax());
+    }
+    if (fExactOnly && (value.fContext.status & DEC_Inexact)) {
+        status = U_FORMAT_INEXACT_ERROR;
+    } else if (fFailIfOverMax) {
+        // TODO(refactor): Not most efficient way, but readable.
+        DigitInterval maxWithUnboundedFracDigits(fMax);
+        maxWithUnboundedFracDigits.setFracDigitCount(-1);
+
+        // Smallest interval for value stored in interval
+        DigitInterval interval;
+        value.getSmallestInterval(interval);
+
+        // newInterval will be interval shrunk as necessary
+        // to accomodate max int digits.
+        DigitInterval newInterval(interval);
+        newInterval.shrinkToFitWithin(maxWithUnboundedFracDigits);
+
+        // If newInterval != interval we exceeded max digits initially.
+        if (!newInterval.equals(interval)) {
+            status = U_ILLEGAL_ARGUMENT_ERROR;
+        }
     }
     return value;
 }
@@ -68,7 +90,7 @@ FixedPrecision::getInterval(
 
 UBool
 FixedPrecision::isFastFormattable() const {
-    return (fMin.getFracDigitCount() == 0 && fSignificant.isNoConstraints() && fRoundingIncrement.isZero());
+    return (fMin.getFracDigitCount() == 0 && fSignificant.isNoConstraints() && fRoundingIncrement.isZero() && !fFailIfOverMax);
 }
 
 DigitList &

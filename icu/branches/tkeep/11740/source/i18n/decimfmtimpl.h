@@ -102,10 +102,15 @@ UBool operator!=(const DecimalFormatImpl &other) const {
 
 void setRoundingMode(DecimalFormat::ERoundingMode mode) {
     fRoundingMode = mode;
+    fEffPrecision.fMantissa.fExactOnly = (fRoundingMode == DecimalFormat::kRoundUnnecessary);
 }
 DecimalFormat::ERoundingMode getRoundingMode() const {
     return fRoundingMode;
 }
+void setFailIfMoreThanMaxDigits(UBool b) {
+    fEffPrecision.fMantissa.fFailIfOverMax = b;
+}
+UBool isFailIfMoreThanMaxDigits() const { return fEffPrecision.fMantissa.fFailIfOverMax; }
 void setMinimumIntegerDigits(int32_t newValue);
 void setMaximumIntegerDigits(int32_t newValue);
 void setMinMaxIntegerDigits(int32_t min, int32_t max);
@@ -227,6 +232,8 @@ private:
     } StatusFlags;
 
 DigitList fMultiplier;
+int32_t fScale;
+
 DecimalFormat::ERoundingMode fRoundingMode;
 UBool fLenient;
 const DecimalFormatStaticSets *fStaticSets;
@@ -312,6 +319,12 @@ SciFormatter fSciFormatter;
 DigitFormatter fFormatter;
 DigitAffixesAndPadding fAap;
 
+UnicodeString &formatInt32(
+        int32_t number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
 // Scales for precent or permille symbols
 UnicodeString &formatDigitList(
         DigitList &number,
@@ -331,9 +344,10 @@ void applyPattern(
         UBool localized, UParseError &perror, UErrorCode &status);
 
 ValueFormatter &prepareValueFormatter(ValueFormatter &vf) const;
-void setScale(int32_t s);
-int32_t getScale() const;
-void getScale(int32_t s);
+void setMultiplierScale(int32_t s);
+int32_t getPatternScale() const;
+void setScale(int32_t s) { fScale = s; }
+int32_t getScale() const { return fScale; }
 
 // Updates everything
 void updateAll(UErrorCode &status);

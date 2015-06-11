@@ -157,7 +157,8 @@ DecimalFormatImpl::DecimalFormatImpl(
         const Locale &locale,
         const UnicodeString &pattern,
         UErrorCode &status)
-        : fRoundingMode(DecimalFormat::kRoundHalfEven), fLenient(FALSE),
+        : fScale(0),
+          fRoundingMode(DecimalFormat::kRoundHalfEven), fLenient(FALSE),
           fParseDecimalMarkRequired(FALSE),
           fParseNoExponent(FALSE),
           fParseIntegerOnly(FALSE),
@@ -188,7 +189,8 @@ DecimalFormatImpl::DecimalFormatImpl(
         DecimalFormatSymbols *symbolsToAdopt,
         UParseError &parseError,
         UErrorCode &status)
-        : fRoundingMode(DecimalFormat::kRoundHalfEven),
+        : fScale(0),
+          fRoundingMode(DecimalFormat::kRoundHalfEven),
           fLenient(FALSE),
           fParseDecimalMarkRequired(FALSE),
           fParseNoExponent(FALSE),
@@ -208,6 +210,7 @@ DecimalFormatImpl::DecimalFormatImpl(
 DecimalFormatImpl::DecimalFormatImpl(const DecimalFormatImpl &other) :
           UObject(other),
           fMultiplier(other.fMultiplier),
+          fScale(other.fScale),
           fRoundingMode(other.fRoundingMode),
           fLenient(other.fLenient),
           fStaticSets(other.fStaticSets),
@@ -263,6 +266,7 @@ DecimalFormatImpl::operator=(const DecimalFormatImpl &other) {
     }
     UObject::operator=(other);
     fMultiplier = other.fMultiplier;
+    fScale = other.fScale;
     fRoundingMode = other.fRoundingMode;
     fLenient = other.fLenient;
     fStaticSets = other.fStaticSets;
@@ -320,6 +324,7 @@ DecimalFormatImpl::operator==(const DecimalFormatImpl &other) const {
         return TRUE;
     }
     return (fMultiplier == other.fMultiplier)
+            && (fScale == other.fScale)
             && (fRoundingMode == other.fRoundingMode)
             && (fLenient == other.fLenient)
             && (fParseDecimalMarkRequired == other.fParseDecimalMarkRequired)
@@ -376,7 +381,7 @@ DecimalFormatImpl::prepareValueFormatter(ValueFormatter &vf) const {
 }
 
 int32_t
-DecimalFormatImpl::getScale() const {
+DecimalFormatImpl::getPatternScale() const {
     UBool usesPercent = fPositivePrefixPattern.usesPercent() || 
             fPositiveSuffixPattern.usesPercent() || 
             fNegativePrefixPattern.usesPercent() || 
@@ -395,7 +400,7 @@ DecimalFormatImpl::getScale() const {
 }
     
 void
-DecimalFormatImpl::setScale(int32_t scale) {
+DecimalFormatImpl::setMultiplierScale(int32_t scale) {
     fMultiplier.set(1);
     fMultiplier.shiftDecimalRight(scale);
 }
@@ -407,20 +412,7 @@ DecimalFormatImpl::format(
         FieldPosition &pos,
         UErrorCode &status) const {
     FieldPositionOnlyHandler handler(pos);
-    if (!fMultiplier.isZero()) {
-        DigitList digits;
-        digits.set(number);
-        digits.mult(fMultiplier, status);
-        return formatAdjustedDigitList(digits, appendTo, handler, status);
-    }
-    ValueFormatter vf;
-    return fAap.formatInt32(
-            number,
-            prepareValueFormatter(vf),
-            handler,
-            fRules,
-            appendTo,
-            status);
+    return formatInt32(number, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -430,10 +422,26 @@ DecimalFormatImpl::format(
         FieldPositionIterator *posIter,
         UErrorCode &status) const {
     FieldPositionIteratorHandler handler(posIter, status);
+    return formatInt32(number, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormatImpl::formatInt32(
+        int32_t number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const {
     if (!fMultiplier.isZero()) {
         DigitList digits;
         digits.set(number);
         digits.mult(fMultiplier, status);
+        digits.shiftDecimalRight(fScale);
+        return formatAdjustedDigitList(digits, appendTo, handler, status);
+    }
+    if (fScale != 0) {
+        DigitList digits;
+        digits.set(number);
+        digits.shiftDecimalRight(fScale);
         return formatAdjustedDigitList(digits, appendTo, handler, status);
     }
     ValueFormatter vf;
@@ -539,6 +547,9 @@ DecimalFormatImpl::formatDigitList(
         UErrorCode &status) const {
     if (!fMultiplier.isZero()) {
         number.mult(fMultiplier, status);
+        number.shiftDecimalRight(fScale);
+    } else if (fScale != 0) {
+        number.shiftDecimalRight(fScale);
     }
     number.reduce();
     return formatAdjustedDigitList(number, appendTo, handler, status);
@@ -1161,6 +1172,10 @@ DecimalFormatImpl::updateFormattingCurrencyAffixInfo(
             fCurrencyAffixInfo.fSymbol =
                     fSymbols->getConstSymbol(DecimalFormatSymbols::kCurrencySymbol);
         }
+        if (fSymbols->isCustomIntlCurrencySymbol()) {
+            fCurrencyAffixInfo.fISO =
+                    fSymbols->getConstSymbol(DecimalFormatSymbols::kIntlCurrencySymbol);
+        }
         changedFormattingFields |= kFormattingCurrencyAffixInfo;
         if (currency) {
             FixedPrecision precision;
@@ -1299,7 +1314,7 @@ DecimalFormatImpl::updateAll(UErrorCode &status) {
     updatePrecision();
     updateGrouping();
     updateFormatting(kFormattingAll, status);
-    setScale(getScale());
+    setMultiplierScale(getPatternScale());
 }
 
 static int32_t

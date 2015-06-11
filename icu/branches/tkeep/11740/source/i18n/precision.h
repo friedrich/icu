@@ -51,6 +51,18 @@ SignificantDigitInterval fSignificant;
  */
 DigitList fRoundingIncrement;
 
+/**
+ * If set, causes round() to set status to U_FORMAT_INEXACT_ERROR if
+ * any rounding is done. Default is FALSE.
+ */
+UBool fExactOnly;
+
+/**
+ * If set, causes round() to set status to U_ILLEGAL_ARGUMENT_ERROR if
+ * rounded number has more than maximum integer digits. Default is FALSE.
+ */
+UBool fFailIfOverMax;
+
 FixedPrecision();
 
 /**
@@ -60,7 +72,9 @@ UBool equals(const FixedPrecision &rhs) const {
     return (fMin.equals(rhs.fMin) &&
             fMax.equals(rhs.fMax) &&
             fSignificant.equals(rhs.fSignificant) &&
-            (fRoundingIncrement == rhs.fRoundingIncrement));
+            (fRoundingIncrement == rhs.fRoundingIncrement) &&
+            fExactOnly == rhs.fExactOnly &&
+            fFailIfOverMax == rhs.fFailIfOverMax);
 }
 
 /**
