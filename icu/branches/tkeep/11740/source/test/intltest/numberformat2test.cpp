@@ -2558,7 +2558,7 @@ void NumberFormat2Test::TestDigitListToFixedDecimal() {
         interval.setIntDigitCount(6);
         interval.setFracDigitCount(25);
         FixedDecimal result(digits, interval);
-        verifyFixedDecimal(result, 123456, 100, FALSE, 18, 560000000000000000LL);
+        verifyFixedDecimal(result, 123456, 100, FALSE, 25, 560000000000000000LL);
     }
 }
 

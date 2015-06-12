@@ -12,6 +12,7 @@
 #include "decimalformatpatternimpl.h"
 #include "valueformatter.h"
 #include "fphdlimp.h"
+#include "plurrule_impl.h"
 
 U_NAMESPACE_BEGIN
 
@@ -409,17 +410,21 @@ DecimalFormatImpl::formatAdjustedDigitList(
             status);
 }
 
-UnicodeString
-DecimalFormatImpl::select(double number, const PluralRules &rules) const {
+FixedDecimal &
+DecimalFormatImpl::getFixedDecimal(
+        double number, FixedDecimal &result) const {
     DigitList dl;
     dl.set(number);
-    dl.setRoundingMode(fRoundingMode);
-    return select(dl, rules);
+    return getFixedDecimal(dl, result);
 }
 
-UnicodeString
-DecimalFormatImpl::select(
-        DigitList &number, const PluralRules &rules) const {
+FixedDecimal &
+DecimalFormatImpl::getFixedDecimal(
+        DigitList &number, FixedDecimal &result) const {
+    if (number.isNaN() || number.isInfinite()) {
+        result.isNanOrInfinity = TRUE;
+        return result;
+    }
     number.setRoundingMode(fRoundingMode);
     UErrorCode status = U_ZERO_ERROR;
     if (!fMultiplier.isZero()) {
@@ -429,7 +434,20 @@ DecimalFormatImpl::select(
     ValueFormatter vf;
     prepareValueFormatter(vf);
     vf.round(number, status);
-    return vf.select(rules, number);
+    return vf.getFixedDecimal(number, result);
+}
+
+UnicodeString
+DecimalFormatImpl::select(double number, const PluralRules &rules) const {
+    FixedDecimal fd;
+    return rules.select(getFixedDecimal(number, fd));
+}
+
+UnicodeString
+DecimalFormatImpl::select(
+        DigitList &number, const PluralRules &rules) const {
+    FixedDecimal fd;
+    return rules.select(getFixedDecimal(number, fd));
 }
 
 void

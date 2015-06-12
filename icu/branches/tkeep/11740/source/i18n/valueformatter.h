@@ -28,6 +28,7 @@ class DigitFormatterOptions;
 class ScientificPrecision;
 class SciFormatter;
 class SciFormatterOptions;
+class FixedDecimal;
 
 
 /**
@@ -70,6 +71,12 @@ public:
     UnicodeString select(
         const PluralRules &rules,
         const DigitList &value) const;
+
+    /**
+     * Temporary for now. PluralFormat actually needs a FixedDecimal.
+     */
+    FixedDecimal &getFixedDecimal(
+            const DigitList &value, FixedDecimal &result) const;
 
     /**
      * formats positiveValue and appends to appendTo. Returns appendTo.

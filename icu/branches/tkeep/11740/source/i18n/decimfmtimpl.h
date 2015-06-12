@@ -27,6 +27,7 @@ class UnicodeString;
 class FieldPosition;
 class ValueFormatter;
 class FieldPositionHandler;
+class FixedDecimal;
 
 class DecimalFormatImpl : public UObject {
 public:
@@ -194,6 +195,8 @@ void setNegativeSuffix(const UnicodeString &str);
 UnicodeString &toPattern(UnicodeString& result) const;
 UnicodeString select(double value, const PluralRules &rules) const;
 UnicodeString select(DigitList &number, const PluralRules &rules) const;
+FixedDecimal &getFixedDecimal(double value, FixedDecimal &result) const;
+FixedDecimal &getFixedDecimal(DigitList &number, FixedDecimal &result) const;
 
 private:
 

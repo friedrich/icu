@@ -50,6 +50,30 @@ ValueFormatter::select(
     return UnicodeString();
 }
 
+FixedDecimal &
+ValueFormatter::getFixedDecimal(
+        const DigitList &value, FixedDecimal &result) const {
+    switch (fType) {
+    case kFixedDecimal:
+        {
+            DigitInterval interval;
+            result = FixedDecimal(
+                            value,
+                            fFixedPrecision->getInterval(value, interval));
+            return result;
+        }
+        break;
+    case kScientificNotation:
+        // This forces the form to be "other"
+        result.isNanOrInfinity = TRUE;
+        return result;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return result;
+}
+
 static UBool isNoGrouping(
         const DigitGrouping &grouping,
         int32_t value,

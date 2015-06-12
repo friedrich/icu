@@ -1145,31 +1145,7 @@ DecimalFormat::clone() const
 FixedDecimal
 DecimalFormat::getFixedDecimal(double number, UErrorCode &status) const {
     FixedDecimal result;
-
-    if (U_FAILURE(status)) {
-        return result;
-    }
-
-    if (uprv_isNaN(number) || uprv_isPositiveInfinity(fabs(number))) {
-        // For NaN and Infinity the state of the formatter is ignored.
-        result.init(number);
-        return result;
-    }
-
-    if (fMultiplier == NULL && fScale == 0 && fRoundingIncrement == 0 && areSignificantDigitsUsed() == FALSE &&
-            result.quickInit(number) && result.visibleDecimalDigitCount <= getMaximumFractionDigits()) {
-        // Fast Path. Construction of an exact FixedDecimal directly from the double, without passing
-        //   through a DigitList, was successful, and the formatter is doing nothing tricky with rounding.
-        // printf("getFixedDecimal(%g): taking fast path.\n", number);
-        result.adjustForMinFractionDigits(getMinimumFractionDigits());
-    } else {
-        // Slow path. Create a DigitList, and have this formatter round it according to the
-        //     requirements of the format, and fill the fixedDecimal from that.
-        DigitList digits;
-        digits.set(number);
-        result = getFixedDecimal(digits, status);
-    }
-    return result;
+    return fImpl->getFixedDecimal(number, result);
 }
 
 UnicodeString
@@ -1189,64 +1165,34 @@ DecimalFormat::select(
     if (U_FAILURE(status)) {
         return result;
     }
-    if (!number.isNumeric()) {
-        status = U_ILLEGAL_ARGUMENT_ERROR;
-        return result;
-    }
-
-    DigitList *dl = number.getDigitList();
-    if (dl != NULL) {
-        result = fImpl->select(*dl, rules);
-        return result;
-    }
-
-    Formattable::Type type = number.getType();
-    if (type == Formattable::kDouble || type == Formattable::kLong) { 
-        result = fImpl->select(number.getDouble(status), rules);
-        return result;
-    }
-
-    if (type == Formattable::kInt64 && number.getInt64() <= MAX_INT64_IN_DOUBLE &&
-                                       number.getInt64() >= -MAX_INT64_IN_DOUBLE) {
-        result = fImpl->select(number.getDouble(status), rules);
-        return result;
-    }
-
-    // The only case left is type==int64_t, with a value with more digits than a double can represent.
-    // Any formattable originating as a big decimal will have had a pre-existing digit list.
-    // Any originating as a double or int32 will have been handled as a double.
-
-    U_ASSERT(type == Formattable::kInt64);
-    DigitList digits;
-    digits.set(number.getInt64());
-    result = fImpl->select(digits, rules);
+    result = rules.select(getFixedDecimal(number, status));
     return result;
 }
 
 FixedDecimal
 DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) const {
+    FixedDecimal result;
     if (U_FAILURE(status)) {
-        return FixedDecimal();
+        return result;
     }
     if (!number.isNumeric()) {
         status = U_ILLEGAL_ARGUMENT_ERROR;
-        return FixedDecimal();
+        return result;
     }
 
     DigitList *dl = number.getDigitList();
     if (dl != NULL) {
-        DigitList clonedDL(*dl);
-        return getFixedDecimal(clonedDL, status);
+        return fImpl->getFixedDecimal(*dl, result);
     }
 
     Formattable::Type type = number.getType();
     if (type == Formattable::kDouble || type == Formattable::kLong) { 
-        return getFixedDecimal(number.getDouble(status), status);
+        return fImpl->getFixedDecimal(number.getDouble(status), result);
     }
 
     if (type == Formattable::kInt64 && number.getInt64() <= MAX_INT64_IN_DOUBLE &&
                                        number.getInt64() >= -MAX_INT64_IN_DOUBLE) {
-        return getFixedDecimal(number.getDouble(status), status);
+        return fImpl->getFixedDecimal(number.getDouble(status), result);
     }
 
     // The only case left is type==int64_t, with a value with more digits than a double can represent.
@@ -1256,7 +1202,7 @@ DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) co
     U_ASSERT(type == Formattable::kInt64);
     DigitList digits;
     digits.set(number.getInt64());
-    return getFixedDecimal(digits, status);
+    return fImpl->getFixedDecimal(digits, result);
 }
 
 
