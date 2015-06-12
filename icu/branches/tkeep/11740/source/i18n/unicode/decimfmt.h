@@ -2169,8 +2169,6 @@ private:
 
     void expandAffixes(const UnicodeString* pluralCount);
 
-    UBool isGroupingPosition(int32_t pos) const;
-
     void setCurrencyForSymbols();
 
     // similar to setCurrency without re-compute the affixes for currency.

@@ -1143,7 +1143,7 @@ DecimalFormat::clone() const
 
 
 FixedDecimal
-DecimalFormat::getFixedDecimal(double number, UErrorCode &status) const {
+DecimalFormat::getFixedDecimal(double number, UErrorCode &/*status*/) const {
     FixedDecimal result;
     return fImpl->getFixedDecimal(number, result);
 }
@@ -1210,71 +1210,9 @@ DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) co
 //    The digit list may be modified.
 //    Internal function only.
 FixedDecimal
-DecimalFormat::getFixedDecimal(DigitList &number, UErrorCode &status) const {
-    // Round the number according to the requirements of this Format.
+DecimalFormat::getFixedDecimal(DigitList &number, UErrorCode &/*status*/) const {
     FixedDecimal result;
-    _round(number, number, result.isNegative, status);
-
-    // The int64_t fields in FixedDecimal can easily overflow.
-    // In deciding what to discard in this event, consider that fixedDecimal
-    //   is being used only with PluralRules, and those rules mostly look at least significant
-    //   few digits of the integer part, and whether the fraction part is zero or not.
-    // 
-    // So, in case of overflow when filling in the fields of the FixedDecimal object,
-    //    for the integer part, discard the most significant digits.
-    //    for the fraction part, discard the least significant digits,
-    //                           don't truncate the fraction value to zero.
-    // For simplicity, the int64_t fields are limited to 18 decimal digits, even
-    // though they could hold most (but not all) 19 digit values.
-
-    // Integer Digits.
-    int32_t di = number.getDecimalAt()-18;  // Take at most 18 digits.
-    if (di < 0) {
-        di = 0;
-    }
-    result.intValue = 0;
-    for (; di<number.getDecimalAt(); di++) {
-        result.intValue = result.intValue * 10 + (number.getDigit(di) & 0x0f);
-    }
-    if (result.intValue == 0 && number.getDecimalAt()-18 > 0) {
-        // The number is something like 100000000000000000000000.
-        // More than 18 digits integer digits, but the least significant 18 are all zero.
-        // We don't want to return zero as the int part, but want to keep zeros
-        //   for several of the least significant digits.
-        result.intValue = 100000000000000000LL;
-    }
-    
-    // Fraction digits.
-    result.decimalDigits = result.decimalDigitsWithoutTrailingZeros = result.visibleDecimalDigitCount = 0;
-    for (di = number.getDecimalAt(); di < number.getCount(); di++) {
-        result.visibleDecimalDigitCount++;
-        if (result.decimalDigits <  100000000000000000LL) {
-                   //              9223372036854775807    Largest 64 bit signed integer
-            int32_t digitVal = number.getDigit(di) & 0x0f;  // getDigit() returns a char, '0'-'9'.
-            result.decimalDigits = result.decimalDigits * 10 + digitVal;
-            if (digitVal > 0) {
-                result.decimalDigitsWithoutTrailingZeros = result.decimalDigits;
-            }
-        }
-    }
-
-    result.hasIntegerValue = (result.decimalDigits == 0);
-
-    // Trailing fraction zeros. The format specification may require more trailing
-    //    zeros than the numeric value. Add any such on now.
-
-    int32_t minFractionDigits;
-    if (areSignificantDigitsUsed()) {
-        minFractionDigits = getMinimumSignificantDigits() - number.getDecimalAt();
-        if (minFractionDigits < 0) {
-            minFractionDigits = 0;
-        }
-    } else {
-        minFractionDigits = getMinimumFractionDigits();
-    }
-    result.adjustForMinFractionDigits(minFractionDigits);
-
-    return result;
+    return fImpl->getFixedDecimal(number, result);
 }
 
 
@@ -1388,7 +1326,6 @@ DecimalFormat::format(const DigitList &number,
 }
 
 
-
 UnicodeString&
 DecimalFormat::format(const DigitList &number,
                      UnicodeString& appendTo,
@@ -1397,126 +1334,12 @@ DecimalFormat::format(const DigitList &number,
     return fImpl->format(number, appendTo, pos, status);
 }
 
-DigitList&
-DecimalFormat::_round(const DigitList &number, DigitList &adjustedNum, UBool& isNegative, UErrorCode &status) const {
-    if (U_FAILURE(status)) {
-        return adjustedNum;
-    }
-
-    // note: number and adjustedNum may refer to the same DigitList, in cases where a copy
-    //       is not needed by the caller.
-
+DigitList& 
+DecimalFormat::_round(const DigitList& number, DigitList& adjustedNum, UBool& isNegative, UErrorCode& status) const {
     adjustedNum = number;
-    isNegative = false;
-    if (number.isNaN()) {
-        return adjustedNum;
-    }
-
-    // Do this BEFORE checking to see if value is infinite or negative! Sets the
-    // begin and end index to be length of the string composed of
-    // localized name of Infinite and the positive/negative localized
-    // signs.
-
-    adjustedNum.setRoundingMode(fRoundingMode);
-    if (fMultiplier != NULL) {
-        adjustedNum.mult(*fMultiplier, status);
-        if (U_FAILURE(status)) {
-            return adjustedNum;
-        }
-    }
-
-    if (fScale != 0) {
-        DigitList ten;
-        ten.set((int32_t)10);
-        if (fScale > 0) {
-            for (int32_t i = fScale ; i > 0 ; i--) {
-                adjustedNum.mult(ten, status);
-                if (U_FAILURE(status)) {
-                    return adjustedNum;
-                }
-            }
-        } else {
-            for (int32_t i = fScale ; i < 0 ; i++) {
-                adjustedNum.div(ten, status);
-                if (U_FAILURE(status)) {
-                    return adjustedNum;
-                }
-            }
-        }
-    }
-
-    /*
-     * Note: sign is important for zero as well as non-zero numbers.
-     * Proper detection of -0.0 is needed to deal with the
-     * issues raised by bugs 4106658, 4106667, and 4147706.  Liu 7/6/98.
-     */
+    fImpl->round(adjustedNum, status);
     isNegative = !adjustedNum.isPositive();
-
-    // Apply rounding after multiplier
-
-    adjustedNum.fContext.status &= ~DEC_Inexact;
-    if (fRoundingIncrement != NULL) {
-        adjustedNum.div(*fRoundingIncrement, status);
-        adjustedNum.toIntegralValue();
-        adjustedNum.mult(*fRoundingIncrement, status);
-        adjustedNum.trim();
-        if (U_FAILURE(status)) {
-            return adjustedNum;
-        }
-    }
-    if (fRoundingMode == kRoundUnnecessary && (adjustedNum.fContext.status & DEC_Inexact)) {
-        status = U_FORMAT_INEXACT_ERROR;
-        return adjustedNum;
-    }
-
-    if (adjustedNum.isInfinite()) {
-        return adjustedNum;
-    }
-
-    if (fUseExponentialNotation || areSignificantDigitsUsed()) {
-        int32_t sigDigits = precision();
-        if (sigDigits > 0) {
-            adjustedNum.round(sigDigits);
-            // Travis Keep (21/2/2014): Calling round on a digitList does not necessarily
-            // preserve the sign of that digit list. Preserving the sign is especially
-            // important when formatting -0.0 for instance. Not preserving the sign seems
-            // like a bug because I cannot think of any case where the sign would actually
-            // have to change when rounding. For now, we preserve the sign by setting the
-            // positive attribute directly.
-            adjustedNum.setPositive(!isNegative);
-        }
-    } else {
-        // Fixed point format.  Round to a set number of fraction digits.
-        int32_t numFractionDigits = precision();
-        adjustedNum.roundFixedPoint(numFractionDigits);
-    }
-    if (fRoundingMode == kRoundUnnecessary && (adjustedNum.fContext.status & DEC_Inexact)) {
-        status = U_FORMAT_INEXACT_ERROR;
-        return adjustedNum;
-    }
     return adjustedNum;
-}
-
-/**
- * Return true if a grouping separator belongs at the given
- * position, based on whether grouping is in use and the values of
- * the primary and secondary grouping interval.
- * @param pos the number of integer digits to the right of
- * the current position.  Zero indicates the position after the
- * rightmost integer digit.
- * @return true if a grouping character belongs at the current
- * position.
- */
-UBool DecimalFormat::isGroupingPosition(int32_t pos) const {
-    UBool result = FALSE;
-    if (isGroupingUsed() && (pos > 0) && (fGroupingSize > 0)) {
-        if ((fGroupingSize2 > 0) && (pos > fGroupingSize)) {
-            result = ((pos - fGroupingSize) % fGroupingSize2) == 0;
-        } else {
-            result = pos % fGroupingSize == 0;
-        }
-    }
-    return result;
 }
 
 void

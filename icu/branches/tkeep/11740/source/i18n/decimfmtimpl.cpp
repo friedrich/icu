@@ -377,19 +377,27 @@ DecimalFormatImpl::format(
     return formatDigitList(dl, appendTo, handler, status);
 }
 
+DigitList &
+DecimalFormatImpl::adjustDigitList(
+        DigitList &number, UErrorCode &status) const {
+    number.setRoundingMode(fRoundingMode);
+    if (!fMultiplier.isZero()) {
+        number.mult(fMultiplier, status);
+    }
+    if (fScale != 0) {
+        number.shiftDecimalRight(fScale);
+    }
+    number.reduce();
+    return number;
+}
+
 UnicodeString &
 DecimalFormatImpl::formatDigitList(
         DigitList &number,
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
-    if (!fMultiplier.isZero()) {
-        number.mult(fMultiplier, status);
-        number.shiftDecimalRight(fScale);
-    } else if (fScale != 0) {
-        number.shiftDecimalRight(fScale);
-    }
-    number.reduce();
+    adjustDigitList(number, status);
     return formatAdjustedDigitList(number, appendTo, handler, status);
 }
 
@@ -399,7 +407,6 @@ DecimalFormatImpl::formatAdjustedDigitList(
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
-    number.setRoundingMode(fRoundingMode);
     ValueFormatter vf;
     return fAap.format(
             number,
@@ -425,16 +432,24 @@ DecimalFormatImpl::getFixedDecimal(
         result.isNanOrInfinity = TRUE;
         return result;
     }
-    number.setRoundingMode(fRoundingMode);
     UErrorCode status = U_ZERO_ERROR;
-    if (!fMultiplier.isZero()) {
-        number.mult(fMultiplier, status);
-    }
-    number.reduce();
+    adjustDigitList(number, status);
     ValueFormatter vf;
     prepareValueFormatter(vf);
     vf.round(number, status);
     return vf.getFixedDecimal(number, result);
+}
+
+DigitList &
+DecimalFormatImpl::round(
+        DigitList &number, UErrorCode &status) const {
+    if (number.isNaN() || number.isInfinite()) {
+        return number;
+    }
+    adjustDigitList(number, status);
+    ValueFormatter vf;
+    prepareValueFormatter(vf);
+    return vf.round(number, status);
 }
 
 UnicodeString

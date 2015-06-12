@@ -197,6 +197,7 @@ UnicodeString select(double value, const PluralRules &rules) const;
 UnicodeString select(DigitList &number, const PluralRules &rules) const;
 FixedDecimal &getFixedDecimal(double value, FixedDecimal &result) const;
 FixedDecimal &getFixedDecimal(DigitList &number, FixedDecimal &result) const;
+DigitList &round(DigitList &number, UErrorCode &status) const;
 
 private:
 
@@ -284,6 +285,8 @@ UnicodeString &formatAdjustedDigitList(
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const;
+
+DigitList &adjustDigitList(DigitList &number, UErrorCode &status) const;
 
 void applyPattern(
         const UnicodeString &pattern,
