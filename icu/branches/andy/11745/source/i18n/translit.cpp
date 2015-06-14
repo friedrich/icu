@@ -25,6 +25,7 @@
 #include "unicode/uscript.h"
 #include "unicode/strenum.h"
 #include "unicode/utf16.h"
+#include "unicode/brkiter.h"
 #include "cpdtrans.h"
 #include "nultrans.h"
 #include "rbt_data.h"
@@ -51,6 +52,7 @@
 #include "cmemory.h"
 #include "cstring.h"
 #include "uinvchar.h"
+#include "uvectr32.h"
 
 static const UChar TARGET_SEP  = 0x002D; /*-*/
 static const UChar ID_DELIM    = 0x003B; /*;*/

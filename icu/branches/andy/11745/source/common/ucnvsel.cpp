@@ -43,7 +43,6 @@
 #include "cmemory.h"
 #include "cstring.h"
 
-U_NAMESPACE_USE
 
 struct UConverterSelector {
   UTrie2 *trie;              // 16 bit trie containing offsets into pv
@@ -55,6 +54,8 @@ struct UConverterSelector {
   uint8_t* swapped;
   UBool ownPv, ownEncodingStrings;
 };
+
+U_NAMESPACE_USE
 
 static void generateSelectorData(UConverterSelector* result,
                                  UPropsVectors *upvec,

@@ -31,6 +31,7 @@
 #include "uvectr32.h"
 #include "sharedpluralrules.h"
 #include "unifiedcache.h"
+// #include "uresimp.h"
 
 #if !UCONFIG_NO_FORMATTING
 
