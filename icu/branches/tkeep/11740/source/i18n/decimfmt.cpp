@@ -3902,33 +3902,6 @@ DecimalFormat::expandAffixAdjustWidth(const UnicodeString* pluralCount) {
     }
 }
 
-
-void
-DecimalFormat::applyPattern(const UnicodeString& pattern,
-                            UBool localized,
-                            UParseError& parseError,
-                            UErrorCode& status)
-{
-    // do the following re-set first. since they change private data by
-    // apply pattern again.
-    if (pattern.indexOf(kCurrencySign) != -1) {
-        if (fCurrencyPluralInfo == NULL) {
-            // initialize currencyPluralInfo if needed
-            fCurrencyPluralInfo = new CurrencyPluralInfo(fSymbols->getLocale(), status);
-        }
-        if (fAffixPatternsForCurrency == NULL) {
-            setupCurrencyAffixPatterns(status);
-        }
-        if (pattern.indexOf(fgTripleCurrencySign, 3, 0) != -1) {
-            // only setup the affixes of the current pattern.
-            setupCurrencyAffixes(pattern, TRUE, FALSE, status);
-        }
-    }
-    applyPatternWithoutExpandAffix(pattern, localized, parseError, status);
-    expandAffixAdjustWidth(NULL);
-}
-
-
 void
 DecimalFormat::applyPatternInternally(const UnicodeString& pluralCount,
                                       const UnicodeString& pattern,

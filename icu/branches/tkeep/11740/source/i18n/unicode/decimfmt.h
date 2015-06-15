@@ -2015,21 +2015,6 @@ private:
                    DecimalFormatSymbols*    symbolsToAdopt = 0
                    );
 
-    /**
-     * Does the real work of applying a pattern.
-     * @param pattern    The pattern to be applied.
-     * @param localized  If true, the pattern is localized; else false.
-     * @param parseError Struct to recieve information on position
-     *                   of error if an error is encountered
-     * @param status     Output param set to success/failure code on
-     *                   exit. If the pattern is invalid, this will be
-     *                   set to a failure result.
-     */
-    void applyPattern(const UnicodeString& pattern,
-                            UBool localized,
-                            UParseError& parseError,
-                            UErrorCode& status);
-
     /*
      * similar to applyPattern, but without re-gen affix for currency
      */
