@@ -788,7 +788,9 @@ DecimalFormat::operator==(const Format& that) const
     const DecimalFormat* other = (DecimalFormat*)&that;
 
     return (
-        NumberFormat::operator==(that) && *fImpl == *other->fImpl);
+        NumberFormat::operator==(that) &&
+        fBoolFlags.getAll() == other->fBoolFlags.getAll() &&
+        *fImpl == *other->fImpl);
 
 }
 
