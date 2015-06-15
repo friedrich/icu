@@ -150,6 +150,8 @@ void applyPattern(const UnicodeString &pattern, UErrorCode &status);
 void applyPattern(
         const UnicodeString &pattern, UParseError &perror, UErrorCode &status);
 void applyLocalizedPattern(const UnicodeString &pattern, UErrorCode &status);
+void applyLocalizedPattern(
+        const UnicodeString &pattern, UParseError &perror, UErrorCode &status);
 void setCurrencyUsage(UCurrencyUsage usage, UErrorCode &status);
 UCurrencyUsage getCurrencyUsage() const { return fCurrencyUsage; }
 void setRoundingIncrement(double d);

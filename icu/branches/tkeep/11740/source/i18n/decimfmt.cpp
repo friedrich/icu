@@ -418,6 +418,17 @@ DecimalFormat::init() {
     fImpl = NULL;
 }
 
+void
+DecimalFormat::updateSuper() {
+    NumberFormat::setGroupingUsed(fImpl->isGroupingUsed());
+    NumberFormat::setMinimumIntegerDigits(fImpl->getMinimumIntegerDigits());
+    NumberFormat::setMaximumIntegerDigits(fImpl->getMaximumIntegerDigits());
+    NumberFormat::setMinimumFractionDigits(fImpl->getMinimumFractionDigits());
+    NumberFormat::setMaximumFractionDigits(fImpl->getMaximumFractionDigits());
+    UErrorCode ec = U_ZERO_ERROR;
+    NumberFormat::setCurrency(fImpl->getCurrency(), ec);
+}
+
 //------------------------------------------------------------------------------
 // Constructs a DecimalFormat instance with the specified number format
 // pattern and the number format symbols in the desired locale.  The
@@ -535,6 +546,7 @@ DecimalFormat::construct(UErrorCode&            status,
         fCurrencyPluralInfo->getCurrencyPluralPattern(UNICODE_STRING("other", 5), currencyPluralPatternForOther);
         // TODO(refactor): Revisit, we are setting the pattern twice.
         fImpl->applyPattern(currencyPluralPatternForOther, status);
+        updateSuper();
         patternUsed = &currencyPluralPatternForOther;
         // TODO: not needed?
         setCurrencyForSymbols();
@@ -2779,24 +2791,9 @@ DecimalFormat::adoptDecimalFormatSymbols(DecimalFormatSymbols* symbolsToAdopt)
     if (symbolsToAdopt == NULL) {
         return; // do not allow caller to set fSymbols to NULL
     }
+    fSymbols = symbolsToAdopt;
     //TODO(refactor): Just adopt, don't copy
     fImpl->adoptDecimalFormatSymbols(new DecimalFormatSymbols(*symbolsToAdopt));
-
-    UBool sameSymbols = FALSE;
-    if (fSymbols != NULL) {
-        sameSymbols = (UBool)(getConstSymbol(DecimalFormatSymbols::kCurrencySymbol) ==
-            symbolsToAdopt->getConstSymbol(DecimalFormatSymbols::kCurrencySymbol) &&
-            getConstSymbol(DecimalFormatSymbols::kIntlCurrencySymbol) ==
-            symbolsToAdopt->getConstSymbol(DecimalFormatSymbols::kIntlCurrencySymbol));
-        delete fSymbols;
-    }
-
-    fSymbols = symbolsToAdopt;
-    if (!sameSymbols) {
-        // If the currency symbols are the same, there is no need to recalculate.
-        setCurrencyForSymbols();
-    }
-    expandAffixes(NULL);
 }
 //------------------------------------------------------------------------------
 // Setting the symbols is equlivalent to adopting a newly created localized
@@ -2900,9 +2897,6 @@ void
 DecimalFormat::setPositivePrefix(const UnicodeString& newValue)
 {
     fImpl->setPositivePrefix(newValue);
-    fPositivePrefix = newValue;
-    delete fPosPrefixPattern;
-    fPosPrefixPattern = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -2921,9 +2915,6 @@ void
 DecimalFormat::setNegativePrefix(const UnicodeString& newValue)
 {
     fImpl->setNegativePrefix(newValue);
-    fNegativePrefix = newValue;
-    delete fNegPrefixPattern;
-    fNegPrefixPattern = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -2942,9 +2933,6 @@ void
 DecimalFormat::setPositiveSuffix(const UnicodeString& newValue)
 {
     fImpl->setPositiveSuffix(newValue);
-    fPositiveSuffix = newValue;
-    delete fPosSuffixPattern;
-    fPosSuffixPattern = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -2963,9 +2951,6 @@ void
 DecimalFormat::setNegativeSuffix(const UnicodeString& newValue)
 {
     fImpl->setNegativeSuffix(newValue);
-    fNegativeSuffix = newValue;
-    delete fNegSuffixPattern;
-    fNegSuffixPattern = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -2986,23 +2971,6 @@ void
 DecimalFormat::setMultiplier(int32_t newValue)
 {
     fImpl->setMultiplier(newValue);
-//  if (newValue == 0) {
-//      throw new IllegalArgumentException("Bad multiplier: " + newValue);
-//  }
-    if (newValue == 0) {
-        newValue = 1;     // one being the benign default value for a multiplier.
-    }
-    if (newValue == 1) {
-        delete fMultiplier;
-        fMultiplier = NULL;
-    } else {
-        if (fMultiplier == NULL) {
-            fMultiplier = new DigitList;
-        }
-        if (fMultiplier != NULL) {
-            fMultiplier->set(newValue);
-        }
-    }
 }
 
 /**
@@ -3028,19 +2996,6 @@ double DecimalFormat::getRoundingIncrement() const {
  */
 void DecimalFormat::setRoundingIncrement(double newValue) {
     fImpl->setRoundingIncrement(newValue);
-    if (newValue > 0.0) {
-        if (fRoundingIncrement == NULL) {
-            fRoundingIncrement = new DigitList();
-        }
-        if (fRoundingIncrement != NULL) {
-            fRoundingIncrement->set(newValue);
-            return;
-        }
-    }
-    // These statements are executed if newValue is less than 0.0
-    // or fRoundingIncrement could not be created.
-    delete fRoundingIncrement;
-    fRoundingIncrement = NULL;
 }
 
 /**
@@ -3064,7 +3019,6 @@ DecimalFormat::ERoundingMode DecimalFormat::getRoundingMode() const {
  */
 void DecimalFormat::setRoundingMode(ERoundingMode roundingMode) {
     fImpl->setRoundingMode(roundingMode);
-    fRoundingMode = roundingMode;
 }
 
 /**
@@ -3102,13 +3056,14 @@ UnicodeString DecimalFormat::getPadCharacterString() const {
 }
 
 void DecimalFormat::setPadCharacter(const UnicodeString &padChar) {
+    UChar pad;
     if (padChar.length() > 0) {
-        fPad = padChar.char32At(0);
+        pad = padChar.char32At(0);
     }
     else {
-        fPad = kDefaultPad;
+        pad = kDefaultPad;
     }
-    fImpl->setPadCharacter(fPad);
+    fImpl->setPadCharacter(pad);
 }
 
 static DecimalFormat::EPadPosition fromPadPosition(DigitAffixesAndPadding::EPadPosition padPos) {
@@ -3187,7 +3142,6 @@ static DigitAffixesAndPadding::EPadPosition toPadPosition(DecimalFormat::EPadPos
  */
 void DecimalFormat::setPadPosition(EPadPosition padPos) {
     fImpl->setPadPosition(toPadPosition(padPos));
-    fPadPosition = padPos;
 }
 
 /**
@@ -3215,7 +3169,6 @@ UBool DecimalFormat::isScientificNotation() const {
  */
 void DecimalFormat::setScientificNotation(UBool useScientific) {
     fImpl->setScientificNotation(useScientific);
-    fUseExponentialNotation = useScientific;
 }
 
 /**
@@ -3243,8 +3196,8 @@ int8_t DecimalFormat::getMinimumExponentDigits() const {
  * @see #setExponentSignAlwaysShown
  */
 void DecimalFormat::setMinimumExponentDigits(int8_t minExpDig) {
-    fMinExponentDigits = (int8_t)((minExpDig > 0) ? minExpDig : 1);
-    fImpl->setMinimumExponentDigits(fMinExponentDigits);
+    int32_t minExponentDigits = (int8_t)((minExpDig > 0) ? minExpDig : 1);
+    fImpl->setMinimumExponentDigits(minExponentDigits);
 }
 
 /**
@@ -3276,7 +3229,6 @@ UBool DecimalFormat::isExponentSignAlwaysShown() const {
  */
 void DecimalFormat::setExponentSignAlwaysShown(UBool expSignAlways) {
     fImpl->setExponentSignAlwaysShown(expSignAlways);
-    fExponentSignAlwaysShown = expSignAlways;
 }
 
 //------------------------------------------------------------------------------
@@ -3296,7 +3248,6 @@ void
 DecimalFormat::setGroupingSize(int32_t newValue)
 {
     fImpl->setGroupingSize(newValue);
-    fGroupingSize = newValue;
 }
 
 //------------------------------------------------------------------------------
@@ -3313,7 +3264,6 @@ void
 DecimalFormat::setSecondaryGroupingSize(int32_t newValue)
 {
     fImpl->setSecondaryGroupingSize(newValue);
-    fGroupingSize2 = newValue;
 }
 
 //------------------------------------------------------------------------------
@@ -3332,7 +3282,6 @@ void
 DecimalFormat::setDecimalSeparatorAlwaysShown(UBool newValue)
 {
     fImpl->setDecimalSeparatorAlwaysShown(newValue);
-    fDecimalSeparatorAlwaysShown = newValue;
 }
 
 //------------------------------------------------------------------------------
@@ -3825,8 +3774,7 @@ void
 DecimalFormat::applyPattern(const UnicodeString& pattern, UErrorCode& status)
 {
     fImpl->applyPattern(pattern, status);
-    UParseError parseError;
-    applyPattern(pattern, FALSE, parseError, status);
+    updateSuper();
 }
 
 //------------------------------------------------------------------------------
@@ -3836,8 +3784,8 @@ DecimalFormat::applyPattern(const UnicodeString& pattern,
                             UParseError& parseError,
                             UErrorCode& status)
 {
-    fImpl->applyPattern(pattern, status);
-    applyPattern(pattern, FALSE, parseError, status);
+    fImpl->applyPattern(pattern, parseError, status);
+    updateSuper();
 }
 //------------------------------------------------------------------------------
 
@@ -3845,8 +3793,7 @@ void
 DecimalFormat::applyLocalizedPattern(const UnicodeString& pattern, UErrorCode& status)
 {
     fImpl->applyLocalizedPattern(pattern, status);
-    UParseError parseError;
-    applyPattern(pattern, TRUE,parseError,status);
+    updateSuper();
 }
 
 //------------------------------------------------------------------------------
@@ -3856,8 +3803,8 @@ DecimalFormat::applyLocalizedPattern(const UnicodeString& pattern,
                                      UParseError& parseError,
                                      UErrorCode& status)
 {
-    fImpl->applyLocalizedPattern(pattern, status);
-    applyPattern(pattern, TRUE,parseError,status);
+    fImpl->applyLocalizedPattern(pattern, parseError, status);
+    updateSuper();
 }
 
 //------------------------------------------------------------------------------
@@ -4060,9 +4007,6 @@ void DecimalFormat::setMinimumSignificantDigits(int32_t min) {
     // pin max sig dig to >= min
     int32_t max = _max(fImpl->fMaxSigDigits, min);
     fImpl->setMinMaxSignificantDigits(min, max);
-    fMinSignificantDigits = min;
-    fMaxSignificantDigits = max;
-    fUseSignificantDigits = TRUE;
 }
 
 void DecimalFormat::setMaximumSignificantDigits(int32_t max) {
@@ -4073,9 +4017,6 @@ void DecimalFormat::setMaximumSignificantDigits(int32_t max) {
     U_ASSERT(fImpl->fMinSigDigits >= 1);
     int32_t min = _min(fImpl->fMinSigDigits, max);
     fImpl->setMinMaxSignificantDigits(min, max);
-    fMinSignificantDigits = min;
-    fMaxSignificantDigits = max;
-    fUseSignificantDigits = TRUE;
 }
 
 UBool DecimalFormat::areSignificantDigitsUsed() const {
@@ -4084,7 +4025,6 @@ UBool DecimalFormat::areSignificantDigitsUsed() const {
 
 void DecimalFormat::setSignificantDigitsUsed(UBool useSignificantDigits) {
     fImpl->setSignificantDigitsUsed(useSignificantDigits);
-    fUseSignificantDigits = useSignificantDigits;
 }
 
 void DecimalFormat::setCurrencyInternally(const UChar* theCurrency,

@@ -1996,6 +1996,8 @@ private:
 
     DecimalFormat(); // default constructor not implemented
 
+    void updateSuper();
+
     int32_t precision() const;
 
     /**

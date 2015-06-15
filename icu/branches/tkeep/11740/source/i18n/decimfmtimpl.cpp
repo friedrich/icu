@@ -704,6 +704,14 @@ DecimalFormatImpl::applyLocalizedPattern(
 }
 
 void
+DecimalFormatImpl::applyLocalizedPattern(
+        const UnicodeString &pattern,
+        UParseError &perror,  UErrorCode &status) {
+    applyPattern(pattern, TRUE, perror, status);
+    updateAll(status);
+}
+
+void
 DecimalFormatImpl::applyPattern(
         const UnicodeString &pattern,
         UBool localized, UParseError &perror, UErrorCode &status) {
@@ -736,6 +744,8 @@ DecimalFormatImpl::applyPattern(
     fOptions.fMantissa.fAlwaysShowDecimal = out.fDecimalSeparatorAlwaysShown;
     if (out.fRoundingIncrementUsed) {
         fEffPrecision.fMantissa.fRoundingIncrement = out.fRoundingIncrement;
+    } else {
+        fEffPrecision.fMantissa.fRoundingIncrement.clear();
     }
     fAap.fPadChar = out.fPad;
     fNegativePrefixPattern = out.fNegPrefixAffix;
