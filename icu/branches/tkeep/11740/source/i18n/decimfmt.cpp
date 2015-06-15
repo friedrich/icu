@@ -508,7 +508,6 @@ DecimalFormat::construct(UErrorCode&            status,
     if (U_FAILURE(status)) {
         return;
     }
-    setMultiplier(1);
 
     delete ns;
 
@@ -517,7 +516,7 @@ DecimalFormat::construct(UErrorCode&            status,
         return;
     }
 
-    if (pattern->indexOf((UChar)kCurrencySign) >= 0) {
+    if (fImpl->fMonetary) {
         // If it looks like we are going to use a currency pattern
         // then do the time consuming lookup.
         setCurrencyForSymbols();
@@ -568,14 +567,9 @@ DecimalFormat::construct(UErrorCode&            status,
 
     applyPatternWithoutExpandAffix(*patternUsed,FALSE, parseErr, status);
 
-    // expand affixes
-    if (fCurrencySignCount != fgCurrencySignCountInPluralFormat) {
-        expandAffixAdjustWidth(NULL);
-    }
-
     // If it was a currency format, apply the appropriate rounding by
     // resetting the currency. NOTE: this copies fCurrency on top of itself.
-    if (fCurrencySignCount != fgCurrencySignCountZero) {
+    if (fImpl->fMonetary) {
         setCurrencyInternally(getCurrency(), status);
     }
 }
