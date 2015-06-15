@@ -508,6 +508,7 @@ DecimalFormat::construct(UErrorCode&            status,
     if (U_FAILURE(status)) {
         return;
     }
+    updateSuper();
 
     delete ns;
 
@@ -3754,12 +3755,7 @@ DecimalFormat::applyPatternWithoutExpandAffix(const UnicodeString& pattern,
       return;
     }
 
-    setMinimumIntegerDigits(out.fMinimumIntegerDigits);
-    setMaximumIntegerDigits(out.fMaximumIntegerDigits);
-    setMinimumFractionDigits(out.fMinimumFractionDigits);
-    setMaximumFractionDigits(out.fMaximumFractionDigits);
     fCurrencySignCount = out.fCurrencySignCount;
-    setMultiplier(out.fMultiplier);
 }
 
 

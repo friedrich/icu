@@ -239,8 +239,14 @@ DecimalFormatImpl::getPatternScale() const {
     
 void
 DecimalFormatImpl::setMultiplierScale(int32_t scale) {
-    fMultiplier.set(1);
-    fMultiplier.shiftDecimalRight(scale);
+    if (scale == 0) {
+        // Needed to preserve equality. fMultiplier == 0 means
+        // multiplier is 1.
+        fMultiplier.set(0);
+    } else {
+        fMultiplier.set(1);
+        fMultiplier.shiftDecimalRight(scale);
+    }
 }
 
 UnicodeString &
