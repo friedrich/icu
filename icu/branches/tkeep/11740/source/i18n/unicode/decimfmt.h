@@ -2170,15 +2170,6 @@ private:
     // Those patterns are used by parseForCurrency().
     void setupCurrencyAffixPatterns(UErrorCode& status);
 
-    // set up the currency affixes used in currency plural formatting.
-    // It sets up both fAffixesForCurrency for currency pattern if the current
-    // pattern contains 3 currency signs,
-    // and it sets up fPluralAffixesForCurrency for currency plural patterns.
-    void setupCurrencyAffixes(const UnicodeString& pattern,
-                              UBool setupForCurrentPattern,
-                              UBool setupForPluralPattern,
-                              UErrorCode& status);
-	
     // get the currency rounding with respect to currency usage
     double getCurrencyRounding(const UChar* currency,
                                UErrorCode* ec) const;

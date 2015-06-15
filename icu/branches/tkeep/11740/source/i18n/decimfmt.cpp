@@ -566,10 +566,6 @@ DecimalFormat::construct(UErrorCode&            status,
         }
         // need it for mix parsing
         setupCurrencyAffixPatterns(status);
-        // expanded affixes for plural names
-        if (patternUsed->indexOf(fgTripleCurrencySign, 3, 0) != -1) {
-            setupCurrencyAffixes(*patternUsed, TRUE, TRUE, status);
-        }
     }
 
     applyPatternWithoutExpandAffix(*patternUsed,FALSE, parseErr, status);
@@ -696,70 +692,6 @@ DecimalFormat::setupCurrencyAffixPatterns(UErrorCode& status) {
                                                     posSuffix,
                                                     UCURR_LONG_NAME);
             fAffixPatternsForCurrency->put(*key, affixPtn, status);
-        }
-    }
-}
-
-
-void
-DecimalFormat::setupCurrencyAffixes(const UnicodeString& pattern,
-                                    UBool setupForCurrentPattern,
-                                    UBool setupForPluralPattern,
-                                    UErrorCode& status) {
-    if (U_FAILURE(status)) {
-        return;
-    }
-    UParseError parseErr;
-    if (setupForCurrentPattern) {
-        if (fAffixesForCurrency) {
-            deleteHashForAffix(fAffixesForCurrency);
-        }
-        fAffixesForCurrency = initHashForAffix(status);
-        if (U_SUCCESS(status)) {
-            applyPatternWithoutExpandAffix(pattern, false, parseErr, status);
-            const PluralRules* pluralRules = fCurrencyPluralInfo->getPluralRules();
-            StringEnumeration* keywords = pluralRules->getKeywords(status);
-            if (U_SUCCESS(status)) {
-                const UnicodeString* pluralCount;
-                while ((pluralCount = keywords->snext(status)) != NULL) {
-                    if ( U_SUCCESS(status) ) {
-                        expandAffixAdjustWidth(pluralCount);
-                        AffixesForCurrency* affix = new AffixesForCurrency(
-                            fNegativePrefix, fNegativeSuffix, fPositivePrefix, fPositiveSuffix);
-                        fAffixesForCurrency->put(*pluralCount, affix, status);
-                    }
-                }
-            }
-            delete keywords;
-        }
-    }
-
-    if (U_FAILURE(status)) {
-        return;
-    }
-
-    if (setupForPluralPattern) {
-        if (fPluralAffixesForCurrency) {
-            deleteHashForAffix(fPluralAffixesForCurrency);
-        }
-        fPluralAffixesForCurrency = initHashForAffix(status);
-        if (U_SUCCESS(status)) {
-            const PluralRules* pluralRules = fCurrencyPluralInfo->getPluralRules();
-            StringEnumeration* keywords = pluralRules->getKeywords(status);
-            if (U_SUCCESS(status)) {
-                const UnicodeString* pluralCount;
-                while ((pluralCount = keywords->snext(status)) != NULL) {
-                    if ( U_SUCCESS(status) ) {
-                        UnicodeString ptn;
-                        fCurrencyPluralInfo->getCurrencyPluralPattern(*pluralCount, ptn);
-                        applyPatternInternally(*pluralCount, ptn, false, parseErr, status);
-                        AffixesForCurrency* affix = new AffixesForCurrency(
-                            fNegativePrefix, fNegativeSuffix, fPositivePrefix, fPositiveSuffix);
-                        fPluralAffixesForCurrency->put(*pluralCount, affix, status);
-                    }
-                }
-            }
-            delete keywords;
         }
     }
 }
@@ -2826,10 +2758,6 @@ DecimalFormat::adoptCurrencyPluralInfo(CurrencyPluralInfo* toAdopt)
                 deleteHashForAffixPattern();
             }
             setupCurrencyAffixPatterns(status);
-            if (fCurrencySignCount == fgCurrencySignCountInPluralFormat) {
-                // only setup the affixes of the plural pattern.
-                setupCurrencyAffixes(fFormatPattern, FALSE, TRUE, status);
-            }
         }
     }
 }
