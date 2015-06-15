@@ -1998,8 +1998,6 @@ private:
 
     void updateSuper();
 
-    int32_t precision() const;
-
     /**
      *   Initialize all fields of a new DecimalFormatter to a safe default value.
      *      Common code for use by constructors.
