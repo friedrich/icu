@@ -2132,14 +2132,6 @@ private:
 
     void expandAffixes(const UnicodeString* pluralCount);
 
-    void setCurrencyForSymbols();
-
-    // similar to setCurrency without re-compute the affixes for currency.
-    // If currency changes, the affix pattern for currency is not changed,
-    // but the affix will be changed. So, affixes need to be
-    // re-computed in setCurrency(), but not in setCurrencyInternally().
-    virtual void setCurrencyInternally(const UChar* theCurrency, UErrorCode& ec);
-
     // set up currency affix patterns for mix parsing.
     // The patterns saved here are the affix patterns of default currency
     // pattern and the unique affix patterns of the plural currency patterns.

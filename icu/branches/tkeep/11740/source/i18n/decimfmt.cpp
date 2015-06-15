@@ -276,27 +276,6 @@ static const char fgCurrencyFormat[]="currencyFormat";
 inline int32_t _min(int32_t a, int32_t b) { return (a<b) ? a : b; }
 inline int32_t _max(int32_t a, int32_t b) { return (a<b) ? b : a; }
 
-static void copyString(const UnicodeString& src, UBool isBogus, UnicodeString *& dest, UErrorCode &status) {
-    if (U_FAILURE(status)) {
-        return;
-    }
-    if (isBogus) {
-        delete dest;
-        dest = NULL;
-    } else {
-        if (dest != NULL) {
-            *dest = src;
-        } else {
-            dest = new UnicodeString(src);
-            if (dest == NULL) {
-                status = U_MEMORY_ALLOCATION_ERROR;
-                return;
-            }
-        }
-    }
-}
-
-
 //------------------------------------------------------------------------------
 // Constructs a DecimalFormat instance in the default locale.
 
@@ -517,14 +496,6 @@ DecimalFormat::construct(UErrorCode&            status,
         return;
     }
 
-    if (fImpl->fMonetary) {
-        // If it looks like we are going to use a currency pattern
-        // then do the time consuming lookup.
-        setCurrencyForSymbols();
-    } else {
-        setCurrencyInternally(NULL, status);
-    }
-
     const UnicodeString* patternUsed;
     UnicodeString currencyPluralPatternForOther;
     // apply pattern
@@ -546,8 +517,6 @@ DecimalFormat::construct(UErrorCode&            status,
         fImpl->applyPattern(currencyPluralPatternForOther, status);
         updateSuper();
         patternUsed = &currencyPluralPatternForOther;
-        // TODO: not needed?
-        setCurrencyForSymbols();
 
     } else {
         patternUsed = pattern;
@@ -564,12 +533,6 @@ DecimalFormat::construct(UErrorCode&            status,
         }
         // need it for mix parsing
         setupCurrencyAffixPatterns(status);
-    }
-
-    // If it was a currency format, apply the appropriate rounding by
-    // resetting the currency. NOTE: this copies fCurrency on top of itself.
-    if (fImpl->fMonetary) {
-        setCurrencyInternally(getCurrency(), status);
     }
 }
 
@@ -2760,46 +2723,6 @@ DecimalFormat::setCurrencyPluralInfo(const CurrencyPluralInfo& info)
 }
 
 
-/**
- * Update the currency object to match the symbols.  This method
- * is used only when the caller has passed in a symbols object
- * that may not be the default object for its locale.
- */
-void
-DecimalFormat::setCurrencyForSymbols() {
-    /*Bug 4212072
-      Update the affix strings accroding to symbols in order to keep
-      the affix strings up to date.
-      [Richard/GCL]
-    */
-
-    // With the introduction of the Currency object, the currency
-    // symbols in the DFS object are ignored.  For backward
-    // compatibility, we check any explicitly set DFS object.  If it
-    // is a default symbols object for its locale, we change the
-    // currency object to one for that locale.  If it is custom,
-    // we set the currency to null.
-    UErrorCode ec = U_ZERO_ERROR;
-    const UChar* c = NULL;
-    const char* loc = fSymbols->getLocale().getName();
-    UChar intlCurrencySymbol[4];
-    ucurr_forLocale(loc, intlCurrencySymbol, 4, &ec);
-    UnicodeString currencySymbol;
-
-    uprv_getStaticCurrencyName(intlCurrencySymbol, loc, currencySymbol, ec);
-    if (U_SUCCESS(ec)
-        && getConstSymbol(DecimalFormatSymbols::kCurrencySymbol) == currencySymbol
-        && getConstSymbol(DecimalFormatSymbols::kIntlCurrencySymbol) == UnicodeString(intlCurrencySymbol))
-    {
-        // Trap an error in mapping locale to currency.  If we can't
-        // map, then don't fail and set the currency to "".
-        c = intlCurrencySymbol;
-    }
-    ec = U_ZERO_ERROR; // reset local error code!
-    setCurrencyInternally(c, ec);
-}
-
-
 //------------------------------------------------------------------------------
 // Gets the positive prefix of the number pattern.
 
@@ -3813,40 +3736,6 @@ UBool DecimalFormat::areSignificantDigitsUsed() const {
 
 void DecimalFormat::setSignificantDigitsUsed(UBool useSignificantDigits) {
     fImpl->setSignificantDigitsUsed(useSignificantDigits);
-}
-
-void DecimalFormat::setCurrencyInternally(const UChar* theCurrency,
-                                          UErrorCode& ec) {
-    // If we are a currency format, then modify our affixes to
-    // encode the currency symbol for the given currency in our
-    // locale, and adjust the decimal digits and rounding for the
-    // given currency.
-
-    // Note: The code is ordered so that this object is *not changed*
-    // until we are sure we are going to succeed.
-
-    // NULL or empty currency is *legal* and indicates no currency.
-    UBool isCurr = (theCurrency && *theCurrency);
-
-    double rounding = 0.0;
-    int32_t frac = 0;
-    if (fImpl->fMonetary && isCurr) {
-        rounding = ucurr_getRoundingIncrementForUsage(theCurrency, fCurrencyUsage, &ec);
-        frac = ucurr_getDefaultFractionDigitsForUsage(theCurrency, fCurrencyUsage, &ec);
-    }
-
-    NumberFormat::setCurrency(theCurrency, ec);
-    if (U_FAILURE(ec)) return;
-
-    if (fImpl->fMonetary) {
-        // NULL or empty currency is *legal* and indicates no currency.
-        if (isCurr) {
-            setRoundingIncrement(rounding);
-            setMinimumFractionDigits(frac);
-            setMaximumFractionDigits(frac);
-        }
-        expandAffixes(NULL);
-    }
 }
 
 void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {

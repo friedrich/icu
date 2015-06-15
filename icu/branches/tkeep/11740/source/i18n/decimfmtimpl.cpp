@@ -1007,12 +1007,11 @@ DecimalFormatImpl::updateFormattingCurrencyAffixInfo(
         }
         changedFormattingFields |= kFormattingCurrencyAffixInfo;
     } else {
-        UChar currencyBuf[4];
         const UChar *currency = fCurr;
         if (currency[0] == 0) {
-            ucurr_forLocale(fSymbols->getLocale().getName(), currencyBuf, UPRV_LENGTHOF(currencyBuf), &status);
+            ucurr_forLocale(fSymbols->getLocale().getName(), fCurr, UPRV_LENGTHOF(fCurr), &status);
             if (U_SUCCESS(status)) {
-                currency = currencyBuf;
+                currency = fCurr;
             } else {
                 currency = NULL;
                 status = U_ZERO_ERROR;
