@@ -566,8 +566,6 @@ DecimalFormat::construct(UErrorCode&            status,
         setupCurrencyAffixPatterns(status);
     }
 
-    applyPatternWithoutExpandAffix(*patternUsed,FALSE, parseErr, status);
-
     // If it was a currency format, apply the appropriate rounding by
     // resetting the currency. NOTE: this copies fCurrency on top of itself.
     if (fImpl->fMonetary) {
@@ -2745,7 +2743,7 @@ DecimalFormat::adoptCurrencyPluralInfo(CurrencyPluralInfo* toAdopt)
         delete fCurrencyPluralInfo;
         fCurrencyPluralInfo = toAdopt;
         // re-set currency affix patterns and currency affixes.
-        if (fCurrencySignCount != fgCurrencySignCountZero) {
+        if (fImpl->fMonetary) {
             UErrorCode status = U_ZERO_ERROR;
             if (fAffixPatternsForCurrency) {
                 deleteHashForAffixPattern();
@@ -3483,7 +3481,7 @@ int32_t DecimalFormat::appendAffix(UnicodeString& buf, double number,
                                    UBool isNegative, UBool isPrefix) const {
     // plural format precedes choice format
     if (fCurrencyChoice != 0 &&
-        fCurrencySignCount != fgCurrencySignCountInPluralFormat) {
+        TRUE) {
         const UnicodeString* affixPat;
         if (isPrefix) {
             affixPat = isNegative ? fNegPrefixPattern : fPosPrefixPattern;
@@ -3500,7 +3498,7 @@ int32_t DecimalFormat::appendAffix(UnicodeString& buf, double number,
     }
 
     const UnicodeString* affix;
-    if (fCurrencySignCount == fgCurrencySignCountInPluralFormat) {
+    if (FALSE) {
         // TODO: get an accurate count of visible fraction digits.
         UnicodeString pluralCount;
         int32_t minFractionDigits = this->getMinimumFractionDigits();
@@ -3730,46 +3728,6 @@ DecimalFormat::applyLocalizedPattern(const UnicodeString& pattern,
 
 //------------------------------------------------------------------------------
 
-void
-DecimalFormat::applyPatternWithoutExpandAffix(const UnicodeString& pattern,
-                                              UBool localized,
-                                              UParseError& parseError,
-                                              UErrorCode& status)
-{
-    if (U_FAILURE(status))
-    {
-        return;
-    }
-    DecimalFormatPatternParser patternParser;
-    if (localized) {
-      patternParser.useSymbols(*fSymbols);
-    }
-    fFormatPattern = pattern;
-    DecimalFormatPattern out;
-    patternParser.applyPatternWithoutExpandAffix(
-        pattern,
-        out,
-        parseError,
-        status);
-    if (U_FAILURE(status)) {
-      return;
-    }
-
-    fCurrencySignCount = out.fCurrencySignCount;
-}
-
-
-void
-DecimalFormat::expandAffixAdjustWidth(const UnicodeString* pluralCount) {
-    expandAffixes(pluralCount);
-    if (fFormatWidth > 0) {
-        // Finish computing format width (see above)
-            // TODO: how to handle fFormatWidth,
-            // need to save in f(Plural)AffixesForCurrecy?
-            fFormatWidth += fPositivePrefix.length() + fPositiveSuffix.length();
-    }
-}
-
 /**
  * Sets the maximum number of digits allowed in the integer portion of a
  * number. 
@@ -3872,7 +3830,7 @@ void DecimalFormat::setCurrencyInternally(const UChar* theCurrency,
 
     double rounding = 0.0;
     int32_t frac = 0;
-    if (fCurrencySignCount != fgCurrencySignCountZero && isCurr) {
+    if (fImpl->fMonetary && isCurr) {
         rounding = ucurr_getRoundingIncrementForUsage(theCurrency, fCurrencyUsage, &ec);
         frac = ucurr_getDefaultFractionDigitsForUsage(theCurrency, fCurrencyUsage, &ec);
     }
@@ -3880,7 +3838,7 @@ void DecimalFormat::setCurrencyInternally(const UChar* theCurrency,
     NumberFormat::setCurrency(theCurrency, ec);
     if (U_FAILURE(ec)) return;
 
-    if (fCurrencySignCount != fgCurrencySignCountZero) {
+    if (fImpl->fMonetary) {
         // NULL or empty currency is *legal* and indicates no currency.
         if (isCurr) {
             setRoundingIncrement(rounding);

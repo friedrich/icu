@@ -2015,21 +2015,6 @@ private:
                    DecimalFormatSymbols*    symbolsToAdopt = 0
                    );
 
-    /*
-     * only apply pattern without expand affixes
-     */
-    void applyPatternWithoutExpandAffix(const UnicodeString& pattern,
-                                        UBool localized,
-                                        UParseError& parseError,
-                                        UErrorCode& status);
-
-
-    /*
-     * expand affixes (after apply patter) and re-compute fFormatWidth
-     */
-    void expandAffixAdjustWidth(const UnicodeString* pluralCount);
-
-
     void parse(const UnicodeString& text,
                Formattable& result,
                ParsePosition& pos,
