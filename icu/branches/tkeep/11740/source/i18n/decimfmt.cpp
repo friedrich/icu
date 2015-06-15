@@ -273,8 +273,6 @@ static const char fgPatterns[]="patterns";
 static const char fgDecimalFormat[]="decimalFormat";
 static const char fgCurrencyFormat[]="currencyFormat";
 
-static const UChar fgTripleCurrencySign[] = {0xA4, 0xA4, 0xA4, 0};
-
 inline int32_t _min(int32_t a, int32_t b) { return (a<b) ? a : b; }
 inline int32_t _max(int32_t a, int32_t b) { return (a<b) ? b : a; }
 
@@ -2200,9 +2198,9 @@ printf("PP -> %d, SLOW = [%s]!    pp=%d, os=%d, err=%s\n", position, parsedNum.d
  * character.  Result is >= position.
  */
 int32_t DecimalFormat::skipPadding(const UnicodeString& text, int32_t position) const {
-    int32_t padLen = U16_LENGTH(fPad);
+    int32_t padLen = U16_LENGTH(fImpl->fAap.fPadChar);
     while (position < text.length() &&
-           text.char32At(position) == fPad) {
+           text.char32At(position) == fImpl->fAap.fPadChar) {
         position += padLen;
     }
     return position;
@@ -3766,56 +3764,8 @@ DecimalFormat::applyPatternWithoutExpandAffix(const UnicodeString& pattern,
     setMaximumIntegerDigits(out.fMaximumIntegerDigits);
     setMinimumFractionDigits(out.fMinimumFractionDigits);
     setMaximumFractionDigits(out.fMaximumFractionDigits);
-    setSignificantDigitsUsed(out.fUseSignificantDigits);
-    if (out.fUseSignificantDigits) {
-        setMinimumSignificantDigits(out.fMinimumSignificantDigits);
-        setMaximumSignificantDigits(out.fMaximumSignificantDigits);
-    }
-    fUseExponentialNotation = out.fUseExponentialNotation;
-    if (out.fUseExponentialNotation) {
-        fMinExponentDigits = out.fMinExponentDigits;
-    }
-    fExponentSignAlwaysShown = out.fExponentSignAlwaysShown;
     fCurrencySignCount = out.fCurrencySignCount;
-    setGroupingUsed(out.fGroupingUsed);
-    fGroupingSize = out.fGroupingSize;
-    fGroupingSize2 = out.fGroupingSize2;
     setMultiplier(out.fMultiplier);
-    fDecimalSeparatorAlwaysShown = out.fDecimalSeparatorAlwaysShown;
-    fFormatWidth = out.fFormatWidth;
-    if (out.fRoundingIncrementUsed) {
-        if (fRoundingIncrement != NULL) {
-            *fRoundingIncrement = out.fRoundingIncrement;
-        } else {
-            fRoundingIncrement = new DigitList(out.fRoundingIncrement);
-            /* test for NULL */
-            if (fRoundingIncrement == NULL) {
-                 status = U_MEMORY_ALLOCATION_ERROR;
-                 return;
-            }
-        }
-    } else {
-        setRoundingIncrement(0.0);
-    }
-    fPad = out.fPad;
-    switch (out.fPadPosition) {
-        case DecimalFormatPattern::kPadBeforePrefix:
-            fPadPosition = kPadBeforePrefix;
-            break;
-        case DecimalFormatPattern::kPadAfterPrefix:
-            fPadPosition = kPadAfterPrefix;
-            break;
-        case DecimalFormatPattern::kPadBeforeSuffix:
-            fPadPosition = kPadBeforeSuffix;
-            break;
-        case DecimalFormatPattern::kPadAfterSuffix:
-            fPadPosition = kPadAfterSuffix;
-            break;
-    }
-    copyString(out.fNegPrefixPattern, out.fNegPatternsBogus, fNegPrefixPattern, status);
-    copyString(out.fNegSuffixPattern, out.fNegPatternsBogus, fNegSuffixPattern, status);
-    copyString(out.fPosPrefixPattern, out.fPosPatternsBogus, fPosPrefixPattern, status);
-    copyString(out.fPosSuffixPattern, out.fPosPatternsBogus, fPosSuffixPattern, status);
 }
 
 
@@ -3829,17 +3779,6 @@ DecimalFormat::expandAffixAdjustWidth(const UnicodeString* pluralCount) {
             fFormatWidth += fPositivePrefix.length() + fPositiveSuffix.length();
     }
 }
-
-void
-DecimalFormat::applyPatternInternally(const UnicodeString& pluralCount,
-                                      const UnicodeString& pattern,
-                                      UBool localized,
-                                      UParseError& parseError,
-                                      UErrorCode& status) {
-    applyPatternWithoutExpandAffix(pattern, localized, parseError, status);
-    expandAffixAdjustWidth(&pluralCount);
-}
-
 
 /**
  * Sets the maximum number of digits allowed in the integer portion of a

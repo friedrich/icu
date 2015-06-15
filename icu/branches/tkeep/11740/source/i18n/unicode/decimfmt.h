@@ -2016,15 +2016,6 @@ private:
                    );
 
     /*
-     * similar to applyPattern, but without re-gen affix for currency
-     */
-    void applyPatternInternally(const UnicodeString& pluralCount,
-                                const UnicodeString& pattern,
-                                UBool localized,
-                                UParseError& parseError,
-                                UErrorCode& status);
-
-    /*
      * only apply pattern without expand affixes
      */
     void applyPatternWithoutExpandAffix(const UnicodeString& pattern,
