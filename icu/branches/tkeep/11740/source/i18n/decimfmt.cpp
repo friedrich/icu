@@ -4065,14 +4065,6 @@ void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {
     // set the currency before compute affixes to get the right currency names
     NumberFormat::setCurrency(theCurrency, ec);
     fImpl->setCurrency(theCurrency, ec);
-    if (fFormatPattern.indexOf(fgTripleCurrencySign, 3, 0) != -1) {
-        UnicodeString savedPtn = fFormatPattern;
-        setupCurrencyAffixes(fFormatPattern, TRUE, TRUE, ec);
-        UParseError parseErr;
-        applyPattern(savedPtn, FALSE, parseErr, ec);
-    }
-    // set the currency after apply pattern to get the correct rounding/fraction
-    setCurrencyInternally(theCurrency, ec);
 }
 
 void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){
