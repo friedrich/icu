@@ -359,7 +359,6 @@ void
 DecimalFormat::init() {
     fBoolFlags.clear();
     fStyle = UNUM_DECIMAL;
-    fCurrencySignCount = fgCurrencySignCountZero;
     fAffixPatternsForCurrency = NULL;
     fCurrencyPluralInfo = NULL;
     fCurrencyUsage = UCURR_USAGE_STANDARD;

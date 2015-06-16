@@ -2135,88 +2135,10 @@ private:
                             fBoolFlags;
 
 
-    /*
-     * Following are used for currency format
-     */
-    // pattern used in this formatter
-    UnicodeString fFormatPattern;
     // style is only valid when decimal formatter is constructed by
     // DecimalFormat(pattern, decimalFormatSymbol, style)
     int fStyle;
-    /*
-     * Represents whether this is a currency format, and which
-     * currency format style.
-     * 0: not currency format type;
-     * 1: currency style -- symbol name, such as "$" for US dollar.
-     * 2: currency style -- ISO name, such as USD for US dollar.
-     * 3: currency style -- plural long name, such as "US Dollar" for
-     *                      "1.00 US Dollar", or "US Dollars" for
-     *                      "3.00 US Dollars".
-     */
-    int fCurrencySignCount;
 
-
-    /* For currency parsing purose,
-     * Need to remember all prefix patterns and suffix patterns of
-     * every currency format pattern,
-     * including the pattern of default currecny style
-     * and plural currency style. And the patterns are set through applyPattern.
-     */
-    // TODO: innerclass?
-    /* This is not needed in the class declaration, so it is moved into decimfmp.cpp
-    struct AffixPatternsForCurrency : public UMemory {
-        // negative prefix pattern
-        UnicodeString negPrefixPatternForCurrency;
-        // negative suffix pattern
-        UnicodeString negSuffixPatternForCurrency;
-        // positive prefix pattern
-        UnicodeString posPrefixPatternForCurrency;
-        // positive suffix pattern
-        UnicodeString posSuffixPatternForCurrency;
-        int8_t patternType;
-
-        AffixPatternsForCurrency(const UnicodeString& negPrefix,
-                                 const UnicodeString& negSuffix,
-                                 const UnicodeString& posPrefix,
-                                 const UnicodeString& posSuffix,
-                                 int8_t type) {
-            negPrefixPatternForCurrency = negPrefix;
-            negSuffixPatternForCurrency = negSuffix;
-            posPrefixPatternForCurrency = posPrefix;
-            posSuffixPatternForCurrency = posSuffix;
-            patternType = type;
-        }
-    };
-    */
-
-    /* affix for currency formatting when the currency sign in the pattern
-     * equals to 3, such as the pattern contains 3 currency sign or
-     * the formatter style is currency plural format style.
-     */
-    /* This is not needed in the class declaration, so it is moved into decimfmp.cpp
-    struct AffixesForCurrency : public UMemory {
-        // negative prefix
-        UnicodeString negPrefixForCurrency;
-        // negative suffix
-        UnicodeString negSuffixForCurrency;
-        // positive prefix
-        UnicodeString posPrefixForCurrency;
-        // positive suffix
-        UnicodeString posSuffixForCurrency;
-
-        int32_t formatWidth;
-
-        AffixesForCurrency(const UnicodeString& negPrefix,
-                           const UnicodeString& negSuffix,
-                           const UnicodeString& posPrefix,
-                           const UnicodeString& posSuffix) {
-            negPrefixForCurrency = negPrefix;
-            negSuffixForCurrency = negSuffix;
-            posPrefixForCurrency = posPrefix;
-            posSuffixForCurrency = posSuffix;
-        }
-    };
-    */
 
     // Affix pattern set for currency.
     // It is a set of AffixPatternsForCurrency,
