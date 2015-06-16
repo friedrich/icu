@@ -357,12 +357,6 @@ DecimalFormat::DecimalFormat(const UnicodeString& pattern,
 //    or assignment operator can run successfully.
 void
 DecimalFormat::init() {
-    fCurrencyChoice = 0;
-    fMultiplier = NULL;
-    fScale = 0;
-    fGroupingSize = 0;
-    fGroupingSize2 = 0;
-    fDecimalSeparatorAlwaysShown = FALSE;
     fSymbols = NULL;
     fUseSignificantDigits = FALSE;
     fMinSignificantDigits = 1;
@@ -419,9 +413,6 @@ DecimalFormat::construct(UErrorCode&            status,
     if (U_FAILURE(status))
         return;
 
-    fGroupingSize = 3;
-    fGroupingSize2 = 0;
-    fDecimalSeparatorAlwaysShown = FALSE;
     fUseExponentialNotation = FALSE;
     fMinExponentDigits = 0;
         
@@ -648,8 +639,6 @@ DecimalFormat::setupCurrencyAffixPatterns(UErrorCode& status) {
 
 DecimalFormat::~DecimalFormat()
 {
-    delete fCurrencyChoice;
-    delete fMultiplier;
     delete fSymbols;
     delete fRoundingIncrement;
     deleteHashForAffixPattern();
@@ -1379,9 +1368,6 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
       if(
          ((j==l)||intOnly) // end OR only parsing integer
          && (digitCount>0)) { // and have at least one digit
-#ifdef FMT_DEBUG
-        printf("PP -> %d, good = [%s]  digitcount=%d, fGroupingSize=%d fGroupingSize2=%d!\n", j, parsedNum.data(), digitCount, fGroupingSize, fGroupingSize2);
-#endif
         fastParseOk=true; // Fast parse OK!
 
 #ifdef SKIP_OPT
@@ -1894,7 +1880,7 @@ int32_t DecimalFormat::compareAffix(const UnicodeString& text,
                                     UChar* currency) const
 {
     const UnicodeString *patternToCompare;
-    if (fCurrencyChoice != NULL || currency != NULL ||
+    if (currency != NULL ||
         (fImpl->fMonetary && complexCurrencyParsing)) {
 
         if (affixPat != NULL) {
@@ -2186,9 +2172,7 @@ int32_t DecimalFormat::compareComplexAffix(const UnicodeString& affixPat,
                                            UChar* currency) const
 {
     int32_t start = pos;
-    U_ASSERT(currency != NULL ||
-             (fCurrencyChoice != NULL && *getCurrency() != 0) ||
-             fImpl->fMonetary);
+    U_ASSERT(currency != NULL || fImpl->fMonetary);
 
     for (int32_t i=0;
          i<affixPat.length() && pos >= 0; ) {
@@ -3273,7 +3257,6 @@ DecimalFormat& DecimalFormat::setAttribute( UNumberFormatAttribute attr,
       break;
 
     case UNUM_SCALE:
-        fScale = newValue;
         fImpl->setScale(newValue);
         break;
 
@@ -3357,7 +3340,7 @@ int32_t DecimalFormat::getAttribute( UNumberFormatAttribute attr,
       return fBoolFlags.get(attr);
 
     case UNUM_SCALE:
-        return fScale;
+        return fImpl->fScale;
 
     case UNUM_CURRENCY_USAGE:
         return fCurrencyUsage;

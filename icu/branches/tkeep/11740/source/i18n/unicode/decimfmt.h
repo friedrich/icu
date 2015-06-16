@@ -2136,18 +2136,6 @@ private:
      */
 
 
-    /**
-     * Formatter for ChoiceFormat-based currency names.  If this field
-     * is not null, then delegate to it to format currency symbols.
-     * @since ICU 2.6
-     */
-    ChoiceFormat*           fCurrencyChoice;
-
-    DigitList *             fMultiplier;   // NULL for multiplier of one
-    int32_t                 fScale;
-    int32_t                 fGroupingSize;
-    int32_t                 fGroupingSize2;
-    UBool                   fDecimalSeparatorAlwaysShown;
     DecimalFormatSymbols*   fSymbols;
 
     UBool                   fUseSignificantDigits;
