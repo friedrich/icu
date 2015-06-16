@@ -2165,9 +2165,6 @@ private:
     // Decimal Format Static Sets singleton.
     const DecimalFormatStaticSets *fStaticSets;
 	
-    // Currency Usage(STANDARD vs CASH)
-    UCurrencyUsage fCurrencyUsage;
-
 protected:
 
 #ifndef U_HIDE_INTERNAL_API

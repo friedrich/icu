@@ -361,7 +361,6 @@ DecimalFormat::init() {
     fStyle = UNUM_DECIMAL;
     fAffixPatternsForCurrency = NULL;
     fCurrencyPluralInfo = NULL;
-    fCurrencyUsage = UCURR_USAGE_STANDARD;
 #if UCONFIG_HAVE_PARSEALLINPUT
     fParseAllInput = UNUM_MAYBE;
 #endif
@@ -2965,21 +2964,6 @@ void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {
 
 void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){
     fImpl->setCurrencyUsage(newContext, *ec);
-    fCurrencyUsage = newContext;
-
-    const UChar* theCurrency = getCurrency();
-
-    // We set rounding/digit based on currency context
-    if(theCurrency){
-        double rounding = ucurr_getRoundingIncrementForUsage(theCurrency, fCurrencyUsage, ec);
-        int32_t frac = ucurr_getDefaultFractionDigitsForUsage(theCurrency, fCurrencyUsage, ec);
-
-        if (U_SUCCESS(*ec)) {
-            setRoundingIncrement(rounding);
-            setMinimumFractionDigits(frac);
-            setMaximumFractionDigits(frac);
-        }
-    }
 }
 
 UCurrencyUsage DecimalFormat::getCurrencyUsage() const {
@@ -3319,7 +3303,7 @@ int32_t DecimalFormat::getAttribute( UNumberFormatAttribute attr,
         return fImpl->fScale;
 
     case UNUM_CURRENCY_USAGE:
-        return fCurrencyUsage;
+        return fImpl->getCurrencyUsage();
 
     default:
         status = U_UNSUPPORTED_ERROR;
