@@ -357,18 +357,7 @@ DecimalFormat::DecimalFormat(const UnicodeString& pattern,
 //    or assignment operator can run successfully.
 void
 DecimalFormat::init() {
-    fUseSignificantDigits = FALSE;
-    fMinSignificantDigits = 1;
-    fMaxSignificantDigits = 6;
-    fUseExponentialNotation = FALSE;
-    fMinExponentDigits = 0;
-    fExponentSignAlwaysShown = FALSE;
     fBoolFlags.clear();
-    fRoundingIncrement = 0;
-    fRoundingMode = kRoundHalfEven;
-    fPad = 0;
-    fFormatWidth = 0;
-    fPadPosition = kPadBeforePrefix;
     fStyle = UNUM_DECIMAL;
     fCurrencySignCount = fgCurrencySignCountZero;
     fAffixPatternsForCurrency = NULL;
@@ -405,16 +394,9 @@ DecimalFormat::construct(UErrorCode&            status,
                          DecimalFormatSymbols*  symbolsToAdopt)
 {
     LocalPointer<DecimalFormatSymbols> adoptedSymbols(symbolsToAdopt);
-    fRoundingIncrement = NULL;
-    fRoundingMode = kRoundHalfEven;
-    fPad = kDefaultPad;
-    fPadPosition = kPadBeforePrefix;
     if (U_FAILURE(status))
         return;
 
-    fUseExponentialNotation = FALSE;
-    fMinExponentDigits = 0;
-        
     if (adoptedSymbols.isNull())
     {
         adoptedSymbols.adoptInstead(
@@ -641,7 +623,6 @@ DecimalFormat::setupCurrencyAffixPatterns(UErrorCode& status) {
 
 DecimalFormat::~DecimalFormat()
 {
-    delete fRoundingIncrement;
     deleteHashForAffixPattern();
     delete fCurrencyPluralInfo;
     delete fImpl;
@@ -1290,7 +1271,6 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     DBGAPPD(posPrefix);
     DBGAPPD(posSuffix);
     debugout(s);
-    printf("currencyParsing=%d, fFormatWidth=%d, isParseIntegerOnly=%c text.length=%d negPrefLen=%d\n", currencyParsing, fFormatWidth, (isParseIntegerOnly())?'Y':'N', text.length(),  negPrefix!=NULL?negPrefix->length():-1);
 #endif
 
     UBool fastParseOk = false; /* TRUE iff fast parse is OK */
@@ -1390,7 +1370,6 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     } else {
 #ifdef FMT_DEBUG
       printf("Could not fastpath parse. ");
-      printf("fFormatWidth=%d ", fFormatWidth);
       printf("text.length()=%d ", text.length());
       printf("posPrefix=%p posSuffix=%p ", posPrefix, posSuffix);
 
@@ -2576,8 +2555,8 @@ int32_t DecimalFormat::getFormatWidth() const {
  * @see #setPadPosition
  */
 void DecimalFormat::setFormatWidth(int32_t width) {
-    fFormatWidth = (width > 0) ? width : 0;
-    fImpl->setFormatWidth(fFormatWidth);
+    int32_t formatWidth = (width > 0) ? width : 0;
+    fImpl->setFormatWidth(formatWidth);
 }
 
 UnicodeString DecimalFormat::getPadCharacterString() const {

@@ -2129,25 +2129,11 @@ private:
      */
 
 
-    UBool                   fUseSignificantDigits;
-    int32_t                 fMinSignificantDigits;
-    int32_t                 fMaxSignificantDigits;
-
-    UBool                   fUseExponentialNotation;
-    int8_t                  fMinExponentDigits;
-    UBool                   fExponentSignAlwaysShown;
-
     EnumSet<UNumberFormatAttribute,
             UNUM_MAX_NONBOOLEAN_ATTRIBUTE+1,
             UNUM_LIMIT_BOOLEAN_ATTRIBUTE>
                             fBoolFlags;
 
-    DigitList*              fRoundingIncrement;  // NULL if no rounding increment specified.
-    ERoundingMode           fRoundingMode;
-
-    UChar32                 fPad;
-    int32_t                 fFormatWidth;
-    EPadPosition            fPadPosition;
 
     /*
      * Following are used for currency format
