@@ -383,8 +383,6 @@ DecimalFormat::init() {
     fStyle = UNUM_DECIMAL;
     fCurrencySignCount = fgCurrencySignCountZero;
     fAffixPatternsForCurrency = NULL;
-    fAffixesForCurrency = NULL;
-    fPluralAffixesForCurrency = NULL;
     fCurrencyPluralInfo = NULL;
     fCurrencyUsage = UCURR_USAGE_STANDARD;
 #if UCONFIG_HAVE_PARSEALLINPUT
@@ -665,8 +663,6 @@ DecimalFormat::~DecimalFormat()
     delete fSymbols;
     delete fRoundingIncrement;
     deleteHashForAffixPattern();
-    deleteHashForAffix(fAffixesForCurrency);
-    deleteHashForAffix(fPluralAffixesForCurrency);
     delete fCurrencyPluralInfo;
     delete fImpl;
 }
@@ -725,18 +721,6 @@ DecimalFormat::operator=(const DecimalFormat& rhs)
             fAffixPatternsForCurrency = initHashForAffixPattern(status);
             copyHashForAffixPattern(rhs.fAffixPatternsForCurrency,
                                     fAffixPatternsForCurrency, status);
-        }
-        deleteHashForAffix(fAffixesForCurrency);
-        if (rhs.fAffixesForCurrency) {
-            UErrorCode status = U_ZERO_ERROR;
-            fAffixesForCurrency = initHashForAffixPattern(status);
-            copyHashForAffix(rhs.fAffixesForCurrency, fAffixesForCurrency, status);
-        }
-        deleteHashForAffix(fPluralAffixesForCurrency);
-        if (rhs.fPluralAffixesForCurrency) {
-            UErrorCode status = U_ZERO_ERROR;
-            fPluralAffixesForCurrency = initHashForAffixPattern(status);
-            copyHashForAffix(rhs.fPluralAffixesForCurrency, fPluralAffixesForCurrency, status);
         }
     }
 

@@ -2276,16 +2276,6 @@ private:
     // count match or not.
     Hashtable* fAffixPatternsForCurrency;
 
-    // Following 2 are affixes for currency.
-    // It is a hash map from plural count to AffixesForCurrency.
-    // AffixesForCurrency saves the negative prefix,
-    // negative suffix, positive prefix, and positive suffix of a pattern.
-    // It is used during currency formatting only when the currency sign count
-    // is 3. In which case, the affixes are getting from here, not
-    // from the fNegativePrefix etc.
-    Hashtable* fAffixesForCurrency;  // for current pattern
-    Hashtable* fPluralAffixesForCurrency;  // for plural pattern
-
     // Information needed for DecimalFormat to format/parse currency plural.
     CurrencyPluralInfo* fCurrencyPluralInfo;
 
