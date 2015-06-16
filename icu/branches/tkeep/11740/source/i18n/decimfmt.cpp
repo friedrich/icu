@@ -485,6 +485,7 @@ DecimalFormat::construct(UErrorCode&            status,
         status = U_MEMORY_ALLOCATION_ERROR;
     }
     if (U_FAILURE(status)) {
+        delete ns;
         return;
     }
     updateSuper();
@@ -2406,6 +2407,7 @@ DecimalFormat::adoptDecimalFormatSymbols(DecimalFormatSymbols* symbolsToAdopt)
     if (symbolsToAdopt == NULL) {
         return; // do not allow caller to set fSymbols to NULL
     }
+    delete fSymbols;
     fSymbols = symbolsToAdopt;
     //TODO(refactor): Just adopt, don't copy
     fImpl->adoptDecimalFormatSymbols(new DecimalFormatSymbols(*symbolsToAdopt));
