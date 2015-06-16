@@ -357,10 +357,6 @@ DecimalFormat::DecimalFormat(const UnicodeString& pattern,
 //    or assignment operator can run successfully.
 void
 DecimalFormat::init() {
-    fPosPrefixPattern = 0;
-    fPosSuffixPattern = 0;
-    fNegPrefixPattern = 0;
-    fNegSuffixPattern = 0;
     fCurrencyChoice = 0;
     fMultiplier = NULL;
     fScale = 0;
@@ -423,8 +419,6 @@ DecimalFormat::construct(UErrorCode&            status,
     if (U_FAILURE(status))
         return;
 
-    fPosPrefixPattern = fPosSuffixPattern = NULL;
-    fNegPrefixPattern = fNegSuffixPattern = NULL;
     fGroupingSize = 3;
     fGroupingSize2 = 0;
     fDecimalSeparatorAlwaysShown = FALSE;
@@ -654,10 +648,6 @@ DecimalFormat::setupCurrencyAffixPatterns(UErrorCode& status) {
 
 DecimalFormat::~DecimalFormat()
 {
-    delete fPosPrefixPattern;
-    delete fPosSuffixPattern;
-    delete fNegPrefixPattern;
-    delete fNegSuffixPattern;
     delete fCurrencyChoice;
     delete fMultiplier;
     delete fSymbols;

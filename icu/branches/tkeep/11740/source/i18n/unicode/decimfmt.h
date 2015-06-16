@@ -2135,14 +2135,6 @@ private:
      * Constants.
      */
 
-    UnicodeString           fPositivePrefix;
-    UnicodeString           fPositiveSuffix;
-    UnicodeString           fNegativePrefix;
-    UnicodeString           fNegativeSuffix;
-    UnicodeString*          fPosPrefixPattern;
-    UnicodeString*          fPosSuffixPattern;
-    UnicodeString*          fNegPrefixPattern;
-    UnicodeString*          fNegSuffixPattern;
 
     /**
      * Formatter for ChoiceFormat-based currency names.  If this field
