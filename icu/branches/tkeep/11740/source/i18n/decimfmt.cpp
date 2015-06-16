@@ -716,40 +716,6 @@ DecimalFormat::operator=(const DecimalFormat& rhs)
             *fImpl = *rhs.fImpl;
         }
         fStaticSets     = DecimalFormatStaticSets::getStaticSets(status);
-        fPositivePrefix = rhs.fPositivePrefix;
-        fPositiveSuffix = rhs.fPositiveSuffix;
-        fNegativePrefix = rhs.fNegativePrefix;
-        fNegativeSuffix = rhs.fNegativeSuffix;
-        _copy_ptr(&fPosPrefixPattern, rhs.fPosPrefixPattern);
-        _copy_ptr(&fPosSuffixPattern, rhs.fPosSuffixPattern);
-        _copy_ptr(&fNegPrefixPattern, rhs.fNegPrefixPattern);
-        _copy_ptr(&fNegSuffixPattern, rhs.fNegSuffixPattern);
-        _clone_ptr(&fCurrencyChoice, rhs.fCurrencyChoice);
-        setRoundingIncrement(rhs.getRoundingIncrement());
-        fRoundingMode = rhs.fRoundingMode;
-        setMultiplier(rhs.getMultiplier());
-        fGroupingSize = rhs.fGroupingSize;
-        fGroupingSize2 = rhs.fGroupingSize2;
-        fDecimalSeparatorAlwaysShown = rhs.fDecimalSeparatorAlwaysShown;
-        _copy_ptr(&fSymbols, rhs.fSymbols);
-        fUseExponentialNotation = rhs.fUseExponentialNotation;
-        fExponentSignAlwaysShown = rhs.fExponentSignAlwaysShown;
-        fBoolFlags = rhs.fBoolFlags;
-        /*Bertrand A. D. Update 98.03.17*/
-        fCurrencySignCount = rhs.fCurrencySignCount;
-        /*end of Update*/
-        fMinExponentDigits = rhs.fMinExponentDigits;
-
-        /* sfb 990629 */
-        fFormatWidth = rhs.fFormatWidth;
-        fPad = rhs.fPad;
-        fPadPosition = rhs.fPadPosition;
-        /* end sfb */
-        fMinSignificantDigits = rhs.fMinSignificantDigits;
-        fMaxSignificantDigits = rhs.fMaxSignificantDigits;
-        fUseSignificantDigits = rhs.fUseSignificantDigits;
-        fFormatPattern = rhs.fFormatPattern;
-        fCurrencyUsage = rhs.fCurrencyUsage;
         fStyle = rhs.fStyle;
         _clone_ptr(&fCurrencyPluralInfo, rhs.fCurrencyPluralInfo);
         deleteHashForAffixPattern();
