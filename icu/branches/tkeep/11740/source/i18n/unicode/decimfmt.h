@@ -2112,15 +2112,11 @@ private:
 
     // hashtable operations
     Hashtable* initHashForAffixPattern(UErrorCode& status);
-    Hashtable* initHashForAffix(UErrorCode& status);
 
     void deleteHashForAffixPattern();
-    void deleteHashForAffix(Hashtable*& table);
 
     void copyHashForAffixPattern(const Hashtable* source,
                                  Hashtable* target, UErrorCode& status);
-    void copyHashForAffix(const Hashtable* source,
-                          Hashtable* target, UErrorCode& status);
 
     DecimalFormatImpl *fImpl;
 

@@ -184,25 +184,7 @@ U_CDECL_BEGIN
 /**
  * @internal ICU 4.2
  */
-static UBool U_CALLCONV decimfmtAffixValueComparator(UHashTok val1, UHashTok val2);
-
-/**
- * @internal ICU 4.2
- */
 static UBool U_CALLCONV decimfmtAffixPatternValueComparator(UHashTok val1, UHashTok val2);
-
-
-static UBool
-U_CALLCONV decimfmtAffixValueComparator(UHashTok val1, UHashTok val2) {
-    const AffixesForCurrency* affix_1 =
-        (AffixesForCurrency*)val1.pointer;
-    const AffixesForCurrency* affix_2 =
-        (AffixesForCurrency*)val2.pointer;
-    return affix_1->negPrefixForCurrency == affix_2->negPrefixForCurrency &&
-           affix_1->negSuffixForCurrency == affix_2->negSuffixForCurrency &&
-           affix_1->posPrefixForCurrency == affix_2->posPrefixForCurrency &&
-           affix_1->posSuffixForCurrency == affix_2->posSuffixForCurrency;
-}
 
 
 static UBool
@@ -637,18 +619,6 @@ DecimalFormat::DecimalFormat(const DecimalFormat &source) :
 
 //------------------------------------------------------------------------------
 // assignment operator
-
-template <class T>
-static void _copy_ptr(T** pdest, const T* source) {
-    if (source == NULL) {
-        delete *pdest;
-        *pdest = NULL;
-    } else if (*pdest == NULL) {
-        *pdest = new T(*source);
-    } else {
-        **pdest = *source;
-    }
-}
 
 template <class T>
 static void _clone_ptr(T** pdest, const T* source) {
@@ -2992,25 +2962,6 @@ void DecimalFormat::getEffectiveCurrency(UChar* result, UErrorCode& ec) const {
     result[3] = 0;
 }
 
-// TODO: template algorithm
-Hashtable*
-DecimalFormat::initHashForAffix(UErrorCode& status) {
-    if ( U_FAILURE(status) ) {
-        return NULL;
-    }
-    Hashtable* hTable;
-    if ( (hTable = new Hashtable(TRUE, status)) == NULL ) {
-        status = U_MEMORY_ALLOCATION_ERROR;
-        return NULL;
-    }
-    if ( U_FAILURE(status) ) {
-        delete hTable; 
-        return NULL;
-    }
-    hTable->setValueComparator(decimfmtAffixValueComparator);
-    return hTable;
-}
-
 Hashtable*
 DecimalFormat::initHashForAffixPattern(UErrorCode& status) {
     if ( U_FAILURE(status) ) {
@@ -3028,25 +2979,6 @@ DecimalFormat::initHashForAffixPattern(UErrorCode& status) {
     hTable->setValueComparator(decimfmtAffixPatternValueComparator);
     return hTable;
 }
-
-void
-DecimalFormat::deleteHashForAffix(Hashtable*& table)
-{
-    if ( table == NULL ) {
-        return;
-    }
-    int32_t pos = UHASH_FIRST;
-    const UHashElement* element = NULL;
-    while ( (element = table->nextElement(pos)) != NULL ) {
-        const UHashTok valueTok = element->value;
-        const AffixesForCurrency* value = (AffixesForCurrency*)valueTok.pointer;
-        delete value;
-    }
-    delete table;
-    table = NULL;
-}
-
-
 
 void
 DecimalFormat::deleteHashForAffixPattern()
@@ -3318,35 +3250,6 @@ void DecimalFormat::setParseAllInput(UNumberFormatAttributeValue value) {
   fParseAllInput = value;
 }
 #endif
-
-void
-DecimalFormat::copyHashForAffix(const Hashtable* source,
-                                Hashtable* target,
-                                UErrorCode& status) {
-    if ( U_FAILURE(status) ) {
-        return;
-    }
-    int32_t pos = UHASH_FIRST;
-    const UHashElement* element = NULL;
-    if ( source ) {
-        while ( (element = source->nextElement(pos)) != NULL ) {
-            const UHashTok keyTok = element->key;
-            const UnicodeString* key = (UnicodeString*)keyTok.pointer;
-
-            const UHashTok valueTok = element->value;
-            const AffixesForCurrency* value = (AffixesForCurrency*)valueTok.pointer;
-            AffixesForCurrency* copy = new AffixesForCurrency(
-                value->negPrefixForCurrency,
-                value->negSuffixForCurrency,
-                value->posPrefixForCurrency,
-                value->posSuffixForCurrency);
-            target->put(UnicodeString(*key), copy, status);
-            if ( U_FAILURE(status) ) {
-                return;
-            }
-        }
-    }
-}
 
 U_NAMESPACE_END
 
