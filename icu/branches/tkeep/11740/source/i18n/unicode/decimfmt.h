@@ -2096,13 +2096,6 @@ private:
                              UChar32 decimalChar, const UnicodeSet *decimalSet,
                              UChar32 schar);
 
-    /**
-     * Get a decimal format symbol.
-     * Returns a const reference to the symbol string.
-     * @internal
-     */
-    inline const UnicodeString &getConstSymbol(DecimalFormatSymbols::ENumberFormatSymbol symbol) const;
-
     // set up currency affix patterns for mix parsing.
     // The patterns saved here are the affix patterns of default currency
     // pattern and the unique affix patterns of the plural currency patterns.
@@ -2135,8 +2128,6 @@ private:
      * Constants.
      */
 
-
-    DecimalFormatSymbols*   fSymbols;
 
     UBool                   fUseSignificantDigits;
     int32_t                 fMinSignificantDigits;
@@ -2311,11 +2302,6 @@ protected:
     static const int32_t  kMaxScientificIntegerDigits;
 
 };
-
-inline const UnicodeString &
-DecimalFormat::getConstSymbol(DecimalFormatSymbols::ENumberFormatSymbol symbol) const {
-    return fSymbols->getConstSymbol(symbol);
-}
 
 U_NAMESPACE_END
 
