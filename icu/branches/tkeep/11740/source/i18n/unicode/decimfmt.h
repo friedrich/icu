@@ -2103,33 +2103,6 @@ private:
      */
     inline const UnicodeString &getConstSymbol(DecimalFormatSymbols::ENumberFormatSymbol symbol) const;
 
-    int32_t appendAffix(UnicodeString& buf,
-                        double number,
-                        FieldPositionHandler& handler,
-                        UBool isNegative,
-                        UBool isPrefix) const;
-
-    /**
-     * Append an affix to the given UnicodeString, using quotes if
-     * there are special characters.  Single quotes themselves must be
-     * escaped in either case.
-     */
-    void appendAffixPattern(UnicodeString& appendTo, const UnicodeString& affix,
-                            UBool localized) const;
-
-    void appendAffixPattern(UnicodeString& appendTo,
-                            const UnicodeString* affixPattern,
-                            const UnicodeString& expAffix, UBool localized) const;
-
-    void expandAffix(const UnicodeString& pattern,
-                     UnicodeString& affix,
-                     double number,
-                     FieldPositionHandler& handler,
-                     UBool doFormat,
-                     const UnicodeString* pluralCount) const;
-
-    void expandAffixes(const UnicodeString* pluralCount);
-
     // set up currency affix patterns for mix parsing.
     // The patterns saved here are the affix patterns of default currency
     // pattern and the unique affix patterns of the plural currency patterns.
