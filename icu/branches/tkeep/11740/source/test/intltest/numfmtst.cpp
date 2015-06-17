@@ -8316,7 +8316,7 @@ void NumberFormatTest::TestBenchmark() {
 //    DecimalFormat fmt("0", sym, status);
     FieldPosition fpos(0);
     clock_t start = clock();
-    for (int32_t i = 0; i < 2000; ++i) {
+    for (int32_t i = 0; i < 100000; ++i) {
         DecimalFormat fmt("0.0000000", new DecimalFormatSymbols(*sym), status);
 //        UnicodeString append;
 //        fmt.format(2.99792458E8, append, fpos, status);

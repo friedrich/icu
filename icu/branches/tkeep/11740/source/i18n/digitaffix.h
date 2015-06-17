@@ -28,6 +28,20 @@ class U_I18N_API DigitAffix : public UMemory {
 public:
 
     /**
+     * Creates an empty DigitAffix.
+     */
+    DigitAffix();
+
+    /**
+     * Creates a DigitAffix containing given UChars where all of it has
+     * a field type of fieldId.
+     */
+    DigitAffix(
+            const UChar *value,
+            int32_t charCount,
+            int32_t fieldId=UNUM_FIELD_COUNT);
+
+    /**
      * Makes this affix be the empty string.
      */
     void remove();

@@ -14,6 +14,15 @@
 
 U_NAMESPACE_BEGIN
 
+DigitAffix::DigitAffix() : fAffix(), fAnnotations() {
+}
+
+DigitAffix::DigitAffix(
+        const UChar *value, int32_t charCount, int32_t fieldId) 
+        : fAffix(value, charCount),
+          fAnnotations(charCount, (UChar) fieldId, charCount) {
+}
+
 void
 DigitAffix::remove() {
     fAffix.remove();

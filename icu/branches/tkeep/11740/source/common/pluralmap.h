@@ -70,6 +70,13 @@ public:
         initializeNew();
     }
 
+    /**
+     * Other variant is mapped to otherVariant.
+     */
+    PluralMap(const T &otherVariant) : fOtherVariant(otherVariant) {
+        initializeNew();
+    }
+
     PluralMap(const PluralMap<T> &other) : fOtherVariant(other.fOtherVariant) {
         fVariants[0] = &fOtherVariant;
         for (int32_t i = 1; i < UPRV_LENGTHOF(fVariants); ++i) {
@@ -206,7 +213,7 @@ public:
     }
 
     /**
-     * Just like get(Variant, UErrorCode &) but copies defaultValue to
+     * Just like getMutable(Variant, UErrorCode &) but copies defaultValue to
      * returned pointer if it was defaulting to the 'other' variant
      * before because no explicit value was stored.
      */

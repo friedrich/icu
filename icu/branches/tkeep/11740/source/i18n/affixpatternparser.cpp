@@ -66,9 +66,11 @@ nextUserToken(const UChar *buffer, int32_t idx, int32_t len, UChar *token) {
     return i;
 }
 
-CurrencyAffixInfo::CurrencyAffixInfo() {
-    UErrorCode status = U_ZERO_ERROR;
-    set(NULL, NULL, NULL, status);
+CurrencyAffixInfo::CurrencyAffixInfo()
+        : fSymbol(gDefaultSymbols, 1),
+          fISO(gDefaultSymbols, 2),
+          fLong(DigitAffix(gDefaultSymbols, 3)),
+          fIsDefault(TRUE) {
 }
 
 void

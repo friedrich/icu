@@ -34,6 +34,16 @@ class U_I18N_API PluralAffix : public UMemory {
 public:
 
     /**
+     * Create empty PluralAffix.
+     */
+    PluralAffix() : affixes() { }
+
+    /**
+     * Create a PluralAffix where the 'other' variant is otherVariant.
+     */
+    PluralAffix(const DigitAffix &otherVariant) : affixes(otherVariant) { }
+
+    /**
      * Sets a particular plural variant while overwritting anything that
      * may have been previously stored for that variant. The set variant
      * has no field annotations.
