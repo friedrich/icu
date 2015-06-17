@@ -102,7 +102,7 @@ public class ICU4JSON extends HttpServlet {
 			final String tzstr = get(params, "meeting_tz", "America/Los_Angeles");
 			final String dtzstr = get(params, "display_tz", tzstr);
 			final String every = get(params, "every", "Wednesday");
-			final String from = get(params, "from", "09:45 AM");
+			final String from = get(params, "from", "10:00 AM");
 			final String to =  get(params, "to", "11:00 AM");
 			final String locid = get(params, "loc", "en-us");
 			final Locale eloc = Locale.forLanguageTag("en-us");
