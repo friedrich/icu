@@ -8310,6 +8310,7 @@ void NumberFormatTest::TestToPatternScientific11648() {
 }
 
 void NumberFormatTest::TestBenchmark() {
+/*
     UErrorCode status = U_ZERO_ERROR;
     Locale en("en");
     DecimalFormatSymbols *sym = new DecimalFormatSymbols(en, status);
@@ -8324,6 +8325,22 @@ void NumberFormatTest::TestBenchmark() {
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
+
+    UErrorCode status = U_ZERO_ERROR;
+    MessageFormat fmt("{0, plural, one {I have # friend.} other {I have # friends.}}", status);
+    FieldPosition fpos(0);
+    Formattable one(1);
+    Formattable three(3);
+    clock_t start = clock();
+    for (int32_t i = 0; i < 500000; ++i) {
+        UnicodeString append;
+        fmt.format(&one, 1, append, fpos, status);
+        UnicodeString append2;
+        fmt.format(&three, 1, append2, fpos, status);
+    }
+    errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
+    assertSuccess("", status);
+*/
 }
 
 

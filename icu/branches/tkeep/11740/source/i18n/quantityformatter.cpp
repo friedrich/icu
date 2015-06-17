@@ -137,7 +137,7 @@ UnicodeString &QuantityFormatter::format(
     UnicodeString count;
     const DecimalFormat *decFmt = dynamic_cast<const DecimalFormat *>(&fmt);
     if (decFmt != NULL) {
-        decFmt->select(quantity, rules, count, status);
+        count = decFmt->select(quantity, rules, status);
         if (U_FAILURE(status)) {
             return appendTo;
         }

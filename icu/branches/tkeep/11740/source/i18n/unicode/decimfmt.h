@@ -1979,10 +1979,9 @@ public:
     /**
      * @internal for ICU use only.
      */
-    UnicodeString &select(
+    UnicodeString select(
             const Formattable &value,
             const PluralRules &rules,
-            UnicodeString &result,
             UErrorCode &status) const;
 
     /**

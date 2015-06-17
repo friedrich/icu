@@ -13,6 +13,7 @@
 #include "valueformatter.h"
 #include "fphdlimp.h"
 #include "plurrule_impl.h"
+#include <math.h>
 
 U_NAMESPACE_BEGIN
 
@@ -424,8 +425,22 @@ DecimalFormatImpl::formatAdjustedDigitList(
 }
 
 FixedDecimal &
-DecimalFormatImpl::getFixedDecimal(
-        double number, FixedDecimal &result) const {
+DecimalFormatImpl::getFixedDecimal(double number, FixedDecimal &result) const {
+    if (uprv_isNaN(number) || uprv_isPositiveInfinity(fabs(number))) {
+        // For NaN and Infinity the state of the formatter is ignored.
+        result.init(number);
+        return result;
+    }
+    if (fMultiplier.isZero() && fScale == 0 && fEffPrecision.fMantissa.fRoundingIncrement.isZero() && areSignificantDigitsUsed() == FALSE &&
+            result.quickInit(number) && result.visibleDecimalDigitCount <= getMaximumFractionDigits()) {
+        // Fast Path. Construction of an exact FixedDecimal directly from the double, without passing
+        //   through a DigitList, was successful, and the formatter is doing nothing tricky with rounding.
+        // printf("getFixedDecimal(%g): taking fast path.\n", number);
+        result.adjustForMinFractionDigits(getMinimumFractionDigits());
+        return result;
+    }
+    // Slow path. Create a DigitList, and have this formatter round it according to the
+    //     requirements of the format, and fill the fixedDecimal from that.
     DigitList dl;
     dl.set(number);
     return getFixedDecimal(dl, result);

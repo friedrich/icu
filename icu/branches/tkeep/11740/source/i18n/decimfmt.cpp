@@ -680,17 +680,15 @@ DecimalFormat::select(
 }
 
 
-UnicodeString &
+UnicodeString
 DecimalFormat::select(
         const Formattable &number,
         const PluralRules &rules,
-        UnicodeString &result,
         UErrorCode &status) const {
     if (U_FAILURE(status)) {
-        return result;
+        return UnicodeString();
     }
-    result = rules.select(getFixedDecimal(number, status));
-    return result;
+    return rules.select(getFixedDecimal(number, status));
 }
 
 FixedDecimal
