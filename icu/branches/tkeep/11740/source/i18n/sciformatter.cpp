@@ -13,9 +13,11 @@
 #include "unicode/unum.h"
 #include "fphdlimp.h"
 
+static UChar gDefaultExponent = 0x45; // 'E'
+
 U_NAMESPACE_BEGIN
 
-SciFormatter::SciFormatter() : fExponent("E") {
+SciFormatter::SciFormatter() : fExponent(gDefaultExponent) {
 }
 
 SciFormatter::SciFormatter(const DecimalFormatSymbols &symbols) {
