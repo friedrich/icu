@@ -1025,12 +1025,12 @@ DecimalFormatImpl::updateFormattingCurrencyAffixInfo(
         // If DecimalFormatSymbols has custom currency symbol, prefer
         // that over what we just read from the resource bundles
         if (fSymbols->isCustomCurrencySymbol()) {
-            fCurrencyAffixInfo.fSymbol =
-                    fSymbols->getConstSymbol(DecimalFormatSymbols::kCurrencySymbol);
+            fCurrencyAffixInfo.setSymbol(
+                    fSymbols->getConstSymbol(DecimalFormatSymbols::kCurrencySymbol));
         }
         if (fSymbols->isCustomIntlCurrencySymbol()) {
-            fCurrencyAffixInfo.fISO =
-                    fSymbols->getConstSymbol(DecimalFormatSymbols::kIntlCurrencySymbol);
+            fCurrencyAffixInfo.setISO(
+                    fSymbols->getConstSymbol(DecimalFormatSymbols::kIntlCurrencySymbol));
         }
         changedFormattingFields |= kFormattingCurrencyAffixInfo;
         if (currency) {

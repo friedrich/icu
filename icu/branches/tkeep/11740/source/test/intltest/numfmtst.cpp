@@ -522,6 +522,7 @@ void NumberFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &n
   TESTCASE_AUTO(TestFastPathConsistent11524);
   TESTCASE_AUTO(TestGetAffixes);
   TESTCASE_AUTO(TestToPatternScientific11648);
+  TESTCASE_AUTO(TestBenchmark);
   TESTCASE_AUTO_END;
 }
 
@@ -8242,7 +8243,6 @@ void NumberFormatTest::TestFastPathConsistent11524() {
 }
 
 void NumberFormatTest::TestGetAffixes() {
-/* Fails for now
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols sym("en_US", status);
     UnicodeString pattern("\\u00a4\\u00a4\\u00a4 0.00 %\\u00a4\\u00a4");
@@ -8295,11 +8295,9 @@ void NumberFormatTest::TestGetAffixes() {
     assertEquals("", "do", fmt.getPositiveSuffix(affixStr));
     assertEquals("", someAffix, fmt.getNegativePrefix(affixStr));
     assertEquals("", "%", fmt.getNegativeSuffix(affixStr));
-*/
 }
 
 void NumberFormatTest::TestToPatternScientific11648() {
-/* Fails for now
     UErrorCode status = U_ZERO_ERROR;
     Locale en("en");
     DecimalFormatSymbols sym(en, status);
@@ -8309,7 +8307,23 @@ void NumberFormatTest::TestToPatternScientific11648() {
     assertEquals("", "0.00E0", fmt.toPattern(pattern));
     DecimalFormat fmt2(pattern, sym, status);
     assertSuccess("", status);
-*/
+}
+
+void NumberFormatTest::TestBenchmark() {
+    UErrorCode status = U_ZERO_ERROR;
+    Locale en("en");
+    DecimalFormatSymbols *sym = new DecimalFormatSymbols(en, status);
+//    DecimalFormat fmt("0", sym, status);
+    FieldPosition fpos(0);
+    clock_t start = clock();
+    for (int32_t i = 0; i < 2000; ++i) {
+        DecimalFormat fmt("0.0000000", new DecimalFormatSymbols(*sym), status);
+//        UnicodeString append;
+//        fmt.format(2.99792458E8, append, fpos, status);
+//        fmt.format(31, append);
+    }
+    errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
+    assertSuccess("", status);
 }
 
 

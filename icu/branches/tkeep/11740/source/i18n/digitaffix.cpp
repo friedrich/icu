@@ -39,6 +39,19 @@ DigitAffix::append(const UnicodeString &value, int32_t fieldId) {
 }
 
 void
+DigitAffix::setTo(const UnicodeString &value, int32_t fieldId) {
+    fAffix = value;
+    fAnnotations.remove();
+    {
+        UnicodeStringAppender appender(fAnnotations);
+        int32_t len = value.length();
+        for (int32_t i = 0; i < len; ++i) {
+            appender.append((UChar) fieldId);
+        }
+    }
+}
+
+void
 DigitAffix::append(const UChar *value, int32_t charCount, int32_t fieldId) {
     fAffix.append(value, charCount);
     {

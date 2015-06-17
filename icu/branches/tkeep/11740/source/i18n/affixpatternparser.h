@@ -38,26 +38,23 @@ public:
      */
     CurrencyAffixInfo();
 
-    /**
-     * The symbol form of the currency.
-     */
-    UnicodeString fSymbol;
-
-    /**
-     * The ISO form of the currency, usually three letter abbreviation.
-     */
-    UnicodeString fISO;
-
-    /**
-     * The long forms of the currency keyed by plural variation.
-     */
-    PluralAffix fLong;
-
+    const UnicodeString &getSymbol() const { return fSymbol; }
+    const UnicodeString &getISO() const { return fISO; }
+    const PluralAffix &getLong() const { return fLong; }
+    void setSymbol(const UnicodeString &symbol) {
+        fSymbol = symbol;
+        fIsDefault = FALSE;
+    }
+    void setISO(const UnicodeString &iso) {
+        fISO = iso;
+        fIsDefault = FALSE;
+    }
     UBool
     equals(const CurrencyAffixInfo &other) const {
         return (fSymbol == other.fSymbol)
                 && (fISO == other.fISO)
-                && (fLong.equals(other.fLong));
+                && (fLong.equals(other.fLong))
+                && (fIsDefault == other.fIsDefault);
     }
 
     /**
@@ -79,7 +76,7 @@ public:
      * currency. For instance never initialized with set()
      * or reset with set(NULL, NULL, NULL, status).
      */
-    UBool isDefault() const;
+    UBool isDefault() const { return fIsDefault; }
 
     /**
      * Adjusts the precision used for a particular currency.
@@ -93,6 +90,25 @@ public:
     static void adjustPrecision(
             const UChar *currency, const UCurrencyUsage usage,
             FixedPrecision &precision, UErrorCode &status);
+
+private:
+    /**
+     * The symbol form of the currency.
+     */
+    UnicodeString fSymbol;
+
+    /**
+     * The ISO form of the currency, usually three letter abbreviation.
+     */
+    UnicodeString fISO;
+
+    /**
+     * The long forms of the currency keyed by plural variation.
+     */
+    PluralAffix fLong;
+
+    UBool fIsDefault;
+
 };
 
 class AffixPatternIterator;

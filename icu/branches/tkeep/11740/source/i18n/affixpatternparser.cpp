@@ -17,6 +17,10 @@
 
         static UChar gDefaultSymbols[] = {0xa4, 0xa4, 0xa4};
 
+static UChar gPercent = 0x25;
+static UChar gPerMill = 0x2030;
+static UChar gNegative = 0x2D;
+
 #define PACK_TOKEN_AND_LENGTH(t, l) ((UChar) (((t) << 8) | (l & 0xFF)))
 
 #define UNPACK_TOKEN(c) ((AffixPattern::ETokenType) (((c) >> 8) & 0x7F))
@@ -67,14 +71,6 @@ CurrencyAffixInfo::CurrencyAffixInfo() {
     set(NULL, NULL, NULL, status);
 }
 
-UBool CurrencyAffixInfo::isDefault() const {
-    UnicodeString dSymbol(gDefaultSymbols, 1);
-    UnicodeString dISO(gDefaultSymbols, 2);
-    PluralAffix dLong;
-    dLong.append(gDefaultSymbols, 3);
-    return (fSymbol == dSymbol && fISO == dISO && fLong.equals(dLong));
-}
-
 void
 CurrencyAffixInfo::set(
         const char *locale,
@@ -84,11 +80,13 @@ CurrencyAffixInfo::set(
     if (U_FAILURE(status)) {
         return;
     }
+    fIsDefault = FALSE;
     if (currency == NULL) {
         fSymbol.setTo(gDefaultSymbols, 1);
         fISO.setTo(gDefaultSymbols, 2);
         fLong.remove();
         fLong.append(gDefaultSymbols, 3);
+        fIsDefault = TRUE;
         return;
     }
     int32_t len;
@@ -591,8 +589,7 @@ AffixPatternIterator::getTokenLength() const {
 }
 
 AffixPatternParser::AffixPatternParser()
-        : fPercent("%"), fPermill("\u2030"), fNegative("-") {
-    fPermill = fPermill.unescape();
+        : fPercent(gPercent), fPermill(gPerMill), fNegative(gNegative) {
 }
 
 AffixPatternParser::AffixPatternParser(
@@ -635,15 +632,15 @@ AffixPatternParser::parse(
             switch (iter.getTokenLength()) {
                 case 1:
                     appendTo.append(
-                            currencyAffixInfo.fSymbol, UNUM_CURRENCY_FIELD);
+                            currencyAffixInfo.getSymbol(), UNUM_CURRENCY_FIELD);
                     break;
                 case 2:
                     appendTo.append(
-                            currencyAffixInfo.fISO, UNUM_CURRENCY_FIELD);
+                            currencyAffixInfo.getISO(), UNUM_CURRENCY_FIELD);
                     break;
                 case 3:
                     appendTo.append(
-                            currencyAffixInfo.fLong, UNUM_CURRENCY_FIELD, status);
+                            currencyAffixInfo.getLong(), UNUM_CURRENCY_FIELD, status);
                     break;
                 default:
                     U_ASSERT(FALSE);

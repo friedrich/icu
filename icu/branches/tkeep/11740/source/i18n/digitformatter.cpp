@@ -48,10 +48,8 @@ DigitFormatter::setOtherDecimalFormatSymbols(
     fIsStandardDigits = isStandardDigits();
     fNegativeSign = symbols.getConstSymbol(DecimalFormatSymbols::kMinusSignSymbol);
     fPositiveSign = symbols.getConstSymbol(DecimalFormatSymbols::kPlusSignSymbol);
-    fInfinity.remove();
-    fInfinity.append(symbols.getConstSymbol(DecimalFormatSymbols::kInfinitySymbol), UNUM_INTEGER_FIELD);
-    fNan.remove();
-    fNan.append(symbols.getConstSymbol(DecimalFormatSymbols::kNaNSymbol), UNUM_INTEGER_FIELD);
+    fInfinity.setTo(symbols.getConstSymbol(DecimalFormatSymbols::kInfinitySymbol), UNUM_INTEGER_FIELD);
+    fNan.setTo(symbols.getConstSymbol(DecimalFormatSymbols::kNaNSymbol), UNUM_INTEGER_FIELD);
 }
 
 void
