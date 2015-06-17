@@ -377,19 +377,20 @@ DecimalFormat::construct(UErrorCode&            status,
     if (U_FAILURE(status)) {
         return;
     }
-    UErrorCode nsStatus = U_ZERO_ERROR;
-    NumberingSystem *ns = NumberingSystem::createInstance(nsStatus);
-    if (U_FAILURE(nsStatus)) {
-        status = nsStatus;
-        return;
-    }
-
 
     UnicodeString str;
     // Uses the default locale's number format pattern if there isn't
     // one specified.
     if (pattern == NULL)
     {
+        UErrorCode nsStatus = U_ZERO_ERROR;
+        LocalPointer<NumberingSystem> ns(
+                NumberingSystem::createInstance(nsStatus));
+        if (U_FAILURE(nsStatus)) {
+            status = nsStatus;
+            return;
+        }
+
         int32_t len = 0;
         UResourceBundle *top = ures_open(NULL, Locale::getDefault().getName(), &status);
 
@@ -417,12 +418,9 @@ DecimalFormat::construct(UErrorCode&            status,
         status = U_MEMORY_ALLOCATION_ERROR;
     }
     if (U_FAILURE(status)) {
-        delete ns;
         return;
     }
     updateSuper();
-
-    delete ns;
 
     if (U_FAILURE(status))
     {
