@@ -19,7 +19,7 @@
 #if !UCONFIG_NO_BREAK_ITERATION
 
 #include "intltest.h"
-
+#include "rbbimonkeytest.h"
 
 class IntlTestRBBI: public IntlTest {
 public:

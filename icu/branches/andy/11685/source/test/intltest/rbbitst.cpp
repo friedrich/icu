@@ -1569,7 +1569,7 @@ void RBBITest::TestDictRules() {
 //-------------------------------------------------------------------------------
 //
 //    ReadAndConvertFile   Read a text data file, convert it to UChars, and
-//    return the datain one big UChar * buffer, which the caller must delete.
+//    return the data in one big UChar * buffer, which the caller must delete.
 //
 //    parameters:
 //          fileName:   the name of the file, with no directory part.  The test data directory
