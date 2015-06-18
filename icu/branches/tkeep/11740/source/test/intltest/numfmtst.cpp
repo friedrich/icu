@@ -8313,12 +8313,14 @@ void NumberFormatTest::TestBenchmark() {
 /*
     UErrorCode status = U_ZERO_ERROR;
     Locale en("en");
-    DecimalFormatSymbols *sym = new DecimalFormatSymbols(en, status);
+    DecimalFormatSymbols sym(en, status);
+//    new DecimalFormat("0.0000000", new DecimalFormatSymbols(sym), status);
+    errln("Size: %d", sizeof(DecimalFormat));
 //    DecimalFormat fmt("0", sym, status);
     FieldPosition fpos(0);
     clock_t start = clock();
     for (int32_t i = 0; i < 100000; ++i) {
-        DecimalFormat fmt("0.0000000", new DecimalFormatSymbols(*sym), status);
+        DecimalFormat fmt("0.0000000", new DecimalFormatSymbols(sym), status);
 //        UnicodeString append;
 //        fmt.format(2.99792458E8, append, fpos, status);
 //        fmt.format(31, append);
