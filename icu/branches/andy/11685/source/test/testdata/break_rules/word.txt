@@ -17,12 +17,15 @@ ExtendNumLet       = [\p{Word_Break = ExtendNumLet}];
 
 #define dicitionary, with the effect being that those characters don't appear in test data.
 
+Han            = [:Han:];
+Hiragana       = [:Hiragana:];
+
 Control        = [\p{Grapheme_Cluster_Break = Control}]; 
 HangulSyllable = [\uac00-\ud7a3];
 ComplexContext = [:LineBreak = Complex_Context:];
-KanaKanji      = [$Han $Hiragana $Katakana];
-dictionaryCJK  = [$KanaKanji $HangulSyllable];
-dictionary     = [$ComplexContext $dictionaryCJK];
+KanaKanji      = [Han Hiragana Katakana];
+dictionaryCJK  = [KanaKanji HangulSyllable];
+dictionary     = [ComplexContext dictionaryCJK];
 
 # leave CJK scripts out of ALetterPlus
 #   Tricky. Redfine a set.
@@ -31,7 +34,7 @@ dictionary     = [$ComplexContext $dictionaryCJK];
 #   Insert defs without redefine just after last pre-existing def of that name.
 #   Maybe drop redefine, add warning for sets defined and not used, should catch typos.
 
-ALetter        = [$ALetter - dictionary];
+ALetter        = [ALetter - dictionary];
 
 AHLetter       = [ALetter  Hebrew_Letter];
 MidNumLetQ     = [MidNumLet  single_Quote];
@@ -64,3 +67,4 @@ WB13c:  Regional_Indicator ExtFmt* Regional_Indicator;
         # TODO: this matches UAX, but do we really want to allow Extend & Format between them?
 
 WB14:   . ExtFmt* ÷;
+

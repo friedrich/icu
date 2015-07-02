@@ -1,23 +1,56 @@
 #
-# defines go at top, before rules. This allows tailorings to put their defines after
-# base defines, making them all visible.
+# One line per rule or set definition. No continuation. Trailing # comments.
+# 
+#
+# Set definitions go at top, before rules.
 
-# tailorings have a redefine, provides safety check that a define is actuall replacing one
-# that is already defined in the base.
+# tailorings: if a tailoring redeines a class, it replaces the original definition.
+#             if it depends on previous definition, place just after the previous def.
 
 # maybe let builder sort out ordering, tailorings may splatter things around.
 
-# Rule labels sort in code point order, allowing tailorings to insert.
+# Rule labels:   letter+ digit+ suffix?
+# suffix:        letter (letter | digit)*
+
+# sort with the first numeric field embedded in the name in numeric order,
+# otherwise in code point order.
+
 # Flag error if source rules not in order.
 
-define CR = [\u000d];
-define LF = [\u000a];
+# Set Substitutions:
+#   Substitutions take place in both rules and set definitions.
+#   Need to avoid replacing literal property names or values. Examples
+#      H2 = [:LineBreak =  H2:];
+#      Extend = [\p{Grapheme_Cluster_Break = Extend}];
+#   Set name: Letter (letter | digit)*
+#   Repaceable set name: not preceded by ('{' | '=' | '[:') space*
 
-define Control            = [\p{Grapheme_Cluster_Break = Control}];
-define Extend             = [\p{Grapheme_Cluster_Break = Extend}];
-define Regional_Indicator = [\p{Grapheme_Cluster_Break = Regional_Indicator}];
-define Prepend            = [];
-define SpacingMark        = [\p{Grapheme_Cluster_Break = SpacingMark}];
+# Tailorings
+# + rule or def. Add it.
+# - rule name or def name. Remove it.
+# ! rule or def. Replace existing. Error if not there.
+#
+# Replace goes at position of original def.
+# Add goes just after any existing def, or after existing defs if not already defined.
+# Rules go in sorted order.
+
+# type and locale are reserved;
+# they tell the test what kind of break iterator to create & test against these rules.
+
+type = grapheme;      # one of grapheme | word | line | sentence
+locale = en;
+
+# Tailoring. If the following rules are a tailoring, specify the base set of rules being tailored.
+# baserules = file_name;
+
+CR = [\u000d];  
+LF = [\u000a];
+
+Control            = [\p{Grapheme_Cluster_Break = Control}];
+Extend             = [\p{Grapheme_Cluster_Break = Extend}];
+Regional_Indicator = [\p{Grapheme_Cluster_Break = Regional_Indicator}];
+Prepend            = [];
+SpacingMark        = [\p{Grapheme_Cluster_Break = SpacingMark}];
 
 #
 # Korean Syllable Definitions
@@ -29,18 +62,18 @@ T       = [\p{Grapheme_Cluster_Break = T}];
 LV      = [\p{Grapheme_Cluster_Break = LV}];
 LVT     = [\p{Grapheme_Cluster_Break = LVT}];
 
-GB03:     CR LF;
-GB04:     (Control | CR | LF) ÷;
-GB05:     . ÷ (Control | CR | LF);
+GB3:     CR LF;   # allow trailing comment.
+GB4:     (Control | CR | LF) ÷;
+GB5:     . ÷ (Control | CR | LF);
 
-GB06:     L (L | V | LV | LVT);
-GB07:     (LV | V) (V | T);
-GB08:     (LVT | T) T;
+GB6:     L (L | V | LV | LVT);
+GB7:     (LV | V) (V | T);
+GB8:     (LVT | T) T;
 
-GB08a:    Regional_Indicator Regional Indicator;
-GB09:     . Extend;
+GB8a:    Regional_Indicator Regional Indicator;
+GB9:     . Extend;
 
-GB09a:    . SpacingMark;
-GB09b:    Prepend .;
+GB9a:    . SpacingMark;
+GB9b:    Prepend .;
 
-GB10:     . ÷
+GB10:     . ÷;

@@ -26,7 +26,7 @@ class RBBIMonkeyTest: public IntlTest {
 
 
   private:
-    void testRules(const char *ruleFile, const char *breakType, const char *locale);
+    void testRules(const char *ruleFile);
 
 
 };
