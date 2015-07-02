@@ -19,7 +19,7 @@ U_NAMESPACE_BEGIN
 // utility FieldPositionHandler
 // base class, null implementation
 
-class FieldPositionHandler: public UMemory {
+class U_I18N_API FieldPositionHandler: public UMemory {
  public:
   virtual ~FieldPositionHandler();
   virtual void addAttribute(int32_t id, int32_t start, int32_t limit);

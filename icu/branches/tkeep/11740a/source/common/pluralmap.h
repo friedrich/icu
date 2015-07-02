@@ -18,7 +18,7 @@ U_NAMESPACE_BEGIN
 
 class UnicodeString;
 
-class PluralMapBase : public UMemory {
+class U_COMMON_API PluralMapBase : public UMemory {
 public:
     enum Variant {
         NONE = -1,

@@ -40,7 +40,7 @@ class FixedDecimal;
  * instance without first calling a prepareXXX method results in an
  * assertion error and a program crash.
  */
-class ValueFormatter : public UObject {
+class U_I18N_API ValueFormatter : public UObject {
 public:
     ValueFormatter() : fType(kFormatTypeCount) {
     }
