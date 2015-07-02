@@ -1989,7 +1989,8 @@ public:
      */
     UnicodeString select(
             double value,
-            const PluralRules &rules) const;
+            const PluralRules &rules,
+            UErrorCode &status) const;
 
 private:
 

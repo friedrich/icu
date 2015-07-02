@@ -16,6 +16,7 @@
 #include "fphdlimp.h"
 #include "smallintformatter.h"
 #include "unistrappender.h"
+#include "visibledigits.h"
 
 U_NAMESPACE_BEGIN
 
@@ -99,6 +100,77 @@ int32_t DigitFormatter::countChar32(
 }
 
 UnicodeString &DigitFormatter::format(
+        const VisibleDigits &digits,
+        const DigitGrouping &grouping,
+        const DigitFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    const DigitInterval &interval = digits.getInterval();
+    int32_t digitsLeftOfDecimal = interval.getMostSignificantExclusive();
+    int32_t lastDigitPos = interval.getLeastSignificantInclusive();
+    int32_t intBegin = appendTo.length();
+    int32_t fracBegin;
+
+    // Emit "0" instead of empty string.
+    if (digitsLeftOfDecimal == 0 && lastDigitPos == 0) {
+        appendTo.append(fLocalizedDigits[0]);
+        handler.addAttribute(UNUM_INTEGER_FIELD, intBegin, appendTo.length());
+        if (options.fAlwaysShowDecimal) {
+            appendField(
+                    UNUM_DECIMAL_SEPARATOR_FIELD,
+                    fDecimal,
+                    handler,
+                    appendTo);
+        }
+        return appendTo;
+    }
+    {
+        UnicodeStringAppender appender(appendTo);
+        for (int32_t i = interval.getMostSignificantExclusive() - 1;
+                i >= interval.getLeastSignificantInclusive(); --i) {
+            if (i == -1) {
+                appender.flush();
+                appendField(
+                        UNUM_DECIMAL_SEPARATOR_FIELD,
+                        fDecimal,
+                        handler,
+                        appendTo);
+                fracBegin = appendTo.length();
+            }
+            appender.append(fLocalizedDigits[digits.getDigitByExponent(i)]);
+            if (grouping.isSeparatorAt(digitsLeftOfDecimal, i)) {
+                appender.flush();
+                appendField(
+                        UNUM_GROUPING_SEPARATOR_FIELD,
+                        fGroupingSeparator,
+                        handler,
+                        appendTo);
+            }
+            if (i == 0) {
+                appender.flush();
+                if (digitsLeftOfDecimal > 0) {
+                    handler.addAttribute(UNUM_INTEGER_FIELD, intBegin, appendTo.length());
+                }
+            }
+        }
+        if (options.fAlwaysShowDecimal && lastDigitPos == 0) {
+            appender.flush();
+            appendField(
+                    UNUM_DECIMAL_SEPARATOR_FIELD,
+                    fDecimal,
+                    handler,
+                    appendTo);
+        }
+    }
+    // lastDigitPos is never > 0 so we are guaranteed that kIntegerField
+    // is already added.
+    if (lastDigitPos < 0) {
+        handler.addAttribute(UNUM_FRACTION_FIELD, fracBegin, appendTo.length());
+    }
+    return appendTo;
+}
+
+UnicodeString &DigitFormatter::format(
         const DigitList &digits,
         const DigitGrouping &grouping,
         const DigitInterval &interval,
@@ -125,7 +197,7 @@ UnicodeString &DigitFormatter::format(
     }
     {
         UnicodeStringAppender appender(appendTo);
-        for (int32_t i = digitsLeftOfDecimal - 1; i >= lastDigitPos; --i) { 
+        for (int32_t i = digitsLeftOfDecimal - 1; i >= lastDigitPos; --i) {
             if (i == -1) {
                 appender.flush();
                 appendField(

@@ -606,20 +606,21 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     UErrorCode status = U_ZERO_ERROR;
 
     LocalPointer<DecimalFormat> df(new DecimalFormat("###", status), status);
+/*
     TEST_ASSERT_STATUS(status);
     FixedDecimal fd = df->getFixedDecimal(44, status);
     TEST_ASSERT_STATUS(status);
     ASSERT_EQUAL(44, fd.source);
     ASSERT_EQUAL(0, fd.visibleDecimalDigitCount);
-
+*/
     df.adoptInsteadAndCheckErrorCode(new DecimalFormat("###.00##", status), status);
     TEST_ASSERT_STATUS(status);
-    fd = df->getFixedDecimal(123.456, status);
+    FixedDecimal fd = df->getFixedDecimal(123.456, status);
     TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount);
-    ASSERT_EQUAL(456, fd.decimalDigits);
-    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros);
-    ASSERT_EQUAL(123, fd.intValue);
+    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount); // v
+    ASSERT_EQUAL(456, fd.decimalDigits); // f
+    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros); // t
+    ASSERT_EQUAL(123, fd.intValue); // i
     ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 

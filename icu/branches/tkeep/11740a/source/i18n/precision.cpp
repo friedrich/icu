@@ -9,12 +9,32 @@
 
 #include "precision.h"
 #include "digitlst.h"
+#include "visibledigits.h"
+#include "fmtableimp.h"
+#include <math.h>
 
 U_NAMESPACE_BEGIN
 
-FixedPrecision::FixedPrecision() : fExactOnly(FALSE), fFailIfOverMax(FALSE) {
+FixedPrecision::FixedPrecision() 
+        : fExactOnly(FALSE), fFailIfOverMax(FALSE), fRoundingMode(DecimalFormat::kRoundHalfEven) {
     fMin.setIntDigitCount(1);
     fMin.setFracDigitCount(0);
+}
+
+UBool
+FixedPrecision::isRoundingRequired(
+        int32_t upperExponent, const DigitInterval &interval) const {
+    int32_t leastSigAllowed = fMax.getLeastSignificantInclusive();
+    int32_t maxSignificantDigits = fSignificant.getMax();
+    int32_t roundDigit;
+    if (maxSignificantDigits == INT32_MAX) {
+        roundDigit = leastSigAllowed;
+    } else {
+        int32_t limitDigit = upperExponent - maxSignificantDigits;
+        roundDigit =
+                limitDigit > leastSigAllowed ? limitDigit : leastSigAllowed;
+    }
+    return (roundDigit > interval.getLeastSignificantInclusive());
 }
 
 DigitList &
@@ -47,25 +67,36 @@ FixedPrecision::round(
     if (fExactOnly && (value.fContext.status & DEC_Inexact)) {
         status = U_FORMAT_INEXACT_ERROR;
     } else if (fFailIfOverMax) {
-        // TODO(refactor): Not most efficient way, but readable.
-        DigitInterval maxWithUnboundedFracDigits(fMax);
-        maxWithUnboundedFracDigits.setFracDigitCount(-1);
-
         // Smallest interval for value stored in interval
         DigitInterval interval;
         value.getSmallestInterval(interval);
-
-        // newInterval will be interval shrunk as necessary
-        // to accomodate max int digits.
-        DigitInterval newInterval(interval);
-        newInterval.shrinkToFitWithin(maxWithUnboundedFracDigits);
-
-        // If newInterval != interval we exceeded max digits initially.
-        if (!newInterval.equals(interval)) {
+        if (fMax.getIntDigitCount() < interval.getIntDigitCount()) {
             status = U_ILLEGAL_ARGUMENT_ERROR;
         }
     }
     return value;
+}
+
+DigitInterval &
+FixedPrecision::getIntervalForZero(DigitInterval &interval) const {
+    interval = fMin;
+    if (fSignificant.getMin() > 0) {
+        interval.expandToContainDigit(interval.getIntDigitCount() - fSignificant.getMin());
+    }
+    interval.shrinkToFitWithin(fMax);
+    return interval;
+}
+
+DigitInterval &
+FixedPrecision::getInterval(
+        int32_t upperExponent, DigitInterval &interval) const {
+    if (fSignificant.getMin() > 0) {
+        interval.expandToContainDigit(
+                upperExponent - fSignificant.getMin());
+    }
+    interval.expandToContain(fMin);
+    interval.shrinkToFitWithin(fMax);
+    return interval;
 }
 
 DigitInterval &
@@ -91,6 +122,173 @@ FixedPrecision::getInterval(
 UBool
 FixedPrecision::isFastFormattable() const {
     return (fMin.getFracDigitCount() == 0 && fSignificant.isNoConstraints() && fRoundingIncrement.isZero() && !fFailIfOverMax);
+}
+
+VisibleDigits &
+FixedPrecision::initVisibleDigits(
+        DigitList &value,
+        VisibleDigits &digits,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return digits;
+    }
+    digits.clear();
+    if (value.isNaN()) {
+        digits.setNaN();
+        return digits;
+    }
+    if (value.isInfinite()) {
+        digits.setInfinite();
+        if (!value.isPositive()) {
+            digits.setNegative();
+        }
+        return digits;
+    }
+    if (!value.isPositive()) {
+        digits.setNegative();
+    }
+    value.setRoundingMode(fRoundingMode);
+    round(value, 0, status);
+    getInterval(value, digits.fInterval);
+    digits.fExponent = value.getLowerExponent();
+    value.appendDigitsTo(digits.fDigits, status);
+    return digits;
+}
+
+VisibleDigits &
+FixedPrecision::initVisibleDigits(
+        int64_t value,
+        VisibleDigits &digits,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return digits;
+    }
+    if (!fRoundingIncrement.isZero()) {
+        // If we have round increment, use digit list.
+        DigitList digitList;
+        digitList.set(value);
+        return initVisibleDigits(digitList, digits, status);
+    }
+    // Try fast path
+    if (initVisibleDigits(value, 0, digits, status)) {
+        return digits;
+    }
+    // Oops have to use digit list
+    DigitList digitList;
+    digitList.set(value);
+    return initVisibleDigits(digitList, digits, status);
+}
+
+VisibleDigits &
+FixedPrecision::initVisibleDigits(
+        double value,
+        VisibleDigits &digits,
+        UErrorCode &status) const {
+    static int32_t p10[] = {1, 10, 100, 1000, 10000};
+    if (U_FAILURE(status)) {
+        return digits;
+    }
+    digits.clear();
+    if (uprv_isNaN(value)) {
+        digits.setNaN();
+        return digits;
+    }
+    if (uprv_isPositiveInfinity(value)) {
+        digits.setInfinite();
+        return digits;
+    }
+    if (uprv_isNegativeInfinity(value)) {
+        digits.setInfinite();
+        digits.setNegative();
+        return digits;
+    }
+    if (!fRoundingIncrement.isZero()) {
+        // If we have round increment, use digit list.
+        DigitList digitList;
+        digitList.set(value);
+        return initVisibleDigits(digitList, digits, status);
+    }
+    // Try to find n such that value * 10^n is an integer
+    int32_t n = -1;
+    double scaled;
+    for (int32_t i = 0; i < UPRV_LENGTHOF(p10); ++i) {
+        scaled = value * p10[i];
+        if (scaled > MAX_INT64_IN_DOUBLE) {
+            break;
+        }
+        if (scaled == floor(scaled)) {
+            n = i;
+            break;
+        }
+    }
+    // Try fast path
+    if (n >= 0 && initVisibleDigits(scaled, -n, digits, status)) {
+        return digits;
+    }
+
+    // Oops have to use digit list
+    DigitList digitList;
+    digitList.set(value);
+    return initVisibleDigits(digitList, digits, status);
+}
+
+UBool
+FixedPrecision::initVisibleDigits(
+        int64_t mantissa,
+        int32_t exponent,
+        VisibleDigits &digits,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return TRUE;
+    }
+    digits.clear();
+    if (mantissa >= 0) {
+        digits.fIntValue = mantissa;
+        for (int32_t i = 0; i > exponent; --i) {
+            digits.fIntValue /= 10;
+        }
+        digits.fIsInitializedFromInt = TRUE;
+    }
+    if (mantissa == 0) {
+        getIntervalForZero(digits.fInterval);
+        return TRUE;
+    }
+    // be sure least significant digit is non zero
+    while (mantissa % 10 == 0) {
+        mantissa /= 10;
+        ++exponent;
+    }
+    if (mantissa < 0) {
+        digits.fDigits.append((char) -(mantissa % -10), status);
+        mantissa /= -10;
+        digits.setNegative();
+    }
+    while (mantissa) {
+        digits.fDigits.append((char) (mantissa % 10), status);
+        mantissa /= 10;
+    }
+    if (U_FAILURE(status)) {
+        return TRUE;
+    }
+    digits.fExponent = exponent;
+    int32_t upperExponent = exponent + digits.fDigits.length();
+    if (fFailIfOverMax && upperExponent > fMax.getIntDigitCount()) {
+        status = U_ILLEGAL_ARGUMENT_ERROR;
+        return TRUE;
+    }
+    digits.fInterval.setLeastSignificantInclusive(exponent);
+    digits.fInterval.setMostSignificantExclusive(upperExponent);
+    UBool roundingRequired =
+            isRoundingRequired(upperExponent, digits.fInterval);
+    if (roundingRequired) {
+        if (fExactOnly) {
+            status = U_FORMAT_INEXACT_ERROR;
+            return TRUE;
+        }
+        return FALSE;
+    }
+    getInterval(upperExponent, digits.fInterval);
+    return TRUE;
 }
 
 DigitList &

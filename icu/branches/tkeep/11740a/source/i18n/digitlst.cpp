@@ -959,16 +959,8 @@ DigitList::getUpperExponent() const {
 
 DigitInterval &
 DigitList::getSmallestInterval(DigitInterval &result) const {
-    int32_t intDigits = getUpperExponent();
-    int32_t fracDigits = -fDecNumber->exponent;
-    if (intDigits < 0) {
-        intDigits = 0;
-    }
-    if (fracDigits < 0) {
-        fracDigits = 0;
-    }
-    result.setIntDigitCount(intDigits);
-    result.setFracDigitCount(fracDigits);
+    result.setLeastSignificantInclusive(fDecNumber->exponent);
+    result.setMostSignificantExclusive(getUpperExponent());
     return result;
 }
 
@@ -979,6 +971,11 @@ DigitList::getDigitByExponent(int32_t exponent) const {
         return 0;
     }
     return fDecNumber->lsu[idx];
+}
+
+void
+DigitList::appendDigitsTo(CharString &str, UErrorCode &status) const {
+    str.append((const char *) fDecNumber->lsu, fDecNumber->digits, status);
 }
 
 void

@@ -387,6 +387,12 @@ public:
     uint8_t getDigitByExponent(int32_t exponent) const;
 
     /**
+     * Appends the digits in this object to a CharString.
+     * 3 is appended as (char) 3, not '3'
+     */
+    void appendDigitsTo(CharString &str, UErrorCode &status) const;
+
+    /**
      * Equivalent to roundFixedPoint(-digitExponent) except unlike
      * roundFixedPoint, this works for any digitExponent value.
      * If maxSigDigits is set then this instance is rounded to have no more

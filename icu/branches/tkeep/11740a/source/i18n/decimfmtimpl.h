@@ -195,10 +195,8 @@ void setPositiveSuffix(const UnicodeString &str);
 void setNegativePrefix(const UnicodeString &str);
 void setNegativeSuffix(const UnicodeString &str);
 UnicodeString &toPattern(UnicodeString& result) const;
-UnicodeString select(double value, const PluralRules &rules) const;
-UnicodeString select(DigitList &number, const PluralRules &rules) const;
-FixedDecimal &getFixedDecimal(double value, FixedDecimal &result) const;
-FixedDecimal &getFixedDecimal(DigitList &number, FixedDecimal &result) const;
+FixedDecimal &getFixedDecimal(double value, FixedDecimal &result, UErrorCode &status) const;
+FixedDecimal &getFixedDecimal(DigitList &number, FixedDecimal &result, UErrorCode &status) const;
 DigitList &round(DigitList &number, UErrorCode &status) const;
 
 private:

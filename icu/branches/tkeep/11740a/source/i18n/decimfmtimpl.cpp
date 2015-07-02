@@ -14,6 +14,7 @@
 #include "fphdlimp.h"
 #include "plurrule_impl.h"
 #include <math.h>
+#include "visibledigits.h"
 
 U_NAMESPACE_BEGIN
 
@@ -424,41 +425,37 @@ DecimalFormatImpl::formatAdjustedDigitList(
             status);
 }
 
+static FixedDecimal &initFixedDecimal(
+        const VisibleDigits &digits, FixedDecimal &result) {
+    result.source = 0.0;
+    result.isNegative = digits.isNegative();
+    result.isNanOrInfinity = digits.isNaNOrInfinity();
+    digits.getFixedDecimal(
+            result.intValue, result.decimalDigits,
+            result.decimalDigitsWithoutTrailingZeros,
+            result.visibleDecimalDigitCount, result.hasIntegerValue);
+    return result;
+}
+
 FixedDecimal &
-DecimalFormatImpl::getFixedDecimal(double number, FixedDecimal &result) const {
-    if (uprv_isNaN(number) || uprv_isPositiveInfinity(fabs(number))) {
-        // For NaN and Infinity the state of the formatter is ignored.
-        result.init(number);
+DecimalFormatImpl::getFixedDecimal(double number, FixedDecimal &result, UErrorCode &status) const {
+    if (U_FAILURE(status)) {
         return result;
     }
-    if (fMultiplier.isZero() && fScale == 0 && fEffPrecision.fMantissa.fRoundingIncrement.isZero() && areSignificantDigitsUsed() == FALSE &&
-            result.quickInit(number) && result.visibleDecimalDigitCount <= getMaximumFractionDigits()) {
-        // Fast Path. Construction of an exact FixedDecimal directly from the double, without passing
-        //   through a DigitList, was successful, and the formatter is doing nothing tricky with rounding.
-        // printf("getFixedDecimal(%g): taking fast path.\n", number);
-        result.adjustForMinFractionDigits(getMinimumFractionDigits());
-        return result;
-    }
-    // Slow path. Create a DigitList, and have this formatter round it according to the
-    //     requirements of the format, and fill the fixedDecimal from that.
-    DigitList dl;
-    dl.set(number);
-    return getFixedDecimal(dl, result);
+    VisibleDigits digits;
+    fEffPrecision.fMantissa.initVisibleDigits(number, digits, status);
+    return initFixedDecimal(digits, result);
 }
 
 FixedDecimal &
 DecimalFormatImpl::getFixedDecimal(
-        DigitList &number, FixedDecimal &result) const {
-    if (number.isNaN() || number.isInfinite()) {
-        result.isNanOrInfinity = TRUE;
+        DigitList &number, FixedDecimal &result, UErrorCode &status) const {
+    if (U_FAILURE(status)) {
         return result;
     }
-    UErrorCode status = U_ZERO_ERROR;
-    adjustDigitList(number, status);
-    ValueFormatter vf;
-    prepareValueFormatter(vf);
-    vf.round(number, status);
-    return vf.getFixedDecimal(number, result);
+    VisibleDigits digits;
+    fEffPrecision.fMantissa.initVisibleDigits(number, digits, status);
+    return initFixedDecimal(digits, result);
 }
 
 DigitList &
@@ -471,19 +468,6 @@ DecimalFormatImpl::round(
     ValueFormatter vf;
     prepareValueFormatter(vf);
     return vf.round(number, status);
-}
-
-UnicodeString
-DecimalFormatImpl::select(double number, const PluralRules &rules) const {
-    FixedDecimal fd;
-    return rules.select(getFixedDecimal(number, fd));
-}
-
-UnicodeString
-DecimalFormatImpl::select(
-        DigitList &number, const PluralRules &rules) const {
-    FixedDecimal fd;
-    return rules.select(getFixedDecimal(number, fd));
 }
 
 void

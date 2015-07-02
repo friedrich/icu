@@ -667,16 +667,19 @@ DecimalFormat::clone() const
 
 
 FixedDecimal
-DecimalFormat::getFixedDecimal(double number, UErrorCode &/*status*/) const {
+DecimalFormat::getFixedDecimal(double number, UErrorCode &status) const {
     FixedDecimal result;
-    return fImpl->getFixedDecimal(number, result);
+    return fImpl->getFixedDecimal(number, result, status);
 }
 
 UnicodeString
 DecimalFormat::select(
         double number,
-        const PluralRules &rules) const {
-    return fImpl->select(number, rules);
+        const PluralRules &rules, UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return UnicodeString();
+    }
+    return rules.select(getFixedDecimal(number, status));
 }
 
 
@@ -704,17 +707,17 @@ DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) co
 
     DigitList *dl = number.getDigitList();
     if (dl != NULL) {
-        return fImpl->getFixedDecimal(*dl, result);
+        return fImpl->getFixedDecimal(*dl, result, status);
     }
 
     Formattable::Type type = number.getType();
     if (type == Formattable::kDouble || type == Formattable::kLong) { 
-        return fImpl->getFixedDecimal(number.getDouble(status), result);
+        return fImpl->getFixedDecimal(number.getDouble(status), result, status);
     }
 
     if (type == Formattable::kInt64 && number.getInt64() <= MAX_INT64_IN_DOUBLE &&
                                        number.getInt64() >= -MAX_INT64_IN_DOUBLE) {
-        return fImpl->getFixedDecimal(number.getDouble(status), result);
+        return fImpl->getFixedDecimal(number.getDouble(status), result, status);
     }
 
     // The only case left is type==int64_t, with a value with more digits than a double can represent.
@@ -724,7 +727,7 @@ DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) co
     U_ASSERT(type == Formattable::kInt64);
     DigitList digits;
     digits.set(number.getInt64());
-    return fImpl->getFixedDecimal(digits, result);
+    return fImpl->getFixedDecimal(digits, result, status);
 }
 
 
@@ -732,9 +735,9 @@ DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) co
 //    The digit list may be modified.
 //    Internal function only.
 FixedDecimal
-DecimalFormat::getFixedDecimal(DigitList &number, UErrorCode &/*status*/) const {
+DecimalFormat::getFixedDecimal(DigitList &number, UErrorCode &status) const {
     FixedDecimal result;
-    return fImpl->getFixedDecimal(number, result);
+    return fImpl->getFixedDecimal(number, result, status);
 }
 
 

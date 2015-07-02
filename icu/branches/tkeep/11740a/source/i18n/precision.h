@@ -20,6 +20,8 @@
 
 U_NAMESPACE_BEGIN
 
+class VisibleDigits;
+
 
 /**
  * A precision manager for values to be formatted as fixed point.
@@ -63,6 +65,12 @@ UBool fExactOnly;
  */
 UBool fFailIfOverMax;
 
+/**
+ * Controls the rounding mode that initVisibleDigits uses.
+ * Default is DecimalFormat::kRoundHalfEven
+ */
+DecimalFormat::ERoundingMode fRoundingMode;
+
 FixedPrecision();
 
 /**
@@ -74,7 +82,8 @@ UBool equals(const FixedPrecision &rhs) const {
             fSignificant.equals(rhs.fSignificant) &&
             (fRoundingIncrement == rhs.fRoundingIncrement) &&
             fExactOnly == rhs.fExactOnly &&
-            fFailIfOverMax == rhs.fFailIfOverMax);
+            fFailIfOverMax == rhs.fFailIfOverMax &&
+            fRoundingMode == rhs.fRoundingMode);
 }
 
 /**
@@ -102,6 +111,56 @@ DigitInterval &getInterval(
  * Returns TRUE if this instance allows for fast formatting of integers.
  */
 UBool isFastFormattable() const;
+
+/**
+ * Initializes a VisibleDigits.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigits &initVisibleDigits(
+        DigitList &value,
+        VisibleDigits &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigits.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigits &initVisibleDigits(
+        double value,
+        VisibleDigits &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigits.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigits &initVisibleDigits(
+        int64_t value,
+        VisibleDigits &digits,
+        UErrorCode &status) const;
+
+private:
+UBool
+initVisibleDigits(
+        int64_t mantissa,
+        int32_t exponent,
+        VisibleDigits &digits,
+        UErrorCode &status) const;
+UBool isRoundingRequired(
+        int32_t upperExponent, const DigitInterval &interval) const;
+DigitInterval &getIntervalForZero(DigitInterval &interval) const;
+DigitInterval &getInterval(
+        int32_t upperExponent, DigitInterval &interval) const;
+
 };
 
 /**

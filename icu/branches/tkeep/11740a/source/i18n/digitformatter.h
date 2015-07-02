@@ -26,6 +26,7 @@ class DigitInterval;
 class UnicodeString;
 class FieldPositionHandler;
 class IntDigitCountRange;
+class VisibleDigits;
 
 /**
  * Various options for formatting in fixed point.
@@ -136,6 +137,23 @@ UnicodeString &format(
         const DigitList &positiveDigits,
         const DigitGrouping &grouping,
         const DigitInterval &interval,
+        const DigitFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
+/**
+ * Fixed point formatting.
+ *
+ * @param positiveDigits the value to format must be positive.
+ * @param grouping controls how digit grouping is done
+ * @param options formatting options
+ * @param handler records field positions
+ * @param appendTo formatted value appended here.
+ * @return appendTo
+ */
+UnicodeString &format(
+        const VisibleDigits &positiveDigits,
+        const DigitGrouping &grouping,
         const DigitFormatterOptions &options,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
