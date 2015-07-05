@@ -24,7 +24,7 @@ class DigitList;
  */
 class U_I18N_API VisibleDigits : public UMemory {
 public:
-    VisibleDigits() : fExponent(0), fFlags(0), fIntValue(0), fIsInitializedFromInt(FALSE) { }
+    VisibleDigits() : fExponent(0), fFlags(0), fAbsIntValue(0), fAbsIntValueSet(FALSE), fAbsDoubleValue(0.0), fAbsDoubleValueSet(FALSE) { }
 
     /**
      * For testing only. value must be real, not NaN or infinite.
@@ -59,7 +59,7 @@ public:
     /**
      * Gets the parameters needed to create a FixedDecimal.
      */
-    void getFixedDecimal(int64_t &intValue, int64_t &f, int64_t &t, int32_t &v, UBool &hasIntValue) const;
+    void getFixedDecimal(double &source, int64_t &intValue, int64_t &f, int64_t &t, int32_t &v, UBool &hasIntValue) const;
 
 
 private:
@@ -67,13 +67,16 @@ private:
     DigitInterval fInterval;
     int32_t fExponent;
     int32_t fFlags;
-    int64_t fIntValue;
-    UBool fIsInitializedFromInt;
+    int64_t fAbsIntValue;
+    UBool fAbsIntValueSet;
+    double fAbsDoubleValue;
+    UBool fAbsDoubleValueSet;
 
     void setNegative();
     void setNaN();
     void setInfinite();
     void clear();
+    double computeAbsDoubleValue() const;
 
     VisibleDigits(const VisibleDigits &);
     VisibleDigits &operator=(const VisibleDigits &);

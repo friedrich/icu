@@ -397,6 +397,27 @@ DigitList::append(char digit)
     internalClear();
 }
 
+char DigitList::getStrtodDecimalSeparator() {
+    // TODO: maybe use andy's pthread once.
+    static char gDecimal = 0;
+    char result;
+    {
+        Mutex mutex;
+        result = gDecimal;;
+        if (result == 0) {
+            // We need to know the decimal separator character that will be used with strtod().
+            // Depends on the C runtime global locale.
+            // Most commonly is '.'
+            // TODO: caching could fail if the global locale is changed on the fly.
+            char rep[MAX_DIGITS];
+            sprintf(rep, "%+1.1f", 1.0);
+            result = rep[2];
+            gDecimal = result;;
+        }
+    }
+    return result;
+}
+
 // -------------------------------------
 
 /**

@@ -606,23 +606,63 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     UErrorCode status = U_ZERO_ERROR;
 
     LocalPointer<DecimalFormat> df(new DecimalFormat("###", status), status);
-/*
     TEST_ASSERT_STATUS(status);
     FixedDecimal fd = df->getFixedDecimal(44, status);
     TEST_ASSERT_STATUS(status);
     ASSERT_EQUAL(44, fd.source);
     ASSERT_EQUAL(0, fd.visibleDecimalDigitCount);
-*/
+    ASSERT_EQUAL(FALSE, fd.isNegative);
+
+    fd = df->getFixedDecimal(-44, status);
+    TEST_ASSERT_STATUS(status);
+    ASSERT_EQUAL(44, fd.source);
+    ASSERT_EQUAL(0, fd.visibleDecimalDigitCount);
+    ASSERT_EQUAL(TRUE, fd.isNegative);
+
     df.adoptInsteadAndCheckErrorCode(new DecimalFormat("###.00##", status), status);
     TEST_ASSERT_STATUS(status);
-    FixedDecimal fd = df->getFixedDecimal(123.456, status);
+    fd = df->getFixedDecimal(123.456, status);
     TEST_ASSERT_STATUS(status);
     ASSERT_EQUAL(3, fd.visibleDecimalDigitCount); // v
     ASSERT_EQUAL(456, fd.decimalDigits); // f
     ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros); // t
     ASSERT_EQUAL(123, fd.intValue); // i
+    ASSERT_EQUAL(123.456, fd.source); // n
     ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
+
+    fd = df->getFixedDecimal(-123.456, status);
+    TEST_ASSERT_STATUS(status);
+    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount); // v
+    ASSERT_EQUAL(456, fd.decimalDigits); // f
+    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros); // t
+    ASSERT_EQUAL(123, fd.intValue); // i
+    ASSERT_EQUAL(123.456, fd.source); // n
+    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
+    ASSERT_EQUAL(TRUE, fd.isNegative);
+
+    // test esoteric rounding
+    df->setRoundingIncrement(7.3);
+
+    fd = df->getFixedDecimal(30.0, status);
+    TEST_ASSERT_STATUS(status);
+    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount); // v
+    ASSERT_EQUAL(20, fd.decimalDigits); // f
+    ASSERT_EQUAL(2, fd.decimalDigitsWithoutTrailingZeros); // t
+    ASSERT_EQUAL(29, fd.intValue); // i
+    ASSERT_EQUAL(29.2, fd.source); // n
+    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
+    ASSERT_EQUAL(FALSE, fd.isNegative);
+
+    fd = df->getFixedDecimal(-30.0, status);
+    TEST_ASSERT_STATUS(status);
+    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount); // v
+    ASSERT_EQUAL(20, fd.decimalDigits); // f
+    ASSERT_EQUAL(2, fd.decimalDigitsWithoutTrailingZeros); // t
+    ASSERT_EQUAL(29, fd.intValue); // i
+    ASSERT_EQUAL(29.2, fd.source); // n
+    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
+    ASSERT_EQUAL(TRUE, fd.isNegative);
 
     df.adoptInsteadAndCheckErrorCode(new DecimalFormat("###", status), status);
     TEST_ASSERT_STATUS(status);
@@ -776,6 +816,17 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 
+    fable.setDecimalNumber("1000000000000000050000.3", status);
+    TEST_ASSERT_STATUS(status);
+    fd = df->getFixedDecimal(fable, status);
+    TEST_ASSERT_STATUS(status);
+    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount);
+    ASSERT_EQUAL(30, fd.decimalDigits);
+    ASSERT_EQUAL(3, fd.decimalDigitsWithoutTrailingZeros);
+    ASSERT_EQUAL(50000LL, fd.intValue);
+    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
+    ASSERT_EQUAL(FALSE, fd.isNegative);
+
     // Test some int64_t values that are out of the range of a double
     fable.setInt64(4503599627370496LL);
     TEST_ASSERT_STATUS(status);
@@ -784,8 +835,7 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     ASSERT_EQUAL(2, fd.visibleDecimalDigitCount);
     ASSERT_EQUAL(0, fd.decimalDigits);
     ASSERT_EQUAL(0, fd.decimalDigitsWithoutTrailingZeros);
-    // TODO(refactor): Explore fastracking longs that fit into doubles
-    // ASSERT_EQUAL(4503599627370496LL, fd.intValue);
+    ASSERT_EQUAL(4503599627370496LL, fd.intValue);
     ASSERT_EQUAL(TRUE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 
@@ -796,8 +846,7 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     ASSERT_EQUAL(2, fd.visibleDecimalDigitCount);
     ASSERT_EQUAL(0, fd.decimalDigits);
     ASSERT_EQUAL(0, fd.decimalDigitsWithoutTrailingZeros);
-    // TODO(refactor): Explore fastracking longs that fit into doubles
-    // ASSERT_EQUAL(4503599627370497LL, fd.intValue);
+    ASSERT_EQUAL(4503599627370497LL, fd.intValue);
     ASSERT_EQUAL(TRUE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 

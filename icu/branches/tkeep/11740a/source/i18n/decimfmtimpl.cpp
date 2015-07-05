@@ -431,7 +431,7 @@ static FixedDecimal &initFixedDecimal(
     result.isNegative = digits.isNegative();
     result.isNanOrInfinity = digits.isNaNOrInfinity();
     digits.getFixedDecimal(
-            result.intValue, result.decimalDigits,
+            result.source, result.intValue, result.decimalDigits,
             result.decimalDigitsWithoutTrailingZeros,
             result.visibleDecimalDigitCount, result.hasIntegerValue);
     return result;

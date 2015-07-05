@@ -103,6 +103,7 @@ UBool operator!=(const DecimalFormatImpl &other) const {
 void setRoundingMode(DecimalFormat::ERoundingMode mode) {
     fRoundingMode = mode;
     fEffPrecision.fMantissa.fExactOnly = (fRoundingMode == DecimalFormat::kRoundUnnecessary);
+    fEffPrecision.fMantissa.fRoundingMode = mode;
 }
 DecimalFormat::ERoundingMode getRoundingMode() const {
     return fRoundingMode;

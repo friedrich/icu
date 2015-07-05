@@ -171,6 +171,8 @@ FixedPrecision::initVisibleDigits(
     }
     // Try fast path
     if (initVisibleDigits(value, 0, digits, status)) {
+        digits.fAbsDoubleValue = fabs((double) value);
+        digits.fAbsDoubleValueSet = TRUE;
         return digits;
     }
     // Oops have to use digit list
@@ -184,7 +186,7 @@ FixedPrecision::initVisibleDigits(
         double value,
         VisibleDigits &digits,
         UErrorCode &status) const {
-    static int32_t p10[] = {1, 10, 100, 1000, 10000};
+    static int32_t p10[] = {1, 10, 100, 1000};
     if (U_FAILURE(status)) {
         return digits;
     }
@@ -223,6 +225,8 @@ FixedPrecision::initVisibleDigits(
     }
     // Try fast path
     if (n >= 0 && initVisibleDigits(scaled, -n, digits, status)) {
+        digits.fAbsDoubleValue = fabs(value);
+        digits.fAbsDoubleValueSet = TRUE;
         return digits;
     }
 
@@ -242,12 +246,13 @@ FixedPrecision::initVisibleDigits(
         return TRUE;
     }
     digits.clear();
+
     if (mantissa >= 0) {
-        digits.fIntValue = mantissa;
+        digits.fAbsIntValue = mantissa;
         for (int32_t i = 0; i > exponent; --i) {
-            digits.fIntValue /= 10;
+            digits.fAbsIntValue /= 10;
         }
-        digits.fIsInitializedFromInt = TRUE;
+        digits.fAbsIntValueSet = TRUE;
     }
     if (mantissa == 0) {
         getIntervalForZero(digits.fInterval);

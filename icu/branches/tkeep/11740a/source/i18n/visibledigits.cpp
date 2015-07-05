@@ -9,6 +9,10 @@
 
 #include "visibledigits.h"
 #include "digitlst.h"
+#include "decnumber.h"
+#include "cstring.h"
+#include "uassert.h"
+#include <math.h>
 
 static const int32_t kNegative = 1;
 static const int32_t kInfinite = 2;
@@ -47,8 +51,10 @@ void VisibleDigits::clear() {
     fDigits.clear();
     fExponent = 0;
     fFlags = 0;
-    fIntValue = 0LL;
-    fIsInitializedFromInt = FALSE;
+    fAbsIntValue = 0LL;
+    fAbsIntValueSet = FALSE;
+    fAbsDoubleValue = 0.0;
+    fAbsDoubleValueSet = FALSE;
 }
 
 UBool VisibleDigits::isNegative() const {
@@ -75,8 +81,55 @@ UBool VisibleDigits::isNaNOrInfinity() const {
     return (fFlags & (kInfinite | kNaN)) != 0;
 }
 
+double VisibleDigits::computeAbsDoubleValue() const {
+    // Take care of NaN and infinity
+    if (isNaN()) {
+        return uprv_getNaN();
+    }
+    if (isInfinite()) {
+        return uprv_getInfinity();
+    }
+
+    // stack allocate a decNumber to hold MAX_DBL_DIGITS+3 significant digits
+    char rawNumber[sizeof(decNumber) + MAX_DBL_DIGITS+3];
+    decNumber *numberPtr = (decNumber *) rawNumber;
+
+    int32_t mostSig = fInterval.getMostSignificantExclusive();
+    int32_t mostSigNonZero = fExponent + fDigits.length();
+    int32_t end = mostSig > mostSigNonZero ? mostSigNonZero : mostSig;
+    int32_t leastSig = fInterval.getLeastSignificantInclusive();
+    int32_t start = leastSig > fExponent ? leastSig : fExponent;
+    if (end <= start) {
+        return 0.0;
+    }
+    if (start < end - (MAX_DBL_DIGITS+3)) {
+        start = end - (MAX_DBL_DIGITS+3);
+    }
+    uint8_t *pos = numberPtr->lsu;
+    const char *src = &(fDigits.data()[start - fExponent]);
+    for (int32_t i = start; i < end; ++i) {
+        *pos++ = (uint8_t) (*src++);
+    }
+    numberPtr->exponent = start;
+    numberPtr->bits = 0;
+    numberPtr->digits = end - start;
+    char str[MAX_DBL_DIGITS+18];
+    uprv_decNumberToString(numberPtr, str);
+    U_ASSERT(uprv_strlen(str) < MAX_DBL_DIGITS+18);
+    char decimalSeparator = DigitList::getStrtodDecimalSeparator();
+    if (decimalSeparator != '.') {
+        char *decimalPt = strchr(str, '.');
+        if (decimalPt != NULL) {
+            *decimalPt = decimalSeparator;
+        }
+    }
+    char *unused = NULL;
+    return uprv_strtod(str, &unused);
+}
+
 void VisibleDigits::getFixedDecimal(
-    int64_t &intValue, int64_t &f, int64_t &t, int32_t &v, UBool &hasIntValue) const {
+    double &source, int64_t &intValue, int64_t &f, int64_t &t, int32_t &v, UBool &hasIntValue) const {
+    source = 0.0;
     intValue = 0;
     f = 0;
     t = 0;
@@ -86,6 +139,13 @@ void VisibleDigits::getFixedDecimal(
         return;
     }
 
+    // source
+    if (fAbsDoubleValueSet) {
+        source = fAbsDoubleValue;
+    } else {
+        source = computeAbsDoubleValue();
+    }
+
     // visible decimal digits
     v = fInterval.getFracDigitCount();
 
@@ -93,19 +153,19 @@ void VisibleDigits::getFixedDecimal(
 
     // If we initialized from an int64 just use that instead of
     // calculating
-    if (fIsInitializedFromInt) {
-        intValue = fIntValue;
+    if (fAbsIntValueSet) {
+        intValue = fAbsIntValue;
     } else {
         int32_t startPos = fInterval.getMostSignificantExclusive();
-        int32_t endPos = 0;
-        for (; startPos - endPos > 18 && getDigitByExponent(endPos) == 0; ++endPos);
-        if (startPos - endPos > 18) {
+        if (startPos > 18) {
             startPos = 18;
-            endPos = 0;
         }
         // process the integer digits
-        for (int32_t i = startPos - 1; i >= endPos; --i) {
+        for (int32_t i = startPos - 1; i >= 0; --i) {
             intValue = intValue * 10LL + getDigitByExponent(i);
+        }
+        if (intValue == 0LL && startPos > 0) {
+            intValue = 100000000000000000LL;
         }
     }
 
