@@ -156,7 +156,7 @@ initVisibleDigits(
         VisibleDigits &digits,
         UErrorCode &status) const;
 UBool isRoundingRequired(
-        int32_t upperExponent, const DigitInterval &interval) const;
+        int32_t upperExponent, int32_t lowerExponent) const;
 DigitInterval &getIntervalForZero(DigitInterval &interval) const;
 DigitInterval &getInterval(
         int32_t upperExponent, DigitInterval &interval) const;

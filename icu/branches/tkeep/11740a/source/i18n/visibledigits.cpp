@@ -77,6 +77,10 @@ int32_t VisibleDigits::getDigitByExponent(int32_t digitPos) const {
     return ptr[digitPos - fExponent];
 }
 
+UBool VisibleDigits::isOverMaxDigits() const {
+    return (fExponent + fDigits.length() > fInterval.getMostSignificantExclusive());
+}
+
 UBool VisibleDigits::isNaNOrInfinity() const {
     return (fFlags & (kInfinite | kNaN)) != 0;
 }

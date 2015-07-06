@@ -641,7 +641,53 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
     ASSERT_EQUAL(TRUE, fd.isNegative);
 
+    // test max int digits
+    df->setMaximumIntegerDigits(2);
+    fd = df->getFixedDecimal(123.456, status);
+    TEST_ASSERT_STATUS(status);
+    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount); // v
+    ASSERT_EQUAL(456, fd.decimalDigits); // f
+    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros); // t
+    ASSERT_EQUAL(23, fd.intValue); // i
+    ASSERT_EQUAL(23.456, fd.source); // n
+    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
+    ASSERT_EQUAL(FALSE, fd.isNegative);
+
+    fd = df->getFixedDecimal(-123.456, status);
+    TEST_ASSERT_STATUS(status);
+    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount); // v
+    ASSERT_EQUAL(456, fd.decimalDigits); // f
+    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros); // t
+    ASSERT_EQUAL(23, fd.intValue); // i
+    ASSERT_EQUAL(23.456, fd.source); // n
+    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
+    ASSERT_EQUAL(TRUE, fd.isNegative);
+
+    // test max fraction digits
+    df->setMaximumIntegerDigits(2000000000);
+    df->setMaximumFractionDigits(2);
+    fd = df->getFixedDecimal(123.456, status);
+    TEST_ASSERT_STATUS(status);
+    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount); // v
+    ASSERT_EQUAL(46, fd.decimalDigits); // f
+    ASSERT_EQUAL(46, fd.decimalDigitsWithoutTrailingZeros); // t
+    ASSERT_EQUAL(123, fd.intValue); // i
+    ASSERT_EQUAL(123.46, fd.source); // n
+    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
+    ASSERT_EQUAL(FALSE, fd.isNegative);
+
+    fd = df->getFixedDecimal(-123.456, status);
+    TEST_ASSERT_STATUS(status);
+    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount); // v
+    ASSERT_EQUAL(46, fd.decimalDigits); // f
+    ASSERT_EQUAL(46, fd.decimalDigitsWithoutTrailingZeros); // t
+    ASSERT_EQUAL(123, fd.intValue); // i
+    ASSERT_EQUAL(123.46, fd.source); // n
+    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
+    ASSERT_EQUAL(TRUE, fd.isNegative);
+
     // test esoteric rounding
+    df->setMaximumFractionDigits(6);
     df->setRoundingIncrement(7.3);
 
     fd = df->getFixedDecimal(30.0, status);

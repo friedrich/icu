@@ -2292,6 +2292,16 @@ void NumberFormat2Test::TestDoubleInitVisibleDigitsToDigitList() {
                 precision.initVisibleDigits(2385.0, digits, status));
         assertSuccess("2380.00", status);
     }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setFracDigitCount(2);
+        verifyVisibleDigits(
+                "45.83",
+                TRUE,
+                precision.initVisibleDigits(-45.8251, digits, status));
+        assertSuccess("45.83", status);
+    }
 }
 
 void NumberFormat2Test::TestDigitListInitVisibleDigits() {

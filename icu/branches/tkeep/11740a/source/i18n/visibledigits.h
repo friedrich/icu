@@ -77,6 +77,7 @@ private:
     void setInfinite();
     void clear();
     double computeAbsDoubleValue() const;
+    UBool isOverMaxDigits() const;
 
     VisibleDigits(const VisibleDigits &);
     VisibleDigits &operator=(const VisibleDigits &);

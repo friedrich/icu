@@ -23,7 +23,7 @@ FixedPrecision::FixedPrecision()
 
 UBool
 FixedPrecision::isRoundingRequired(
-        int32_t upperExponent, const DigitInterval &interval) const {
+        int32_t upperExponent, int32_t lowerExponent) const {
     int32_t leastSigAllowed = fMax.getLeastSignificantInclusive();
     int32_t maxSignificantDigits = fSignificant.getMax();
     int32_t roundDigit;
@@ -34,7 +34,7 @@ FixedPrecision::isRoundingRequired(
         roundDigit =
                 limitDigit > leastSigAllowed ? limitDigit : leastSigAllowed;
     }
-    return (roundDigit > interval.getLeastSignificantInclusive());
+    return (roundDigit > lowerExponent);
 }
 
 DigitList &
@@ -172,7 +172,7 @@ FixedPrecision::initVisibleDigits(
     // Try fast path
     if (initVisibleDigits(value, 0, digits, status)) {
         digits.fAbsDoubleValue = fabs((double) value);
-        digits.fAbsDoubleValueSet = TRUE;
+        digits.fAbsDoubleValueSet = U_SUCCESS(status) && !digits.isOverMaxDigits();
         return digits;
     }
     // Oops have to use digit list
@@ -226,7 +226,7 @@ FixedPrecision::initVisibleDigits(
     // Try fast path
     if (n >= 0 && initVisibleDigits(scaled, -n, digits, status)) {
         digits.fAbsDoubleValue = fabs(value);
-        digits.fAbsDoubleValueSet = TRUE;
+        digits.fAbsDoubleValueSet = U_SUCCESS(status) && !digits.isOverMaxDigits();
         return digits;
     }
 
@@ -247,15 +247,18 @@ FixedPrecision::initVisibleDigits(
     }
     digits.clear();
 
+    // Compute fAbsIntValue, but we don't know yet if it will be valid.
+    UBool absIntValueComputed = FALSE;
     if (mantissa >= 0) {
         digits.fAbsIntValue = mantissa;
         for (int32_t i = 0; i > exponent; --i) {
             digits.fAbsIntValue /= 10;
         }
-        digits.fAbsIntValueSet = TRUE;
+        absIntValueComputed = TRUE;
     }
     if (mantissa == 0) {
         getIntervalForZero(digits.fInterval);
+        digits.fAbsIntValueSet = absIntValueComputed;
         return TRUE;
     }
     // be sure least significant digit is non zero
@@ -281,10 +284,8 @@ FixedPrecision::initVisibleDigits(
         status = U_ILLEGAL_ARGUMENT_ERROR;
         return TRUE;
     }
-    digits.fInterval.setLeastSignificantInclusive(exponent);
-    digits.fInterval.setMostSignificantExclusive(upperExponent);
     UBool roundingRequired =
-            isRoundingRequired(upperExponent, digits.fInterval);
+            isRoundingRequired(upperExponent, exponent);
     if (roundingRequired) {
         if (fExactOnly) {
             status = U_FORMAT_INEXACT_ERROR;
@@ -292,7 +293,13 @@ FixedPrecision::initVisibleDigits(
         }
         return FALSE;
     }
+    digits.fInterval.setLeastSignificantInclusive(exponent);
+    digits.fInterval.setMostSignificantExclusive(upperExponent);
     getInterval(upperExponent, digits.fInterval);
+
+    // The intValue we computed above is only valid if our visible digits
+    // doesn't exceed the maximum integer digits allowed.
+    digits.fAbsIntValueSet = absIntValueComputed && !digits.isOverMaxDigits();
     return TRUE;
 }
 
