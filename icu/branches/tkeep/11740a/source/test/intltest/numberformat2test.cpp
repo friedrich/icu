@@ -1972,7 +1972,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "13",
                 FALSE,
-                precision.initVisibleDigits(13LL, digits, status));
+                precision.initVisibleDigits((int64_t) 13LL, digits, status));
         assertSuccess("13", status);
     }
     {
@@ -1981,7 +1981,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "17",
                 TRUE,
-                precision.initVisibleDigits(-17LL, digits, status));
+                precision.initVisibleDigits((int64_t) -17LL, digits, status));
         assertSuccess("-17", status);
     }
     {
@@ -2008,7 +2008,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "31536000",
                 TRUE,
-                precision.initVisibleDigits(-31536000LL, digits, status));
+                precision.initVisibleDigits((int64_t) -31536000LL, digits, status));
         assertSuccess("-31536000", status);
     }
     {
@@ -2017,7 +2017,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "0",
                 FALSE,
-                precision.initVisibleDigits(0LL, digits, status));
+                precision.initVisibleDigits((int64_t) 0LL, digits, status));
         assertSuccess("0", status);
     }
     {
@@ -2028,7 +2028,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "0000.00",
                 FALSE,
-                precision.initVisibleDigits(0LL, digits, status));
+                precision.initVisibleDigits((int64_t) 0LL, digits, status));
         assertSuccess("0", status);
     }
     {
@@ -2039,7 +2039,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "0057.00",
                 FALSE,
-                precision.initVisibleDigits(57LL, digits, status));
+                precision.initVisibleDigits((int64_t) 57LL, digits, status));
         assertSuccess("57", status);
     }
     {
@@ -2050,7 +2050,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "0057.00",
                 TRUE,
-                precision.initVisibleDigits(-57LL, digits, status));
+                precision.initVisibleDigits((int64_t) -57LL, digits, status));
         assertSuccess("-57", status);
     }
     {
@@ -2061,7 +2061,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "35.0",
                 FALSE,
-                precision.initVisibleDigits(235LL, digits, status));
+                precision.initVisibleDigits((int64_t) 235LL, digits, status));
         assertSuccess("235", status);
     }
     {
@@ -2070,7 +2070,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         precision.fMax.setIntDigitCount(2);
         precision.fMin.setFracDigitCount(1);
         precision.fFailIfOverMax = TRUE;
-        precision.initVisibleDigits(239LL, digits, status);
+        precision.initVisibleDigits((int64_t) 239LL, digits, status);
         if (status != U_ILLEGAL_ARGUMENT_ERROR) {
             errln("239: Expected U_ILLEGAL_ARGUMENT_ERROR");
         }
@@ -2082,7 +2082,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "153.00",
                 FALSE,
-                precision.initVisibleDigits(153LL, digits, status));
+                precision.initVisibleDigits((int64_t) 153LL, digits, status));
         assertSuccess("153", status);
     }
     {
@@ -2090,7 +2090,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         FixedPrecision precision;
         precision.fSignificant.setMax(2);
         precision.fExactOnly = TRUE;
-        precision.initVisibleDigits(154LL, digits, status);
+        precision.initVisibleDigits((int64_t) 154LL, digits, status);
         if (status != U_FORMAT_INEXACT_ERROR) {
             errln("154: Expected U_FORMAT_INEXACT_ERROR");
         }
@@ -2102,7 +2102,7 @@ void NumberFormat2Test::TestIntInitVisibleDigits() {
         verifyVisibleDigits(
                 "150",
                 FALSE,
-                precision.initVisibleDigits(150LL, digits, status));
+                precision.initVisibleDigits((int64_t) 150LL, digits, status));
         assertSuccess("150", status);
     }
 }
@@ -2116,7 +2116,7 @@ void NumberFormat2Test::TestIntInitVisibleDigitsToDigitList() {
         verifyVisibleDigits(
                 "29.2",
                 TRUE,
-                precision.initVisibleDigits(-30LL, digits, status));
+                precision.initVisibleDigits((int64_t) -30LL, digits, status));
         assertSuccess("-29.2", status);
     }
     {
@@ -2127,7 +2127,7 @@ void NumberFormat2Test::TestIntInitVisibleDigitsToDigitList() {
         verifyVisibleDigits(
                 "36.5",
                 TRUE,
-                precision.initVisibleDigits(-30LL, digits, status));
+                precision.initVisibleDigits((int64_t) -30LL, digits, status));
         assertSuccess("-36.5", status);
     }
     {
@@ -2138,7 +2138,7 @@ void NumberFormat2Test::TestIntInitVisibleDigitsToDigitList() {
         verifyVisibleDigits(
                 "1390",
                 FALSE,
-                precision.initVisibleDigits(1381LL, digits, status));
+                precision.initVisibleDigits((int64_t) 1381LL, digits, status));
         assertSuccess("1390", status);
     }
     {
@@ -2149,7 +2149,7 @@ void NumberFormat2Test::TestIntInitVisibleDigitsToDigitList() {
         verifyVisibleDigits(
                 "2000",
                 TRUE,
-                precision.initVisibleDigits(-1381LL, digits, status));
+                precision.initVisibleDigits((int64_t) -1381LL, digits, status));
         assertSuccess("-2000", status);
     }
 }

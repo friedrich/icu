@@ -9,7 +9,7 @@
 
 #include "visibledigits.h"
 #include "digitlst.h"
-#include "decnumber.h"
+#include "decNumber.h"
 #include "cstring.h"
 #include "uassert.h"
 #include <math.h>
