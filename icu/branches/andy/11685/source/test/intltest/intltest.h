@@ -253,6 +253,30 @@ public:
      */
     static float random();
 
+
+    /**
+     *   Integer random numbers, similar to C++ std::minstd_rand, with the same algorithm
+     *   and constants.  Allow additional access to internal state, for use by monkey tests,
+     *   which need to recreate previous random sequences beginning near a failure point.
+     */
+    class icu_rand {
+      public:
+        icu_rand(uint32_t seed = 1);
+        ~icu_rand();
+        void seed(uint32_t seed);
+        uint32_t operator()();
+        /**
+          * Get a seed corresponding to the current state of the generator.
+          * Seeding any generator with this value will cause it to produce the
+          * same sequence as this one will from this point forward.
+          */
+        uint32_t getSeed();
+      private:
+        uint32_t fLast;
+    };
+     
+
+
     enum { kMaxProps = 16 };
 
     virtual void setProperty(const char* propline);

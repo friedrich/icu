@@ -9,16 +9,13 @@
 #include "rbbimonkeytest.h"
 #include "unicode/utypes.h"
 #include "unicode/brkiter.h"
-#include "unicode/rbbi.h"
-#include "unicode/regex.h"
 #include "unicode/uniset.h"
 #include "unicode/unistr.h"
 
 #include "charstr.h"
-#include "ucbuf.h"
+#include "cmemory.h"
 #include "uelement.h"
 #include "uhash.h"
-#include "uvector.h"
 
 #include "iostream"
 #include "string"
@@ -36,34 +33,21 @@ void RBBIMonkeyTest::runIndexedTest(int32_t index, UBool exec, const char* &name
     TESTCASE_AUTO_END;
 }
 
+//---------------------------------------------------------------------------------------
+//
+//   class BreakRule implementation.
+//
+//---------------------------------------------------------------------------------------
+
+BreakRule::BreakRule()      // :  all field default initialized.
+{
+}
+
+BreakRule::~BreakRule() {};
 
 
-//  class CharClass    Represents a single character class from the source break rules.
-
-class CharClass {
-  public:
-    UnicodeString     fName;
-    UnicodeString     fOriginalDef;    // set definition as it appeared in user supplied rules.
-    UnicodeString     fExpandedDef;    // set definition with any embedded named sets replaced by their defs, recursively.
-    CharClass(const UnicodeString &name, const UnicodeString &originalDef, const UnicodeString &expandedDef) :
-            fName(name), fOriginalDef(originalDef), fExpandedDef(expandedDef) {}
-};
-
-
-// class BreakRule    represents a single rule from a set of break rules.
-//                    Each rule has the set definitions expanded, and
-//                    is compiled to a regular expression.
-
-class BreakRule {
-  public:
-    UnicodeString    fName;                         // Original name from source rules.
-    UnicodeString    fPaddedName;                   // Name, adjusted so it will compare in desired sort order.
-                                                    //   (First numeric field expanded with leading '0's)
-    UnicodeString    fRule;                         // Rule expression, excluding the name.
-    UnicodeString    fExpandedRule;                 // Rule expression after expanding the set definitions.
-    LocalPointer<RegexMatcher>  fRuleMatcher;       // Regular expression that matches the rule.
-    static int8_t comparator(UElement a, UElement b);  // See uelement.h
-};
+// Break rules are ordered in the order they should be applied,
+// which is based on the rule name but with the first numeric field treated in numeric order.
 
 int8_t BreakRule::comparator(UElement a, UElement b) {
     BreakRule *bra = static_cast<BreakRule *>(a.pointer);
@@ -72,36 +56,11 @@ int8_t BreakRule::comparator(UElement a, UElement b) {
 }
 
 
-// class BreakRules    represents a complete set of break rules, possibly tailored,
-//                     compiled from testdata break rules.
-
-class BreakRules {
-  public:
-    BreakRules(UErrorCode &status);
-
-    void compileRules(UCHARBUF *rules, UErrorCode &status);
-
-    
-    icu::UVector       fBreakRules;     // Contents are of type (BreakRule *).
-                                        // Contents are ordered by the order of application.
-    UHashtable        *fCharClasses;    // Key is set name (UnicodeString).
-                                        // Value is (CharClass *)
-
-    CharString         fLocale;
-    UBreakIteratorType fType;
-
-    void addCharClass(const UnicodeString &name, const UnicodeString &def, UErrorCode &status);
-    void addRule(const UnicodeString &name, const UnicodeString &def, UErrorCode &status);
-    bool setKeywordParameter(const UnicodeString &keyword, const UnicodeString &value, UErrorCode &status);
-
-    LocalPointer<RegexMatcher> fSetRefsMatcher;
-    LocalPointer<RegexMatcher> fCommentsMatcher;
-    LocalPointer<RegexMatcher> fClassDefMatcher;
-    LocalPointer<RegexMatcher> fRuleDefMatcher;
-    LocalPointer<RegexMatcher> fNumericFieldMatcher;
-};
-
-
+//---------------------------------------------------------------------------------------
+//
+//   class BreakRules implementation.
+//
+//---------------------------------------------------------------------------------------
 BreakRules::BreakRules(UErrorCode &status)  : fBreakRules(status), fCharClasses(NULL) {
     fCharClasses = uhash_open(uhash_hashUnicodeString,
                               uhash_compareUnicodeString,
@@ -188,7 +147,7 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
 
 
 void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definition, UErrorCode &status) {
-    // If the rule name contains embedded digits, pad the first such field with leading zeroes,
+    // If the rule name contains embedded digits, pad the first numeric field to a fixed length with leading zeroes,
     // This gives a numeric sort order that matches Unicode UAX rule numbering conventions.
     UnicodeString paddedName;
     UnicodeString emptyString;
@@ -251,7 +210,9 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
 
 bool BreakRules::setKeywordParameter(const UnicodeString &keyword, const UnicodeString &value, UErrorCode &status) {
     if (keyword == UnicodeString("locale")) {
-        fLocale.appendInvariantChars(value, status);
+        CharString localeName;
+        localeName.appendInvariantChars(value, status);
+        fLocale = Locale::createFromName(localeName.data());
         return true;
     } 
     if (keyword == UnicodeString("type")) {
@@ -271,14 +232,37 @@ bool BreakRules::setKeywordParameter(const UnicodeString &keyword, const Unicode
     // TODO: add tailoring base setting here.
     return false;
 }
-    
+
+RuleBasedBreakIterator *BreakRules::createICUBreakIterator(UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    RuleBasedBreakIterator *bi = NULL;
+    switch(fType) {
+        case UBRK_CHARACTER:
+            bi = dynamic_cast<RuleBasedBreakIterator *>(BreakIterator::createCharacterInstance(fLocale, status));
+            break;
+        case UBRK_WORD:
+            bi = dynamic_cast<RuleBasedBreakIterator *>(BreakIterator::createWordInstance(fLocale, status));
+            break;
+        case UBRK_LINE:
+            bi = dynamic_cast<RuleBasedBreakIterator *>(BreakIterator::createLineInstance(fLocale, status));
+            break;
+        case UBRK_SENTENCE:
+            bi = dynamic_cast<RuleBasedBreakIterator *>(BreakIterator::createSentenceInstance(fLocale, status));
+            break;
+        default:
+            IntlTest::gTest->errln("%s:%d Bad break iterator type of %d", __FILE__, __LINE__, fType);
+            status = U_ILLEGAL_ARGUMENT_ERROR;
+    }
+    return bi;
+}
+
 
 void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
     if (U_FAILURE(status)) {
         return;
     }
-
-
 
     UnicodeString emptyString;
     for (int32_t lineNumber=0; ;lineNumber++) {    // Loop once per input line.
@@ -329,6 +313,80 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
 
 }
 
+
+
+//---------------------------------------------------------------------------------------
+//
+//   class MonkeyTestData implementation.
+//
+//---------------------------------------------------------------------------------------
+
+MonkeyTestData::MonkeyTestData(UErrorCode &status)  {
+    fRuleForPosition.adoptInstead(new UVector(status));
+
+}
+
+void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status) {
+}
+
+
+//---------------------------------------------------------------------------------------
+//
+//   class RBBIMonkeyImpl 
+//
+//---------------------------------------------------------------------------------------
+
+
+// RBBIMonkeyImpl constructor does all of the setup for a single rule set - compiling the
+//                            reference rules and creating the icu breakiterator to test,
+//                            with its type and locale coming from the reference rules.
+
+RBBIMonkeyImpl::RBBIMonkeyImpl(const char *ruleFile, UErrorCode &status) {
+    openBreakRules(ruleFile, status);
+    if (U_FAILURE(status)) {
+        IntlTest::gTest->errln("%s:%d Error %s opening file %s.", __FILE__, __LINE__, u_errorName(status), ruleFile);
+        return;
+    }
+    fRuleSet.adoptInstead(new BreakRules(status));
+    fRuleSet->compileRules(fRuleCharBuffer.getAlias(), status);
+    if (U_FAILURE(status)) {
+        IntlTest::gTest->errln("%s:%d Error %s processing file %s.", __FILE__, __LINE__, u_errorName(status), ruleFile);
+        return;
+    }
+    fBI.adoptInstead(fRuleSet->createICUBreakIterator(status));
+}
+
+
+void RBBIMonkeyImpl::openBreakRules(const char *fileName, UErrorCode &status) {
+    CharString path;
+    path.append(IntlTest::getSourceTestData(status), status);
+    path.append("break_rules" U_FILE_SEP_STRING, status);
+    path.appendPathPart(fileName, status);
+    const char *codePage = "UTF-8";
+    fRuleCharBuffer.adoptInstead(ucbuf_open(path.data(), &codePage, TRUE, FALSE, &status));
+}
+
+
+void RBBIMonkeyImpl::runTest(int32_t numIterations, UErrorCode &status) {
+    if (U_FAILURE(status)) { return; };
+    IntlTest::icu_rand randomGenerator;
+
+    for (int loopCount = 0; loopCount < numIterations; loopCount++) {
+        fTestData->set(fRuleSet.getAlias(), randomGenerator, status);
+        if (U_FAILURE(status)) { break; };
+        // check forwards
+        // check reverse
+        // check following / preceding
+        // check is boundary
+    }
+}
+
+
+//---------------------------------------------------------------------------------------
+//
+//   class RBBIMonkeyTest implementation.
+//
+//---------------------------------------------------------------------------------------
 RBBIMonkeyTest::RBBIMonkeyTest() {
 }
 
@@ -337,45 +395,13 @@ RBBIMonkeyTest::~RBBIMonkeyTest() {
 
 
 void RBBIMonkeyTest::testMonkey() {
-    // testRules("grapheme.txt");
-    // testRules("word.txt");
-    testRules("line.txt");
-}
+    // TODO: need parameters from test framework for specific test, exhaustive, iteration count, starting seed, asynch, ...
+    const char *tests[] = {"grapheme.txt", "word.txt", "line.txt"};
 
-
-static UCHARBUF *openBreakRules(const char *fileName, UErrorCode &status) {
-    CharString path;
-    path.append(IntlTest::getSourceTestData(status), status);
-    path.append("break_rules" U_FILE_SEP_STRING, status);
-    path.appendPathPart(fileName, status);
-    const char *codePage = "UTF-8";
-    UCHARBUF *charBuf = ucbuf_open(path.data(), &codePage, TRUE, FALSE, &status);
-    return charBuf;
-}
-     
-
-/* Run a monkey test on a set of break rules.
- * Each break type and tailoring of a break type results in a separate call to this function.
- *  @param ruleFile   The name of the break rules file for the reference implementation.
- */
-void RBBIMonkeyTest::testRules(const char *ruleFile) {
-    UErrorCode status = U_ZERO_ERROR;
-
-   
-    LocalUCHARBUFPointer ruleCharBuf(openBreakRules(ruleFile, status));
-    if (U_FAILURE(status)) {
-        errln("%s:%d Error %s opening file %s.", __FILE__, __LINE__, u_errorName(status), ruleFile);
-        return;
+    for (int i=0; i < UPRV_LENGTHOF(tests); ++i) {
+        UErrorCode status = U_ZERO_ERROR;
+        RBBIMonkeyImpl test(tests[i], status);
+        test.runTest(1, status);
     }
-    BreakRules ruleSet(status);
-    ruleSet.compileRules(ruleCharBuf.getAlias(), status);
-    if (U_FAILURE(status)) {
-        errln("%s:%d Error %s processing file %s.", __FILE__, __LINE__, u_errorName(status), ruleFile);
-        return;
-    }
-
-
-
-    // TODO: make running the rules be multi-threaded.
-
 }
+
