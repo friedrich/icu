@@ -247,10 +247,15 @@ FixedPrecision::initVisibleDigits(
     }
     digits.clear();
 
-    // Compute fAbsIntValue, but we don't know yet if it will be valid.
+    // Precompute fAbsIntValue if it is small enough, but we don't know yet
+    // if it will be valid.
     UBool absIntValueComputed = FALSE;
-    if (mantissa >= 0) {
+    if (mantissa > -1000000000000000000LL /* -1e18 */
+            && mantissa < 1000000000000000000LL /* 1e18 */) {
         digits.fAbsIntValue = mantissa;
+        if (digits.fAbsIntValue < 0) {
+            digits.fAbsIntValue = -digits.fAbsIntValue;
+        }
         for (int32_t i = 0; i > exponent; --i) {
             digits.fAbsIntValue /= 10;
         }

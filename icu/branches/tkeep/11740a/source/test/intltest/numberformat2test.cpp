@@ -99,6 +99,7 @@ private:
     void TestSmallIntFormatter();
     void TestPositiveIntDigitFormatter();
     void TestDigitListInterval();
+    void TestLargeIntValue();
     void TestIntInitVisibleDigits();
     void TestIntInitVisibleDigitsToDigitList();
     void TestDoubleInitVisibleDigits();
@@ -220,6 +221,8 @@ private:
     void verifyAttributes(
             const NumberFormat2Test_Attributes *expected,
             const NumberFormat2Test_Attributes *actual);
+    void verifyIntValue(
+            int64_t expected, const VisibleDigits &digits);
 };
 
 void NumberFormat2Test::runIndexedTest(
@@ -257,6 +260,7 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestValueFormatter);
     TESTCASE_AUTO(TestValueFormatterIsFastFormattable);
     TESTCASE_AUTO(TestValueFormatterScientific);
+    TESTCASE_AUTO(TestLargeIntValue);
     TESTCASE_AUTO(TestIntInitVisibleDigits);
     TESTCASE_AUTO(TestIntInitVisibleDigitsToDigitList);
     TESTCASE_AUTO(TestDoubleInitVisibleDigits);
@@ -1964,6 +1968,31 @@ void NumberFormat2Test::TestAffixPatternAppendAjoiningLiterals() {
   assertSuccess("", status);
 }
 
+void NumberFormat2Test::TestLargeIntValue() {
+    VisibleDigits digits;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+
+        // Last 18 digits for int values.
+        verifyIntValue(
+                223372036854775807LL, 
+                precision.initVisibleDigits(INT64_MAX, digits, status));
+        assertSuccess("INT64_MAX", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+
+        // Last 18 digits for int values.
+        verifyIntValue(
+                223372036854775808LL, 
+                precision.initVisibleDigits(INT64_MIN, digits, status));
+        assertSuccess("INT64_MIN", status);
+    }
+        
+}
+
 void NumberFormat2Test::TestIntInitVisibleDigits() {
     VisibleDigits digits;
     {
@@ -3397,6 +3426,20 @@ void NumberFormat2Test::verifyAttributes(
             "expected and actual not same length",
             expected[idx].spos,
             actual[idx].spos);
+}
+
+void NumberFormat2Test::verifyIntValue(
+        int64_t expected, const VisibleDigits &digits) {
+    double unusedSource;
+    int64_t intValue;
+    int64_t unusedF;
+    int64_t unusedT;
+    int32_t unusedV;
+    UBool unusedHasIntValue;
+    digits.getFixedDecimal(
+            unusedSource, intValue, unusedF,
+            unusedT, unusedV, unusedHasIntValue);
+    assertEquals("", expected, intValue);
 }
 
 extern IntlTest *createNumberFormat2Test() {
