@@ -172,7 +172,7 @@ FixedPrecision::initVisibleDigits(
     // Try fast path
     if (initVisibleDigits(value, 0, digits, status)) {
         digits.fAbsDoubleValue = fabs((double) value);
-        digits.fAbsDoubleValueSet = U_SUCCESS(status) && !digits.isOverMaxDigits();
+        digits.fAbsDoubleValueSet = U_SUCCESS(status) && digits.fAbsIntValueSet;
         return digits;
     }
     // Oops have to use digit list
@@ -226,7 +226,7 @@ FixedPrecision::initVisibleDigits(
     // Try fast path
     if (n >= 0 && initVisibleDigits(scaled, -n, digits, status)) {
         digits.fAbsDoubleValue = fabs(value);
-        digits.fAbsDoubleValueSet = U_SUCCESS(status) && !digits.isOverMaxDigits();
+        digits.fAbsDoubleValueSet = U_SUCCESS(status) && digits.fAbsIntValueSet;
         return digits;
     }
 
