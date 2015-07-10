@@ -223,6 +223,8 @@ private:
             const NumberFormat2Test_Attributes *actual);
     void verifyIntValue(
             int64_t expected, const VisibleDigits &digits);
+    void verifySource(
+            double expected, const VisibleDigits &digits);
 };
 
 void NumberFormat2Test::runIndexedTest(
@@ -1983,12 +1985,36 @@ void NumberFormat2Test::TestLargeIntValue() {
     {
         UErrorCode status = U_ZERO_ERROR;
         FixedPrecision precision;
+        precision.fMax.setIntDigitCount(5);
+
+        // Last 18 digits for int values.
+        verifyIntValue(
+                75807LL, 
+                precision.initVisibleDigits(INT64_MAX, digits, status));
+        verifySource(75807.0, digits);
+        assertSuccess("75807", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
 
         // Last 18 digits for int values.
         verifyIntValue(
                 223372036854775808LL, 
                 precision.initVisibleDigits(INT64_MIN, digits, status));
         assertSuccess("INT64_MIN", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setIntDigitCount(5);
+
+        // Last 18 digits for int values.
+        verifyIntValue(
+                75808LL, 
+                precision.initVisibleDigits(INT64_MIN, digits, status));
+        verifySource(75808.0, digits);
+        assertSuccess("75808", status);
     }
         
 }
@@ -3440,6 +3466,22 @@ void NumberFormat2Test::verifyIntValue(
             unusedSource, intValue, unusedF,
             unusedT, unusedV, unusedHasIntValue);
     assertEquals("", expected, intValue);
+}
+
+void NumberFormat2Test::verifySource(
+        double expected, const VisibleDigits &digits) {
+    double source;
+    int64_t unusedIntValue;
+    int64_t unusedF;
+    int64_t unusedT;
+    int32_t unusedV;
+    UBool unusedHasIntValue;
+    digits.getFixedDecimal(
+            source, unusedIntValue, unusedF,
+            unusedT, unusedV, unusedHasIntValue);
+    if (expected != source) {
+        errln("Expected %f, got %f instead", expected, source);
+    }
 }
 
 extern IntlTest *createNumberFormat2Test() {
