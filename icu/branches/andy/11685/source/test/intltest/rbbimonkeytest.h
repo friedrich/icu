@@ -12,6 +12,7 @@
 
 #include "unicode/rbbi.h"
 #include "unicode/regex.h"
+#include "unicode/uniset.h"
 #include "unicode/unistr.h"
 
 #include "ucbuf.h"
@@ -44,11 +45,12 @@ class RBBIMonkeyTest: public IntlTest {
 
 class CharClass {
   public:
-    UnicodeString     fName;
-    UnicodeString     fOriginalDef;    // set definition as it appeared in user supplied rules.
-    UnicodeString     fExpandedDef;    // set definition with any embedded named sets replaced by their defs, recursively.
-    CharClass(const UnicodeString &name, const UnicodeString &originalDef, const UnicodeString &expandedDef) :
-            fName(name), fOriginalDef(originalDef), fExpandedDef(expandedDef) {}
+    UnicodeString                fName;
+    UnicodeString                fOriginalDef;    // set definition as it appeared in user supplied rules.
+    UnicodeString                fExpandedDef;    // set definition with any embedded named sets replaced by their defs, recursively.
+    LocalPointer<const UnicodeSet>     fSet;
+    CharClass(const UnicodeString &name, const UnicodeString &originalDef, const UnicodeString &expandedDef, const UnicodeSet *set) :
+            fName(name), fOriginalDef(originalDef), fExpandedDef(expandedDef), fSet(set) {}
 };
 
 
@@ -86,6 +88,7 @@ class BreakRules {
                                            // Value is (CharClass *)
     LocalPointer<UVector>  fCharClassList; // Char Classes, same contents as fCharClasses values,
                                            //   but in a vector so they can be accessed by index.
+    UnicodeSet         fDictionarySet;     // Dictionary set, empty if none is defined.
     Locale             fLocale;
     UBreakIteratorType fType;
 
@@ -137,6 +140,7 @@ class RBBIMonkeyImpl {
     LocalPointer<BreakRules>             fRuleSet;
     LocalPointer<RuleBasedBreakIterator> fBI;
     LocalPointer<MonkeyTestData>         fTestData;
+    IntlTest::icu_rand                   fRandomGenerator;
 
   private:
     void openBreakRules(const char *fileName, UErrorCode &status);

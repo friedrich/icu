@@ -1,0 +1,137 @@
+type = line;
+locale = en;
+
+
+AI = [:LineBreak =  Ambiguous:];
+AL = [:LineBreak =  Alphabetic:];
+BA = [:LineBreak =  Break_After:];
+BB = [:LineBreak =  Break_Before:];
+BK = [:LineBreak =  Mandatory_Break:];
+B2 = [:LineBreak =  Break_Both:];
+CB = [:LineBreak =  Contingent_Break:];
+CJ = [:LineBreak =  Conditional_Japanese_Starter:];
+CL = [:LineBreak =  Close_Punctuation:];
+CM = [:LineBreak =  Combining_Mark:];
+CP = [:LineBreak =  Close_Parenthesis:];
+CR = [:LineBreak =  Carriage_Return:];
+EX = [:LineBreak =  Exclamation:];
+GL = [:LineBreak =  Glue:];
+HL = [:LineBreak =  Hebrew_Letter:];
+HY = [:LineBreak =  Hyphen:];
+H2 = [:LineBreak =  H2:];
+H3 = [:LineBreak =  H3:];
+ID = [:LineBreak =  Ideographic:];
+IN = [:LineBreak =  Inseperable:];
+IS = [:LineBreak =  Infix_Numeric:];
+JL = [:LineBreak =  JL:];
+JV = [:LineBreak =  JV:];
+JT = [:LineBreak =  JT:];
+LF = [:LineBreak =  Line_Feed:];
+NL = [:LineBreak =  Next_Line:];
+NS = [[:LineBreak =  Nonstarter:] CJ];
+NU = [:LineBreak =  Numeric:];
+OP = [:LineBreak =  Open_Punctuation:];
+PO = [:LineBreak =  Postfix_Numeric:];
+PR = [:LineBreak =  Prefix_Numeric:];
+QU = [:LineBreak =  Quotation:];
+RI = [:LineBreak =  Regional_Indicator:];
+SA = [:LineBreak =  Complex_Context:];
+SG = [:LineBreak =  Surrogate:];
+SP = [:LineBreak =  Space:];
+SY = [:LineBreak =  Break_Symbols:];
+WJ = [:LineBreak =  Word_Joiner:];
+XX = [:LineBreak =  Unknown:];
+ZW = [:LineBreak =  ZWSpace:];
+
+dictionary = [:LineBreak = Complex_Context:];
+
+LB4:        BK ÷;
+LB5:        CR LF;
+LB5.1:      CR ÷;
+LB5.2:      LF ÷;
+LB5.3:      NL ÷;
+
+LB6:        . (BK | CR | LF | NL);
+
+LB7:        . SP;
+LB7.1:      . ZW;
+
+LB8:        ZW SP* ÷;
+
+# LB9:  X CM -> X
+# LB10: Unattached CM -> AL
+
+LB11:        . CM* WJ;
+LB11.1:      WJ CM* [^CM];
+
+LB12:        GL CM* [^CM];
+
+LB12a:       [^SP BA HY] CM* GL;
+
+LB13:        . CM* CL;
+LB13.1:      . CM* CP;
+LB13.2:      . CM* EX;
+LB13.3:      . CM* IS;
+LB13.4:      . CM* SY;
+
+LB14:        OP CM* (SP CM*)* [^CM];
+
+LB15:        QU CM* (SP CM*)* OP;
+
+LB16:        (CL | CP)CM* (SP CM*)* NS;
+
+LB17:        B2 CM* (SP CM*)* NS;
+
+LB18:        SP CM* ÷;
+
+LB19:        . CM* QU;
+LB19.1:      QU CM* [^CM];
+
+LB20:        . CM* ÷ CB;
+LB20.1:      CB CM* ÷;
+
+LB21:        . CM* BA;
+LB21.1:      . CM* HY;
+LB21.2:      . CM* NS;
+LB21.3:      BB CM* [^CM];
+
+LB21a:       HL CM* (HY | BA);
+LB21b:       SY CM* HL;
+
+LB22:        (AL | HL | CM) CM* IN;   # The CM is from LB10, treat an unattached CM as AL.
+
+LB23:        ID CM* PO CM*;
+LB23.1:      (AL | HL | CM) CM* NU;
+LB23.2:      NU CM* (AL | HL);
+
+LB24:        PR CM* ID;
+LB24.1:      PR CM* (AL | HL);
+LB24.2:      PO CM* (AL | HL);
+
+# Numbers. Recast second half to ensure that match stops on a regular character, not on
+#          a combining character.
+LB25:        ((PR | PO)CM*)? ((OP | HY)CM*)? NU (CM*(NU | SY | IS))* (CM*(CL | CP))? (CM*(PR | PO))?;
+
+LB26:        JL CM* (JL | JV | H2 | H3);
+LB26.1:      (JV | H2) CM* (JV | JT);
+LB26.2:      (JT | H3) CM* JT;
+
+LB27:        (JL | JV | JT | H2 | H3) CM* IN;
+LB27.1:      (JL | JV | JT | H2 | H3) CM* PO;
+LB27.2:      PO CM* (JL | JV | JT | H2 | H3);
+
+# LB28 Do not break between Alphabetics.
+#      Unattached (leading) CM treated as AL.
+LB28:        (AL | HL | CM)CM* (AL | HL);
+
+LB29:        IS CM* (AL | HL);
+
+# LB30  is also adjusted for unattached leading CM.
+LB30:        (AL | CM | HL | NU)CM* OP;
+LB30.1:      CP CM* (AL | HL | NU);
+
+LB30a:       RI CM* RI;
+
+# LB31 Break Everywhere Else.
+#      Include combining marks
+LB31:        . CM* ÷;

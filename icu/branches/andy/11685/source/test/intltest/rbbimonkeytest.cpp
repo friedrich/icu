@@ -61,11 +61,14 @@ int8_t BreakRule::comparator(UElement a, UElement b) {
 //   class BreakRules implementation.
 //
 //---------------------------------------------------------------------------------------
-BreakRules::BreakRules(UErrorCode &status)  : fBreakRules(status), fCharClasses(NULL) {
+BreakRules::BreakRules(UErrorCode &status)  : 
+        fBreakRules(status), fCharClasses(NULL), fType(UBRK_COUNT) {
     fCharClasses = uhash_open(uhash_hashUnicodeString,
                               uhash_compareUnicodeString,
                               NULL,      // value comparator.
                               &status);
+
+    fCharClassList.adoptInstead(new UVector(status));
 
     fSetRefsMatcher.adoptInstead(new RegexMatcher(UnicodeString(
              "(?!(?:\\{|=|\\[:)[ \\t]{0,4})"              // Negative lookbehind for '{' or '=' or '[:'
@@ -93,7 +96,7 @@ BreakRules::BreakRules(UErrorCode &status)  : fBreakRules(status), fCharClasses(
     // Match (initial parse) of a break rule line.
     fRuleDefMatcher.adoptInstead(new RegexMatcher(UnicodeString(
                 "[ \\t]*"                                // leading white space
-                "(?<RuleName>[A-Za-z_][A-Za-z0-9_]*)"    // The rule name
+                "(?<RuleName>[A-Za-z_][A-Za-z0-9_.]*)"    // The rule name
                 "[ \\t]*:[ \\t]*"                        //   :
                 "(?<RuleDef>.*?)"                        // The rule definition
                 "[ \\t]*;$"),                            // ; <end of line>
@@ -128,12 +131,12 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
 
     std::cout << "expandedDef: " << stdstr(expandedDef) << std::endl;
 
-    UnicodeSet s(expandedDef, USET_IGNORE_SPACE, NULL, status);
+    UnicodeSet *s = new UnicodeSet(expandedDef, USET_IGNORE_SPACE, NULL, status);
     if (U_FAILURE(status)) {
         return;
     }
+    CharClass *cclass = new CharClass(name, definition, expandedDef, s);
 
-    CharClass *cclass = new CharClass(name, definition, expandedDef);
     CharClass *previousClass = static_cast<CharClass *>(uhash_put(fCharClasses, &cclass->fName, cclass, &status));
     if (previousClass != NULL) {
         // Duplicate class def.
@@ -142,7 +145,6 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
         std::cout << "Duplicate definition of " << stdstr(cclass->fName) << std::endl;
         delete previousClass;
     }
-
 }
 
 
@@ -310,6 +312,28 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
         std::cout << "unrecognized line: " << stdstr(line) << std::endl;
 
     }
+    
+    // Build the vector of char classes, omitting the dictionary class if there is one.
+    // This will be used when constructing the random text to be tested.
+
+    int32_t pos = UHASH_FIRST;
+    const UHashElement *el = NULL;
+    std::cout << "Building char class list ..." << std::endl;
+    while ((el = uhash_nextElement(fCharClasses , &pos)) != NULL) {
+        const UnicodeString *ccName = static_cast<const UnicodeString *>(el->key.pointer);
+        CharClass *cclass = static_cast<CharClass *>(el->value.pointer);
+        // std::cout << "    Adding " << stdstr(*ccName) << std::endl;
+        if (*ccName != cclass->fName) {
+            std::cout << "%s:%d: internal error, set names inconsistent.\n";
+        }
+        const UnicodeSet *set = cclass->fSet.getAlias();
+        if (*ccName == UnicodeString("dictionary")) {
+            fDictionarySet = *set;
+        } else {
+            fCharClassList->addElement(cclass, status);
+        }
+    }
+
 
 }
 
@@ -327,6 +351,28 @@ MonkeyTestData::MonkeyTestData(UErrorCode &status)  {
 }
 
 void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status) {
+    const int32_t dataLength = 100;
+
+    // Fill the test string with random characters.
+    // First randomly pick a char class, then randomly pick a character from that class.
+    // Exclude any characters from the dictionary set.
+
+    std::cout << "Populating Test Data" << std::endl;
+    for (int n=0; n<dataLength;) {
+        int charClassIndex = rand() % rules->fCharClassList->size();
+        const CharClass *cclass = static_cast<CharClass *>(rules->fCharClassList->elementAt(charClassIndex));
+        // std::cout << "   class " << stdstr(cclass->fName) << std::endl;
+        if (cclass->fSet->size() == 0) {
+            // Some rules or tailorings do end up with empty char classes.
+            continue;
+        }
+        int32_t charIndex = rand() % cclass->fSet->size();
+        UChar32 c = cclass->fSet->charAt(charIndex);
+        if (!rules->fDictionarySet.contains(c)) {
+            fString.append(c);
+            ++n;
+        }
+    }
 }
 
 
@@ -354,6 +400,11 @@ RBBIMonkeyImpl::RBBIMonkeyImpl(const char *ruleFile, UErrorCode &status) {
         return;
     }
     fBI.adoptInstead(fRuleSet->createICUBreakIterator(status));
+    fTestData.adoptInstead(new MonkeyTestData(status));
+}
+
+
+RBBIMonkeyImpl::~RBBIMonkeyImpl() {
 }
 
 
@@ -369,10 +420,9 @@ void RBBIMonkeyImpl::openBreakRules(const char *fileName, UErrorCode &status) {
 
 void RBBIMonkeyImpl::runTest(int32_t numIterations, UErrorCode &status) {
     if (U_FAILURE(status)) { return; };
-    IntlTest::icu_rand randomGenerator;
 
     for (int loopCount = 0; loopCount < numIterations; loopCount++) {
-        fTestData->set(fRuleSet.getAlias(), randomGenerator, status);
+        fTestData->set(fRuleSet.getAlias(), fRandomGenerator, status);
         if (U_FAILURE(status)) { break; };
         // check forwards
         // check reverse
