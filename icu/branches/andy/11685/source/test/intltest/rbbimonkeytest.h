@@ -116,8 +116,10 @@ class MonkeyTestData {
     void set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status);
 
     UnicodeString          fString;            // The text.
-    UnicodeString          fBoundaries;        // Parallel to fString. Non-zero if break preceding.
-    LocalPointer<UVector>  fRuleForPosition;   // Pointer to BreakRule that applied at each position.
+    UnicodeString          fExpectedBreaks;    // Breaks as found by the reference rules.
+                                               //     Parallel to fString. Non-zero if break preceding.
+    UnicodeString          fActualBreaks;      // Breaks as found by ICU break iterator.
+    UnicodeString          fRuleForPosition;   // Index into BreakRules.fBreakRules of rule that applied at each position.
                                                // Also parallel to fString.
 
 };

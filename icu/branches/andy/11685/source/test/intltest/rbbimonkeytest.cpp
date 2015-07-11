@@ -345,9 +345,7 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
 //
 //---------------------------------------------------------------------------------------
 
-MonkeyTestData::MonkeyTestData(UErrorCode &status)  {
-    fRuleForPosition.adoptInstead(new UVector(status));
-
+MonkeyTestData::MonkeyTestData(UErrorCode &status) : fRuleForPosition(status)  {
 }
 
 void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status) {
@@ -358,7 +356,8 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
     // Exclude any characters from the dictionary set.
 
     std::cout << "Populating Test Data" << std::endl;
-    for (int n=0; n<dataLength;) {
+    int32_t n = 0;
+    for (n=0; n<dataLength;) {
         int charClassIndex = rand() % rules->fCharClassList->size();
         const CharClass *cclass = static_cast<CharClass *>(rules->fCharClassList->elementAt(charClassIndex));
         // std::cout << "   class " << stdstr(cclass->fName) << std::endl;
@@ -372,6 +371,47 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
             fString.append(c);
             ++n;
         }
+    }
+
+    // Reset each rule matcher regex with this new string.
+    //    (Although we are always using the same string object, ICU regular expressions
+    //    don't like the underlying string data changing without doing a reset).
+
+    for (int32_t ruleNum=0; ruleNum<rules->fBreakRules.size(); ruleNum++) {
+        BreakRule *rule = static_cast<BreakRule *>(rules->fBreakRules.elementAt(ruleNum));
+            rule->fRuleMatcher->reset(fString);
+    }
+
+    // Init the expectedBreaks, actualBreaks and ruleForPosition strings (used as arrays).
+    // The actual data doesn't matter at this point, but they need to be of the same length as fString.
+
+    fExpectedBreaks = fString;   // (assigning values, not pointers)
+    fActualBreaks = fString;
+    fRuleForPosition = fString;
+
+    // Apply reference rules to find the expected breaks.
+    
+    n = 0;
+    while (n < fString.length()) {
+        BreakRule *matchingRule = NULL;
+        int32_t ruleNum = 0;
+        for (ruleNum=0; ruleNum<rules->fBreakRules.size(); ruleNum++) {
+            BreakRule *rule = static_cast<BreakRule *>(rules->fBreakRules.elementAt(ruleNum));
+            if (rule->fRuleMatcher->lookingAt(n, status)) {
+               matchingRule = rule;
+               break;
+            }
+        }
+        if (matchingRule == NULL) {
+            // No reference rule matched. This is an error in the rules that should never happen.
+            IntlTest::gTest->errln("%s:%d Trouble with monkey test reference rules.", __FILE__, __LINE__);
+            status = U_INVALID_FORMAT_ERROR;
+            return;
+        }
+        for (int32_t strIndex = n; strIndex < matchingRule->fRuleMatcher->end(status); strIndex++) {
+            fRuleForPosition.setCharAt(n, (UChar)ruleNum);
+        }
+
     }
 }
 
