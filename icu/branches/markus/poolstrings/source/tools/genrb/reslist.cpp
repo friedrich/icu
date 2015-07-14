@@ -27,6 +27,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string>
 #include "unicode/localpointer.h"
 #include "reslist.h"
 #include "unewdata.h"
@@ -228,6 +229,16 @@ void ArrayResource::add(SResource *res) {
     }
 }
 
+PseudoListResource::~PseudoListResource() {}
+
+void PseudoListResource::add(SResource *res) {
+    if (res != NULL && res != &kNoResource) {
+        res->fNext = fFirst;
+        fFirst = res;
+        ++fCount;
+    }
+}
+
 StringBaseResource::StringBaseResource(SRBRoot *bundle, const char *tag, int8_t type,
                                        const UChar *value, int32_t len,
                                        const UString* comment, UErrorCode &errorCode)
@@ -239,6 +250,21 @@ StringBaseResource::StringBaseResource(SRBRoot *bundle, const char *tag, int8_t 
     }
 
     fString.setTo(value, len);
+    fString.getTerminatedBuffer();  // Some code relies on NUL-termination.
+    if (U_SUCCESS(errorCode) && fString.isBogus()) {
+        errorCode = U_MEMORY_ALLOCATION_ERROR;
+    }
+}
+
+StringBaseResource::StringBaseResource(SRBRoot *bundle, int8_t type,
+                                       const icu::UnicodeString &value, UErrorCode &errorCode)
+        : SResource(bundle, NULL, type, NULL, errorCode), fString(value) {
+    if (value.isEmpty() && gFormatVersion > 1) {
+        fRes = URES_MAKE_EMPTY_RESOURCE(type);
+        fWritten = TRUE;
+        return;
+    }
+
     fString.getTerminatedBuffer();  // Some code relies on NUL-termination.
     if (U_SUCCESS(errorCode) && fString.isBogus()) {
         errorCode = U_MEMORY_ALLOCATION_ERROR;
@@ -335,17 +361,20 @@ BinaryResource::~BinaryResource() {
 void
 StringResource::handlePreflightStrings(SRBRoot *bundle, UHashtable *stringSet,
                                        UErrorCode &errorCode) {
+    assert(fSame == NULL);
     fSame = static_cast<StringResource *>(uhash_get(stringSet, this));
     if (fSame != NULL) {
+        ++fSame->fNumCopies;
         return;  /* This is a duplicate of an earlier-visited string. */
     }
     /* Put this string into the set for finding duplicates. */
+    fNumCopies = 1;
     uhash_put(stringSet, this, this, &errorCode);
 
     if (bundle->fStringsForm != STRINGS_UTF16_V1) {
-        const UChar *s = getBuffer();
         int32_t len = length();
-        if (len <= MAX_IMPLICIT_STRING_LENGTH && !U16_IS_TRAIL(s[0]) && len == u_strlen(s)) {
+        if (len <= MAX_IMPLICIT_STRING_LENGTH &&
+                !U16_IS_TRAIL(fString[0]) && fString.indexOf((UChar)0) < 0) {
             /*
              * This string will be stored without an explicit length.
              * Runtime will detect !U16_IS_TRAIL(s[0]) and call u_strlen().
@@ -542,6 +571,12 @@ TableResource::handleWrite16(SRBRoot *bundle, UErrorCode &errorCode) {
         /* 32-bit count, key offsets and values */
         fTableType = URES_TABLE32;
     }
+}
+
+void
+PseudoListResource::handleWrite16(SRBRoot * /*bundle*/, UErrorCode & /*errorCode*/) {
+    fRes = URES_MAKE_EMPTY_RESOURCE(URES_TABLE);
+    fWritten = TRUE;
 }
 
 void
@@ -1016,7 +1051,7 @@ SRBRoot::SRBRoot(const UString *comment, UBool isPoolBundle, UErrorCode &errorCo
           fKeys(NULL), fKeyMap(NULL),
           fKeysBottom(0), fKeysTop(0), fKeysCapacity(0), fKeysCount(0), fLocalKeyLimit(0),
           f16BitUnits(), f16BitStringsLength(0),
-          fUsePoolBundle(&kNoPoolBundle) {
+          fUsePoolBundle(&kNoPoolBundle), fWritePoolBundle(NULL) {
     if (U_FAILURE(errorCode)) {
         return;
     }
@@ -1028,7 +1063,11 @@ SRBRoot::SRBRoot(const UString *comment, UBool isPoolBundle, UErrorCode &errorCo
     }
 
     fKeys = (char *) uprv_malloc(sizeof(char) * KEY_SPACE_SIZE);
-    fRoot = new TableResource(this, NULL, comment, errorCode);
+    if (isPoolBundle) {
+        fRoot = new PseudoListResource(this, errorCode);
+    } else {
+        fRoot = new TableResource(this, NULL, comment, errorCode);
+    }
     if (fKeys == NULL || fRoot == NULL || U_FAILURE(errorCode)) {
         if (U_SUCCESS(errorCode)) {
             errorCode = U_MEMORY_ALLOCATION_ERROR;
@@ -1395,6 +1434,17 @@ StringResource::writeUTF16v2(UnicodeString &dest) {
     dest.append((UChar)0);
 }
 
+#define DEBUG_PRINT_POOL_STRINGS 0
+
+#if DEBUG_PRINT_POOL_STRINGS
+namespace {
+const char *writeStr8(const StringResource *res, std::string &s8) {
+    s8.clear();
+    return res->fString.toUTF8String(s8).c_str();
+}
+}  // namespace
+#endif
+
 void
 SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
     if (U_FAILURE(errorCode)) {
@@ -1422,6 +1472,9 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
      * Temporarily use fSame and fSuffixOffset for suffix strings to
      * refer to the remaining ones.
      */
+#if DEBUG_PRINT_POOL_STRINGS
+    std::string s8;
+#endif
     for (int32_t i = 0; i < count;) {
         /*
          * This string is not a suffix of the previous one;
@@ -1429,6 +1482,13 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
          * suffixes of this one.
          */
         StringResource *res = array[i];
+        res->fNumUnitsSaved = (res->fNumCopies - 1) * res->get16BitStringsLength();
+#if DEBUG_PRINT_POOL_STRINGS
+        if (fIsPoolBundle) {
+            printf("\n**** %4d * [%4d] %s\n",
+                   res->fNumCopies, res->length(), writeStr8(res, s8));
+        }
+#endif
         int32_t j;
         for (j = i + 1; j < count; ++j) {
             StringResource *suffixRes = array[j];
@@ -1439,8 +1499,23 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
                     /* yes, point to the earlier string */
                     suffixRes->fSame = res;
                     suffixRes->fSuffixOffset = res->length() - suffixRes->length();
+                    res->fNumUnitsSaved += suffixRes->fNumCopies * suffixRes->get16BitStringsLength();
+#if DEBUG_PRINT_POOL_STRINGS
+                    if (fIsPoolBundle) {
+                        s8.clear();
+                        printf("save %4d * [%4d] %s\n",
+                               suffixRes->fNumCopies, suffixRes->length(), writeStr8(suffixRes, s8));
+                    }
+#endif
                 } else {
                     /* write the suffix by itself if we need explicit length */
+#if DEBUG_PRINT_POOL_STRINGS
+                    if (fIsPoolBundle) {
+                        s8.clear();
+                        printf("else %4d * [%4d] %s\n",
+                               suffixRes->fNumCopies, suffixRes->length(), writeStr8(suffixRes, s8));
+                    }
+#endif
                 }
             } else {
                 break;  /* not a suffix, restart from here */
@@ -1458,23 +1533,78 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
     if (U_FAILURE(errorCode)) {
         return;
     }
-    /* Write the non-suffix strings. */
-    int32_t i;
-    for (i = 0; i < count && array[i]->fSame == NULL; ++i) {
-        array[i]->writeUTF16v2(f16BitUnits);
-    }
-    if (f16BitUnits.isBogus()) {
-        errorCode = U_MEMORY_ALLOCATION_ERROR;
-        return;
-    }
-    /* Write the suffix strings. Make each point to the real string. */
-    for (; i < count; ++i) {
-        StringResource *res = array[i];
-        StringResource *same = res->fSame;
-        assert(res->length() != same->length());  // Set strings are unique.
-        res->fRes = same->fRes + same->fNumCharsForLength + res->fSuffixOffset;
-        res->fSame = NULL;
-        res->fWritten = TRUE;
+    if (fIsPoolBundle) {
+        // Write strings that are sufficiently shared.
+        // Avoid writing other strings.
+#if DEBUG_PRINT_POOL_STRINGS
+        puts("\n---- write strings that are sufficiently shared ----");
+#endif
+        int32_t numStringsWritten = 0;
+        int32_t numUnitsSaved = 0;
+        for (int32_t i = 0; i < count; ++i) {
+            StringResource *res = array[i];
+            if (res->fNumUnitsSaved >= 1 /* TODO: res->get16BitStringsLength() */) {
+                res->writeUTF16v2(f16BitUnits);
+                ++numStringsWritten;
+                numUnitsSaved += res->fNumUnitsSaved;
+#if DEBUG_PRINT_POOL_STRINGS
+                s8.clear();
+                printf("saves %6d units: [%4d] %s\n",
+                       res->fNumUnitsSaved, res->length(), writeStr8(res, s8));
+#endif
+            } else {
+                if (res->fNumUnitsSaved != 0) {
+                    printf("num units not saved: %d vs. num units self: %d\n",
+                           (int)res->fNumUnitsSaved, (int)res->get16BitStringsLength());
+                }
+                res->fRes = URES_MAKE_EMPTY_RESOURCE(URES_STRING);
+                res->fWritten = TRUE;
+            }
+        }
+        if (f16BitUnits.isBogus()) {
+            errorCode = U_MEMORY_ALLOCATION_ERROR;
+        }
+        if (getShowWarning()) {  // not quiet
+            printf("number of shared strings: %d\n", (int)numStringsWritten);
+            printf("16-bit units for strings: %6d = %6d bytes\n",
+                   (int)f16BitUnits.length(), (int)f16BitUnits.length() * 2);
+            printf("16-bit units saved:       %6d = %6d bytes\n",
+                   (int)numUnitsSaved, (int)numUnitsSaved * 2);
+        }
+    } else {
+        /* Write the non-suffix strings. */
+        int32_t i;
+        for (i = 0; i < count && array[i]->fSame == NULL; ++i) {
+            array[i]->writeUTF16v2(f16BitUnits);
+        }
+        if (f16BitUnits.isBogus()) {
+            errorCode = U_MEMORY_ALLOCATION_ERROR;
+            return;
+        }
+        if (fWritePoolBundle != NULL) {
+            PseudoListResource *poolStrings =
+                    static_cast<PseudoListResource *>(fWritePoolBundle->fRoot);
+            for (i = 0; i < count && array[i]->fSame == NULL; ++i) {
+                if (!array[i]->fString.isEmpty()) {
+                    StringResource *poolString =
+                            new StringResource(fWritePoolBundle, array[i]->fString, errorCode);
+                    if (poolString == NULL) {
+                        errorCode = U_MEMORY_ALLOCATION_ERROR;
+                        break;
+                    }
+                    poolStrings->add(poolString);
+                }
+            }
+        }
+        /* Write the suffix strings. Make each point to the real string. */
+        for (; i < count; ++i) {
+            StringResource *res = array[i];
+            StringResource *same = res->fSame;
+            assert(res->length() != same->length());  // Set strings are unique.
+            res->fRes = same->fRes + same->fNumCharsForLength + res->fSuffixOffset;
+            res->fSame = NULL;
+            res->fWritten = TRUE;
+        }
     }
     // +1 to account for the initial zero in f16BitUnits
     assert(f16BitUnits.length() <= (f16BitStringsLength + 1));

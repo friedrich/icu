@@ -102,6 +102,7 @@ public:
   int32_t f16BitStringsLength;
 
   const ResFile *fUsePoolBundle;
+  SRBRoot *fWritePoolBundle;
 };
 
 /* write a java resource file */
@@ -260,11 +261,28 @@ public:
     SResource *fLast;
 };
 
+/**
+ * List of resources for a pool bundle.
+ * Writes an empty table resource, rather than a container structure.
+ */
+class PseudoListResource : public ContainerResource {
+public:
+    PseudoListResource(SRBRoot *bundle, UErrorCode &errorCode)
+            : ContainerResource(bundle, NULL, URES_TABLE, NULL, errorCode) {}
+    virtual ~PseudoListResource();
+
+    void add(SResource *res);
+
+    virtual void handleWrite16(SRBRoot *bundle, UErrorCode &errorCode);
+};
+
 class StringBaseResource : public SResource {
 public:
     StringBaseResource(SRBRoot *bundle, const char *tag, int8_t type,
                        const UChar *value, int32_t len,
                        const UString* comment, UErrorCode &errorCode);
+    StringBaseResource(SRBRoot *bundle, int8_t type,
+                       const icu::UnicodeString &value, UErrorCode &errorCode);
     virtual ~StringBaseResource();
 
     const UChar *getBuffer() const { return fString.getBuffer(); }
@@ -283,8 +301,17 @@ public:
     StringResource(SRBRoot *bundle, const char *tag, const UChar *value, int32_t len,
                    const UString* comment, UErrorCode &errorCode)
             : StringBaseResource(bundle, tag, URES_STRING, value, len, comment, errorCode),
-              fSame(NULL), fSuffixOffset(0), fNumCharsForLength(0) {}
+              fSame(NULL), fSuffixOffset(0),
+              fNumCopies(0), fNumUnitsSaved(0), fNumCharsForLength(0) {}
+    StringResource(SRBRoot *bundle, const icu::UnicodeString &value, UErrorCode &errorCode)
+            : StringBaseResource(bundle, URES_STRING, value, errorCode),
+              fSame(NULL), fSuffixOffset(0),
+              fNumCopies(0), fNumUnitsSaved(0), fNumCharsForLength(0) {}
     virtual ~StringResource();
+
+    int32_t get16BitStringsLength() const {
+        return fNumCharsForLength + length() + 1;  // +1 for the NUL
+    }
 
     virtual void handlePreflightStrings(SRBRoot *bundle, UHashtable *stringSet, UErrorCode &errorCode);
     virtual void handleWrite16(SRBRoot *bundle, UErrorCode &errorCode);
@@ -293,6 +320,8 @@ public:
 
     StringResource *fSame;  // used for duplicates
     int32_t fSuffixOffset;  // this string is a suffix of fSame at this offset
+    int32_t fNumCopies;     // number of equal strings represented by one stringSet element
+    int32_t fNumUnitsSaved;  // from not writing duplicates and suffixes
     int8_t fNumCharsForLength;
 };
 

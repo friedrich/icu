@@ -565,6 +565,7 @@ processFile(const char *filename, const char *cp,
         goto finish;
     }
     if(options[WRITE_POOL_BUNDLE].doesOccur) {
+        data->fWritePoolBundle = newPoolBundle;
         data->compactKeys(*status);
         int32_t newKeysLength;
         const char *newKeys = data->getKeyBytes(&newKeysLength);
