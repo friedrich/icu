@@ -351,7 +351,6 @@ void UnifiedCacheTest::TestError() {
     cache->flush();
     // error placeholders have no hard references so they always get flushed. 
     assertEquals("", baseCount + 0, cache->keyCount());
-    assertSuccess("", status);
 }
 
 void UnifiedCacheTest::TestHashEquals() {
