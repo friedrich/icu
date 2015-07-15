@@ -140,6 +140,8 @@ void UnifiedCacheTest::TestEvictionPolicy() {
 
     // This should free up all cache items
     assertEquals("", 0, cache.keyCount());
+
+    assertSuccess("", status);
 }
 
 
@@ -261,7 +263,7 @@ void UnifiedCacheTest::TestBounded() {
     // Size of cache should magically drop to 3.
     assertEquals("", 3, cache.unusedCount());
     assertEquals("", 3, cache.keyCount());
-
+    assertSuccess("", status);
 }
 
 void UnifiedCacheTest::TestBasic() {
@@ -316,6 +318,7 @@ void UnifiedCacheTest::TestBasic() {
     SharedObject::clearPtr(frFr);
     cache->flush();
     assertEquals("", baseCount + 0, cache->keyCount());
+    assertSuccess("", status);
 }
 
 void UnifiedCacheTest::TestError() {
@@ -348,6 +351,7 @@ void UnifiedCacheTest::TestError() {
     cache->flush();
     // error placeholders have no hard references so they always get flushed. 
     assertEquals("", baseCount + 0, cache->keyCount());
+    assertSuccess("", status);
 }
 
 void UnifiedCacheTest::TestHashEquals() {
