@@ -27,13 +27,26 @@ U_NAMESPACE_BEGIN
 class U_COMMON_API SharedObject : public UObject {
 public:
     /** Initializes totalRefCount, softRefCount to 0. */
-    SharedObject() : totalRefCount(0), softRefCount(0) {}
+    SharedObject() :
+            totalRefCount(0),
+            softRefCount(0),
+            hardRefCount(0),
+            incrementItemsInUseWithLocking(NULL),
+            incrementItemsInUse(NULL),
+            decrementItemsInUseWithLockingAndEviction(NULL),
+            decrementItemsInUse(NULL),
+            cacheContext(NULL) {}
 
     /** Initializes totalRefCount, softRefCount to 0. */
-    SharedObject(const SharedObject &other)
-        : UObject(other),
-          totalRefCount(0),
-          softRefCount(0) {}
+    SharedObject(const SharedObject &other) :
+            UObject(other),
+            totalRefCount(0),
+            softRefCount(0),
+            incrementItemsInUseWithLocking(NULL),
+            incrementItemsInUse(NULL),
+            decrementItemsInUseWithLockingAndEviction(NULL),
+            decrementItemsInUse(NULL),
+            cacheContext(NULL) {}
 
     virtual ~SharedObject();
 
@@ -41,6 +54,13 @@ public:
      * Increments the number of references to this object. Thread-safe.
      */
     void addRef() const;
+
+    /**
+     * Increments the number of references to this object. Thread-safe.
+     * Must be called only from within the internals of UnifiedCache and
+     * only while the cache global mutex is held.
+     */
+    void addRefWhileHoldingCacheLock() const;
 
     /**
      * Increments the number of soft references to this object. Thread-safe.
@@ -51,6 +71,13 @@ public:
      * Decrements the number of references to this object. Thread-safe.
      */
     void removeRef() const;
+
+    /**
+     * Decrements the number of references to this object. Thread-safe.
+     * Must be called only from within the internals of UnifiedCache and
+     * only while the cache global mutex is held.
+     */
+    void removeRefWhileHoldingCacheLock() const;
 
     /**
      * Decrements the number of soft references to this object. Thread-safe.
@@ -70,16 +97,43 @@ public:
     int32_t getSoftRefCount() const;
 
     /**
-     * If allSoftReferences() == TRUE then this object has only soft
-     * references. The converse is not necessarily true.
+     * Returns the count of hard references only. Uses a memory barrier.
+     * Used for testing the cache. Regular clients won't need this.
+     */
+    int32_t getHardRefCount() const;
+
+    /**
+     * If allSoftReferences() == TRUE then this object has only soft references.
      */
     UBool allSoftReferences() const;
+
+    /**
+     * If allHardReferences() == TRUE then this object has only hard references.
+     */
+    UBool allHardReferences() const;
 
     /**
      * Deletes this object if it has no references or soft references.
      */
     void deleteIfZeroRefCount() const;
 
+    /**
+     * @internal For UnifedCache use only to register this object with itself.
+     *   Must be called before this object is exposed to multiple threads.
+     */ 
+    void registerWithCache(
+            void (*incrementWithLockingFunc)(const void *context),
+            void (*incrementFunc)(const void *context),
+            void (*decrementWithLockingFunc)(const void *context),
+            void (*decrementFunc)(const void *context),
+            const void *context) const {
+        incrementItemsInUseWithLocking = incrementWithLockingFunc;
+        incrementItemsInUse = incrementFunc;
+        decrementItemsInUseWithLockingAndEviction = decrementWithLockingFunc;
+        decrementItemsInUse = decrementFunc;
+        cacheContext = context;
+    }
+        
     /**
      * Returns a writable version of ptr.
      * If there is exactly one owner, then ptr itself is returned as a
@@ -134,6 +188,15 @@ public:
 private:
     mutable u_atomic_int32_t totalRefCount;
     mutable u_atomic_int32_t softRefCount;
+    mutable u_atomic_int32_t hardRefCount;
+    mutable void (*incrementItemsInUseWithLocking)(const void *context);
+    mutable void (*incrementItemsInUse)(const void *context);
+    mutable void (*decrementItemsInUseWithLockingAndEviction)(const void *context);
+    mutable void (*decrementItemsInUse)(const void *context);
+    mutable const void *cacheContext;
+    void addRef(void (*incrementFunc)(const void *), const void *context) const;
+    void removeRef(void (*decrementFunc)(const void *), const void *context) const;
+
 };
 
 U_NAMESPACE_END

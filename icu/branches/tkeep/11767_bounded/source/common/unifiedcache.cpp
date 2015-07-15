@@ -20,6 +20,7 @@ static icu::SharedObject *gNoValue = NULL;
 static UMutex gCacheMutex = U_MUTEX_INITIALIZER;
 static UConditionVar gInProgressValueAddedCond = U_CONDITION_INITIALIZER;
 static icu::UInitOnce gCacheInitOnce = U_INITONCE_INITIALIZER;
+static int32_t MAX_EVICT_ITERATIONS = 10;
 
 U_CDECL_BEGIN
 static UBool U_CALLCONV unifiedcache_cleanup() {
@@ -94,7 +95,11 @@ const UnifiedCache *UnifiedCache::getInstance(UErrorCode &status) {
     return gCache;
 }
 
-UnifiedCache::UnifiedCache(UErrorCode &status) {
+UnifiedCache::UnifiedCache(UErrorCode &status) :
+        fHashtable(NULL),
+        fEvictPos(UHASH_FIRST),
+        fItemsInUseCount(0),
+        fMaxUnused(INT32_MAX) {
     if (U_FAILURE(status)) {
         return;
     }
@@ -110,6 +115,18 @@ UnifiedCache::UnifiedCache(UErrorCode &status) {
     uhash_setKeyDeleter(fHashtable, &ucache_deleteKey);
 }
 
+void UnifiedCache::setMaxUnusedCount(int32_t count) const {
+    Mutex lock(&gCacheMutex);
+    fMaxUnused = count;
+}
+
+int32_t UnifiedCache::unusedCount() const {
+    Mutex lock(&gCacheMutex);
+    return uhash_count(fHashtable) - fItemsInUseCount;
+}
+
+
+
 int32_t UnifiedCache::keyCount() const {
     Mutex lock(&gCacheMutex);
     return uhash_count(fHashtable);
@@ -122,7 +139,6 @@ void UnifiedCache::flush() const {
     // other cache items making those additional cache items eligible for
     // flushing.
     while (_flush(FALSE));
-    umtx_condBroadcast(&gInProgressValueAddedCond);
 }
 
 #ifdef UNIFIED_CACHE_DEBUG
@@ -185,20 +201,32 @@ UnifiedCache::~UnifiedCache() {
     uhash_close(fHashtable);
 }
 
+// Returns the next element in the cache round robin style.
+// On entry, gCacheMutex must be held.
+const UHashElement *
+UnifiedCache::_nextElement() const {
+    const UHashElement *element = uhash_nextElement(fHashtable, &fEvictPos);
+    if (element == NULL) {
+        fEvictPos = UHASH_FIRST;
+        return uhash_nextElement(fHashtable, &fEvictPos);
+    }
+    return element;
+}
+
 // Flushes the contents of the cache. If cache values hold references to other
 // cache values then _flush should be called in a loop until it returns FALSE.
 // On entry, gCacheMutex must be held.
-// On exit, those values with only soft references are flushed. If all is true
-// then every value is flushed even if hard references are held.
+// On exit, those values with are evictable are flushed. If all is true
+// then every value is flushed even if it is not evictable.
 // Returns TRUE if any value in cache was flushed or FALSE otherwise.
 UBool UnifiedCache::_flush(UBool all) const {
     UBool result = FALSE;
-    int32_t pos = UHASH_FIRST;
-    const UHashElement *element = uhash_nextElement(fHashtable, &pos);
-    for (; element != NULL; element = uhash_nextElement(fHashtable, &pos)) {
-        const SharedObject *sharedObject =
-                (const SharedObject *) element->value.pointer;
-        if (all || sharedObject->allSoftReferences()) {
+    int32_t origSize = uhash_count(fHashtable);
+    for (int32_t i = 0; i < origSize; ++i) {
+        const UHashElement *element = _nextElement();
+        if (all || _isEvictable(element)) {
+            const SharedObject *sharedObject =
+                    (const SharedObject *) element->value.pointer;
             uhash_removeElement(fHashtable, element);
             sharedObject->removeSoftRef();
             result = TRUE;
@@ -206,6 +234,30 @@ UBool UnifiedCache::_flush(UBool all) const {
     }
     return result;
 }
+
+// Run an eviction slice.
+// On entry, gCacheMutex must be held.
+// _runEvictionSlice runs a slice of the evict pipeline by examining the next
+// 10 entries in the cache round robin style evicting them if they are eligible.
+void UnifiedCache::_runEvictionSlice() const {
+    int32_t maxItemsToEvict = uhash_count(fHashtable) - fItemsInUseCount - fMaxUnused;
+    if (maxItemsToEvict <= 0) {
+        return;
+    }
+    for (int32_t i = 0; i < MAX_EVICT_ITERATIONS; ++i) {
+        const UHashElement *element = _nextElement();
+        if (_isEvictable(element)) {
+            const SharedObject *sharedObject =
+                    (const SharedObject *) element->value.pointer;
+            uhash_removeElement(fHashtable, element);
+            sharedObject->removeSoftRef();
+            if (--maxItemsToEvict == 0) {
+                break;
+            }
+        }
+    }
+}
+
 
 // Places a new value and creationStatus in the cache for the given key.
 // On entry, gCacheMutex must be held. key must not exist in the cache. 
@@ -225,6 +277,9 @@ void UnifiedCache::_putNew(
         return;
     }
     keyToAdopt->creationStatus = creationStatus;
+    if (value->allHardReferences()) {
+        _registerMaster(keyToAdopt, value);
+    }
     uhash_put(fHashtable, keyToAdopt, (void *) value, &status);
     if (U_SUCCESS(status)) {
         value->addSoftRef();
@@ -254,9 +309,12 @@ void UnifiedCache::_putIfAbsentAndGet(
         UErrorCode putError = U_ZERO_ERROR;
         // best-effort basis only.
         _putNew(key, value, status, putError);
-        return;
+    } else {
+        _put(element, value, status);
     }
-    _put(element, value, status);
+    // Run an eviction slice. This will run even if we added a master entry
+    // which doesn't increase the unused count, but that is still o.k
+    _runEvictionSlice();
 }
 
 // Attempts to fetch value and status for key from cache.
@@ -294,8 +352,9 @@ UBool UnifiedCache::_poll(
 // On exit. value and status set to what is in cache at key or on cache
 // miss the key's createObject() is called and value and status are set to
 // the result of that. In this latter case, best effort is made to add the
-// value and status to the cache. value will be set to NULL instead of
-// gNoValue. Caller must call removeRef on value if non NULL.
+// value and status to the cache. If createObject() fails to create a value,
+// gNoValue is stored in cache, and value is set to NULL. Caller must call
+// removeRef on value if non NULL.
 void UnifiedCache::_get(
         const CacheKeyBase &key,
         const SharedObject *&value,
@@ -324,6 +383,46 @@ void UnifiedCache::_get(
     }
 }
 
+void UnifiedCache::_incrementItemsInUseWithLocking(const void *cacheContext) {
+    Mutex mutex(&gCacheMutex);
+    _incrementItemsInUse(cacheContext);
+}
+
+void UnifiedCache::_decrementItemsInUseWithLockingAndEviction(
+        const void *cacheContext) {
+    Mutex mutex(&gCacheMutex);
+    _decrementItemsInUse(cacheContext);
+    const UnifiedCache *cache = (const UnifiedCache *) cacheContext;
+    cache->_runEvictionSlice();
+}
+
+void UnifiedCache::_incrementItemsInUse(const void *cacheContext) {
+    const UnifiedCache *cache = (const UnifiedCache *) cacheContext;
+    ++cache->fItemsInUseCount;
+}
+
+void UnifiedCache::_decrementItemsInUse(const void *cacheContext) {
+    const UnifiedCache *cache = (const UnifiedCache *) cacheContext;
+    --cache->fItemsInUseCount;
+}
+
+// Register a master cache entry.
+// On entry, gCacheMutex must be held.
+// On exit, items in use count incremented, entry is marked as a master
+// entry, and value registered with cache so that subsequent calls to
+// addRef() and removeRef() on it correctly updates items in use count
+void UnifiedCache::_registerMaster(
+        const CacheKeyBase *theKey, const SharedObject *value) const {
+    theKey->isMaster = TRUE;
+    ++fItemsInUseCount;
+    value->registerWithCache(
+            _incrementItemsInUseWithLocking,
+            _incrementItemsInUse,
+            _decrementItemsInUseWithLockingAndEviction,
+            _decrementItemsInUse,
+            this);
+}
+
 // Store a value and error in given hash entry.
 // On entry, gCacheMutex must be held. Hash entry element must be in progress.
 // value must be non NULL.
@@ -333,11 +432,14 @@ void UnifiedCache::_get(
 void UnifiedCache::_put(
         const UHashElement *element, 
         const SharedObject *value,
-        const UErrorCode status) {
+        const UErrorCode status) const {
     U_ASSERT(_inProgress(element));
     const CacheKeyBase *theKey = (const CacheKeyBase *) element->key.pointer;
     const SharedObject *oldValue = (const SharedObject *) element->value.pointer;
     theKey->creationStatus = status;
+    if (value->allHardReferences()) {
+        _registerMaster(theKey, value);
+    }
     value->addSoftRef();
     UHashElement *ptr = const_cast<UHashElement *>(element);
     ptr->value.pointer = (void *) value;
@@ -347,6 +449,28 @@ void UnifiedCache::_put(
     // an error.
     umtx_condBroadcast(&gInProgressValueAddedCond);
 }
+
+void
+UnifiedCache::copyPtr(const SharedObject *src, const SharedObject *&dest) {
+    if(src != dest) {
+        if(dest != NULL) {
+            dest->removeRefWhileHoldingCacheLock();
+        }
+        dest = src;
+        if(src != NULL) {
+            src->addRefWhileHoldingCacheLock();
+        }
+    }
+}
+
+void
+UnifiedCache::clearPtr(const SharedObject *&ptr) {
+    if (ptr != NULL) {
+        ptr->removeRefWhileHoldingCacheLock();
+        ptr = NULL;
+    }
+}
+
 
 // Fetch value and error code from a particular hash entry.
 // On entry, gCacheMutex must be held. value must be either NULL or must be
@@ -361,19 +485,50 @@ void UnifiedCache::_fetch(
         UErrorCode &status) {
     const CacheKeyBase *theKey = (const CacheKeyBase *) element->key.pointer;
     status = theKey->creationStatus;
-    SharedObject::copyPtr(
-            (const SharedObject *) element->value.pointer, value);
+
+    // Since we have the cache lock, calling regular SharedObject methods
+    // could cause us to deadlock on ourselves since they may need to lock
+    // the cache mutex.
+    UnifiedCache::copyPtr((const SharedObject *) element->value.pointer, value);
 }
-    
+
 // Determine if given hash entry is in progress.
 // On entry, gCacheMutex must be held.
 UBool UnifiedCache::_inProgress(const UHashElement *element) {
     const SharedObject *value = NULL;
     UErrorCode status = U_ZERO_ERROR;
     _fetch(element, value, status);
-    UBool result = (value == gNoValue && status == U_ZERO_ERROR);
-    SharedObject::clearPtr(value);
+    UBool result = _inProgress(value, status);
+
+    // Since we have the cache lock, calling regular SharedObject methods
+    // could cause us to deadlock on ourselves since they may need to lock
+    // the cache mutex.
+    UnifiedCache::clearPtr(value);
     return result;
+}
+
+// Determine if given hash entry is in progress.
+// On entry, gCacheMutex must be held.
+UBool UnifiedCache::_inProgress(
+        const SharedObject *theValue, UErrorCode creationStatus) {
+    return (theValue == gNoValue && creationStatus == U_ZERO_ERROR);
+}
+
+// Determine if given hash entry is eligible for eviction.
+// On entry, gCacheMutex must be held.
+UBool UnifiedCache::_isEvictable(const UHashElement *element) {
+    const CacheKeyBase *theKey = (const CacheKeyBase *) element->key.pointer;
+    const SharedObject *theValue =
+            (const SharedObject *) element->value.pointer;
+
+    // Entries that are under construction are never evictable
+    if (_inProgress(theValue, theKey->creationStatus)) {
+        return FALSE;
+    }
+
+    // We can evict entries that are either not a master or have just
+    // one reference (The one reference being from the cache itself).
+    return (!theKey->isMaster || theValue->getRefCount() == 1);
 }
 
 U_NAMESPACE_END

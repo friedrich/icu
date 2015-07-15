@@ -28,17 +28,17 @@ U_NAMESPACE_BEGIN
 class UnifiedCache;
 
 /**
- * A base class for all cache keys
+ * A base class for all cache keys.
  */
 class U_COMMON_API CacheKeyBase : public UObject {
  public:
-   CacheKeyBase() : creationStatus(U_ZERO_ERROR) {}
+   CacheKeyBase() : creationStatus(U_ZERO_ERROR), isMaster(FALSE) {}
 
    /**
     * Copy constructor. Needed to support cloning.
     */
    CacheKeyBase(const CacheKeyBase &other) 
-           : UObject(other), creationStatus(other.creationStatus) { }
+           : UObject(other), creationStatus(other.creationStatus), isMaster(FALSE) { }
    virtual ~CacheKeyBase();
 
    /**
@@ -86,6 +86,7 @@ class U_COMMON_API CacheKeyBase : public UObject {
    }
  private:
    mutable UErrorCode creationStatus;
+   mutable UBool isMaster;
    friend class UnifiedCache;
 };
 
@@ -285,9 +286,48 @@ class U_COMMON_API UnifiedCache : public UObject {
     */
    void flush() const;
 
+   /**
+    * Sets the maximum number of unused entries this cache is to have.
+    * No eviction will happen until the actual number of unused entries
+    * exceeds this count. Once the number of unused entries drops down to
+    * this count, eviction ceases. Because eviction may happen in multiple
+    * time slices, the actual unused entry count may exceed this number 
+    * from time to time.
+    *
+    * A cache entry is defined as unused if it is not essential to guarantee
+    * that for a given key X, the cache returns the same reference to the
+    * same value as long as the client already holds a reference to that
+    * value.
+    *
+    * If this method is never called, this cache is an unbounded cache.
+    *
+    * Although this method is thread-safe, it is designed to be called at
+    * application startup. If it is called in the middle of execution, it
+    * will have no immediate effect on the cache. However over time, the
+    * cache will perform eviction slices in an attempt to honor the new
+    * setting.
+    *
+    * If a client already holds references to many different unique values
+    * in the cache such that the number of those unique values far exeeds
+    * "count" then the cache may not be able to maintain this maximum.
+    * However, if this happens, the cache still guarantees that the number of
+    * unused entries will remain only a small percentage of the total cache
+    * size.
+    */
+   void setMaxUnusedCount(int32_t count) const;
+
+   /**
+    * Returns the unused entry count in this cache. For testing only,
+    * Regular clients will not need this.
+    */
+   int32_t unusedCount() const;
+
    virtual ~UnifiedCache();
  private:
    UHashtable *fHashtable;
+   mutable int32_t fEvictPos;
+   mutable int32_t fItemsInUseCount;
+   mutable int32_t fMaxUnused;
    UnifiedCache(const UnifiedCache &other);
    UnifiedCache &operator=(const UnifiedCache &other);
    UBool _flush(UBool all) const;
@@ -309,18 +349,32 @@ class U_COMMON_API UnifiedCache : public UObject {
            const CacheKeyBase &key,
            const SharedObject *&value,
            UErrorCode &status) const;
+   const UHashElement *_nextElement() const;
+   void _runEvictionSlice() const;
+   void _registerMaster( 
+        const CacheKeyBase *theKey, const SharedObject *value) const;
+   void _put(
+           const UHashElement *element,
+           const SharedObject *value,
+           const UErrorCode status) const;
 #ifdef UNIFIED_CACHE_DEBUG
    void _dumpContents() const;
 #endif
-   static void _put(
-           const UHashElement *element,
-           const SharedObject *value,
-           const UErrorCode status);
+   static void _incrementItemsInUseWithLocking(const void *cacheContext);
+   static void _incrementItemsInUse(const void *cacheContext);
+   static void _decrementItemsInUseWithLockingAndEviction(
+           const void *cacheContext);
+   static void _decrementItemsInUse(const void *cacheContext);
+   static void copyPtr(const SharedObject *src, const SharedObject *&dest);
+   static void clearPtr(const SharedObject *&ptr);
    static void _fetch(
            const UHashElement *element,
            const SharedObject *&value,
            UErrorCode &status);
    static UBool _inProgress(const UHashElement *element);
+   static UBool _inProgress(
+           const SharedObject *theValue, UErrorCode creationStatus);
+   static UBool _isEvictable(const UHashElement *element);
 };
 
 U_NAMESPACE_END
