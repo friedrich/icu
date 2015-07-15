@@ -22,6 +22,10 @@ static UConditionVar gInProgressValueAddedCond = U_CONDITION_INITIALIZER;
 static icu::UInitOnce gCacheInitOnce = U_INITONCE_INITIALIZER;
 static int32_t MAX_EVICT_ITERATIONS = 10;
 
+static int32_t DEFAULT_MAX_UNUSED = 1000;
+static int32_t DEFAULT_PERCENTAGE_OF_IN_USE = 100;
+
+
 U_CDECL_BEGIN
 static UBool U_CALLCONV unifiedcache_cleanup() {
     gCacheInitOnce.reset();
@@ -99,7 +103,8 @@ UnifiedCache::UnifiedCache(UErrorCode &status) :
         fHashtable(NULL),
         fEvictPos(UHASH_FIRST),
         fItemsInUseCount(0),
-        fMaxUnused(INT32_MAX) {
+        fMaxUnused(DEFAULT_MAX_UNUSED),
+        fMaxPercentageOfInUse(DEFAULT_PERCENTAGE_OF_IN_USE) {
     if (U_FAILURE(status)) {
         return;
     }
@@ -115,9 +120,11 @@ UnifiedCache::UnifiedCache(UErrorCode &status) :
     uhash_setKeyDeleter(fHashtable, &ucache_deleteKey);
 }
 
-void UnifiedCache::setMaxUnusedCount(int32_t count) const {
+void UnifiedCache::setEvictionPolicy(
+        int32_t count, int32_t percentageOfInUseItems) const {
     Mutex lock(&gCacheMutex);
     fMaxUnused = count;
+    fMaxPercentageOfInUse = percentageOfInUseItems;
 }
 
 int32_t UnifiedCache::unusedCount() const {
@@ -235,12 +242,26 @@ UBool UnifiedCache::_flush(UBool all) const {
     return result;
 }
 
+// Computes how many items should be evicted.
+// On entry, gCacheMutex must be held.
+// Returns number of items that should be evicted or a value <= 0 if no
+// items need to be evicted.
+int32_t UnifiedCache::_computeCountOfItemsToEvict() const {
+    int32_t maxPercentageOfInUseCount =
+            fItemsInUseCount * fMaxPercentageOfInUse / 100;
+    int32_t maxUnusedCount = fMaxUnused;
+    if (maxUnusedCount < maxPercentageOfInUseCount) {
+        maxUnusedCount = maxPercentageOfInUseCount;
+    }
+    return uhash_count(fHashtable) - fItemsInUseCount - maxUnusedCount;
+}
+
 // Run an eviction slice.
 // On entry, gCacheMutex must be held.
 // _runEvictionSlice runs a slice of the evict pipeline by examining the next
 // 10 entries in the cache round robin style evicting them if they are eligible.
 void UnifiedCache::_runEvictionSlice() const {
-    int32_t maxItemsToEvict = uhash_count(fHashtable) - fItemsInUseCount - fMaxUnused;
+    int32_t maxItemsToEvict = _computeCountOfItemsToEvict();
     if (maxItemsToEvict <= 0) {
         return;
     }

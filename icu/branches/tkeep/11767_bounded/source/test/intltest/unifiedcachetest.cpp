@@ -68,6 +68,7 @@ public:
     }
     void runIndexedTest(int32_t index, UBool exec, const char *&name, char *par=0);
 private:
+    void TestEvictionPolicy();
     void TestBounded();
     void TestBasic();
     void TestError();
@@ -76,12 +77,72 @@ private:
 
 void UnifiedCacheTest::runIndexedTest(int32_t index, UBool exec, const char* &name, char* /*par*/) {
   TESTCASE_AUTO_BEGIN;
+  TESTCASE_AUTO(TestEvictionPolicy);
   TESTCASE_AUTO(TestBounded);
   TESTCASE_AUTO(TestBasic);
   TESTCASE_AUTO(TestError);
   TESTCASE_AUTO(TestHashEquals);
   TESTCASE_AUTO_END;
 }
+
+void UnifiedCacheTest::TestEvictionPolicy() {
+    UErrorCode status = U_ZERO_ERROR;
+
+    // We have to call this first or else calling the UnifiedCache
+    // ctor will fail. This is by design to deter clients from using the 
+    // cache API incorrectly by creating their own cache instances.
+    UnifiedCache::getInstance(status);
+
+    // We create our own local UnifiedCache instance to ensure we have
+    // complete control over it. Real clients should never ever create
+    // their own cache!
+    UnifiedCache cache(status);
+    assertSuccess("", status);
+
+    // Don't allow unused entries to exeed more than 100% of in use entries.
+    cache.setEvictionPolicy(0, 100);
+
+    static const char *locales[] = {
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+            "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"};
+
+    const UCTItem *usedReferences[] = {NULL, NULL, NULL, NULL, NULL};
+    const UCTItem *unusedReference = NULL;
+
+    // Add 5 in-use entries
+    for (int32_t i = 0; i < UPRV_LENGTHOF(usedReferences); i++) {
+        cache.get(
+                LocaleCacheKey<UCTItem>(locales[i]),
+                &cache,
+                usedReferences[i],
+                status);
+    }
+
+    // Add 10 not in use entries.
+    for (int32_t i = 0; i < 10; ++i) {
+        cache.get(
+                LocaleCacheKey<UCTItem>(
+                        locales[i + UPRV_LENGTHOF(usedReferences)]),
+                &cache,
+                unusedReference,
+                status);
+    }
+    unusedReference->removeRef();
+
+    // unused count not to exeed in use count
+    assertEquals("", UPRV_LENGTHOF(usedReferences), cache.unusedCount());
+    assertEquals("", 2*UPRV_LENGTHOF(usedReferences), cache.keyCount());
+
+    // Free up those used entries.
+    for (int32_t i = 0; i < UPRV_LENGTHOF(usedReferences); i++) {
+        usedReferences[i]->removeRef();
+    }
+
+    // This should free up all cache items
+    assertEquals("", 0, cache.keyCount());
+}
+
+
 
 void UnifiedCacheTest::TestBounded() {
     UErrorCode status = U_ZERO_ERROR;
@@ -97,7 +158,8 @@ void UnifiedCacheTest::TestBounded() {
     UnifiedCache cache(status);
     assertSuccess("", status);
 
-    cache.setMaxUnusedCount(3);
+    // Maximum unused count is 3.
+    cache.setEvictionPolicy(3, 0);
 
     // Our cache will hold up to 3 unused key-value pairs
     // We test the following invariants:

@@ -287,11 +287,12 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
    void flush() const;
 
    /**
-    * Sets the maximum number of unused entries this cache is to have.
-    * No eviction will happen until the actual number of unused entries
-    * exceeds this count. Once the number of unused entries drops down to
-    * this count, eviction ceases. Because eviction may happen in multiple
-    * time slices, the actual unused entry count may exceed this number 
+    * Configures at what point evcition of unused entries will begin.
+    * Eviction is triggered whenever the number of unused entries exeeds
+    * BOTH count AND (number of in-use items) * (percentageOfInUseItems / 100).
+    * Once the number of unused entries drops below one of these,
+    * eviction ceases. Because eviction may happen in multiple
+    * time slices, the actual unused entry count may exceed both these numbers
     * from time to time.
     *
     * A cache entry is defined as unused if it is not essential to guarantee
@@ -299,13 +300,13 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
     * same value as long as the client already holds a reference to that
     * value.
     *
-    * If this method is never called, this cache is an unbounded cache.
+    * If this method is never called, the default settings are 1000 and 100%.
     *
     * Although this method is thread-safe, it is designed to be called at
     * application startup. If it is called in the middle of execution, it
     * will have no immediate effect on the cache. However over time, the
     * cache will perform eviction slices in an attempt to honor the new
-    * setting.
+    * settings.
     *
     * If a client already holds references to many different unique values
     * in the cache such that the number of those unique values far exeeds
@@ -314,7 +315,7 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
     * unused entries will remain only a small percentage of the total cache
     * size.
     */
-   void setMaxUnusedCount(int32_t count) const;
+   void setEvictionPolicy(int32_t count, int32_t percentageOfInUseItems) const;
 
    /**
     * Returns the unused entry count in this cache. For testing only,
@@ -332,6 +333,7 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
    mutable int32_t fEvictPos;
    mutable int32_t fItemsInUseCount;
    mutable int32_t fMaxUnused;
+   mutable int32_t fMaxPercentageOfInUse;
    UnifiedCache(const UnifiedCache &other);
    UnifiedCache &operator=(const UnifiedCache &other);
    UBool _flush(UBool all) const;
@@ -354,6 +356,7 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
            const SharedObject *&value,
            UErrorCode &status) const;
    const UHashElement *_nextElement() const;
+   int32_t _computeCountOfItemsToEvict() const;
    void _runEvictionSlice() const;
    void _registerMaster( 
         const CacheKeyBase *theKey, const SharedObject *value) const;
