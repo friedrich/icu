@@ -16,6 +16,44 @@
 U_NAMESPACE_BEGIN
 
 /**
+ * Base class for unified cache exposing enough methods to SharedObject
+ * instances to allow their addRef() and removeRef() methods to
+ * update cache metrics.
+ */
+class UnifiedCacheBase : public UObject {
+public:
+    UnifiedCacheBase() { }
+
+    /**
+     * Called by addRef() when the hard reference count of its instance
+     * goes from 0 to 1.
+     */
+    virtual void incrementItemsInUseWithLocking() const = 0;
+
+    /**
+     * Called by addRefWhileHoldingCacheLock() when the hard reference count
+     * of its instance goes from 0 to 1.
+     */
+    virtual void incrementItemsInUse() const = 0;
+
+    /**
+     * Called by removeRef() when the hard reference count of its instance
+     * drops from 1 to 0.
+     */
+    virtual void decrementItemsInUseWithLockingAndEviction() const = 0;
+
+    /**
+     * Called by removeRefWhileHoldingCacheLock() when the hard reference
+     * count of its instance drops from 1 to 0.
+     */
+    virtual void decrementItemsInUse() const = 0;
+    virtual ~UnifiedCacheBase();
+private:
+    UnifiedCacheBase(const UnifiedCacheBase &);
+    UnifiedCacheBase &operator=(const UnifiedCacheBase &);
+};
+
+/**
  * Base class for shared, reference-counted, auto-deleted objects.
  * Subclasses can be immutable.
  * If they are mutable, then they must implement their copy constructor
@@ -31,36 +69,29 @@ public:
             totalRefCount(0),
             softRefCount(0),
             hardRefCount(0),
-            incrementItemsInUseWithLocking(NULL),
-            incrementItemsInUse(NULL),
-            decrementItemsInUseWithLockingAndEviction(NULL),
-            decrementItemsInUse(NULL),
-            cacheContext(NULL) {}
+            cachePtr(NULL) {}
 
     /** Initializes totalRefCount, softRefCount to 0. */
     SharedObject(const SharedObject &other) :
             UObject(other),
             totalRefCount(0),
             softRefCount(0),
-            incrementItemsInUseWithLocking(NULL),
-            incrementItemsInUse(NULL),
-            decrementItemsInUseWithLockingAndEviction(NULL),
-            decrementItemsInUse(NULL),
-            cacheContext(NULL) {}
+            hardRefCount(0),
+            cachePtr(NULL) {}
 
     virtual ~SharedObject();
 
     /**
      * Increments the number of references to this object. Thread-safe.
      */
-    void addRef() const;
+    void addRef() const { addRef(FALSE); }
 
     /**
      * Increments the number of references to this object. Thread-safe.
      * Must be called only from within the internals of UnifiedCache and
      * only while the cache global mutex is held.
      */
-    void addRefWhileHoldingCacheLock() const;
+    void addRefWhileHoldingCacheLock() const { addRef(TRUE); }
 
     /**
      * Increments the number of soft references to this object. Thread-safe.
@@ -70,14 +101,14 @@ public:
     /**
      * Decrements the number of references to this object. Thread-safe.
      */
-    void removeRef() const;
+    void removeRef() const { removeRef(FALSE); }
 
     /**
      * Decrements the number of references to this object. Thread-safe.
      * Must be called only from within the internals of UnifiedCache and
      * only while the cache global mutex is held.
      */
-    void removeRefWhileHoldingCacheLock() const;
+    void removeRefWhileHoldingCacheLock() const { removeRef(TRUE); }
 
     /**
      * Decrements the number of soft references to this object. Thread-safe.
@@ -121,17 +152,8 @@ public:
      * @internal For UnifedCache use only to register this object with itself.
      *   Must be called before this object is exposed to multiple threads.
      */ 
-    void registerWithCache(
-            void (*incrementWithLockingFunc)(const void *context),
-            void (*incrementFunc)(const void *context),
-            void (*decrementWithLockingFunc)(const void *context),
-            void (*decrementFunc)(const void *context),
-            const void *context) const {
-        incrementItemsInUseWithLocking = incrementWithLockingFunc;
-        incrementItemsInUse = incrementFunc;
-        decrementItemsInUseWithLockingAndEviction = decrementWithLockingFunc;
-        decrementItemsInUse = decrementFunc;
-        cacheContext = context;
+    void registerWithCache(const UnifiedCacheBase *ptr) const {
+        cachePtr = ptr;
     }
         
     /**
@@ -189,13 +211,9 @@ private:
     mutable u_atomic_int32_t totalRefCount;
     mutable u_atomic_int32_t softRefCount;
     mutable u_atomic_int32_t hardRefCount;
-    mutable void (*incrementItemsInUseWithLocking)(const void *context);
-    mutable void (*incrementItemsInUse)(const void *context);
-    mutable void (*decrementItemsInUseWithLockingAndEviction)(const void *context);
-    mutable void (*decrementItemsInUse)(const void *context);
-    mutable const void *cacheContext;
-    void addRef(void (*incrementFunc)(const void *), const void *context) const;
-    void removeRef(void (*decrementFunc)(const void *), const void *context) const;
+    mutable const UnifiedCacheBase *cachePtr;
+    void addRef(UBool withCacheLock) const;
+    void removeRef(UBool withCacheLock) const;
 
 };
 

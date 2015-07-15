@@ -383,27 +383,23 @@ void UnifiedCache::_get(
     }
 }
 
-void UnifiedCache::_incrementItemsInUseWithLocking(const void *cacheContext) {
+void UnifiedCache::incrementItemsInUseWithLocking() const {
     Mutex mutex(&gCacheMutex);
-    _incrementItemsInUse(cacheContext);
+    incrementItemsInUse();
 }
 
-void UnifiedCache::_decrementItemsInUseWithLockingAndEviction(
-        const void *cacheContext) {
+void UnifiedCache::decrementItemsInUseWithLockingAndEviction() const {
     Mutex mutex(&gCacheMutex);
-    _decrementItemsInUse(cacheContext);
-    const UnifiedCache *cache = (const UnifiedCache *) cacheContext;
-    cache->_runEvictionSlice();
+    decrementItemsInUse();
+    _runEvictionSlice();
 }
 
-void UnifiedCache::_incrementItemsInUse(const void *cacheContext) {
-    const UnifiedCache *cache = (const UnifiedCache *) cacheContext;
-    ++cache->fItemsInUseCount;
+void UnifiedCache::incrementItemsInUse() const {
+    ++fItemsInUseCount;
 }
 
-void UnifiedCache::_decrementItemsInUse(const void *cacheContext) {
-    const UnifiedCache *cache = (const UnifiedCache *) cacheContext;
-    --cache->fItemsInUseCount;
+void UnifiedCache::decrementItemsInUse() const {
+    --fItemsInUseCount;
 }
 
 // Register a master cache entry.
@@ -415,12 +411,7 @@ void UnifiedCache::_registerMaster(
         const CacheKeyBase *theKey, const SharedObject *value) const {
     theKey->isMaster = TRUE;
     ++fItemsInUseCount;
-    value->registerWithCache(
-            _incrementItemsInUseWithLocking,
-            _incrementItemsInUse,
-            _decrementItemsInUseWithLockingAndEviction,
-            _decrementItemsInUse,
-            this);
+    value->registerWithCache(this);
 }
 
 // Store a value and error in given hash entry.

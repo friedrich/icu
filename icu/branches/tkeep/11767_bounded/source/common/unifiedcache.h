@@ -176,7 +176,7 @@ class LocaleCacheKey : public CacheKey<T> {
 /**
  * The unified cache. A singleton type.
  */
-class U_COMMON_API UnifiedCache : public UObject {
+class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
  public:
    /**
     * @internal
@@ -322,6 +322,10 @@ class U_COMMON_API UnifiedCache : public UObject {
     */
    int32_t unusedCount() const;
 
+   virtual void incrementItemsInUseWithLocking() const;
+   virtual void incrementItemsInUse() const;
+   virtual void decrementItemsInUseWithLockingAndEviction() const;
+   virtual void decrementItemsInUse() const;
    virtual ~UnifiedCache();
  private:
    UHashtable *fHashtable;
@@ -360,11 +364,6 @@ class U_COMMON_API UnifiedCache : public UObject {
 #ifdef UNIFIED_CACHE_DEBUG
    void _dumpContents() const;
 #endif
-   static void _incrementItemsInUseWithLocking(const void *cacheContext);
-   static void _incrementItemsInUse(const void *cacheContext);
-   static void _decrementItemsInUseWithLockingAndEviction(
-           const void *cacheContext);
-   static void _decrementItemsInUse(const void *cacheContext);
    static void copyPtr(const SharedObject *src, const SharedObject *&dest);
    static void clearPtr(const SharedObject *&ptr);
    static void _fetch(

@@ -11,50 +11,36 @@ U_NAMESPACE_BEGIN
 
 SharedObject::~SharedObject() {}
 
+UnifiedCacheBase::~UnifiedCacheBase() {}
 
 void
-SharedObject::addRef() const {
-    addRef(incrementItemsInUseWithLocking, cacheContext);
-}
-
-void
-SharedObject::addRefWhileHoldingCacheLock() const {
-    addRef(incrementItemsInUse, cacheContext);
-}
-
-
-void
-SharedObject::addRef(
-        void (*addFunc)(const void *), const void *context) const {
+SharedObject::addRef(UBool fromWithinCache) const {
     umtx_atomic_inc(&totalRefCount);
 
     // Although items in use may not be correct immediately, it
     // will be correct eventually.
-    if (umtx_atomic_inc(&hardRefCount) == 1 && addFunc != NULL) {
-        addFunc(context);
+    if (umtx_atomic_inc(&hardRefCount) == 1 && cachePtr != NULL) {
+        if (fromWithinCache) {
+            cachePtr->incrementItemsInUse();
+        } else {
+            cachePtr->incrementItemsInUseWithLocking();
+        }
     }
 }
 
 void
-SharedObject::removeRef() const {
-    removeRef(decrementItemsInUseWithLockingAndEviction, cacheContext);
-}
-
-void
-SharedObject::removeRefWhileHoldingCacheLock() const {
-    removeRef(decrementItemsInUse, cacheContext);
-}
-
-void
-SharedObject::removeRef(
-        void (*removeFunc)(const void *), const void *context) const {
+SharedObject::removeRef(UBool fromWithinCache) const {
     UBool decrimentItemsInUse = (umtx_atomic_dec(&hardRefCount) == 0);
     UBool allReferencesGone = (umtx_atomic_dec(&totalRefCount) == 0);
 
     // Although items in use may not be correct immediately, it
     // will be correct eventually.
-    if (decrimentItemsInUse && removeFunc != NULL) {
-        removeFunc(context);
+    if (decrimentItemsInUse && cachePtr != NULL) {
+        if (fromWithinCache) {
+            cachePtr->decrementItemsInUse();
+        } else {
+            cachePtr->decrementItemsInUseWithLockingAndEviction();
+        }
     }
     if (allReferencesGone) {
         delete this;
