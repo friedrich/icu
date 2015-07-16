@@ -40,6 +40,10 @@
 #include "unicode/uscript.h"
 #include "cmemory.h"
 
+#if !UCONFIG_NO_FILTERED_BREAK_ITERATION
+#include "unicode/filteredbrk.h"
+#endif // !UCONFIG_NO_FILTERED_BREAK_ITERATION
+
 #define TEST_ASSERT(x) {if (!(x)) { \
     errln("Failure in file %s, line %d", __FILE__, __LINE__);}}
 
@@ -1287,6 +1291,20 @@ void RBBITest::TestExtended() {
                 delete tp.bi;
                 tp.bi = NULL;
                 tp.bi = BreakIterator::createSentenceInstance(locale,  status);
+                // SRL hack
+#if !UCONFIG_NO_FILTERED_BREAK_ITERATION
+                {
+                    UErrorCode subStatus = status;
+                    char buf[100];
+                    int32_t len = locale.getKeywordValue("uli",buf,100,subStatus);
+                    if(U_SUCCESS(subStatus) && len > 0) {
+                        LocalPointer<FilteredBreakIteratorBuilder> builder(FilteredBreakIteratorBuilder::createInstance(locale, status), status);
+                        if(U_SUCCESS(status)) {
+                            tp.bi = builder->build(tp.bi, status);
+                        }
+                    }
+                }
+#endif //!UCONFIG_NO_FILTERED_BREAK_ITERATION
                 charIdx += 5;
                 break;
             }
