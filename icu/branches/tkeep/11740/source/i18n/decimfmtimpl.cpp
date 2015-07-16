@@ -703,8 +703,7 @@ DecimalFormatImpl::applyPattern(
         const UnicodeString &pattern, UErrorCode &status) {
     UParseError perror;
     applyPattern(pattern, FALSE, perror, status);
-    // TODO: Consider updating everything except symbols
-    updateAll(status);
+    updateForApplyPattern(status);
 }
 
 void
@@ -712,8 +711,7 @@ DecimalFormatImpl::applyPattern(
         const UnicodeString &pattern,
         UParseError &perror, UErrorCode &status) {
     applyPattern(pattern, FALSE, perror, status);
-    // TODO: Consider updating everything except symbols
-    updateAll(status);
+    updateForApplyPattern(status);
 }
 
 void
@@ -721,7 +719,7 @@ DecimalFormatImpl::applyLocalizedPattern(
         const UnicodeString &pattern, UErrorCode &status) {
     UParseError perror;
     applyPattern(pattern, TRUE, perror, status);
-    updateAll(status);
+    updateForApplyPattern(status);
 }
 
 void
@@ -729,7 +727,7 @@ DecimalFormatImpl::applyLocalizedPattern(
         const UnicodeString &pattern,
         UParseError &perror,  UErrorCode &status) {
     applyPattern(pattern, TRUE, perror, status);
-    updateAll(status);
+    updateForApplyPattern(status);
 }
 
 void
@@ -930,7 +928,16 @@ DecimalFormatImpl::updateGrouping() {
 
 void
 DecimalFormatImpl::updateFormatting(
-        int32_t changedFormattingFields, UErrorCode &status) {
+        int32_t changedFormattingFields,
+        UErrorCode &status) {
+    updateFormatting(changedFormattingFields, TRUE, status);
+}
+
+void
+DecimalFormatImpl::updateFormatting(
+        int32_t changedFormattingFields,
+        UBool updatePrecisionBasedOnCurrency,
+        UErrorCode &status) {
     if (U_FAILURE(status)) {
         return;
     }
@@ -942,7 +949,10 @@ DecimalFormatImpl::updateFormatting(
     updateFormattingScientificFormatter(changedFormattingFields);
     updateFormattingAffixParser(changedFormattingFields);
     updateFormattingPluralRules(changedFormattingFields, status);
-    updateFormattingCurrencyAffixInfo(changedFormattingFields, status);
+    updateFormattingCurrencyAffixInfo(
+            changedFormattingFields,
+            updatePrecisionBasedOnCurrency,
+            status);
     updateFormattingLocalizedPositivePrefix(
             changedFormattingFields, status);
     updateFormattingLocalizedPositiveSuffix(
@@ -1001,7 +1011,9 @@ DecimalFormatImpl::updateFormattingPluralRules(
 
 void
 DecimalFormatImpl::updateFormattingCurrencyAffixInfo(
-        int32_t &changedFormattingFields, UErrorCode &status) {
+        int32_t &changedFormattingFields,
+        UBool updatePrecisionBasedOnCurrency,
+        UErrorCode &status) {
     if ((changedFormattingFields & (
             kFormattingSymbols | kFormattingCurrency |
             kFormattingUsesCurrency | kFormattingPluralRules)) == 0) {
@@ -1037,18 +1049,21 @@ DecimalFormatImpl::updateFormattingCurrencyAffixInfo(
         if (U_FAILURE(status)) {
             return;
         }
+        UBool customCurrencySymbol = FALSE;
         // If DecimalFormatSymbols has custom currency symbol, prefer
         // that over what we just read from the resource bundles
         if (fSymbols->isCustomCurrencySymbol()) {
             fCurrencyAffixInfo.setSymbol(
                     fSymbols->getConstSymbol(DecimalFormatSymbols::kCurrencySymbol));
+            customCurrencySymbol = TRUE;
         }
         if (fSymbols->isCustomIntlCurrencySymbol()) {
             fCurrencyAffixInfo.setISO(
                     fSymbols->getConstSymbol(DecimalFormatSymbols::kIntlCurrencySymbol));
+            customCurrencySymbol = TRUE;
         }
         changedFormattingFields |= kFormattingCurrencyAffixInfo;
-        if (currency) {
+        if (currency && !customCurrencySymbol && updatePrecisionBasedOnCurrency) {
             FixedPrecision precision;
             CurrencyAffixInfo::adjustPrecision(
                     currency, fCurrencyUsage, precision, status);
@@ -1175,6 +1190,17 @@ DecimalFormatImpl::updateFormattingLocalizedNegativeSuffix(
             fCurrencyAffixInfo,
             fAap.fNegativeSuffix,
             status);
+}
+
+void
+DecimalFormatImpl::updateForApplyPattern(UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    updatePrecision();
+    updateGrouping();
+    updateFormatting(kFormattingAll & ~kFormattingSymbols, FALSE, status);
+    setMultiplierScale(getPatternScale());
 }
 
 void

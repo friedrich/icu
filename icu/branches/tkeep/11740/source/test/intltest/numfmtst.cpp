@@ -523,6 +523,7 @@ void NumberFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &n
   TESTCASE_AUTO(TestGetAffixes);
   TESTCASE_AUTO(TestToPatternScientific11648);
   TESTCASE_AUTO(TestBenchmark);
+  TESTCASE_AUTO(TestCtorApplyPatternDifference);
   TESTCASE_AUTO_END;
 }
 
@@ -8345,6 +8346,23 @@ void NumberFormatTest::TestBenchmark() {
 */
 }
 
+void NumberFormatTest::TestCtorApplyPatternDifference() {
+    UErrorCode status = U_ZERO_ERROR;
+    DecimalFormatSymbols sym("en_US", status);
+    UnicodeString pattern("\\u00a40");
+    DecimalFormat fmt(pattern.unescape(), sym, status);
+    UnicodeString result;
+    assertEquals(
+            "ctor favors precision of currency",
+            "$5.00",
+            fmt.format(5, result));
+    result.remove();
+    fmt.applyPattern(pattern.unescape(), status);
+    assertEquals(
+            "applyPattern favors precision of pattern",
+            "$5",
+            fmt.format(5, result));
+}
 
 
 

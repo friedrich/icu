@@ -303,6 +303,9 @@ int32_t getScale() const { return fScale; }
 // Updates everything
 void updateAll(UErrorCode &status);
 
+// Updates from formatting pattern changes
+void updateForApplyPattern(UErrorCode &status);
+
 // Updates from changes to first group of attributes
 void updatePrecision();
 
@@ -311,6 +314,10 @@ void updateGrouping();
 
 // Updates from changes to third group of attributes
 void updateFormatting(int32_t changedFormattingFields, UErrorCode &status);
+void updateFormatting(
+        int32_t changedFormattingFields,
+        UBool updatePrecisionBasedOnCurrency,
+        UErrorCode &status);
 
 // Helper functions for updatePrecision
 void updatePrecisionForScientific();
@@ -324,7 +331,9 @@ void updateFormattingPluralRules(
         int32_t &changedFormattingFields, UErrorCode &status);
 void updateFormattingAffixParser(int32_t &changedFormattingFields);
 void updateFormattingCurrencyAffixInfo(
-        int32_t &changedFormattingFields, UErrorCode &status);
+        int32_t &changedFormattingFields,
+        UBool updatePrecisionBasedOnCurrency,
+        UErrorCode &status);
 void updateFormattingFixedPointFormatter(
         int32_t &changedFormattingFields);
 void updateFormattingScientificFormatter(

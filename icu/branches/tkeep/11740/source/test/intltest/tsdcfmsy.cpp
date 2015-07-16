@@ -203,9 +203,7 @@ void IntlTestDecimalFormatSymbols::testSymbols(/* char *par */)
     sym.setSymbol(DecimalFormatSymbols::kPercentSymbol, (UnicodeString)"P");
     Verify(34.5, (UnicodeString)"00 %", sym, (UnicodeString)"3450 P");
     sym.setSymbol(DecimalFormatSymbols::kCurrencySymbol, (UnicodeString)"D");
-    // TODO(refactor): Known to fail. USD currency is minFracDig=maxFracDig=2.
-    // Generally, currency settings override pattern.
-    // Verify(34.5, CharsToUnicodeString("\\u00a4##.##"), sym, (UnicodeString)"D34.5");
+    Verify(34.5, CharsToUnicodeString("\\u00a4##.##"), sym, (UnicodeString)"D34.5");
     sym.setSymbol(DecimalFormatSymbols::kGroupingSeparatorSymbol, (UnicodeString)"|");
     Verify(3456.5, (UnicodeString)"0,000.##", sym, (UnicodeString)"3|456S5");
 
