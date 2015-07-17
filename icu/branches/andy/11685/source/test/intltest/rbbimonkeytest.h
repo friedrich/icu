@@ -81,6 +81,8 @@ class BreakRules {
 
     void compileRules(UCHARBUF *rules, UErrorCode &status);
 
+    const CharClass *getClassForChar(UChar32 c, int32_t *iter=NULL) const;
+
     
     icu::UVector       fBreakRules;        // Contents are of type (BreakRule *).
                                            // Contents are ordered by the order of application.
@@ -114,7 +116,9 @@ class MonkeyTestData {
     MonkeyTestData(UErrorCode &status);
     ~MonkeyTestData() {};
     void set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status);
+    void dump() const;
 
+    const BreakRules      *fBkRules;           // The break rules used to generate this data.
     UnicodeString          fString;            // The text.
     UnicodeString          fExpectedBreaks;    // Breaks as found by the reference rules.
                                                //     Parallel to fString. Non-zero if break preceding.

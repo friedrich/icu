@@ -133,6 +133,8 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
 
     UnicodeSet *s = new UnicodeSet(expandedDef, USET_IGNORE_SPACE, NULL, status);
     if (U_FAILURE(status)) {
+        IntlTest::gTest->errln("%s:%d: error %s creating UnicodeSet %s", __FILE__, __LINE__,
+                               u_errorName(status), stdstr(name).c_str());    // TODO: ebcdic hostile.
         return;
     }
     CharClass *cclass = new CharClass(name, definition, expandedDef, s);
@@ -149,24 +151,26 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
 
 
 void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definition, UErrorCode &status) {
+    LocalPointer<BreakRule> thisRule(new BreakRule);
+    thisRule->fName = name;
+    thisRule->fRule = definition;
+
     // If the rule name contains embedded digits, pad the first numeric field to a fixed length with leading zeroes,
     // This gives a numeric sort order that matches Unicode UAX rule numbering conventions.
-    UnicodeString paddedName;
     UnicodeString emptyString;
     fNumericFieldMatcher->reset(name);
     if (fNumericFieldMatcher->find()) {
-        fNumericFieldMatcher->appendReplacement(paddedName, emptyString, status);
+        fNumericFieldMatcher->appendReplacement(thisRule->fPaddedName, emptyString, status);
         int32_t paddingWidth = 6 - fNumericFieldMatcher->group(status).length();
         if (paddingWidth > 0) {
-            paddedName.padTrailing(paddedName.length() + paddingWidth, (UChar)0x30);
+            thisRule->fPaddedName.padTrailing(thisRule->fPaddedName.length() + paddingWidth, (UChar)0x30);
         }
-        paddedName.append(fNumericFieldMatcher->group(status));
+        thisRule->fPaddedName.append(fNumericFieldMatcher->group(status));
     }
-    fNumericFieldMatcher->appendTail(paddedName);
-    // std::cout << stdstr(paddedName) << std::endl;
+    fNumericFieldMatcher->appendTail(thisRule->fPaddedName);
+    // std::cout << stdstr(thisRule->fPaddedName) << std::endl;
 
     // Expand the char class definitions within the rule.
-    UnicodeString expandedDef;
     fSetRefsMatcher->reset(definition);
     while (fSetRefsMatcher->find() && U_SUCCESS(status)) {
         const UnicodeString name = 
@@ -174,20 +178,19 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
         CharClass *nameClass = static_cast<CharClass *>(uhash_get(fCharClasses, &name));
         const UnicodeString &expansionForName = nameClass ? nameClass->fExpandedDef : name;
 
-        fSetRefsMatcher->appendReplacement(expandedDef, emptyString, status);
-        expandedDef.append(expansionForName);
+        fSetRefsMatcher->appendReplacement(thisRule->fExpandedRule, emptyString, status);
+        thisRule->fExpandedRule.append(expansionForName);
     }
-    fSetRefsMatcher->appendTail(expandedDef);
-    // std::cout << "expandedDef: " << stdstr(expandedDef) << std::endl;
+    fSetRefsMatcher->appendTail(thisRule->fExpandedRule);
 
     // Replace the divide sign (\u00f7) with a regular expression named capture.
     // When running the rules, a match that includes this group means we found a break position.
 
-    int32_t dividePos = expandedDef.indexOf((UChar)0x00f7);
+    int32_t dividePos = thisRule->fExpandedRule.indexOf((UChar)0x00f7);
     if (dividePos >= 0) {
-        expandedDef.replace(dividePos, 1, UnicodeString("(<BreakPosition>)"));
+        thisRule->fExpandedRule.replace(dividePos, 1, UnicodeString("(?<BreakPosition>)"));
     }
-    if (expandedDef.indexOf((UChar)0x00f7) != -1) {
+    if (thisRule->fExpandedRule.indexOf((UChar)0x00f7) != -1) {
         status = U_ILLEGAL_ARGUMENT_ERROR;   // TODO: produce a good error message.
     }
 
@@ -197,16 +200,20 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
 
     static const UChar emptySet[] = {(UChar)0x5b, (UChar)0x5d, 0};
     int32_t where = 0;
-    while ((where = expandedDef.indexOf(emptySet, 2, 0)) >= 0) {
-        expandedDef.replace(where, 2, UnicodeString("[^\\u0000-\\U0010ffff]"));
+    while ((where = thisRule->fExpandedRule.indexOf(emptySet, 2, 0)) >= 0) {
+        thisRule->fExpandedRule.replace(where, 2, UnicodeString("[^\\u0000-\\U0010ffff]"));
     }
+    std::cout << "fExpandedRule: " << stdstr(thisRule->fExpandedRule) << std::endl;
         
     // Compile a regular expression for this rule.
-    LocalPointer<RegexMatcher> reMatcher(new RegexMatcher(expandedDef, UREGEX_COMMENTS, status));
+    thisRule->fRuleMatcher.adoptInstead(new RegexMatcher(thisRule->fExpandedRule, UREGEX_COMMENTS, status));
     if (U_FAILURE(status)) {
-        std::cout << stdstr(expandedDef) << std::endl;
+        std::cout << stdstr(thisRule->fExpandedRule) << std::endl;
         return;
     }
+
+    // Put this new rule into the vector of all Rules.
+    fBreakRules.addElement(thisRule.orphan(), status);
 }
 
 
@@ -333,11 +340,22 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
             fCharClassList->addElement(cclass, status);
         }
     }
-
-
 }
 
 
+const CharClass *BreakRules::getClassForChar(UChar32 c, int32_t *iter) const {
+   int32_t localIter = 0;
+   int32_t &it = iter? *iter : localIter;
+
+   while (it < fCharClassList->size()) {
+       const CharClass *cc = static_cast<const CharClass *>(fCharClassList->elementAt(it));
+       ++it;
+       if (cc->fSet->contains(c)) {
+           return cc;
+       }
+    }
+    return NULL;
+}
 
 //---------------------------------------------------------------------------------------
 //
@@ -356,6 +374,7 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
     // Exclude any characters from the dictionary set.
 
     std::cout << "Populating Test Data" << std::endl;
+    fBkRules = rules;
     int32_t n = 0;
     for (n=0; n<dataLength;) {
         int charClassIndex = rand() % rules->fCharClassList->size();
@@ -391,27 +410,76 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
 
     // Apply reference rules to find the expected breaks.
     
-    n = 0;
-    while (n < fString.length()) {
+    int32_t strIdx = 0;
+    while (strIdx < fString.length()) {
         BreakRule *matchingRule = NULL;
         int32_t ruleNum = 0;
         for (ruleNum=0; ruleNum<rules->fBreakRules.size(); ruleNum++) {
             BreakRule *rule = static_cast<BreakRule *>(rules->fBreakRules.elementAt(ruleNum));
-            if (rule->fRuleMatcher->lookingAt(n, status)) {
+            rule->fRuleMatcher->reset();
+            if (rule->fRuleMatcher->lookingAt(strIdx, status)) {
                matchingRule = rule;
                break;
             }
         }
         if (matchingRule == NULL) {
             // No reference rule matched. This is an error in the rules that should never happen.
-            IntlTest::gTest->errln("%s:%d Trouble with monkey test reference rules.", __FILE__, __LINE__);
+            IntlTest::gTest->errln("%s:%d Trouble with monkey test reference rules at position %d. ",
+                 __FILE__, __LINE__, strIdx);
             status = U_INVALID_FORMAT_ERROR;
             return;
         }
-        for (int32_t strIndex = n; strIndex < matchingRule->fRuleMatcher->end(status); strIndex++) {
-            fRuleForPosition.setCharAt(n, (UChar)ruleNum);
+        if (matchingRule->fRuleMatcher->group(status).length() == 0) {
+            // Zero length rule match. This is an error in the rule expressions.
+            IntlTest::gTest->errln("%s:%d Zero length rule match.",
+                __FILE__, __LINE__);
+            status =  U_INVALID_FORMAT_ERROR;
+            return;
         }
 
+        // Record which rule matched over the length of the match.
+        for (; strIdx < matchingRule->fRuleMatcher->end(status); strIdx++) {
+            fRuleForPosition.setCharAt(strIdx, (UChar)ruleNum);
+            fExpectedBreaks.setCharAt(strIdx, (UChar)0);
+        }
+
+        // If the matching rule specified a break, record that also.
+        // Breaks appear in rules as a matching named capture of zero length at the break position,
+        //   the adjusted pattern contains (?<BreakPosition>)
+        int32_t breakGroup = matchingRule->fRuleMatcher->pattern().groupNumberFromName("BreakPosition", status);
+        if (status == U_REGEX_INVALID_CAPTURE_GROUP_NAME) {
+            // Common case. Original rule didn't specify a break.
+            status = U_ZERO_ERROR;
+        } else {
+            int32_t breakPos = (matchingRule->fRuleMatcher->start(breakGroup, status));
+            // TODO: probably a rule error if the rule matched (it did or we wouldn't be here),
+            //       the capture group is defined, but did not match.
+            if (breakPos >= 0) {
+                fExpectedBreaks.setCharAt(strIdx, (UChar)1);
+            }
+        }
+    }
+}
+
+
+void MonkeyTestData::dump() const {
+    printf("position class               break  Rule        Character\n");
+
+    for (int charIdx = 0; charIdx < fString.length(); charIdx=fString.moveIndex32(charIdx, 1)) {
+        UErrorCode status = U_ZERO_ERROR;
+        UChar32 c = fString.char32At(charIdx);
+        const CharClass *cc = fBkRules->getClassForChar(c);
+        CharString ccName;
+        ccName.appendInvariantChars(cc->fName, status);
+        CharString ruleName;
+        const BreakRule *rule = static_cast<BreakRule *>(fBkRules->fBreakRules.elementAt(fRuleForPosition.charAt(charIdx)));
+        ruleName.appendInvariantChars(rule->fName, status);
+
+        printf("  %4.1d  %-20s  %c     %-10s\n",
+            charIdx, ccName.data(),
+            fExpectedBreaks.charAt(charIdx) ? '*' : '.',
+            ruleName.data()
+        );
     }
 }
 
@@ -463,6 +531,7 @@ void RBBIMonkeyImpl::runTest(int32_t numIterations, UErrorCode &status) {
 
     for (int loopCount = 0; loopCount < numIterations; loopCount++) {
         fTestData->set(fRuleSet.getAlias(), fRandomGenerator, status);
+        fTestData->dump();
         if (U_FAILURE(status)) { break; };
         // check forwards
         // check reverse
@@ -486,7 +555,7 @@ RBBIMonkeyTest::~RBBIMonkeyTest() {
 
 void RBBIMonkeyTest::testMonkey() {
     // TODO: need parameters from test framework for specific test, exhaustive, iteration count, starting seed, asynch, ...
-    const char *tests[] = {"grapheme.txt", "word.txt", "line.txt"};
+    const char *tests[] = {"grapheme.txt", /* "word.txt", "line.txt" */ };
 
     for (int i=0; i < UPRV_LENGTHOF(tests); ++i) {
         UErrorCode status = U_ZERO_ERROR;
