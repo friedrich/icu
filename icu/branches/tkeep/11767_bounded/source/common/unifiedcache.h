@@ -186,7 +186,7 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
    /**
     * Returns the cache instance.
     */
-   static const UnifiedCache *getInstance(UErrorCode &status);
+   static UnifiedCache *getInstance(UErrorCode &status);
 
    /**
     * Fetches a value from the cache by key. Equivalent to
@@ -315,7 +315,7 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
     * unused entries will remain only a small percentage of the total cache
     * size.
     */
-   void setEvictionPolicy(int32_t count, int32_t percentageOfInUseItems) const;
+   void setEvictionPolicy(int32_t count, int32_t percentageOfInUseItems);
 
    /**
     * Returns the unused entry count in this cache. For testing only,
@@ -332,8 +332,8 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
    UHashtable *fHashtable;
    mutable int32_t fEvictPos;
    mutable int32_t fItemsInUseCount;
-   mutable int32_t fMaxUnused;
-   mutable int32_t fMaxPercentageOfInUse;
+   int32_t fMaxUnused;
+   int32_t fMaxPercentageOfInUse;
    UnifiedCache(const UnifiedCache &other);
    UnifiedCache &operator=(const UnifiedCache &other);
    UBool _flush(UBool all) const;

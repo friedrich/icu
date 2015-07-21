@@ -90,7 +90,7 @@ static void U_CALLCONV cacheInit(UErrorCode &status) {
     gNoValue->addSoftRef();
 }
 
-const UnifiedCache *UnifiedCache::getInstance(UErrorCode &status) {
+UnifiedCache *UnifiedCache::getInstance(UErrorCode &status) {
     umtx_initOnce(gCacheInitOnce, &cacheInit, status);
     if (U_FAILURE(status)) {
         return NULL;
@@ -121,7 +121,7 @@ UnifiedCache::UnifiedCache(UErrorCode &status) :
 }
 
 void UnifiedCache::setEvictionPolicy(
-        int32_t count, int32_t percentageOfInUseItems) const {
+        int32_t count, int32_t percentageOfInUseItems) {
     Mutex lock(&gCacheMutex);
     fMaxUnused = count;
     fMaxPercentageOfInUse = percentageOfInUseItems;
