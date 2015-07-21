@@ -30,12 +30,12 @@ SharedObject::addRef(UBool fromWithinCache) const {
 
 void
 SharedObject::removeRef(UBool fromWithinCache) const {
-    UBool decrimentItemsInUse = (umtx_atomic_dec(&hardRefCount) == 0);
+    UBool decrementItemsInUse = (umtx_atomic_dec(&hardRefCount) == 0);
     UBool allReferencesGone = (umtx_atomic_dec(&totalRefCount) == 0);
 
     // Although items in use may not be correct immediately, it
     // will be correct eventually.
-    if (decrimentItemsInUse && cachePtr != NULL) {
+    if (decrementItemsInUse && cachePtr != NULL) {
         if (fromWithinCache) {
             cachePtr->decrementItemsInUse();
         } else {

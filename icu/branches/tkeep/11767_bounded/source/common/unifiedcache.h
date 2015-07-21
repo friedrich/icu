@@ -32,13 +32,13 @@ class UnifiedCache;
  */
 class U_COMMON_API CacheKeyBase : public UObject {
  public:
-   CacheKeyBase() : creationStatus(U_ZERO_ERROR), isMaster(FALSE) {}
+   CacheKeyBase() : fCreationStatus(U_ZERO_ERROR), fIsMaster(FALSE) {}
 
    /**
     * Copy constructor. Needed to support cloning.
     */
    CacheKeyBase(const CacheKeyBase &other) 
-           : UObject(other), creationStatus(other.creationStatus), isMaster(FALSE) { }
+           : UObject(other), fCreationStatus(other.fCreationStatus), fIsMaster(FALSE) { }
    virtual ~CacheKeyBase();
 
    /**
@@ -85,8 +85,8 @@ class U_COMMON_API CacheKeyBase : public UObject {
        return !(*this == other);
    }
  private:
-   mutable UErrorCode creationStatus;
-   mutable UBool isMaster;
+   mutable UErrorCode fCreationStatus;
+   mutable UBool fIsMaster;
    friend class UnifiedCache;
 };
 
@@ -291,8 +291,8 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
     * Eviction is triggered whenever the number of unused entries exeeds
     * BOTH count AND (number of in-use items) * (percentageOfInUseItems / 100).
     * Once the number of unused entries drops below one of these,
-    * eviction ceases. Because eviction may happen in multiple
-    * time slices, the actual unused entry count may exceed both these numbers
+    * eviction ceases. Because eviction happens incrementally,
+    * the actual unused entry count may exceed both these numbers
     * from time to time.
     *
     * A cache entry is defined as unused if it is not essential to guarantee
