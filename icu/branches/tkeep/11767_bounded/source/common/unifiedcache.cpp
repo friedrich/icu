@@ -297,7 +297,7 @@ void UnifiedCache::_putNew(
         status = U_MEMORY_ALLOCATION_ERROR;
         return;
     }
-    keyToAdopt->creationStatus = creationStatus;
+    keyToAdopt->fCreationStatus = creationStatus;
     if (value->allHardReferences()) {
         _registerMaster(keyToAdopt, value);
     }
@@ -430,7 +430,7 @@ void UnifiedCache::decrementItemsInUse() const {
 // addRef() and removeRef() on it correctly updates items in use count
 void UnifiedCache::_registerMaster(
         const CacheKeyBase *theKey, const SharedObject *value) const {
-    theKey->isMaster = TRUE;
+    theKey->fIsMaster = TRUE;
     ++fItemsInUseCount;
     value->registerWithCache(this);
 }
@@ -448,7 +448,7 @@ void UnifiedCache::_put(
     U_ASSERT(_inProgress(element));
     const CacheKeyBase *theKey = (const CacheKeyBase *) element->key.pointer;
     const SharedObject *oldValue = (const SharedObject *) element->value.pointer;
-    theKey->creationStatus = status;
+    theKey->fCreationStatus = status;
     if (value->allHardReferences()) {
         _registerMaster(theKey, value);
     }
@@ -496,7 +496,7 @@ void UnifiedCache::_fetch(
         const SharedObject *&value,
         UErrorCode &status) {
     const CacheKeyBase *theKey = (const CacheKeyBase *) element->key.pointer;
-    status = theKey->creationStatus;
+    status = theKey->fCreationStatus;
 
     // Since we have the cache lock, calling regular SharedObject methods
     // could cause us to deadlock on ourselves since they may need to lock
@@ -534,13 +534,13 @@ UBool UnifiedCache::_isEvictable(const UHashElement *element) {
             (const SharedObject *) element->value.pointer;
 
     // Entries that are under construction are never evictable
-    if (_inProgress(theValue, theKey->creationStatus)) {
+    if (_inProgress(theValue, theKey->fCreationStatus)) {
         return FALSE;
     }
 
     // We can evict entries that are either not a master or have just
     // one reference (The one reference being from the cache itself).
-    return (!theKey->isMaster || theValue->getRefCount() == 1);
+    return (!theKey->fIsMaster || theValue->getRefCount() == 1);
 }
 
 U_NAMESPACE_END
