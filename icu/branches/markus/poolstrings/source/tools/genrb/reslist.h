@@ -34,10 +34,14 @@
 
 U_CDECL_BEGIN
 
+class PseudoListResource;
+
 struct ResFile {
     ResFile()
             : fBytes(NULL), fIndexes(NULL),
-              fKeys(NULL), fKeysLength(0), fKeysCount(0), fChecksum(0) {}
+              fKeys(NULL), fKeysLength(0), fKeysCount(0),
+              fStrings(NULL), fStringIndexLimit(0),
+              fChecksum(0) {}
     ~ResFile() { close(); }
 
     void close();
@@ -47,6 +51,10 @@ struct ResFile {
     const char *fKeys;
     int32_t fKeysLength;
     int32_t fKeysCount;
+
+    PseudoListResource *fStrings;
+    int32_t fStringIndexLimit;
+
     int32_t fChecksum;
 };
 
@@ -74,6 +82,7 @@ struct SRBRoot {
 
     void compactKeys(UErrorCode &errorCode);
 
+    int32_t makeRes16(uint32_t resWord) const;
     int32_t mapKey(int32_t oldpos) const;
     uint16_t makeKey16(int32_t key) const;
 
@@ -102,6 +111,9 @@ public:
   int32_t f16BitStringsLength;
 
   const ResFile *fUsePoolBundle;
+  int32_t fPoolStringIndexLimit;
+  int32_t fPoolStringIndex16Limit;
+  int32_t fLocalStringIndexLimit;
   SRBRoot *fWritePoolBundle;
 };
 
@@ -283,6 +295,7 @@ public:
                        const UString* comment, UErrorCode &errorCode);
     StringBaseResource(SRBRoot *bundle, int8_t type,
                        const icu::UnicodeString &value, UErrorCode &errorCode);
+    StringBaseResource(int8_t type, const UChar *value, int32_t len, UErrorCode &errorCode);
     virtual ~StringBaseResource();
 
     const UChar *getBuffer() const { return fString.getBuffer(); }
@@ -307,6 +320,16 @@ public:
             : StringBaseResource(bundle, URES_STRING, value, errorCode),
               fSame(NULL), fSuffixOffset(0),
               fNumCopies(0), fNumUnitsSaved(0), fNumCharsForLength(0) {}
+    StringResource(int32_t poolStringIndex, int8_t numCharsForLength,
+                   const UChar *value, int32_t length,
+                   UErrorCode &errorCode)
+            : StringBaseResource(URES_STRING, value, length, errorCode),
+              fSame(NULL), fSuffixOffset(0),
+              fNumCopies(0), fNumUnitsSaved(0), fNumCharsForLength(numCharsForLength) {
+        // v3 pool string encoded as string-v2 with low offset
+        fRes = URES_MAKE_RESOURCE(URES_STRING_V2, poolStringIndex);
+        fWritten = TRUE;
+    }
     virtual ~StringResource();
 
     int32_t get16BitStringsLength() const {
@@ -316,7 +339,7 @@ public:
     virtual void handlePreflightStrings(SRBRoot *bundle, UHashtable *stringSet, UErrorCode &errorCode);
     virtual void handleWrite16(SRBRoot *bundle, UErrorCode &errorCode);
 
-    void writeUTF16v2(icu::UnicodeString &dest);
+    void writeUTF16v2(int32_t base, icu::UnicodeString &dest);
 
     StringResource *fSame;  // used for duplicates
     int32_t fSuffixOffset;  // this string is a suffix of fSame at this offset
@@ -386,10 +409,12 @@ UBool getIncludeCopyright(void);
 
 void setFormatVersion(int32_t formatVersion);
 
+int32_t getFormatVersion();
+
 void setUsePoolBundle(UBool use);
 
 /* in wrtxml.cpp */
-uint32_t computeCRC(char *ptr, uint32_t len, uint32_t lastcrc);
+uint32_t computeCRC(const char *ptr, uint32_t len, uint32_t lastcrc);
 
 U_CDECL_END
 #endif /* #ifndef RESLIST_H */

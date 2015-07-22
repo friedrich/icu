@@ -1,9 +1,7 @@
 /*
 ******************************************************************************
-*                                                                            *
-* Copyright (C) 1999-2012, International Business Machines                   *
-*                Corporation and others. All Rights Reserved.                *
-*                                                                            *
+* Copyright (C) 1999-2015, International Business Machines
+*                Corporation and others. All Rights Reserved.
 ******************************************************************************
 *   file name:  uresdata.h
 *   encoding:   US-ASCII
@@ -51,6 +49,8 @@ typedef enum {
      * All values are URES_STRING_V2 strings.
      */
     URES_ARRAY16=9
+
+    /* Resource type 15 is not defined but effectively used by RES_BOGUS=0xffffffff. */
 } UResInternalType;
 
 /*
@@ -61,6 +61,7 @@ typedef enum {
 typedef uint32_t Resource;
 
 #define RES_BOGUS 0xffffffff
+#define RES_MAX_OFFSET 0x0fffffff
 
 #define RES_GET_TYPE(res) ((int32_t)((res)>>28UL))
 #define RES_GET_OFFSET(res) ((res)&0x0fffffff)
@@ -84,22 +85,48 @@ typedef uint32_t Resource;
 
 /* indexes[] value names; indexes are generally 32-bit (Resource) indexes */
 enum {
-    URES_INDEX_LENGTH,          /* [0] contains URES_INDEX_TOP==the length of indexes[];
-                                 *     formatVersion==1: all bits contain the length of indexes[]
-                                 *       but the length is much less than 0xff;
-                                 *     formatVersion>1:
-                                 *       only bits  7..0 contain the length of indexes[],
-                                 *            bits 31..8 are reserved and set to 0 */
-    URES_INDEX_KEYS_TOP,        /* [1] contains the top of the key strings, */
-                                /*     same as the bottom of resources or UTF-16 strings, rounded up */
-    URES_INDEX_RESOURCES_TOP,   /* [2] contains the top of all resources */
-    URES_INDEX_BUNDLE_TOP,      /* [3] contains the top of the bundle, */
-                                /*     in case it were ever different from [2] */
-    URES_INDEX_MAX_TABLE_LENGTH,/* [4] max. length of any table */
-    URES_INDEX_ATTRIBUTES,      /* [5] attributes bit set, see URES_ATT_* (new in formatVersion 1.2) */
-    URES_INDEX_16BIT_TOP,       /* [6] top of the 16-bit units (UTF-16 string v2 UChars, URES_TABLE16, URES_ARRAY16),
-                                 *     rounded up (new in formatVersion 2.0, ICU 4.4) */
-    URES_INDEX_POOL_CHECKSUM,   /* [7] checksum of the pool bundle (new in formatVersion 2.0, ICU 4.4) */
+    /**
+     * [0] contains the length of indexes[]
+     * which is at most URES_INDEX_TOP of the latest format version
+     *
+     * formatVersion==1: all bits contain the length of indexes[]
+     *   but the length is much less than 0xff;
+     * formatVersion>1:
+     *   only bits  7..0 contain the length of indexes[],
+     *        bits 31..8 are reserved and set to 0
+     * formatVersion>=3:
+     *        bits 31..8 poolStringIndexLimit bits 23..0
+     */
+    URES_INDEX_LENGTH,
+    /**
+     * [1] contains the top of the key strings,
+     *     same as the bottom of resources or UTF-16 strings, rounded up
+     */
+    URES_INDEX_KEYS_TOP,
+    /** [2] contains the top of all resources */
+    URES_INDEX_RESOURCES_TOP,
+    /**
+     * [3] contains the top of the bundle,
+     *     in case it were ever different from [2]
+     */
+    URES_INDEX_BUNDLE_TOP,
+    /** [4] max. length of any table */
+    URES_INDEX_MAX_TABLE_LENGTH,
+    /**
+     * [5] attributes bit set, see URES_ATT_* (new in formatVersion 1.2)
+     *
+     * formatVersion>=3:
+     *   bits 31..16 poolStringIndex16Limit
+     *   bits 15..12 poolStringIndexLimit bits 27..24
+     */
+    URES_INDEX_ATTRIBUTES,
+    /**
+     * [6] top of the 16-bit units (UTF-16 string v2 UChars, URES_TABLE16, URES_ARRAY16),
+     *     rounded up (new in formatVersion 2.0, ICU 4.4)
+     */
+    URES_INDEX_16BIT_TOP,
+    /** [7] checksum of the pool bundle (new in formatVersion 2.0, ICU 4.4) */
+    URES_INDEX_POOL_CHECKSUM,
     URES_INDEX_TOP
 };
 
@@ -126,9 +153,13 @@ enum {
 #define URES_ATT_USES_POOL_BUNDLE 4
 
 /*
- * File format for .res resource bundle files (formatVersion=2, ICU 4.4)
+ * File format for .res resource bundle files
  *
- * New in formatVersion 2 compared with 1.3: -------------
+ * ICU 56: New in formatVersion 3 compared with 2: -------------
+ *
+ * TODO
+ *
+ * ICU 4.4: New in formatVersion 2 compared with 1.3: -------------
  *
  * Three new resource types -- String-v2, Table16 and Array16 -- have their
  * values stored in a new array of 16-bit units between the table key strings

@@ -1,6 +1,6 @@
 /*
 *******************************************************************************
-* Copyright (C) 1999-2014, International Business Machines Corporation
+* Copyright (C) 1999-2015, International Business Machines Corporation
 *               and others. All Rights Reserved.
 *******************************************************************************
 *   file name:  uresdata.c
@@ -990,8 +990,9 @@ ures_swap(const UDataSwapper *ds,
         pInfo->dataFormat[1]==0x65 &&
         pInfo->dataFormat[2]==0x73 &&
         pInfo->dataFormat[3]==0x42 &&
-        ((pInfo->formatVersion[0]==1 && pInfo->formatVersion[1]>=1) ||  /* formatVersion 1.1+ or 2.x */
-         pInfo->formatVersion[0]==2)
+        /* formatVersion 1.1+ or 2.x or 3.x */
+        ((pInfo->formatVersion[0]==1 && pInfo->formatVersion[1]>=1) ||
+            pInfo->formatVersion[0]==2 || pInfo->formatVersion[0]==3)
     )) {
         udata_printError(ds, "ures_swap(): data format %02x.%02x.%02x.%02x (format version %02x.%02x) is not a resource bundle\n",
                          pInfo->dataFormat[0], pInfo->dataFormat[1],
