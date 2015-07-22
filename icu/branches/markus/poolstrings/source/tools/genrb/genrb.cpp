@@ -490,7 +490,7 @@ main(int argc,
 
         T_FileStream_close(poolFile);
         setUsePoolBundle(TRUE);
-        if (getShowWarning()) {  // not quiet
+        if (isVerbose()) {
             printf("number of shared strings: %d\n", (int)poolBundle.fStrings->fCount);
             int32_t length = poolBundle.fStringIndexLimit + 1;  // incl. last NUL
             printf("16-bit units for strings: %6d = %6d bytes\n",

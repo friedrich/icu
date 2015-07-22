@@ -158,6 +158,7 @@ enum {
  * ICU 56: New in formatVersion 3 compared with 2: -------------
  *
  * TODO
+ * Guarantee: poolStringIndex16Limit <= poolStringIndexLimit
  *
  * ICU 4.4: New in formatVersion 2 compared with 1.3: -------------
  *
@@ -348,6 +349,9 @@ typedef struct {
     const char *poolBundleKeys;
     Resource rootRes;
     int32_t localKeyLimit;
+    const uint16_t *poolBundleStrings;
+    int32_t poolStringIndexLimit;
+    int32_t poolStringIndex16Limit;
     UBool noFallback; /* see URES_ATT_NO_FALLBACK */
     UBool isPoolBundle;
     UBool usesPoolBundle;

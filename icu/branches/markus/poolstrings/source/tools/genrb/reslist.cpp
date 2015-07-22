@@ -67,7 +67,7 @@ U_NAMESPACE_USE
 
 static UBool gIncludeCopyright = FALSE;
 static UBool gUsePoolBundle = FALSE;
-static int32_t gFormatVersion = 2;  // TODO: default to 3
+static int32_t gFormatVersion = 3;
 
 /* How do we store string values? */
 enum {
@@ -106,6 +106,8 @@ static const UVersionInfo gFormatVersions[4] = {  /* indexed by a major-formatVe
     { 2, 0, 0, 0 },
     { 3, 0, 0, 0 }
 };
+// Remember to update genrb.h GENRB_VERSION when changing the data format.
+// (Or maybe we should remove GENRB_VERSION and report the ICU version number?)
 
 static uint8_t calcPadding(uint32_t size) {
     /* returns space we need to pad */
@@ -391,8 +393,15 @@ StringResource::handlePreflightStrings(SRBRoot *bundle, UHashtable *stringSet,
     assert(fSame == NULL);
     fSame = static_cast<StringResource *>(uhash_get(stringSet, this));
     if (fSame != NULL) {
-        ++fSame->fNumCopies;
-        return;  /* This is a duplicate of an earlier-visited string. */
+        // This is a duplicate of a pool bundle string or of an earlier-visited string.
+        if (++fSame->fNumCopies == 1) {
+            assert(fSame->fWritten);
+            int32_t poolStringIndex = (int32_t)RES_GET_OFFSET(fSame->fRes);
+            if (poolStringIndex >= bundle->fPoolStringIndexLimit) {
+                bundle->fPoolStringIndexLimit = poolStringIndex + 1;
+            }
+        }
+        return;
     }
     /* Put this string into the set for finding duplicates. */
     fNumCopies = 1;
@@ -1572,7 +1581,6 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
 #if DEBUG_PRINT_POOL_STRINGS
     std::string s8;
 #endif
-    uint32_t maxPoolStringRes = 0;
     for (int32_t i = 0; i < count;) {
         /*
          * This string is not a suffix of the previous one;
@@ -1587,9 +1595,8 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
                    res->fNumCopies, res->length(), writeStr8(res, s8));
         }
 #endif
-        if (res->fWritten && res->fNumCopies != 0 && res->fRes > maxPoolStringRes) {
-            maxPoolStringRes = res->fRes;
-        }
+        // Whole duplicates of pool strings are already account for in fPoolStringIndexLimit,
+        // see StringResource::handlePreflightStrings().
         int32_t j;
         for (j = i + 1; j < count; ++j) {
             StringResource *suffixRes = array[j];
@@ -1607,8 +1614,9 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
                         // Compute the resource word and collect the maximum.
                         suffixRes->fRes =
                                 res->fRes + res->fNumCharsForLength + suffixRes->fSuffixOffset;
-                        if (suffixRes->fRes > maxPoolStringRes) {
-                            maxPoolStringRes = suffixRes->fRes;
+                        int32_t poolStringIndex = (int32_t)RES_GET_OFFSET(suffixRes->fRes);
+                        if (poolStringIndex >= fPoolStringIndexLimit) {
+                            fPoolStringIndexLimit = poolStringIndex + 1;
                         }
                         suffixRes->fWritten = TRUE;
                     }
@@ -1695,20 +1703,17 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
                    (int)numUnitsNotSaved, (int)numUnitsNotSaved * 2);
         }
     } else {
-        if (maxPoolStringRes != 0) {
-            fPoolStringIndexLimit = RES_GET_OFFSET(maxPoolStringRes) + 1;
-            assert(fPoolStringIndexLimit <= fUsePoolBundle->fStringIndexLimit);
-        }
+        assert(fPoolStringIndexLimit <= fUsePoolBundle->fStringIndexLimit);
         /* Write the non-suffix strings. */
-        uint32_t maxStringRes = 0;
         int32_t i;
         for (i = 0; i < count && array[i]->fSame == NULL; ++i) {
             StringResource *res = array[i];
             if (!res->fWritten) {
-                res->writeUTF16v2(fPoolStringIndexLimit, f16BitUnits);
-                if (res->fRes > maxStringRes) {
-                    maxStringRes = res->fRes;
+                int32_t localStringIndex = f16BitUnits.length();
+                if (localStringIndex >= fLocalStringIndexLimit) {
+                    fLocalStringIndexLimit = localStringIndex + 1;
                 }
+                res->writeUTF16v2(fPoolStringIndexLimit, f16BitUnits);
             }
         }
         if (f16BitUnits.isBogus()) {
@@ -1737,18 +1742,14 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
             }
             StringResource *same = res->fSame;
             assert(res->length() != same->length());  // Set strings are unique.
-            // Suffixes of pool strings have been set already.
-            assert(same->fRes >= URES_MAKE_RESOURCE(URES_STRING_V2, fPoolStringIndexLimit));
             res->fRes = same->fRes + same->fNumCharsForLength + res->fSuffixOffset;
-            if (res->fRes > maxStringRes) {
-                maxStringRes = res->fRes;
+            int32_t localStringIndex = (int32_t)RES_GET_OFFSET(res->fRes) - fPoolStringIndexLimit;
+            // Suffixes of pool strings have been set already.
+            assert(localStringIndex >= 0);
+            if (localStringIndex >= fLocalStringIndexLimit) {
+                fLocalStringIndexLimit = localStringIndex + 1;
             }
             res->fWritten = TRUE;
-        }
-        if (maxStringRes != 0) {
-            int32_t maxLocalStringIndex = RES_GET_OFFSET(maxStringRes) - fPoolStringIndexLimit;
-            assert(maxLocalStringIndex >= 0);
-            fLocalStringIndexLimit = maxLocalStringIndex + 1;
         }
     }
     // +1 to account for the initial zero in f16BitUnits
