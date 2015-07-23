@@ -16,12 +16,7 @@
 *******************************************************************************
 */
 
-#define DEBUG_PRINT_POOL_STRINGS 0
-
 #include <assert.h>
-#if DEBUG_PRINT_POOL_STRINGS
-#   include <string>
-#endif
 #include "genrb.h"
 #include "unicode/localpointer.h"
 #include "unicode/uclean.h"
@@ -111,15 +106,6 @@ static     const char* outputEnc ="";
 static     struct SRBRoot *newPoolBundle = NULL;
 
 static ResFile poolBundle;
-
-#if DEBUG_PRINT_POOL_STRINGS
-namespace {
-const char *writeStr8(const StringResource *res, std::string &s8) {
-    s8.clear();
-    return res->fString.toUTF8String(s8).c_str();
-}
-}  // namespace
-#endif
 
 /*added by Jing*/
 static     const char* language = NULL;
@@ -411,9 +397,6 @@ main(int argc,
             }
         }
 
-#if DEBUG_PRINT_POOL_STRINGS
-        std::string s8;
-#endif
         // 16BitUnits[] begins with strings-v2.
         // The strings-v2 may optionally be terminated by what looks like
         // an explicit string length that exceeds the number of remaining 16-bit units.
@@ -478,10 +461,6 @@ main(int argc,
                     poolBundle.fStringIndexLimit = maxStringIndex + 1;
                     // The StringResource constructor did not allocate further memory.
                     assert(U_SUCCESS(status));
-#if DEBUG_PRINT_POOL_STRINGS
-                    s8.clear();
-                    printf("                 [%4d] %s\n", length, writeStr8(sr, s8));
-#endif
                 }
                 p += length + 1;
                 remaining -= length + 1;
@@ -490,7 +469,7 @@ main(int argc,
 
         T_FileStream_close(poolFile);
         setUsePoolBundle(TRUE);
-        if (isVerbose()) {
+        if (isVerbose() && poolBundle.fStrings != NULL) {
             printf("number of shared strings: %d\n", (int)poolBundle.fStrings->fCount);
             int32_t length = poolBundle.fStringIndexLimit + 1;  // incl. last NUL
             printf("16-bit units for strings: %6d = %6d bytes\n",

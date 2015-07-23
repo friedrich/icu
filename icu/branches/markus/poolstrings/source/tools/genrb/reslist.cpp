@@ -25,13 +25,8 @@
 #   define UNISTR_FROM_STRING_EXPLICIT explicit
 #endif
 
-#define DEBUG_PRINT_POOL_STRINGS 0
-
 #include <assert.h>
 #include <stdio.h>
-#if DEBUG_PRINT_POOL_STRINGS
-#   include <string>
-#endif
 #include "unicode/localpointer.h"
 #include "reslist.h"
 #include "unewdata.h"
@@ -59,6 +54,8 @@
 // We trade some total size reduction to reduce the pool bundle a bit,
 // so that one can reasonably save data size by
 // removing bundle files without rebuilding the pool bundle.
+// This can also help to keep the pool and total (pool+local) string indexes
+// within 16 bits, that is, within range of Table16 and Array16 containers.
 #ifndef GENRB_MIN_16BIT_UNITS_SAVED_FOR_POOL_STRING
 #   define GENRB_MIN_16BIT_UNITS_SAVED_FOR_POOL_STRING 10
 #endif
@@ -1542,15 +1539,6 @@ StringResource::writeUTF16v2(int32_t base, UnicodeString &dest) {
     dest.append((UChar)0);
 }
 
-#if DEBUG_PRINT_POOL_STRINGS
-namespace {
-const char *writeStr8(const StringResource *res, std::string &s8) {
-    s8.clear();
-    return res->fString.toUTF8String(s8).c_str();
-}
-}  // namespace
-#endif
-
 void
 SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
     if (U_FAILURE(errorCode)) {
@@ -1578,9 +1566,6 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
      * Temporarily use fSame and fSuffixOffset for suffix strings to
      * refer to the remaining ones.
      */
-#if DEBUG_PRINT_POOL_STRINGS
-    std::string s8;
-#endif
     for (int32_t i = 0; i < count;) {
         /*
          * This string is not a suffix of the previous one;
@@ -1589,12 +1574,6 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
          */
         StringResource *res = array[i];
         res->fNumUnitsSaved = (res->fNumCopies - 1) * res->get16BitStringsLength();
-#if DEBUG_PRINT_POOL_STRINGS
-        if (fIsPoolBundle) {
-            printf("\n**** %4d * [%4d] %s\n",
-                   res->fNumCopies, res->length(), writeStr8(res, s8));
-        }
-#endif
         // Whole duplicates of pool strings are already account for in fPoolStringIndexLimit,
         // see StringResource::handlePreflightStrings().
         int32_t j;
@@ -1621,22 +1600,8 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
                         suffixRes->fWritten = TRUE;
                     }
                     res->fNumUnitsSaved += suffixRes->fNumCopies * suffixRes->get16BitStringsLength();
-#if DEBUG_PRINT_POOL_STRINGS
-                    if (fIsPoolBundle) {
-                        s8.clear();
-                        printf("save %4d * [%4d] %s\n",
-                               suffixRes->fNumCopies, suffixRes->length(), writeStr8(suffixRes, s8));
-                    }
-#endif
                 } else {
                     /* write the suffix by itself if we need explicit length */
-#if DEBUG_PRINT_POOL_STRINGS
-                    if (fIsPoolBundle) {
-                        s8.clear();
-                        printf("else %4d * [%4d] %s\n",
-                               suffixRes->fNumCopies, suffixRes->length(), writeStr8(suffixRes, s8));
-                    }
-#endif
                 }
             } else {
                 break;  /* not a suffix, restart from here */
@@ -1657,9 +1622,6 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
     if (fIsPoolBundle) {
         // Write strings that are sufficiently shared.
         // Avoid writing other strings.
-#if DEBUG_PRINT_POOL_STRINGS
-        puts("\n---- write strings that are sufficiently shared ----");
-#endif
         int32_t numStringsWritten = 0;
         int32_t numUnitsSaved = 0;
         int32_t numUnitsNotSaved = 0;
@@ -1673,18 +1635,7 @@ SRBRoot::compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode) {
                 res->writeUTF16v2(0, f16BitUnits);
                 ++numStringsWritten;
                 numUnitsSaved += res->fNumUnitsSaved;
-#if DEBUG_PRINT_POOL_STRINGS
-                s8.clear();
-                printf("saves %6d units: [%4d] %s\n",
-                       res->fNumUnitsSaved, res->length(), writeStr8(res, s8));
-#endif
             } else {
-#if 0
-                if (res->fNumUnitsSaved != 0) {
-                    printf("num units not saved: %d vs. num units self: %d\n",
-                           (int)res->fNumUnitsSaved, (int)res->get16BitStringsLength());
-                }
-#endif
                 numUnitsNotSaved += res->fNumUnitsSaved;
                 res->fRes = URES_MAKE_EMPTY_RESOURCE(URES_STRING);
                 res->fWritten = TRUE;
