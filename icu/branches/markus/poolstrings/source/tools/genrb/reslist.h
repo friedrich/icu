@@ -84,7 +84,6 @@ struct SRBRoot {
 
     int32_t makeRes16(uint32_t resWord) const;
     int32_t mapKey(int32_t oldpos) const;
-    uint16_t makeKey16(int32_t key) const;
 
 private:
     void compactStringsV2(UHashtable *stringSet, UErrorCode &errorCode);
@@ -183,8 +182,8 @@ struct SResource {
      * Writes resource values into f16BitUnits
      * and determines the resource item word, if possible.
      */
-    void write16(SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handleWrite16(SRBRoot *bundle, UErrorCode &errorCode);
+    void write16(SRBRoot *bundle);
+    virtual void handleWrite16(SRBRoot *bundle);
 
     /**
      * Calculates ("preflights") and advances the *byteOffset
@@ -201,21 +200,22 @@ struct SResource {
      * before actually writing the bundle contents to the file,
      * which is necessary because the root item is stored at the beginning.
      */
-    void preWrite(uint32_t *byteOffset, SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handlePreWrite(uint32_t *byteOffset, SRBRoot *bundle, UErrorCode &errorCode);
+    void preWrite(uint32_t *byteOffset);
+    virtual void handlePreWrite(uint32_t *byteOffset);
 
     /**
      * Writes the resource's data to mem and updates the byteOffset
      * in parallel.
      */
-    void write(UNewDataMemory *mem, uint32_t *byteOffset, SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset, SRBRoot *bundle,
-                             UErrorCode &errorCode);
+    void write(UNewDataMemory *mem, uint32_t *byteOffset);
+    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset);
 
     int8_t   fType;     /* nominal type: fRes (when != 0xffffffff) may use subtype */
     UBool    fWritten;  /* res_write() can exit early */
     uint32_t fRes;      /* resource item word; RES_BOGUS=0xffffffff if not known yet */
+    int32_t  fRes16;    /* Res16 version of fRes for Table, Table16, Array16; -1 if it does not fit. */
     int32_t  fKey;      /* Index into bundle->fKeys; -1 if no key. */
+    int32_t  fKey16;    /* Key16 version of fKey for Table & Table16; -1 if no key or it does not fit. */
     int      line;      /* used internally to report duplicate keys in tables */
     SResource *fNext;   /* This is for internal chaining while building */
     struct UString fComment;
@@ -230,7 +230,13 @@ public:
     virtual ~ContainerResource();
 
     virtual void handlePreflightStrings(SRBRoot *bundle, UHashtable *stringSet, UErrorCode &errorCode);
+protected:
+    void writeAllRes16(SRBRoot *bundle);
+    void preWriteAllRes(uint32_t *byteOffset);
+    void writeAllRes(UNewDataMemory *mem, uint32_t *byteOffset);
+    void writeAllRes32(UNewDataMemory *mem, uint32_t *byteOffset);
 
+public:
     // TODO: private with getter?
     uint32_t fCount;
     SResource *fFirst;
@@ -246,10 +252,9 @@ public:
 
     void add(SResource *res, int linenumber, UErrorCode &errorCode);
 
-    virtual void handleWrite16(SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handlePreWrite(uint32_t *byteOffset, SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset, SRBRoot *bundle,
-                             UErrorCode &errorCode);
+    virtual void handleWrite16(SRBRoot *bundle);
+    virtual void handlePreWrite(uint32_t *byteOffset);
+    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset);
 
     int8_t fTableType;  // determined by table_write16() for table_preWrite() & table_write()
     SRBRoot *fRoot;
@@ -265,10 +270,9 @@ public:
 
     void add(SResource *res);
 
-    virtual void handleWrite16(SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handlePreWrite(uint32_t *byteOffset, SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset, SRBRoot *bundle,
-                             UErrorCode &errorCode);
+    virtual void handleWrite16(SRBRoot *bundle);
+    virtual void handlePreWrite(uint32_t *byteOffset);
+    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset);
 
     SResource *fLast;
 };
@@ -285,7 +289,7 @@ public:
 
     void add(SResource *res);
 
-    virtual void handleWrite16(SRBRoot *bundle, UErrorCode &errorCode);
+    virtual void handleWrite16(SRBRoot *bundle);
 };
 
 class StringBaseResource : public SResource {
@@ -301,9 +305,8 @@ public:
     const UChar *getBuffer() const { return fString.getBuffer(); }
     int32_t length() const { return fString.length(); }
 
-    virtual void handlePreWrite(uint32_t *byteOffset, SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset, SRBRoot *bundle,
-                             UErrorCode &errorCode);
+    virtual void handlePreWrite(uint32_t *byteOffset);
+    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset);
 
     // TODO: private with getter?
     icu::UnicodeString fString;
@@ -337,7 +340,7 @@ public:
     }
 
     virtual void handlePreflightStrings(SRBRoot *bundle, UHashtable *stringSet, UErrorCode &errorCode);
-    virtual void handleWrite16(SRBRoot *bundle, UErrorCode &errorCode);
+    virtual void handleWrite16(SRBRoot *bundle);
 
     void writeUTF16v2(int32_t base, icu::UnicodeString &dest);
 
@@ -374,9 +377,8 @@ public:
 
     void add(int32_t value, UErrorCode &errorCode);
 
-    virtual void handlePreWrite(uint32_t *byteOffset, SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset, SRBRoot *bundle,
-                             UErrorCode &errorCode);
+    virtual void handlePreWrite(uint32_t *byteOffset);
+    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset);
 
     // TODO: UVector32
     uint32_t fCount;
@@ -390,9 +392,8 @@ public:
                    const UString* comment, UErrorCode &errorCode);
     virtual ~BinaryResource();
 
-    virtual void handlePreWrite(uint32_t *byteOffset, SRBRoot *bundle, UErrorCode &errorCode);
-    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset, SRBRoot *bundle,
-                             UErrorCode &errorCode);
+    virtual void handlePreWrite(uint32_t *byteOffset);
+    virtual void handleWrite(UNewDataMemory *mem, uint32_t *byteOffset);
 
     // TODO: CharString?
     uint32_t fLength;
