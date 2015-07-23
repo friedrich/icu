@@ -70,7 +70,7 @@ GB6:     L (L | V | LV | LVT);
 GB7:     (LV | V) (V | T);
 GB8:     (LVT | T) T;
 
-GB8a:    Regional_Indicator Regional Indicator;
+GB8a:    Regional_Indicator Regional_Indicator;
 GB9:     . Extend;
 
 GB9a:    . SpacingMark;

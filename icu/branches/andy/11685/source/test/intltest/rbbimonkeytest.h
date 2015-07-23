@@ -116,7 +116,8 @@ class MonkeyTestData {
     MonkeyTestData(UErrorCode &status);
     ~MonkeyTestData() {};
     void set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status);
-    void dump() const;
+    void clearActualBreaks();
+    void dump(int32_t around = -1) const;
 
     const BreakRules      *fBkRules;           // The break rules used to generate this data.
     UnicodeString          fString;            // The text.
@@ -125,6 +126,9 @@ class MonkeyTestData {
     UnicodeString          fActualBreaks;      // Breaks as found by ICU break iterator.
     UnicodeString          fRuleForPosition;   // Index into BreakRules.fBreakRules of rule that applied at each position.
                                                // Also parallel to fString.
+    UnicodeString          f2ndRuleForPos;     // As above. A 2nd rule applies when the preceding rule
+                                               //   didn't cause a break, and a subsequent rule match starts
+                                               //   on the last code point of the preceding match.
 
 };
 
@@ -147,6 +151,14 @@ class RBBIMonkeyImpl {
     LocalPointer<RuleBasedBreakIterator> fBI;
     LocalPointer<MonkeyTestData>         fTestData;
     IntlTest::icu_rand                   fRandomGenerator;
+
+    enum CheckDirection {
+        FORWARD = 1,
+        REVERSE = 2
+    };
+    void clearActualBreaks();
+    void testForwards(UErrorCode &status);
+    void checkResults(CheckDirection dir, UErrorCode &status);
 
   private:
     void openBreakRules(const char *fileName, UErrorCode &status);

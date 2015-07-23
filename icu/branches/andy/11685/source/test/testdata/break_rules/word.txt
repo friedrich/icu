@@ -40,7 +40,7 @@ dictionary     = [ComplexContext dictionaryCJK];
 ALetter        = [ALetter - dictionary];
 
 AHLetter       = [ALetter  Hebrew_Letter];
-MidNumLetQ     = [MidNumLet  single_Quote];
+MidNumLetQ     = [MidNumLet  Single_Quote];
 ExtFmt         = [Extend Format];
 
 WB3:   CR LF;

@@ -363,10 +363,11 @@ const CharClass *BreakRules::getClassForChar(UChar32 c, int32_t *iter) const {
 //
 //---------------------------------------------------------------------------------------
 
-MonkeyTestData::MonkeyTestData(UErrorCode &status) : fRuleForPosition(status)  {
+MonkeyTestData::MonkeyTestData(UErrorCode &status)  {
 }
 
 void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status) {
+    printf("set(): random seed = %d, next random = %d\n", rand.getSeed(), rand());
     const int32_t dataLength = 100;
 
     // Fill the test string with random characters.
@@ -375,8 +376,8 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
 
     std::cout << "Populating Test Data" << std::endl;
     fBkRules = rules;
-    int32_t n = 0;
-    for (n=0; n<dataLength;) {
+    fString.remove();
+    for (int32_t n=0; n<dataLength;) {
         int charClassIndex = rand() % rules->fCharClassList->size();
         const CharClass *cclass = static_cast<CharClass *>(rules->fCharClassList->elementAt(charClassIndex));
         // std::cout << "   class " << stdstr(cclass->fName) << std::endl;
@@ -405,25 +406,41 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
     // Expected and Actual breaks are one longer than the input string; a non-zero value
     // will indicate a boundary preceding that position.
 
-    fExpectedBreaks.remove();
-    for (int32_t i=0; i<=fString.length(); ++i) {
-         fExpectedBreaks.append(UChar(0));
-    }
-    fActualBreaks = fExpectedBreaks;
-    fRuleForPosition = fExpectedBreaks;
+    clearActualBreaks();
+    fExpectedBreaks  = fActualBreaks;
+    fRuleForPosition = fActualBreaks;
+    f2ndRuleForPos   = fActualBreaks;
 
     // Apply reference rules to find the expected breaks.
     
+    fExpectedBreaks.setCharAt(0, (UChar)1);  // Force an expected break before the start of the text.
+                                             // ICU always reports a break there.
+                                             // The reference rules do not have a means to do so.
     int32_t strIdx = 0;
     while (strIdx < fString.length()) {
         BreakRule *matchingRule = NULL;
+        UBool      hasBreak = FALSE;
         int32_t ruleNum = 0;
+        int32_t matchStart = 0;
+        int32_t matchEnd = 0;
+        int32_t breakGroup = 0;
         for (ruleNum=0; ruleNum<rules->fBreakRules.size(); ruleNum++) {
             BreakRule *rule = static_cast<BreakRule *>(rules->fBreakRules.elementAt(ruleNum));
             rule->fRuleMatcher->reset();
             if (rule->fRuleMatcher->lookingAt(strIdx, status)) {
-               matchingRule = rule;
-               break;
+                // A candidate rule match, check further to see if we take it or continue to check other rules.
+                // Matches of zero or one codepoint count only if they also specify a break.
+                matchStart = rule->fRuleMatcher->start(status);
+                matchEnd = rule->fRuleMatcher->end(status);
+                breakGroup = rule->fRuleMatcher->pattern().groupNumberFromName("BreakPosition", status); 
+                hasBreak = U_SUCCESS(status);
+                if (status == U_REGEX_INVALID_CAPTURE_GROUP_NAME) {
+                    status = U_ZERO_ERROR;
+                }
+                if (hasBreak || fString.moveIndex32(matchStart, 1) < matchEnd) {
+                    matchingRule = rule;
+                    break;
+                }
             }
         }
         if (matchingRule == NULL) {
@@ -434,7 +451,7 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
             return;
         }
         if (matchingRule->fRuleMatcher->group(status).length() == 0) {
-            // Zero length rule match. This is an error in the rule expressions.
+            // Zero length rule match. This is also an error in the rule expressions.
             IntlTest::gTest->errln("%s:%d Zero length rule match.",
                 __FILE__, __LINE__);
             status =  U_INVALID_FORMAT_ERROR;
@@ -442,26 +459,19 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
         }
 
         // Record which rule matched over the length of the match.
-        int32_t matchStart = matchingRule->fRuleMatcher->start(status);
-        int32_t matchEnd = matchingRule->fRuleMatcher->end(status);
-        for (strIdx = matchStart; strIdx < matchEnd; strIdx++) {
-            fRuleForPosition.setCharAt(strIdx, (UChar)ruleNum);
+        for (int i = matchStart; i < matchEnd; i++) {
+            if (fRuleForPosition.charAt(i) == 0) {
+                fRuleForPosition.setCharAt(i, (UChar)ruleNum);
+            } else {
+                f2ndRuleForPos.setCharAt(i, (UChar)ruleNum);
+            }
         }
 
         // Break positions appear in rules as a matching named capture of zero length at the break position,
         //   the adjusted pattern contains (?<BreakPosition>)
-        int32_t breakGroup = matchingRule->fRuleMatcher->pattern().groupNumberFromName("BreakPosition", status);
-        if (status == U_REGEX_INVALID_CAPTURE_GROUP_NAME) {
-
-            // Original rule didn't specify a break. 
-            // Continue applying rules starting on the last code point of this match.
-            
-            strIdx = fString.moveIndex32(matchEnd, -1);
-            status = U_ZERO_ERROR;
-
-        } else {
-            int32_t breakPos = (matchingRule->fRuleMatcher->start(breakGroup, status));
-            if (breakPos < 0) {
+        if (hasBreak) {
+            int32_t breakPos = matchingRule->fRuleMatcher->start(breakGroup, status);
+            if (U_FAILURE(status) || breakPos < 0) {
                 // Rule specified a break, but that break wasn't part of the match, even
                 // though the rule as a whole matched.
                 // Can't happen with regular expressions derived from (equivalent to) ICU break rules.
@@ -472,10 +482,24 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
             }
             fExpectedBreaks.setCharAt(breakPos, (UChar)1);
             // printf("recording break at %d\n", breakPos);
-            // Pick up applying rules immediately after the break, not the end of the match. 
-            // The matching rule may have included context following the boundary that 
-            // needs to be looked at again.
+            // For the next iteration, pick up applying rules immediately after the break,
+            // which may differ from end of the match. The matching rule may have included 
+            // context following the boundary that needs to be looked at again.
             strIdx = matchingRule->fRuleMatcher->end(breakGroup, status);
+        } else {
+            // Original rule didn't specify a break. 
+            // Continue applying rules starting on the last code point of this match.
+            strIdx = fString.moveIndex32(matchEnd, -1);
+            if (strIdx == matchStart) {
+                // Match was only one code point, no progress if we continue.
+                // Shouldn't get here, case is filtered out at top of loop.
+                CharString ruleName;
+                ruleName.appendInvariantChars(matchingRule->fName, status);
+                IntlTest::gTest->errln("%s:%d Rule %s internal error",
+                        __FILE__, __LINE__, ruleName.data());
+                status = U_INVALID_FORMAT_ERROR;
+                break;
+            }
         }
         if (U_FAILURE(status)) {
             IntlTest::gTest->errln("%s:%d status = %s. Unexpected failure, perhaps problem internal to test.",
@@ -485,27 +509,54 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
     }
 }
 
+void MonkeyTestData::clearActualBreaks() {
+    fActualBreaks.remove();
+    // Actual Breaks length is one longer than the data string length, allowing
+    //    for breaks before the first and after the last character in the data.
+    for (int32_t i=0; i<=fString.length(); i++) {
+        fActualBreaks.append((UChar)0);
+    }
+}
 
-void MonkeyTestData::dump() const {
-    printf("position class               break  Rule              Character\n");
+void MonkeyTestData::dump(int32_t around) const {
+    printf("\n"
+           "char     char                break  Rule                    Character\n"
+           "position class                R I   name                    name\n"
+           "---------------------------------------------------------------------------------------------\n");
 
-    for (int charIdx = 0; charIdx < fString.length(); charIdx=fString.moveIndex32(charIdx, 1)) {
+    int32_t start;
+    int32_t end;
+
+    if (around == -1) {
+        start = 0;
+        end = fString.length();
+    } else {
+        // Display context around a failure.
+        start = fString.moveIndex32(around, -30);
+        end = fString.moveIndex32(around, +30);
+    }
+
+    for (int charIdx = start; charIdx < end; charIdx=fString.moveIndex32(charIdx, 1)) {
         UErrorCode status = U_ZERO_ERROR;
         UChar32 c = fString.char32At(charIdx);
         const CharClass *cc = fBkRules->getClassForChar(c);
         CharString ccName;
         ccName.appendInvariantChars(cc->fName, status);
-        CharString ruleName;
+        CharString ruleName, secondRuleName;
         const BreakRule *rule = static_cast<BreakRule *>(fBkRules->fBreakRules.elementAt(fRuleForPosition.charAt(charIdx)));
         ruleName.appendInvariantChars(rule->fName, status);
-        
+        if (f2ndRuleForPos.charAt(charIdx) > 0) {
+            const BreakRule *secondRule = static_cast<BreakRule *>(fBkRules->fBreakRules.elementAt(f2ndRuleForPos.charAt(charIdx)));
+            secondRuleName.appendInvariantChars(secondRule->fName, status);
+        }
         char cName[200];
         u_charName(c, U_UNICODE_CHAR_NAME, cName, sizeof(cName), &status);
 
-        printf("  %4.1d  %-20s  %c     %-10s     %s\n",
+        printf("  %4.1d  %-20s  %c %c   %-10s %-10s    %s\n",
             charIdx, ccName.data(),
             fExpectedBreaks.charAt(charIdx) ? '*' : '.',
-            ruleName.data(), cName
+            fActualBreaks.charAt(charIdx) ? '*' : '.',
+            ruleName.data(), secondRuleName.data(), cName
         );
     }
 }
@@ -557,15 +608,68 @@ void RBBIMonkeyImpl::runTest(int32_t numIterations, UErrorCode &status) {
     if (U_FAILURE(status)) { return; };
 
     for (int loopCount = 0; loopCount < numIterations; loopCount++) {
+        status = U_ZERO_ERROR;   // TODO: counter on allowed number of failures.
+        printf("runtest %d: random seed = %d, next random = %d\n", loopCount, fRandomGenerator.getSeed(), fRandomGenerator());
         fTestData->set(fRuleSet.getAlias(), fRandomGenerator, status);
-        fTestData->dump();
+        // fTestData->dump();
         if (U_FAILURE(status)) { break; };
         // check forwards
+        testForwards(status);
+
         // check reverse
         // check following / preceding
         // check is boundary
     }
 }
+
+void RBBIMonkeyImpl::testForwards(UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    fTestData->clearActualBreaks();
+    fBI->setText(fTestData->fString);
+    int32_t previousBreak = -2;
+    for (int32_t bk=fBI->first(); bk != BreakIterator::DONE; bk=fBI->next()) {
+        if (bk == previousBreak) {
+            IntlTest::gTest->errln("%s:%d: Break Iterator Stall." __FILE__, __LINE__); 
+            status = U_INVALID_STATE_ERROR;
+            return;
+        }
+        if (bk < 0 || bk > fTestData->fString.length()) {
+            IntlTest::gTest->errln("%s:%d: Boundary (%d) out of bounds.", __FILE__, __LINE__, bk);
+            status = U_INVALID_STATE_ERROR;
+            return;
+        }
+        fTestData->fActualBreaks.setCharAt(bk, 1);
+    }
+    checkResults(FORWARD, status);
+}
+
+void RBBIMonkeyImpl::checkResults(CheckDirection direction, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    if (direction == FORWARD) {
+        for (int i=0; i<=fTestData->fString.length(); ++i) {
+            if (fTestData->fExpectedBreaks.charAt(i) != fTestData->fActualBreaks.charAt(i)) {
+                IntlTest::gTest->errln("%s:%d failure at index %d", __FILE__, __LINE__, i);
+                fTestData->dump(i);
+                status = U_INVALID_STATE_ERROR;
+                break;
+            }
+        }
+    } else {
+        for (int i=fTestData->fString.length(); i>=0; i--) {
+            if (fTestData->fExpectedBreaks.charAt(i) != fTestData->fActualBreaks.charAt(i)) {
+                IntlTest::gTest->errln("%s:%d failure at index %d", __FILE__, __LINE__, i);
+                fTestData->dump(i);
+                status = U_INVALID_STATE_ERROR;
+                break;
+            }
+        }
+    }
+}
+        
 
 
 //---------------------------------------------------------------------------------------
@@ -582,12 +686,12 @@ RBBIMonkeyTest::~RBBIMonkeyTest() {
 
 void RBBIMonkeyTest::testMonkey() {
     // TODO: need parameters from test framework for specific test, exhaustive, iteration count, starting seed, asynch, ...
-    const char *tests[] = {"grapheme.txt", /* "word.txt", "line.txt" */ };
+    const char *tests[] = {/* "grapheme.txt", "word.txt", */ "line.txt" };
 
     for (int i=0; i < UPRV_LENGTHOF(tests); ++i) {
         UErrorCode status = U_ZERO_ERROR;
         RBBIMonkeyImpl test(tests[i], status);
-        test.runTest(1, status);
+        test.runTest(10, status);
     }
 }
 
