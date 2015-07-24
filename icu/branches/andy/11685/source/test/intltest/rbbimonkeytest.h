@@ -19,6 +19,7 @@
 #include "uvector.h"
 
 class BreakRules;       // Forward declaration
+class RBBIMonkeyImpl;
 
 /**
  * Test the RuleBasedBreakIterator class giving different rules
@@ -33,7 +34,13 @@ class RBBIMonkeyTest: public IntlTest {
 
 
   private:
+    const char *fParams;                  // Copy of user parameters passed in from IntlTest.
+    
+
     void testRules(const char *ruleFile);
+    static UBool getIntParam(UnicodeString name, UnicodeString &params, int32_t &val, UErrorCode &status);
+    static UBool getStringParam(UnicodeString name, UnicodeString &params, CharString &dest, UErrorCode &status);
+    static UBool getBoolParam(UnicodeString name, UnicodeString &params, UBool &dest, UErrorCode &status);
 
 };
 
@@ -77,13 +84,14 @@ class BreakRule {
 
 class BreakRules {
   public:
-    BreakRules(UErrorCode &status);
+    BreakRules(RBBIMonkeyImpl *monkeyImpl, UErrorCode &status);
 
     void compileRules(UCHARBUF *rules, UErrorCode &status);
 
     const CharClass *getClassForChar(UChar32 c, int32_t *iter=NULL) const;
 
     
+    RBBIMonkeyImpl    *fMonkeyImpl;        // Pointer back to the owning MonkeyImpl instance.
     icu::UVector       fBreakRules;        // Contents are of type (BreakRule *).
                                            // Contents are ordered by the order of application.
     UHashtable        *fCharClasses;       // Key is set name (UnicodeString).
@@ -141,9 +149,11 @@ class MonkeyTestData {
 //                          rule tailorings in a separate thread.
 class RBBIMonkeyImpl {
   public:
-    RBBIMonkeyImpl(const char *ruleFile, UErrorCode &status);
+    RBBIMonkeyImpl(UErrorCode &status);
     ~RBBIMonkeyImpl();
     
+    void setup(const char *ruleFileName, UErrorCode &status);
+
     void runTest(int32_t numIterations, UErrorCode &status);
 
     LocalUCHARBUFPointer                 fRuleCharBuffer;
@@ -151,6 +161,8 @@ class RBBIMonkeyImpl {
     LocalPointer<RuleBasedBreakIterator> fBI;
     LocalPointer<MonkeyTestData>         fTestData;
     IntlTest::icu_rand                   fRandomGenerator;
+
+    UBool fDumpExpansions;               // Debug flag to output epananded form of rules and sets.
 
     enum CheckDirection {
         FORWARD = 1,
@@ -162,6 +174,7 @@ class RBBIMonkeyImpl {
 
   private:
     void openBreakRules(const char *fileName, UErrorCode &status);
+
 };
 
 #endif  //  RBBIMONKEYTEST_H

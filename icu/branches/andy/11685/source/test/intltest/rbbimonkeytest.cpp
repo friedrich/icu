@@ -22,11 +22,30 @@
 
 using namespace icu;
 
-// Debugging function
-static std::string stdstr(const UnicodeString &s) { std::string ss; return s.toUTF8String(ss); };
+// Debugging class for printing UnicodeStrings as (char *).
+class CStr {
+  public:
+    CStr(const UnicodeString &in);
+    ~CStr() {};
+    CharString s;
+    const char * operator ()() const  {return s.data();};
+};
+
+CStr::CStr(const UnicodeString &in) {
+    UErrorCode status = U_ZERO_ERROR;
+    int32_t length = in.extract(0, in.length(), NULL, (uint32_t)0) + 1;
+    int32_t resultCapacity = 0;
+    char *buf = s.getAppendBuffer(length, length, resultCapacity, status);
+    if (U_SUCCESS(status)) {
+        in.extract(0, in.length(), buf, resultCapacity);
+        s.append(buf, length, status);
+    }
+}
+        
 
 
 void RBBIMonkeyTest::runIndexedTest(int32_t index, UBool exec, const char* &name, char* params) {
+    fParams = params;            // Work around TESTCASE_AUTO not being able to pass params to test function.
 
     TESTCASE_AUTO_BEGIN;
     TESTCASE_AUTO(testMonkey);
@@ -61,8 +80,8 @@ int8_t BreakRule::comparator(UElement a, UElement b) {
 //   class BreakRules implementation.
 //
 //---------------------------------------------------------------------------------------
-BreakRules::BreakRules(UErrorCode &status)  : 
-        fBreakRules(status), fCharClasses(NULL), fType(UBRK_COUNT) {
+BreakRules::BreakRules(RBBIMonkeyImpl *monkeyImpl, UErrorCode &status)  : 
+        fMonkeyImpl(monkeyImpl), fBreakRules(status), fCharClasses(NULL), fType(UBRK_COUNT) {
     fCharClasses = uhash_open(uhash_hashUnicodeString,
                               uhash_compareUnicodeString,
                               NULL,      // value comparator.
@@ -129,12 +148,14 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
 
     // Verify that the expanded set defintion is valid.
 
-    std::cout << "expandedDef: " << stdstr(expandedDef) << std::endl;
+    if (fMonkeyImpl->fDumpExpansions) {
+        printf("epandedDef: %s\n", CStr(expandedDef)());
+    }
 
     UnicodeSet *s = new UnicodeSet(expandedDef, USET_IGNORE_SPACE, NULL, status);
     if (U_FAILURE(status)) {
         IntlTest::gTest->errln("%s:%d: error %s creating UnicodeSet %s", __FILE__, __LINE__,
-                               u_errorName(status), stdstr(name).c_str());    // TODO: ebcdic hostile.
+                               u_errorName(status), CStr(name)());
         return;
     }
     CharClass *cclass = new CharClass(name, definition, expandedDef, s);
@@ -144,7 +165,7 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
         // Duplicate class def.
         // These are legitimate, they are adustments of an existing class.
         // TODO: will need to keep the old around when we handle tailorings.
-        std::cout << "Duplicate definition of " << stdstr(cclass->fName) << std::endl;
+        printf("Duplicate definition of %s\n", CStr(cclass->fName)());
         delete previousClass;
     }
 }
@@ -203,12 +224,15 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
     while ((where = thisRule->fExpandedRule.indexOf(emptySet, 2, 0)) >= 0) {
         thisRule->fExpandedRule.replace(where, 2, UnicodeString("[^\\u0000-\\U0010ffff]"));
     }
-    std::cout << "fExpandedRule: " << stdstr(thisRule->fExpandedRule) << std::endl;
+    if (fMonkeyImpl->fDumpExpansions) {
+        printf("fExpandedRule: %s\n", CStr(thisRule->fExpandedRule)());
+    }
         
     // Compile a regular expression for this rule.
     thisRule->fRuleMatcher.adoptInstead(new RegexMatcher(thisRule->fExpandedRule, UREGEX_COMMENTS, status));
     if (U_FAILURE(status)) {
-        std::cout << stdstr(thisRule->fExpandedRule) << std::endl;
+        IntlTest::gTest->errln("%s:%d Error creating regular expression for %s",
+                __FILE__, __LINE__, CStr(thisRule->fExpandedRule)());
         return;
     }
 
@@ -234,7 +258,7 @@ bool BreakRules::setKeywordParameter(const UnicodeString &keyword, const Unicode
         } else if (value == UnicodeString("sentence")) {
             fType = UBRK_SENTENCE;
         } else {
-            std::cout << "Unrecognized break type " << stdstr(value) << std::endl;
+            IntlTest::gTest->errln("%s:%d Unrecognized break type %s", __FILE__, __LINE__,  CStr(value)());
         }
         return true;
     }
@@ -297,9 +321,12 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
         if (fClassDefMatcher->matches(status)) {
             UnicodeString className = fClassDefMatcher->group(fClassDefMatcher->pattern().groupNumberFromName("ClassName", status), status); 
             UnicodeString classDef  = fClassDefMatcher->group(fClassDefMatcher->pattern().groupNumberFromName("ClassDef", status), status); 
-            std::cout << "scanned class: " << stdstr(className) << " = " << stdstr(classDef) << std::endl;
+            if (fMonkeyImpl->fDumpExpansions) {
+                printf("scanned class: %s = %s\n", CStr(className)(), CStr(classDef)());
+            }
             if (setKeywordParameter(className, classDef, status)) {
-                // was "type = ..." or "locale = ...", etc.
+                // The scanned item was "type = ..." or "locale = ...", etc.
+                //   which are not actual character classes.
                 continue;
             }
             addCharClass(className, classDef, status);
@@ -311,13 +338,14 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
         if (fRuleDefMatcher->matches(status)) {
             UnicodeString ruleName = fRuleDefMatcher->group(fRuleDefMatcher->pattern().groupNumberFromName("RuleName", status), status); 
             UnicodeString ruleDef  = fRuleDefMatcher->group(fRuleDefMatcher->pattern().groupNumberFromName("RuleDef", status), status); 
-            std::cout << "scanned rule: " << stdstr(ruleName) << " : " << stdstr(ruleDef) << std::endl;
+            if (fMonkeyImpl->fDumpExpansions) {
+                printf("scanned rule: %s : %s\n", CStr(ruleName)(), CStr(ruleDef)());
+            }
             addRule(ruleName, ruleDef, status);
             continue;
         }
 
-        std::cout << "unrecognized line: " << stdstr(line) << std::endl;
-
+        IntlTest::gTest->errln("%s:%d: Unrecognized line in rule file: \"%s\"\n", CStr(line)());
     }
     
     // Build the vector of char classes, omitting the dictionary class if there is one.
@@ -329,7 +357,7 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
     while ((el = uhash_nextElement(fCharClasses , &pos)) != NULL) {
         const UnicodeString *ccName = static_cast<const UnicodeString *>(el->key.pointer);
         CharClass *cclass = static_cast<CharClass *>(el->value.pointer);
-        // std::cout << "    Adding " << stdstr(*ccName) << std::endl;
+        // printf("    Adding %s\n", CStr(*ccName)());
         if (*ccName != cclass->fName) {
             std::cout << "%s:%d: internal error, set names inconsistent.\n";
         }
@@ -367,7 +395,6 @@ MonkeyTestData::MonkeyTestData(UErrorCode &status)  {
 }
 
 void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status) {
-    printf("set(): random seed = %d, next random = %d\n", rand.getSeed(), rand());
     const int32_t dataLength = 100;
 
     // Fill the test string with random characters.
@@ -520,8 +547,8 @@ void MonkeyTestData::clearActualBreaks() {
 
 void MonkeyTestData::dump(int32_t around) const {
     printf("\n"
-           "char     char                break  Rule                    Character\n"
-           "position class                R I   name                    name\n"
+           "         char                        break  Rule                     Character\n"
+           "   pos   code   class                 R I   name                     name\n"
            "---------------------------------------------------------------------------------------------\n");
 
     int32_t start;
@@ -552,8 +579,8 @@ void MonkeyTestData::dump(int32_t around) const {
         char cName[200];
         u_charName(c, U_UNICODE_CHAR_NAME, cName, sizeof(cName), &status);
 
-        printf("  %4.1d  %-20s  %c %c   %-10s %-10s    %s\n",
-            charIdx, ccName.data(),
+        printf("  %4.1d %6.4x   %-20s  %c %c   %-10s %-10s    %s\n",
+            charIdx, c, ccName.data(),
             fExpectedBreaks.charAt(charIdx) ? '*' : '.',
             fActualBreaks.charAt(charIdx) ? '*' : '.',
             ruleName.data(), secondRuleName.data(), cName
@@ -568,18 +595,20 @@ void MonkeyTestData::dump(int32_t around) const {
 //
 //---------------------------------------------------------------------------------------
 
+RBBIMonkeyImpl::RBBIMonkeyImpl(UErrorCode &status) : fDumpExpansions(FALSE) {
+}
 
-// RBBIMonkeyImpl constructor does all of the setup for a single rule set - compiling the
+// RBBIMonkeyImpl setup       does all of the setup for a single rule set - compiling the
 //                            reference rules and creating the icu breakiterator to test,
 //                            with its type and locale coming from the reference rules.
 
-RBBIMonkeyImpl::RBBIMonkeyImpl(const char *ruleFile, UErrorCode &status) {
+void RBBIMonkeyImpl::setup(const char *ruleFile, UErrorCode &status) {
     openBreakRules(ruleFile, status);
     if (U_FAILURE(status)) {
         IntlTest::gTest->errln("%s:%d Error %s opening file %s.", __FILE__, __LINE__, u_errorName(status), ruleFile);
         return;
     }
-    fRuleSet.adoptInstead(new BreakRules(status));
+    fRuleSet.adoptInstead(new BreakRules(this, status));
     fRuleSet->compileRules(fRuleCharBuffer.getAlias(), status);
     if (U_FAILURE(status)) {
         IntlTest::gTest->errln("%s:%d Error %s processing file %s.", __FILE__, __LINE__, u_errorName(status), ruleFile);
@@ -609,7 +638,6 @@ void RBBIMonkeyImpl::runTest(int32_t numIterations, UErrorCode &status) {
 
     for (int loopCount = 0; loopCount < numIterations; loopCount++) {
         status = U_ZERO_ERROR;   // TODO: counter on allowed number of failures.
-        printf("runtest %d: random seed = %d, next random = %d\n", loopCount, fRandomGenerator.getSeed(), fRandomGenerator());
         fTestData->set(fRuleSet.getAlias(), fRandomGenerator, status);
         // fTestData->dump();
         if (U_FAILURE(status)) { break; };
@@ -684,14 +712,109 @@ RBBIMonkeyTest::~RBBIMonkeyTest() {
 }
 
 
+//     params, taken from this->fParams.
+//       rules=file_name   Name of file containing the reference rules.
+//       seed=nnnnn        Random number starting seed.
+//                         Setting the seed allows errors to be reproduced.
+//       loop=nnn          Looping count.  Controls running time.
+//                         -1:  run forever.
+//                          0 or greater:  run length.
+//       expansions        debug option, show expansions of rules and sets.
+//
+//     Parameters on the intltest command line follow the test name, and are preceded by '@'.
+//     For example,
+//           intltest rbbi/RBBIMonkeyTest/testMonkey@rules=line.txt,loop=-1
+//
 void RBBIMonkeyTest::testMonkey() {
-    // TODO: need parameters from test framework for specific test, exhaustive, iteration count, starting seed, asynch, ...
-    const char *tests[] = {/* "grapheme.txt", "word.txt", */ "line.txt" };
+    // printf("Test parameters: %s\n", fParams);
+    UnicodeString params(fParams);
+    UErrorCode status = U_ZERO_ERROR;
 
-    for (int i=0; i < UPRV_LENGTHOF(tests); ++i) {
-        UErrorCode status = U_ZERO_ERROR;
-        RBBIMonkeyImpl test(tests[i], status);
-        test.runTest(10, status);
+    const char *tests[] = {"grapheme.txt", "word.txt", "line.txt", NULL };
+    CharString testNameFromParams;
+    if (getStringParam("rules", params, testNameFromParams, status)) {
+        tests[0] = testNameFromParams.data();
+        tests[1] = NULL;
     }
+
+    int32_t loopCount = 10;
+    getIntParam("loop", params, loopCount, status);
+
+    UBool dumpExpansions = FALSE;
+    getBoolParam("expansions", params, dumpExpansions, status);
+
+    if (params.length() != 0) {
+        // Options processing did not consume all of the parameters. Something unrecognized was present.
+        CharString unrecognizedParameters;
+        unrecognizedParameters.appendInvariantChars(params, status);
+        errln("%s:%d unrecognized test parameter(s) \"%s\"", __FILE__, __LINE__, unrecognizedParameters.data());
+        return;
+    }
+
+    if (U_FAILURE(status)) {
+        errln("%s:%d: error %s while setting up test.", __FILE__, __LINE__, u_errorName(status));
+        return;
+    }
+
+    for (int i=0; tests[i] != NULL; ++i) {
+        UErrorCode status = U_ZERO_ERROR;
+        RBBIMonkeyImpl test(status);
+        test.fDumpExpansions = dumpExpansions;
+        test.setup(tests[i], status);
+        test.runTest(loopCount, status);
+    }
+}
+
+
+UBool  RBBIMonkeyTest::getIntParam(UnicodeString name, UnicodeString &params, int32_t &val, UErrorCode &status) {
+    name.append(" *= *(-?\\d+) *,?");
+    RegexMatcher m(name, params, 0, status);
+    if (m.find()) {
+        // The param exists.  Convert the string to an int.
+        CharString str;
+        str.appendInvariantChars(m.group(1, status), status);
+        val = strtol(str.data(),  NULL, 10);
+
+        // Delete this parameter from the params string.
+        m.reset();
+        params = m.replaceFirst(UnicodeString(), status);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+UBool RBBIMonkeyTest::getStringParam(UnicodeString name, UnicodeString &params, CharString &dest, UErrorCode &status) {
+    name.append(" *= *([^ ,]*)");
+    RegexMatcher m(name, params, 0, status);
+    if (m.find()) {
+        // The param exists.
+        dest.appendInvariantChars(m.group(1, status), status);
+
+        // Delete this parameter from the params string.
+        m.reset();
+        params = m.replaceFirst(UnicodeString(), status);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+UBool RBBIMonkeyTest::getBoolParam(UnicodeString name, UnicodeString &params, UBool &dest, UErrorCode &status) {
+    name.append("(?: *= *(true|false))? *,?");
+    RegexMatcher m(name, params, UREGEX_CASE_INSENSITIVE, status);
+    if (m.find()) {
+        if (m.start(1, status) > 0) {
+            // user option included a value.
+            dest = m.group(1, status).caseCompare(UnicodeString("true"), U_FOLD_CASE_DEFAULT) == 0;
+        } else {
+            // No explicit user value, implies true.
+            dest = TRUE;
+        }
+
+        // Delete this parameter from the params string.
+        m.reset();
+        params = m.replaceFirst(UnicodeString(), status);
+        return TRUE;
+    }
+    return FALSE;
 }
 
