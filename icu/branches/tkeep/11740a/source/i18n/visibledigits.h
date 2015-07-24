@@ -83,7 +83,35 @@ private:
     VisibleDigits &operator=(const VisibleDigits &);
 
     friend class FixedPrecision;
+    friend class VisibleDigitsWithExponent;
 };
+
+/**
+ * A VisibleDigits with a possible exponent.
+ */
+class U_I18N_API VisibleDigitsWithExponent : public UMemory {
+public:
+    VisibleDigitsWithExponent() : fHasExponent(FALSE) { }
+    const VisibleDigits &getMantissa() const { return fMantissa; }
+    const VisibleDigits *getExponent() const {
+        return fHasExponent ? &fExponent : NULL;
+    }
+    void clear() {
+        fMantissa.clear();
+        fExponent.clear();
+        fHasExponent = FALSE;
+    }
+    UBool isNegative() const { return fMantissa.isNegative(); }
+    UBool isNaN() const { return fMantissa.isNaN(); }
+    UBool isInfinite() const { return fMantissa.isInfinite(); }
+private:
+    VisibleDigits fMantissa;
+    VisibleDigits fExponent;
+    UBool fHasExponent;
+
+    friend class ScientificPrecision;
+};
+
 
 U_NAMESPACE_END
 

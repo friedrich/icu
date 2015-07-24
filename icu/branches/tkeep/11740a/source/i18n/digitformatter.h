@@ -231,6 +231,26 @@ UnicodeString &formatInt32(
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
 
+
+/**
+ * Formats an exponent.
+ * @param value the value to format. May be positive or negative.
+ * @param options formatting options.
+ * @param signField The field ID to use when recording the sign field.
+ *   Can be anything if handler is not recording field positions.
+ * @param intField The field ID to use when recording the integer field.
+ *   Can be anything if handler is not recording field positions.
+ * @param handler Records the field positions.
+ * @param appendTo the formatted value appended here.
+ */
+UnicodeString &formatExponent(
+        const VisibleDigits &digits,
+        const DigitFormatterIntOptions &options,
+        int32_t signField,
+        int32_t intField,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
 /**
  * Counts the number of code points needed for formatting.
  */
@@ -238,6 +258,14 @@ int32_t countChar32(
         const DigitGrouping &grouping,
         const DigitInterval &interval,
         const DigitFormatterOptions &options) const;
+
+/**
+ * Counts the number of code points needed for formatting an exponent.
+ */
+int32_t countChar32ForExponent(
+        const VisibleDigits &exponent,
+        const DigitFormatterIntOptions &options) const;
+
 
 /**
  * Counts the number of code points needed for formatting an int32.

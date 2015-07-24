@@ -18,6 +18,9 @@
 #include "unistrappender.h"
 #include "visibledigits.h"
 
+// Only here for backward compatibility
+#include "precision.h"
+
 U_NAMESPACE_BEGIN
 
 DigitFormatter::DigitFormatter()
@@ -177,67 +180,15 @@ UnicodeString &DigitFormatter::format(
         const DigitFormatterOptions &options,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
-    int32_t digitsLeftOfDecimal = interval.getMostSignificantExclusive();
-    int32_t lastDigitPos = interval.getLeastSignificantInclusive();
-    int32_t intBegin = appendTo.length();
-    int32_t fracBegin;
-
-    // Emit "0" instead of empty string.
-    if (digitsLeftOfDecimal == 0 && lastDigitPos == 0) {
-        appendTo.append(fLocalizedDigits[0]);
-        handler.addAttribute(UNUM_INTEGER_FIELD, intBegin, appendTo.length());
-        if (options.fAlwaysShowDecimal) {
-            appendField(
-                    UNUM_DECIMAL_SEPARATOR_FIELD,
-                    fDecimal,
-                    handler,
-                    appendTo);
-        }
-        return appendTo;
-    }
-    {
-        UnicodeStringAppender appender(appendTo);
-        for (int32_t i = digitsLeftOfDecimal - 1; i >= lastDigitPos; --i) {
-            if (i == -1) {
-                appender.flush();
-                appendField(
-                        UNUM_DECIMAL_SEPARATOR_FIELD,
-                        fDecimal,
-                        handler,
-                        appendTo);
-                fracBegin = appendTo.length();
-            }
-            appender.append(fLocalizedDigits[digits.getDigitByExponent(i)]);
-            if (grouping.isSeparatorAt(digitsLeftOfDecimal, i)) {
-                appender.flush();
-                appendField(
-                        UNUM_GROUPING_SEPARATOR_FIELD,
-                        fGroupingSeparator,
-                        handler,
-                        appendTo);
-            }
-            if (i == 0) {
-                appender.flush();
-                if (digitsLeftOfDecimal > 0) {
-                    handler.addAttribute(UNUM_INTEGER_FIELD, intBegin, appendTo.length());
-                }
-            }
-        }
-        if (options.fAlwaysShowDecimal && lastDigitPos == 0) {
-            appender.flush();
-            appendField(
-                    UNUM_DECIMAL_SEPARATOR_FIELD,
-                    fDecimal,
-                    handler,
-                    appendTo);
-        }
-    }
-    // lastDigitPos is never > 0 so we are guaranteed that kIntegerField
-    // is already added.
-    if (lastDigitPos < 0) {
-        handler.addAttribute(UNUM_FRACTION_FIELD, fracBegin, appendTo.length());
-    }
-    return appendTo;
+    UErrorCode status = U_ZERO_ERROR;
+    VisibleDigits vdigits;
+    return format(
+            VisibleDigits::initVisibleDigits(
+                    digits, interval, vdigits, status),
+            grouping,
+            options,
+            handler,
+            appendTo);
 }
 
 static UBool isNeg(int32_t &value, uint8_t *digits) {
@@ -297,9 +248,28 @@ DigitFormatter::formatInt32(
         int32_t intField,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
-    IntDigitCountRange range(options.fMinDigits, INT32_MAX);
-    uint8_t digits[10];
-    UBool neg = isNeg(value, digits);
+    FixedPrecision fp;
+    fp.fMin.setIntDigitCount(options.fMinDigits);
+    VisibleDigits exponent;
+    UErrorCode status = U_ZERO_ERROR;
+    return formatExponent(
+            fp.initVisibleDigits((int64_t) value, exponent, status),
+            options,
+            signField,
+            intField,
+            handler,
+            appendTo);
+}
+
+UnicodeString &
+DigitFormatter::formatExponent(
+        const VisibleDigits &digits,
+        const DigitFormatterIntOptions &options,
+        int32_t signField,
+        int32_t intField,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    UBool neg = digits.isNegative();
     if (neg || options.fAlwaysShowSign) {
         appendField(
                 signField,
@@ -307,33 +277,46 @@ DigitFormatter::formatInt32(
                 handler,
                 appendTo);
     }
-    int32_t count = neg ? formatInt(value, digits + 1) + 1 : formatInt(value, digits);
-    return formatDigits(
+    int32_t begin = appendTo.length();
+    DigitGrouping grouping;
+    DigitFormatterOptions expOptions;
+    FieldPosition fpos(FieldPosition::DONT_CARE);
+    FieldPositionOnlyHandler noHandler(fpos);
+    format(
             digits,
-            count,
-            range,
-            intField,
-            handler,
+            grouping,
+            expOptions,
+            noHandler,
             appendTo);
+    handler.addAttribute(intField, begin, appendTo.length());
+    return appendTo;
 }
 
 int32_t
 DigitFormatter::countChar32ForInt32(
         int32_t value,
         const DigitFormatterIntOptions &options) const {
-    IntDigitCountRange range(options.fMinDigits, INT32_MAX);
-    uint8_t digits[10];
-    UBool neg = isNeg(value, digits);
-    int32_t count = neg ? formatInt(value, digits + 1) + 1 : formatInt(value, digits);
-    int32_t result = range.pin(count);
+    FixedPrecision fp;
+    fp.fMin.setIntDigitCount(options.fMinDigits);
+    VisibleDigits exponent;
+    UErrorCode status = U_ZERO_ERROR;
+    return countChar32ForExponent(
+            fp.initVisibleDigits((int64_t) value, exponent, status),
+            options);
+}
 
-    // We always emit '0' in lieu of no digits.
-    if (result == 0) {
-        result = 1;
-    }
+int32_t
+DigitFormatter::countChar32ForExponent(
+        const VisibleDigits &exponent,
+        const DigitFormatterIntOptions &options) const {
+    int32_t result = 0;
+    UBool neg = exponent.isNegative();
     if (neg || options.fAlwaysShowSign) {
         result += neg ? fNegativeSign.countChar32() : fPositiveSign.countChar32();
     }
+    DigitGrouping grouping;
+    DigitFormatterOptions expOptions;
+    result += countChar32(grouping, exponent.getInterval(), expOptions);
     return result;
 }
 

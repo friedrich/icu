@@ -24,6 +24,7 @@ class DigitList;
 class DigitInterval;
 class UnicodeString;
 class FieldPositionHandler;
+class VisibleDigitsWithExponent;
 
 /**
  * Options for formatting in scientific notation.
@@ -91,6 +92,21 @@ UnicodeString &format(
         UnicodeString &appendTo) const;
 
 /**
+ * formats in scientifc notation.
+ * @param positiveDigits the scientific quantity to format
+ * @param formatter used to format the mantissa
+ * @param options formatting options
+ * @param handler records field positions.
+ * @param appendTo formatted value appended here.
+ */
+UnicodeString &format(
+        const VisibleDigitsWithExponent &positiveDigits,
+        const DigitFormatter &formatter,
+        const SciFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
+/**
  * Counts how many code points are needed for the formatting.
  */
 int32_t countChar32(
@@ -98,6 +114,15 @@ int32_t countChar32(
         const DigitFormatter &formatter,
         const DigitInterval &mantissaInterval,
         const SciFormatterOptions &options) const;
+
+/**
+ * Counts how many code points are needed for the formatting.
+ */
+int32_t countChar32(
+        const VisibleDigitsWithExponent &digits,
+        const DigitFormatter &formatter,
+        const SciFormatterOptions &options) const;
+
 
 /**
  * Returns TRUE if this object equals rhs.
@@ -108,6 +133,11 @@ UBool equals(const SciFormatter &rhs) const {
 
 private:
 UnicodeString fExponent;
+int32_t countChar32(
+        const VisibleDigits &exponent,
+        const DigitFormatter &formatter,
+        const DigitInterval &mantissaInterval,
+        const SciFormatterOptions &options) const;
 };
 
 U_NAMESPACE_END

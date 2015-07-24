@@ -106,6 +106,7 @@ private:
     void TestDoubleInitVisibleDigitsToDigitList();
     void TestDigitListInitVisibleDigits();
     void TestSpecialInitVisibleDigits();
+    void TestVisibleDigitsWithExponent();
     void TestDigitAffixesAndPadding();
     void TestPluralsAndRounding();
     void TestPluralsAndRoundingScientific();
@@ -167,6 +168,11 @@ private:
         const UnicodeString &expected,
         UBool bNegative,
         const VisibleDigits &digits);
+    void verifyVisibleDigitsWithExponent(
+        const UnicodeString &expected,
+        UBool bNegative,
+        const VisibleDigitsWithExponent &digits);
+    DigitFormatter formatter;
     void verifyDigitIntFormatter(
             const UnicodeString &expected,
             const DigitFormatter &formatter,
@@ -196,6 +202,13 @@ private:
             const DigitGrouping &grouping,
             const DigitInterval &interval,
             const DigitFormatterOptions &options,
+            const NumberFormat2Test_Attributes *expectedAttributes);
+    void verifySciFormatter(
+            const UnicodeString &expected,
+            const SciFormatter &sciformatter,
+            const VisibleDigitsWithExponent &digits,
+            const DigitFormatter &formatter,
+            const SciFormatterOptions &options,
             const NumberFormat2Test_Attributes *expectedAttributes);
     void verifySciFormatter(
             const UnicodeString &expected,
@@ -269,6 +282,7 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestDoubleInitVisibleDigitsToDigitList);
     TESTCASE_AUTO(TestDigitListInitVisibleDigits);
     TESTCASE_AUTO(TestSpecialInitVisibleDigits);
+    TESTCASE_AUTO(TestVisibleDigitsWithExponent);
     TESTCASE_AUTO(TestDigitAffixesAndPadding);
     TESTCASE_AUTO(TestPluralsAndRounding);
     TESTCASE_AUTO(TestPluralsAndRoundingScientific);
@@ -2418,6 +2432,48 @@ void NumberFormat2Test::TestSpecialInitVisibleDigits() {
     }
 }
 
+void NumberFormat2Test::TestVisibleDigitsWithExponent() {
+    VisibleDigitsWithExponent digits;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        ScientificPrecision precision;
+        precision.initVisibleDigits(389.256, digits, status);
+        verifyVisibleDigitsWithExponent(
+                "3.89256E2", FALSE, digits);
+        assertSuccess("3.89256E2", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        ScientificPrecision precision;
+        precision.initVisibleDigits(-389.256, digits, status);
+        verifyVisibleDigitsWithExponent(
+                "3.89256E2", TRUE, digits);
+        assertSuccess("-3.89256E2", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        ScientificPrecision precision;
+        precision.fMinExponentDigits = 3;
+        precision.fMantissa.fMin.setIntDigitCount(1);
+        precision.fMantissa.fMax.setIntDigitCount(3);
+        precision.initVisibleDigits(12345.67, digits, status);
+        verifyVisibleDigitsWithExponent(
+                "12.34567E003", FALSE, digits);
+        assertSuccess("12.34567E003", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        ScientificPrecision precision;
+        precision.fMantissa.fRoundingIncrement.set(0.073);
+        precision.fMantissa.fMin.setIntDigitCount(2);
+        precision.fMantissa.fMax.setIntDigitCount(2);
+        precision.initVisibleDigits(999.74, digits, status);
+        verifyVisibleDigitsWithExponent(
+                "10.001E2", FALSE, digits);
+        assertSuccess("10.001E2", status);
+    }
+}
+
 void NumberFormat2Test::TestDigitAffixesAndPadding() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
@@ -3263,6 +3319,29 @@ void NumberFormat2Test::verifyVisibleDigits(
     }
 }
 
+void NumberFormat2Test::verifyVisibleDigitsWithExponent(
+        const UnicodeString &expected,
+        UBool bNegative,
+        const VisibleDigitsWithExponent &digits) {
+    DigitFormatter formatter;
+    SciFormatter sciformatter;
+    SciFormatterOptions options;
+    verifySciFormatter(
+            expected,
+            sciformatter,
+            digits,
+            formatter,
+            options,
+            NULL);
+    if (digits.isNegative() != bNegative) {
+        errln(expected + ": Wrong sign.");
+    }
+    if (digits.isNaN() || digits.isInfinite()) {
+        errln(expected + ": Require real value.");
+    }
+}
+
+
 void NumberFormat2Test::verifyDigitIntFormatter(
         const UnicodeString &expected,
         const DigitFormatter &formatter,
@@ -3287,6 +3366,37 @@ void NumberFormat2Test::verifyDigitIntFormatter(
                     options,
                     kSignField,
                     kIntField,
+                    handler,
+                    appendTo));
+    if (expectedAttributes != NULL) {
+        verifyAttributes(expectedAttributes, handler.attributes);
+    }
+}
+
+
+void NumberFormat2Test::verifySciFormatter(
+        const UnicodeString &expected,
+        const SciFormatter &sciformatter,
+        const VisibleDigitsWithExponent &digits,
+        const DigitFormatter &formatter,
+        const SciFormatterOptions &options,
+        const NumberFormat2Test_Attributes *expectedAttributes) {
+    assertEquals(
+            "",
+            expected.countChar32(),
+            sciformatter.countChar32(
+                    digits,
+                    formatter,
+                    options));
+    UnicodeString appendTo;
+    NumberFormat2Test_FieldPositionHandler handler;
+    assertEquals(
+            "",
+            expected,
+            sciformatter.format(
+                    digits,
+                    formatter,
+                    options,
                     handler,
                     appendTo));
     if (expectedAttributes != NULL) {

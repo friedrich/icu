@@ -124,6 +124,22 @@ FixedPrecision::isFastFormattable() const {
     return (fMin.getFracDigitCount() == 0 && fSignificant.isNoConstraints() && fRoundingIncrement.isZero() && !fFailIfOverMax);
 }
 
+UBool
+FixedPrecision::handleNonNumeric(DigitList &value, VisibleDigits &digits) {
+    if (value.isNaN()) {
+        digits.setNaN();
+        return TRUE;
+    }
+    if (value.isInfinite()) {
+        digits.setInfinite();
+        if (!value.isPositive()) {
+            digits.setNegative();
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+
 VisibleDigits &
 FixedPrecision::initVisibleDigits(
         DigitList &value,
@@ -133,15 +149,7 @@ FixedPrecision::initVisibleDigits(
         return digits;
     }
     digits.clear();
-    if (value.isNaN()) {
-        digits.setNaN();
-        return digits;
-    }
-    if (value.isInfinite()) {
-        digits.setInfinite();
-        if (!value.isPositive()) {
-            digits.setNegative();
-        }
+    if (handleNonNumeric(value, digits)) {
         return digits;
     }
     if (!value.isPositive()) {
@@ -308,6 +316,9 @@ FixedPrecision::initVisibleDigits(
     return TRUE;
 }
 
+ScientificPrecision::ScientificPrecision() : fMinExponentDigits(1) {
+}
+
 DigitList &
 ScientificPrecision::round(DigitList &value, UErrorCode &status) const {
     if (U_FAILURE(status)) {
@@ -334,6 +345,72 @@ ScientificPrecision::getMultiplier() const {
         maxIntDigitCount - fMantissa.fMin.getIntDigitCount() + 1;
     return (multiplier < 1 ? 1 : multiplier);
 }
+
+VisibleDigitsWithExponent &
+ScientificPrecision::initVisibleDigits(
+        DigitList &value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return digits;
+    }
+    digits.clear();
+    if (FixedPrecision::handleNonNumeric(value, digits.fMantissa)) {
+        return digits;
+    }
+    int64_t exponent = toScientific(round(value, status));
+    fMantissa.initVisibleDigits(value, digits.fMantissa, status);
+    FixedPrecision exponentPrecision;
+    exponentPrecision.fMin.setIntDigitCount(fMinExponentDigits);
+    exponentPrecision.initVisibleDigits(exponent, digits.fExponent, status);
+    digits.fHasExponent = TRUE;
+    return digits;
+}
+
+VisibleDigitsWithExponent &
+ScientificPrecision::initVisibleDigits(
+        double value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return digits;
+    }
+    DigitList digitList;
+    digitList.set(value);
+    return initVisibleDigits(digitList, digits, status);
+}
+
+VisibleDigitsWithExponent &
+ScientificPrecision::initVisibleDigits(
+        int64_t value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return digits;
+    }
+    DigitList digitList;
+    digitList.set(value);
+    return initVisibleDigits(digitList, digits, status);
+}
+
+VisibleDigitsWithExponent &
+ScientificPrecision::initVisibleDigitsWithExponent(
+        const DigitList &mantissa,
+        const DigitInterval &mantissaInterval,
+        int32_t exponent,
+        int32_t minExpDigits,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) {
+    VisibleDigits::initVisibleDigits(
+            mantissa, mantissaInterval, digits.fMantissa, status);
+    FixedPrecision fp;
+    fp.fMin.setIntDigitCount(minExpDigits);
+    fp.initVisibleDigits((int64_t) exponent, digits.fExponent, status);
+    digits.fHasExponent = TRUE;
+    return digits;
+}
+
+
 
 
 U_NAMESPACE_END

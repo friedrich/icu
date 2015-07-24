@@ -21,6 +21,7 @@
 U_NAMESPACE_BEGIN
 
 class VisibleDigits;
+class VisibleDigitsWithExponent;
 
 
 /**
@@ -160,7 +161,9 @@ UBool isRoundingRequired(
 DigitInterval &getIntervalForZero(DigitInterval &interval) const;
 DigitInterval &getInterval(
         int32_t upperExponent, DigitInterval &interval) const;
+static UBool handleNonNumeric(DigitList &value, VisibleDigits &digits);
 
+friend class ScientificPrecision;
 };
 
 /**
@@ -169,6 +172,9 @@ DigitInterval &getInterval(
 class U_I18N_API ScientificPrecision : public UMemory {
 public:
     FixedPrecision fMantissa;
+    int32_t fMinExponentDigits;
+
+    ScientificPrecision();
 
     /**
      * rounds value in place to prepare it for formatting.
@@ -194,6 +200,51 @@ public:
     UBool equals(const ScientificPrecision &rhs) const {
         return fMantissa.equals(rhs.fMantissa);
     }
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value the value
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigits(
+        DigitList &value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value the value
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigits(
+        double value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value the value
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigits(
+        int64_t value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * For testing only.
+ */
+static VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        const DigitList &mantissa, const DigitInterval &mantissaInterval,
+        int32_t exponent, int32_t minExpDigits,
+        VisibleDigitsWithExponent &digits, UErrorCode &status);
+
 private:
     int32_t getMultiplier() const;
 
