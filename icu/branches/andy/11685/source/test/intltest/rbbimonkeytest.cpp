@@ -165,7 +165,7 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
         // Duplicate class def.
         // These are legitimate, they are adustments of an existing class.
         // TODO: will need to keep the old around when we handle tailorings.
-        printf("Duplicate definition of %s\n", CStr(cclass->fName)());
+        IntlTest::gTest->logln("Redefinition of character class %s\n", CStr(cclass->fName)());
         delete previousClass;
     }
 }
@@ -189,7 +189,6 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
         thisRule->fPaddedName.append(fNumericFieldMatcher->group(status));
     }
     fNumericFieldMatcher->appendTail(thisRule->fPaddedName);
-    // std::cout << stdstr(thisRule->fPaddedName) << std::endl;
 
     // Expand the char class definitions within the rule.
     fSetRefsMatcher->reset(definition);
@@ -351,15 +350,17 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
     // Build the vector of char classes, omitting the dictionary class if there is one.
     // This will be used when constructing the random text to be tested.
 
+    // TODO:  add an "other" set.
+
     int32_t pos = UHASH_FIRST;
     const UHashElement *el = NULL;
-    std::cout << "Building char class list ..." << std::endl;
     while ((el = uhash_nextElement(fCharClasses , &pos)) != NULL) {
         const UnicodeString *ccName = static_cast<const UnicodeString *>(el->key.pointer);
         CharClass *cclass = static_cast<CharClass *>(el->value.pointer);
         // printf("    Adding %s\n", CStr(*ccName)());
         if (*ccName != cclass->fName) {
-            std::cout << "%s:%d: internal error, set names inconsistent.\n";
+            IntlTest::gTest->errln("%s:%d: internal error, set names (%s, %s) inconsistent.\n",
+                    __FILE__, __LINE__, CStr(*ccName)(), CStr(cclass->fName)());
         }
         const UnicodeSet *set = cclass->fSet.getAlias();
         if (*ccName == UnicodeString("dictionary")) {
@@ -401,13 +402,14 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
     // First randomly pick a char class, then randomly pick a character from that class.
     // Exclude any characters from the dictionary set.
 
-    std::cout << "Populating Test Data" << std::endl;
+    // std::cout << "Populating Test Data" << std::endl;
+    fRandomSeed = rand.getSeed();         // Save initial seed for use in error messages,
+                                          // allowing recreation of failing data.
     fBkRules = rules;
     fString.remove();
     for (int32_t n=0; n<dataLength;) {
         int charClassIndex = rand() % rules->fCharClassList->size();
         const CharClass *cclass = static_cast<CharClass *>(rules->fCharClassList->elementAt(charClassIndex));
-        // std::cout << "   class " << stdstr(cclass->fName) << std::endl;
         if (cclass->fSet->size() == 0) {
             // Some rules or tailorings do end up with empty char classes.
             continue;
@@ -616,6 +618,7 @@ void RBBIMonkeyImpl::setup(const char *ruleFile, UErrorCode &status) {
     }
     fBI.adoptInstead(fRuleSet->createICUBreakIterator(status));
     fTestData.adoptInstead(new MonkeyTestData(status));
+    fRuleFileName = ruleFile;
 }
 
 
@@ -680,10 +683,13 @@ void RBBIMonkeyImpl::checkResults(CheckDirection direction, UErrorCode &status) 
     if (direction == FORWARD) {
         for (int i=0; i<=fTestData->fString.length(); ++i) {
             if (fTestData->fExpectedBreaks.charAt(i) != fTestData->fActualBreaks.charAt(i)) {
-                IntlTest::gTest->errln("%s:%d failure at index %d", __FILE__, __LINE__, i);
-                fTestData->dump(i);
-                status = U_INVALID_STATE_ERROR;
-                break;
+                IntlTest::gTest->errln("%s:%d failure at index %d. Parameters to reproduce: @rules=%s,seed=%u,loop=1,verbose ",
+                        __FILE__, __LINE__, i, fRuleFileName, fTestData->fRandomSeed);
+                if (fVerbose) {
+                    fTestData->dump(i);
+                }
+                status = U_INVALID_STATE_ERROR;   // Prevent the test from continuing, which would likely
+                break;                            // produce many redundant errors.
             }
         }
     } else {
@@ -720,6 +726,7 @@ RBBIMonkeyTest::~RBBIMonkeyTest() {
 //                         -1:  run forever.
 //                          0 or greater:  run length.
 //       expansions        debug option, show expansions of rules and sets.
+//       verbose           Display details of the failure.
 //
 //     Parameters on the intltest command line follow the test name, and are preceded by '@'.
 //     For example,
@@ -737,11 +744,17 @@ void RBBIMonkeyTest::testMonkey() {
         tests[1] = NULL;
     }
 
-    int32_t loopCount = 10;
+    int64_t loopCount = 10;
     getIntParam("loop", params, loopCount, status);
 
     UBool dumpExpansions = FALSE;
     getBoolParam("expansions", params, dumpExpansions, status);
+    
+    UBool verbose = FALSE;
+    getBoolParam("verbose", params, verbose, status);
+
+    int64_t seed = 0;
+    getIntParam("seed", params, seed, status);
 
     if (params.length() != 0) {
         // Options processing did not consume all of the parameters. Something unrecognized was present.
@@ -760,14 +773,16 @@ void RBBIMonkeyTest::testMonkey() {
         UErrorCode status = U_ZERO_ERROR;
         RBBIMonkeyImpl test(status);
         test.fDumpExpansions = dumpExpansions;
+        test.fVerbose = verbose;
+        test.fRandomGenerator.seed((uint32_t)seed);
         test.setup(tests[i], status);
-        test.runTest(loopCount, status);
+        test.runTest((int32_t)loopCount, status);
     }
 }
 
 
-UBool  RBBIMonkeyTest::getIntParam(UnicodeString name, UnicodeString &params, int32_t &val, UErrorCode &status) {
-    name.append(" *= *(-?\\d+) *,?");
+UBool  RBBIMonkeyTest::getIntParam(UnicodeString name, UnicodeString &params, int64_t &val, UErrorCode &status) {
+    name.append(" *= *(-?\\d+) *,? *");
     RegexMatcher m(name, params, 0, status);
     if (m.find()) {
         // The param exists.  Convert the string to an int.
@@ -784,7 +799,7 @@ UBool  RBBIMonkeyTest::getIntParam(UnicodeString name, UnicodeString &params, in
 }
 
 UBool RBBIMonkeyTest::getStringParam(UnicodeString name, UnicodeString &params, CharString &dest, UErrorCode &status) {
-    name.append(" *= *([^ ,]*)");
+    name.append(" *= *([^ ,]*) *, *");
     RegexMatcher m(name, params, 0, status);
     if (m.find()) {
         // The param exists.
@@ -799,7 +814,7 @@ UBool RBBIMonkeyTest::getStringParam(UnicodeString name, UnicodeString &params, 
 }
 
 UBool RBBIMonkeyTest::getBoolParam(UnicodeString name, UnicodeString &params, UBool &dest, UErrorCode &status) {
-    name.append("(?: *= *(true|false))? *,?");
+    name.append("(?: *= *(true|false))? *,? *");
     RegexMatcher m(name, params, UREGEX_CASE_INSENSITIVE, status);
     if (m.find()) {
         if (m.start(1, status) > 0) {

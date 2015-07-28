@@ -1787,6 +1787,7 @@ float IntlTest::random() {
  * Similar to C++ std::minstd_rand, with the same algorithm & constants.
  */
 IntlTest::icu_rand::icu_rand(uint32_t seed) {
+    seed = seed % 2147483647UL;
     if (seed == 0) {
         seed = 1;
     }

@@ -38,7 +38,7 @@ class RBBIMonkeyTest: public IntlTest {
     
 
     void testRules(const char *ruleFile);
-    static UBool getIntParam(UnicodeString name, UnicodeString &params, int32_t &val, UErrorCode &status);
+    static UBool getIntParam(UnicodeString name, UnicodeString &params, int64_t &val, UErrorCode &status);
     static UBool getStringParam(UnicodeString name, UnicodeString &params, CharString &dest, UErrorCode &status);
     static UBool getBoolParam(UnicodeString name, UnicodeString &params, UBool &dest, UErrorCode &status);
 
@@ -127,6 +127,7 @@ class MonkeyTestData {
     void clearActualBreaks();
     void dump(int32_t around = -1) const;
 
+    uint32_t               fRandomSeed;        // The initial seed value from the random number genererator.
     const BreakRules      *fBkRules;           // The break rules used to generate this data.
     UnicodeString          fString;            // The text.
     UnicodeString          fExpectedBreaks;    // Breaks as found by the reference rules.
@@ -161,6 +162,8 @@ class RBBIMonkeyImpl {
     LocalPointer<RuleBasedBreakIterator> fBI;
     LocalPointer<MonkeyTestData>         fTestData;
     IntlTest::icu_rand                   fRandomGenerator;
+    const char                          *fRuleFileName;
+    UBool                                fVerbose;                 // True to do long dump of failing data.
 
     UBool fDumpExpansions;               // Debug flag to output epananded form of rules and sets.
 
