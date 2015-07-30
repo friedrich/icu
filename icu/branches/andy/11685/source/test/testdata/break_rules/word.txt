@@ -54,13 +54,13 @@ WB5:    AHLetter ExtFmt* AHLetter;
 WB6:    AHLetter ExtFmt* (MidLetter | MidNumLetQ) ExtFmt*  AHLetter;
 
 WB7a:   Hebrew_Letter ExtFmt* Single_Quote;
-WB7b:   Hebrew_Letter ExtFmt* Double_quote ExtFmt* Hebrew_Letter;   # Include WB7c
+WB7b:   Hebrew_Letter ExtFmt* Double_Quote ExtFmt* Hebrew_Letter;   # Include WB7c
 
 WB8:    Numeric ExtFmt* Numeric;
 WB9:    AHLetter ExtFmt* Numeric;
 WB10:   Numeric ExtFmt* AHLetter;
 
-WB11:   Numeric ExtFmt* (MidNum | MidLetQ) ExtFmt* Numeric;    # includes WB12
+WB11:   Numeric ExtFmt* (MidNum | MidNumLetQ) ExtFmt* Numeric;    # includes WB12
 WB13:   Katakana ExtFmt* Katakana;
 
 WB13a:  (AHLetter | Numeric | Katakana | ExtendNumLet) ExtFmt* ExtendNumLet;

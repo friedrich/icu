@@ -344,7 +344,8 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
             continue;
         }
 
-        IntlTest::gTest->errln("%s:%d: Unrecognized line in rule file: \"%s\"\n", CStr(line)());
+        IntlTest::gTest->errln("%s:%d: Unrecognized line in rule file %s: \"%s\"\n", 
+            __FILE__, __LINE__, fMonkeyImpl->fRuleFileName, CStr(line)());
     }
     
     // Build the vector of char classes, omitting the dictionary class if there is one.
@@ -396,7 +397,7 @@ MonkeyTestData::MonkeyTestData(UErrorCode &status)  {
 }
 
 void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status) {
-    const int32_t dataLength = 100;
+    const int32_t dataLength = 1000;
 
     // Fill the test string with random characters.
     // First randomly pick a char class, then randomly pick a character from that class.
@@ -579,7 +580,7 @@ void MonkeyTestData::dump(int32_t around) const {
             secondRuleName.appendInvariantChars(secondRule->fName, status);
         }
         char cName[200];
-        u_charName(c, U_UNICODE_CHAR_NAME, cName, sizeof(cName), &status);
+        u_charName(c, U_EXTENDED_CHAR_NAME, cName, sizeof(cName), &status);
 
         printf("  %4.1d %6.4x   %-20s  %c %c   %-10s %-10s    %s\n",
             charIdx, c, ccName.data(),
@@ -605,6 +606,7 @@ RBBIMonkeyImpl::RBBIMonkeyImpl(UErrorCode &status) : fDumpExpansions(FALSE) {
 //                            with its type and locale coming from the reference rules.
 
 void RBBIMonkeyImpl::setup(const char *ruleFile, UErrorCode &status) {
+    fRuleFileName = ruleFile;
     openBreakRules(ruleFile, status);
     if (U_FAILURE(status)) {
         IntlTest::gTest->errln("%s:%d Error %s opening file %s.", __FILE__, __LINE__, u_errorName(status), ruleFile);
@@ -618,7 +620,6 @@ void RBBIMonkeyImpl::setup(const char *ruleFile, UErrorCode &status) {
     }
     fBI.adoptInstead(fRuleSet->createICUBreakIterator(status));
     fTestData.adoptInstead(new MonkeyTestData(status));
-    fRuleFileName = ruleFile;
 }
 
 
@@ -744,7 +745,7 @@ void RBBIMonkeyTest::testMonkey() {
         tests[1] = NULL;
     }
 
-    int64_t loopCount = 10;
+    int64_t loopCount = 100;
     getIntParam("loop", params, loopCount, status);
 
     UBool dumpExpansions = FALSE;

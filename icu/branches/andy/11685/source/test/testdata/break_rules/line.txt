@@ -55,11 +55,17 @@ LB5.2:      LF ÷;
 LB5.3:      NL ÷;
 
 LB6:        . (BK | CR | LF | NL);
+LB6a:       [^ZW] CM* (BK | CR | LF | NL);
 
-LB7:        . SP;
-LB7.1:      . ZW;
+LB14moved:        OP CM* (SP CM*)* [^CM];
 
-LB8:        ZW SP* ÷;
+LB7.1:      [^ZW] CM* [SP ZW];
+LB7.2:      ZW [SP ZW];
+
+# LB8, ICU differs from UAX-14,
+#    ICU:    ZW ÷;
+#    UAX 14: ZW SP* ÷;
+LB8:        ZW ÷;
 
 # LB9:  X CM -> X
 # LB10: Unattached CM -> AL
@@ -71,11 +77,14 @@ LB12:        GL CM* [^CM];
 
 LB12a:       [^SP BA HY] CM* GL;
 
-LB13:        . CM* CL;
-LB13.1:      . CM* CP;
-LB13.2:      . CM* EX;
-LB13.3:      . CM* IS;
-LB13.4:      . CM* SY;
+# ICU Tailoring: conflict with the longer rule NU for CL, CP, IS, SY
+#LB13:        . CM* CL;
+#LB13.1:      . CM* CP;
+#LB13.2:      . CM* EX;
+#LB13.3:      . CM* IS;
+#LB13.4:      . CM* SY;
+LB13.1: [^NU] CM* [CL CP IS SY];
+LB13.2: . CM* EX;
 
 LB14:        OP CM* (SP CM*)* [^CM];
 
@@ -83,9 +92,11 @@ LB15:        QU CM* (SP CM*)* OP;
 
 LB16:        (CL | CP)CM* (SP CM*)* NS;
 
-LB17:        B2 CM* (SP CM*)* NS;
+LB17:        B2 CM* (SP CM*)* B2;
 
-LB18:        SP CM* ÷;
+# ICU Bug. Match ICU behavior for now.
+#LB18:        SP CM* ÷;
+LB18:        SP ÷;
 
 LB19:        . CM* QU;
 LB19.1:      QU CM* [^CM];
@@ -128,7 +139,7 @@ LB26.2:      (JT | H3) CM* JT;
 
 LB27:        (JL | JV | JT | H2 | H3) CM* IN;
 LB27.1:      (JL | JV | JT | H2 | H3) CM* PO;
-LB27.2:      PO CM* (JL | JV | JT | H2 | H3);
+LB27.2:      PR CM* (JL | JV | JT | H2 | H3);
 
 # LB28 Do not break between Alphabetics.
 #      Unattached (leading) CM treated as AL.
