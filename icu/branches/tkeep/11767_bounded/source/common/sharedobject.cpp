@@ -6,6 +6,7 @@
 * sharedobject.cpp
 */
 #include "sharedobject.h"
+#include "uassert.h"
 
 U_NAMESPACE_BEGIN
 
@@ -20,11 +21,13 @@ SharedObject::addRef(UBool fromWithinCache) const {
     // Although items in use may not be correct immediately, it
     // will be correct eventually.
     if (umtx_atomic_inc(&hardRefCount) == 1 && cachePtr != NULL) {
-        if (fromWithinCache) {
-            cachePtr->incrementItemsInUse();
-        } else {
-            cachePtr->incrementItemsInUseWithLocking();
-        }
+        // If this object is cached, and the hardRefCount goes from 0 to 1,
+        // then the increment must happen from within the cache while the
+        // cache global mutex is locked. In this way, we can be rest assured
+        // that data races can't happen if the cache performs some task if
+        // the hardRefCount is zero while the global cache mutex is locked.
+        U_ASSERT(fromWithinCache);
+        cachePtr->incrementItemsInUse();
     }
 }
 

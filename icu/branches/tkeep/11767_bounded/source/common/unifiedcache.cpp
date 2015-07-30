@@ -540,7 +540,7 @@ UBool UnifiedCache::_isEvictable(const UHashElement *element) {
 
     // We can evict entries that are either not a master or have just
     // one reference (The one reference being from the cache itself).
-    return (!theKey->fIsMaster || theValue->getRefCount() == 1);
+    return (!theKey->fIsMaster || (theValue->getSoftRefCount() == 1 && theValue->getHardRefCount() == 0));
 }
 
 U_NAMESPACE_END
