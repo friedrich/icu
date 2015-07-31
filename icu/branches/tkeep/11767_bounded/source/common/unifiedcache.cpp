@@ -179,7 +179,7 @@ void UnifiedCache::_dumpContents() const {
                 (const SharedObject *) element->value.pointer;
         const CacheKeyBase *key =
                 (const CacheKeyBase *) element->key.pointer;
-        if (!sharedObject->allSoftReferences()) {
+        if (sharedObject->hasHardReferences()) {
             ++cnt;
             fprintf(
                     stderr,
@@ -298,7 +298,7 @@ void UnifiedCache::_putNew(
         return;
     }
     keyToAdopt->fCreationStatus = creationStatus;
-    if (value->allHardReferences()) {
+    if (value->noSoftReferences()) {
         _registerMaster(keyToAdopt, value);
     }
     uhash_put(fHashtable, keyToAdopt, (void *) value, &status);
@@ -393,7 +393,7 @@ void UnifiedCache::_get(
         return;
     }
     value = key.createObject(creationContext, status);
-    U_ASSERT(value == NULL || !value->allSoftReferences());
+    U_ASSERT(value == NULL || value->hasHardReferences());
     U_ASSERT(value != NULL || status != U_ZERO_ERROR);
     if (value == NULL) {
         SharedObject::copyPtr(gNoValue, value);
@@ -449,7 +449,7 @@ void UnifiedCache::_put(
     const CacheKeyBase *theKey = (const CacheKeyBase *) element->key.pointer;
     const SharedObject *oldValue = (const SharedObject *) element->value.pointer;
     theKey->fCreationStatus = status;
-    if (value->allHardReferences()) {
+    if (value->noSoftReferences()) {
         _registerMaster(theKey, value);
     }
     value->addSoftRef();
@@ -540,7 +540,7 @@ UBool UnifiedCache::_isEvictable(const UHashElement *element) {
 
     // We can evict entries that are either not a master or have just
     // one reference (The one reference being from the cache itself).
-    return (!theKey->fIsMaster || (theValue->getSoftRefCount() == 1 && theValue->getHardRefCount() == 0));
+    return (!theKey->fIsMaster || (theValue->getSoftRefCount() == 1 && theValue->noHardReferences()));
 }
 
 U_NAMESPACE_END

@@ -53,25 +53,25 @@ SharedObject::removeRef(UBool fromWithinCache) const {
 void
 SharedObject::addSoftRef() const {
     umtx_atomic_inc(&totalRefCount);
-    umtx_atomic_inc(&softRefCount);
+    ++softRefCount;
 }
 
 void
 SharedObject::removeSoftRef() const {
-    umtx_atomic_dec(&softRefCount);
+    --softRefCount;
     if (umtx_atomic_dec(&totalRefCount) == 0) {
         delete this;
     }
 }
 
 UBool
-SharedObject::allSoftReferences() const {
+SharedObject::noHardReferences() const {
     return umtx_loadAcquire(hardRefCount) == 0;
 }
 
 UBool
-SharedObject::allHardReferences() const {
-    return umtx_loadAcquire(softRefCount) == 0;
+SharedObject::noSoftReferences() const {
+    return (softRefCount == 0);
 }
 int32_t
 SharedObject::getRefCount() const {
@@ -80,7 +80,7 @@ SharedObject::getRefCount() const {
 
 int32_t
 SharedObject::getSoftRefCount() const {
-    return umtx_loadAcquire(softRefCount);
+    return softRefCount;
 }
 
 int32_t

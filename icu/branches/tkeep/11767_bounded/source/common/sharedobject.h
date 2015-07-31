@@ -87,14 +87,16 @@ public:
     void addRef() const { addRef(FALSE); }
 
     /**
-     * Increments the number of references to this object. Thread-safe.
+     * Increments the number of references to this object.
      * Must be called only from within the internals of UnifiedCache and
      * only while the cache global mutex is held.
      */
     void addRefWhileHoldingCacheLock() const { addRef(TRUE); }
 
     /**
-     * Increments the number of soft references to this object. Thread-safe.
+     * Increments the number of soft references to this object.
+     * Must be called only from within the internals of UnifiedCache and
+     * only while the cache global mutex is held.
      */
     void addSoftRef() const;
 
@@ -104,14 +106,16 @@ public:
     void removeRef() const { removeRef(FALSE); }
 
     /**
-     * Decrements the number of references to this object. Thread-safe.
+     * Decrements the number of references to this object.
      * Must be called only from within the internals of UnifiedCache and
      * only while the cache global mutex is held.
      */
     void removeRefWhileHoldingCacheLock() const { removeRef(TRUE); }
 
     /**
-     * Decrements the number of soft references to this object. Thread-safe.
+     * Decrements the number of soft references to this object.
+     * Must be called only from within the internals of UnifiedCache and
+     * only while the cache global mutex is held.
      */
     void removeSoftRef() const;
 
@@ -122,8 +126,9 @@ public:
     int32_t getRefCount() const;
 
     /**
-     * Returns the count of soft references only. Uses a memory barrier.
-     * Used for testing the cache. Regular clients won't need this.
+     * Returns the count of soft references only.
+     * Must be called only from within the internals of UnifiedCache and
+     * only while the cache global mutex is held.
      */
     int32_t getSoftRefCount() const;
 
@@ -134,14 +139,23 @@ public:
     int32_t getHardRefCount() const;
 
     /**
-     * If allSoftReferences() == TRUE then this object has only soft references.
+     * If noHardReferences() == TRUE then this object has no hard references.
+     * Must be called only from within the internals of UnifiedCache.
      */
-    UBool allSoftReferences() const;
+    UBool noHardReferences() const;
 
     /**
-     * If allHardReferences() == TRUE then this object has only hard references.
+     * If hasHardReferences() == TRUE then this object has hard references.
+     * Must be called only from within the internals of UnifiedCache.
      */
-    UBool allHardReferences() const;
+    UBool hasHardReferences() const { return !noHardReferences(); }
+
+    /**
+     * If noSoftReferences() == TRUE then this object has no soft references.
+     * Must be called only from within the internals of UnifiedCache and
+     * only while the cache global mutex is held.
+     */
+    UBool noSoftReferences() const;
 
     /**
      * Deletes this object if it has no references or soft references.
@@ -209,7 +223,10 @@ public:
 
 private:
     mutable u_atomic_int32_t totalRefCount;
-    mutable u_atomic_int32_t softRefCount;
+
+    // Any thread modifying softRefCount must hold the global cache mutex
+    mutable int32_t softRefCount;
+
     mutable u_atomic_int32_t hardRefCount;
     mutable const UnifiedCacheBase *cachePtr;
     void addRef(UBool withCacheLock) const;
