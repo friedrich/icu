@@ -1460,8 +1460,8 @@ void MultithreadTest::TestUnifiedCache() {
     UErrorCode status = U_ZERO_ERROR;
     UnifiedCache::getInstance(status);
     UnifiedCache cache(status);
+    cache.setEvictionPolicy(2, 0, status);
     U_ASSERT(U_SUCCESS(status));
-    cache.setEvictionPolicy(2, 0);
 
     gFinishedThreads = 0;
     gObjectsCreated = 0;

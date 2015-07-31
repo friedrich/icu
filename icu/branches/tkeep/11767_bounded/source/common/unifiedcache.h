@@ -180,6 +180,8 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
  public:
    /**
     * @internal
+    * Do not call directly. Instead use UnifiedCache::getInstance() as
+    * there should be only one UnifiedCache in an application.
     */
    UnifiedCache(UErrorCode &status);
 
@@ -314,8 +316,12 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
     * However, if this happens, the cache still guarantees that the number of
     * unused entries will remain only a small percentage of the total cache
     * size.
+    *
+    * If the parameters passed are negative, setEvctionPolicy sets status to
+    * U_ILLEGAL_ARGUMENT_ERROR.
     */
-   void setEvictionPolicy(int32_t count, int32_t percentageOfInUseItems);
+   void setEvictionPolicy(
+           int32_t count, int32_t percentageOfInUseItems, UErrorCode &status);
 
    /**
     * Returns the unused entry count in this cache. For testing only,

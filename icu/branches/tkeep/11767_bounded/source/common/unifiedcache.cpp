@@ -121,7 +121,14 @@ UnifiedCache::UnifiedCache(UErrorCode &status) :
 }
 
 void UnifiedCache::setEvictionPolicy(
-        int32_t count, int32_t percentageOfInUseItems) {
+        int32_t count, int32_t percentageOfInUseItems, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    if (count < 0 || percentageOfInUseItems < 0) {
+        status = U_ILLEGAL_ARGUMENT_ERROR;
+        return;
+    }
     Mutex lock(&gCacheMutex);
     fMaxUnused = count;
     fMaxPercentageOfInUse = percentageOfInUseItems;

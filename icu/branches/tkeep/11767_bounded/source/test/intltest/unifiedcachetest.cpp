@@ -100,7 +100,7 @@ void UnifiedCacheTest::TestEvictionPolicy() {
     assertSuccess("", status);
 
     // Don't allow unused entries to exeed more than 100% of in use entries.
-    cache.setEvictionPolicy(0, 100);
+    cache.setEvictionPolicy(0, 100, status);
 
     static const char *locales[] = {
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
@@ -161,7 +161,7 @@ void UnifiedCacheTest::TestBounded() {
     assertSuccess("", status);
 
     // Maximum unused count is 3.
-    cache.setEvictionPolicy(3, 0);
+    cache.setEvictionPolicy(3, 0, status);
 
     // Our cache will hold up to 3 unused key-value pairs
     // We test the following invariants:
@@ -263,7 +263,12 @@ void UnifiedCacheTest::TestBounded() {
     // Size of cache should magically drop to 3.
     assertEquals("", 3, cache.unusedCount());
     assertEquals("", 3, cache.keyCount());
+
+    // Be sure nothing happens setting the eviction policy in the middle of
+    // a run.
+    cache.setEvictionPolicy(3, 0, status);
     assertSuccess("", status);
+    
 }
 
 void UnifiedCacheTest::TestBasic() {
