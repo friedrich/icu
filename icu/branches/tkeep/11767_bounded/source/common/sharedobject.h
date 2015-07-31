@@ -25,12 +25,6 @@ public:
     UnifiedCacheBase() { }
 
     /**
-     * Called by addRef() when the hard reference count of its instance
-     * goes from 0 to 1.
-     */
-    virtual void incrementItemsInUseWithLocking() const = 0;
-
-    /**
      * Called by addRefWhileHoldingCacheLock() when the hard reference count
      * of its instance goes from 0 to 1.
      */

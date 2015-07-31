@@ -411,11 +411,6 @@ void UnifiedCache::_get(
     }
 }
 
-void UnifiedCache::incrementItemsInUseWithLocking() const {
-    Mutex mutex(&gCacheMutex);
-    incrementItemsInUse();
-}
-
 void UnifiedCache::decrementItemsInUseWithLockingAndEviction() const {
     Mutex mutex(&gCacheMutex);
     decrementItemsInUse();
