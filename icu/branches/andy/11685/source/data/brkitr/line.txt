@@ -293,6 +293,7 @@ $CM+          $SY;              # by rule 10, stand-alone CM behaves as AL
 
 #
 # LB 14  Do not break after OP, even after spaces
+#        UAX 14 deviation: "$SP*" should be "($SP $CM*)*"
 #
 $OPcm $SP* $CAN_CM $CM*;
 $OPcm $SP* $CANT_CM;

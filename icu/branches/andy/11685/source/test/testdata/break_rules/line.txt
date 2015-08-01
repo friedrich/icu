@@ -55,12 +55,20 @@ LB5.2:      LF ÷;
 LB5.3:      NL ÷;
 
 LB6:        . (BK | CR | LF | NL);
-LB6a:       [^ZW] CM* (BK | CR | LF | NL);
+# LB6a:       [^ZW] CM* (BK | CR | LF | NL);
+# ICU Deviation: spaces do not take combining marks.
+LB6a:       [^ZW SP] CM* (BK | CR | LF | NL);
 
-LB14moved:        OP CM* (SP CM*)* [^CM];
+# UAX reorder: rule moved earlier, to pick up longer match than LB7.1 on "OP CM* SP"
+# UAX deviation:  ICU rules have SP*, not (SP CM*)*
+#LB14moved:        OP CM* (SP CM*)* [^CM];
+LB14moved:        OP CM* SP* .;
+LB15moved:        QU CM* SP* OP;
+LB16moved:        (CL | CP)CM* SP* NS;
+LB17moved:        B2 CM* SP* B2;
 
-LB7.1:      [^ZW] CM* [SP ZW];
-LB7.2:      ZW [SP ZW];
+LB7.1:      [^ZW SP] CM* [SP ZW];
+LB7.2:      [ZW SP] [SP ZW];
 
 # LB8, ICU differs from UAX-14,
 #    ICU:    ZW ÷;
@@ -70,7 +78,10 @@ LB8:        ZW ÷;
 # LB9:  X CM -> X
 # LB10: Unattached CM -> AL
 
-LB11:        . CM* WJ;
+# ICU deviation: Spaces don't take CM
+#LB11:        . CM* WJ;
+LB11:       [^SP]CM* WJ;
+LB11.01:     SP WJ;
 LB11.1:      WJ CM* [^CM];
 
 LB12:        GL CM* [^CM];
@@ -78,21 +89,28 @@ LB12:        GL CM* [^CM];
 LB12a:       [^SP BA HY] CM* GL;
 
 # ICU Tailoring: conflict with the longer rule NU for CL, CP, IS, SY
+# Further tailoring conflict: spaces dont take CM in ICU.
 #LB13:        . CM* CL;
 #LB13.1:      . CM* CP;
 #LB13.2:      . CM* EX;
 #LB13.3:      . CM* IS;
 #LB13.4:      . CM* SY;
-LB13.1: [^NU] CM* [CL CP IS SY];
-LB13.2: . CM* EX;
+LB13.1: [^NU SP] CM* [CL CP IS SY];
+LB12.1b: SP [CL CP IS SY];     # With no intervening CM*
 
-LB14:        OP CM* (SP CM*)* [^CM];
+# Google Deviation: spaces don't take CM
+#LB13.2: . CM* EX;
+LB13.2.1: [^SP] CM* EX;
+LB13.2.2: SP EX;
 
-LB15:        QU CM* (SP CM*)* OP;
+# Rule move above LB 7.
+#LB14:        OP CM* (SP CM*)* [^CM];
 
-LB16:        (CL | CP)CM* (SP CM*)* NS;
+#LB15:        QU CM* (SP CM*)* OP;
 
-LB17:        B2 CM* (SP CM*)* B2;
+#LB16:        (CL | CP)CM* (SP CM*)* NS;
+
+#LB17:        B2 CM* (SP CM*)* B2;
 
 # ICU Bug. Match ICU behavior for now.
 #LB18:        SP CM* ÷;
@@ -106,12 +124,12 @@ LB20.1:      CB CM* ÷;
 
 # UAX Deviation Note: 21a must come before 21 to prevent 21 from matching HL BA, then
 #                     not picking up the no-break after the BA from 21a.
-LB21a:       HL CM* (HY | BA) CM* [^CM];
+LB21a:       HL CM* (HY | BA) CM* [^CM CB];
 
 LB21:        . CM* BA;
 LB21.1:      . CM* HY;
 LB21.2:      . CM* NS;
-LB21.3:      BB CM* [^CM];
+LB21.3:      BB CM* [^CM CB];
 
 LB21b:       SY CM* HL;
 
@@ -121,7 +139,7 @@ LB22b:       ID CM* IN;
 LB22c:       IN CM* IN;
 LB22d:       NU CM* IN;
 
-LB23:        ID CM* PO CM*;
+LB23:        ID CM* PO;
 LB23.1:      (AL | HL | CM) CM* NU;
 LB23.2:      NU CM* (AL | HL);
 

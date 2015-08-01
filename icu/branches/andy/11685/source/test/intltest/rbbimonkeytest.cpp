@@ -9,6 +9,7 @@
 #include "rbbimonkeytest.h"
 #include "unicode/utypes.h"
 #include "unicode/brkiter.h"
+#include "unicode/utf16.h"
 #include "unicode/uniset.h"
 #include "unicode/unistr.h"
 
@@ -81,11 +82,16 @@ int8_t BreakRule::comparator(UElement a, UElement b) {
 //
 //---------------------------------------------------------------------------------------
 BreakRules::BreakRules(RBBIMonkeyImpl *monkeyImpl, UErrorCode &status)  : 
-        fMonkeyImpl(monkeyImpl), fBreakRules(status), fCharClasses(NULL), fType(UBRK_COUNT) {
-    fCharClasses = uhash_open(uhash_hashUnicodeString,
-                              uhash_compareUnicodeString,
-                              NULL,      // value comparator.
-                              &status);
+        fMonkeyImpl(monkeyImpl), fBreakRules(status), fType(UBRK_COUNT) {
+    fCharClasses.adoptInstead(uhash_open(uhash_hashUnicodeString,
+                                         uhash_compareUnicodeString,
+                                         NULL,      // value comparator.
+                                         &status));
+    if (U_FAILURE(status)) {
+        return;
+    }
+    uhash_setKeyDeleter(fCharClasses.getAlias(), uprv_deleteUObject);
+    uhash_setValueDeleter(fCharClasses.getAlias(), uprv_deleteUObject);
 
     fCharClassList.adoptInstead(new UVector(status));
 
@@ -138,7 +144,7 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
     while (fSetRefsMatcher->find() && U_SUCCESS(status)) {
         const UnicodeString name = 
                 fSetRefsMatcher->group(fSetRefsMatcher->pattern().groupNumberFromName("ClassName", status), status); 
-        CharClass *nameClass = static_cast<CharClass *>(uhash_get(fCharClasses, &name));
+        CharClass *nameClass = static_cast<CharClass *>(uhash_get(fCharClasses.getAlias(), &name));
         const UnicodeString &expansionForName = nameClass ? nameClass->fExpandedDef : name;
 
         fSetRefsMatcher->appendReplacement(expandedDef, emptyString, status);
@@ -159,8 +165,11 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
         return;
     }
     CharClass *cclass = new CharClass(name, definition, expandedDef, s);
+    CharClass *previousClass = static_cast<CharClass *>(uhash_put(fCharClasses.getAlias(), 
+                                                        new UnicodeString(name),   // Key, owned by hash table.
+                                                        cclass,                    // Value, owned by hash table.
+                                                        &status));
 
-    CharClass *previousClass = static_cast<CharClass *>(uhash_put(fCharClasses, &cclass->fName, cclass, &status));
     if (previousClass != NULL) {
         // Duplicate class def.
         // These are legitimate, they are adustments of an existing class.
@@ -195,7 +204,7 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
     while (fSetRefsMatcher->find() && U_SUCCESS(status)) {
         const UnicodeString name = 
                 fSetRefsMatcher->group(fSetRefsMatcher->pattern().groupNumberFromName("ClassName", status), status); 
-        CharClass *nameClass = static_cast<CharClass *>(uhash_get(fCharClasses, &name));
+        CharClass *nameClass = static_cast<CharClass *>(uhash_get(fCharClasses.getAlias(), &name));
         const UnicodeString &expansionForName = nameClass ? nameClass->fExpandedDef : name;
 
         fSetRefsMatcher->appendReplacement(thisRule->fExpandedRule, emptyString, status);
@@ -355,7 +364,7 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
 
     int32_t pos = UHASH_FIRST;
     const UHashElement *el = NULL;
-    while ((el = uhash_nextElement(fCharClasses , &pos)) != NULL) {
+    while ((el = uhash_nextElement(fCharClasses.getAlias(), &pos)) != NULL) {
         const UnicodeString *ccName = static_cast<const UnicodeString *>(el->key.pointer);
         CharClass *cclass = static_cast<CharClass *>(el->value.pointer);
         // printf("    Adding %s\n", CStr(*ccName)());
@@ -417,6 +426,13 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
         }
         int32_t charIndex = rand() % cclass->fSet->size();
         UChar32 c = cclass->fSet->charAt(charIndex);
+        if (U16_IS_TRAIL(c) && fString.length() > 0 && U16_IS_LEAD(fString.charAt(fString.length()-1))) {
+            // Character classes may contain unpaired surrogates, e.g. Grapheme_Cluster_Break = Control.
+            // Don't let random unpaired surrogates combine in the test data because they might
+            // produce an unwanted dictionary character.
+            continue;
+        }
+
         if (!rules->fDictionarySet.contains(c)) {
             fString.append(c);
             ++n;
@@ -640,7 +656,7 @@ void RBBIMonkeyImpl::openBreakRules(const char *fileName, UErrorCode &status) {
 void RBBIMonkeyImpl::runTest(int32_t numIterations, UErrorCode &status) {
     if (U_FAILURE(status)) { return; };
 
-    for (int loopCount = 0; loopCount < numIterations; loopCount++) {
+    for (int64_t loopCount = 0; numIterations < 0 || loopCount < numIterations; loopCount++) {
         status = U_ZERO_ERROR;   // TODO: counter on allowed number of failures.
         fTestData->set(fRuleSet.getAlias(), fRandomGenerator, status);
         // fTestData->dump();
@@ -651,6 +667,9 @@ void RBBIMonkeyImpl::runTest(int32_t numIterations, UErrorCode &status) {
         // check reverse
         // check following / preceding
         // check is boundary
+        if (numIterations < 0 && loopCount % 100 == 0) {
+            fprintf(stderr, ".");
+        }
     }
 }
 

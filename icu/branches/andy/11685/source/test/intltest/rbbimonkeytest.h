@@ -16,6 +16,7 @@
 #include "unicode/unistr.h"
 
 #include "ucbuf.h"
+#include "uhash.h"
 #include "uvector.h"
 
 class BreakRules;       // Forward declaration
@@ -94,7 +95,7 @@ class BreakRules {
     RBBIMonkeyImpl    *fMonkeyImpl;        // Pointer back to the owning MonkeyImpl instance.
     icu::UVector       fBreakRules;        // Contents are of type (BreakRule *).
                                            // Contents are ordered by the order of application.
-    UHashtable        *fCharClasses;       // Key is set name (UnicodeString).
+    LocalUHashtablePointer fCharClasses;   // Key is set name (UnicodeString).
                                            // Value is (CharClass *)
     LocalPointer<UVector>  fCharClassList; // Char Classes, same contents as fCharClasses values,
                                            //   but in a vector so they can be accessed by index.
