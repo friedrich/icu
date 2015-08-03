@@ -191,15 +191,6 @@ UnicodeString &DigitFormatter::format(
             appendTo);
 }
 
-static UBool isNeg(int32_t &value, uint8_t *digits) {
-    if (value < 0) {
-        digits[0] = -(value % 10);
-        value = -(value / 10);
-        return TRUE;
-    }
-    return FALSE;
-}
-
 static int32_t formatInt(
         int32_t value, uint8_t *digits) {
     int32_t idx = 0;

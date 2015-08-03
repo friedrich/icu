@@ -110,6 +110,7 @@ private:
     UBool fHasExponent;
 
     friend class ScientificPrecision;
+    friend class FixedPrecision;
 };
 
 

@@ -316,6 +316,36 @@ FixedPrecision::initVisibleDigits(
     return TRUE;
 }
 
+VisibleDigitsWithExponent &
+FixedPrecision::initVisibleDigitsWithExponent(
+        DigitList &value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    digits.clear();
+    initVisibleDigits(value, digits.fMantissa, status);
+    return digits;
+}
+
+VisibleDigitsWithExponent &
+FixedPrecision::initVisibleDigitsWithExponent(
+        double value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    digits.clear();
+    initVisibleDigits(value, digits.fMantissa, status);
+    return digits;
+}
+
+VisibleDigitsWithExponent &
+FixedPrecision::initVisibleDigitsWithExponent(
+        int64_t value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    digits.clear();
+    initVisibleDigits(value, digits.fMantissa, status);
+    return digits;
+}
+
 ScientificPrecision::ScientificPrecision() : fMinExponentDigits(1) {
 }
 
@@ -347,7 +377,7 @@ ScientificPrecision::getMultiplier() const {
 }
 
 VisibleDigitsWithExponent &
-ScientificPrecision::initVisibleDigits(
+ScientificPrecision::initVisibleDigitsWithExponent(
         DigitList &value,
         VisibleDigitsWithExponent &digits,
         UErrorCode &status) const {
@@ -368,7 +398,7 @@ ScientificPrecision::initVisibleDigits(
 }
 
 VisibleDigitsWithExponent &
-ScientificPrecision::initVisibleDigits(
+ScientificPrecision::initVisibleDigitsWithExponent(
         double value,
         VisibleDigitsWithExponent &digits,
         UErrorCode &status) const {
@@ -377,11 +407,11 @@ ScientificPrecision::initVisibleDigits(
     }
     DigitList digitList;
     digitList.set(value);
-    return initVisibleDigits(digitList, digits, status);
+    return initVisibleDigitsWithExponent(digitList, digits, status);
 }
 
 VisibleDigitsWithExponent &
-ScientificPrecision::initVisibleDigits(
+ScientificPrecision::initVisibleDigitsWithExponent(
         int64_t value,
         VisibleDigitsWithExponent &digits,
         UErrorCode &status) const {
@@ -390,7 +420,7 @@ ScientificPrecision::initVisibleDigits(
     }
     DigitList digitList;
     digitList.set(value);
-    return initVisibleDigits(digitList, digits, status);
+    return initVisibleDigitsWithExponent(digitList, digits, status);
 }
 
 VisibleDigitsWithExponent &

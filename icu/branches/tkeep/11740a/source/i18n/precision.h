@@ -149,6 +149,42 @@ VisibleDigits &initVisibleDigits(
         VisibleDigits &digits,
         UErrorCode &status) const;
 
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        DigitList &value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        double value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        int64_t value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
 private:
 UBool
 initVisibleDigits(
@@ -208,7 +244,7 @@ public:
  * @param status any error returned here.
  * @return digits
  */
-VisibleDigitsWithExponent &initVisibleDigits(
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
         DigitList &value,
         VisibleDigitsWithExponent &digits,
         UErrorCode &status) const;
@@ -220,7 +256,7 @@ VisibleDigitsWithExponent &initVisibleDigits(
  * @param status any error returned here.
  * @return digits
  */
-VisibleDigitsWithExponent &initVisibleDigits(
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
         double value,
         VisibleDigitsWithExponent &digits,
         UErrorCode &status) const;
@@ -232,7 +268,7 @@ VisibleDigitsWithExponent &initVisibleDigits(
  * @param status any error returned here.
  * @return digits
  */
-VisibleDigitsWithExponent &initVisibleDigits(
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
         int64_t value,
         VisibleDigitsWithExponent &digits,
         UErrorCode &status) const;

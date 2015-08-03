@@ -2437,7 +2437,7 @@ void NumberFormat2Test::TestVisibleDigitsWithExponent() {
     {
         UErrorCode status = U_ZERO_ERROR;
         ScientificPrecision precision;
-        precision.initVisibleDigits(389.256, digits, status);
+        precision.initVisibleDigitsWithExponent(389.256, digits, status);
         verifyVisibleDigitsWithExponent(
                 "3.89256E2", FALSE, digits);
         assertSuccess("3.89256E2", status);
@@ -2445,7 +2445,7 @@ void NumberFormat2Test::TestVisibleDigitsWithExponent() {
     {
         UErrorCode status = U_ZERO_ERROR;
         ScientificPrecision precision;
-        precision.initVisibleDigits(-389.256, digits, status);
+        precision.initVisibleDigitsWithExponent(-389.256, digits, status);
         verifyVisibleDigitsWithExponent(
                 "3.89256E2", TRUE, digits);
         assertSuccess("-3.89256E2", status);
@@ -2456,7 +2456,7 @@ void NumberFormat2Test::TestVisibleDigitsWithExponent() {
         precision.fMinExponentDigits = 3;
         precision.fMantissa.fMin.setIntDigitCount(1);
         precision.fMantissa.fMax.setIntDigitCount(3);
-        precision.initVisibleDigits(12345.67, digits, status);
+        precision.initVisibleDigitsWithExponent(12345.67, digits, status);
         verifyVisibleDigitsWithExponent(
                 "12.34567E003", FALSE, digits);
         assertSuccess("12.34567E003", status);
@@ -2467,7 +2467,7 @@ void NumberFormat2Test::TestVisibleDigitsWithExponent() {
         precision.fMantissa.fRoundingIncrement.set(0.073);
         precision.fMantissa.fMin.setIntDigitCount(2);
         precision.fMantissa.fMax.setIntDigitCount(2);
-        precision.initVisibleDigits(999.74, digits, status);
+        precision.initVisibleDigitsWithExponent(999.74, digits, status);
         verifyVisibleDigitsWithExponent(
                 "10.001E2", FALSE, digits);
         assertSuccess("10.001E2", status);
