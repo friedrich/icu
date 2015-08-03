@@ -92,6 +92,7 @@ BreakRules::BreakRules(RBBIMonkeyImpl *monkeyImpl, UErrorCode &status)  :
     }
     uhash_setKeyDeleter(fCharClasses.getAlias(), uprv_deleteUObject);
     uhash_setValueDeleter(fCharClasses.getAlias(), uprv_deleteUObject);
+    fBreakRules.setDeleter(uprv_deleteUObject);
 
     fCharClassList.adoptInstead(new UVector(status));
 
@@ -131,6 +132,9 @@ BreakRules::BreakRules(RBBIMonkeyImpl *monkeyImpl, UErrorCode &status)  :
     fNumericFieldMatcher.adoptInstead(new RegexMatcher(UnicodeString(
                  "[0-9]+"), 0, status));
 }
+
+
+BreakRules::~BreakRules() {};
 
 
 void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &definition, UErrorCode &status) {
@@ -819,7 +823,7 @@ UBool  RBBIMonkeyTest::getIntParam(UnicodeString name, UnicodeString &params, in
 }
 
 UBool RBBIMonkeyTest::getStringParam(UnicodeString name, UnicodeString &params, CharString &dest, UErrorCode &status) {
-    name.append(" *= *([^ ,]*) *, *");
+    name.append(" *= *([^ ,]*) *,? *");
     RegexMatcher m(name, params, 0, status);
     if (m.find()) {
         // The param exists.

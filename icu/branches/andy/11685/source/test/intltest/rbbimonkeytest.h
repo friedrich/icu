@@ -14,6 +14,7 @@
 #include "unicode/regex.h"
 #include "unicode/uniset.h"
 #include "unicode/unistr.h"
+#include "unicode/uobject.h"
 
 #include "ucbuf.h"
 #include "uhash.h"
@@ -50,8 +51,10 @@ class RBBIMonkeyTest: public IntlTest {
 
 
 //  class CharClass    Represents a single character class from the source break rules.
+//                     Inherits from UObject because instances are adopted by UHashtable, which ultimately
+//                     deletes them using hash's object deleter function.
 
-class CharClass {
+class CharClass: public UObject {
   public:
     UnicodeString                fName;
     UnicodeString                fOriginalDef;    // set definition as it appeared in user supplied rules.
@@ -66,7 +69,7 @@ class CharClass {
 //                    Each rule has the set definitions expanded, and
 //                    is compiled to a regular expression.
 
-class BreakRule {
+class BreakRule: public UObject {
   public:
     BreakRule();
     ~BreakRule();
@@ -83,9 +86,10 @@ class BreakRule {
 // class BreakRules    represents a complete set of break rules, possibly tailored,
 //                     compiled from testdata break rules.
 
-class BreakRules {
+class BreakRules: public UObject {
   public:
     BreakRules(RBBIMonkeyImpl *monkeyImpl, UErrorCode &status);
+    ~BreakRules();
 
     void compileRules(UCHARBUF *rules, UErrorCode &status);
 
@@ -120,7 +124,7 @@ class BreakRules {
 //                         with the expected break positions obtained by applying
 //                         the test break rules.
 
-class MonkeyTestData {
+class MonkeyTestData: public UObject {
   public:
     MonkeyTestData(UErrorCode &status);
     ~MonkeyTestData() {};
@@ -149,7 +153,7 @@ class MonkeyTestData {
 //                          (Future) in a multithreaded version, multiple instances of this class
 //                          could exist concurrently, each testing a different set of rules or
 //                          rule tailorings in a separate thread.
-class RBBIMonkeyImpl {
+class RBBIMonkeyImpl: public UObject {
   public:
     RBBIMonkeyImpl(UErrorCode &status);
     ~RBBIMonkeyImpl();
