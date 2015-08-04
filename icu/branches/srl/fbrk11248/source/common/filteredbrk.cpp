@@ -323,25 +323,111 @@ int32_t SimpleFilteredSentenceBreakIterator::next() {
 
 // work in progress.
    int32_t SimpleFilteredSentenceBreakIterator::first(void) {
-       return UBRK_DONE;
+       int32_t n = fDelegate->first();
+
+       return n; // TODO: can a suppressible break go here?
    }
   int32_t SimpleFilteredSentenceBreakIterator::preceding(int32_t offset) {
-       return UBRK_DONE;
+       UErrorCode status = U_ZERO_ERROR;
+       resetState(status);
+       int32_t n = fDelegate->preceding(offset);
+       while(n != UBRK_DONE && n != 0) {
+            int32_t bestPosn;
+            int32_t bestValue;
+
+            SimpleFilteredSentenceBreakIterator::EFBMatchResult m = getResult(n, bestPosn, bestValue);
+
+            switch(m) {
+            case kExceptionHere:
+                n = fDelegate->previous(); // skip this one. Find the next lowerlevel break.
+                continue;
+            case kNoExceptionHere:
+                return n;
+            }
+       }
+       return n;
   }
   int32_t SimpleFilteredSentenceBreakIterator::previous(void) {
-       return UBRK_DONE;
+       UErrorCode status = U_ZERO_ERROR;
+       resetState(status);
+       int32_t n = fDelegate->previous();
+       while(n != UBRK_DONE && n != 0) {
+            int32_t bestPosn;
+            int32_t bestValue;
+
+            SimpleFilteredSentenceBreakIterator::EFBMatchResult m = getResult(n, bestPosn, bestValue);
+
+            switch(m) {
+            case kExceptionHere:
+                n = fDelegate->previous(); // skip this one. Find the next lowerlevel break.
+                continue;
+            case kNoExceptionHere:
+                return n;
+            }
+       }
+       return n;
   }
   UBool SimpleFilteredSentenceBreakIterator::isBoundary(int32_t offset) {
-      return true;
+    if(!fDelegate->isBoundary(offset)) return false; // no break to suppress
+
+    UErrorCode status = U_ZERO_ERROR;
+    resetState(status);
+
+    int32_t bestPosn;
+    int32_t bestValue;
+
+    SimpleFilteredSentenceBreakIterator::EFBMatchResult m = getResult(offset, bestPosn, bestValue);
+
+    switch(m) {
+    case kExceptionHere:
+        return false;
+    default:
+    case kNoExceptionHere:
+        return true;
+    }    
   }
   int32_t SimpleFilteredSentenceBreakIterator::next(int32_t n) {
-       return UBRK_DONE;
+       return fDelegate->next(n);
   }
   int32_t SimpleFilteredSentenceBreakIterator::following(int32_t offset) {
-       return UBRK_DONE;
+       UErrorCode status = U_ZERO_ERROR;
+       resetState(status);
+       int32_t n = fDelegate->following(offset);
+       while(n != UBRK_DONE) {
+            int32_t bestPosn;
+            int32_t bestValue;
+
+            SimpleFilteredSentenceBreakIterator::EFBMatchResult m = getResult(n, bestPosn, bestValue);
+
+            switch(m) {
+            case kExceptionHere:
+                n = fDelegate->next(); // skip this one. Find the next lowerlevel break.
+                continue;
+            case kNoExceptionHere:
+                return n;
+            }
+       }
+       return n;
   }
   int32_t SimpleFilteredSentenceBreakIterator::last(void) {
-       return UBRK_DONE;
+       UErrorCode status = U_ZERO_ERROR;
+       resetState(status);
+       int32_t n = fDelegate->last();
+       while(n != UBRK_DONE && n != 0) {
+            int32_t bestPosn;
+            int32_t bestValue;
+
+            SimpleFilteredSentenceBreakIterator::EFBMatchResult m = getResult(n, bestPosn, bestValue);
+
+            switch(m) {
+            case kExceptionHere:
+                n = fDelegate->previous(); // skip this one. Find the next lowerlevel break.
+                continue;
+            case kNoExceptionHere:
+                return n;
+            }
+       }
+       return n;
   }
 
 
