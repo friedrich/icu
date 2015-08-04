@@ -58,15 +58,10 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *   
  *   private int primitive = 0;
  *   private ImmutablePoint point = ImmutablePoint.valueOf(2, 3);
- *   private ValueObjectClass value = ValueObjectClass.DEFAULT;
+ *   private ValueObjectClass value = new ValueObjectClass().freeze();
  *   private ValueObjectClass optionalValue = null;
  *   private FreezableClass freezable = new FreezableClass().freeze();
  *   private MutableClass pojo = new MutableClass();
- *   
- *   // Default instance. This has to be defined after all the fields because of
- *   // the way JAVA initializes a class. Declaring this before any of the fields
- *   // may result in exception in initialization errors caused by null pointer exception.
- *   public static final MyClass DEFAULT = new MyClass().freeze();
  *   
  *   public void doSomeMutations() {
  *       // Throw an exception if this object is frozen.
@@ -76,6 +71,7 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *       primitive = 3;
  *       
  *       // Modify a ValueObject. Always thaw a ValueObject field first before modifying it.
+ *       // Note that if value is already unfrozen, thaw returns it unchanged.
  *       value = thaw(value);
  *       value.setFoo(7);
  *       
@@ -192,7 +188,9 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *   // Subclasses override only if they have ValueObject fields
  *   protected void freezeValueFields() {
  *       value.freeze();
- *       optFreeze(optionalValue);
+ *       if (optionalValue != null) {
+ *           optionalValue.freeze();
+ *       }
  *       // No freezing ordinary Freezable fields in here.
  *       // Doing so may cause data races.
  *   }
@@ -275,19 +273,7 @@ public abstract class ValueObject<T extends ValueObject<T>> implements Freezable
         if (isFrozen()) {
             throw new UnsupportedOperationException("Cannot modify a frozen object");
         }
-    }
-    
-    /**
-     * Call within the freezeFields method to freeze an optional, Freezable field.
-     * See coding example in documentation.
-     * @param value The value to freeze. value may be null.
-     */
-    protected static <U extends Freezable<U>> void optFreeze(U value) {
-        if (value != null) {
-            value.freeze();
-        }
-    }
-    
+    } 
     
     /**
      * Call from a mutating method to thaw a ValueObject field so that it can be
