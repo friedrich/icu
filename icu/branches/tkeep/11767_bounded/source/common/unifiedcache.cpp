@@ -104,7 +104,8 @@ UnifiedCache::UnifiedCache(UErrorCode &status) :
         fEvictPos(UHASH_FIRST),
         fItemsInUseCount(0),
         fMaxUnused(DEFAULT_MAX_UNUSED),
-        fMaxPercentageOfInUse(DEFAULT_PERCENTAGE_OF_IN_USE) {
+        fMaxPercentageOfInUse(DEFAULT_PERCENTAGE_OF_IN_USE),
+        fAutoEvictedCount(0) {
     if (U_FAILURE(status)) {
         return;
     }
@@ -139,7 +140,10 @@ int32_t UnifiedCache::unusedCount() const {
     return uhash_count(fHashtable) - fItemsInUseCount;
 }
 
-
+int64_t UnifiedCache::autoEvictedCount() const {
+    Mutex lock(&gCacheMutex);
+    return fAutoEvictedCount;
+}
 
 int32_t UnifiedCache::keyCount() const {
     Mutex lock(&gCacheMutex);
@@ -279,6 +283,7 @@ void UnifiedCache::_runEvictionSlice() const {
                     (const SharedObject *) element->value.pointer;
             uhash_removeElement(fHashtable, element);
             sharedObject->removeSoftRef();
+            ++fAutoEvictedCount;
             if (--maxItemsToEvict == 0) {
                 break;
             }

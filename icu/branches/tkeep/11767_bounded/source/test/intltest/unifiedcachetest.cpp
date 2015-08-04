@@ -11,6 +11,7 @@
 #include "cstring.h"
 #include "intltest.h"
 #include "unifiedcache.h"
+#include "unicode/datefmt.h"
 
 class UCTItem : public SharedObject {
   public:
@@ -73,6 +74,7 @@ private:
     void TestBasic();
     void TestError();
     void TestHashEquals();
+    void TestEvictionUnderStress();
 };
 
 void UnifiedCacheTest::runIndexedTest(int32_t index, UBool exec, const char* &name, char* /*par*/) {
@@ -82,7 +84,24 @@ void UnifiedCacheTest::runIndexedTest(int32_t index, UBool exec, const char* &na
   TESTCASE_AUTO(TestBasic);
   TESTCASE_AUTO(TestError);
   TESTCASE_AUTO(TestHashEquals);
+  TESTCASE_AUTO(TestEvictionUnderStress);
   TESTCASE_AUTO_END;
+}
+
+void UnifiedCacheTest::TestEvictionUnderStress() {
+    int32_t localeCount;
+    const Locale *locales = DateFormat::getAvailableLocales(localeCount);
+    UErrorCode status = U_ZERO_ERROR;
+    const UnifiedCache *cache = UnifiedCache::getInstance(status);
+    int64_t evictedCountBefore = cache->autoEvictedCount();
+    for (int32_t i = 0; i < localeCount; ++i) {
+        LocalPointer<DateFormat> ptr(DateFormat::createInstanceForSkeleton("yMd", locales[i], status));
+    }
+    int64_t evictedCountAfter = cache->autoEvictedCount();
+    if (evictedCountBefore == evictedCountAfter) {
+        errln("%s:%d Items should have been evicted from cache",
+               __FILE__, __LINE__);
+    }
 }
 
 void UnifiedCacheTest::TestEvictionPolicy() {

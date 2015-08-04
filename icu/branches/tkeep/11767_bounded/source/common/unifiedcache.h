@@ -325,6 +325,14 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
    void setEvictionPolicy(
            int32_t count, int32_t percentageOfInUseItems, UErrorCode &status);
 
+
+   /**
+    * Returns how many entries have been auto evicted during the lifetime
+    * of this cache. This only includes auto evicted entries, not
+    * entries evicted because of a call to flush().
+    */
+   int64_t autoEvictedCount() const;
+
    /**
     * Returns the unused entry count in this cache. For testing only,
     * Regular clients will not need this.
@@ -341,6 +349,7 @@ class U_COMMON_API UnifiedCache : public UnifiedCacheBase {
    mutable int32_t fItemsInUseCount;
    int32_t fMaxUnused;
    int32_t fMaxPercentageOfInUse;
+   mutable int64_t fAutoEvictedCount;
    UnifiedCache(const UnifiedCache &other);
    UnifiedCache &operator=(const UnifiedCache &other);
    UBool _flush(UBool all) const;
