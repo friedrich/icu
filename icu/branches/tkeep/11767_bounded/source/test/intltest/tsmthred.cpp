@@ -1321,7 +1321,7 @@ void MultithreadTest::TestConditionVariables() {
 
 // Each thread fetches a pair of objects. There are 8 distinct pairs:
 // ("en_US", "bs"), ("en_GB", "ca"), ("fr_FR", "ca_AD") etc.
-// These pairs represent 8 distict languages
+// These pairs represent 8 distinct languages
 
 // Note that only one value per language gets created in the cache.
 // In particular each cached value can have multiple keys.
@@ -1423,7 +1423,7 @@ void UnifiedCacheThread::exerciseByLocale(const Locale &locale) {
     U_ASSERT(U_SUCCESS(status));
     if (uprv_strcmp(locale.getLanguage(), origItem->value)) {
       IntlTest::gTest->errln(
-              "Expected %s, got %s",
+              "%s:%d Expected %s, got %s", __FILE__, __LINE__,
               locale.getLanguage(),
               origItem->value);
     }
@@ -1435,7 +1435,10 @@ void UnifiedCacheThread::exerciseByLocale(const Locale &locale) {
         fCache->get(
                 LocaleCacheKey<UCTMultiThreadItem>(locale), fCache, item, status);
         if (item != origItem) {
-            IntlTest::gTest->errln("Expected to get the same pointer");
+            IntlTest::gTest->errln(
+                    "%s:%d Expected to get the same pointer",
+                     __FILE__,
+                     __LINE__);
         }
         if (item != NULL) {
             item->removeRef();
@@ -1486,13 +1489,13 @@ void MultithreadTest::TestUnifiedCache() {
     // However we know that at least 8 objects get created because that
     // is how many distinct languages we have in our test.
     if (gObjectsCreated < 8) {
-        errln("Too few objects created.");
+        errln("%s:%d Too few objects created.", __FILE__, __LINE__);
     }
     // We know that each thread cannot create more than 2 objects in
     // the cache, and there are UPRV_LENGTHOF(gCacheLocales) pairs of
     // objects fetched from the cache
     if (gObjectsCreated > 2 * UPRV_LENGTHOF(gCacheLocales)) {
-        errln("Too many objects created.");
+        errln("Too many objects created.", __FILE__, __LINE__);
     }
 
     assertEquals("unused values", 2, cache.unusedCount());

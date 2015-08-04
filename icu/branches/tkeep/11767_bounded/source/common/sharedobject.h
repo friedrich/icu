@@ -18,7 +18,8 @@ U_NAMESPACE_BEGIN
 /**
  * Base class for unified cache exposing enough methods to SharedObject
  * instances to allow their addRef() and removeRef() methods to
- * update cache metrics.
+ * update cache metrics. No other part of ICU, except for SharedObject,
+ * should directly call the methods of this base class.
  */
 class UnifiedCacheBase : public UObject {
 public:
@@ -124,7 +125,7 @@ public:
      * Must be called only from within the internals of UnifiedCache and
      * only while the cache global mutex is held.
      */
-    int32_t getSoftRefCount() const;
+    int32_t getSoftRefCount() const { return softRefCount; }
 
     /**
      * Returns the count of hard references only. Uses a memory barrier.
@@ -136,20 +137,20 @@ public:
      * If noHardReferences() == TRUE then this object has no hard references.
      * Must be called only from within the internals of UnifiedCache.
      */
-    UBool noHardReferences() const;
+    inline UBool noHardReferences() const { return getHardRefCount() == 0; }
 
     /**
      * If hasHardReferences() == TRUE then this object has hard references.
      * Must be called only from within the internals of UnifiedCache.
      */
-    UBool hasHardReferences() const { return !noHardReferences(); }
+    inline UBool hasHardReferences() const { return getHardRefCount() != 0; }
 
     /**
      * If noSoftReferences() == TRUE then this object has no soft references.
      * Must be called only from within the internals of UnifiedCache and
      * only while the cache global mutex is held.
      */
-    UBool noSoftReferences() const;
+    UBool noSoftReferences() const { return (softRefCount == 0); }
 
     /**
      * Deletes this object if it has no references or soft references.

@@ -64,23 +64,9 @@ SharedObject::removeSoftRef() const {
     }
 }
 
-UBool
-SharedObject::noHardReferences() const {
-    return umtx_loadAcquire(hardRefCount) == 0;
-}
-
-UBool
-SharedObject::noSoftReferences() const {
-    return (softRefCount == 0);
-}
 int32_t
 SharedObject::getRefCount() const {
     return umtx_loadAcquire(totalRefCount);
-}
-
-int32_t
-SharedObject::getSoftRefCount() const {
-    return softRefCount;
 }
 
 int32_t
