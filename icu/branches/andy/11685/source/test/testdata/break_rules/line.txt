@@ -55,17 +55,16 @@ LB5.2:      LF ÷;
 LB5.3:      NL ÷;
 
 LB6:        . (BK | CR | LF | NL);
-# LB6a:       [^ZW] CM* (BK | CR | LF | NL);
-# ICU Deviation: spaces do not take combining marks.
-LB6a:       [^ZW SP] CM* (BK | CR | LF | NL);
+LB6.1:      [^BK CR LF NL SP ZW] CM* (BK | CR | LF | NL);
 
-# UAX reorder: rule moved earlier, to pick up longer match than LB7.1 on "OP CM* SP"
-# UAX deviation:  ICU rules have SP*, not (SP CM*)*
-#LB14moved:        OP CM* (SP CM*)* [^CM];
-LB14moved:        OP CM* SP* .;
-LB15moved:        QU CM* SP* OP;
-LB16moved:        (CL | CP)CM* SP* NS;
-LB17moved:        B2 CM* SP* B2;
+# Rules LB14 - LB17.
+# Moved before LB7, because they can match a longer sequence that would also match LB7,
+# for example, the sequence "OP CM SP AL" matches LB14 while the prefix of it,
+#                           "while only the prefix "OP CM SP" matches LB7.1
+LB6.14:        OP CM* SP* .;
+LB6.15:        QU CM* SP* OP;
+LB6.16:        (CL | CP)CM* SP* NS;
+LB6.17:        B2 CM* SP* B2;
 
 LB7.1:      [^ZW SP] CM* [SP ZW];
 LB7.2:      [ZW SP] [SP ZW];
@@ -78,42 +77,29 @@ LB8:        ZW ÷;
 # LB9:  X CM -> X
 # LB10: Unattached CM -> AL
 
-# ICU deviation: Spaces don't take CM
-#LB11:        . CM* WJ;
-LB11:       [^SP]CM* WJ;
-LB11.01:     SP WJ;
-LB11.1:      WJ CM* [^CM];
+#LB11:       × WJ;
+#            WJ ×
+
+LB11.1:      [^BK CR LF NL SP ZW] CM* WJ;
+LB11.2:      SP WJ;
+LB11.3:      WJ CM* [^CM];
 
 LB12:        GL CM* [^CM];
 
 LB12a:       [^SP BA HY] CM* GL;
 
-# ICU Tailoring: conflict with the longer rule NU for CL, CP, IS, SY
-# Further tailoring conflict: spaces dont take CM in ICU.
-#LB13:        . CM* CL;
-#LB13.1:      . CM* CP;
-#LB13.2:      . CM* EX;
-#LB13.3:      . CM* IS;
-#LB13.4:      . CM* SY;
+# LB 13 ICU Tailoring, matches tailoring exmaple 8 from UAX 14.
+#
+#   LB13.1   [^SP] CM* [CL CP EX IS SY]    # original UAX 14 rule.
+#   LB13.2   SP    CM* [CL CP EX IS SY]
+
 LB13.1: [^NU SP] CM* [CL CP IS SY];
-LB12.1b: SP [CL CP IS SY];     # With no intervening CM*
+LB13.2: [^SP] CM* EX;
+LB13.2: SP [CL CP IS SY EX];
 
-# Google Deviation: spaces don't take CM
-#LB13.2: . CM* EX;
-LB13.2.1: [^SP] CM* EX;
-LB13.2.2: SP EX;
 
-# Rule move above LB 7.
-#LB14:        OP CM* (SP CM*)* [^CM];
+# LB 14-17 are moved above LB 7.
 
-#LB15:        QU CM* (SP CM*)* OP;
-
-#LB16:        (CL | CP)CM* (SP CM*)* NS;
-
-#LB17:        B2 CM* (SP CM*)* B2;
-
-# ICU Bug. Match ICU behavior for now.
-#LB18:        SP CM* ÷;
 LB18:        SP ÷;
 
 LB19:        . CM* QU;
@@ -147,7 +133,8 @@ LB24:        PR CM* ID;
 LB24.1:      PR CM* (AL | HL);
 LB24.2:      PO CM* (AL | HL);
 
-# Numbers. Recast second half to ensure that match stops on a regular character, not on
+# Numbers. Equivalent to Tailoring expample 8 from UAx 14.
+#          Recast second half to ensure that match stops on a regular character, not on
 #          a combining character.
 LB25:        ((PR | PO)CM*)? ((OP | HY)CM*)? NU (CM*(NU | SY | IS))* (CM*(CL | CP))? (CM*(PR | PO))?;
 

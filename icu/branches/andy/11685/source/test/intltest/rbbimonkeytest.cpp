@@ -137,7 +137,7 @@ BreakRules::BreakRules(RBBIMonkeyImpl *monkeyImpl, UErrorCode &status)  :
 BreakRules::~BreakRules() {};
 
 
-void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &definition, UErrorCode &status) {
+CharClass *BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &definition, UErrorCode &status) {
     
     // Create the expanded definition for this char class,
     // replacing any set references with the corresponding definition.
@@ -166,7 +166,7 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
     if (U_FAILURE(status)) {
         IntlTest::gTest->errln("%s:%d: error %s creating UnicodeSet %s", __FILE__, __LINE__,
                                u_errorName(status), CStr(name)());
-        return;
+        return NULL;
     }
     CharClass *cclass = new CharClass(name, definition, expandedDef, s);
     CharClass *previousClass = static_cast<CharClass *>(uhash_put(fCharClasses.getAlias(), 
@@ -181,6 +181,7 @@ void BreakRules::addCharClass(const UnicodeString &name, const UnicodeString &de
         IntlTest::gTest->logln("Redefinition of character class %s\n", CStr(cclass->fName)());
         delete previousClass;
     }
+    return cclass;
 }
 
 
@@ -209,6 +210,10 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
         const UnicodeString name = 
                 fSetRefsMatcher->group(fSetRefsMatcher->pattern().groupNumberFromName("ClassName", status), status); 
         CharClass *nameClass = static_cast<CharClass *>(uhash_get(fCharClasses.getAlias(), &name));
+        if (!nameClass) {
+            IntlTest::gTest->errln("%s:%d char class \"%s\" unrecognized in rule \"%s\"",
+                __FILE__, __LINE__, CStr(name)(), CStr(definition)());
+        }
         const UnicodeString &expansionForName = nameClass ? nameClass->fExpandedDef : name;
 
         fSetRefsMatcher->appendReplacement(thisRule->fExpandedRule, emptyString, status);
@@ -228,7 +233,7 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
     }
 
     // UAX break rule set definitions can be empty, just [].
-    // Regular expression set expressions don't accept this. Substiture with [^\u0000-\U0010ffff], which
+    // Regular expression set expressions don't accept this. Substitute with [^\u0000-\U0010ffff], which
     // also matches nothing.
 
     static const UChar emptySet[] = {(UChar)0x5b, (UChar)0x5d, 0};
@@ -241,7 +246,7 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
     }
         
     // Compile a regular expression for this rule.
-    thisRule->fRuleMatcher.adoptInstead(new RegexMatcher(thisRule->fExpandedRule, UREGEX_COMMENTS, status));
+    thisRule->fRuleMatcher.adoptInstead(new RegexMatcher(thisRule->fExpandedRule, UREGEX_COMMENTS | UREGEX_DOTALL, status));
     if (U_FAILURE(status)) {
         IntlTest::gTest->errln("%s:%d Error creating regular expression for %s",
                 __FILE__, __LINE__, CStr(thisRule->fExpandedRule)());
@@ -364,8 +369,10 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
     // Build the vector of char classes, omitting the dictionary class if there is one.
     // This will be used when constructing the random text to be tested.
 
-    // TODO:  add an "other" set.
+    // Also compute the "other" set, consisting of any characters not included in
+    // one or more of the user defined sets.
 
+    UnicodeSet otherSet((UChar32)0, 0x10ffff);
     int32_t pos = UHASH_FIRST;
     const UHashElement *el = NULL;
     while ((el = uhash_nextElement(fCharClasses.getAlias(), &pos)) != NULL) {
@@ -377,11 +384,19 @@ void BreakRules::compileRules(UCHARBUF *rules, UErrorCode &status) {
                     __FILE__, __LINE__, CStr(*ccName)(), CStr(cclass->fName)());
         }
         const UnicodeSet *set = cclass->fSet.getAlias();
+        otherSet.removeAll(*set);
         if (*ccName == UnicodeString("dictionary")) {
             fDictionarySet = *set;
         } else {
             fCharClassList->addElement(cclass, status);
         }
+    }
+
+    if (!otherSet.isEmpty()) {
+        // fprintf(stderr, "have an other set.\n");
+        UnicodeString pattern;
+        CharClass *cclass = addCharClass(UnicodeString("__Others"), otherSet.toPattern(pattern), status);
+        fCharClassList->addElement(cclass, status);
     }
 }
 
@@ -497,6 +512,7 @@ void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode
             // No reference rule matched. This is an error in the rules that should never happen.
             IntlTest::gTest->errln("%s:%d Trouble with monkey test reference rules at position %d. ",
                  __FILE__, __LINE__, strIdx);
+            dump(strIdx);
             status = U_INVALID_FORMAT_ERROR;
             return;
         }
@@ -618,7 +634,7 @@ void MonkeyTestData::dump(int32_t around) const {
 //
 //---------------------------------------------------------------------------------------
 
-RBBIMonkeyImpl::RBBIMonkeyImpl(UErrorCode &status) : fDumpExpansions(FALSE) {
+RBBIMonkeyImpl::RBBIMonkeyImpl(UErrorCode &status) : fDumpExpansions(FALSE), fThread(this) {
 }
 
 // RBBIMonkeyImpl setup       does all of the setup for a single rule set - compiling the
@@ -657,10 +673,19 @@ void RBBIMonkeyImpl::openBreakRules(const char *fileName, UErrorCode &status) {
 }
 
 
-void RBBIMonkeyImpl::runTest(int32_t numIterations, UErrorCode &status) {
-    if (U_FAILURE(status)) { return; };
+void RBBIMonkeyImpl::startTest(UErrorCode &status) {
+    if (U_SUCCESS(status)) {
+        fThread.run();   // invokes runTest() in a separate thread.
+    }
+}
 
-    for (int64_t loopCount = 0; numIterations < 0 || loopCount < numIterations; loopCount++) {
+void RBBIMonkeyImpl::join() {
+    fThread.join();
+}
+
+void RBBIMonkeyImpl::runTest() {
+    UErrorCode status = U_ZERO_ERROR;
+    for (int64_t loopCount = 0; fLoopCount < 0 || loopCount < fLoopCount; loopCount++) {
         status = U_ZERO_ERROR;   // TODO: counter on allowed number of failures.
         fTestData->set(fRuleSet.getAlias(), fRandomGenerator, status);
         // fTestData->dump();
@@ -671,7 +696,7 @@ void RBBIMonkeyImpl::runTest(int32_t numIterations, UErrorCode &status) {
         // check reverse
         // check following / preceding
         // check is boundary
-        if (numIterations < 0 && loopCount % 100 == 0) {
+        if (fLoopCount < 0 && loopCount % 100 == 0) {
             fprintf(stderr, ".");
         }
     }
@@ -761,7 +786,7 @@ void RBBIMonkeyTest::testMonkey() {
     UnicodeString params(fParams);
     UErrorCode status = U_ZERO_ERROR;
 
-    const char *tests[] = {"grapheme.txt", "word.txt", "line.txt", NULL };
+    const char *tests[] = {"grapheme.txt", "word.txt", "line.txt", "sentence.txt", NULL };
     CharString testNameFromParams;
     if (getStringParam("rules", params, testNameFromParams, status)) {
         tests[0] = testNameFromParams.data();
@@ -795,12 +820,15 @@ void RBBIMonkeyTest::testMonkey() {
 
     for (int i=0; tests[i] != NULL; ++i) {
         UErrorCode status = U_ZERO_ERROR;
+        logln("beginning testing of %s", tests[i]);
         RBBIMonkeyImpl test(status);
         test.fDumpExpansions = dumpExpansions;
         test.fVerbose = verbose;
         test.fRandomGenerator.seed((uint32_t)seed);
+        test.fLoopCount = loopCount;
         test.setup(tests[i], status);
-        test.runTest((int32_t)loopCount, status);
+        test.startTest(status);
+        test.join();   // << Keep a vector of them
     }
 }
 

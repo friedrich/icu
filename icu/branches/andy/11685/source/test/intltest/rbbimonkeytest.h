@@ -16,6 +16,7 @@
 #include "unicode/unistr.h"
 #include "unicode/uobject.h"
 
+#include "simplethread.h"
 #include "ucbuf.h"
 #include "uhash.h"
 #include "uvector.h"
@@ -107,7 +108,7 @@ class BreakRules: public UObject {
     Locale             fLocale;
     UBreakIteratorType fType;
 
-    void addCharClass(const UnicodeString &name, const UnicodeString &def, UErrorCode &status);
+    CharClass *addCharClass(const UnicodeString &name, const UnicodeString &def, UErrorCode &status);
     void addRule(const UnicodeString &name, const UnicodeString &def, UErrorCode &status);
     bool setKeywordParameter(const UnicodeString &keyword, const UnicodeString &value, UErrorCode &status);
     RuleBasedBreakIterator *createICUBreakIterator(UErrorCode &status);
@@ -147,6 +148,8 @@ class MonkeyTestData: public UObject {
 };
 
 
+
+
 // class RBBIMonkeyImpl     holds (some indirectly) everything associated with running a monkey
 //                          test for one set of break rules.
 //
@@ -160,7 +163,9 @@ class RBBIMonkeyImpl: public UObject {
     
     void setup(const char *ruleFileName, UErrorCode &status);
 
-    void runTest(int32_t numIterations, UErrorCode &status);
+    void startTest(UErrorCode &status);
+    void runTest();
+    void join();
 
     LocalUCHARBUFPointer                 fRuleCharBuffer;
     LocalPointer<BreakRules>             fRuleSet;
@@ -169,6 +174,7 @@ class RBBIMonkeyImpl: public UObject {
     IntlTest::icu_rand                   fRandomGenerator;
     const char                          *fRuleFileName;
     UBool                                fVerbose;                 // True to do long dump of failing data.
+    int32_t                              fLoopCount;
 
     UBool fDumpExpansions;               // Debug flag to output epananded form of rules and sets.
 
@@ -180,8 +186,16 @@ class RBBIMonkeyImpl: public UObject {
     void testForwards(UErrorCode &status);
     void checkResults(CheckDirection dir, UErrorCode &status);
 
+    class RBBIMonkeyThread: public SimpleThread {
+      private:
+        RBBIMonkeyImpl *fMonkeyImpl;
+      public:
+        RBBIMonkeyThread(RBBIMonkeyImpl *impl) : fMonkeyImpl(impl) {};
+        void run() U_OVERRIDE { fMonkeyImpl->runTest(); };
+    };
   private:
     void openBreakRules(const char *fileName, UErrorCode &status);
+    RBBIMonkeyThread fThread;
 
 };
 
