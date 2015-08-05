@@ -857,17 +857,19 @@ void NumberFormat2Test::TestPositiveIntDigitFormatter() {
 
 void NumberFormat2Test::TestDigitFormatterDefaultCtor() {
     DigitFormatter formatter;
-    DigitList digits;
-    DigitInterval interval;
+    VisibleDigits digits;
+    FixedPrecision precision;
+    UErrorCode status = U_ZERO_ERROR;
+    precision.initVisibleDigits(246.801, digits, status);
+    assertSuccess("", status);
     DigitGrouping grouping;
-    digits.set(246.801);
+    DigitFormatterOptions options;
     verifyDigitFormatter(
             "246.801",
             formatter,
             digits,
             grouping,
-            digits.getSmallestInterval(interval),
-            FALSE,
+            options,
             NULL);
     verifyDigitIntFormatter(
             "+023",
