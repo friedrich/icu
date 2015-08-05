@@ -26,10 +26,12 @@ U_NAMESPACE_BEGIN
 DigitFormatter::DigitFormatter()
         : fGroupingSeparator(",", -1, US_INV), fDecimal(".", -1, US_INV),
           fNegativeSign("-", -1, US_INV), fPositiveSign("+", -1, US_INV),
-          fIsStandardDigits(TRUE) {
+          fIsStandardDigits(TRUE), fExponent("E", -1, US_INV) {
     for (int32_t i = 0; i < 10; ++i) {
         fLocalizedDigits[i] = (UChar32) (0x30 + i);
     }
+    fInfinity.setTo(UnicodeString("Inf", -1, US_INV), UNUM_INTEGER_FIELD);
+    fNan.setTo(UnicodeString("Nan", -1, US_INV), UNUM_INTEGER_FIELD);
 }
 
 DigitFormatter::DigitFormatter(const DecimalFormatSymbols &symbols) {
@@ -54,6 +56,7 @@ DigitFormatter::setOtherDecimalFormatSymbols(
     fPositiveSign = symbols.getConstSymbol(DecimalFormatSymbols::kPlusSignSymbol);
     fInfinity.setTo(symbols.getConstSymbol(DecimalFormatSymbols::kInfinitySymbol), UNUM_INTEGER_FIELD);
     fNan.setTo(symbols.getConstSymbol(DecimalFormatSymbols::kNaNSymbol), UNUM_INTEGER_FIELD);
+    fExponent = symbols.getConstSymbol(DecimalFormatSymbols::kExponentialSymbol);
 }
 
 void
@@ -101,6 +104,82 @@ int32_t DigitFormatter::countChar32(
     result += grouping.getSeparatorCount(interval.getIntDigitCount()) * fGroupingSeparator.countChar32();
     return result;
 }
+
+int32_t
+DigitFormatter::countChar32(
+        const VisibleDigits &digits,
+        const DigitGrouping &grouping,
+        const DigitFormatterOptions &options) const {
+    return countChar32(
+            grouping,
+            digits.getInterval(),
+            options);
+}
+
+int32_t
+DigitFormatter::countChar32(
+        const VisibleDigitsWithExponent &digits,
+        const SciFormatterOptions &options) const {
+    const VisibleDigits *exponent = digits.getExponent();
+    if (exponent == NULL) {
+        DigitGrouping grouping;
+        return countChar32(
+                grouping,
+                digits.getMantissa().getInterval(),
+                options.fMantissa);
+    }
+    return countChar32(
+            *exponent, digits.getMantissa().getInterval(), options);
+}
+
+int32_t
+DigitFormatter::countChar32(
+        int32_t exponent,
+        const DigitInterval &mantissaInterval,
+        const SciFormatterOptions &options) const {
+    UErrorCode status = U_ZERO_ERROR;
+    VisibleDigits digits;
+    FixedPrecision expPrecision;
+    expPrecision.fMin.setIntDigitCount(options.fExponent.fMinDigits);
+    return countChar32(
+            expPrecision.initVisibleDigits((int64_t) exponent, digits, status),
+            mantissaInterval,
+            options);
+}
+
+int32_t
+DigitFormatter::countChar32(
+        const VisibleDigits &exponent,
+        const DigitInterval &mantissaInterval,
+        const SciFormatterOptions &options) const {
+    DigitGrouping grouping;
+    int32_t count = countChar32(
+            grouping, mantissaInterval, options.fMantissa);
+    count += fExponent.countChar32();
+    count += countChar32ForExponent(
+            exponent, options.fExponent);
+    return count;
+}
+
+
+UnicodeString &
+DigitFormatter::format(
+        const DigitList &positiveMantissa,
+        int32_t exponent,
+        const DigitInterval &mantissaInterval,
+        const SciFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    UErrorCode status = U_ZERO_ERROR;
+    VisibleDigitsWithExponent digits;
+    ScientificPrecision::initVisibleDigitsWithExponent(
+            positiveMantissa, mantissaInterval,
+            exponent, options.fExponent.fMinDigits,
+            digits, status);
+    return format(digits, options, handler, appendTo);
+}
+
+
 
 UnicodeString &DigitFormatter::format(
         const VisibleDigits &digits,
@@ -171,6 +250,36 @@ UnicodeString &DigitFormatter::format(
         handler.addAttribute(UNUM_FRACTION_FIELD, fracBegin, appendTo.length());
     }
     return appendTo;
+}
+
+UnicodeString &
+DigitFormatter::format(
+        const VisibleDigitsWithExponent &digits,
+        const SciFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    DigitGrouping grouping;
+    format(
+            digits.getMantissa(),
+            grouping,
+            options.fMantissa,
+            handler,
+            appendTo);
+    const VisibleDigits *exponent = digits.getExponent();
+    if (exponent == NULL) {
+        return appendTo;
+    }
+    int32_t expBegin = appendTo.length();
+    appendTo.append(fExponent);
+    handler.addAttribute(
+            UNUM_EXPONENT_SYMBOL_FIELD, expBegin, appendTo.length());
+    return formatExponent(
+            *exponent,
+            options.fExponent,
+            UNUM_EXPONENT_SIGN_FIELD,
+            UNUM_EXPONENT_FIELD,
+            handler,
+            appendTo);
 }
 
 UnicodeString &DigitFormatter::format(

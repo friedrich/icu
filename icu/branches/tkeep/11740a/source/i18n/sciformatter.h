@@ -26,30 +26,6 @@ class UnicodeString;
 class FieldPositionHandler;
 class VisibleDigitsWithExponent;
 
-/**
- * Options for formatting in scientific notation.
- */
-class U_I18N_API SciFormatterOptions : public UMemory {
-    public:
-
-    /**
-     * Returns TRUE if this object equals rhs.
-     */
-    UBool equals(const SciFormatterOptions &rhs) const {
-        return (fMantissa.equals(rhs.fMantissa) &&
-                fExponent.equals(rhs.fExponent));
-    }
-
-    /**
-     * Options for formatting the mantissa. 
-     */
-    DigitFormatterOptions fMantissa;
-
-    /**
-     * Options for formatting the exponent.
-     */
-    DigitFormatterIntOptions fExponent;
-};
 
 /**
  * This class formats scientific notation. This class does no rounding.

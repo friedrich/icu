@@ -205,9 +205,8 @@ private:
             const NumberFormat2Test_Attributes *expectedAttributes);
     void verifySciFormatter(
             const UnicodeString &expected,
-            const SciFormatter &sciformatter,
-            const VisibleDigitsWithExponent &digits,
             const DigitFormatter &formatter,
+            const VisibleDigitsWithExponent &digits,
             const SciFormatterOptions &options,
             const NumberFormat2Test_Attributes *expectedAttributes);
     void verifySciFormatter(
@@ -3324,13 +3323,11 @@ void NumberFormat2Test::verifyVisibleDigitsWithExponent(
         UBool bNegative,
         const VisibleDigitsWithExponent &digits) {
     DigitFormatter formatter;
-    SciFormatter sciformatter;
     SciFormatterOptions options;
     verifySciFormatter(
             expected,
-            sciformatter,
-            digits,
             formatter,
+            digits,
             options,
             NULL);
     if (digits.isNegative() != bNegative) {
@@ -3376,61 +3373,39 @@ void NumberFormat2Test::verifyDigitIntFormatter(
 
 void NumberFormat2Test::verifySciFormatter(
         const UnicodeString &expected,
-        const SciFormatter &sciformatter,
-        const VisibleDigitsWithExponent &digits,
-        const DigitFormatter &formatter,
-        const SciFormatterOptions &options,
-        const NumberFormat2Test_Attributes *expectedAttributes) {
-    assertEquals(
-            "",
-            expected.countChar32(),
-            sciformatter.countChar32(
-                    digits,
-                    formatter,
-                    options));
-    UnicodeString appendTo;
-    NumberFormat2Test_FieldPositionHandler handler;
-    assertEquals(
-            "",
-            expected,
-            sciformatter.format(
-                    digits,
-                    formatter,
-                    options,
-                    handler,
-                    appendTo));
-    if (expectedAttributes != NULL) {
-        verifyAttributes(expectedAttributes, handler.attributes);
-    }
-}
-
-void NumberFormat2Test::verifySciFormatter(
-        const UnicodeString &expected,
-        const SciFormatter &sciformatter,
+        const SciFormatter &/*sciformatter*/,
         const DigitList &mantissa,
         int32_t exponent,
         const DigitFormatter &formatter,
         const DigitInterval &interval,
         const SciFormatterOptions &options,
         const NumberFormat2Test_Attributes *expectedAttributes) {
+    VisibleDigitsWithExponent digits;
+    UErrorCode status = U_ZERO_ERROR;
+    ScientificPrecision::initVisibleDigitsWithExponent(
+            mantissa, interval, exponent,
+            options.fExponent.fMinDigits, digits, status);
+    verifySciFormatter(
+            expected, formatter, digits, options, expectedAttributes);
+}
+
+void NumberFormat2Test::verifySciFormatter(
+        const UnicodeString &expected,
+        const DigitFormatter &formatter,
+        const VisibleDigitsWithExponent &digits,
+        const SciFormatterOptions &options,
+        const NumberFormat2Test_Attributes *expectedAttributes) {
     assertEquals(
             "",
             expected.countChar32(),
-            sciformatter.countChar32(
-                    exponent,
-                    formatter,
-                    interval,
-                    options));
+            formatter.countChar32(digits, options));
     UnicodeString appendTo;
     NumberFormat2Test_FieldPositionHandler handler;
     assertEquals(
             "",
             expected,
-            sciformatter.format(
-                    mantissa,
-                    exponent,
-                    formatter,
-                    interval,
+            formatter.format(
+                    digits,
                     options,
                     handler,
                     appendTo));

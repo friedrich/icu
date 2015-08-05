@@ -27,6 +27,7 @@ class UnicodeString;
 class FieldPositionHandler;
 class IntDigitCountRange;
 class VisibleDigits;
+class VisibleDigitsWithExponent;
 
 /**
  * Various options for formatting in fixed point.
@@ -85,6 +86,32 @@ class U_I18N_API DigitFormatterIntOptions : public UMemory {
      */
     UBool fAlwaysShowSign;
 };
+
+/**
+ * Options for formatting in scientific notation.
+ */
+class U_I18N_API SciFormatterOptions : public UMemory {
+    public:
+
+    /**
+     * Returns TRUE if this object equals rhs.
+     */
+    UBool equals(const SciFormatterOptions &rhs) const {
+        return (fMantissa.equals(rhs.fMantissa) &&
+                fExponent.equals(rhs.fExponent));
+    }
+
+    /**
+     * Options for formatting the mantissa.
+     */
+    DigitFormatterOptions fMantissa;
+
+    /**
+     * Options for formatting the exponent.
+     */
+    DigitFormatterIntOptions fExponent;
+};
+
 
 /**
  * Does fixed point formatting.
@@ -157,6 +184,20 @@ UnicodeString &format(
         const DigitFormatterOptions &options,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
+
+/**
+ * formats in scientifc notation.
+ * @param positiveDigits the scientific quantity to format
+ * @param options formatting options
+ * @param handler records field positions.
+ * @param appendTo formatted value appended here.
+ */
+UnicodeString &format(
+        const VisibleDigitsWithExponent &positiveDigits,
+        const SciFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
 
 /**
  * Formats NaN.
@@ -275,6 +316,21 @@ int32_t countChar32ForInt32(
         const DigitFormatterIntOptions &options) const;
 
 /**
+ * Counts how many code points are needed for fixed formatting.
+ */
+int32_t countChar32(
+        const VisibleDigits &digits,
+        const DigitGrouping &grouping,
+        const DigitFormatterOptions &options) const;
+
+/**
+ * Counts how many code points are needed for scientific formatting.
+ */
+int32_t countChar32(
+        const VisibleDigitsWithExponent &digits,
+        const SciFormatterOptions &options) const;
+
+/**
  * Returns TRUE if this object equals rhs.
  */
 UBool equals(const DigitFormatter &rhs) const;
@@ -288,7 +344,7 @@ UnicodeString fPositiveSign;
 DigitAffix fInfinity;
 DigitAffix fNan;
 UBool fIsStandardDigits;
-
+UnicodeString fExponent;
 UBool isStandardDigits() const;
 
 UnicodeString &formatDigits(
@@ -300,6 +356,26 @@ UnicodeString &formatDigits(
         UnicodeString &appendTo) const;
 
 void setOtherDecimalFormatSymbols(const DecimalFormatSymbols &symbols);
+
+int32_t countChar32(
+        int32_t exponent,
+        const DigitInterval &mantissaInterval,
+        const SciFormatterOptions &options) const;
+
+UnicodeString &format(
+        const DigitList &positiveMantissa,
+        int32_t exponent,
+        const DigitInterval &mantissaInterval,
+        const SciFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
+int32_t countChar32(
+        const VisibleDigits &exponent,
+        const DigitInterval &mantissaInterval,
+        const SciFormatterOptions &options) const;
+
+
 
 };
 
