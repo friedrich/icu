@@ -110,6 +110,12 @@ DigitFormatter::countChar32(
         const VisibleDigits &digits,
         const DigitGrouping &grouping,
         const DigitFormatterOptions &options) const {
+    if (digits.isNaN()) {
+        return countChar32ForNaN();
+    }   
+    if (digits.isInfinite()) {
+        return countChar32ForInfinity();
+    }   
     return countChar32(
             grouping,
             digits.getInterval(),
@@ -120,6 +126,12 @@ int32_t
 DigitFormatter::countChar32(
         const VisibleDigitsWithExponent &digits,
         const SciFormatterOptions &options) const {
+    if (digits.isNaN()) {
+        return countChar32ForNaN();
+    }
+    if (digits.isInfinite()) {
+        return countChar32ForInfinity();
+    }
     const VisibleDigits *exponent = digits.getExponent();
     if (exponent == NULL) {
         DigitGrouping grouping;
@@ -187,6 +199,13 @@ UnicodeString &DigitFormatter::format(
         const DigitFormatterOptions &options,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
+    if (digits.isNaN()) {
+        return formatNaN(handler, appendTo);
+    }
+    if (digits.isInfinite()) {
+        return formatInfinity(handler, appendTo);
+    }
+
     const DigitInterval &interval = digits.getInterval();
     int32_t digitsLeftOfDecimal = interval.getMostSignificantExclusive();
     int32_t lastDigitPos = interval.getLeastSignificantInclusive();

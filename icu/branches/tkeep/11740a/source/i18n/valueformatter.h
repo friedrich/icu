@@ -29,6 +29,7 @@ class ScientificPrecision;
 class SciFormatter;
 class SciFormatterOptions;
 class FixedDecimal;
+class VisibleDigitsWithExponent;
 
 
 /**
@@ -73,10 +74,29 @@ public:
         const DigitList &value) const;
 
     /**
+     * Return the plural form to use for a given value.
+     * @param rules the plural rules.
+     * @param value the value.
+     * @return 'zero', 'one', 'two', 'few', 'many', or 'other'
+     */
+    UnicodeString select(
+        const PluralRules &rules,
+        const VisibleDigitsWithExponent &value) const;
+
+    /**
      * Temporary for now. PluralFormat actually needs a FixedDecimal.
      */
     FixedDecimal &getFixedDecimal(
             const DigitList &value, FixedDecimal &result) const;
+
+    /**
+     * Converts a DigitList to a VisibleDigitsWithExponent.
+     * Result may be fixed point or scientific.
+     */
+    VisibleDigitsWithExponent &toVisibleDigitsWithExponent(
+            DigitList &value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
 
     /**
      * formats positiveValue and appends to appendTo. Returns appendTo.
@@ -88,6 +108,19 @@ public:
         const DigitList &positiveValue,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
+
+
+    /**
+     * formats positiveValue and appends to appendTo. Returns appendTo.
+     * @param positiveValue If negative, no negative sign is formatted.
+     * @param handler stores the field positions
+     * @param appendTo formatted value appended here.
+     */
+    UnicodeString &format(
+        const VisibleDigitsWithExponent &positiveValue,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
 
     /**
      * formats positiveValue and appends to appendTo. Returns appendTo.
@@ -105,6 +138,14 @@ public:
      * @param positiveValue must be positive. May be positive infinity or NaN.
      */
     int32_t countChar32(const DigitList &positiveValue) const;
+
+    /**
+     * Returns the number of code points needed to format.
+     * @param positiveValue if negative, the negative sign is not included
+     *   in count.
+     */
+    int32_t countChar32(
+            const VisibleDigitsWithExponent &positiveValue) const;
   
     /**
      * Prepares this instance for fixed decimal formatting.
@@ -122,6 +163,7 @@ public:
         const DigitFormatter &formatter,
         const ScientificPrecision &precision,
         const SciFormatterOptions &options);
+
 private:
     ValueFormatter(const ValueFormatter &);
     ValueFormatter &operator=(const ValueFormatter &);

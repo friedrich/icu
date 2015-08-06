@@ -741,7 +741,7 @@ DecimalFormatImpl::applyPattern(
     fMaxFracDigits = out.fMaximumFractionDigits;
     fMinSigDigits = out.fMinimumSignificantDigits;
     fMaxSigDigits = out.fMaximumSignificantDigits;
-    fOptions.fExponent.fMinDigits = out.fMinExponentDigits;
+    fEffPrecision.fMinExponentDigits = out.fMinExponentDigits;
     fOptions.fExponent.fAlwaysShowSign = out.fExponentSignAlwaysShown;
     fUseGrouping = out.fGroupingUsed;
     fGrouping.fGrouping = out.fGroupingSize;
@@ -1213,7 +1213,7 @@ getLeftDigitsForLeftLength(
 int32_t
 DecimalFormatImpl::computeExponentPatternLength() const {
     if (fUseScientific) {
-        return 1 + (fOptions.fExponent.fAlwaysShowSign ? 1 : 0) + fOptions.fExponent.fMinDigits;
+        return 1 + (fOptions.fExponent.fAlwaysShowSign ? 1 : 0) + fEffPrecision.fMinExponentDigits;
     }
     return 0;
 }
@@ -1362,7 +1362,7 @@ DecimalFormatImpl::toNumberPattern(
         if (fOptions.fExponent.fAlwaysShowSign) {
             result.append(kPatternPlus);
         }
-        for (int32_t i = 0; i < 1 || i < fOptions.fExponent.fMinDigits; ++i) {
+        for (int32_t i = 0; i < 1 || i < fEffPrecision.fMinExponentDigits; ++i) {
             result.append(kPatternZeroDigit);
         }
     }

@@ -12,6 +12,7 @@
 #include "valueformatter.h"
 #include "uassert.h"
 #include "charstr.h"
+#include "visibledigits.h"
 
 U_NAMESPACE_BEGIN
 
@@ -84,52 +85,53 @@ DigitAffixesAndPadding::format(
         const PluralRules *optPluralRules,
         UnicodeString &appendTo,
         UErrorCode &status) const {
-    formatter.round(value, status);
+    VisibleDigitsWithExponent digits;
+    formatter.toVisibleDigitsWithExponent(
+            value, digits, status);
     if (U_FAILURE(status)) {
         return appendTo;
     }
     const DigitAffix *prefix = NULL;
     const DigitAffix *suffix = NULL;
-    if (!value.isNaN()) {
-        UBool bPositive = value.isPositive();
+    if (!digits.isNaN()) {
+        UBool bPositive = !digits.isNegative();
         const PluralAffix *pluralPrefix = bPositive ? &fPositivePrefix : &fNegativePrefix;
         const PluralAffix *pluralSuffix = bPositive ? &fPositiveSuffix : &fNegativeSuffix;
-        if (optPluralRules == NULL || value.isInfinite()) {
+        if (optPluralRules == NULL || digits.isInfinite()) {
             prefix = &pluralPrefix->getOtherVariant();
             suffix = &pluralSuffix->getOtherVariant();
         } else {
-            UnicodeString count(formatter.select(*optPluralRules, value));
+            UnicodeString count(formatter.select(*optPluralRules, digits));
             prefix = &pluralPrefix->getByVariant(count);
             suffix = &pluralSuffix->getByVariant(count);
         }
-        value.setPositive(TRUE);
     }
     if (fWidth <= 0) {
         formatAffix(prefix, handler, appendTo);
-        formatter.format(value, handler, appendTo);
+        formatter.format(digits, handler, appendTo);
         return formatAffix(suffix, handler, appendTo);
     }
-    int32_t codePointCount = countAffixChar32(prefix) + formatter.countChar32(value) + countAffixChar32(suffix);
+    int32_t codePointCount = countAffixChar32(prefix) + formatter.countChar32(digits) + countAffixChar32(suffix);
     int32_t paddingCount = fWidth - codePointCount;
     switch (fPadPosition) {
     case kPadBeforePrefix:
         appendPadding(paddingCount, appendTo);
         formatAffix(prefix, handler, appendTo);
-        formatter.format(value, handler, appendTo);
+        formatter.format(digits, handler, appendTo);
         return formatAffix(suffix, handler, appendTo);
     case kPadAfterPrefix:
         formatAffix(prefix, handler, appendTo);
         appendPadding(paddingCount, appendTo);
-        formatter.format(value, handler, appendTo);
+        formatter.format(digits, handler, appendTo);
         return formatAffix(suffix, handler, appendTo);
     case kPadBeforeSuffix:
         formatAffix(prefix, handler, appendTo);
-        formatter.format(value, handler, appendTo);
+        formatter.format(digits, handler, appendTo);
         appendPadding(paddingCount, appendTo);
         return formatAffix(suffix, handler, appendTo);
     case kPadAfterSuffix:
         formatAffix(prefix, handler, appendTo);
-        formatter.format(value, handler, appendTo);
+        formatter.format(digits, handler, appendTo);
         formatAffix(suffix, handler, appendTo);
         return appendPadding(paddingCount, appendTo);
     default:

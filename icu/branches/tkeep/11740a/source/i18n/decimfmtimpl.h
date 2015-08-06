@@ -170,10 +170,10 @@ void setPadPosition(DigitAffixesAndPadding::EPadPosition x) {
     fAap.fPadPosition = x;
 }
 int32_t getMinimumExponentDigits() const {
-    return fOptions.fExponent.fMinDigits;
+    return fEffPrecision.fMinExponentDigits;
 }
 void setMinimumExponentDigits(int32_t x) {
-    fOptions.fExponent.fMinDigits = x;
+    fEffPrecision.fMinExponentDigits = x;
 }
 UBool isExponentSignAlwaysShown() const {
     return fOptions.fExponent.fAlwaysShowSign;

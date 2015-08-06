@@ -171,7 +171,8 @@ UnicodeString &format(
 /**
  * Fixed point formatting.
  *
- * @param positiveDigits the value to format must be positive.
+ * @param positiveDigits the value to format
+ *  Negative sign can be present, but it won't show.
  * @param grouping controls how digit grouping is done
  * @param options formatting options
  * @param handler records field positions
@@ -187,7 +188,8 @@ UnicodeString &format(
 
 /**
  * formats in scientifc notation.
- * @param positiveDigits the scientific quantity to format
+ * @param positiveDigits the value to format.
+ *  Negative sign can be present, but it won't show.
  * @param options formatting options
  * @param handler records field positions.
  * @param appendTo formatted value appended here.
@@ -317,6 +319,7 @@ int32_t countChar32ForInt32(
 
 /**
  * Counts how many code points are needed for fixed formatting.
+ *   If digits is negative, the negative sign is not included in the count.
  */
 int32_t countChar32(
         const VisibleDigits &digits,
@@ -325,6 +328,7 @@ int32_t countChar32(
 
 /**
  * Counts how many code points are needed for scientific formatting.
+ *   If digits is negative, the negative sign is not included in the count.
  */
 int32_t countChar32(
         const VisibleDigitsWithExponent &digits,

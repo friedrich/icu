@@ -22,10 +22,32 @@
 #include "uassert.h"
 #include "smallintformatter.h"
 #include "digitgrouping.h"
+#include "visibledigits.h"
 
 U_NAMESPACE_BEGIN
 
 const UChar gOther[] = {0x6f, 0x74, 0x68, 0x65, 0x72, 0x0};
+
+VisibleDigitsWithExponent &
+ValueFormatter::toVisibleDigitsWithExponent(
+        DigitList &value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    switch (fType) {
+    case kFixedDecimal:
+        return fFixedPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
+        break;
+    case kScientificNotation:
+        return fScientificPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
+        break;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return digits;
+}
 
 UnicodeString
 ValueFormatter::select(
@@ -39,6 +61,32 @@ ValueFormatter::select(
                     FixedDecimal(
                             value,
                             fFixedPrecision->getInterval(value, interval)));
+        }
+        break;
+    case kScientificNotation:
+        return UnicodeString(TRUE, gOther, -1);
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return UnicodeString();
+}
+
+UnicodeString
+ValueFormatter::select(
+        const PluralRules &rules,
+        const VisibleDigitsWithExponent &value) const {
+    switch (fType) {
+    case kFixedDecimal:
+        {
+            FixedDecimal fd;
+            value.getMantissa().getFixedDecimal(
+                    fd.source, fd.intValue, fd.decimalDigits,
+                    fd.decimalDigitsWithoutTrailingZeros, 
+                    fd.visibleDecimalDigitCount, fd.hasIntegerValue);
+            fd.isNegative = value.getMantissa().isNegative();
+            fd.isNanOrInfinity = value.getMantissa().isNaNOrInfinity();
+            return rules.select(fd);
         }
         break;
     case kScientificNotation:
@@ -195,6 +243,34 @@ ValueFormatter::format(
     return appendTo;
 }
 
+UnicodeString &
+ValueFormatter::format(
+        const VisibleDigitsWithExponent &value,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    switch (fType) {
+    case kFixedDecimal:
+        return fDigitFormatter->format(
+                value.getMantissa(),
+                *fGrouping,
+                *fFixedOptions,
+                handler,
+                appendTo);
+        break;
+    case kScientificNotation:
+        return fDigitFormatter->format(
+                value,
+                *fScientificOptions,
+                handler,
+                appendTo);
+        break;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return appendTo;
+}
+
 int32_t
 ValueFormatter::countChar32(const DigitList &value) const {
     if (value.isNaN()) {
@@ -224,6 +300,27 @@ ValueFormatter::countChar32(const DigitList &value) const {
                     fScientificPrecision->fMantissa.getInterval(mantissa, interval),
                     *fScientificOptions);
         }
+        break;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return 0;
+}
+
+int32_t
+ValueFormatter::countChar32(const VisibleDigitsWithExponent &value) const {
+    switch (fType) {
+    case kFixedDecimal:
+        return fDigitFormatter->countChar32(
+                value.getMantissa(),
+                *fGrouping,
+                *fFixedOptions);
+        break;
+    case kScientificNotation:
+        return fDigitFormatter->countChar32(
+                value,
+                *fScientificOptions);
         break;
     default:
         U_ASSERT(FALSE);

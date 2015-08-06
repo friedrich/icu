@@ -2850,7 +2850,7 @@ void NumberFormat2Test::TestPluralsAndRoundingScientific() {
     }
     precision.fMantissa.fSignificant.setMin(4);
     options.fExponent.fAlwaysShowSign = TRUE;
-    options.fExponent.fMinDigits = 3;
+    precision.fMinExponentDigits = 3;
     {
         digits.set(3);
         NumberFormat2Test_Attributes expectedAttributes[] = {
