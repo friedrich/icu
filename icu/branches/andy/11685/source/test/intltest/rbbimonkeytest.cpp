@@ -673,31 +673,43 @@ void RBBIMonkeyImpl::openBreakRules(const char *fileName, UErrorCode &status) {
 }
 
 
-void RBBIMonkeyImpl::startTest(UErrorCode &status) {
-    if (U_SUCCESS(status)) {
-        fThread.run();   // invokes runTest() in a separate thread.
-    }
+void RBBIMonkeyImpl::startTest() {
+    fThread.start();   // invokes runTest() in a separate thread.
 }
 
 void RBBIMonkeyImpl::join() {
     fThread.join();
 }
 
+#define MONKEY_ERROR(msg, index) { \
+    IntlTest::gTest->errln("%s:%d %s at index %d. Parameters to reproduce: @rules=%s,seed=%u,loop=1,verbose ", \
+                    __FILE__, __LINE__, msg, index, fRuleFileName, fTestData->fRandomSeed); \
+    if (fVerbose) { fTestData->dump(index); } \
+    status = U_INVALID_STATE_ERROR;  \
+}
+
 void RBBIMonkeyImpl::runTest() {
     UErrorCode status = U_ZERO_ERROR;
+    int32_t errorCount = 0;
     for (int64_t loopCount = 0; fLoopCount < 0 || loopCount < fLoopCount; loopCount++) {
         status = U_ZERO_ERROR;   // TODO: counter on allowed number of failures.
         fTestData->set(fRuleSet.getAlias(), fRandomGenerator, status);
         // fTestData->dump();
-        if (U_FAILURE(status)) { break; };
-        // check forwards
         testForwards(status);
+        testPrevious(status);
+        testFollowing(status);
+        testPreceding(status);
 
         // check reverse
         // check following / preceding
         // check is boundary
         if (fLoopCount < 0 && loopCount % 100 == 0) {
             fprintf(stderr, ".");
+        }
+        if (U_FAILURE(status)) {
+            if (++errorCount > 10) {
+                return;
+            }
         }
     }
 }
@@ -710,30 +722,116 @@ void RBBIMonkeyImpl::testForwards(UErrorCode &status) {
     fBI->setText(fTestData->fString);
     int32_t previousBreak = -2;
     for (int32_t bk=fBI->first(); bk != BreakIterator::DONE; bk=fBI->next()) {
-        if (bk == previousBreak) {
-            IntlTest::gTest->errln("%s:%d: Break Iterator Stall." __FILE__, __LINE__); 
-            status = U_INVALID_STATE_ERROR;
+        if (bk <= previousBreak) {
+            MONKEY_ERROR("Break Iterator Stall", bk);
             return;
         }
         if (bk < 0 || bk > fTestData->fString.length()) {
-            IntlTest::gTest->errln("%s:%d: Boundary (%d) out of bounds.", __FILE__, __LINE__, bk);
-            status = U_INVALID_STATE_ERROR;
+            MONKEY_ERROR("Boundary out of bounds", bk);
             return;
         }
         fTestData->fActualBreaks.setCharAt(bk, 1);
     }
-    checkResults(FORWARD, status);
+    checkResults("testForwards", FORWARD, status);
 }
 
-void RBBIMonkeyImpl::checkResults(CheckDirection direction, UErrorCode &status) {
+void RBBIMonkeyImpl::testFollowing(UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    fTestData->clearActualBreaks();
+    fBI->setText(fTestData->fString);
+    int32_t nextBreak = -1;
+    for (int32_t i=-1 ; i<fTestData->fString.length(); ++i) {
+        int32_t bk = fBI->following(i);
+        if (bk == BreakIterator::DONE && i == fTestData->fString.length()) {
+            continue;
+        }
+        if (bk == nextBreak && bk > i) {
+            // i is in the gap between two breaks.
+            continue;
+        }
+        if (i == nextBreak && bk > nextBreak) {
+            fTestData->fActualBreaks.setCharAt(bk, 1);
+            nextBreak = bk;
+            continue;
+        }
+        MONKEY_ERROR("following(i)", i);
+        return;
+    }
+    checkResults("testFollowing", FORWARD, status);
+}
+
+        
+ 
+void RBBIMonkeyImpl::testPrevious(UErrorCode &status) {
+    if (U_FAILURE(status)) {return;}
+
+    fTestData->clearActualBreaks();
+    fBI->setText(fTestData->fString);
+    int32_t previousBreak = INT32_MAX;
+    for (int32_t bk=fBI->last(); bk != BreakIterator::DONE; bk=fBI->previous()) {
+         if (bk >= previousBreak) {
+            MONKEY_ERROR("Break Iterator Stall", bk);
+            return;
+        }
+        if (bk < 0 || bk > fTestData->fString.length()) {
+            MONKEY_ERROR("Boundary out of bounds", bk);
+            return;
+        }
+        fTestData->fActualBreaks.setCharAt(bk, 1);
+    }
+    checkResults("testPrevius", REVERSE, status);
+}       
+
+
+void RBBIMonkeyImpl::testPreceding(UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    fTestData->clearActualBreaks();
+    fBI->setText(fTestData->fString);
+    int32_t nextBreak = fTestData->fString.length()+1;
+    for (int32_t i=fTestData->fString.length()+1 ; i>=0; --i) {
+        int32_t bk = fBI->preceding(i);
+        // printf("i:%d  bk:%d  nextBreak:%d\n", i, bk, nextBreak);
+        if (bk == BreakIterator::DONE && i == 0) {
+            continue;
+        }
+        if (bk == nextBreak && bk < i) {
+            // i is in the gap between two breaks.
+            continue;
+        }
+        if (i<fTestData->fString.length() && fTestData->fString.getChar32Start(i) < i) {
+            // i indexes to a trailing surrogate.
+            // Break Iterators treat an index to either half as referring to the supplemental code point,
+            // with preceding going to some preceding code point.
+            if (fBI->preceding(i) != fBI->preceding(fTestData->fString.getChar32Start(i))) {
+                MONKEY_ERROR("preceding of trailing surrogate error", i);
+            }
+            continue;
+        }
+        if (i == nextBreak && bk < nextBreak) {
+            fTestData->fActualBreaks.setCharAt(bk, 1);
+            nextBreak = bk;
+            continue;
+        }
+        MONKEY_ERROR("preceding(i)", i);
+        return;
+    }
+    checkResults("testPreceding", REVERSE, status);
+}
+
+ 
+void RBBIMonkeyImpl::checkResults(const char *msg, CheckDirection direction, UErrorCode &status) {
     if (U_FAILURE(status)) {
         return;
     }
     if (direction == FORWARD) {
         for (int i=0; i<=fTestData->fString.length(); ++i) {
             if (fTestData->fExpectedBreaks.charAt(i) != fTestData->fActualBreaks.charAt(i)) {
-                IntlTest::gTest->errln("%s:%d failure at index %d. Parameters to reproduce: @rules=%s,seed=%u,loop=1,verbose ",
-                        __FILE__, __LINE__, i, fRuleFileName, fTestData->fRandomSeed);
+                IntlTest::gTest->errln("%s:%d %s failure at index %d. Parameters to reproduce: @rules=%s,seed=%u,loop=1,verbose ",
+                        __FILE__, __LINE__, msg, i, fRuleFileName, fTestData->fRandomSeed);
                 if (fVerbose) {
                     fTestData->dump(i);
                 }
@@ -744,8 +842,11 @@ void RBBIMonkeyImpl::checkResults(CheckDirection direction, UErrorCode &status) 
     } else {
         for (int i=fTestData->fString.length(); i>=0; i--) {
             if (fTestData->fExpectedBreaks.charAt(i) != fTestData->fActualBreaks.charAt(i)) {
-                IntlTest::gTest->errln("%s:%d failure at index %d", __FILE__, __LINE__, i);
-                fTestData->dump(i);
+                IntlTest::gTest->errln("%s:%d %s failure at index %d. Parameters to reproduce: @rules=%s,seed=%u,loop=1,verbose ",
+                        __FILE__, __LINE__, msg, i, fRuleFileName, fTestData->fRandomSeed);
+                if (fVerbose) {
+                    fTestData->dump(i);
+                }
                 status = U_INVALID_STATE_ERROR;
                 break;
             }
@@ -813,22 +914,38 @@ void RBBIMonkeyTest::testMonkey() {
         return;
     }
 
+    UVector startedTests(status);
     if (U_FAILURE(status)) {
         errln("%s:%d: error %s while setting up test.", __FILE__, __LINE__, u_errorName(status));
         return;
     }
 
-    for (int i=0; tests[i] != NULL; ++i) {
-        UErrorCode status = U_ZERO_ERROR;
+    // Multi-threaded test. Each set of break rules to be tested is run in a separate thread.
+    //                      Each gets a separate RBBIMonkeyImpl object.
+    int32_t i;
+    for (i=0; tests[i] != NULL; ++i) {
         logln("beginning testing of %s", tests[i]);
-        RBBIMonkeyImpl test(status);
-        test.fDumpExpansions = dumpExpansions;
-        test.fVerbose = verbose;
-        test.fRandomGenerator.seed((uint32_t)seed);
-        test.fLoopCount = loopCount;
-        test.setup(tests[i], status);
-        test.startTest(status);
-        test.join();   // << Keep a vector of them
+        RBBIMonkeyImpl *test = new RBBIMonkeyImpl(status);
+        test->fDumpExpansions = dumpExpansions;
+        test->fVerbose = verbose;
+        test->fRandomGenerator.seed((uint32_t)seed);
+        test->fLoopCount = loopCount;
+        test->setup(tests[i], status);
+        test->startTest();
+        startedTests.addElement(test, status);
+        if (U_FAILURE(status)) {
+            break;
+        }
+    }
+
+    if (U_FAILURE(status)) {
+        errln("%s:%d: error %s while starting test %s.", __FILE__, __LINE__, u_errorName(status), tests[i]);
+    }
+
+    for (i=0; i<startedTests.size(); ++i) {
+        RBBIMonkeyImpl *test = static_cast<RBBIMonkeyImpl *>(startedTests.elementAt(i));
+        test->join();
+        delete test;
     }
 }
 

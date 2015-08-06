@@ -163,7 +163,7 @@ class RBBIMonkeyImpl: public UObject {
     
     void setup(const char *ruleFileName, UErrorCode &status);
 
-    void startTest(UErrorCode &status);
+    void startTest();
     void runTest();
     void join();
 
@@ -184,7 +184,10 @@ class RBBIMonkeyImpl: public UObject {
     };
     void clearActualBreaks();
     void testForwards(UErrorCode &status);
-    void checkResults(CheckDirection dir, UErrorCode &status);
+    void testPrevious(UErrorCode &status);
+    void testFollowing(UErrorCode &status);
+    void testPreceding(UErrorCode &status);
+    void checkResults(const char *msg, CheckDirection dir, UErrorCode &status);
 
     class RBBIMonkeyThread: public SimpleThread {
       private:
