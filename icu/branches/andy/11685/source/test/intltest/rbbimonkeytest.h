@@ -187,6 +187,7 @@ class RBBIMonkeyImpl: public UObject {
     void testPrevious(UErrorCode &status);
     void testFollowing(UErrorCode &status);
     void testPreceding(UErrorCode &status);
+    void testIsBoundary(UErrorCode &status);
     void checkResults(const char *msg, CheckDirection dir, UErrorCode &status);
 
     class RBBIMonkeyThread: public SimpleThread {

@@ -261,7 +261,7 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
 bool BreakRules::setKeywordParameter(const UnicodeString &keyword, const UnicodeString &value, UErrorCode &status) {
     if (keyword == UnicodeString("locale")) {
         CharString localeName;
-        localeName.appendInvariantChars(value, status);
+        localeName.append(CStr(value)(), -1, status);
         fLocale = Locale::createFromName(localeName.data());
         return true;
     } 
@@ -692,17 +692,15 @@ void RBBIMonkeyImpl::runTest() {
     UErrorCode status = U_ZERO_ERROR;
     int32_t errorCount = 0;
     for (int64_t loopCount = 0; fLoopCount < 0 || loopCount < fLoopCount; loopCount++) {
-        status = U_ZERO_ERROR;   // TODO: counter on allowed number of failures.
+        status = U_ZERO_ERROR;
         fTestData->set(fRuleSet.getAlias(), fRandomGenerator, status);
         // fTestData->dump();
         testForwards(status);
         testPrevious(status);
         testFollowing(status);
         testPreceding(status);
+        testIsBoundary(status);
 
-        // check reverse
-        // check following / preceding
-        // check is boundary
         if (fLoopCount < 0 && loopCount % 100 == 0) {
             fprintf(stderr, ".");
         }
@@ -823,6 +821,20 @@ void RBBIMonkeyImpl::testPreceding(UErrorCode &status) {
 }
 
  
+void RBBIMonkeyImpl::testIsBoundary(UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
+    }
+    fTestData->clearActualBreaks();
+    fBI->setText(fTestData->fString);
+    for (int i=fTestData->fString.length(); i>=0; --i) {
+        if (fBI->isBoundary(i)) {
+            fTestData->fActualBreaks.setCharAt(i, 1);
+        }
+    }
+    checkResults("testForwards", FORWARD, status);
+}
+
 void RBBIMonkeyImpl::checkResults(const char *msg, CheckDirection direction, UErrorCode &status) {
     if (U_FAILURE(status)) {
         return;
@@ -887,7 +899,8 @@ void RBBIMonkeyTest::testMonkey() {
     UnicodeString params(fParams);
     UErrorCode status = U_ZERO_ERROR;
 
-    const char *tests[] = {"grapheme.txt", "word.txt", "line.txt", "sentence.txt", NULL };
+    const char *tests[] = {"grapheme.txt", "word.txt", "line.txt", "sentence.txt", "line_normal.txt",
+                           "line_loose.txt", NULL };
     CharString testNameFromParams;
     if (getStringParam("rules", params, testNameFromParams, status)) {
         tests[0] = testNameFromParams.data();
@@ -909,7 +922,7 @@ void RBBIMonkeyTest::testMonkey() {
     if (params.length() != 0) {
         // Options processing did not consume all of the parameters. Something unrecognized was present.
         CharString unrecognizedParameters;
-        unrecognizedParameters.appendInvariantChars(params, status);
+        unrecognizedParameters.append(CStr(params)(), -1, status);
         errln("%s:%d unrecognized test parameter(s) \"%s\"", __FILE__, __LINE__, unrecognizedParameters.data());
         return;
     }
@@ -956,7 +969,7 @@ UBool  RBBIMonkeyTest::getIntParam(UnicodeString name, UnicodeString &params, in
     if (m.find()) {
         // The param exists.  Convert the string to an int.
         CharString str;
-        str.appendInvariantChars(m.group(1, status), status);
+        str.append(CStr(m.group(1, status))(), -1, status);
         val = strtol(str.data(),  NULL, 10);
 
         // Delete this parameter from the params string.
@@ -972,7 +985,7 @@ UBool RBBIMonkeyTest::getStringParam(UnicodeString name, UnicodeString &params, 
     RegexMatcher m(name, params, 0, status);
     if (m.find()) {
         // The param exists.
-        dest.appendInvariantChars(m.group(1, status), status);
+        dest.append(CStr(m.group(1, status))(), -1, status);
 
         // Delete this parameter from the params string.
         m.reset();

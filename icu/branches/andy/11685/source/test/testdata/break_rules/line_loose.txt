@@ -1,5 +1,15 @@
+#  file:  line_loose.txt
+#
+#         This tailors the line break behavior to correspond to CSS
+#         line-break=loose (BCP47 -u-lb-loose) as defined for languages other than 
+#         Chinese & Japanese.
+#         It sets characters of class CJ to behave like ID.
+#         In addition, it allows breaks:
+#         * before iteration marks 3005, 303B, 309D, 309E, 30FD, 30FE (all NS)
+#         * between characters of LineBreak class IN
+
 type = line;
-locale = en;
+locale = en@lb=loose;
 
 
 AI = [:LineBreak =  Ambiguous:];
@@ -20,7 +30,7 @@ HL = [:LineBreak =  Hebrew_Letter:];
 HY = [:LineBreak =  Hyphen:];
 H2 = [:LineBreak =  H2:];
 H3 = [:LineBreak =  H3:];
-ID = [:LineBreak =  Ideographic:];
+ID = [[:LineBreak =  Ideographic:] CJ];
 IN = [:LineBreak =  Inseperable:];
 IS = [:LineBreak =  Infix_Numeric:];
 JL = [:LineBreak =  JL:];
@@ -28,7 +38,8 @@ JV = [:LineBreak =  JV:];
 JT = [:LineBreak =  JT:];
 LF = [:LineBreak =  Line_Feed:];
 NL = [:LineBreak =  Next_Line:];
-NS = [[:LineBreak =  Nonstarter:] CJ];
+NSX = [\u3005 \u303B \u309D \u309E \u30FD \u30FE];
+NS = [[:LineBreak =  Nonstarter:] - NSX];
 NU = [:LineBreak =  Numeric:];
 OP = [:LineBreak =  Open_Punctuation:];
 PO = [:LineBreak =  Postfix_Numeric:];
@@ -120,7 +131,7 @@ LB21b:       SY CM* HL;
 LB22.1:        (AL | HL | CM) CM* IN;   # The CM is from LB10, treat an unattached CM as AL.
 LB22.2:       EX CM* IN;
 LB22.3:       ID CM* IN;
-LB22.4:       IN CM* IN;
+# LB22.4:       IN CM* IN;  # delete this rule for CSS loose.
 LB22.5:       NU CM* IN;
 
 LB23.1:      ID CM* PO;

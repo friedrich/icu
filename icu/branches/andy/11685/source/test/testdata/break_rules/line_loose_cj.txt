@@ -1,10 +1,34 @@
+#  file:  line_loose_cj.txt
+#
+#         Line Breaking Rules
+#         Implement default line breaking as defined by 
+#         Unicode Standard Annex #14 Revision 34 for Unicode 8.0
+#         http://www.unicode.org/reports/tr14/
+#         tailored as noted in 2nd paragraph below..
+#
+#         This tailors the line break behavior to correspond to CSS
+#         line-break=loose (BCP47 -u-lb-loose) as defined for Chinese & Japanese.
+#         It sets characters of class CJ to behave like ID.
+#         In addition, it allows breaks:
+#         * before hyphens 2010 & 2013 (both BA) and 301C, 30A0 (both NS)
+#         * before iteration marks 3005, 303B, 309D, 309E, 30FD, 30FE (all NS)
+#         * between characters of LineBreak class IN such as 2026
+#         * before some centered punct 203C, 2047, 2048, 2049, 30FB, FF1A, FF1B,
+#           FF65 (all NS) and FF01, FF1F (both EX).
+#         * before suffix characters with LineBreak class PO and EastAsianWidth A,F,W;
+#           this includes: 00B0 2030 2032 2033 2035 2103 2109 FE6A FF05 FFE0
+#         * after prefix characters with LineBreak class PR and EastAsianWidth A,F,W;
+#           this includes: 00A4 00B1 20AC 2116 FE69 FF04 FFE1 FFE5 FFE6
+
+
 type = line;
-locale = en;
+locale = ja@lb=loose;
 
 
 AI = [:LineBreak =  Ambiguous:];
 AL = [:LineBreak =  Alphabetic:];
-BA = [:LineBreak =  Break_After:];
+BAX = [\u2010 \u2013];
+BA = [[:LineBreak =  Break_After:] - BAX];
 BB = [:LineBreak =  Break_Before:];
 BK = [:LineBreak =  Mandatory_Break:];
 B2 = [:LineBreak =  Break_Both:];
@@ -14,13 +38,14 @@ CL = [:LineBreak =  Close_Punctuation:];
 CM = [:LineBreak =  Combining_Mark:];
 CP = [:LineBreak =  Close_Parenthesis:];
 CR = [:LineBreak =  Carriage_Return:];
-EX = [:LineBreak =  Exclamation:];
+EXX = [\uFF01 \uFF1F];
+EX = [[:LineBreak =  Exclamation:] - EXX];
 GL = [:LineBreak =  Glue:];
 HL = [:LineBreak =  Hebrew_Letter:];
 HY = [:LineBreak =  Hyphen:];
 H2 = [:LineBreak =  H2:];
 H3 = [:LineBreak =  H3:];
-ID = [:LineBreak =  Ideographic:];
+ID = [[:LineBreak =  Ideographic:] - CJ];
 IN = [:LineBreak =  Inseperable:];
 IS = [:LineBreak =  Infix_Numeric:];
 JL = [:LineBreak =  JL:];
@@ -28,11 +53,14 @@ JV = [:LineBreak =  JV:];
 JT = [:LineBreak =  JT:];
 LF = [:LineBreak =  Line_Feed:];
 NL = [:LineBreak =  Next_Line:];
-NS = [[:LineBreak =  Nonstarter:] CJ];
+NSX = [\u301C \u30A0 \u3005 \u303B \u309D \u309E \u30FD \u30FE \u203C \u2047 \u2048 \u2049 \u30FB \uFF1A \uFF1B \uFF65];
+NS = [[:LineBreak =  Nonstarter:] - NSX];
 NU = [:LineBreak =  Numeric:];
 OP = [:LineBreak =  Open_Punctuation:];
-PO = [:LineBreak =  Postfix_Numeric:];
-PR = [:LineBreak =  Prefix_Numeric:];
+POX = [\u00B0 \u2030 \u2032 \u2033 \u2035 \u2103 \u2109 \uFE6A \uFF05 \uFFE0];
+PO = [[:LineBreak =  Postfix_Numeric:] - POX];
+PRX = [\u00A4 \u00B1 \u20AC \u2116 \uFE69 \uFF04 \uFFE1 \uFFE5 \uFFE6];
+PR = [[:LineBreak =  Prefix_Numeric:] - PRX];
 QU = [:LineBreak =  Quotation:];
 RI = [:LineBreak =  Regional_Indicator:];
 SA = [:LineBreak =  Complex_Context:];
@@ -110,7 +138,7 @@ LB20.1:      CB CM* ÷;
 
 # Note: Rule 21a must come before 21 to prevent 21.1 from matching HL BA, then
 #       not picking up the continuing match after the BA from 21a.
-LB21a:       HL CM* (HY | BA) CM* [^CM CB];
+LB21a:       HL CM* (HY | BA | BAX) CM* [^CM CB];
 
 LB21.1:      . CM* [BA HY NS];
 LB21.2:      BB CM* [^CM CB];
@@ -120,7 +148,7 @@ LB21b:       SY CM* HL;
 LB22.1:        (AL | HL | CM) CM* IN;   # The CM is from LB10, treat an unattached CM as AL.
 LB22.2:       EX CM* IN;
 LB22.3:       ID CM* IN;
-LB22.4:       IN CM* IN;
+# LB22.4:       IN CM* IN;  # delete this rule for CSS loose.
 LB22.5:       NU CM* IN;
 
 LB23.1:      ID CM* PO;
@@ -129,7 +157,7 @@ LB23.3:      NU CM* (AL | HL);
 
 LB24.1:      PR CM* ID;
 LB24.2:      PR CM* (AL | HL);
-LB24.3:      PO CM* (AL | HL);
+LB24.3:      (PO | POX) CM* (AL | HL);
 
 # Numbers. Equivalent to Tailoring example 8 from UAx 14.
 LB25:        ((PR | PO)CM*)? ((OP | HY)CM*)? NU (CM*(NU | SY | IS))* (CM*(CL | CP))? (CM*(PR | PO))?;
