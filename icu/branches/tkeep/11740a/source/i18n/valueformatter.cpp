@@ -30,6 +30,48 @@ const UChar gOther[] = {0x6f, 0x74, 0x68, 0x65, 0x72, 0x0};
 
 VisibleDigitsWithExponent &
 ValueFormatter::toVisibleDigitsWithExponent(
+        int64_t value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    switch (fType) {
+    case kFixedDecimal:
+        return fFixedPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
+        break;
+    case kScientificNotation:
+        return fScientificPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
+        break;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return digits;
+}
+
+VisibleDigitsWithExponent &
+ValueFormatter::toVisibleDigitsWithExponent(
+        double value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    switch (fType) {
+    case kFixedDecimal:
+        return fFixedPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
+        break;
+    case kScientificNotation:
+        return fScientificPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
+        break;
+    default:
+        U_ASSERT(FALSE);
+        break;
+    }
+    return digits;
+}
+
+VisibleDigitsWithExponent &
+ValueFormatter::toVisibleDigitsWithExponent(
         DigitList &value,
         VisibleDigitsWithExponent &digits,
         UErrorCode &status) const {

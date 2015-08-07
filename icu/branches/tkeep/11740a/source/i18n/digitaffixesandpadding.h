@@ -23,6 +23,7 @@ class ValueFormatter;
 class UnicodeString;
 class FieldPositionHandler;
 class PluralRules;
+class VisibleDigitsWithExponent;
 
 /**
  * A formatter of numbers. This class can format any numerical value
@@ -123,7 +124,64 @@ UBool needsPluralRules() const;
  * @status any error returned here.
  */
 UnicodeString &format(
+        const VisibleDigitsWithExponent &value,
+        const ValueFormatter &formatter,
+        FieldPositionHandler &handler,
+        const PluralRules *optPluralRules,
+        UnicodeString &appendTo,
+        UErrorCode &status) const;
+
+/**
+ * Formats value and appends to appendTo.
+ *
+ * @param value the value to format. May be NaN or ininite.
+ * @param formatter handles the details of formatting the actual value.
+ * @param handler records field positions
+ * @param optPluralRules the plural rules, but may be NULL if
+ *   needsPluralRules returns FALSE. 
+ * @appendTo formatted string appended here.
+ * @status any error returned here.
+ */
+UnicodeString &format(
         DigitList &value,
+        const ValueFormatter &formatter,
+        FieldPositionHandler &handler,
+        const PluralRules *optPluralRules,
+        UnicodeString &appendTo,
+        UErrorCode &status) const;
+
+/**
+ * Formats value and appends to appendTo.
+ *
+ * @param value the value to format.
+ * @param formatter handles the details of formatting the actual value.
+ * @param handler records field positions
+ * @param optPluralRules the plural rules, but may be NULL if
+ *   needsPluralRules returns FALSE. 
+ * @appendTo formatted string appended here.
+ * @status any error returned here.
+ */
+UnicodeString &format(
+        double value,
+        const ValueFormatter &formatter,
+        FieldPositionHandler &handler,
+        const PluralRules *optPluralRules,
+        UnicodeString &appendTo,
+        UErrorCode &status) const;
+
+/**
+ * Formats value and appends to appendTo.
+ *
+ * @param value the value to format.
+ * @param formatter handles the details of formatting the actual value.
+ * @param handler records field positions
+ * @param optPluralRules the plural rules, but may be NULL if
+ *   needsPluralRules returns FALSE. 
+ * @appendTo formatted string appended here.
+ * @status any error returned here.
+ */
+UnicodeString &format(
+        int64_t value,
         const ValueFormatter &formatter,
         FieldPositionHandler &handler,
         const PluralRules *optPluralRules,

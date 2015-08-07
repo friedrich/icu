@@ -234,7 +234,7 @@ public:
      * Returns TRUE if this object equals rhs.
      */
     UBool equals(const ScientificPrecision &rhs) const {
-        return fMantissa.equals(rhs.fMantissa);
+        return fMantissa.equals(rhs.fMantissa) && fMinExponentDigits == rhs.fMinExponentDigits;
     }
 
 /**

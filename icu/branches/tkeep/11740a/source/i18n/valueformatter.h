@@ -90,7 +90,25 @@ public:
             const DigitList &value, FixedDecimal &result) const;
 
     /**
-     * Converts a DigitList to a VisibleDigitsWithExponent.
+     * Converts value to a VisibleDigitsWithExponent.
+     * Result may be fixed point or scientific.
+     */
+    VisibleDigitsWithExponent &toVisibleDigitsWithExponent(
+            int64_t value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
+
+    /**
+     * Converts value to a VisibleDigitsWithExponent.
+     * Result may be fixed point or scientific.
+     */
+    VisibleDigitsWithExponent &toVisibleDigitsWithExponent(
+            double value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
+
+    /**
+     * Converts value to a VisibleDigitsWithExponent.
      * Result may be fixed point or scientific.
      */
     VisibleDigitsWithExponent &toVisibleDigitsWithExponent(

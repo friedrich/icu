@@ -271,9 +271,9 @@ DecimalFormatImpl::format(
     return formatInt32(number, appendTo, handler, status);
 }
 
-UnicodeString &
-DecimalFormatImpl::formatInt32(
-        int32_t number,
+template<class T>
+UBool DecimalFormatImpl::maybeFormatWithDigitList(
+        T number,
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
@@ -282,13 +282,27 @@ DecimalFormatImpl::formatInt32(
         digits.set(number);
         digits.mult(fMultiplier, status);
         digits.shiftDecimalRight(fScale);
-        return formatAdjustedDigitList(digits, appendTo, handler, status);
+        formatAdjustedDigitList(digits, appendTo, handler, status);
+        return TRUE;
     }
     if (fScale != 0) {
         DigitList digits;
         digits.set(number);
         digits.shiftDecimalRight(fScale);
-        return formatAdjustedDigitList(digits, appendTo, handler, status);
+        formatAdjustedDigitList(digits, appendTo, handler, status);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+UnicodeString &
+DecimalFormatImpl::formatInt32(
+        int32_t number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const {
+    if (maybeFormatWithDigitList(number, appendTo, handler, status)) {
+        return appendTo;
     }
     ValueFormatter vf;
     return fAap.formatInt32(
@@ -301,18 +315,44 @@ DecimalFormatImpl::formatInt32(
 }
 
 UnicodeString &
-DecimalFormatImpl::format(
+DecimalFormatImpl::formatInt64(
         int64_t number,
         UnicodeString &appendTo,
-        FieldPosition &pos,
+        FieldPositionHandler &handler,
         UErrorCode &status) const {
     if (number >= -2147483648LL && number <= 2147483647LL) {
-        return format((int32_t) number, appendTo, pos, status);
+        return formatInt32((int32_t) number, appendTo, handler, status);
     }
-    DigitList dl;
-    dl.set(number);
-    FieldPositionOnlyHandler handler(pos);
-    return formatDigitList(dl, appendTo, handler, status);
+    if (maybeFormatWithDigitList(number, appendTo, handler, status)) {
+        return appendTo;
+    }
+    ValueFormatter vf;
+    return fAap.format(
+            number,
+            prepareValueFormatter(vf),
+            handler,
+            fRules,
+            appendTo,
+            status);
+}
+
+UnicodeString &
+DecimalFormatImpl::formatDouble(
+        double number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const {
+    if (maybeFormatWithDigitList(number, appendTo, handler, status)) {
+        return appendTo;
+    }
+    ValueFormatter vf;
+    return fAap.format(
+            number,
+            prepareValueFormatter(vf),
+            handler,
+            fRules,
+            appendTo,
+            status);
 }
 
 UnicodeString &
@@ -321,10 +361,8 @@ DecimalFormatImpl::format(
         UnicodeString &appendTo,
         FieldPosition &pos,
         UErrorCode &status) const {
-    DigitList dl;
-    dl.set(number);
     FieldPositionOnlyHandler handler(pos);
-    return formatDigitList(dl, appendTo, handler, status);
+    return formatDouble(number, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -342,12 +380,20 @@ UnicodeString &
 DecimalFormatImpl::format(
         int64_t number,
         UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const {
+    FieldPositionOnlyHandler handler(pos);
+    return formatInt64(number, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormatImpl::format(
+        int64_t number,
+        UnicodeString &appendTo,
         FieldPositionIterator *posIter,
         UErrorCode &status) const {
-    DigitList dl;
-    dl.set(number);
     FieldPositionIteratorHandler handler(posIter, status);
-    return formatDigitList(dl, appendTo, handler, status);
+    return formatInt64(number, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -356,10 +402,8 @@ DecimalFormatImpl::format(
         UnicodeString &appendTo,
         FieldPositionIterator *posIter,
         UErrorCode &status) const {
-    DigitList dl;
-    dl.set(number);
     FieldPositionIteratorHandler handler(posIter, status);
-    return formatDigitList(dl, appendTo, handler, status);
+    return formatDouble(number, appendTo, handler, status);
 }
 
 UnicodeString &

@@ -223,7 +223,7 @@ FixedPrecision::initVisibleDigits(
     double scaled;
     for (int32_t i = 0; i < UPRV_LENGTHOF(p10); ++i) {
         scaled = value * p10[i];
-        if (scaled > MAX_INT64_IN_DOUBLE) {
+        if (scaled > MAX_INT64_IN_DOUBLE || scaled < -MAX_INT64_IN_DOUBLE) {
             break;
         }
         if (scaled == floor(scaled)) {
@@ -235,6 +235,11 @@ FixedPrecision::initVisibleDigits(
     if (n >= 0 && initVisibleDigits(scaled, -n, digits, status)) {
         digits.fAbsDoubleValue = fabs(value);
         digits.fAbsDoubleValueSet = U_SUCCESS(status) && !digits.isOverMaxDigits();
+        // Adjust for negative 0 becuase when we cast to an int64,
+        // negative 0 becomes positive 0.
+        if (scaled == 0.0 && signbit(scaled)) {
+            digits.setNegative();
+        }
         return digits;
     }
 
@@ -388,6 +393,7 @@ ScientificPrecision::initVisibleDigitsWithExponent(
     if (FixedPrecision::handleNonNumeric(value, digits.fMantissa)) {
         return digits;
     }
+    value.setRoundingMode(fMantissa.fRoundingMode);
     int64_t exponent = toScientific(round(value, status));
     fMantissa.initVisibleDigits(value, digits.fMantissa, status);
     FixedPrecision exponentPrecision;

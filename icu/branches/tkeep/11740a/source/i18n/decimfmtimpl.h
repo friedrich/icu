@@ -273,6 +273,18 @@ UnicodeString &formatInt32(
         FieldPositionHandler &handler,
         UErrorCode &status) const;
 
+UnicodeString &formatInt64(
+        int64_t number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+UnicodeString &formatDouble(
+        double number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
 // Scales for precent or permille symbols
 UnicodeString &formatDigitList(
         DigitList &number,
@@ -283,6 +295,13 @@ UnicodeString &formatDigitList(
 // Does not scale for precent or permille symbols
 UnicodeString &formatAdjustedDigitList(
         DigitList &number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+template<class T>
+UBool maybeFormatWithDigitList(
+        T number,
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const;

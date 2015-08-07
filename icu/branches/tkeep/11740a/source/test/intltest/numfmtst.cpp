@@ -92,6 +92,19 @@ static UnicodeString &format(
     return fmt.format(digitList, appendTo, fpos, status);
 }
 
+template<class T>
+static UnicodeString &format(
+        const DecimalFormat &fmt,
+        T value,
+        UnicodeString &appendTo,
+        UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return appendTo;
+    }
+    FieldPosition fpos(FieldPosition::DONT_CARE);
+    return fmt.format(value, appendTo, fpos, status);
+}
+
 static void adjustDecimalFormat(
         const NumberFormatTestTuple &tuple,
         DecimalFormat &fmt,
@@ -270,16 +283,48 @@ UBool NumberFormatTestDataDriven::isFormatPass(
     }
     DigitList digitList;
     strToDigitList(tuple.format, digitList, status);
-    UnicodeString appendTo;
-    format(*fmtPtr, digitList, appendTo, status);
-    if (U_FAILURE(status)) {
-        appendErrorMessage.append("Error formatting.");
-        return FALSE;
+    {
+        UnicodeString appendTo;
+        format(*fmtPtr, digitList, appendTo, status);
+        if (U_FAILURE(status)) {
+            appendErrorMessage.append("Error formatting.");
+            return FALSE;
+        }
+        if (appendTo != tuple.output) {
+            appendErrorMessage.append(
+                    UnicodeString("Expected: ") + tuple.output + ", got: " + appendTo);
+            return FALSE;
+        }
     }
-    if (appendTo != tuple.output) {
-        appendErrorMessage.append(
-                UnicodeString("Expected: ") + tuple.output + ", got: " + appendTo);
-        return FALSE;
+    double doubleVal = digitList.getDouble();
+    {
+        UnicodeString appendTo;
+        format(*fmtPtr, doubleVal, appendTo, status);
+        if (U_FAILURE(status)) {
+            appendErrorMessage.append("Error formatting.");
+            return FALSE;
+        }
+        if (appendTo != tuple.output) {
+            appendErrorMessage.append(
+                    UnicodeString("double Expected: ") + tuple.output + ", got: " + appendTo);
+            return FALSE;
+        }
+    }
+    if (!uprv_isNaN(doubleVal) && !uprv_isInfinite(doubleVal) && doubleVal == uprv_floor(doubleVal)) {
+        int64_t intVal = digitList.getInt64();
+        {
+            UnicodeString appendTo;
+            format(*fmtPtr, intVal, appendTo, status);
+            if (U_FAILURE(status)) {
+                appendErrorMessage.append("Error formatting.");
+                return FALSE;
+            }
+            if (appendTo != tuple.output) {
+                appendErrorMessage.append(
+                        UnicodeString("int64 Expected: ") + tuple.output + ", got: " + appendTo);
+                return FALSE;
+            }
+        }
     }
     return TRUE;
 }
