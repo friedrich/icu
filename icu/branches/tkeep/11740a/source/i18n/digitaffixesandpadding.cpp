@@ -37,10 +37,8 @@ DigitAffixesAndPadding::formatInt32(
         return appendTo;
     }
     if (optPluralRules != NULL || fWidth > 0 || !formatter.isFastFormattable(value)) {
-        DigitList digitList;
-        digitList.set(value);
         return format(
-                digitList,
+                (int64_t) value,
                 formatter,
                 handler,
                 optPluralRules,
