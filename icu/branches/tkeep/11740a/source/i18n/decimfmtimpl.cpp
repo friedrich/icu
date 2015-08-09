@@ -295,6 +295,29 @@ UBool DecimalFormatImpl::maybeFormatWithDigitList(
     return FALSE;
 }
 
+template<class T>
+UBool DecimalFormatImpl::maybeInitVisibleDigitsFromDigitList(
+        T number,
+        VisibleDigitsWithExponent &visibleDigits,
+        UErrorCode &status) const {
+    if (!fMultiplier.isZero()) {
+        DigitList digits;
+        digits.set(number);
+        digits.mult(fMultiplier, status);
+        digits.shiftDecimalRight(fScale);
+        initVisibleDigitsFromAdjusted(digits, visibleDigits, status);
+        return TRUE;
+    }
+    if (fScale != 0) {
+        DigitList digits;
+        digits.set(number);
+        digits.shiftDecimalRight(fScale);
+        initVisibleDigitsFromAdjusted(digits, visibleDigits, status);
+        return TRUE;
+    }
+    return FALSE;
+}
+
 UnicodeString &
 DecimalFormatImpl::formatInt32(
         int32_t number,
@@ -342,17 +365,10 @@ DecimalFormatImpl::formatDouble(
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
-    if (maybeFormatWithDigitList(number, appendTo, handler, status)) {
-        return appendTo;
-    }
-    ValueFormatter vf;
-    return fAap.format(
-            number,
-            prepareValueFormatter(vf),
-            handler,
-            fRules,
-            appendTo,
-            status);
+    VisibleDigitsWithExponent digits;
+    initVisibleDigitsWithExponent(number, digits, status);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -451,6 +467,22 @@ DecimalFormatImpl::formatDigitList(
         UErrorCode &status) const {
     adjustDigitList(number, status);
     return formatAdjustedDigitList(number, appendTo, handler, status);
+/*
+    VisibleDigitsWithExponent digits;
+
+    initVisibleDigitsWithExponent(number, digits, status);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
+    initVisibleDigitsWithExponent(number, digits, status);
+    ValueFormatter vf;
+    return fAap.format(
+            digits,
+            prepareValueFormatter(vf),
+            handler,
+            fRules,
+            appendTo,
+            status);
+*/
 }
 
 UnicodeString &
@@ -462,6 +494,22 @@ DecimalFormatImpl::formatAdjustedDigitList(
     ValueFormatter vf;
     return fAap.format(
             number,
+            prepareValueFormatter(vf),
+            handler,
+            fRules,
+            appendTo,
+            status);
+}
+
+UnicodeString &
+DecimalFormatImpl::formatVisibleDigitsWithExponent(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const {
+    ValueFormatter vf;
+    return fAap.format(
+            digits,
             prepareValueFormatter(vf),
             handler,
             fRules,
@@ -500,6 +548,49 @@ DecimalFormatImpl::getFixedDecimal(
     VisibleDigits digits;
     fEffPrecision.fMantissa.initVisibleDigits(number, digits, status);
     return initFixedDecimal(digits, result);
+}
+
+VisibleDigitsWithExponent &
+DecimalFormatImpl::initVisibleDigitsWithExponent(
+        double number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (maybeInitVisibleDigitsFromDigitList(
+            number, digits, status)) {
+        return digits;
+    }
+    if (fUseScientific) {
+        fEffPrecision.initVisibleDigitsWithExponent(
+                number, digits, status);
+    } else {
+        fEffPrecision.fMantissa.initVisibleDigitsWithExponent(
+                number, digits, status);
+    }
+    return digits;
+}
+
+VisibleDigitsWithExponent &
+DecimalFormatImpl::initVisibleDigitsWithExponent(
+        DigitList &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    adjustDigitList(number, status);
+    return initVisibleDigitsFromAdjusted(number, digits, status);
+}
+
+VisibleDigitsWithExponent &
+DecimalFormatImpl::initVisibleDigitsFromAdjusted(
+        DigitList &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (fUseScientific) {
+        fEffPrecision.initVisibleDigitsWithExponent(
+                number, digits, status);
+    } else {
+        fEffPrecision.fMantissa.initVisibleDigitsWithExponent(
+                number, digits, status);
+    }
+    return digits;
 }
 
 DigitList &

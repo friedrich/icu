@@ -200,6 +200,18 @@ FixedDecimal &getFixedDecimal(double value, FixedDecimal &result, UErrorCode &st
 FixedDecimal &getFixedDecimal(DigitList &number, FixedDecimal &result, UErrorCode &status) const;
 DigitList &round(DigitList &number, UErrorCode &status) const;
 
+VisibleDigitsWithExponent &
+initVisibleDigitsWithExponent(
+        double number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+VisibleDigitsWithExponent &
+initVisibleDigitsWithExponent(
+        DigitList &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+
 private:
 
 DigitList fMultiplier;
@@ -299,11 +311,29 @@ UnicodeString &formatAdjustedDigitList(
         FieldPositionHandler &handler,
         UErrorCode &status) const;
 
+UnicodeString &formatVisibleDigitsWithExponent(
+        const VisibleDigitsWithExponent &number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+VisibleDigitsWithExponent &
+initVisibleDigitsFromAdjusted(
+        DigitList &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
 template<class T>
 UBool maybeFormatWithDigitList(
         T number,
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+template<class T>
+UBool maybeInitVisibleDigitsFromDigitList(
+        T number,
+        VisibleDigitsWithExponent &digits,
         UErrorCode &status) const;
 
 DigitList &adjustDigitList(DigitList &number, UErrorCode &status) const;
