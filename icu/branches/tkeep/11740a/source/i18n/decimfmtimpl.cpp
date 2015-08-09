@@ -465,24 +465,10 @@ DecimalFormatImpl::formatDigitList(
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
-    adjustDigitList(number, status);
-    return formatAdjustedDigitList(number, appendTo, handler, status);
-/*
     VisibleDigitsWithExponent digits;
-
     initVisibleDigitsWithExponent(number, digits, status);
     return formatVisibleDigitsWithExponent(
             digits, appendTo, handler, status);
-    initVisibleDigitsWithExponent(number, digits, status);
-    ValueFormatter vf;
-    return fAap.format(
-            digits,
-            prepareValueFormatter(vf),
-            handler,
-            fRules,
-            appendTo,
-            status);
-*/
 }
 
 UnicodeString &

@@ -83,6 +83,9 @@ DigitAffixesAndPadding::format(
         const PluralRules *optPluralRules,
         UnicodeString &appendTo,
         UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return appendTo;
+    }
     const DigitAffix *prefix = NULL;
     const DigitAffix *suffix = NULL;
     if (!digits.isNaN()) {
