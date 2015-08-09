@@ -13,6 +13,7 @@
 #include "uassert.h"
 #include "charstr.h"
 #include "visibledigits.h"
+#include "unicode/plurrule.h"
 
 U_NAMESPACE_BEGIN
 
@@ -37,8 +38,11 @@ DigitAffixesAndPadding::formatInt32(
         return appendTo;
     }
     if (optPluralRules != NULL || fWidth > 0 || !formatter.isFastFormattable(value)) {
+        VisibleDigitsWithExponent digits;
+        formatter.toVisibleDigitsWithExponent(
+                (int64_t) value, digits, status);
         return format(
-                (int64_t) value,
+                digits,
                 formatter,
                 handler,
                 optPluralRules,
@@ -96,7 +100,7 @@ DigitAffixesAndPadding::format(
             prefix = &pluralPrefix->getOtherVariant();
             suffix = &pluralSuffix->getOtherVariant();
         } else {
-            UnicodeString count(formatter.select(*optPluralRules, digits));
+            UnicodeString count(optPluralRules->select(digits));
             prefix = &pluralPrefix->getByVariant(count);
             suffix = &pluralSuffix->getByVariant(count);
         }

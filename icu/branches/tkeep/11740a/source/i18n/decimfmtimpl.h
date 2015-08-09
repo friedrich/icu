@@ -202,6 +202,11 @@ DigitList &round(DigitList &number, UErrorCode &status) const;
 
 VisibleDigitsWithExponent &
 initVisibleDigitsWithExponent(
+        int64_t number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+VisibleDigitsWithExponent &
+initVisibleDigitsWithExponent(
         double number,
         VisibleDigitsWithExponent &digits,
         UErrorCode &status) const;

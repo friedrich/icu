@@ -61,6 +61,7 @@ class DecimalFormatStaticSets;
 class FixedDecimal;
 class DecimalFormatImpl;
 class PluralRules;
+class VisibleDigitsWithExponent;
 
 // explicit template instantiation. see digitlst.h
 #if defined (_MSC_VER)
@@ -1946,6 +1947,41 @@ public:
      *  @internal
      */
      FixedDecimal getFixedDecimal(DigitList &number, UErrorCode &status) const;
+
+    /**
+     *  Get a VisibleDigitsWithExponent corresponding to a double
+     *  as it would be formatted by this DecimalFormat.
+     *  Internal, not intended for public use.
+     *  @internal
+     */
+     VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+             double number,
+             VisibleDigitsWithExponent &digits,
+             UErrorCode &status) const;
+
+    /**
+     *  Get a VisibleDigitsWithExponent corresponding to a formattable
+     *  as it would be formatted by this DecimalFormat.
+     *  Internal, not intended for public use.
+     *  @internal
+     */
+     VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+             const Formattable &number,
+             VisibleDigitsWithExponent &digits,
+             UErrorCode &status) const;
+
+    /**
+     *  Get a VisibleDigitsWithExponent corresponding to a DigitList
+     *  as it would be formatted by this DecimalFormat.
+     *  Note: the DigitList may be modified.
+     *  Internal, not intended for public use.
+     *  @internal
+     */
+     VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+             DigitList &number,
+             VisibleDigitsWithExponent &digits,
+             UErrorCode &status) const;
+
 #endif  /* U_HIDE_INTERNAL_API */
 
 public:

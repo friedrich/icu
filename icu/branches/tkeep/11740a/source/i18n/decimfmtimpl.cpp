@@ -346,17 +346,10 @@ DecimalFormatImpl::formatInt64(
     if (number >= -2147483648LL && number <= 2147483647LL) {
         return formatInt32((int32_t) number, appendTo, handler, status);
     }
-    if (maybeFormatWithDigitList(number, appendTo, handler, status)) {
-        return appendTo;
-    }
-    ValueFormatter vf;
-    return fAap.format(
-            number,
-            prepareValueFormatter(vf),
-            handler,
-            fRules,
-            appendTo,
-            status);
+    VisibleDigitsWithExponent digits;
+    initVisibleDigitsWithExponent(number, digits, status);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -534,6 +527,25 @@ DecimalFormatImpl::getFixedDecimal(
     VisibleDigits digits;
     fEffPrecision.fMantissa.initVisibleDigits(number, digits, status);
     return initFixedDecimal(digits, result);
+}
+
+VisibleDigitsWithExponent &
+DecimalFormatImpl::initVisibleDigitsWithExponent(
+        int64_t number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (maybeInitVisibleDigitsFromDigitList(
+            number, digits, status)) {
+        return digits;
+    }
+    if (fUseScientific) {
+        fEffPrecision.initVisibleDigitsWithExponent(
+                number, digits, status);
+    } else {
+        fEffPrecision.fMantissa.initVisibleDigitsWithExponent(
+                number, digits, status);
+    }
+    return digits;
 }
 
 VisibleDigitsWithExponent &
