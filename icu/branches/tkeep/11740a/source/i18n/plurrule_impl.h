@@ -191,7 +191,6 @@ class U_I18N_API FixedDecimal: public UMemory {
     explicit FixedDecimal(double n);
     explicit FixedDecimal(const VisibleDigits &n);
     FixedDecimal();
-    FixedDecimal(const DigitList &value, const DigitInterval &interval); 
     FixedDecimal(const UnicodeString &s, UErrorCode &ec);
     FixedDecimal(const FixedDecimal &other);
 
