@@ -106,7 +106,6 @@ DecimalFormatImpl::DecimalFormatImpl(const DecimalFormatImpl &other) :
           fEffPrecision(other.fEffPrecision),
           fEffGrouping(other.fEffGrouping),
           fOptions(other.fOptions),
-          fSciFormatter(other.fSciFormatter),
           fFormatter(other.fFormatter),
           fAap(other.fAap) {
     fSymbols = new DecimalFormatSymbols(*fSymbols);
@@ -147,7 +146,6 @@ DecimalFormatImpl::operator=(const DecimalFormatImpl &other) {
     fEffPrecision = other.fEffPrecision;
     fEffGrouping = other.fEffGrouping;
     fOptions = other.fOptions;
-    fSciFormatter = other.fSciFormatter;
     fFormatter = other.fFormatter;
     fAap = other.fAap;
     *fSymbols = *other.fSymbols;
@@ -192,7 +190,6 @@ DecimalFormatImpl::operator==(const DecimalFormatImpl &other) const {
             && fEffPrecision.equals(other.fEffPrecision)
             && fEffGrouping.equals(other.fEffGrouping)
             && fOptions.equals(other.fOptions)
-            && fSciFormatter.equals(other.fSciFormatter)
             && fFormatter.equals(other.fFormatter)
             && fAap.equals(other.fAap)
             && (*fSymbols == *other.fSymbols)
@@ -212,7 +209,7 @@ ValueFormatter &
 DecimalFormatImpl::prepareValueFormatter(ValueFormatter &vf) const {
     if (fUseScientific) {
         vf.prepareScientificFormatting(
-                fSciFormatter, fFormatter, fEffPrecision, fOptions);
+                fFormatter, fEffPrecision, fOptions);
         return vf;
     }
     vf.prepareFixedDecimalFormatting(
@@ -1056,7 +1053,6 @@ DecimalFormatImpl::updateFormatting(
     // fRules field is needed to update the fCurrencyAffixInfo field.
     updateFormattingUsesCurrency(changedFormattingFields);
     updateFormattingFixedPointFormatter(changedFormattingFields);
-    updateFormattingScientificFormatter(changedFormattingFields);
     updateFormattingAffixParser(changedFormattingFields);
     updateFormattingPluralRules(changedFormattingFields, status);
     updateFormattingCurrencyAffixInfo(changedFormattingFields, status);
@@ -1181,17 +1177,6 @@ DecimalFormatImpl::updateFormattingCurrencyAffixInfo(
  
     }
 }
-
-void
-DecimalFormatImpl::updateFormattingScientificFormatter(
-        int32_t &changedFormattingFields) {
-    if ((changedFormattingFields & kFormattingSymbols) == 0) {
-        // No work to do if fSymbols is unchanged
-        return;
-    }
-    fSciFormatter.setDecimalFormatSymbols(*fSymbols);
-}
-
 
 void
 DecimalFormatImpl::updateFormattingFixedPointFormatter(

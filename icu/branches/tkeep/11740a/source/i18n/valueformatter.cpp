@@ -384,12 +384,11 @@ ValueFormatter::prepareFixedDecimalFormatting(
 
 void
 ValueFormatter::prepareScientificFormatting(
-        const SciFormatter &sciformatter,
         const DigitFormatter &formatter,
         const ScientificPrecision &precision,
         const SciFormatterOptions &options) {
     fType = kScientificNotation;
-    fSciFormatter = &sciformatter;
+    fSciFormatter = NULL;
     fDigitFormatter = &formatter;
     fScientificPrecision = &precision;
     fScientificOptions = &options;

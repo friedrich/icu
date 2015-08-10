@@ -173,14 +173,24 @@ public:
         const DigitGrouping &grouping,
         const FixedPrecision &precision,
         const DigitFormatterOptions &options);
+
     /**
      * Prepares this instance for scientific formatting.
      */
     void prepareScientificFormatting(
-        const SciFormatter &sciformatter,
         const DigitFormatter &formatter,
         const ScientificPrecision &precision,
         const SciFormatterOptions &options);
+
+    // TODO: remove
+    void prepareScientificFormatting(
+        const SciFormatter &,
+        const DigitFormatter &formatter,
+        const ScientificPrecision &precision,
+        const SciFormatterOptions &options) {
+        prepareScientificFormatting(
+                formatter, precision, options);
+    }
 
 private:
     ValueFormatter(const ValueFormatter &);

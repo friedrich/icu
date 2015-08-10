@@ -252,7 +252,7 @@ UBool fUseGrouping;
 
 // Updating any of the following fields triggers updates on the following:
 // fMonetary, fRules, fAffixParser, fCurrencyAffixInfo,
-// fSciFormatter, fFormatter, fAap.fPositivePrefiix, fAap.fPositiveSuffix,
+// fFormatter, fAap.fPositivePrefiix, fAap.fPositiveSuffix,
 // fAap.fNegativePrefiix, fAap.fNegativeSuffix
 // We do this two phase update because localizing the affix patterns
 // and formatters can be expensive. Better to do it once with the setters
@@ -280,7 +280,6 @@ ScientificPrecision fEffPrecision;
 // The actual grouping used when formatting
 DigitGrouping fEffGrouping;
 SciFormatterOptions fOptions;   // Encapsulates fixed precision options
-SciFormatter fSciFormatter;
 DigitFormatter fFormatter;
 DigitAffixesAndPadding fAap;
 
@@ -379,8 +378,6 @@ void updateFormattingAffixParser(int32_t &changedFormattingFields);
 void updateFormattingCurrencyAffixInfo(
         int32_t &changedFormattingFields, UErrorCode &status);
 void updateFormattingFixedPointFormatter(
-        int32_t &changedFormattingFields);
-void updateFormattingScientificFormatter(
         int32_t &changedFormattingFields);
 void updateFormattingLocalizedPositivePrefix(
         int32_t &changedFormattingFields, UErrorCode &status);

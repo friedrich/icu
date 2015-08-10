@@ -15,7 +15,6 @@
 #if !UCONFIG_NO_FORMATTING
 
 #include "digitformatter.h"
-#include "sciformatter.h"
 #include "digitinterval.h"
 #include "significantdigitinterval.h"
 #include "digitlst.h"
@@ -1242,11 +1241,10 @@ void NumberFormat2Test::TestValueFormatterIsFastFormattable() {
     {
         // test scientific notation
         ScientificPrecision precision;
-        SciFormatter sciformatter;
         SciFormatterOptions options;
         ValueFormatter vf;
         vf.prepareScientificFormatting(
-                sciformatter, formatter, precision, options);
+                formatter, precision, options);
         assertFalse("1081", vf.isFastFormattable(1081));
     }
 }
@@ -2445,13 +2443,11 @@ void NumberFormat2Test::TestPluralsAndRoundingScientific() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
     DigitFormatter formatter(symbols);
-    SciFormatter sciformatter(symbols);
     ScientificPrecision precision;
     precision.fMantissa.fSignificant.setMax(4);
     SciFormatterOptions options;
     ValueFormatter vf;
     vf.prepareScientificFormatting(
-            sciformatter,
             formatter,
             precision,
             options);
@@ -2651,7 +2647,6 @@ void NumberFormat2Test::TestRoundingIncrement() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
     DigitFormatter formatter(symbols);
-    SciFormatter sciformatter(symbols);
     ScientificPrecision precision;
     SciFormatterOptions options;
     precision.fMantissa.fRoundingIncrement.set(0.25);
@@ -2718,7 +2713,6 @@ void NumberFormat2Test::TestRoundingIncrement() {
     precision.fMantissa.fMin.setIntDigitCount(2);
     // Scientific notation
     vf.prepareScientificFormatting(
-            sciformatter,
             formatter,
             precision,
             options);
