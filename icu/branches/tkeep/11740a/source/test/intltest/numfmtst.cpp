@@ -34,6 +34,7 @@
 #include "fmtableimp.h"
 #include "numberformattesttuple.h"
 #include "datadrivennumberformattestsuite.h"
+#include "unicode/msgfmt.h"
 
 class NumberFormatTestDataDriven : public DataDrivenNumberFormatTestSuite {
 protected:
@@ -8355,23 +8356,25 @@ void NumberFormatTest::TestToPatternScientific11648() {
 }
 
 void NumberFormatTest::TestBenchmark() {
-/*
     UErrorCode status = U_ZERO_ERROR;
     Locale en("en");
     DecimalFormatSymbols sym(en, status);
-//    new DecimalFormat("0.0000000", new DecimalFormatSymbols(sym), status);
-    errln("Size: %d", sizeof(DecimalFormat));
-//    DecimalFormat fmt("0", sym, status);
+    DecimalFormat fmt("0.0000000", new DecimalFormatSymbols(sym), status);
+//    DecimalFormat fmt("0.00000E0", new DecimalFormatSymbols(sym), status);
+//    DecimalFormat fmt("0", new DecimalFormatSymbols(sym), status);
     FieldPosition fpos(0);
     clock_t start = clock();
-    for (int32_t i = 0; i < 100000; ++i) {
-        DecimalFormat fmt("0.0000000", new DecimalFormatSymbols(sym), status);
-//        UnicodeString append;
+    for (int32_t i = 0; i < 1000000; ++i) {
+        UnicodeString append;
+        fmt.format(3.0, append, fpos, status);
+//        fmt.format(4.6692016, append, fpos, status);
+//        fmt.format(1234567.8901, append, fpos, status);
 //        fmt.format(2.99792458E8, append, fpos, status);
 //        fmt.format(31, append);
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
+/*
 
     UErrorCode status = U_ZERO_ERROR;
     MessageFormat fmt("{0, plural, one {I have # friend.} other {I have # friends.}}", status);

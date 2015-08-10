@@ -1052,7 +1052,7 @@ void NumberFormat2Test::TestDigitFormatter() {
         VisibleDigits visibleDigits;
         DigitGrouping grouping;
         FixedPrecision precision;
-        precision.initVisibleDigits(8192LL, visibleDigits, status);
+        precision.initVisibleDigits((int64_t) 8192, visibleDigits, status);
         if (!assertSuccess("", status)) {
             return;
         }
@@ -1099,7 +1099,7 @@ void NumberFormat2Test::TestDigitFormatter() {
                 NULL);
 
         // adding one more digit will enable grouping once again.
-        precision.initVisibleDigits(43560LL, visibleDigits, status);
+        precision.initVisibleDigits((int64_t) 43560, visibleDigits, status);
         if (!assertSuccess("", status)) {
             return;
         }
