@@ -64,21 +64,14 @@ class U_I18N_API DigitFormatterOptions : public UMemory {
  */
 class U_I18N_API DigitFormatterIntOptions : public UMemory {
     public:
-    DigitFormatterIntOptions() : fMinDigits(1), fAlwaysShowSign(FALSE) { }
+    DigitFormatterIntOptions() : fAlwaysShowSign(FALSE) { }
 
     /**
      * Returns TRUE if this object equals rhs.
      */
     UBool equals(const DigitFormatterIntOptions &rhs) const {
-        return ((fMinDigits == rhs.fMinDigits) &&
-                (fAlwaysShowSign == rhs.fAlwaysShowSign));
+        return (fAlwaysShowSign == rhs.fAlwaysShowSign);
     }
-
-    /**
-     * Minimum digit count to use. Left pad small ints with 0's
-     * (or equivalent) to get the minimum digits. Default is 1.
-     */
-    int32_t fMinDigits;
 
     /**
      * If TRUE, always prefix the integer with its sign even if the number is
@@ -218,26 +211,6 @@ int32_t countChar32(
  */
 UBool equals(const DigitFormatter &rhs) const;
 
-// TODO: Make this be private.
-UnicodeString &formatExponent(
-        const VisibleDigits &digits,
-        const DigitFormatterIntOptions &options,
-        int32_t signField,
-        int32_t intField,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const;
-
-// TODO make this be private
-int32_t countChar32(
-        const DigitGrouping &grouping,
-        const DigitInterval &interval,
-        const DigitFormatterOptions &options) const;
-
-// TODO: make this private
-int32_t countChar32ForExponent(
-        const VisibleDigits &exponent,
-        const DigitFormatterIntOptions &options) const;
-
 private:
 UChar32 fLocalizedDigits[10];
 UnicodeString fGroupingSeparator;
@@ -284,6 +257,23 @@ UnicodeString &formatInfinity(
 int32_t countChar32ForInfinity() const {
     return fInfinity.toString().countChar32();
 }
+
+UnicodeString &formatExponent(
+        const VisibleDigits &digits,
+        const DigitFormatterIntOptions &options,
+        int32_t signField,
+        int32_t intField,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
+int32_t countChar32(
+        const DigitGrouping &grouping,
+        const DigitInterval &interval,
+        const DigitFormatterOptions &options) const;
+
+int32_t countChar32ForExponent(
+        const VisibleDigits &exponent,
+        const DigitFormatterIntOptions &options) const;
 
 };
 

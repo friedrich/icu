@@ -2958,7 +2958,7 @@ void NumberFormat2Test::verifyDigitFormatter(
     assertEquals(
             "",
             expected.countChar32(),
-            formatter.countChar32(grouping, digits.getInterval(), options));
+            formatter.countChar32(digits, grouping, options));
     UnicodeString appendTo;
     NumberFormat2Test_FieldPositionHandler handler;
     assertEquals(
