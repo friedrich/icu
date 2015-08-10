@@ -14,7 +14,6 @@
 #include "digitinterval.h"
 #include "digitlst.h"
 #include "digitformatter.h"
-#include "sciformatter.h"
 #include "precision.h"
 #include "unicode/unistr.h"
 #include "unicode/plurrule.h"
@@ -264,14 +263,8 @@ ValueFormatter::format(
             DigitList mantissa(value);
             int32_t exponent = fScientificPrecision->toScientific(mantissa);
             DigitInterval interval;
-            return fSciFormatter->format(
-                    mantissa,
-                    exponent,
-                    *fDigitFormatter,
-                    fScientificPrecision->fMantissa.getInterval(mantissa, interval),
-                    *fScientificOptions,
-                    handler,
-                    appendTo);
+//            return fSciFormatter->format(
+            return appendTo;
         }
         break;
     default:
@@ -334,11 +327,8 @@ ValueFormatter::countChar32(const DigitList &value) const {
             DigitList mantissa(value);
             int32_t exponent = fScientificPrecision->toScientific(mantissa);
             DigitInterval interval;
-            return fSciFormatter->countChar32(
-                    exponent,
-                    *fDigitFormatter,
-                    fScientificPrecision->fMantissa.getInterval(mantissa, interval),
-                    *fScientificOptions);
+//            return fSciFormatter->countChar32(
+            return 0;
         }
         break;
     default:

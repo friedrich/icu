@@ -14,7 +14,6 @@
 #include "unicode/utypes.h"
 #include "unicode/uobject.h"
 #include "affixpatternparser.h"
-#include "sciformatter.h"
 #include "digitformatter.h"
 #include "digitgrouping.h"
 #include "precision.h"
