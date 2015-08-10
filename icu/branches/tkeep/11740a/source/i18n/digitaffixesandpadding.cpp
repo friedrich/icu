@@ -139,43 +139,6 @@ DigitAffixesAndPadding::format(
     }
 }
 
-
-UnicodeString &
-DigitAffixesAndPadding::format(
-        int64_t value,
-        const ValueFormatter &formatter,
-        FieldPositionHandler &handler,
-        const PluralRules *optPluralRules,
-        UnicodeString &appendTo,
-        UErrorCode &status) const {
-    VisibleDigitsWithExponent digits;
-    formatter.toVisibleDigitsWithExponent(
-            value, digits, status);
-    if (U_FAILURE(status)) {
-        return appendTo;
-    }
-    return format(
-            digits, formatter, handler, optPluralRules, appendTo, status);
-}
-
-UnicodeString &
-DigitAffixesAndPadding::format(
-        double value,
-        const ValueFormatter &formatter,
-        FieldPositionHandler &handler,
-        const PluralRules *optPluralRules,
-        UnicodeString &appendTo,
-        UErrorCode &status) const {
-    VisibleDigitsWithExponent digits;
-    formatter.toVisibleDigitsWithExponent(
-            value, digits, status);
-    if (U_FAILURE(status)) {
-        return appendTo;
-    }
-    return format(
-            digits, formatter, handler, optPluralRules, appendTo, status);
-}
-
 UnicodeString &
 DigitAffixesAndPadding::format(
         DigitList &value,
