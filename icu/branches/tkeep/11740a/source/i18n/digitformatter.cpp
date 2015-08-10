@@ -146,21 +146,6 @@ DigitFormatter::countChar32(
 
 int32_t
 DigitFormatter::countChar32(
-        int32_t exponent,
-        const DigitInterval &mantissaInterval,
-        const SciFormatterOptions &options) const {
-    UErrorCode status = U_ZERO_ERROR;
-    VisibleDigits digits;
-    FixedPrecision expPrecision;
-    expPrecision.fMin.setIntDigitCount(options.fExponent.fMinDigits);
-    return countChar32(
-            expPrecision.initVisibleDigits((int64_t) exponent, digits, status),
-            mantissaInterval,
-            options);
-}
-
-int32_t
-DigitFormatter::countChar32(
         const VisibleDigits &exponent,
         const DigitInterval &mantissaInterval,
         const SciFormatterOptions &options) const {
@@ -172,26 +157,6 @@ DigitFormatter::countChar32(
             exponent, options.fExponent);
     return count;
 }
-
-
-UnicodeString &
-DigitFormatter::format(
-        const DigitList &positiveMantissa,
-        int32_t exponent,
-        const DigitInterval &mantissaInterval,
-        const SciFormatterOptions &options,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const {
-    UErrorCode status = U_ZERO_ERROR;
-    VisibleDigitsWithExponent digits;
-    ScientificPrecision::initVisibleDigitsWithExponent(
-            positiveMantissa, mantissaInterval,
-            exponent, options.fExponent.fMinDigits,
-            digits, status);
-    return format(digits, options, handler, appendTo);
-}
-
-
 
 UnicodeString &DigitFormatter::format(
         const VisibleDigits &digits,
@@ -301,24 +266,6 @@ DigitFormatter::format(
             appendTo);
 }
 
-UnicodeString &DigitFormatter::format(
-        const DigitList &digits,
-        const DigitGrouping &grouping,
-        const DigitInterval &interval,
-        const DigitFormatterOptions &options,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const {
-    UErrorCode status = U_ZERO_ERROR;
-    VisibleDigits vdigits;
-    return format(
-            VisibleDigits::initVisibleDigits(
-                    digits, interval, vdigits, status),
-            grouping,
-            options,
-            handler,
-            appendTo);
-}
-
 static int32_t formatInt(
         int32_t value, uint8_t *digits) {
     int32_t idx = 0;
@@ -331,7 +278,7 @@ static int32_t formatInt(
 
 UnicodeString &
 DigitFormatter::formatDigits(
-        uint8_t *digits,
+        const uint8_t *digits,
         int32_t count,
         const IntDigitCountRange &range,
         int32_t intField,
@@ -357,27 +304,6 @@ DigitFormatter::formatDigits(
     }
     handler.addAttribute(intField, begin, appendTo.length());
     return appendTo;
-}
-
-UnicodeString &
-DigitFormatter::formatInt32(
-        int32_t value,
-        const DigitFormatterIntOptions &options,
-        int32_t signField,
-        int32_t intField,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const {
-    FixedPrecision fp;
-    fp.fMin.setIntDigitCount(options.fMinDigits);
-    VisibleDigits exponent;
-    UErrorCode status = U_ZERO_ERROR;
-    return formatExponent(
-            fp.initVisibleDigits((int64_t) value, exponent, status),
-            options,
-            signField,
-            intField,
-            handler,
-            appendTo);
 }
 
 UnicodeString &
@@ -409,19 +335,6 @@ DigitFormatter::formatExponent(
             appendTo);
     handler.addAttribute(intField, begin, appendTo.length());
     return appendTo;
-}
-
-int32_t
-DigitFormatter::countChar32ForInt32(
-        int32_t value,
-        const DigitFormatterIntOptions &options) const {
-    FixedPrecision fp;
-    fp.fMin.setIntDigitCount(options.fMinDigits);
-    VisibleDigits exponent;
-    UErrorCode status = U_ZERO_ERROR;
-    return countChar32ForExponent(
-            fp.initVisibleDigits((int64_t) value, exponent, status),
-            options);
 }
 
 int32_t
@@ -480,7 +393,11 @@ DigitFormatter::equals(const DigitFormatter &rhs) const {
                    (fDecimal == rhs.fDecimal) &&
                    (fNegativeSign == rhs.fNegativeSign) &&
                    (fPositiveSign == rhs.fPositiveSign) &&
-                   (fIsStandardDigits == rhs.fIsStandardDigits);
+                   (fInfinity.equals(rhs.fInfinity)) &&
+                   (fNan.equals(rhs.fNan)) &&
+                   (fIsStandardDigits == rhs.fIsStandardDigits) &&
+                   (fExponent == rhs.fExponent);
+
     if (!result) {
         return FALSE;
     }

@@ -151,26 +151,6 @@ void setDecimalFormatSymbolsForMonetary(const DecimalFormatSymbols &symbols);
 /**
  * Fixed point formatting.
  *
- * @param positiveDigits the value to format must be positive.
- * @param grouping controls how digit grouping is done
- * @param interval specifies what digits of the value get formatted.
- *   Provides poor man's truncation without doing any arithmetic.
- * @param options formatting options
- * @param handler records field positions
- * @param appendTo formatted value appended here.
- * @return appendTo
- */
-UnicodeString &format(
-        const DigitList &positiveDigits,
-        const DigitGrouping &grouping,
-        const DigitInterval &interval,
-        const DigitFormatterOptions &options,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const;
-
-/**
- * Fixed point formatting.
- *
  * @param positiveDigits the value to format
  *  Negative sign can be present, but it won't show.
  * @param grouping controls how digit grouping is done
@@ -200,45 +180,6 @@ UnicodeString &format(
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
 
-
-/**
- * Formats NaN.
- * @param handler records field positions
- * @param appendTo formatted value appended here.
- * @return appendTo
- */
-UnicodeString &formatNaN(
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const {
-    return fNan.format(handler, appendTo);
-}
-
-/**
- * Counts code points for NaN.
- */
-int32_t countChar32ForNaN() const {
-    return fNan.toString().countChar32();
-}
-
-/**
- * Formats positive infinity.
- * @param handler records field positions
- * @param appendTo formatted value appended here.
- * @return appendTo
- */
-UnicodeString &formatInfinity(
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const {
-    return fInfinity.format(handler, appendTo);
-}
-
-/**
- * Counts code points for positive infinity.
- */
-int32_t countChar32ForInfinity() const {
-    return fInfinity.toString().countChar32();
-}
-
 /**
  * Fixed point formatting of integers.
  * Always performed with no grouping and no decimal point.
@@ -254,68 +195,6 @@ UnicodeString &formatPositiveInt32(
         const IntDigitCountRange &range,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
-
-/**
- * Fixed point formatting for 32 bit ints.
- * @param value the value to format. May be positive or negative.
- * @param options formatting options.
- * @param signField The field ID to use when recording the sign field.
- *   Can be anything if handler is not recording field positions.
- * @param intField The field ID to use when recording the integer field.
- *   Can be anything if handler is not recording field positions.
- * @param handler Records the field positions.
- * @param appendTo the formatted value appended here.
- */
-UnicodeString &formatInt32(
-        int32_t value,
-        const DigitFormatterIntOptions &options,
-        int32_t signField,
-        int32_t intField,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const;
-
-
-/**
- * Formats an exponent.
- * @param value the value to format. May be positive or negative.
- * @param options formatting options.
- * @param signField The field ID to use when recording the sign field.
- *   Can be anything if handler is not recording field positions.
- * @param intField The field ID to use when recording the integer field.
- *   Can be anything if handler is not recording field positions.
- * @param handler Records the field positions.
- * @param appendTo the formatted value appended here.
- */
-UnicodeString &formatExponent(
-        const VisibleDigits &digits,
-        const DigitFormatterIntOptions &options,
-        int32_t signField,
-        int32_t intField,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const;
-
-/**
- * Counts the number of code points needed for formatting.
- */
-int32_t countChar32(
-        const DigitGrouping &grouping,
-        const DigitInterval &interval,
-        const DigitFormatterOptions &options) const;
-
-/**
- * Counts the number of code points needed for formatting an exponent.
- */
-int32_t countChar32ForExponent(
-        const VisibleDigits &exponent,
-        const DigitFormatterIntOptions &options) const;
-
-
-/**
- * Counts the number of code points needed for formatting an int32.
- */
-int32_t countChar32ForInt32(
-        int32_t value,
-        const DigitFormatterIntOptions &options) const;
 
 /**
  * Counts how many code points are needed for fixed formatting.
@@ -339,6 +218,26 @@ int32_t countChar32(
  */
 UBool equals(const DigitFormatter &rhs) const;
 
+// TODO: Make this be private.
+UnicodeString &formatExponent(
+        const VisibleDigits &digits,
+        const DigitFormatterIntOptions &options,
+        int32_t signField,
+        int32_t intField,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const;
+
+// TODO make this be private
+int32_t countChar32(
+        const DigitGrouping &grouping,
+        const DigitInterval &interval,
+        const DigitFormatterOptions &options) const;
+
+// TODO: make this private
+int32_t countChar32ForExponent(
+        const VisibleDigits &exponent,
+        const DigitFormatterIntOptions &options) const;
+
 private:
 UChar32 fLocalizedDigits[10];
 UnicodeString fGroupingSeparator;
@@ -352,7 +251,7 @@ UnicodeString fExponent;
 UBool isStandardDigits() const;
 
 UnicodeString &formatDigits(
-        uint8_t *digits,
+        const uint8_t *digits,
         int32_t count,
         const IntDigitCountRange &range,
         int32_t intField,
@@ -362,24 +261,29 @@ UnicodeString &formatDigits(
 void setOtherDecimalFormatSymbols(const DecimalFormatSymbols &symbols);
 
 int32_t countChar32(
-        int32_t exponent,
-        const DigitInterval &mantissaInterval,
-        const SciFormatterOptions &options) const;
-
-UnicodeString &format(
-        const DigitList &positiveMantissa,
-        int32_t exponent,
-        const DigitInterval &mantissaInterval,
-        const SciFormatterOptions &options,
-        FieldPositionHandler &handler,
-        UnicodeString &appendTo) const;
-
-int32_t countChar32(
         const VisibleDigits &exponent,
         const DigitInterval &mantissaInterval,
         const SciFormatterOptions &options) const;
 
+UnicodeString &formatNaN(
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    return fNan.format(handler, appendTo);
+}
 
+int32_t countChar32ForNaN() const {
+    return fNan.toString().countChar32();
+}
+
+UnicodeString &formatInfinity(
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    return fInfinity.format(handler, appendTo);
+}
+
+int32_t countChar32ForInfinity() const {
+    return fInfinity.toString().countChar32();
+}
 
 };
 

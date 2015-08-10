@@ -245,22 +245,18 @@ ValueFormatter::format(
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
     if (value.isNaN()) {
-        return fDigitFormatter->formatNaN(handler, appendTo);
+//        return fDigitFormatter->formatNaN(handler, appendTo);
+          return appendTo;
     }
     if (value.isInfinite()) {
-        return fDigitFormatter->formatInfinity(handler, appendTo);
+//         return fDigitFormatter->formatInfinity(handler, appendTo);
+        return appendTo;
     }
     switch (fType) {
     case kFixedDecimal:
         {
             DigitInterval interval;
-            return fDigitFormatter->format(
-                    value,
-                    *fGrouping,
-                    fFixedPrecision->getInterval(value, interval),
-                    *fFixedOptions,
-                    handler,
-                    appendTo);
+            return appendTo;
         }
         break;
     case kScientificNotation:
@@ -316,10 +312,12 @@ ValueFormatter::format(
 int32_t
 ValueFormatter::countChar32(const DigitList &value) const {
     if (value.isNaN()) {
-        return fDigitFormatter->countChar32ForNaN();
+//        return fDigitFormatter->countChar32ForNaN();
+          return 0;
     }
     if (value.isInfinite()) {
-        return fDigitFormatter->countChar32ForInfinity();
+//        return fDigitFormatter->countChar32ForInfinity();
+          return 0;
     }
     switch (fType) {
     case kFixedDecimal:

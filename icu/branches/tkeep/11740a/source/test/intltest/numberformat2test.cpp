@@ -35,9 +35,6 @@
 #include "uassert.h"
 #include "visibledigits.h"
 
-static const int32_t kIntField = 4938;
-static const int32_t kSignField = 5770;
-
 struct NumberFormat2Test_Attributes {
     int32_t id;
     int32_t spos;
@@ -120,7 +117,6 @@ private:
     void TestPluralAffix();
     void TestDigitAffix();
     void TestDigitFormatterDefaultCtor();
-    void TestDigitIntFormatter();
     void TestDigitFormatterMonetary();
     void TestDigitFormatter();
     void TestSciFormatterDefaultCtor();
@@ -157,13 +153,6 @@ private:
         UBool bNegative,
         const VisibleDigitsWithExponent &digits);
     DigitFormatter formatter;
-    void verifyDigitIntFormatter(
-            const UnicodeString &expected,
-            const DigitFormatter &formatter,
-            int32_t value,
-            int32_t minDigits,
-            UBool alwaysShowSign,
-            const NumberFormat2Test_Attributes *expectedAttributes);
     void verifyDigitFormatter(
             const UnicodeString &expected,
             const DigitFormatter &formatter,
@@ -213,7 +202,6 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestGroupingUsed);
     TESTCASE_AUTO(TestDigitListInterval);
     TESTCASE_AUTO(TestDigitFormatterDefaultCtor);
-    TESTCASE_AUTO(TestDigitIntFormatter);
     TESTCASE_AUTO(TestDigitFormatterMonetary);
     TESTCASE_AUTO(TestDigitFormatter);
     TESTCASE_AUTO(TestSciFormatterDefaultCtor);
@@ -826,183 +814,6 @@ void NumberFormat2Test::TestDigitFormatterDefaultCtor() {
             grouping,
             options,
             NULL);
-    verifyDigitIntFormatter(
-            "+023",
-            formatter,
-            23,
-            3,
-            TRUE,
-            NULL);
-}
-
-void NumberFormat2Test::TestDigitIntFormatter() {
-    UErrorCode status = U_ZERO_ERROR;
-    DecimalFormatSymbols symbols("en", status);
-    DigitFormatter formatter(symbols);
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 1},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "0",
-                formatter,
-                0,
-                0,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 2},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "+0",
-                formatter,
-                0,
-                0,
-                TRUE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 1},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "0",
-                formatter,
-                0,
-                1,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 2},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "+0",
-                formatter,
-                0,
-                1,
-                TRUE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 2},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-2",
-                formatter,
-                -2,
-                1,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 3},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-02",
-                formatter,
-                -2,
-                2,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 3},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-02",
-                formatter,
-                -2,
-                2,
-                TRUE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 11},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-2147483648",
-                formatter,
-                INT32_MIN,
-                1,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 11},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "+2147483647",
-                formatter,
-                INT32_MAX,
-                1,
-                TRUE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 12},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "002147483647",
-                formatter,
-                INT32_MAX,
-                12,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 9},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "007654321",
-                formatter,
-                7654321,
-                9,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 10},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-007654321",
-                formatter,
-                -7654321,
-                9,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 3},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "100",
-                formatter,
-                100,
-                0,
-                FALSE,
-                expectedAttributes);
-    }
 }
 
 void NumberFormat2Test::TestDigitFormatterMonetary() {
@@ -3092,38 +2903,6 @@ void NumberFormat2Test::verifyVisibleDigitsWithExponent(
     }
     if (digits.isNaN() || digits.isInfinite()) {
         errln(expected + ": Require real value.");
-    }
-}
-
-
-void NumberFormat2Test::verifyDigitIntFormatter(
-        const UnicodeString &expected,
-        const DigitFormatter &formatter,
-        int32_t value,
-        int32_t minDigits,
-        UBool alwaysShowSign,
-        const NumberFormat2Test_Attributes *expectedAttributes) {
-    DigitFormatterIntOptions options;
-    options.fMinDigits = minDigits;
-    options.fAlwaysShowSign = alwaysShowSign;
-    assertEquals(
-            "",
-            expected.countChar32(),
-            formatter.countChar32ForInt32(value, options));
-    UnicodeString appendTo;
-    NumberFormat2Test_FieldPositionHandler handler(expectedAttributes != NULL);
-    assertEquals(
-            "",
-            expected,
-            formatter.formatInt32(
-                    value,
-                    options,
-                    kSignField,
-                    kIntField,
-                    handler,
-                    appendTo));
-    if (expectedAttributes != NULL) {
-        verifyAttributes(expectedAttributes, handler.attributes);
     }
 }
 
