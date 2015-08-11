@@ -92,6 +92,16 @@ UnicodeString &format(
         UnicodeString &appendTo,
         FieldPositionIterator *posIter,
         UErrorCode &status) const;
+UnicodeString &format(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const;
+UnicodeString &format(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const;
 
 UBool operator==(const DecimalFormatImpl &) const;
 

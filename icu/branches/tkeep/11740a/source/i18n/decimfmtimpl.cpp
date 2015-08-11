@@ -435,6 +435,28 @@ DecimalFormatImpl::format(
     return formatDigitList(dl, appendTo, handler, status);
 }
 
+UnicodeString &
+DecimalFormatImpl::format(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const {
+    FieldPositionOnlyHandler handler(pos);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormatImpl::format(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const {
+    FieldPositionIteratorHandler handler(posIter, status);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
+}
+
 DigitList &
 DecimalFormatImpl::adjustDigitList(
         DigitList &number, UErrorCode &status) const {

@@ -15,6 +15,7 @@
 #include "charstr.h"
 #include "unicode/fmtable.h"
 #include "unicode/fieldpos.h"
+#include "visibledigits.h"
 
 #if !UCONFIG_NO_FORMATTING
 
@@ -135,12 +136,14 @@ UnicodeString &QuantityFormatter::format(
         return appendTo;
     }
     UnicodeString count;
+    VisibleDigitsWithExponent digits;
     const DecimalFormat *decFmt = dynamic_cast<const DecimalFormat *>(&fmt);
     if (decFmt != NULL) {
-        count = decFmt->select(quantity, rules, status);
+        decFmt->initVisibleDigitsWithExponent(quantity, digits, status);
         if (U_FAILURE(status)) {
             return appendTo;
         }
+        count = rules.select(digits);
     } else {
         if (quantity.getType() == Formattable::kDouble) {
             count = rules.select(quantity.getDouble());
@@ -165,7 +168,11 @@ UnicodeString &QuantityFormatter::format(
     }
     UnicodeString formattedNumber;
     FieldPosition fpos(pos.getField());
-    fmt.format(quantity, formattedNumber, fpos, status);
+    if (decFmt != NULL) {
+        decFmt->format(digits, formattedNumber, fpos, status);
+    } else {
+        fmt.format(quantity, formattedNumber, fpos, status);
+    }
     const UnicodeString *params[1] = {&formattedNumber};
     int32_t offsets[1];
     pattern->formatAndAppend(

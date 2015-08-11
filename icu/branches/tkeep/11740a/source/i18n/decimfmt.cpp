@@ -685,33 +685,6 @@ DecimalFormat::initVisibleDigitsWithExponent(
     return fImpl->initVisibleDigitsWithExponent(number, digits, status);
 }
 
-
-UnicodeString
-DecimalFormat::select(
-        double number,
-        const PluralRules &rules, UErrorCode &status) const {
-    VisibleDigitsWithExponent digits;
-    initVisibleDigitsWithExponent(number, digits, status);
-    if (U_FAILURE(status)) {
-        return UnicodeString();
-    }
-    return rules.select(digits);
-}
-
-
-UnicodeString
-DecimalFormat::select(
-        const Formattable &number,
-        const PluralRules &rules,
-        UErrorCode &status) const {
-    VisibleDigitsWithExponent digits;
-    initVisibleDigitsWithExponent(number, digits, status);
-    if (U_FAILURE(status)) {
-        return UnicodeString();
-    }
-    return rules.select(digits);
-}
-
 FixedDecimal
 DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) const {
     VisibleDigitsWithExponent digits;
@@ -887,6 +860,23 @@ DecimalFormat::format(const DigitList &number,
 
 UnicodeString&
 DecimalFormat::format(const DigitList &number,
+                     UnicodeString& appendTo,
+                     FieldPosition& pos,
+                     UErrorCode &status) const {
+    return fImpl->format(number, appendTo, pos, status);
+}
+
+UnicodeString&
+DecimalFormat::format(const VisibleDigitsWithExponent &number,
+                      UnicodeString &appendTo,
+                      FieldPositionIterator *posIter,
+                      UErrorCode &status) const {
+    return fImpl->format(number, appendTo, posIter, status);
+}
+
+
+UnicodeString&
+DecimalFormat::format(const VisibleDigitsWithExponent &number,
                      UnicodeString& appendTo,
                      FieldPosition& pos,
                      UErrorCode &status) const {
