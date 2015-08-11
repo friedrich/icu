@@ -8375,7 +8375,6 @@ void NumberFormatTest::TestBenchmark() {
     }
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
-
     UErrorCode status = U_ZERO_ERROR;
     MessageFormat fmt("{0, plural, one {I have # friend.} other {I have # friends.}}", status);
     FieldPosition fpos(0);
