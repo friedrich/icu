@@ -26,9 +26,9 @@ class FixedPrecision;
 class DigitFormatter;
 class DigitFormatterOptions;
 class ScientificPrecision;
-class SciFormatter;
 class SciFormatterOptions;
 class FixedDecimal;
+class VisibleDigitsWithExponent;
 
 
 /**
@@ -40,15 +40,14 @@ class FixedDecimal;
  * instance without first calling a prepareXXX method results in an
  * assertion error and a program crash.
  */
-class ValueFormatter : public UObject {
+class U_I18N_API ValueFormatter : public UObject {
 public:
     ValueFormatter() : fType(kFormatTypeCount) {
     }
 
     /**
-     * Rounds the value according to how it will be formatted.
-     * Round must be called to adjust value before calling select.
-     * If value is NaN or infinite, round does nothing.
+     * This function is here only to support the protected round() method
+     * in DecimalFormat. It serves no ther purpose than that.
      *
      * @param value this value is rounded in place.
      * @param status any error returned here.
@@ -62,32 +61,34 @@ public:
     UBool isFastFormattable(int32_t value) const;
 
     /**
-     * Return the plural form to use for a given value.
-     * @param rules the plural rules.
-     * @param value should have been adjusted with round.
-     *   value must be real, not infinite or NaN.
-     * @return 'zero', 'one', 'two', 'few', 'many', or 'other'
+     * Converts value to a VisibleDigitsWithExponent.
+     * Result may be fixed point or scientific.
      */
-    UnicodeString select(
-        const PluralRules &rules,
-        const DigitList &value) const;
+    VisibleDigitsWithExponent &toVisibleDigitsWithExponent(
+            int64_t value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
 
     /**
-     * Temporary for now. PluralFormat actually needs a FixedDecimal.
+     * Converts value to a VisibleDigitsWithExponent.
+     * Result may be fixed point or scientific.
      */
-    FixedDecimal &getFixedDecimal(
-            const DigitList &value, FixedDecimal &result) const;
+    VisibleDigitsWithExponent &toVisibleDigitsWithExponent(
+            DigitList &value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
 
     /**
      * formats positiveValue and appends to appendTo. Returns appendTo.
-     * @param positiveValue must be positive. May be positive infinity or NaN.
+     * @param positiveValue If negative, no negative sign is formatted.
      * @param handler stores the field positions
      * @param appendTo formatted value appended here.
      */
     UnicodeString &format(
-        const DigitList &positiveValue,
+        const VisibleDigitsWithExponent &positiveValue,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const;
+
 
     /**
      * formats positiveValue and appends to appendTo. Returns appendTo.
@@ -102,9 +103,11 @@ public:
 
     /**
      * Returns the number of code points needed to format.
-     * @param positiveValue must be positive. May be positive infinity or NaN.
+     * @param positiveValue if negative, the negative sign is not included
+     *   in count.
      */
-    int32_t countChar32(const DigitList &positiveValue) const;
+    int32_t countChar32(
+            const VisibleDigitsWithExponent &positiveValue) const;
   
     /**
      * Prepares this instance for fixed decimal formatting.
@@ -114,14 +117,15 @@ public:
         const DigitGrouping &grouping,
         const FixedPrecision &precision,
         const DigitFormatterOptions &options);
+
     /**
      * Prepares this instance for scientific formatting.
      */
     void prepareScientificFormatting(
-        const SciFormatter &sciformatter,
         const DigitFormatter &formatter,
         const ScientificPrecision &precision,
         const SciFormatterOptions &options);
+
 private:
     ValueFormatter(const ValueFormatter &);
     ValueFormatter &operator=(const ValueFormatter &);
@@ -142,7 +146,6 @@ private:
     const DigitGrouping *fGrouping;
 
     // for scientific formatting
-    const SciFormatter *fSciFormatter;
     const ScientificPrecision *fScientificPrecision;
     const SciFormatterOptions *fScientificOptions;
 };

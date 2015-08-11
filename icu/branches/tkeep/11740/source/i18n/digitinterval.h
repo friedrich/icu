@@ -29,6 +29,7 @@ public:
     DigitInterval()
             : fLargestExclusive(INT32_MAX), fSmallestInclusive(INT32_MIN) { }
 
+
     /**
      * Makes this instance span all digits.
      */
@@ -80,6 +81,22 @@ public:
      * to the right of the decimal point.
      */
     void setFracDigitCount(int32_t count);
+
+    /**
+     * Sets the least significant inclusive value to smallest. If smallest >= 0
+     * then least significant inclusive value becomes 0.
+     */
+    void setLeastSignificantInclusive(int32_t smallest) {
+        fSmallestInclusive = smallest < 0 ? smallest : 0;
+    }
+
+    /**
+     * Sets the most significant exclusive value to largest.
+     * If largest <= 0 then most significant exclusive value becomes 0.
+     */
+    void setMostSignificantExclusive(int32_t largest) {
+        fLargestExclusive = largest > 0 ? largest : 0;
+    }
 
     /**
      * If returns 8, the most significant digit in interval is the 10^7 digit.

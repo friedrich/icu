@@ -14,7 +14,6 @@
 #include "digitinterval.h"
 #include "digitlst.h"
 #include "digitformatter.h"
-#include "sciformatter.h"
 #include "precision.h"
 #include "unicode/unistr.h"
 #include "unicode/plurrule.h"
@@ -22,56 +21,50 @@
 #include "uassert.h"
 #include "smallintformatter.h"
 #include "digitgrouping.h"
+#include "visibledigits.h"
 
 U_NAMESPACE_BEGIN
 
-const UChar gOther[] = {0x6f, 0x74, 0x68, 0x65, 0x72, 0x0};
-
-UnicodeString
-ValueFormatter::select(
-        const PluralRules &rules,
-        const DigitList &value) const {
+VisibleDigitsWithExponent &
+ValueFormatter::toVisibleDigitsWithExponent(
+        int64_t value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
     switch (fType) {
     case kFixedDecimal:
-        {
-            DigitInterval interval;
-            return rules.select(
-                    FixedDecimal(
-                            value,
-                            fFixedPrecision->getInterval(value, interval)));
-        }
+        return fFixedPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
         break;
     case kScientificNotation:
-        return UnicodeString(TRUE, gOther, -1);
+        return fScientificPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
+        break;
     default:
         U_ASSERT(FALSE);
         break;
     }
-    return UnicodeString();
+    return digits;
 }
 
-FixedDecimal &
-ValueFormatter::getFixedDecimal(
-        const DigitList &value, FixedDecimal &result) const {
+VisibleDigitsWithExponent &
+ValueFormatter::toVisibleDigitsWithExponent(
+        DigitList &value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
     switch (fType) {
     case kFixedDecimal:
-        {
-            DigitInterval interval;
-            result = FixedDecimal(
-                            value,
-                            fFixedPrecision->getInterval(value, interval));
-            return result;
-        }
+        return fFixedPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
         break;
     case kScientificNotation:
-        // This forces the form to be "other"
-        result.isNanOrInfinity = TRUE;
-        return result;
+        return fScientificPrecision->initVisibleDigitsWithExponent(
+                value, digits, status);
+        break;
     default:
         U_ASSERT(FALSE);
         break;
     }
-    return result;
+    return digits;
 }
 
 static UBool isNoGrouping(
@@ -151,42 +144,24 @@ ValueFormatter::formatInt32(
 
 UnicodeString &
 ValueFormatter::format(
-        const DigitList &value,
+        const VisibleDigitsWithExponent &value,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
-    if (value.isNaN()) {
-        return fDigitFormatter->formatNaN(handler, appendTo);
-    }
-    if (value.isInfinite()) {
-        return fDigitFormatter->formatInfinity(handler, appendTo);
-    }
     switch (fType) {
     case kFixedDecimal:
-        {
-            DigitInterval interval;
-            return fDigitFormatter->format(
-                    value,
-                    *fGrouping,
-                    fFixedPrecision->getInterval(value, interval),
-                    *fFixedOptions,
-                    handler,
-                    appendTo);
-        }
+        return fDigitFormatter->format(
+                value.getMantissa(),
+                *fGrouping,
+                *fFixedOptions,
+                handler,
+                appendTo);
         break;
     case kScientificNotation:
-        {
-            DigitList mantissa(value);
-            int32_t exponent = fScientificPrecision->toScientific(mantissa);
-            DigitInterval interval;
-            return fSciFormatter->format(
-                    mantissa,
-                    exponent,
-                    *fDigitFormatter,
-                    fScientificPrecision->fMantissa.getInterval(mantissa, interval),
-                    *fScientificOptions,
-                    handler,
-                    appendTo);
-        }
+        return fDigitFormatter->format(
+                value,
+                *fScientificOptions,
+                handler,
+                appendTo);
         break;
     default:
         U_ASSERT(FALSE);
@@ -196,34 +171,18 @@ ValueFormatter::format(
 }
 
 int32_t
-ValueFormatter::countChar32(const DigitList &value) const {
-    if (value.isNaN()) {
-        return fDigitFormatter->countChar32ForNaN();
-    }
-    if (value.isInfinite()) {
-        return fDigitFormatter->countChar32ForInfinity();
-    }
+ValueFormatter::countChar32(const VisibleDigitsWithExponent &value) const {
     switch (fType) {
     case kFixedDecimal:
-        {
-            DigitInterval interval;
-            return fDigitFormatter->countChar32(
-                    *fGrouping,
-                    fFixedPrecision->getInterval(value, interval),
-                    *fFixedOptions);
-        }
+        return fDigitFormatter->countChar32(
+                value.getMantissa(),
+                *fGrouping,
+                *fFixedOptions);
         break;
     case kScientificNotation:
-        {
-            DigitList mantissa(value);
-            int32_t exponent = fScientificPrecision->toScientific(mantissa);
-            DigitInterval interval;
-            return fSciFormatter->countChar32(
-                    exponent,
-                    *fDigitFormatter,
-                    fScientificPrecision->fMantissa.getInterval(mantissa, interval),
-                    *fScientificOptions);
-        }
+        return fDigitFormatter->countChar32(
+                value,
+                *fScientificOptions);
         break;
     default:
         U_ASSERT(FALSE);
@@ -247,12 +206,10 @@ ValueFormatter::prepareFixedDecimalFormatting(
 
 void
 ValueFormatter::prepareScientificFormatting(
-        const SciFormatter &sciformatter,
         const DigitFormatter &formatter,
         const ScientificPrecision &precision,
         const SciFormatterOptions &options) {
     fType = kScientificNotation;
-    fSciFormatter = &sciformatter;
     fDigitFormatter = &formatter;
     fScientificPrecision = &precision;
     fScientificOptions = &options;

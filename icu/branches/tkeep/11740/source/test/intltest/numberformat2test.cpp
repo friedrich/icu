@@ -15,7 +15,6 @@
 #if !UCONFIG_NO_FORMATTING
 
 #include "digitformatter.h"
-#include "sciformatter.h"
 #include "digitinterval.h"
 #include "significantdigitinterval.h"
 #include "digitlst.h"
@@ -33,9 +32,7 @@
 #include "charstr.h"
 #include "smallintformatter.h"
 #include "uassert.h"
-
-static const int32_t kIntField = 4938;
-static const int32_t kSignField = 5770;
+#include "visibledigits.h"
 
 struct NumberFormat2Test_Attributes {
     int32_t id;
@@ -98,12 +95,18 @@ private:
     void TestSmallIntFormatter();
     void TestPositiveIntDigitFormatter();
     void TestDigitListInterval();
+    void TestLargeIntValue();
+    void TestIntInitVisibleDigits();
+    void TestIntInitVisibleDigitsToDigitList();
+    void TestDoubleInitVisibleDigits();
+    void TestDoubleInitVisibleDigitsToDigitList();
+    void TestDigitListInitVisibleDigits();
+    void TestSpecialInitVisibleDigits();
+    void TestVisibleDigitsWithExponent();
     void TestDigitAffixesAndPadding();
     void TestPluralsAndRounding();
     void TestPluralsAndRoundingScientific();
-    void TestValueFormatter();
     void TestValueFormatterIsFastFormattable();
-    void TestValueFormatterScientific();
     void TestCurrencyAffixInfo();
     void TestAffixPattern();
     void TestAffixPatternAppend();
@@ -113,30 +116,15 @@ private:
     void TestPluralAffix();
     void TestDigitAffix();
     void TestDigitFormatterDefaultCtor();
-    void TestDigitIntFormatter();
     void TestDigitFormatterMonetary();
     void TestDigitFormatter();
     void TestSciFormatterDefaultCtor();
     void TestSciFormatter();
-    void TestDigitListToFixedDecimal();
-    void TestApplyPatternResets();
     void TestToPatternScientific11648();
     void verifyInterval(const DigitInterval &, int32_t minInclusive, int32_t maxExclusive);
-    void verifyFixedDecimal(
-            const FixedDecimal &result,
-            int64_t numerator,
-            int64_t denominator,
-            UBool bNegative,
-            int32_t v,
-            int64_t f);
     void verifyAffix(
             const UnicodeString &expected,
             const DigitAffix &affix,
-            const NumberFormat2Test_Attributes *expectedAttributes);
-    void verifyValueFormatter(
-            const UnicodeString &expected,
-            const ValueFormatter &formatter,
-            DigitList &digits,
             const NumberFormat2Test_Attributes *expectedAttributes);
     void verifyAffixesAndPadding(
             const UnicodeString &expected,
@@ -155,36 +143,26 @@ private:
     void verifyDigitList(
         const UnicodeString &expected,
         const DigitList &digits);
-    void verifyDigitIntFormatter(
-            const UnicodeString &expected,
-            const DigitFormatter &formatter,
-            int32_t value,
-            int32_t minDigits,
-            UBool alwaysShowSign,
-            const NumberFormat2Test_Attributes *expectedAttributes);
+    void verifyVisibleDigits(
+        const UnicodeString &expected,
+        UBool bNegative,
+        const VisibleDigits &digits);
+    void verifyVisibleDigitsWithExponent(
+        const UnicodeString &expected,
+        UBool bNegative,
+        const VisibleDigitsWithExponent &digits);
+    DigitFormatter formatter;
     void verifyDigitFormatter(
             const UnicodeString &expected,
             const DigitFormatter &formatter,
-            const DigitList &digits,
+            const VisibleDigits &digits,
             const DigitGrouping &grouping,
-            const DigitInterval &interval,
-            UBool alwaysShowDecimal,
-            const NumberFormat2Test_Attributes *expectedAttributes);
-    void verifyDigitFormatter(
-            const UnicodeString &expected,
-            const DigitFormatter &formatter,
-            const DigitList &digits,
-            const DigitGrouping &grouping,
-            const DigitInterval &interval,
             const DigitFormatterOptions &options,
             const NumberFormat2Test_Attributes *expectedAttributes);
     void verifySciFormatter(
             const UnicodeString &expected,
-            const SciFormatter &sciformatter,
-            const DigitList &mantissa,
-            int32_t exponent,
             const DigitFormatter &formatter,
-            const DigitInterval &interval,
+            const VisibleDigitsWithExponent &digits,
             const SciFormatterOptions &options,
             const NumberFormat2Test_Attributes *expectedAttributes);
     void verifySmallIntFormatter(
@@ -202,6 +180,10 @@ private:
     void verifyAttributes(
             const NumberFormat2Test_Attributes *expected,
             const NumberFormat2Test_Attributes *actual);
+    void verifyIntValue(
+            int64_t expected, const VisibleDigits &digits);
+    void verifySource(
+            double expected, const VisibleDigits &digits);
 };
 
 void NumberFormat2Test::runIndexedTest(
@@ -219,7 +201,6 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestGroupingUsed);
     TESTCASE_AUTO(TestDigitListInterval);
     TESTCASE_AUTO(TestDigitFormatterDefaultCtor);
-    TESTCASE_AUTO(TestDigitIntFormatter);
     TESTCASE_AUTO(TestDigitFormatterMonetary);
     TESTCASE_AUTO(TestDigitFormatter);
     TESTCASE_AUTO(TestSciFormatterDefaultCtor);
@@ -236,14 +217,18 @@ void NumberFormat2Test::runIndexedTest(
     TESTCASE_AUTO(TestAffixPatternParser);
     TESTCASE_AUTO(TestPluralAffix);
     TESTCASE_AUTO(TestDigitAffix);
-    TESTCASE_AUTO(TestValueFormatter);
     TESTCASE_AUTO(TestValueFormatterIsFastFormattable);
-    TESTCASE_AUTO(TestValueFormatterScientific);
+    TESTCASE_AUTO(TestLargeIntValue);
+    TESTCASE_AUTO(TestIntInitVisibleDigits);
+    TESTCASE_AUTO(TestIntInitVisibleDigitsToDigitList);
+    TESTCASE_AUTO(TestDoubleInitVisibleDigits);
+    TESTCASE_AUTO(TestDoubleInitVisibleDigitsToDigitList);
+    TESTCASE_AUTO(TestDigitListInitVisibleDigits);
+    TESTCASE_AUTO(TestSpecialInitVisibleDigits);
+    TESTCASE_AUTO(TestVisibleDigitsWithExponent);
     TESTCASE_AUTO(TestDigitAffixesAndPadding);
     TESTCASE_AUTO(TestPluralsAndRounding);
     TESTCASE_AUTO(TestPluralsAndRoundingScientific);
-    TESTCASE_AUTO(TestDigitListToFixedDecimal);
-    TESTCASE_AUTO(TestApplyPatternResets);
     TESTCASE_AUTO(TestToPatternScientific11648);
  
     TESTCASE_AUTO_END;
@@ -814,195 +799,20 @@ void NumberFormat2Test::TestPositiveIntDigitFormatter() {
 
 void NumberFormat2Test::TestDigitFormatterDefaultCtor() {
     DigitFormatter formatter;
-    DigitList digits;
-    DigitInterval interval;
+    VisibleDigits digits;
+    FixedPrecision precision;
+    UErrorCode status = U_ZERO_ERROR;
+    precision.initVisibleDigits(246.801, digits, status);
+    assertSuccess("", status);
     DigitGrouping grouping;
-    digits.set(246.801);
+    DigitFormatterOptions options;
     verifyDigitFormatter(
             "246.801",
             formatter,
             digits,
             grouping,
-            digits.getSmallestInterval(interval),
-            FALSE,
+            options,
             NULL);
-    verifyDigitIntFormatter(
-            "+023",
-            formatter,
-            23,
-            3,
-            TRUE,
-            NULL);
-}
-
-void NumberFormat2Test::TestDigitIntFormatter() {
-    UErrorCode status = U_ZERO_ERROR;
-    DecimalFormatSymbols symbols("en", status);
-    DigitFormatter formatter(symbols);
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 1},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "0",
-                formatter,
-                0,
-                0,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 2},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "+0",
-                formatter,
-                0,
-                0,
-                TRUE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 1},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "0",
-                formatter,
-                0,
-                1,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 2},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "+0",
-                formatter,
-                0,
-                1,
-                TRUE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 2},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-2",
-                formatter,
-                -2,
-                1,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 3},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-02",
-                formatter,
-                -2,
-                2,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 3},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-02",
-                formatter,
-                -2,
-                2,
-                TRUE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 11},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-2147483648",
-                formatter,
-                INT32_MIN,
-                1,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 11},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "+2147483647",
-                formatter,
-                INT32_MAX,
-                1,
-                TRUE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 12},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "002147483647",
-                formatter,
-                INT32_MAX,
-                12,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 9},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "007654321",
-                formatter,
-                7654321,
-                9,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kSignField, 0, 1},
-            {kIntField, 1, 10},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "-007654321",
-                formatter,
-                -7654321,
-                9,
-                FALSE,
-                expectedAttributes);
-    }
-    {
-        NumberFormat2Test_Attributes expectedAttributes[] = {
-            {kIntField, 0, 3},
-            {0, -1, 0}};
-        verifyDigitIntFormatter(
-                "100",
-                formatter,
-                100,
-                0,
-                FALSE,
-                expectedAttributes);
-    }
 }
 
 void NumberFormat2Test::TestDigitFormatterMonetary() {
@@ -1015,28 +825,29 @@ void NumberFormat2Test::TestDigitFormatterMonetary() {
             DecimalFormatSymbols::kMonetaryGroupingSeparatorSymbol,
             "grouping separator");
     DigitFormatter formatter(symbols);
-    DigitList digits;
-    DigitInterval interval;
+    VisibleDigits visibleDigits;
     DigitGrouping grouping;
+    FixedPrecision precision;
+    precision.initVisibleDigits(43560.02, visibleDigits, status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     DigitFormatterOptions options;
     grouping.fGrouping = 3;
-    digits.set(43560.02);
     {
         verifyDigitFormatter(
                 "43,560.02",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                digits.getSmallestInterval(interval),
                 options,
                 NULL);
         formatter.setDecimalFormatSymbolsForMonetary(symbols);
         verifyDigitFormatter(
                 "43grouping separator560decimal separator02",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                digits.getSmallestInterval(interval),
                 options,
                 NULL);
     }
@@ -1046,41 +857,45 @@ void NumberFormat2Test::TestDigitFormatter() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
     DigitFormatter formatter(symbols);
-    DigitList digits;
     DigitInterval interval;
     {
+        VisibleDigits visibleDigits;
         DigitGrouping grouping;
-        digits.set(8192);
+        FixedPrecision precision;
+        precision.initVisibleDigits((int64_t) 8192, visibleDigits, status);
+        if (!assertSuccess("", status)) {
+            return;
+        }
+        DigitFormatterOptions options;
         verifyDigitFormatter(
                 "8192",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                digits.getSmallestInterval(interval),
-                FALSE,
+                options,
                 NULL);
         NumberFormat2Test_Attributes expectedAttributes[] = {
             {UNUM_INTEGER_FIELD, 0, 4},
             {UNUM_DECIMAL_SEPARATOR_FIELD, 4, 5},
             {0, -1, 0}};
+        options.fAlwaysShowDecimal = TRUE;
         verifyDigitFormatter(
                 "8192.",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                digits.getSmallestInterval(interval),
-                TRUE,
+                options,
                 expectedAttributes);
 
         // Turn on grouping
         grouping.fGrouping = 3;
+        options.fAlwaysShowDecimal = FALSE;
         verifyDigitFormatter(
                 "8,192",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                digits.getSmallestInterval(interval),
-                FALSE,
+                options,
                 NULL);
 
         // turn on min grouping which will suppress grouping
@@ -1088,33 +903,40 @@ void NumberFormat2Test::TestDigitFormatter() {
         verifyDigitFormatter(
                 "8192",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                digits.getSmallestInterval(interval),
-                FALSE,
+                options,
                 NULL);
 
         // adding one more digit will enable grouping once again.
-        digits.set(43560);
+        precision.initVisibleDigits((int64_t) 43560, visibleDigits, status);
+        if (!assertSuccess("", status)) {
+            return;
+        }
         verifyDigitFormatter(
                 "43,560",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                digits.getSmallestInterval(interval),
-                FALSE,
+                options,
                 NULL);
     }
     {
         DigitGrouping grouping;
-        digits.set(31415926.0078125);
+        FixedPrecision precision;
+        VisibleDigits visibleDigits;
+        precision.initVisibleDigits(
+                31415926.0078125, visibleDigits, status);
+        if (!assertSuccess("", status)) {
+            return;
+        }
+        DigitFormatterOptions options;
         verifyDigitFormatter(
                 "31415926.0078125",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                digits.getSmallestInterval(interval),
-                FALSE,
+                options,
                 NULL);
 
         // Turn on grouping with secondary.
@@ -1123,15 +945,19 @@ void NumberFormat2Test::TestDigitFormatter() {
         verifyDigitFormatter(
                 "314,159,26.0078125",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                digits.getSmallestInterval(interval),
-                FALSE,
+                options,
                 NULL);
 
         // Pad with zeros by widening interval.
-        interval.setIntDigitCount(9);
-        interval.setFracDigitCount(10);
+        precision.fMin.setIntDigitCount(9);
+        precision.fMin.setFracDigitCount(10);
+        precision.initVisibleDigits(
+                31415926.0078125, visibleDigits, status);
+        if (!assertSuccess("", status)) {
+            return;
+        }
         NumberFormat2Test_Attributes expectedAttributes[] = {
             {UNUM_GROUPING_SEPARATOR_FIELD, 1, 2},
             {UNUM_GROUPING_SEPARATOR_FIELD, 5, 6},
@@ -1143,112 +969,123 @@ void NumberFormat2Test::TestDigitFormatter() {
         verifyDigitFormatter(
                 "0,314,159,26.0078125000",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                interval,
-                FALSE,
+                options,
                 expectedAttributes);
     }
     {
         DigitGrouping grouping;
-        digits.set(3125);
-        interval.setIntDigitCount(0);
-        interval.setFracDigitCount(0);
+        FixedPrecision precision;
+        VisibleDigits visibleDigits;
+        DigitFormatterOptions options;
+        precision.fMax.setIntDigitCount(0);
+        precision.fMax.setFracDigitCount(0);
+        precision.initVisibleDigits(
+                3125.0, visibleDigits, status);
+        if (!assertSuccess("", status)) {
+            return;
+        }
         NumberFormat2Test_Attributes expectedAttributes[] = {
             {UNUM_INTEGER_FIELD, 0, 1},
             {0, -1, 0}};
         verifyDigitFormatter(
                 "0",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                interval,
-                FALSE,
+                options,
                 expectedAttributes);
-    }
-    {
-        DigitGrouping grouping;
-        digits.set(3125);
-        interval.setIntDigitCount(0);
-        interval.setFracDigitCount(0);
-        NumberFormat2Test_Attributes expectedAttributes[] = {
+        NumberFormat2Test_Attributes expectedAttributesWithDecimal[] = {
             {UNUM_INTEGER_FIELD, 0, 1},
             {UNUM_DECIMAL_SEPARATOR_FIELD, 1, 2},
             {0, -1, 0}};
+        options.fAlwaysShowDecimal = TRUE;
         verifyDigitFormatter(
                 "0.",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                interval,
-                TRUE,
-                expectedAttributes);
+                options,
+                expectedAttributesWithDecimal);
     }
     {
         DigitGrouping grouping;
-        digits.set(3125);
-        interval.setIntDigitCount(1);
-        interval.setFracDigitCount(1);
+        FixedPrecision precision;
+        VisibleDigits visibleDigits;
+        DigitFormatterOptions options;
+        precision.fMax.setIntDigitCount(1);
+        precision.fMin.setFracDigitCount(1);
+        precision.initVisibleDigits(
+                3125.0, visibleDigits, status);
+        if (!assertSuccess("", status)) {
+            return;
+        }
         NumberFormat2Test_Attributes expectedAttributes[] = {
             {UNUM_INTEGER_FIELD, 0, 1},
             {UNUM_DECIMAL_SEPARATOR_FIELD, 1, 2},
             {UNUM_FRACTION_FIELD, 2, 3},
             {0, -1, 0}};
+        options.fAlwaysShowDecimal = TRUE;
         verifyDigitFormatter(
                 "5.0",
                 formatter,
-                digits,
+                visibleDigits,
                 grouping,
-                interval,
-                TRUE,
+                options,
                 expectedAttributes);
     }
 }
 
 void NumberFormat2Test::TestSciFormatterDefaultCtor() {
-    SciFormatter sciformatter;
     DigitFormatter formatter;
-    DigitList mantissa;
-    DigitInterval interval;
+    ScientificPrecision precision;
+    VisibleDigitsWithExponent visibleDigits;
+    UErrorCode status = U_ZERO_ERROR;
+    precision.initVisibleDigitsWithExponent(
+            6.02E23, visibleDigits, status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     SciFormatterOptions options;
-    {
-        mantissa.set(6.02);
-        verifySciFormatter(
-                "6.02E23",
-                sciformatter,
-                mantissa,
-                23,
-                formatter,
-                mantissa.getSmallestInterval(interval),
-                options,
-                NULL);
+    verifySciFormatter(
+            "6.02E23",
+            formatter,
+            visibleDigits,
+            options,
+            NULL);
+    precision.initVisibleDigitsWithExponent(
+            6.62E-34, visibleDigits, status);
+    if (!assertSuccess("", status)) {
+        return;
     }
-    {
-        mantissa.set(6.62);
-        verifySciFormatter(
-                "6.62E-34",
-                sciformatter,
-                mantissa,
-                -34,
-                formatter,
-                mantissa.getSmallestInterval(interval),
-                options,
-                NULL);
-    }
+    verifySciFormatter(
+            "6.62E-34",
+            formatter,
+            visibleDigits,
+            options,
+            NULL);
 }
 
 void NumberFormat2Test::TestSciFormatter() {
+    DigitFormatter formatter;
+    ScientificPrecision precision;
+    precision.fMantissa.fMin.setIntDigitCount(4);
+    precision.fMantissa.fMax.setIntDigitCount(4);
+    precision.fMantissa.fMin.setFracDigitCount(0);
+    precision.fMantissa.fMax.setFracDigitCount(0);
+    precision.fMinExponentDigits = 3;
+    VisibleDigitsWithExponent visibleDigits;
     UErrorCode status = U_ZERO_ERROR;
-    DecimalFormatSymbols symbols("en", status);
-    SciFormatter sciformatter(symbols);
-    DigitFormatter formatter(symbols);
-    DigitList mantissa;
-    DigitInterval interval;
+    precision.initVisibleDigitsWithExponent(
+            1.248E26, visibleDigits, status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     SciFormatterOptions options;
-    options.fExponent.fMinDigits = 3;
+
     {
         options.fExponent.fAlwaysShowSign = TRUE;
-        mantissa.set(1248);
         NumberFormat2Test_Attributes expectedAttributes[] = {
             {UNUM_INTEGER_FIELD, 0, 4},
             {UNUM_EXPONENT_SYMBOL_FIELD, 4, 5},
@@ -1257,18 +1094,14 @@ void NumberFormat2Test::TestSciFormatter() {
             {0, -1, 0}};
         verifySciFormatter(
                 "1248E+023",
-                sciformatter,
-                mantissa,
-                23,
                 formatter,
-                mantissa.getSmallestInterval(interval),
+                visibleDigits,
                 options,
                 expectedAttributes);
     }
     {
         options.fMantissa.fAlwaysShowDecimal = TRUE;
         options.fExponent.fAlwaysShowSign = FALSE;
-        mantissa.set(1248);
         NumberFormat2Test_Attributes expectedAttributes[] = {
             {UNUM_INTEGER_FIELD, 0, 4},
             {UNUM_DECIMAL_SEPARATOR_FIELD, 4, 5},
@@ -1277,77 +1110,10 @@ void NumberFormat2Test::TestSciFormatter() {
             {0, -1, 0}};
         verifySciFormatter(
                 "1248.E023",
-                sciformatter,
-                mantissa,
-                23,
                 formatter,
-                mantissa.getSmallestInterval(interval),
+                visibleDigits,
                 options,
                 expectedAttributes);
-    }
-}
-
-void NumberFormat2Test::TestValueFormatter() {
-    UErrorCode status = U_ZERO_ERROR;
-    DecimalFormatSymbols symbols("en", status);
-    DigitFormatter formatter(symbols);
-    DigitGrouping grouping;
-    grouping.fGrouping = 3;
-    FixedPrecision precision;
-    precision.fMin.setIntDigitCount(4);
-    precision.fMin.setFracDigitCount(2);
-    precision.fMax.setIntDigitCount(6);
-    precision.fMax.setFracDigitCount(4);
-    DigitFormatterOptions options;
-    ValueFormatter vf;
-    vf.prepareFixedDecimalFormatting(
-            formatter,
-            grouping,
-            precision,
-            options);
-    DigitList digits;
-    {
-        digits.set(3.49951);
-        verifyValueFormatter(
-                "0,003.4995",
-                vf,
-                digits,
-                NULL);
-    }
-    {
-        digits.set(3.499951);
-        verifyValueFormatter(
-                "0,003.50",
-                vf,
-                digits,
-                NULL);
-    }
-    {
-        digits.set(1234567.89008);
-        verifyValueFormatter(
-                "234,567.8901",
-                vf,
-                digits,
-                NULL);
-    }
-    // significant digits too
-    precision.fSignificant.setMin(3);
-    precision.fSignificant.setMax(4);
-    {
-        digits.set(342.562);
-        verifyValueFormatter(
-                "0,342.60",
-                vf,
-                digits,
-                NULL);
-    }
-    {
-        digits.set(0.57);
-        verifyValueFormatter(
-                "0,000.570",
-                vf,
-                digits,
-                NULL);
     }
 }
 
@@ -1475,67 +1241,12 @@ void NumberFormat2Test::TestValueFormatterIsFastFormattable() {
     {
         // test scientific notation
         ScientificPrecision precision;
-        SciFormatter sciformatter;
         SciFormatterOptions options;
         ValueFormatter vf;
         vf.prepareScientificFormatting(
-                sciformatter, formatter, precision, options);
+                formatter, precision, options);
         assertFalse("1081", vf.isFastFormattable(1081));
     }
-}
-
-void NumberFormat2Test::TestValueFormatterScientific() {
-    UErrorCode status = U_ZERO_ERROR;
-    DecimalFormatSymbols symbols("en", status);
-    SciFormatter sciformatter(symbols);
-    DigitFormatter formatter(symbols);
-    ScientificPrecision precision;
-    precision.fMantissa.fSignificant.setMax(3);
-    SciFormatterOptions options;
-    ValueFormatter vf;
-    vf.prepareScientificFormatting(
-            sciformatter,
-            formatter,
-            precision,
-            options);
-    DigitList digits;
-    {
-        digits.set(43560);
-        verifyValueFormatter(
-                "4.36E4",
-                vf,
-                digits,
-                NULL);
-    }
-    {
-        digits.set(43560);
-        precision.fMantissa.fMax.setIntDigitCount(3);
-        verifyValueFormatter(
-                "43.6E3",
-                vf,
-                digits,
-                NULL);
-    }
-    {
-        digits.set(43560);
-        precision.fMantissa.fMin.setIntDigitCount(3);
-        verifyValueFormatter(
-                "436E2",
-                vf,
-                digits,
-                NULL);
-    }
-    {
-        digits.set(43560);
-        options.fExponent.fAlwaysShowSign = TRUE;
-        options.fExponent.fMinDigits = 2;
-        verifyValueFormatter(
-                "436E+02",
-                vf,
-                digits,
-                NULL);
-    }
-
 }
 
 void NumberFormat2Test::TestDigitAffix() {
@@ -1940,6 +1651,496 @@ void NumberFormat2Test::TestAffixPatternAppendAjoiningLiterals() {
   assertSuccess("", status);
 }
 
+void NumberFormat2Test::TestLargeIntValue() {
+    VisibleDigits digits;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+
+        // Last 18 digits for int values.
+        verifyIntValue(
+                223372036854775807LL, 
+                precision.initVisibleDigits(INT64_MAX, digits, status));
+        assertSuccess("INT64_MAX", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setIntDigitCount(5);
+
+        // Last 18 digits for int values.
+        verifyIntValue(
+                75807LL, 
+                precision.initVisibleDigits(INT64_MAX, digits, status));
+        verifySource(75807.0, digits);
+        assertSuccess("75807", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+
+        // Last 18 digits for int values.
+        verifyIntValue(
+                223372036854775808LL, 
+                precision.initVisibleDigits(INT64_MIN, digits, status));
+        assertSuccess("INT64_MIN", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setIntDigitCount(5);
+
+        // Last 18 digits for int values.
+        verifyIntValue(
+                75808LL, 
+                precision.initVisibleDigits(INT64_MIN, digits, status));
+        verifySource(75808.0, digits);
+        assertSuccess("75808", status);
+    }
+        
+}
+
+void NumberFormat2Test::TestIntInitVisibleDigits() {
+    VisibleDigits digits;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        verifyVisibleDigits(
+                "13",
+                FALSE,
+                precision.initVisibleDigits((int64_t) 13LL, digits, status));
+        assertSuccess("13", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        verifyVisibleDigits(
+                "17",
+                TRUE,
+                precision.initVisibleDigits((int64_t) -17LL, digits, status));
+        assertSuccess("-17", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        verifyVisibleDigits(
+                "9223372036854775808",
+                TRUE,
+                precision.initVisibleDigits(INT64_MIN, digits, status));
+        assertSuccess("-9223372036854775808", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        verifyVisibleDigits(
+                "9223372036854775807",
+                FALSE,
+                precision.initVisibleDigits(INT64_MAX, digits, status));
+        assertSuccess("9223372036854775807", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        verifyVisibleDigits(
+                "31536000",
+                TRUE,
+                precision.initVisibleDigits((int64_t) -31536000LL, digits, status));
+        assertSuccess("-31536000", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        verifyVisibleDigits(
+                "0",
+                FALSE,
+                precision.initVisibleDigits((int64_t) 0LL, digits, status));
+        assertSuccess("0", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMin.setIntDigitCount(4);
+        precision.fMin.setFracDigitCount(2);
+        verifyVisibleDigits(
+                "0000.00",
+                FALSE,
+                precision.initVisibleDigits((int64_t) 0LL, digits, status));
+        assertSuccess("0", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMin.setIntDigitCount(4);
+        precision.fMin.setFracDigitCount(2);
+        verifyVisibleDigits(
+                "0057.00",
+                FALSE,
+                precision.initVisibleDigits((int64_t) 57LL, digits, status));
+        assertSuccess("57", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMin.setIntDigitCount(4);
+        precision.fMin.setFracDigitCount(2);
+        verifyVisibleDigits(
+                "0057.00",
+                TRUE,
+                precision.initVisibleDigits((int64_t) -57LL, digits, status));
+        assertSuccess("-57", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setIntDigitCount(2);
+        precision.fMin.setFracDigitCount(1);
+        verifyVisibleDigits(
+                "35.0",
+                FALSE,
+                precision.initVisibleDigits((int64_t) 235LL, digits, status));
+        assertSuccess("235", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setIntDigitCount(2);
+        precision.fMin.setFracDigitCount(1);
+        precision.fFailIfOverMax = TRUE;
+        precision.initVisibleDigits((int64_t) 239LL, digits, status);
+        if (status != U_ILLEGAL_ARGUMENT_ERROR) {
+            errln("239: Expected U_ILLEGAL_ARGUMENT_ERROR");
+        }
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMin(5);
+        verifyVisibleDigits(
+                "153.00",
+                FALSE,
+                precision.initVisibleDigits((int64_t) 153LL, digits, status));
+        assertSuccess("153", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMax(2);
+        precision.fExactOnly = TRUE;
+        precision.initVisibleDigits((int64_t) 154LL, digits, status);
+        if (status != U_FORMAT_INEXACT_ERROR) {
+            errln("154: Expected U_FORMAT_INEXACT_ERROR");
+        }
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMax(5);
+        verifyVisibleDigits(
+                "150",
+                FALSE,
+                precision.initVisibleDigits((int64_t) 150LL, digits, status));
+        assertSuccess("150", status);
+    }
+}
+
+void NumberFormat2Test::TestIntInitVisibleDigitsToDigitList() {
+    VisibleDigits digits;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fRoundingIncrement.set(7.3);
+        verifyVisibleDigits(
+                "29.2",
+                TRUE,
+                precision.initVisibleDigits((int64_t) -30LL, digits, status));
+        assertSuccess("-29.2", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fRoundingIncrement.set(7.3);
+        precision.fRoundingMode = DecimalFormat::kRoundFloor;
+        verifyVisibleDigits(
+                "36.5",
+                TRUE,
+                precision.initVisibleDigits((int64_t) -30LL, digits, status));
+        assertSuccess("-36.5", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMax(3);
+        precision.fRoundingMode = DecimalFormat::kRoundCeiling;
+        verifyVisibleDigits(
+                "1390",
+                FALSE,
+                precision.initVisibleDigits((int64_t) 1381LL, digits, status));
+        assertSuccess("1390", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMax(1);
+        precision.fRoundingMode = DecimalFormat::kRoundFloor;
+        verifyVisibleDigits(
+                "2000",
+                TRUE,
+                precision.initVisibleDigits((int64_t) -1381LL, digits, status));
+        assertSuccess("-2000", status);
+    }
+}
+
+void NumberFormat2Test::TestDoubleInitVisibleDigits() {
+    VisibleDigits digits;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        verifyVisibleDigits(
+                "2.05",
+                FALSE,
+                precision.initVisibleDigits(2.05, digits, status));
+        assertSuccess("2.05", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        verifyVisibleDigits(
+                "3547",
+                FALSE,
+                precision.initVisibleDigits(3547.0, digits, status));
+        assertSuccess("3547", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setFracDigitCount(2);
+        precision.fMax.setIntDigitCount(1);
+        precision.fFailIfOverMax = TRUE;
+        precision.fExactOnly = TRUE;
+        verifyVisibleDigits(
+                "2.05",
+                TRUE,
+                precision.initVisibleDigits(-2.05, digits, status));
+        assertSuccess("-2.05", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setFracDigitCount(1);
+        precision.fMax.setIntDigitCount(1);
+        precision.fFailIfOverMax = TRUE;
+        precision.fExactOnly = TRUE;
+        precision.initVisibleDigits(-2.05, digits, status);
+        if (status != U_FORMAT_INEXACT_ERROR) {
+            errln("6245.3: Expected U_FORMAT_INEXACT_ERROR");
+        }
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setFracDigitCount(2);
+        precision.fMax.setIntDigitCount(0);
+        precision.fFailIfOverMax = TRUE;
+        precision.fExactOnly = TRUE;
+        precision.initVisibleDigits(-2.05, digits, status);
+        if (status != U_ILLEGAL_ARGUMENT_ERROR) {
+            errln("-2.05: Expected U_ILLEGAL_ARGUMENT_ERROR");
+        }
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMin.setIntDigitCount(5);
+        precision.fMin.setFracDigitCount(2);
+        precision.fExactOnly = TRUE;
+        verifyVisibleDigits(
+                "06245.30",
+                FALSE,
+                precision.initVisibleDigits(6245.3, digits, status));
+        assertSuccess("06245.30", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMax(5);
+        precision.fExactOnly = TRUE;
+        verifyVisibleDigits(
+                "6245.3",
+                FALSE,
+                precision.initVisibleDigits(6245.3, digits, status));
+        assertSuccess("6245.3", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMax(4);
+        precision.fExactOnly = TRUE;
+        precision.initVisibleDigits(6245.3, digits, status);
+        if (status != U_FORMAT_INEXACT_ERROR) {
+            errln("6245.3: Expected U_FORMAT_INEXACT_ERROR");
+        }
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setIntDigitCount(3);
+        precision.fMin.setFracDigitCount(2);
+        verifyVisibleDigits(
+                "384.90",
+                FALSE,
+                precision.initVisibleDigits(2384.9, digits, status));
+        assertSuccess("380.00", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setIntDigitCount(3);
+        precision.fMin.setFracDigitCount(2);
+        precision.fFailIfOverMax = TRUE;
+        precision.initVisibleDigits(2384.9, digits, status);
+        if (status != U_ILLEGAL_ARGUMENT_ERROR) {
+            errln("2384.9: Expected U_ILLEGAL_ARGUMENT_ERROR");
+        }
+    }
+}
+
+void NumberFormat2Test::TestDoubleInitVisibleDigitsToDigitList() {
+    VisibleDigits digits;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        // 2.01 produces round off error when multiplied by powers of
+        // 10 forcing the use of DigitList.
+        verifyVisibleDigits(
+                "2.01",
+                TRUE,
+                precision.initVisibleDigits(-2.01, digits, status));
+        assertSuccess("-2.01", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMax(3);
+        precision.fMin.setFracDigitCount(2);
+        verifyVisibleDigits(
+                "2380.00",
+                FALSE,
+                precision.initVisibleDigits(2385.0, digits, status));
+        assertSuccess("2380.00", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setFracDigitCount(2);
+        verifyVisibleDigits(
+                "45.83",
+                TRUE,
+                precision.initVisibleDigits(-45.8251, digits, status));
+        assertSuccess("45.83", status);
+    }
+}
+
+void NumberFormat2Test::TestDigitListInitVisibleDigits() {
+    VisibleDigits digits;
+    DigitList dlist;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fMax.setIntDigitCount(3);
+        precision.fMin.setFracDigitCount(2);
+        precision.fFailIfOverMax = TRUE;
+        dlist.set(2384.9);
+        precision.initVisibleDigits(dlist, digits, status);
+        if (status != U_ILLEGAL_ARGUMENT_ERROR) {
+            errln("2384.9: Expected U_ILLEGAL_ARGUMENT_ERROR");
+        }
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMax(4);
+        precision.fExactOnly = TRUE;
+        dlist.set(6245.3);
+        precision.initVisibleDigits(dlist, digits, status);
+        if (status != U_FORMAT_INEXACT_ERROR) {
+            errln("6245.3: Expected U_FORMAT_INEXACT_ERROR");
+        }
+    }
+}
+
+void NumberFormat2Test::TestSpecialInitVisibleDigits() {
+    VisibleDigits digits;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.fSignificant.setMax(3);
+        precision.fMin.setFracDigitCount(2);
+        precision.initVisibleDigits(-5.0 / 0.0, digits, status);
+        assertFalse("", digits.isNaN());
+        assertTrue("", digits.isInfinite());
+        assertTrue("", digits.isNegative());
+        assertSuccess("-Inf", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.initVisibleDigits(5.0 / 0.0, digits, status);
+        assertFalse("", digits.isNaN());
+        assertTrue("", digits.isInfinite());
+        assertFalse("", digits.isNegative());
+        assertSuccess("Inf", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        FixedPrecision precision;
+        precision.initVisibleDigits(uprv_getNaN(), digits, status);
+        assertTrue("", digits.isNaN());
+        assertSuccess("Inf", status);
+    }
+}
+
+void NumberFormat2Test::TestVisibleDigitsWithExponent() {
+    VisibleDigitsWithExponent digits;
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        ScientificPrecision precision;
+        precision.initVisibleDigitsWithExponent(389.256, digits, status);
+        verifyVisibleDigitsWithExponent(
+                "3.89256E2", FALSE, digits);
+        assertSuccess("3.89256E2", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        ScientificPrecision precision;
+        precision.initVisibleDigitsWithExponent(-389.256, digits, status);
+        verifyVisibleDigitsWithExponent(
+                "3.89256E2", TRUE, digits);
+        assertSuccess("-3.89256E2", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        ScientificPrecision precision;
+        precision.fMinExponentDigits = 3;
+        precision.fMantissa.fMin.setIntDigitCount(1);
+        precision.fMantissa.fMax.setIntDigitCount(3);
+        precision.initVisibleDigitsWithExponent(12345.67, digits, status);
+        verifyVisibleDigitsWithExponent(
+                "12.34567E003", FALSE, digits);
+        assertSuccess("12.34567E003", status);
+    }
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        ScientificPrecision precision;
+        precision.fMantissa.fRoundingIncrement.set(0.073);
+        precision.fMantissa.fMin.setIntDigitCount(2);
+        precision.fMantissa.fMax.setIntDigitCount(2);
+        precision.initVisibleDigitsWithExponent(999.74, digits, status);
+        verifyVisibleDigitsWithExponent(
+                "10.001E2", FALSE, digits);
+        assertSuccess("10.001E2", status);
+    }
+}
+
 void NumberFormat2Test::TestDigitAffixesAndPadding() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
@@ -2242,13 +2443,11 @@ void NumberFormat2Test::TestPluralsAndRoundingScientific() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
     DigitFormatter formatter(symbols);
-    SciFormatter sciformatter(symbols);
     ScientificPrecision precision;
     precision.fMantissa.fSignificant.setMax(4);
     SciFormatterOptions options;
     ValueFormatter vf;
     vf.prepareScientificFormatting(
-            sciformatter,
             formatter,
             precision,
             options);
@@ -2315,7 +2514,7 @@ void NumberFormat2Test::TestPluralsAndRoundingScientific() {
     }
     precision.fMantissa.fSignificant.setMin(4);
     options.fExponent.fAlwaysShowSign = TRUE;
-    options.fExponent.fMinDigits = 3;
+    precision.fMinExponentDigits = 3;
     {
         digits.set(3);
         NumberFormat2Test_Attributes expectedAttributes[] = {
@@ -2448,7 +2647,6 @@ void NumberFormat2Test::TestRoundingIncrement() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
     DigitFormatter formatter(symbols);
-    SciFormatter sciformatter(symbols);
     ScientificPrecision precision;
     SciFormatterOptions options;
     precision.fMantissa.fRoundingIncrement.set(0.25);
@@ -2515,7 +2713,6 @@ void NumberFormat2Test::TestRoundingIncrement() {
     precision.fMantissa.fMin.setIntDigitCount(2);
     // Scientific notation
     vf.prepareScientificFormatting(
-            sciformatter,
             formatter,
             precision,
             options);
@@ -2549,77 +2746,6 @@ void NumberFormat2Test::TestRoundingIncrement() {
     }
 }
 
-
-void NumberFormat2Test::TestDigitListToFixedDecimal() {
-    DigitList digits;
-    DigitInterval interval;
-    digits.set(-9217.875);
-    {
-        interval.setIntDigitCount(2);
-        interval.setFracDigitCount(1);
-        FixedDecimal result(digits, interval);
-        verifyFixedDecimal(result, 178, 10, TRUE, 1, 8);
-    }
-    {
-        interval.setIntDigitCount(6);
-        interval.setFracDigitCount(7);
-        FixedDecimal result(digits, interval);
-        verifyFixedDecimal(result, 9217875, 1000, TRUE, 7, 8750000);
-    }
-    {
-        digits.set(1234.56);
-        interval.setIntDigitCount(6);
-        interval.setFracDigitCount(25);
-        FixedDecimal result(digits, interval);
-        verifyFixedDecimal(result, 123456, 100, FALSE, 25, 560000000000000000LL);
-    }
-}
-
-void NumberFormat2Test::TestApplyPatternResets() {
-    // TODO: Known to fail. See ticket 11645
-/*
-    UErrorCode status = U_ZERO_ERROR;
-    UnicodeString pattern("#,###0.0");
-    DecimalFormat2 fmt("en", pattern, status);
-    if (!assertSuccess("", status)) {
-        return;
-    }
-    {
-        DecimalFormat2 fmtCopy(fmt);
-        fmtCopy.setMultiplier(37);
-        fmtCopy.applyPattern(pattern, status);
-        assertTrue("multiplier", fmt == fmtCopy);
-    }
-    {
-        DecimalFormat2 fmtCopy(fmt);
-        fmtCopy.setRoundingMode(DigitList::kRoundCeiling);
-        fmtCopy.applyPattern(pattern, status);
-        assertTrue("roundingMode", fmt == fmtCopy);
-    }
-    {
-        DecimalFormat2 fmtCopy(fmt);
-        assertFalse("", fmtCopy.isDecimalSeparatorAlwaysShown());
-        fmtCopy.setDecimalSeparatorAlwaysShown(TRUE);
-        fmtCopy.applyPattern(pattern, status);
-        assertTrue("decimalSeparatorAlwaysShown", fmt == fmtCopy);
-    }
-    {
-        DecimalFormat2 fmtCopy(fmt);
-        static UChar funnyCurrency[] = {0x45, 0x41, 0x54, 0x0}; // EAT
-        fmtCopy.setCurrency(funnyCurrency, status);
-        fmtCopy.applyPattern(pattern, status);
-        assertTrue("currency", fmt == fmtCopy);
-    }
-    {
-        DecimalFormat2 fmtCopy(fmt);
-        fmtCopy.setCurrencyUsage(UCURR_USAGE_CASH, status);
-        fmtCopy.applyPattern(pattern, status);
-        assertTrue("currencyUsage", fmt == fmtCopy);
-    }
-    assertSuccess("", status);
-*/
-}
-
 void NumberFormat2Test::TestToPatternScientific11648() {
 /*
     UErrorCode status = U_ZERO_ERROR;
@@ -2633,20 +2759,6 @@ void NumberFormat2Test::TestToPatternScientific11648() {
     // Fails, bad pattern.
     assertSuccess("", status);
 */
-}
-
-
-void NumberFormat2Test::verifyFixedDecimal(
-        const FixedDecimal &result,
-        int64_t numerator,
-        int64_t denominator,
-        UBool bNegative,
-        int32_t v,
-        int64_t f) {
-    assertEquals("", numerator, (int64_t) (result.source * (double) denominator + 0.5));
-    assertEquals("", v, result.visibleDecimalDigitCount);
-    assertEquals("", f, result.decimalDigits);
-    assertEquals("", bNegative, result.isNegative);
 }
 
 void NumberFormat2Test::verifyAffixesAndPadding(
@@ -2720,18 +2832,84 @@ void NumberFormat2Test::verifyAffix(
     }
 }
 
-void NumberFormat2Test::verifyValueFormatter(
+// Right now only works for positive values.
+void NumberFormat2Test::verifyDigitList(
         const UnicodeString &expected,
-        const ValueFormatter &formatter,
-        DigitList &digits,
-        const NumberFormat2Test_Attributes *expectedAttributes) {
+        const DigitList &digits) {
+    DigitFormatter formatter;
+    DigitGrouping grouping;
+    VisibleDigits visibleDigits;
+    FixedPrecision precision;
+    precision.fMin.setIntDigitCount(0);
+    DigitFormatterOptions options;
     UErrorCode status = U_ZERO_ERROR;
-    formatter.round(digits, status);
-    assertSuccess("", status);
+    DigitList dlCopy(digits);
+    precision.initVisibleDigits(
+            dlCopy, visibleDigits, status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
+    verifyDigitFormatter(
+            expected,
+            formatter,
+            visibleDigits,
+            grouping,
+            options,
+            NULL);
+}
+
+void NumberFormat2Test::verifyVisibleDigits(
+        const UnicodeString &expected,
+        UBool bNegative,
+        const VisibleDigits &digits) {
+    DigitFormatter formatter;
+    DigitGrouping grouping;
+    DigitFormatterOptions options;
+    verifyDigitFormatter(
+            expected,
+            formatter,
+            digits,
+            grouping,
+            options,
+            NULL);
+    if (digits.isNegative() != bNegative) {
+        errln(expected + ": Wrong sign.");
+    }
+    if (digits.isNaN() || digits.isInfinite()) {
+        errln(expected + ": Require real value.");
+    }
+}
+
+void NumberFormat2Test::verifyVisibleDigitsWithExponent(
+        const UnicodeString &expected,
+        UBool bNegative,
+        const VisibleDigitsWithExponent &digits) {
+    DigitFormatter formatter;
+    SciFormatterOptions options;
+    verifySciFormatter(
+            expected,
+            formatter,
+            digits,
+            options,
+            NULL);
+    if (digits.isNegative() != bNegative) {
+        errln(expected + ": Wrong sign.");
+    }
+    if (digits.isNaN() || digits.isInfinite()) {
+        errln(expected + ": Require real value.");
+    }
+}
+
+void NumberFormat2Test::verifySciFormatter(
+        const UnicodeString &expected,
+        const DigitFormatter &formatter,
+        const VisibleDigitsWithExponent &digits,
+        const SciFormatterOptions &options,
+        const NumberFormat2Test_Attributes *expectedAttributes) {
     assertEquals(
             "",
             expected.countChar32(),
-            formatter.countChar32(digits));
+            formatter.countChar32(digits, options));
     UnicodeString appendTo;
     NumberFormat2Test_FieldPositionHandler handler;
     assertEquals(
@@ -2739,88 +2917,6 @@ void NumberFormat2Test::verifyValueFormatter(
             expected,
             formatter.format(
                     digits,
-                    handler,
-                    appendTo));
-    if (expectedAttributes != NULL) {
-        verifyAttributes(expectedAttributes, handler.attributes);
-    }
-}
-
-// Right now only works for positive values.
-void NumberFormat2Test::verifyDigitList(
-        const UnicodeString &expected,
-        const DigitList &digits) {
-    DigitFormatter formatter;
-    DigitInterval interval;
-    DigitGrouping grouping;
-    verifyDigitFormatter(
-            expected,
-            formatter,
-            digits,
-            grouping,
-            digits.getSmallestInterval(interval),
-            FALSE,
-            NULL);
-}
-
-void NumberFormat2Test::verifyDigitIntFormatter(
-        const UnicodeString &expected,
-        const DigitFormatter &formatter,
-        int32_t value,
-        int32_t minDigits,
-        UBool alwaysShowSign,
-        const NumberFormat2Test_Attributes *expectedAttributes) {
-    DigitFormatterIntOptions options;
-    options.fMinDigits = minDigits;
-    options.fAlwaysShowSign = alwaysShowSign;
-    assertEquals(
-            "",
-            expected.countChar32(),
-            formatter.countChar32ForInt32(value, options));
-    UnicodeString appendTo;
-    NumberFormat2Test_FieldPositionHandler handler(expectedAttributes != NULL);
-    assertEquals(
-            "",
-            expected,
-            formatter.formatInt32(
-                    value,
-                    options,
-                    kSignField,
-                    kIntField,
-                    handler,
-                    appendTo));
-    if (expectedAttributes != NULL) {
-        verifyAttributes(expectedAttributes, handler.attributes);
-    }
-}
-
-void NumberFormat2Test::verifySciFormatter(
-        const UnicodeString &expected,
-        const SciFormatter &sciformatter,
-        const DigitList &mantissa,
-        int32_t exponent,
-        const DigitFormatter &formatter,
-        const DigitInterval &interval,
-        const SciFormatterOptions &options,
-        const NumberFormat2Test_Attributes *expectedAttributes) {
-    assertEquals(
-            "",
-            expected.countChar32(),
-            sciformatter.countChar32(
-                    exponent,
-                    formatter,
-                    interval,
-                    options));
-    UnicodeString appendTo;
-    NumberFormat2Test_FieldPositionHandler handler;
-    assertEquals(
-            "",
-            expected,
-            sciformatter.format(
-                    mantissa,
-                    exponent,
-                    formatter,
-                    interval,
                     options,
                     handler,
                     appendTo));
@@ -2855,35 +2951,14 @@ void NumberFormat2Test::verifyPositiveIntDigitFormatter(
 void NumberFormat2Test::verifyDigitFormatter(
         const UnicodeString &expected,
         const DigitFormatter &formatter,
-        const DigitList &digits,
+        const VisibleDigits &digits,
         const DigitGrouping &grouping,
-        const DigitInterval &interval,
-        UBool alwaysShowDecimal,
-        const NumberFormat2Test_Attributes *expectedAttributes) {
-    DigitFormatterOptions options;
-    options.fAlwaysShowDecimal = alwaysShowDecimal;
-    verifyDigitFormatter(
-            expected,
-            formatter,
-            digits,
-            grouping,
-            interval,
-            options,
-            expectedAttributes);
-}
-
-void NumberFormat2Test::verifyDigitFormatter(
-        const UnicodeString &expected,
-        const DigitFormatter &formatter,
-        const DigitList &digits,
-        const DigitGrouping &grouping,
-        const DigitInterval &interval,
         const DigitFormatterOptions &options,
         const NumberFormat2Test_Attributes *expectedAttributes) {
     assertEquals(
             "",
             expected.countChar32(),
-            formatter.countChar32(grouping, interval, options));
+            formatter.countChar32(digits, grouping, options));
     UnicodeString appendTo;
     NumberFormat2Test_FieldPositionHandler handler;
     assertEquals(
@@ -2892,7 +2967,6 @@ void NumberFormat2Test::verifyDigitFormatter(
             formatter.format(
                     digits,
                     grouping,
-                    interval,
                     options,
                     handler,
                     appendTo));
@@ -2930,6 +3004,36 @@ void NumberFormat2Test::verifyAttributes(
             "expected and actual not same length",
             expected[idx].spos,
             actual[idx].spos);
+}
+
+void NumberFormat2Test::verifyIntValue(
+        int64_t expected, const VisibleDigits &digits) {
+    double unusedSource;
+    int64_t intValue;
+    int64_t unusedF;
+    int64_t unusedT;
+    int32_t unusedV;
+    UBool unusedHasIntValue;
+    digits.getFixedDecimal(
+            unusedSource, intValue, unusedF,
+            unusedT, unusedV, unusedHasIntValue);
+    assertEquals("", expected, intValue);
+}
+
+void NumberFormat2Test::verifySource(
+        double expected, const VisibleDigits &digits) {
+    double source;
+    int64_t unusedIntValue;
+    int64_t unusedF;
+    int64_t unusedT;
+    int32_t unusedV;
+    UBool unusedHasIntValue;
+    digits.getFixedDecimal(
+            source, unusedIntValue, unusedF,
+            unusedT, unusedV, unusedHasIntValue);
+    if (expected != source) {
+        errln("Expected %f, got %f instead", expected, source);
+    }
 }
 
 extern IntlTest *createNumberFormat2Test() {

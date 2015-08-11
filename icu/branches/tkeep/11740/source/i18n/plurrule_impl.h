@@ -32,6 +32,7 @@ U_NAMESPACE_BEGIN
 class AndConstraint;
 class RuleChain;
 class DigitInterval;
+class VisibleDigits;
 
 static const UChar DOT             = ((UChar)0x002E);
 static const UChar SINGLE_QUOTE    = ((UChar)0x0027);
@@ -188,8 +189,8 @@ class U_I18N_API FixedDecimal: public UMemory {
     FixedDecimal(double  n, int32_t v, int64_t f);
     FixedDecimal(double n, int32_t);
     explicit FixedDecimal(double n);
+    explicit FixedDecimal(const VisibleDigits &n);
     FixedDecimal();
-    FixedDecimal(const DigitList &value, const DigitInterval &interval); 
     FixedDecimal(const UnicodeString &s, UErrorCode &ec);
     FixedDecimal(const FixedDecimal &other);
 

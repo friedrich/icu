@@ -14,7 +14,6 @@
 #include "unicode/utypes.h"
 #include "unicode/uobject.h"
 #include "affixpatternparser.h"
-#include "sciformatter.h"
 #include "digitformatter.h"
 #include "digitgrouping.h"
 #include "precision.h"
@@ -93,6 +92,16 @@ UnicodeString &format(
         UnicodeString &appendTo,
         FieldPositionIterator *posIter,
         UErrorCode &status) const;
+UnicodeString &format(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const;
+UnicodeString &format(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const;
 
 UBool operator==(const DecimalFormatImpl &) const;
 
@@ -103,6 +112,7 @@ UBool operator!=(const DecimalFormatImpl &other) const {
 void setRoundingMode(DecimalFormat::ERoundingMode mode) {
     fRoundingMode = mode;
     fEffPrecision.fMantissa.fExactOnly = (fRoundingMode == DecimalFormat::kRoundUnnecessary);
+    fEffPrecision.fMantissa.fRoundingMode = mode;
 }
 DecimalFormat::ERoundingMode getRoundingMode() const {
     return fRoundingMode;
@@ -169,10 +179,10 @@ void setPadPosition(DigitAffixesAndPadding::EPadPosition x) {
     fAap.fPadPosition = x;
 }
 int32_t getMinimumExponentDigits() const {
-    return fOptions.fExponent.fMinDigits;
+    return fEffPrecision.fMinExponentDigits;
 }
 void setMinimumExponentDigits(int32_t x) {
-    fOptions.fExponent.fMinDigits = x;
+    fEffPrecision.fMinExponentDigits = x;
 }
 UBool isExponentSignAlwaysShown() const {
     return fOptions.fExponent.fAlwaysShowSign;
@@ -195,11 +205,26 @@ void setPositiveSuffix(const UnicodeString &str);
 void setNegativePrefix(const UnicodeString &str);
 void setNegativeSuffix(const UnicodeString &str);
 UnicodeString &toPattern(UnicodeString& result) const;
-UnicodeString select(double value, const PluralRules &rules) const;
-UnicodeString select(DigitList &number, const PluralRules &rules) const;
-FixedDecimal &getFixedDecimal(double value, FixedDecimal &result) const;
-FixedDecimal &getFixedDecimal(DigitList &number, FixedDecimal &result) const;
+FixedDecimal &getFixedDecimal(double value, FixedDecimal &result, UErrorCode &status) const;
+FixedDecimal &getFixedDecimal(DigitList &number, FixedDecimal &result, UErrorCode &status) const;
 DigitList &round(DigitList &number, UErrorCode &status) const;
+
+VisibleDigitsWithExponent &
+initVisibleDigitsWithExponent(
+        int64_t number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+VisibleDigitsWithExponent &
+initVisibleDigitsWithExponent(
+        double number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+VisibleDigitsWithExponent &
+initVisibleDigitsWithExponent(
+        DigitList &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
 
 private:
 
@@ -236,7 +261,7 @@ UBool fUseGrouping;
 
 // Updating any of the following fields triggers updates on the following:
 // fMonetary, fRules, fAffixParser, fCurrencyAffixInfo,
-// fSciFormatter, fFormatter, fAap.fPositivePrefiix, fAap.fPositiveSuffix,
+// fFormatter, fAap.fPositivePrefiix, fAap.fPositiveSuffix,
 // fAap.fNegativePrefiix, fAap.fNegativeSuffix
 // We do this two phase update because localizing the affix patterns
 // and formatters can be expensive. Better to do it once with the setters
@@ -264,12 +289,23 @@ ScientificPrecision fEffPrecision;
 // The actual grouping used when formatting
 DigitGrouping fEffGrouping;
 SciFormatterOptions fOptions;   // Encapsulates fixed precision options
-SciFormatter fSciFormatter;
 DigitFormatter fFormatter;
 DigitAffixesAndPadding fAap;
 
 UnicodeString &formatInt32(
         int32_t number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+UnicodeString &formatInt64(
+        int64_t number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+UnicodeString &formatDouble(
+        double number,
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const;
@@ -286,6 +322,31 @@ UnicodeString &formatAdjustedDigitList(
         DigitList &number,
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+UnicodeString &formatVisibleDigitsWithExponent(
+        const VisibleDigitsWithExponent &number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+VisibleDigitsWithExponent &
+initVisibleDigitsFromAdjusted(
+        DigitList &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+template<class T>
+UBool maybeFormatWithDigitList(
+        T number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const;
+
+template<class T>
+UBool maybeInitVisibleDigitsFromDigitList(
+        T number,
+        VisibleDigitsWithExponent &digits,
         UErrorCode &status) const;
 
 DigitList &adjustDigitList(DigitList &number, UErrorCode &status) const;
@@ -335,8 +396,6 @@ void updateFormattingCurrencyAffixInfo(
         UBool updatePrecisionBasedOnCurrency,
         UErrorCode &status);
 void updateFormattingFixedPointFormatter(
-        int32_t &changedFormattingFields);
-void updateFormattingScientificFormatter(
         int32_t &changedFormattingFields);
 void updateFormattingLocalizedPositivePrefix(
         int32_t &changedFormattingFields, UErrorCode &status);

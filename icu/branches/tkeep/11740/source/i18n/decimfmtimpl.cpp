@@ -14,6 +14,7 @@
 #include "fphdlimp.h"
 #include "plurrule_impl.h"
 #include <math.h>
+#include "visibledigits.h"
 
 U_NAMESPACE_BEGIN
 
@@ -105,7 +106,6 @@ DecimalFormatImpl::DecimalFormatImpl(const DecimalFormatImpl &other) :
           fEffPrecision(other.fEffPrecision),
           fEffGrouping(other.fEffGrouping),
           fOptions(other.fOptions),
-          fSciFormatter(other.fSciFormatter),
           fFormatter(other.fFormatter),
           fAap(other.fAap) {
     fSymbols = new DecimalFormatSymbols(*fSymbols);
@@ -146,7 +146,6 @@ DecimalFormatImpl::operator=(const DecimalFormatImpl &other) {
     fEffPrecision = other.fEffPrecision;
     fEffGrouping = other.fEffGrouping;
     fOptions = other.fOptions;
-    fSciFormatter = other.fSciFormatter;
     fFormatter = other.fFormatter;
     fAap = other.fAap;
     *fSymbols = *other.fSymbols;
@@ -191,7 +190,6 @@ DecimalFormatImpl::operator==(const DecimalFormatImpl &other) const {
             && fEffPrecision.equals(other.fEffPrecision)
             && fEffGrouping.equals(other.fEffGrouping)
             && fOptions.equals(other.fOptions)
-            && fSciFormatter.equals(other.fSciFormatter)
             && fFormatter.equals(other.fFormatter)
             && fAap.equals(other.fAap)
             && (*fSymbols == *other.fSymbols)
@@ -211,7 +209,7 @@ ValueFormatter &
 DecimalFormatImpl::prepareValueFormatter(ValueFormatter &vf) const {
     if (fUseScientific) {
         vf.prepareScientificFormatting(
-                fSciFormatter, fFormatter, fEffPrecision, fOptions);
+                fFormatter, fEffPrecision, fOptions);
         return vf;
     }
     vf.prepareFixedDecimalFormatting(
@@ -270,9 +268,9 @@ DecimalFormatImpl::format(
     return formatInt32(number, appendTo, handler, status);
 }
 
-UnicodeString &
-DecimalFormatImpl::formatInt32(
-        int32_t number,
+template<class T>
+UBool DecimalFormatImpl::maybeFormatWithDigitList(
+        T number,
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
@@ -281,13 +279,50 @@ DecimalFormatImpl::formatInt32(
         digits.set(number);
         digits.mult(fMultiplier, status);
         digits.shiftDecimalRight(fScale);
-        return formatAdjustedDigitList(digits, appendTo, handler, status);
+        formatAdjustedDigitList(digits, appendTo, handler, status);
+        return TRUE;
     }
     if (fScale != 0) {
         DigitList digits;
         digits.set(number);
         digits.shiftDecimalRight(fScale);
-        return formatAdjustedDigitList(digits, appendTo, handler, status);
+        formatAdjustedDigitList(digits, appendTo, handler, status);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+template<class T>
+UBool DecimalFormatImpl::maybeInitVisibleDigitsFromDigitList(
+        T number,
+        VisibleDigitsWithExponent &visibleDigits,
+        UErrorCode &status) const {
+    if (!fMultiplier.isZero()) {
+        DigitList digits;
+        digits.set(number);
+        digits.mult(fMultiplier, status);
+        digits.shiftDecimalRight(fScale);
+        initVisibleDigitsFromAdjusted(digits, visibleDigits, status);
+        return TRUE;
+    }
+    if (fScale != 0) {
+        DigitList digits;
+        digits.set(number);
+        digits.shiftDecimalRight(fScale);
+        initVisibleDigitsFromAdjusted(digits, visibleDigits, status);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+UnicodeString &
+DecimalFormatImpl::formatInt32(
+        int32_t number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const {
+    if (maybeFormatWithDigitList(number, appendTo, handler, status)) {
+        return appendTo;
     }
     ValueFormatter vf;
     return fAap.formatInt32(
@@ -300,18 +335,30 @@ DecimalFormatImpl::formatInt32(
 }
 
 UnicodeString &
-DecimalFormatImpl::format(
+DecimalFormatImpl::formatInt64(
         int64_t number,
         UnicodeString &appendTo,
-        FieldPosition &pos,
+        FieldPositionHandler &handler,
         UErrorCode &status) const {
     if (number >= -2147483648LL && number <= 2147483647LL) {
-        return format((int32_t) number, appendTo, pos, status);
+        return formatInt32((int32_t) number, appendTo, handler, status);
     }
-    DigitList dl;
-    dl.set(number);
-    FieldPositionOnlyHandler handler(pos);
-    return formatDigitList(dl, appendTo, handler, status);
+    VisibleDigitsWithExponent digits;
+    initVisibleDigitsWithExponent(number, digits, status);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormatImpl::formatDouble(
+        double number,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const {
+    VisibleDigitsWithExponent digits;
+    initVisibleDigitsWithExponent(number, digits, status);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -320,10 +367,8 @@ DecimalFormatImpl::format(
         UnicodeString &appendTo,
         FieldPosition &pos,
         UErrorCode &status) const {
-    DigitList dl;
-    dl.set(number);
     FieldPositionOnlyHandler handler(pos);
-    return formatDigitList(dl, appendTo, handler, status);
+    return formatDouble(number, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -341,12 +386,20 @@ UnicodeString &
 DecimalFormatImpl::format(
         int64_t number,
         UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const {
+    FieldPositionOnlyHandler handler(pos);
+    return formatInt64(number, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormatImpl::format(
+        int64_t number,
+        UnicodeString &appendTo,
         FieldPositionIterator *posIter,
         UErrorCode &status) const {
-    DigitList dl;
-    dl.set(number);
     FieldPositionIteratorHandler handler(posIter, status);
-    return formatDigitList(dl, appendTo, handler, status);
+    return formatInt64(number, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -355,10 +408,8 @@ DecimalFormatImpl::format(
         UnicodeString &appendTo,
         FieldPositionIterator *posIter,
         UErrorCode &status) const {
-    DigitList dl;
-    dl.set(number);
     FieldPositionIteratorHandler handler(posIter, status);
-    return formatDigitList(dl, appendTo, handler, status);
+    return formatDouble(number, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -384,6 +435,28 @@ DecimalFormatImpl::format(
     return formatDigitList(dl, appendTo, handler, status);
 }
 
+UnicodeString &
+DecimalFormatImpl::format(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPosition &pos,
+        UErrorCode &status) const {
+    FieldPositionOnlyHandler handler(pos);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
+}
+
+UnicodeString &
+DecimalFormatImpl::format(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPositionIterator *posIter,
+        UErrorCode &status) const {
+    FieldPositionIteratorHandler handler(posIter, status);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
+}
+
 DigitList &
 DecimalFormatImpl::adjustDigitList(
         DigitList &number, UErrorCode &status) const {
@@ -404,8 +477,10 @@ DecimalFormatImpl::formatDigitList(
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
-    adjustDigitList(number, status);
-    return formatAdjustedDigitList(number, appendTo, handler, status);
+    VisibleDigitsWithExponent digits;
+    initVisibleDigitsWithExponent(number, digits, status);
+    return formatVisibleDigitsWithExponent(
+            digits, appendTo, handler, status);
 }
 
 UnicodeString &
@@ -424,41 +499,115 @@ DecimalFormatImpl::formatAdjustedDigitList(
             status);
 }
 
+UnicodeString &
+DecimalFormatImpl::formatVisibleDigitsWithExponent(
+        const VisibleDigitsWithExponent &digits,
+        UnicodeString &appendTo,
+        FieldPositionHandler &handler,
+        UErrorCode &status) const {
+    ValueFormatter vf;
+    return fAap.format(
+            digits,
+            prepareValueFormatter(vf),
+            handler,
+            fRules,
+            appendTo,
+            status);
+}
+
+static FixedDecimal &initFixedDecimal(
+        const VisibleDigits &digits, FixedDecimal &result) {
+    result.source = 0.0;
+    result.isNegative = digits.isNegative();
+    result.isNanOrInfinity = digits.isNaNOrInfinity();
+    digits.getFixedDecimal(
+            result.source, result.intValue, result.decimalDigits,
+            result.decimalDigitsWithoutTrailingZeros,
+            result.visibleDecimalDigitCount, result.hasIntegerValue);
+    return result;
+}
+
 FixedDecimal &
-DecimalFormatImpl::getFixedDecimal(double number, FixedDecimal &result) const {
-    if (uprv_isNaN(number) || uprv_isPositiveInfinity(fabs(number))) {
-        // For NaN and Infinity the state of the formatter is ignored.
-        result.init(number);
+DecimalFormatImpl::getFixedDecimal(double number, FixedDecimal &result, UErrorCode &status) const {
+    if (U_FAILURE(status)) {
         return result;
     }
-    if (fMultiplier.isZero() && fScale == 0 && fEffPrecision.fMantissa.fRoundingIncrement.isZero() && areSignificantDigitsUsed() == FALSE &&
-            result.quickInit(number) && result.visibleDecimalDigitCount <= getMaximumFractionDigits()) {
-        // Fast Path. Construction of an exact FixedDecimal directly from the double, without passing
-        //   through a DigitList, was successful, and the formatter is doing nothing tricky with rounding.
-        // printf("getFixedDecimal(%g): taking fast path.\n", number);
-        result.adjustForMinFractionDigits(getMinimumFractionDigits());
-        return result;
-    }
-    // Slow path. Create a DigitList, and have this formatter round it according to the
-    //     requirements of the format, and fill the fixedDecimal from that.
-    DigitList dl;
-    dl.set(number);
-    return getFixedDecimal(dl, result);
+    VisibleDigits digits;
+    fEffPrecision.fMantissa.initVisibleDigits(number, digits, status);
+    return initFixedDecimal(digits, result);
 }
 
 FixedDecimal &
 DecimalFormatImpl::getFixedDecimal(
-        DigitList &number, FixedDecimal &result) const {
-    if (number.isNaN() || number.isInfinite()) {
-        result.isNanOrInfinity = TRUE;
+        DigitList &number, FixedDecimal &result, UErrorCode &status) const {
+    if (U_FAILURE(status)) {
         return result;
     }
-    UErrorCode status = U_ZERO_ERROR;
+    VisibleDigits digits;
+    fEffPrecision.fMantissa.initVisibleDigits(number, digits, status);
+    return initFixedDecimal(digits, result);
+}
+
+VisibleDigitsWithExponent &
+DecimalFormatImpl::initVisibleDigitsWithExponent(
+        int64_t number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (maybeInitVisibleDigitsFromDigitList(
+            number, digits, status)) {
+        return digits;
+    }
+    if (fUseScientific) {
+        fEffPrecision.initVisibleDigitsWithExponent(
+                number, digits, status);
+    } else {
+        fEffPrecision.fMantissa.initVisibleDigitsWithExponent(
+                number, digits, status);
+    }
+    return digits;
+}
+
+VisibleDigitsWithExponent &
+DecimalFormatImpl::initVisibleDigitsWithExponent(
+        double number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (maybeInitVisibleDigitsFromDigitList(
+            number, digits, status)) {
+        return digits;
+    }
+    if (fUseScientific) {
+        fEffPrecision.initVisibleDigitsWithExponent(
+                number, digits, status);
+    } else {
+        fEffPrecision.fMantissa.initVisibleDigitsWithExponent(
+                number, digits, status);
+    }
+    return digits;
+}
+
+VisibleDigitsWithExponent &
+DecimalFormatImpl::initVisibleDigitsWithExponent(
+        DigitList &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
     adjustDigitList(number, status);
-    ValueFormatter vf;
-    prepareValueFormatter(vf);
-    vf.round(number, status);
-    return vf.getFixedDecimal(number, result);
+    return initVisibleDigitsFromAdjusted(number, digits, status);
+}
+
+VisibleDigitsWithExponent &
+DecimalFormatImpl::initVisibleDigitsFromAdjusted(
+        DigitList &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (fUseScientific) {
+        fEffPrecision.initVisibleDigitsWithExponent(
+                number, digits, status);
+    } else {
+        fEffPrecision.fMantissa.initVisibleDigitsWithExponent(
+                number, digits, status);
+    }
+    return digits;
 }
 
 DigitList &
@@ -471,19 +620,6 @@ DecimalFormatImpl::round(
     ValueFormatter vf;
     prepareValueFormatter(vf);
     return vf.round(number, status);
-}
-
-UnicodeString
-DecimalFormatImpl::select(double number, const PluralRules &rules) const {
-    FixedDecimal fd;
-    return rules.select(getFixedDecimal(number, fd));
-}
-
-UnicodeString
-DecimalFormatImpl::select(
-        DigitList &number, const PluralRules &rules) const {
-    FixedDecimal fd;
-    return rules.select(getFixedDecimal(number, fd));
 }
 
 void
@@ -755,7 +891,7 @@ DecimalFormatImpl::applyPattern(
     fMaxFracDigits = out.fMaximumFractionDigits;
     fMinSigDigits = out.fMinimumSignificantDigits;
     fMaxSigDigits = out.fMaximumSignificantDigits;
-    fOptions.fExponent.fMinDigits = out.fMinExponentDigits;
+    fEffPrecision.fMinExponentDigits = out.fMinExponentDigits;
     fOptions.fExponent.fAlwaysShowSign = out.fExponentSignAlwaysShown;
     fUseGrouping = out.fGroupingUsed;
     fGrouping.fGrouping = out.fGroupingSize;
@@ -946,7 +1082,6 @@ DecimalFormatImpl::updateFormatting(
     // fRules field is needed to update the fCurrencyAffixInfo field.
     updateFormattingUsesCurrency(changedFormattingFields);
     updateFormattingFixedPointFormatter(changedFormattingFields);
-    updateFormattingScientificFormatter(changedFormattingFields);
     updateFormattingAffixParser(changedFormattingFields);
     updateFormattingPluralRules(changedFormattingFields, status);
     updateFormattingCurrencyAffixInfo(
@@ -1079,17 +1214,6 @@ DecimalFormatImpl::updateFormattingCurrencyAffixInfo(
  
     }
 }
-
-void
-DecimalFormatImpl::updateFormattingScientificFormatter(
-        int32_t &changedFormattingFields) {
-    if ((changedFormattingFields & kFormattingSymbols) == 0) {
-        // No work to do if fSymbols is unchanged
-        return;
-    }
-    fSciFormatter.setDecimalFormatSymbols(*fSymbols);
-}
-
 
 void
 DecimalFormatImpl::updateFormattingFixedPointFormatter(
@@ -1255,7 +1379,7 @@ getLeftDigitsForLeftLength(
 int32_t
 DecimalFormatImpl::computeExponentPatternLength() const {
     if (fUseScientific) {
-        return 1 + (fOptions.fExponent.fAlwaysShowSign ? 1 : 0) + fOptions.fExponent.fMinDigits;
+        return 1 + (fOptions.fExponent.fAlwaysShowSign ? 1 : 0) + fEffPrecision.fMinExponentDigits;
     }
     return 0;
 }
@@ -1404,7 +1528,7 @@ DecimalFormatImpl::toNumberPattern(
         if (fOptions.fExponent.fAlwaysShowSign) {
             result.append(kPatternPlus);
         }
-        for (int32_t i = 0; i < 1 || i < fOptions.fExponent.fMinDigits; ++i) {
+        for (int32_t i = 0; i < 1 || i < fEffPrecision.fMinExponentDigits; ++i) {
             result.append(kPatternZeroDigit);
         }
     }

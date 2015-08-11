@@ -20,6 +20,9 @@
 
 U_NAMESPACE_BEGIN
 
+class VisibleDigits;
+class VisibleDigitsWithExponent;
+
 
 /**
  * A precision manager for values to be formatted as fixed point.
@@ -63,6 +66,12 @@ UBool fExactOnly;
  */
 UBool fFailIfOverMax;
 
+/**
+ * Controls the rounding mode that initVisibleDigits uses.
+ * Default is DecimalFormat::kRoundHalfEven
+ */
+DecimalFormat::ERoundingMode fRoundingMode;
+
 FixedPrecision();
 
 /**
@@ -74,7 +83,8 @@ UBool equals(const FixedPrecision &rhs) const {
             fSignificant.equals(rhs.fSignificant) &&
             (fRoundingIncrement == rhs.fRoundingIncrement) &&
             fExactOnly == rhs.fExactOnly &&
-            fFailIfOverMax == rhs.fFailIfOverMax);
+            fFailIfOverMax == rhs.fFailIfOverMax &&
+            fRoundingMode == rhs.fRoundingMode);
 }
 
 /**
@@ -102,6 +112,94 @@ DigitInterval &getInterval(
  * Returns TRUE if this instance allows for fast formatting of integers.
  */
 UBool isFastFormattable() const;
+
+/**
+ * Initializes a VisibleDigits.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigits &initVisibleDigits(
+        DigitList &value,
+        VisibleDigits &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigits.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigits &initVisibleDigits(
+        double value,
+        VisibleDigits &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigits.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigits &initVisibleDigits(
+        int64_t value,
+        VisibleDigits &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        DigitList &value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        double value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value value for VisibleDigits
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        int64_t value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+private:
+UBool
+initVisibleDigits(
+        int64_t mantissa,
+        int32_t exponent,
+        VisibleDigits &digits,
+        UErrorCode &status) const;
+UBool isRoundingRequired(
+        int32_t upperExponent, int32_t lowerExponent) const;
+DigitInterval &getIntervalForZero(DigitInterval &interval) const;
+DigitInterval &getInterval(
+        int32_t upperExponent, DigitInterval &interval) const;
+static UBool handleNonNumeric(DigitList &value, VisibleDigits &digits);
+
+friend class ScientificPrecision;
 };
 
 /**
@@ -110,6 +208,9 @@ UBool isFastFormattable() const;
 class U_I18N_API ScientificPrecision : public UMemory {
 public:
     FixedPrecision fMantissa;
+    int32_t fMinExponentDigits;
+
+    ScientificPrecision();
 
     /**
      * rounds value in place to prepare it for formatting.
@@ -133,8 +234,53 @@ public:
      * Returns TRUE if this object equals rhs.
      */
     UBool equals(const ScientificPrecision &rhs) const {
-        return fMantissa.equals(rhs.fMantissa);
+        return fMantissa.equals(rhs.fMantissa) && fMinExponentDigits == rhs.fMinExponentDigits;
     }
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value the value
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        DigitList &value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value the value
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        double value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * Initializes a VisibleDigitsWithExponent.
+ * @param value the value
+ * @param digits This is the value that is initialized.
+ * @param status any error returned here.
+ * @return digits
+ */
+VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        int64_t value,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const;
+
+/**
+ * For testing only.
+ */
+static VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+        const DigitList &mantissa, const DigitInterval &mantissaInterval,
+        int32_t exponent, int32_t minExpDigits,
+        VisibleDigitsWithExponent &digits, UErrorCode &status);
+
 private:
     int32_t getMultiplier() const;
 

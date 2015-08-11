@@ -23,6 +23,7 @@ class ValueFormatter;
 class UnicodeString;
 class FieldPositionHandler;
 class PluralRules;
+class VisibleDigitsWithExponent;
 
 /**
  * A formatter of numbers. This class can format any numerical value
@@ -121,6 +122,17 @@ UBool needsPluralRules() const;
  *   needsPluralRules returns FALSE. 
  * @appendTo formatted string appended here.
  * @status any error returned here.
+ */
+UnicodeString &format(
+        const VisibleDigitsWithExponent &value,
+        const ValueFormatter &formatter,
+        FieldPositionHandler &handler,
+        const PluralRules *optPluralRules,
+        UnicodeString &appendTo,
+        UErrorCode &status) const;
+
+/**
+ * For testing only.
  */
 UnicodeString &format(
         DigitList &value,

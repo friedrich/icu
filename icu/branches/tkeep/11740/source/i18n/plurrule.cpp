@@ -32,6 +32,7 @@
 #include "sharedpluralrules.h"
 #include "unifiedcache.h"
 #include "digitinterval.h" 
+#include "visibledigits.h"
 
 
 #if !UCONFIG_NO_FORMATTING
@@ -254,6 +255,16 @@ PluralRules::select(const FixedDecimal &number) const {
         return mRules->select(number);
     }
 }
+
+UnicodeString
+PluralRules::select(const VisibleDigitsWithExponent &number) const {
+    if (number.getExponent() != NULL) {
+        return UnicodeString(TRUE, PLURAL_DEFAULT_RULE, -1);
+    }
+    return select(FixedDecimal(number.getMantissa()));
+}
+
+
 
 StringEnumeration*
 PluralRules::getKeywords(UErrorCode& status) const {
@@ -1372,76 +1383,13 @@ PluralKeywordEnumeration::count(UErrorCode& /*status*/) const {
 PluralKeywordEnumeration::~PluralKeywordEnumeration() {
 }
 
-FixedDecimal::FixedDecimal(
-        const DigitList &value, const DigitInterval &interval) {
-    source = 0.0;
-    visibleDecimalDigitCount = -interval.getLeastSignificantInclusive();
-    decimalDigits = 0LL;
-    decimalDigitsWithoutTrailingZeros = 0LL;
-    intValue = 0LL;
-    hasIntegerValue = TRUE;
-    isNegative = !value.isPositive();
-    isNanOrInfinity = (value.isNaN() || value.isInfinite());
-
-    // Bail on infinity or NaN
-    if (isNanOrInfinity) {
-        hasIntegerValue = FALSE;
-        return;
-    }
-
-    // Calculate the integer part of source
-    for (int32_t i = interval.getMostSignificantExclusive() - 1; i >= 0; --i) {
-        source = source * 10.0 + (double) value.getDigitByExponent(i);
-    }
-
-    // calculate 'intValue'
-
-    // If we have more than 18 int digits, trim zero's from the right.
-    // If we still have more than 18 int digits, restore the 0's to the
-    // right and trim from the left.
-
-    int32_t startPos = interval.getMostSignificantExclusive();
-    int32_t endPos = 0;
-    for (; startPos - endPos > 18 && value.getDigitByExponent(endPos) == 0; ++endPos);
-    if (startPos - endPos > 18) {
-        startPos = 18;
-        endPos = 0;
-    }
-
-    // process the integer digits
-    for (int32_t i = startPos - 1; i >= endPos; --i) {
-        intValue = intValue * 10LL + value.getDigitByExponent(i);
-    }
-
-    // Compute 'decimalDigits'
-
-    // skip over any leading 0's in fraction digits.
-    int32_t idx = -1;
-    for (; idx >= -visibleDecimalDigitCount && value.getDigitByExponent(idx) == 0; --idx);
-     
-    // Only process up to first 18 non zero fraction digits for decimalDigits
-    // since that is all we can fit into an int64.
-    for (int32_t i = idx; i >= -visibleDecimalDigitCount && i > idx - 18; --i) {
-        decimalDigits = decimalDigits * 10LL + value.getDigitByExponent(i);
-    }
-
-    // If we have decimal digits, we don't have an integer value
-    if (decimalDigits > 0LL) {
-        hasIntegerValue = FALSE;
-    }
-
-    // compute 'decimalDigitsWithoutTrailingZeros'
-    decimalDigitsWithoutTrailingZeros = decimalDigits;
-    while (decimalDigitsWithoutTrailingZeros > 0 && decimalDigitsWithoutTrailingZeros % 10LL == 0) {
-        decimalDigitsWithoutTrailingZeros /= 10;
-    }
-
-    // compute fractional part of source
-    double fpart = 0.0;
-    for (int32_t i = -visibleDecimalDigitCount; i < 0; ++i) {
-        fpart = (fpart + value.getDigitByExponent(i)) / 10.0;
-    }
-    source += fpart;
+FixedDecimal::FixedDecimal(const VisibleDigits &digits) {
+    digits.getFixedDecimal(
+            source, intValue, decimalDigits,
+            decimalDigitsWithoutTrailingZeros,
+            visibleDecimalDigitCount, hasIntegerValue);
+    isNegative = digits.isNegative();
+    isNanOrInfinity = digits.isNaNOrInfinity();
 }
 
 FixedDecimal::FixedDecimal(double n, int32_t v, int64_t f) {

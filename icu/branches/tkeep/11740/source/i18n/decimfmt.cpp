@@ -59,6 +59,7 @@
 #include "decimalformatpattern.h"
 #include "fmtableimp.h"
 #include "decimfmtimpl.h"
+#include "visibledigits.h"
 
 /*
  * On certain platforms, round is a macro defined in math.h
@@ -667,64 +668,60 @@ DecimalFormat::clone() const
 
 
 FixedDecimal
-DecimalFormat::getFixedDecimal(double number, UErrorCode &/*status*/) const {
-    FixedDecimal result;
-    return fImpl->getFixedDecimal(number, result);
-}
-
-UnicodeString
-DecimalFormat::select(
-        double number,
-        const PluralRules &rules) const {
-    return fImpl->select(number, rules);
-}
-
-
-UnicodeString
-DecimalFormat::select(
-        const Formattable &number,
-        const PluralRules &rules,
-        UErrorCode &status) const {
+DecimalFormat::getFixedDecimal(double number, UErrorCode &status) const {
+    VisibleDigitsWithExponent digits;
+    initVisibleDigitsWithExponent(number, digits, status);
     if (U_FAILURE(status)) {
-        return UnicodeString();
+        return FixedDecimal();
     }
-    return rules.select(getFixedDecimal(number, status));
+    return FixedDecimal(digits.getMantissa());
+}
+
+VisibleDigitsWithExponent &
+DecimalFormat::initVisibleDigitsWithExponent(
+        double number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    return fImpl->initVisibleDigitsWithExponent(number, digits, status);
 }
 
 FixedDecimal
 DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) const {
-    FixedDecimal result;
+    VisibleDigitsWithExponent digits;
+    initVisibleDigitsWithExponent(number, digits, status);
     if (U_FAILURE(status)) {
-        return result;
+        return FixedDecimal();
+    }
+    return FixedDecimal(digits.getMantissa());
+}
+
+VisibleDigitsWithExponent &
+DecimalFormat::initVisibleDigitsWithExponent(
+        const Formattable &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    if (U_FAILURE(status)) {
+        return digits;
     }
     if (!number.isNumeric()) {
         status = U_ILLEGAL_ARGUMENT_ERROR;
-        return result;
+        return digits;
     }
 
     DigitList *dl = number.getDigitList();
     if (dl != NULL) {
-        return fImpl->getFixedDecimal(*dl, result);
+        DigitList dlCopy(*dl);
+        return fImpl->initVisibleDigitsWithExponent(
+                dlCopy, digits, status);
     }
 
     Formattable::Type type = number.getType();
     if (type == Formattable::kDouble || type == Formattable::kLong) { 
-        return fImpl->getFixedDecimal(number.getDouble(status), result);
+        return fImpl->initVisibleDigitsWithExponent(
+                number.getDouble(status), digits, status);
     }
-
-    if (type == Formattable::kInt64 && number.getInt64() <= MAX_INT64_IN_DOUBLE &&
-                                       number.getInt64() >= -MAX_INT64_IN_DOUBLE) {
-        return fImpl->getFixedDecimal(number.getDouble(status), result);
-    }
-
-    // The only case left is type==int64_t, with a value with more digits than a double can represent.
-    // Any formattable originating as a big decimal will have had a pre-existing digit list.
-    // Any originating as a double or int32 will have been handled as a double.
-
-    U_ASSERT(type == Formattable::kInt64);
-    DigitList digits;
-    digits.set(number.getInt64());
-    return fImpl->getFixedDecimal(digits, result);
+    return fImpl->initVisibleDigitsWithExponent(
+            number.getInt64(), digits, status);
 }
 
 
@@ -732,9 +729,22 @@ DecimalFormat::getFixedDecimal(const Formattable &number, UErrorCode &status) co
 //    The digit list may be modified.
 //    Internal function only.
 FixedDecimal
-DecimalFormat::getFixedDecimal(DigitList &number, UErrorCode &/*status*/) const {
-    FixedDecimal result;
-    return fImpl->getFixedDecimal(number, result);
+DecimalFormat::getFixedDecimal(DigitList &number, UErrorCode &status) const {
+    VisibleDigitsWithExponent digits;
+    initVisibleDigitsWithExponent(number, digits, status);
+    if (U_FAILURE(status)) {
+        return FixedDecimal();
+    }
+    return FixedDecimal(digits.getMantissa());
+}
+
+VisibleDigitsWithExponent &
+DecimalFormat::initVisibleDigitsWithExponent(
+        DigitList &number,
+        VisibleDigitsWithExponent &digits,
+        UErrorCode &status) const {
+    return fImpl->initVisibleDigitsWithExponent(
+            number, digits, status);
 }
 
 
@@ -850,6 +860,23 @@ DecimalFormat::format(const DigitList &number,
 
 UnicodeString&
 DecimalFormat::format(const DigitList &number,
+                     UnicodeString& appendTo,
+                     FieldPosition& pos,
+                     UErrorCode &status) const {
+    return fImpl->format(number, appendTo, pos, status);
+}
+
+UnicodeString&
+DecimalFormat::format(const VisibleDigitsWithExponent &number,
+                      UnicodeString &appendTo,
+                      FieldPositionIterator *posIter,
+                      UErrorCode &status) const {
+    return fImpl->format(number, appendTo, posIter, status);
+}
+
+
+UnicodeString&
+DecimalFormat::format(const VisibleDigitsWithExponent &number,
                      UnicodeString& appendTo,
                      FieldPosition& pos,
                      UErrorCode &status) const {

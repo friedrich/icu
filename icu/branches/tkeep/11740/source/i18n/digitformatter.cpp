@@ -16,16 +16,22 @@
 #include "fphdlimp.h"
 #include "smallintformatter.h"
 #include "unistrappender.h"
+#include "visibledigits.h"
+
+// Only here for backward compatibility
+#include "precision.h"
 
 U_NAMESPACE_BEGIN
 
 DigitFormatter::DigitFormatter()
         : fGroupingSeparator(",", -1, US_INV), fDecimal(".", -1, US_INV),
           fNegativeSign("-", -1, US_INV), fPositiveSign("+", -1, US_INV),
-          fIsStandardDigits(TRUE) {
+          fIsStandardDigits(TRUE), fExponent("E", -1, US_INV) {
     for (int32_t i = 0; i < 10; ++i) {
         fLocalizedDigits[i] = (UChar32) (0x30 + i);
     }
+    fInfinity.setTo(UnicodeString("Inf", -1, US_INV), UNUM_INTEGER_FIELD);
+    fNan.setTo(UnicodeString("Nan", -1, US_INV), UNUM_INTEGER_FIELD);
 }
 
 DigitFormatter::DigitFormatter(const DecimalFormatSymbols &symbols) {
@@ -50,6 +56,7 @@ DigitFormatter::setOtherDecimalFormatSymbols(
     fPositiveSign = symbols.getConstSymbol(DecimalFormatSymbols::kPlusSignSymbol);
     fInfinity.setTo(symbols.getConstSymbol(DecimalFormatSymbols::kInfinitySymbol), UNUM_INTEGER_FIELD);
     fNan.setTo(symbols.getConstSymbol(DecimalFormatSymbols::kNaNSymbol), UNUM_INTEGER_FIELD);
+    fExponent = symbols.getConstSymbol(DecimalFormatSymbols::kExponentialSymbol);
 }
 
 void
@@ -98,13 +105,73 @@ int32_t DigitFormatter::countChar32(
     return result;
 }
 
-UnicodeString &DigitFormatter::format(
-        const DigitList &digits,
+int32_t
+DigitFormatter::countChar32(
+        const VisibleDigits &digits,
         const DigitGrouping &grouping,
-        const DigitInterval &interval,
+        const DigitFormatterOptions &options) const {
+    if (digits.isNaN()) {
+        return countChar32ForNaN();
+    }   
+    if (digits.isInfinite()) {
+        return countChar32ForInfinity();
+    }   
+    return countChar32(
+            grouping,
+            digits.getInterval(),
+            options);
+}
+
+int32_t
+DigitFormatter::countChar32(
+        const VisibleDigitsWithExponent &digits,
+        const SciFormatterOptions &options) const {
+    if (digits.isNaN()) {
+        return countChar32ForNaN();
+    }
+    if (digits.isInfinite()) {
+        return countChar32ForInfinity();
+    }
+    const VisibleDigits *exponent = digits.getExponent();
+    if (exponent == NULL) {
+        DigitGrouping grouping;
+        return countChar32(
+                grouping,
+                digits.getMantissa().getInterval(),
+                options.fMantissa);
+    }
+    return countChar32(
+            *exponent, digits.getMantissa().getInterval(), options);
+}
+
+int32_t
+DigitFormatter::countChar32(
+        const VisibleDigits &exponent,
+        const DigitInterval &mantissaInterval,
+        const SciFormatterOptions &options) const {
+    DigitGrouping grouping;
+    int32_t count = countChar32(
+            grouping, mantissaInterval, options.fMantissa);
+    count += fExponent.countChar32();
+    count += countChar32ForExponent(
+            exponent, options.fExponent);
+    return count;
+}
+
+UnicodeString &DigitFormatter::format(
+        const VisibleDigits &digits,
+        const DigitGrouping &grouping,
         const DigitFormatterOptions &options,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
+    if (digits.isNaN()) {
+        return formatNaN(handler, appendTo);
+    }
+    if (digits.isInfinite()) {
+        return formatInfinity(handler, appendTo);
+    }
+
+    const DigitInterval &interval = digits.getInterval();
     int32_t digitsLeftOfDecimal = interval.getMostSignificantExclusive();
     int32_t lastDigitPos = interval.getLeastSignificantInclusive();
     int32_t intBegin = appendTo.length();
@@ -125,7 +192,8 @@ UnicodeString &DigitFormatter::format(
     }
     {
         UnicodeStringAppender appender(appendTo);
-        for (int32_t i = digitsLeftOfDecimal - 1; i >= lastDigitPos; --i) { 
+        for (int32_t i = interval.getMostSignificantExclusive() - 1;
+                i >= interval.getLeastSignificantInclusive(); --i) {
             if (i == -1) {
                 appender.flush();
                 appendField(
@@ -168,13 +236,34 @@ UnicodeString &DigitFormatter::format(
     return appendTo;
 }
 
-static UBool isNeg(int32_t &value, uint8_t *digits) {
-    if (value < 0) {
-        digits[0] = -(value % 10);
-        value = -(value / 10);
-        return TRUE;
+UnicodeString &
+DigitFormatter::format(
+        const VisibleDigitsWithExponent &digits,
+        const SciFormatterOptions &options,
+        FieldPositionHandler &handler,
+        UnicodeString &appendTo) const {
+    DigitGrouping grouping;
+    format(
+            digits.getMantissa(),
+            grouping,
+            options.fMantissa,
+            handler,
+            appendTo);
+    const VisibleDigits *exponent = digits.getExponent();
+    if (exponent == NULL) {
+        return appendTo;
     }
-    return FALSE;
+    int32_t expBegin = appendTo.length();
+    appendTo.append(fExponent);
+    handler.addAttribute(
+            UNUM_EXPONENT_SYMBOL_FIELD, expBegin, appendTo.length());
+    return formatExponent(
+            *exponent,
+            options.fExponent,
+            UNUM_EXPONENT_SIGN_FIELD,
+            UNUM_EXPONENT_FIELD,
+            handler,
+            appendTo);
 }
 
 static int32_t formatInt(
@@ -189,7 +278,7 @@ static int32_t formatInt(
 
 UnicodeString &
 DigitFormatter::formatDigits(
-        uint8_t *digits,
+        const uint8_t *digits,
         int32_t count,
         const IntDigitCountRange &range,
         int32_t intField,
@@ -218,16 +307,14 @@ DigitFormatter::formatDigits(
 }
 
 UnicodeString &
-DigitFormatter::formatInt32(
-        int32_t value,
+DigitFormatter::formatExponent(
+        const VisibleDigits &digits,
         const DigitFormatterIntOptions &options,
         int32_t signField,
         int32_t intField,
         FieldPositionHandler &handler,
         UnicodeString &appendTo) const {
-    IntDigitCountRange range(options.fMinDigits, INT32_MAX);
-    uint8_t digits[10];
-    UBool neg = isNeg(value, digits);
+    UBool neg = digits.isNegative();
     if (neg || options.fAlwaysShowSign) {
         appendField(
                 signField,
@@ -235,33 +322,33 @@ DigitFormatter::formatInt32(
                 handler,
                 appendTo);
     }
-    int32_t count = neg ? formatInt(value, digits + 1) + 1 : formatInt(value, digits);
-    return formatDigits(
+    int32_t begin = appendTo.length();
+    DigitGrouping grouping;
+    DigitFormatterOptions expOptions;
+    FieldPosition fpos(FieldPosition::DONT_CARE);
+    FieldPositionOnlyHandler noHandler(fpos);
+    format(
             digits,
-            count,
-            range,
-            intField,
-            handler,
+            grouping,
+            expOptions,
+            noHandler,
             appendTo);
+    handler.addAttribute(intField, begin, appendTo.length());
+    return appendTo;
 }
 
 int32_t
-DigitFormatter::countChar32ForInt32(
-        int32_t value,
+DigitFormatter::countChar32ForExponent(
+        const VisibleDigits &exponent,
         const DigitFormatterIntOptions &options) const {
-    IntDigitCountRange range(options.fMinDigits, INT32_MAX);
-    uint8_t digits[10];
-    UBool neg = isNeg(value, digits);
-    int32_t count = neg ? formatInt(value, digits + 1) + 1 : formatInt(value, digits);
-    int32_t result = range.pin(count);
-
-    // We always emit '0' in lieu of no digits.
-    if (result == 0) {
-        result = 1;
-    }
+    int32_t result = 0;
+    UBool neg = exponent.isNegative();
     if (neg || options.fAlwaysShowSign) {
         result += neg ? fNegativeSign.countChar32() : fPositiveSign.countChar32();
     }
+    DigitGrouping grouping;
+    DigitFormatterOptions expOptions;
+    result += countChar32(grouping, exponent.getInterval(), expOptions);
     return result;
 }
 
@@ -306,7 +393,11 @@ DigitFormatter::equals(const DigitFormatter &rhs) const {
                    (fDecimal == rhs.fDecimal) &&
                    (fNegativeSign == rhs.fNegativeSign) &&
                    (fPositiveSign == rhs.fPositiveSign) &&
-                   (fIsStandardDigits == rhs.fIsStandardDigits);
+                   (fInfinity.equals(rhs.fInfinity)) &&
+                   (fNan.equals(rhs.fNan)) &&
+                   (fIsStandardDigits == rhs.fIsStandardDigits) &&
+                   (fExponent == rhs.fExponent);
+
     if (!result) {
         return FALSE;
     }

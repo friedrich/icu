@@ -397,6 +397,27 @@ DigitList::append(char digit)
     internalClear();
 }
 
+char DigitList::getStrtodDecimalSeparator() {
+    // TODO: maybe use andy's pthread once.
+    static char gDecimal = 0;
+    char result;
+    {
+        Mutex mutex;
+        result = gDecimal;;
+        if (result == 0) {
+            // We need to know the decimal separator character that will be used with strtod().
+            // Depends on the C runtime global locale.
+            // Most commonly is '.'
+            // TODO: caching could fail if the global locale is changed on the fly.
+            char rep[MAX_DIGITS];
+            sprintf(rep, "%+1.1f", 1.0);
+            result = rep[2];
+            gDecimal = result;;
+        }
+    }
+    return result;
+}
+
 // -------------------------------------
 
 /**
@@ -959,16 +980,8 @@ DigitList::getUpperExponent() const {
 
 DigitInterval &
 DigitList::getSmallestInterval(DigitInterval &result) const {
-    int32_t intDigits = getUpperExponent();
-    int32_t fracDigits = -fDecNumber->exponent;
-    if (intDigits < 0) {
-        intDigits = 0;
-    }
-    if (fracDigits < 0) {
-        fracDigits = 0;
-    }
-    result.setIntDigitCount(intDigits);
-    result.setFracDigitCount(fracDigits);
+    result.setLeastSignificantInclusive(fDecNumber->exponent);
+    result.setMostSignificantExclusive(getUpperExponent());
     return result;
 }
 
@@ -979,6 +992,11 @@ DigitList::getDigitByExponent(int32_t exponent) const {
         return 0;
     }
     return fDecNumber->lsu[idx];
+}
+
+void
+DigitList::appendDigitsTo(CharString &str, UErrorCode &status) const {
+    str.append((const char *) fDecNumber->lsu, fDecNumber->digits, status);
 }
 
 void
