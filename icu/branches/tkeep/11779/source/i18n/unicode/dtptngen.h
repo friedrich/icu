@@ -150,7 +150,7 @@ public:
      * @param pattern  Input pattern, such as "dd/MMM"
      * @param status  Output param set to success/failure code on exit,
      *               which must not indicate a failure before the function call.
-     * @return base skeleton, such as "Md"
+     * @return base skeleton, such as "MMMd"
      * @draft ICU 56
      */
     static UnicodeString staticGetBaseSkeleton(const UnicodeString& pattern, UErrorCode& status);
