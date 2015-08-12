@@ -80,15 +80,6 @@ ures_a_codepointSort(const void *context, const void *left, const void *right) {
 
 U_CDECL_END
 
-static DTPNGGlobals *getGlobals(UErrorCode &status) {
-    umtx_initOnce(gGlobalsInitOnce, &dtpng_initGlobals, status);
-    if (U_FAILURE(status)) {
-        return NULL;
-    }
-    U_ASSERT(gGlobals);
-    return gGlobals;
-}
-
 static void ures_a_open(UResourceBundleAIterator *aiter, UResourceBundle *bund, UErrorCode *status) {
     if(U_FAILURE(*status)) {
         return;
