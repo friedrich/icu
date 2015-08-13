@@ -36,10 +36,6 @@
 #include "dtptngen_impl.h"
 #include "shareddatetimepatterngenerator.h"
 #include "unifiedcache.h"
-#include "ucln_in.h"
-#include "uassert.h"
-#include "mutex.h"
-#include "umutex.h"
 
 #if U_CHARSET_FAMILY==U_EBCDIC_FAMILY
 /**
@@ -129,49 +125,6 @@ static const UChar *ures_a_getNextString(UResourceBundleAIterator *aiter, int32_
 
 
 U_NAMESPACE_BEGIN
-
-class DTPNGGlobals : public UMemory {
-public:
-    FormatParser fFp;
-    DateTimeMatcher fMatcher;
-};
-
-static DTPNGGlobals *gGlobals = NULL;
-static UInitOnce gGlobalsInitOnce = U_INITONCE_INITIALIZER;
-static UMutex gGlobalsMutex = U_MUTEX_INITIALIZER;
-
-U_CDECL_BEGIN
-
-static UBool U_CALLCONV
-dtpng_cleanup(void)
-{
-    delete gGlobals;
-    gGlobals = NULL;
-    gGlobalsInitOnce.reset();
-    return TRUE;
-}
-
-static void U_CALLCONV dtpng_initGlobals(UErrorCode &status) {
-    ucln_i18n_registerCleanup(UCLN_I18N_DTPNG, dtpng_cleanup);
-    U_ASSERT(gGlobals == NULL);
-    gGlobals = new DTPNGGlobals();
-    if (gGlobals == NULL) {
-        status = U_MEMORY_ALLOCATION_ERROR;
-        return;
-    }
-}
-
-U_CDECL_END
-
-static DTPNGGlobals *getGlobals(UErrorCode &status) {
-    umtx_initOnce(gGlobalsInitOnce, &dtpng_initGlobals, status);
-    if (U_FAILURE(status)) {
-        return NULL;
-    }
-    U_ASSERT(gGlobals);
-    return gGlobals;
-}
-
 
 SharedDateTimePatternGenerator::~SharedDateTimePatternGenerator() {
     delete ptr;
@@ -488,32 +441,23 @@ DateTimePatternGenerator::initData(const Locale& locale, UErrorCode &status) {
 } // DateTimePatternGenerator::initData
 
 UnicodeString
-DateTimePatternGenerator::staticGetSkeleton(const UnicodeString& pattern, UErrorCode&
-status) {
-    DTPNGGlobals *globals = getGlobals(status);
-    if (U_FAILURE(status)) {
-        return UnicodeString();
-    }
+DateTimePatternGenerator::staticGetSkeleton(
+        const UnicodeString& pattern, UErrorCode& /*status*/) {
+    FormatParser fp;
+    DateTimeMatcher matcher;
     PtnSkeleton localSkeleton;
-    {
-        Mutex mutex(&gGlobalsMutex);
-        globals->fMatcher.set(pattern, &globals->fFp, localSkeleton);
-        return localSkeleton.getSkeleton();
-    }
+    matcher.set(pattern, &fp, localSkeleton);
+    return localSkeleton.getSkeleton();
 }
 
 UnicodeString
-DateTimePatternGenerator::staticGetBaseSkeleton(const UnicodeString& pattern, UErrorCode& status) {
-    DTPNGGlobals *globals = getGlobals(status);
-    if (U_FAILURE(status)) {
-        return UnicodeString();
-    }
+DateTimePatternGenerator::staticGetBaseSkeleton(
+        const UnicodeString& pattern, UErrorCode& /*status*/) {
+    FormatParser fp;
+    DateTimeMatcher matcher;
     PtnSkeleton localSkeleton;
-    {
-        Mutex mutex(&gGlobalsMutex);
-        globals->fMatcher.set(pattern, &globals->fFp, localSkeleton);
-        return localSkeleton.getBaseSkeleton();
-    }
+    matcher.set(pattern, &fp, localSkeleton);
+    return localSkeleton.getBaseSkeleton();
 }
 
 void
