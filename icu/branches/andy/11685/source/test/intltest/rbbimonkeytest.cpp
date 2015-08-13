@@ -421,9 +421,6 @@ const CharClass *BreakRules::getClassForChar(UChar32 c, int32_t *iter) const {
 //
 //---------------------------------------------------------------------------------------
 
-MonkeyTestData::MonkeyTestData(UErrorCode &status)  {
-}
-
 void MonkeyTestData::set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status) {
     const int32_t dataLength = 1000;
 
@@ -635,6 +632,7 @@ void MonkeyTestData::dump(int32_t around) const {
 //---------------------------------------------------------------------------------------
 
 RBBIMonkeyImpl::RBBIMonkeyImpl(UErrorCode &status) : fDumpExpansions(FALSE), fThread(this) {
+    (void)status;    // suppress unused parameter compiler warning.
 }
 
 // RBBIMonkeyImpl setup       does all of the setup for a single rule set - compiling the
@@ -655,7 +653,7 @@ void RBBIMonkeyImpl::setup(const char *ruleFile, UErrorCode &status) {
         return;
     }
     fBI.adoptInstead(fRuleSet->createICUBreakIterator(status));
-    fTestData.adoptInstead(new MonkeyTestData(status));
+    fTestData.adoptInstead(new MonkeyTestData());
 }
 
 
@@ -900,7 +898,7 @@ void RBBIMonkeyTest::testMonkey() {
     UErrorCode status = U_ZERO_ERROR;
 
     const char *tests[] = {"grapheme.txt", "word.txt", "line.txt", "sentence.txt", "line_normal.txt",
-                           "line_loose.txt", NULL };
+                           "line_normal_cj.txt", "line_loose.txt", "line_loose_cj.txt", NULL };
     CharString testNameFromParams;
     if (getStringParam("rules", params, testNameFromParams, status)) {
         tests[0] = testNameFromParams.data();

@@ -21,6 +21,14 @@
 #include "uhash.h"
 #include "uvector.h"
 
+//
+//  TODO:
+//     Document the rule format.
+//     Remove the sort-by-rule-number support.
+//     Develop a tailoring format.
+//     Hook to old tests that use monkey impl to get expected data.
+//     Remove old tests.
+
 class BreakRules;       // Forward declaration
 class RBBIMonkeyImpl;
 
@@ -127,7 +135,7 @@ class BreakRules: public UObject {
 
 class MonkeyTestData: public UObject {
   public:
-    MonkeyTestData(UErrorCode &status);
+    MonkeyTestData() {};
     ~MonkeyTestData() {};
     void set(BreakRules *rules, IntlTest::icu_rand &rand, UErrorCode &status);
     void clearActualBreaks();
@@ -153,9 +161,9 @@ class MonkeyTestData: public UObject {
 // class RBBIMonkeyImpl     holds (some indirectly) everything associated with running a monkey
 //                          test for one set of break rules.
 //
-//                          (Future) in a multithreaded version, multiple instances of this class
-//                          could exist concurrently, each testing a different set of rules or
-//                          rule tailorings in a separate thread.
+//                          When running RBBIMonkeyTest with multiple hreads, there is a 1:1 correspondence
+//                          between instances of RBBIMonkeyImpl and threads.
+//
 class RBBIMonkeyImpl: public UObject {
   public:
     RBBIMonkeyImpl(UErrorCode &status);
@@ -167,7 +175,7 @@ class RBBIMonkeyImpl: public UObject {
     void runTest();
     void join();
 
-    LocalUCHARBUFPointer                 fRuleCharBuffer;
+    LocalUCHARBUFPointer                 fRuleCharBuffer;         // source file contents of the reference rules.
     LocalPointer<BreakRules>             fRuleSet;
     LocalPointer<RuleBasedBreakIterator> fBI;
     LocalPointer<MonkeyTestData>         fTestData;
@@ -176,7 +184,7 @@ class RBBIMonkeyImpl: public UObject {
     UBool                                fVerbose;                 // True to do long dump of failing data.
     int32_t                              fLoopCount;
 
-    UBool fDumpExpansions;               // Debug flag to output epananded form of rules and sets.
+    UBool                                fDumpExpansions;          // Debug flag to output epananded form of rules and sets.
 
     enum CheckDirection {
         FORWARD = 1,

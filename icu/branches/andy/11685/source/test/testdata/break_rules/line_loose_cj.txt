@@ -45,7 +45,7 @@ HL = [:LineBreak =  Hebrew_Letter:];
 HY = [:LineBreak =  Hyphen:];
 H2 = [:LineBreak =  H2:];
 H3 = [:LineBreak =  H3:];
-ID = [[:LineBreak =  Ideographic:] - CJ];
+ID = [[:LineBreak =  Ideographic:] CJ];
 IN = [:LineBreak =  Inseperable:];
 IS = [:LineBreak =  Infix_Numeric:];
 JL = [:LineBreak =  JL:];
@@ -114,7 +114,7 @@ LB11.3:      WJ CM* [^CM];
 
 LB12:        GL CM* [^CM];
 
-LB12a:       [^SP BA HY] CM* GL;
+LB12a:       [^SP BA BAX HY] CM* GL;
 
 # LB 13 ICU Tailoring, matches tailoring exmaple 8 from UAX 14.
 #
@@ -138,7 +138,10 @@ LB20.1:      CB CM* ÷;
 
 # Note: Rule 21a must come before 21 to prevent 21.1 from matching HL BA, then
 #       not picking up the continuing match after the BA from 21a.
-LB21a:       HL CM* (HY | BA | BAX) CM* [^CM CB];
+# LB 21a Don't break after Hebrew + Hyphen
+#   HL (HY | BA) x
+
+LB21a:       HL CM* (HY | BA | BAX) CM* [^CM CB]?;
 
 LB21.1:      . CM* [BA HY NS];
 LB21.2:      BB CM* [^CM CB];
@@ -160,7 +163,8 @@ LB24.2:      PR CM* (AL | HL);
 LB24.3:      (PO | POX) CM* (AL | HL);
 
 # Numbers. Equivalent to Tailoring example 8 from UAx 14.
-LB25:        ((PR | PO)CM*)? ((OP | HY)CM*)? NU (CM*(NU | SY | IS))* (CM*(CL | CP))? (CM*(PR | PO))?;
+#          Loose_cj tailoring: do not include $PRX at the beginning or $POX at the end.
+LB25:        ((PR | PO | POX)CM*)? ((OP | HY)CM*)? NU (CM*(NU | SY | IS))* (CM*(CL | CP))? (CM*(PR | PRX | PO))?;
 
 LB26.1:      JL CM* (JL | JV | H2 | H3);
 LB26.2:      (JV | H2) CM* (JV | JT);

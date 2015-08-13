@@ -1,9 +1,20 @@
 # line_normal.txt
 #
+#         Line Breaking Rules
+#         Implement default line breaking as defined by 
+#         Unicode Standard Annex #14 Revision 34 for Unicode 8.0
+#         http://www.unicode.org/reports/tr14/
+#         tailored as noted in 2nd paragraph below..
+#
+#         TODO:  Rule LB 8 remains as it was in Unicode 5.2
+#         This is only because of a limitation of ICU break engine implementation,
+#         not because the older behavior is desirable.
+#
 #         This tailors the line break behavior to correspond to CSS
 #         line-break=normal (BCP47 -u-lb-normal) as defined for languages other than 
 #         Chinese & Japanese.
 #         It sets characters of class CJ to behave like ID.
+
 
 type = line;
 locale = en@lb=normal;
