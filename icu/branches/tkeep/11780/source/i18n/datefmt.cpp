@@ -27,6 +27,9 @@
 #include "unicode/dtptngen.h"
 #include "unicode/udisplaycontext.h"
 #include "reldtfmt.h"
+#include "sharedobject.h"
+#include "unifiedcache.h"
+#include "uarrsort.h"
 
 #include "cstring.h"
 #include "windtfmt.h"
@@ -40,6 +43,116 @@
 // *****************************************************************************
 
 U_NAMESPACE_BEGIN
+
+class U_I18N_API DateFmtBestPattern : public SharedObject {
+public:
+UnicodeString fPattern;
+
+DateFmtBestPattern(UnicodeString pattern)
+        : fPattern(pattern) { }
+~DateFmtBestPattern();
+};
+
+DateFmtBestPattern::~DateFmtBestPattern() {
+}
+
+static int32_t ucharCompare(
+        const void * /*unusedContext*/,
+        const void *left,
+        const void *right) {
+    if (*(const UChar *) left < *(const UChar *) right) {
+        return -1;
+    } else if (*(const UChar *) left > *(const UChar *) right) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+static UnicodeString normalizeSkeleton(const UnicodeString &skeleton) {
+    UnicodeString result(skeleton);
+    int32_t len = result.length();
+    UChar *buffer = result.getBuffer(len);
+    UErrorCode status = U_ZERO_ERROR;
+    uprv_sortArray(
+            buffer,
+            len,
+            sizeof(UChar),
+            &ucharCompare,
+            NULL,
+            FALSE,
+            &status);
+    result.releaseBuffer(len);
+    return result;
+}
+
+template<> U_I18N_API
+const DateFmtBestPattern *LocaleCacheKey<DateFmtBestPattern>::createObject(
+        const void * /*creationContext*/, UErrorCode &status) const {
+    status = U_UNSUPPORTED_ERROR;
+    return NULL;
+}
+
+class U_I18N_API DateFmtBestPatternKey : public LocaleCacheKey<DateFmtBestPattern> { 
+private:
+    UnicodeString fSkeleton;
+public:
+    DateFmtBestPatternKey(const Locale &loc, const UnicodeString &skeleton) :
+            LocaleCacheKey<DateFmtBestPattern>(loc),
+            fSkeleton(normalizeSkeleton(skeleton)) { }
+    DateFmtBestPatternKey(const DateFmtBestPatternKey &other) :
+            LocaleCacheKey<DateFmtBestPattern>(other),
+            fSkeleton(other.fSkeleton) { }
+    virtual ~DateFmtBestPatternKey();
+    virtual int32_t hashCode() const {
+        return 37 * LocaleCacheKey<DateFmtBestPattern>::hashCode() + fSkeleton.hashCode();
+    }
+    virtual UBool operator==(const CacheKeyBase &other) const {
+       // reflexive
+       if (this == &other) { 	
+           return TRUE;
+       }
+       if (!LocaleCacheKey<DateFmtBestPattern>::operator==(other)) {
+           return FALSE;
+       }
+       // We know that this an other are of same class if we get this far.
+       const DateFmtBestPatternKey *realOther =
+               static_cast<const DateFmtBestPatternKey *>(&other);
+       return (realOther->fSkeleton == fSkeleton);
+    }
+    virtual CacheKeyBase *clone() const {
+        return new DateFmtBestPatternKey(*this);
+    }
+    virtual const DateFmtBestPattern *createObject(
+            const void *creationContext, UErrorCode &status) const {
+        void *mutableCreationContext = const_cast<void *>(creationContext);
+        DateTimePatternGenerator *dtpg =
+               static_cast<DateTimePatternGenerator *>(mutableCreationContext);
+        LocalPointer<DateTimePatternGenerator> ownedDtpg;
+        if (dtpg == NULL) {
+            ownedDtpg.adoptInstead(
+                    DateTimePatternGenerator::createInstance(fLoc, status));
+            if (U_FAILURE(status)) {
+                return NULL;
+            }
+            dtpg = ownedDtpg.getAlias();
+        }
+  
+        LocalPointer<DateFmtBestPattern> pattern(
+                new DateFmtBestPattern(
+                        dtpg->getBestPattern(fSkeleton, status)),
+                status);
+        if (U_FAILURE(status)) {
+            return NULL;
+        }
+        DateFmtBestPattern *result = pattern.orphan();
+        result->addRef();
+        return result;
+    }
+};
+
+DateFmtBestPatternKey::~DateFmtBestPatternKey() { }
+
 
 DateFormat::DateFormat()
 :   fCalendar(0),
@@ -345,6 +458,23 @@ DateFormat::createInstance()
 
 //----------------------------------------------------------------------
 
+static UnicodeString getBestPattern(
+        const Locale &locale,
+        const UnicodeString &skeleton,
+        DateTimePatternGenerator *gen,
+        UErrorCode &status) {
+    UnifiedCache *cache = UnifiedCache::getInstance(status);
+    DateFmtBestPatternKey key(locale, skeleton);
+    const DateFmtBestPattern *patternPtr = NULL;
+    cache->get(key, gen, patternPtr, status);
+    if (U_FAILURE(status)) {
+        return UnicodeString();
+    }
+    UnicodeString result(patternPtr->fPattern);
+    patternPtr->removeRef();
+    return result;
+}
+
 DateFormat* U_EXPORT2
 DateFormat::createInstanceForSkeleton(
         Calendar *calendarToAdopt,
@@ -372,13 +502,8 @@ DateFormat::createInstanceForSkeleton(
         const UnicodeString& skeleton,
         const Locale &locale,
         UErrorCode &status) {
-    LocalPointer<DateTimePatternGenerator> gen(
-            DateTimePatternGenerator::createInstance(locale, status));
-    if (U_FAILURE(status)) {
-        return NULL;
-    }
-    return internalCreateInstanceForSkeleton(
-            skeleton, locale, *gen, status);
+    return _internalCreateInstanceForSkeleton(
+            skeleton, locale, NULL, status);
 }
 
 DateFormat* U_EXPORT2
@@ -395,11 +520,21 @@ DateFormat::internalCreateInstanceForSkeleton(
         const Locale &locale,
         DateTimePatternGenerator &gen,
         UErrorCode &status) {
+    return _internalCreateInstanceForSkeleton(
+            skeleton, locale, &gen, status);
+}
+
+DateFormat* U_EXPORT2
+DateFormat::_internalCreateInstanceForSkeleton(
+        const UnicodeString& skeleton,
+        const Locale &locale,
+        DateTimePatternGenerator *gen,
+        UErrorCode &status) {
     if (U_FAILURE(status)) {
         return NULL;
     }
     DateFormat *fmt = new SimpleDateFormat(
-               gen.getBestPattern(skeleton, status),
+               getBestPattern(locale, skeleton, gen, status),
                locale,
                status);
    if (fmt == NULL) {

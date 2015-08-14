@@ -887,6 +887,12 @@ protected:
 
 
 private:
+    static DateFormat* U_EXPORT2 _internalCreateInstanceForSkeleton(
+            const UnicodeString& skeleton,
+            const Locale &locale,
+            DateTimePatternGenerator *dpng,
+            UErrorCode &status);
+
     /**
      * Gets the date/time formatter with the given formatting styles for the
      * given locale.
