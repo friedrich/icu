@@ -15,6 +15,8 @@
 
 U_NAMESPACE_BEGIN
 
+static const int32_t gPower10[] = {1, 10, 100, 1000};
+
 FixedPrecision::FixedPrecision() 
         : fExactOnly(FALSE), fFailIfOverMax(FALSE), fRoundingMode(DecimalFormat::kRoundHalfEven) {
     fMin.setIntDigitCount(1);
@@ -194,7 +196,6 @@ FixedPrecision::initVisibleDigits(
         double value,
         VisibleDigits &digits,
         UErrorCode &status) const {
-    static int32_t p10[] = {1, 10, 100, 1000};
     if (U_FAILURE(status)) {
         return digits;
     }
@@ -221,8 +222,8 @@ FixedPrecision::initVisibleDigits(
     // Try to find n such that value * 10^n is an integer
     int32_t n = -1;
     double scaled;
-    for (int32_t i = 0; i < UPRV_LENGTHOF(p10); ++i) {
-        scaled = value * p10[i];
+    for (int32_t i = 0; i < UPRV_LENGTHOF(gPower10); ++i) {
+        scaled = value * gPower10[i];
         if (scaled > MAX_INT64_IN_DOUBLE || scaled < -MAX_INT64_IN_DOUBLE) {
             break;
         }
@@ -269,9 +270,12 @@ FixedPrecision::initVisibleDigits(
         if (digits.fAbsIntValue < 0) {
             digits.fAbsIntValue = -digits.fAbsIntValue;
         }
-        for (int32_t i = 0; i > exponent; --i) {
-            digits.fAbsIntValue /= 10;
+        int32_t i = 0;
+        int32_t maxPower10Exp = UPRV_LENGTHOF(gPower10) - 1;
+        for (; i > exponent + maxPower10Exp; i -= maxPower10Exp) {
+            digits.fAbsIntValue /= gPower10[maxPower10Exp];
         }
+        digits.fAbsIntValue /= gPower10[i - exponent];
         absIntValueComputed = TRUE;
     }
     if (mantissa == 0) {
@@ -428,25 +432,6 @@ ScientificPrecision::initVisibleDigitsWithExponent(
     digitList.set(value);
     return initVisibleDigitsWithExponent(digitList, digits, status);
 }
-
-VisibleDigitsWithExponent &
-ScientificPrecision::initVisibleDigitsWithExponent(
-        const DigitList &mantissa,
-        const DigitInterval &mantissaInterval,
-        int32_t exponent,
-        int32_t minExpDigits,
-        VisibleDigitsWithExponent &digits,
-        UErrorCode &status) {
-    VisibleDigits::initVisibleDigits(
-            mantissa, mantissaInterval, digits.fMantissa, status);
-    FixedPrecision fp;
-    fp.fMin.setIntDigitCount(minExpDigits);
-    fp.initVisibleDigits((int64_t) exponent, digits.fExponent, status);
-    digits.fHasExponent = TRUE;
-    return digits;
-}
-
-
 
 
 U_NAMESPACE_END

@@ -31,175 +31,179 @@ class VisibleDigitsWithExponent;
 class U_I18N_API FixedPrecision : public UMemory {
 public:
 
-/**
- * The smallest format interval allowed. Default is 1 integer digit and no
- * fraction digits.
- */
-DigitInterval fMin;
+    /**
+     * The smallest format interval allowed. Default is 1 integer digit and no
+     * fraction digits.
+     */
+    DigitInterval fMin;
 
-/**
- * The largest format interval allowed. Must contain fMin.
- *  Default is all digits.
- */
-DigitInterval fMax;
+    /**
+     * The largest format interval allowed. Must contain fMin.
+     *  Default is all digits.
+     */
+    DigitInterval fMax;
 
-/**
- * Min and max significant digits allowed. The default is no constraints.
- */
-SignificantDigitInterval fSignificant;
+    /**
+     * Min and max significant digits allowed. The default is no constraints.
+     */
+    SignificantDigitInterval fSignificant;
 
-/**
- * The rounding increment or zero if there is no rounding increment.
- * Default is zero.
- */
-DigitList fRoundingIncrement;
-
-/**
- * If set, causes round() to set status to U_FORMAT_INEXACT_ERROR if
- * any rounding is done. Default is FALSE.
- */
-UBool fExactOnly;
-
-/**
- * If set, causes round() to set status to U_ILLEGAL_ARGUMENT_ERROR if
- * rounded number has more than maximum integer digits. Default is FALSE.
- */
-UBool fFailIfOverMax;
-
-/**
- * Controls the rounding mode that initVisibleDigits uses.
- * Default is DecimalFormat::kRoundHalfEven
- */
-DecimalFormat::ERoundingMode fRoundingMode;
-
-FixedPrecision();
-
-/**
- * Returns TRUE if this object equals rhs.
- */
-UBool equals(const FixedPrecision &rhs) const {
-    return (fMin.equals(rhs.fMin) &&
-            fMax.equals(rhs.fMax) &&
-            fSignificant.equals(rhs.fSignificant) &&
-            (fRoundingIncrement == rhs.fRoundingIncrement) &&
-            fExactOnly == rhs.fExactOnly &&
-            fFailIfOverMax == rhs.fFailIfOverMax &&
-            fRoundingMode == rhs.fRoundingMode);
-}
-
-/**
- * Rounds value in place to prepare it for formatting.
- * @param value The value to be rounded. It is rounded in place.
- * @param exponent Always pass 0 for fixed decimal formatting. scientific
- *  precision passes the exponent value.  Essentially, it divides value by
- *  10^exponent, rounds and then multiplies by 10^exponent.
- * @param status error returned here.
- * @return reference to value.
- */
-DigitList &round(DigitList &value, int32_t exponent, UErrorCode &status) const;
-
-/**
- * Returns the interval to use to format the rounded value.
- * @param roundedValue the already rounded value to format.
- * @param interval modified in place to be the interval to use to format
- *   the rounded value.
- * @return a reference to interval.
- */
-DigitInterval &getInterval(
-        const DigitList &roundedValue, DigitInterval &interval) const;
-
-/**
- * Returns TRUE if this instance allows for fast formatting of integers.
- */
-UBool isFastFormattable() const;
-
-/**
- * Initializes a VisibleDigits.
- * @param value value for VisibleDigits
- * @param digits This is the value that is initialized.
- * @param status any error returned here.
- * @return digits
- */
-VisibleDigits &initVisibleDigits(
-        DigitList &value,
-        VisibleDigits &digits,
-        UErrorCode &status) const;
-
-/**
- * Initializes a VisibleDigits.
- * @param value value for VisibleDigits
- * @param digits This is the value that is initialized.
- * @param status any error returned here.
- * @return digits
- */
-VisibleDigits &initVisibleDigits(
-        double value,
-        VisibleDigits &digits,
-        UErrorCode &status) const;
-
-/**
- * Initializes a VisibleDigits.
- * @param value value for VisibleDigits
- * @param digits This is the value that is initialized.
- * @param status any error returned here.
- * @return digits
- */
-VisibleDigits &initVisibleDigits(
-        int64_t value,
-        VisibleDigits &digits,
-        UErrorCode &status) const;
-
-/**
- * Initializes a VisibleDigitsWithExponent.
- * @param value value for VisibleDigits
- * @param digits This is the value that is initialized.
- * @param status any error returned here.
- * @return digits
- */
-VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
-        DigitList &value,
-        VisibleDigitsWithExponent &digits,
-        UErrorCode &status) const;
-
-/**
- * Initializes a VisibleDigitsWithExponent.
- * @param value value for VisibleDigits
- * @param digits This is the value that is initialized.
- * @param status any error returned here.
- * @return digits
- */
-VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
-        double value,
-        VisibleDigitsWithExponent &digits,
-        UErrorCode &status) const;
-
-/**
- * Initializes a VisibleDigitsWithExponent.
- * @param value value for VisibleDigits
- * @param digits This is the value that is initialized.
- * @param status any error returned here.
- * @return digits
- */
-VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
-        int64_t value,
-        VisibleDigitsWithExponent &digits,
-        UErrorCode &status) const;
-
+    /**
+     * The rounding increment or zero if there is no rounding increment.
+     * Default is zero.
+     */
+    DigitList fRoundingIncrement;
+    
+    /**
+     * If set, causes round() to set status to U_FORMAT_INEXACT_ERROR if
+     * any rounding is done. Default is FALSE.
+     */
+    UBool fExactOnly;
+    
+    /**
+     * If set, causes round() to set status to U_ILLEGAL_ARGUMENT_ERROR if
+     * rounded number has more than maximum integer digits. Default is FALSE.
+     */
+    UBool fFailIfOverMax;
+    
+    /**
+     * Controls the rounding mode that initVisibleDigits uses.
+     * Default is DecimalFormat::kRoundHalfEven
+     */
+    DecimalFormat::ERoundingMode fRoundingMode;
+    
+    FixedPrecision();
+    
+    /**
+     * Returns TRUE if this object equals rhs.
+     */
+    UBool equals(const FixedPrecision &rhs) const {
+        return (fMin.equals(rhs.fMin) &&
+                fMax.equals(rhs.fMax) &&
+                fSignificant.equals(rhs.fSignificant) &&
+                (fRoundingIncrement == rhs.fRoundingIncrement) &&
+                fExactOnly == rhs.fExactOnly &&
+                fFailIfOverMax == rhs.fFailIfOverMax &&
+                fRoundingMode == rhs.fRoundingMode);
+    }
+    
+    /**
+     * Rounds value in place to prepare it for formatting.
+     * @param value The value to be rounded. It is rounded in place.
+     * @param exponent Always pass 0 for fixed decimal formatting. scientific
+     *  precision passes the exponent value.  Essentially, it divides value by
+     *  10^exponent, rounds and then multiplies by 10^exponent.
+     * @param status error returned here.
+     * @return reference to value.
+     */
+    DigitList &round(DigitList &value, int32_t exponent, UErrorCode &status) const;
+    
+    /**
+     * Returns the interval to use to format the rounded value.
+     * @param roundedValue the already rounded value to format.
+     * @param interval modified in place to be the interval to use to format
+     *   the rounded value.
+     * @return a reference to interval.
+     */
+    DigitInterval &getInterval(
+            const DigitList &roundedValue, DigitInterval &interval) const;
+    
+    /**
+     * Returns TRUE if this instance allows for fast formatting of integers.
+     */
+    UBool isFastFormattable() const;
+    
+    /**
+     * Initializes a VisibleDigits.
+     * @param value value for VisibleDigits
+     *    Caller must not assume that the value of this parameter will remain
+     *    unchanged.
+     * @param digits This is the value that is initialized.
+     * @param status any error returned here.
+     * @return digits
+     */
+    VisibleDigits &initVisibleDigits(
+            DigitList &value,
+            VisibleDigits &digits,
+            UErrorCode &status) const;
+    
+    /**
+     * Initializes a VisibleDigits.
+     * @param value value for VisibleDigits
+     * @param digits This is the value that is initialized.
+     * @param status any error returned here.
+     * @return digits
+     */
+    VisibleDigits &initVisibleDigits(
+            double value,
+            VisibleDigits &digits,
+            UErrorCode &status) const;
+    
+    /**
+     * Initializes a VisibleDigits.
+     * @param value value for VisibleDigits
+     * @param digits This is the value that is initialized.
+     * @param status any error returned here.
+     * @return digits
+     */
+    VisibleDigits &initVisibleDigits(
+            int64_t value,
+            VisibleDigits &digits,
+            UErrorCode &status) const;
+    
+    /**
+     * Initializes a VisibleDigitsWithExponent.
+     * @param value value for VisibleDigits
+     *    Caller must not assume that the value of this parameter will remain
+     *    unchanged.
+     * @param digits This is the value that is initialized.
+     * @param status any error returned here.
+     * @return digits
+     */
+    VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+            DigitList &value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
+    
+    /**
+     * Initializes a VisibleDigitsWithExponent.
+     * @param value value for VisibleDigits
+     * @param digits This is the value that is initialized.
+     * @param status any error returned here.
+     * @return digits
+     */
+    VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+            double value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
+    
+    /**
+     * Initializes a VisibleDigitsWithExponent.
+     * @param value value for VisibleDigits
+     * @param digits This is the value that is initialized.
+     * @param status any error returned here.
+     * @return digits
+     */
+    VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+            int64_t value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
+    
 private:
-UBool
-initVisibleDigits(
-        int64_t mantissa,
-        int32_t exponent,
-        VisibleDigits &digits,
-        UErrorCode &status) const;
-UBool isRoundingRequired(
-        int32_t upperExponent, int32_t lowerExponent) const;
-DigitInterval &getIntervalForZero(DigitInterval &interval) const;
-DigitInterval &getInterval(
-        int32_t upperExponent, DigitInterval &interval) const;
-static UBool handleNonNumeric(DigitList &value, VisibleDigits &digits);
-
-friend class ScientificPrecision;
+    UBool
+    initVisibleDigits(
+            int64_t mantissa,
+            int32_t exponent,
+            VisibleDigits &digits,
+            UErrorCode &status) const;
+    UBool isRoundingRequired(
+            int32_t upperExponent, int32_t lowerExponent) const;
+    DigitInterval &getIntervalForZero(DigitInterval &interval) const;
+    DigitInterval &getInterval(
+            int32_t upperExponent, DigitInterval &interval) const;
+    static UBool handleNonNumeric(DigitList &value, VisibleDigits &digits);
+    
+    friend class ScientificPrecision;
 };
 
 /**
@@ -237,50 +241,44 @@ public:
         return fMantissa.equals(rhs.fMantissa) && fMinExponentDigits == rhs.fMinExponentDigits;
     }
 
-/**
- * Initializes a VisibleDigitsWithExponent.
- * @param value the value
- * @param digits This is the value that is initialized.
- * @param status any error returned here.
- * @return digits
- */
-VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
-        DigitList &value,
-        VisibleDigitsWithExponent &digits,
-        UErrorCode &status) const;
-
-/**
- * Initializes a VisibleDigitsWithExponent.
- * @param value the value
- * @param digits This is the value that is initialized.
- * @param status any error returned here.
- * @return digits
- */
-VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
-        double value,
-        VisibleDigitsWithExponent &digits,
-        UErrorCode &status) const;
-
-/**
- * Initializes a VisibleDigitsWithExponent.
- * @param value the value
- * @param digits This is the value that is initialized.
- * @param status any error returned here.
- * @return digits
- */
-VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
-        int64_t value,
-        VisibleDigitsWithExponent &digits,
-        UErrorCode &status) const;
-
-/**
- * For testing only.
- */
-static VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
-        const DigitList &mantissa, const DigitInterval &mantissaInterval,
-        int32_t exponent, int32_t minExpDigits,
-        VisibleDigitsWithExponent &digits, UErrorCode &status);
-
+    /**
+     * Initializes a VisibleDigitsWithExponent.
+     * @param value the value
+     *    Caller must not assume that the value of this parameter will remain
+     *    unchanged.
+     * @param digits This is the value that is initialized.
+     * @param status any error returned here.
+     * @return digits
+     */
+    VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+            DigitList &value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
+    
+    /**
+     * Initializes a VisibleDigitsWithExponent.
+     * @param value the value
+     * @param digits This is the value that is initialized.
+     * @param status any error returned here.
+     * @return digits
+     */
+    VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+            double value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
+    
+    /**
+     * Initializes a VisibleDigitsWithExponent.
+     * @param value the value
+     * @param digits This is the value that is initialized.
+     * @param status any error returned here.
+     * @return digits
+     */
+    VisibleDigitsWithExponent &initVisibleDigitsWithExponent(
+            int64_t value,
+            VisibleDigitsWithExponent &digits,
+            UErrorCode &status) const;
+    
 private:
     int32_t getMultiplier() const;
 

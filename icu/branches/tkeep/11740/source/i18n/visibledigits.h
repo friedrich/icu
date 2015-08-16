@@ -1,9 +1,10 @@
-/* ******************************************************************************* * Copyright (C) 2015, International Business Machines
+/*
+******************************************************************************* * Copyright (C) 2015, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
-* digitinterval.h
+* visibledigits.h
 *
-* created on: 2015jan6
+* created on: 2015jun20
 * created by: Travis Keep
 */
 
@@ -20,20 +21,15 @@ U_NAMESPACE_BEGIN
 class DigitList;
 
 /**
- * An interval of digits.
+ * VisibleDigits represents the digits visible for formatting.
+ * Once initialized, VisibleDigits instances remain unchanged until they
+ * are initialized again.
+ * For the value 3, a VisibleDigits instance may represent 3, 3.0, 3.00 or
+ * even 003.0 depending on how the client initialized it.
  */
 class U_I18N_API VisibleDigits : public UMemory {
 public:
     VisibleDigits() : fExponent(0), fFlags(0), fAbsIntValue(0), fAbsIntValueSet(FALSE), fAbsDoubleValue(0.0), fAbsDoubleValueSet(FALSE) { }
-
-    /**
-     * For testing only. value must be real, not NaN or infinite.
-     */
-    static VisibleDigits &initVisibleDigits(
-            const DigitList &value,
-            const DigitInterval &interval,
-            VisibleDigits &digits,
-            UErrorCode &status);
 
     UBool isNegative() const;
     UBool isNaN() const;
@@ -63,13 +59,51 @@ public:
 
 
 private:
+    /**
+     * The digits, least significant first. Both the least and most
+     * significant digit in this list are non-zero; however, digits in the
+     * middle may be zero. This field contains values between (char) 0, and
+     * (char) 9 inclusive.
+     */
     CharString fDigits;
+
+    /**
+     * The range of displayable digits. This field is needed to account for
+     * any leading and trailing zeros which are not stored in fDigits.
+     */
     DigitInterval fInterval;
+
+    /**
+     * The exponent value of the least significant digit in fDigits. For
+     * example, fExponent = 2 and fDigits = {7, 8, 5} represents 58700.
+     */
     int32_t fExponent;
+
+    /**
+     * Contains flags such as NaN, Inf, and negative.
+     */
     int32_t fFlags;
+
+    /**
+     * Contains the absolute value of the digits left of the decimal place
+     * if fAbsIntValueSet is TRUE
+     */
     int64_t fAbsIntValue;
+
+    /**
+     * Indicates whether or not fAbsIntValue is set.
+     */
     UBool fAbsIntValueSet;
+
+    /**
+     * Contains the absolute value of the value this instance represents
+     * if fAbsDoubleValueSet is TRUE
+     */
     double fAbsDoubleValue;
+
+    /**
+     * Indicates whether or not fAbsDoubleValue is set.
+     */
     UBool fAbsDoubleValueSet;
 
     void setNegative();

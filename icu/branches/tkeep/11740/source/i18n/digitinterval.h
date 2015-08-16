@@ -19,12 +19,18 @@ U_NAMESPACE_BEGIN
 
 /**
  * An interval of digits.
+ * DigitIntervals are for fixed point formatting. A DigitInterval contains 
+ * zero or more integer digits and zero or more fractional digits. This class
+ * specifies particular digits in a number by their power of 10. For example,
+ * the digit position just to the left of the decimal is 0, and the digit
+ * position just left of that is 1. The digit position just to the right of
+ * the decimal is -1. The digit position just to the right of that is -2.
  */
 class U_I18N_API DigitInterval : public UMemory {
 public:
 
     /**
-     * Spans all digits
+     * Spans all integer and fraction digits
      */
     DigitInterval()
             : fLargestExclusive(INT32_MAX), fSmallestInclusive(INT32_MIN) { }

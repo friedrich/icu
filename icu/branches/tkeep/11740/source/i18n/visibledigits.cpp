@@ -20,20 +20,6 @@ static const int32_t kNaN = 4;
 
 U_NAMESPACE_BEGIN
 
-VisibleDigits &VisibleDigits::initVisibleDigits(
-            const DigitList &value,
-            const DigitInterval &interval,
-            VisibleDigits &digits,
-            UErrorCode &status) {
-    digits.fInterval = interval;
-    digits.fExponent = value.getLowerExponent();
-    value.appendDigitsTo(digits.fDigits, status);
-    if (!value.isPositive()) {
-        digits.setNegative();
-    }
-    return digits;
-}
-
 void VisibleDigits::setNegative() {
     fFlags |= kNegative;
 }

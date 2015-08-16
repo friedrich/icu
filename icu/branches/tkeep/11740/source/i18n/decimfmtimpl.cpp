@@ -99,7 +99,7 @@ DecimalFormatImpl::DecimalFormatImpl(const DecimalFormatImpl &other) :
           fNegativeSuffixPattern(other.fNegativeSuffixPattern),
           fSymbols(other.fSymbols),
           fCurrencyUsage(other.fCurrencyUsage),
-          fRules(other.fRules),
+          fRules(NULL),
           fMonetary(other.fMonetary),
           fAffixParser(other.fAffixParser),
           fCurrencyAffixInfo(other.fCurrencyAffixInfo),
@@ -109,8 +109,8 @@ DecimalFormatImpl::DecimalFormatImpl(const DecimalFormatImpl &other) :
           fFormatter(other.fFormatter),
           fAap(other.fAap) {
     fSymbols = new DecimalFormatSymbols(*fSymbols);
-    if (fRules != NULL) {
-        fRules = new PluralRules(*fRules);
+    if (other.fRules != NULL) {
+        fRules = new PluralRules(*other.fRules);
     }
     u_strcpy(fCurr, other.fCurr);
 }
