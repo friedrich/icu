@@ -124,18 +124,11 @@ public:
         return new DateFmtBestPatternKey(*this);
     }
     virtual const DateFmtBestPattern *createObject(
-            const void *creationContext, UErrorCode &status) const {
-        void *mutableCreationContext = const_cast<void *>(creationContext);
-        DateTimePatternGenerator *dtpg =
-               static_cast<DateTimePatternGenerator *>(mutableCreationContext);
-        LocalPointer<DateTimePatternGenerator> ownedDtpg;
-        if (dtpg == NULL) {
-            ownedDtpg.adoptInstead(
+            const void * /*unused*/, UErrorCode &status) const {
+        LocalPointer<DateTimePatternGenerator> dtpg(
                     DateTimePatternGenerator::createInstance(fLoc, status));
-            if (U_FAILURE(status)) {
-                return NULL;
-            }
-            dtpg = ownedDtpg.getAlias();
+        if (U_FAILURE(status)) {
+            return NULL;
         }
   
         LocalPointer<DateFmtBestPattern> pattern(
@@ -458,15 +451,18 @@ DateFormat::createInstance()
 
 //----------------------------------------------------------------------
 
-static UnicodeString getBestPattern(
+UnicodeString U_EXPORT2
+DateFormat::getBestPattern(
         const Locale &locale,
         const UnicodeString &skeleton,
-        DateTimePatternGenerator *gen,
         UErrorCode &status) {
     UnifiedCache *cache = UnifiedCache::getInstance(status);
+    if (U_FAILURE(status)) {
+        return UnicodeString();
+    }
     DateFmtBestPatternKey key(locale, skeleton);
     const DateFmtBestPattern *patternPtr = NULL;
-    cache->get(key, gen, patternPtr, status);
+    cache->get(key, patternPtr, status);
     if (U_FAILURE(status)) {
         return UnicodeString();
     }
@@ -503,7 +499,7 @@ DateFormat::createInstanceForSkeleton(
         const Locale &locale,
         UErrorCode &status) {
     return _internalCreateInstanceForSkeleton(
-            skeleton, locale, NULL, status);
+            skeleton, locale, status);
 }
 
 DateFormat* U_EXPORT2
@@ -515,26 +511,15 @@ DateFormat::createInstanceForSkeleton(
 }
 
 DateFormat* U_EXPORT2
-DateFormat::internalCreateInstanceForSkeleton(
-        const UnicodeString& skeleton,
-        const Locale &locale,
-        DateTimePatternGenerator &gen,
-        UErrorCode &status) {
-    return _internalCreateInstanceForSkeleton(
-            skeleton, locale, &gen, status);
-}
-
-DateFormat* U_EXPORT2
 DateFormat::_internalCreateInstanceForSkeleton(
         const UnicodeString& skeleton,
         const Locale &locale,
-        DateTimePatternGenerator *gen,
         UErrorCode &status) {
     if (U_FAILURE(status)) {
         return NULL;
     }
     DateFormat *fmt = new SimpleDateFormat(
-               getBestPattern(locale, skeleton, gen, status),
+               getBestPattern(locale, skeleton, status),
                locale,
                status);
    if (fmt == NULL) {

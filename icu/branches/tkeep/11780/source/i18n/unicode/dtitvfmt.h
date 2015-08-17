@@ -667,7 +667,6 @@ private:
     static SimpleDateFormat* U_EXPORT2 createSDFPatternInstance(
                                         const UnicodeString& skeleton,
                                         const Locale& locale,
-                                        DateTimePatternGenerator* dtpng,
                                         UErrorCode& status);
 
 
@@ -994,10 +993,7 @@ private:
     Calendar* fFromCalendar;
     Calendar* fToCalendar;
 
-    /**
-     * Date time pattern generator
-     */
-    DateTimePatternGenerator* fDtpng;
+    Locale fLocale;
 
     /**
      * Following are interval information relevant (locale) to this formatter.
