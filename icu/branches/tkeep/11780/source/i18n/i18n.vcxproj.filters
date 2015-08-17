@@ -698,9 +698,6 @@
     <ClInclude Include="shareddateformatsymbols.h">
       <Filter>formatting</Filter>
     </ClInclude>
-    <ClInclude Include="shareddatetimepatterngenerator.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
     <ClInclude Include="sharednumberformat.h">
       <Filter>formatting</Filter>
     </ClInclude>
