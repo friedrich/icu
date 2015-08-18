@@ -446,7 +446,8 @@ DecimalFormat::construct(UErrorCode&            status,
         // during format.
         fCurrencyPluralInfo->getCurrencyPluralPattern(UNICODE_STRING("other", 5), currencyPluralPatternForOther);
         // TODO(refactor): Revisit, we are setting the pattern twice.
-        fImpl->applyPattern(currencyPluralPatternForOther, status);
+        fImpl->applyPatternFavorCurrencyPrecision(
+                currencyPluralPatternForOther, status);
         updateSuper();
         patternUsed = &currencyPluralPatternForOther;
 

@@ -570,6 +570,7 @@ void NumberFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &n
   TESTCASE_AUTO(TestToPatternScientific11648);
   TESTCASE_AUTO(TestBenchmark);
   TESTCASE_AUTO(TestCtorApplyPatternDifference);
+  TESTCASE_AUTO(TestFormatCurrencyPlural);
   TESTCASE_AUTO_END;
 }
 
@@ -8406,6 +8407,16 @@ void NumberFormatTest::TestBenchmark() {
     errln("Took %f", (double) (clock() - start) / CLOCKS_PER_SEC);
     assertSuccess("", status);
 */
+}
+
+void NumberFormatTest::TestFormatCurrencyPlural() {
+    UErrorCode status = U_ZERO_ERROR;
+    Locale locale = Locale::createCanonical("en_US");
+    NumberFormat *fmt = NumberFormat::createInstance(locale, UNUM_CURRENCY_PLURAL, status);
+   UnicodeString formattedNum;
+   fmt->format(11234.567, formattedNum, NULL, status);
+   assertEquals("", "11,234.57 US dollars", formattedNum);
+   delete fmt;
 }
 
 void NumberFormatTest::TestCtorApplyPatternDifference() {

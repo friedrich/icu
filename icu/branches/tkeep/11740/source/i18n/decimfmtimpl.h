@@ -158,6 +158,8 @@ UBool isGroupingUsed() const { return fUseGrouping; }
 void setCurrency(const UChar *currency, UErrorCode &status);
 const UChar *getCurrency() const { return fCurr; }
 void applyPattern(const UnicodeString &pattern, UErrorCode &status);
+void applyPatternFavorCurrencyPrecision(
+        const UnicodeString &pattern, UErrorCode &status);
 void applyPattern(
         const UnicodeString &pattern, UParseError &perror, UErrorCode &status);
 void applyLocalizedPattern(const UnicodeString &pattern, UErrorCode &status);
@@ -367,9 +369,14 @@ int32_t getScale() const { return fScale; }
 
 // Updates everything
 void updateAll(UErrorCode &status);
+void updateAll(
+        int32_t formattingFlags,
+        UBool updatePrecisionBasedOnCurrency,
+        UErrorCode &status);
 
 // Updates from formatting pattern changes
 void updateForApplyPattern(UErrorCode &status);
+void updateForApplyPatternFavorCurrencyPrecision(UErrorCode &status);
 
 // Updates from changes to first group of attributes
 void updatePrecision();

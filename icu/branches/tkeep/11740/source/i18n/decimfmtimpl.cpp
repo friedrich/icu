@@ -846,6 +846,14 @@ DecimalFormatImpl::adoptDecimalFormatSymbols(DecimalFormatSymbols *symbolsToAdop
 }
 
 void
+DecimalFormatImpl::applyPatternFavorCurrencyPrecision(
+        const UnicodeString &pattern, UErrorCode &status) {
+    UParseError perror;
+    applyPattern(pattern, FALSE, perror, status);
+    updateForApplyPatternFavorCurrencyPrecision(status);
+}
+
+void
 DecimalFormatImpl::applyPattern(
         const UnicodeString &pattern, UErrorCode &status) {
     UParseError perror;
@@ -1328,26 +1336,36 @@ DecimalFormatImpl::updateFormattingLocalizedNegativeSuffix(
 }
 
 void
+DecimalFormatImpl::updateForApplyPatternFavorCurrencyPrecision(
+        UErrorCode &status) {
+    updateAll(kFormattingAll & ~kFormattingSymbols, TRUE, status);
+}
+
+void
 DecimalFormatImpl::updateForApplyPattern(UErrorCode &status) {
-    if (U_FAILURE(status)) {
-        return;
-    }
-    updatePrecision();
-    updateGrouping();
-    updateFormatting(kFormattingAll & ~kFormattingSymbols, FALSE, status);
-    setMultiplierScale(getPatternScale());
+    updateAll(kFormattingAll & ~kFormattingSymbols, FALSE, status);
 }
 
 void
 DecimalFormatImpl::updateAll(UErrorCode &status) {
+    updateAll(kFormattingAll, TRUE, status);
+}
+
+void
+DecimalFormatImpl::updateAll(
+        int32_t formattingFlags,
+        UBool updatePrecisionBasedOnCurrency,
+        UErrorCode &status) {
     if (U_FAILURE(status)) {
         return;
     }
     updatePrecision();
     updateGrouping();
-    updateFormatting(kFormattingAll, status);
+    updateFormatting(
+            formattingFlags, updatePrecisionBasedOnCurrency, status);
     setMultiplierScale(getPatternScale());
 }
+
 
 static int32_t
 getMinimumLengthToDescribeGrouping(const DigitGrouping &grouping) {
