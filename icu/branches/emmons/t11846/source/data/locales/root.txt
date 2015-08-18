@@ -1119,10 +1119,12 @@ root{
             quarters:alias{"/LOCALE/calendar/gregorian/quarters"}
         }
         gregorian{
+            AmPmMarkers:alias{"/LOCALE/calendar/gregorian/AmPmMarkersAbbr"}
             AmPmMarkersAbbr{
                 "AM",
                 "PM",
             }
+            AmPmMarkersNarrow:alias{"/LOCALE/calendar/gregorian/AmPmMarkersAbbr"}
             DateTimePatterns{
                 "HH:mm:ss zzzz",
                 "HH:mm:ss z",
