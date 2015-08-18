@@ -32,7 +32,7 @@ es_MX{
             }
         }
     }
-    Version{"2.1.13.23"}
+    Version{"2.1.19.79"}
     calendar{
         generic{
             DateTimePatterns{
@@ -80,10 +80,6 @@ es_MX{
             }
         }
         gregorian{
-            AmPmMarkers{
-                "a.m.",
-                "p.m.",
-            }
             DateTimePatterns{
                 "HH:mm:ss zzzz",
                 "HH:mm:ss z",
@@ -290,12 +286,6 @@ es_MX{
                     other{"en {0} días"}
                 }
             }
-        }
-        dayperiod{
-            dn{"a.m./p.m."}
-        }
-        era{
-            dn{"era"}
         }
         fri{
             relative{

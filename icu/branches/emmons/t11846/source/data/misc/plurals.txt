@@ -16,7 +16,6 @@ plurals:table(nofallback){
         asa{"set8"}
         ast{"set3"}
         az{"set8"}
-        azb{"set8"}
         be{"set27"}
         bem{"set8"}
         bez{"set8"}

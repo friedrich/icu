@@ -11,6 +11,9 @@ az{
         calendar{"Təqvim"}
         collation{"Çeşidləmə"}
         currency{"Valyuta"}
+        hc{"Saat Sikli (12 / 24)"}
+        lb{"Sətirdən sətrə keçirmə üslubu"}
+        ms{"Ölçü Sistemi"}
         numbers{"Rəqəmlər"}
     }
     Languages{
@@ -45,7 +48,8 @@ az{
         av{"avarikcə"}
         awa{"avadicə"}
         ay{"aymarca"}
-        az{"azərbaycanca"}
+        az{"azərbaycan dili"}
+        az_Arab{"cənubi azərbaycan"}
         ba{"başqırd"}
         bal{"baluc dili"}
         ban{"balincə"}
@@ -55,6 +59,7 @@ az{
         bem{"bemba"}
         bez{"bena"}
         bg{"bolqar"}
+        bgn{"qərbi bəluc"}
         bho{"bxoçpuri dili"}
         bi{"bislama dili"}
         bik{"bikolca"}
@@ -208,7 +213,7 @@ az{
         iu{"inuktitut"}
         ja{"yapon"}
         jbo{"loğban dili"}
-        jgo{"nqomba"}
+        jgo{"nqomba dili"}
         jmc{"maçam"}
         jpr{"judo-farsca"}
         jrb{"jude-ərəbcə"}
@@ -269,6 +274,7 @@ az{
         lo{"laos"}
         lol{"monqo dili"}
         loz{"lozi dili"}
+        lrc{"şimali luri"}
         lt{"litva"}
         lu{"luba-katanqa"}
         lua{"luba-lulua dili"}
@@ -314,12 +320,14 @@ az{
         mwr{"maruari dili"}
         my{"birma"}
         myv{"erzya dili"}
+        mzn{"mazandaran"}
         na{"nauru dili"}
         nap{"neapolital dili"}
         naq{"nama"}
         nb{"bokmal norveç"}
         nd{"şimali ndebele"}
         nds{"aşağı almanca"}
+        nds_NL{"aşağı sakson"}
         ne{"nepal"}
         new{"nevari dili"}
         ng{"nqonka dili"}
@@ -393,6 +401,7 @@ az{
         scn{"sisili dili"}
         sco{"skots dili"}
         sd{"sindhi"}
+        sdh{"cənubi kürd"}
         se{"şimali sami"}
         seh{"sena"}
         sel{"selkup dili"}
@@ -421,7 +430,6 @@ az{
         srr{"serer dilii"}
         ss{"svati dili"}
         st{"Sesoto dili"}
-        su{"sudan"}
         suk{"sukuma dili"}
         sus{"susu dili"}
         sux{"sumeryan dili"}
@@ -479,6 +487,7 @@ az{
         wal{"valamo dili"}
         war{"varay dili"}
         was{"vaşo dili"}
+        wbp{"Valpiri"}
         wo{"volof"}
         xal{"kalmıqca"}
         xh{"xosa"}
@@ -545,9 +554,9 @@ az{
         Hang{"hanqıl"}
         Hani{"han"}
         Hano{"hanunu"}
-        Hans{"sadələşmiş han"}
-        Hant{"ənənəvi han"}
-        Hebr{"yəhudi"}
+        Hans{"sadələşmiş"}
+        Hant{"ənənəvi"}
+        Hebr{"ibrani"}
         Hira{"iraqana"}
         Hmng{"pahav monq"}
         Hrkt{"katakana vəya hiraqana"}
@@ -658,6 +667,22 @@ az{
             search{"Ümumi Məqsədli Axtarış"}
             standard{"Standart Çeşidləmə"}
         }
+        hc{
+            h11{"12 Saatlıq Sistem (0–11)"}
+            h12{"12 Saatlıq Sistem (0–12)"}
+            h23{"24 Saatlıq Sistem (0–23)"}
+            h24{"24 Saatlıq Sistem (0–23)"}
+        }
+        lb{
+            loose{"Sərbəst sətirdən sətrə keçirmə üslubu"}
+            normal{"Normal sətirdən sətrə keçirmə üslubu"}
+            strict{"Sərt sətirdən sətrə keçirmə üslubu"}
+        }
+        ms{
+            metric{"Metrik Sistem"}
+            uksystem{"İmperial Ölçü Sistemi"}
+            ussystem{"ABŞ Ölçü Sistemi"}
+        }
         numbers{
             arab{"Ərəb-Hind Rəqəmləri"}
             arabext{"Genişlənmiş Ərəb-Hind Rəqəmləri"}
@@ -696,7 +721,7 @@ az{
             tibt{"Tibet Rəqəmləri"}
         }
     }
-    Version{"2.1.15.60"}
+    Version{"2.1.19.17"}
     codePatterns{
         language{"Dil: {0}"}
         script{"Skript: {0}"}
