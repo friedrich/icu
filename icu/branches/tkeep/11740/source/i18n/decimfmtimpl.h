@@ -40,8 +40,9 @@ DecimalFormatImpl(
         DecimalFormatSymbols *symbolsToAdopt,
         UParseError &parseError,
         UErrorCode &status);
-DecimalFormatImpl(const DecimalFormatImpl &other);
-DecimalFormatImpl &operator=(const DecimalFormatImpl &other);
+DecimalFormatImpl(const DecimalFormatImpl &other, UErrorCode &status);
+DecimalFormatImpl &assign(
+        const DecimalFormatImpl &other, UErrorCode &status);
 virtual ~DecimalFormatImpl();
 void adoptDecimalFormatSymbols(DecimalFormatSymbols *symbolsToAdopt);
 const DecimalFormatSymbols &getDecimalFormatSymbols() const {
@@ -227,6 +228,9 @@ initVisibleDigitsWithExponent(
 
 
 private:
+// Disallow copy and assign
+DecimalFormatImpl(const DecimalFormatImpl &other);
+DecimalFormatImpl &operator=(const DecimalFormatImpl &other);
 
 DigitList fMultiplier;
 int32_t fScale;

@@ -78,7 +78,8 @@ DecimalFormatImpl::DecimalFormatImpl(
     updateAll(status);
 }
 
-DecimalFormatImpl::DecimalFormatImpl(const DecimalFormatImpl &other) :
+DecimalFormatImpl::DecimalFormatImpl(
+    const DecimalFormatImpl &other, UErrorCode &status) :
           UObject(other),
           fMultiplier(other.fMultiplier),
           fScale(other.fScale),
@@ -108,17 +109,23 @@ DecimalFormatImpl::DecimalFormatImpl(const DecimalFormatImpl &other) :
           fOptions(other.fOptions),
           fFormatter(other.fFormatter),
           fAap(other.fAap) {
+    u_strcpy(fCurr, other.fCurr);
     fSymbols = new DecimalFormatSymbols(*fSymbols);
+    if (fSymbols == NULL && U_SUCCESS(status)) {
+        status = U_MEMORY_ALLOCATION_ERROR;
+    }
     if (other.fRules != NULL) {
         fRules = new PluralRules(*other.fRules);
+        if (fRules == NULL && U_SUCCESS(status)) {
+            status = U_MEMORY_ALLOCATION_ERROR;
+        }
     }
-    u_strcpy(fCurr, other.fCurr);
 }
 
 
 DecimalFormatImpl &
-DecimalFormatImpl::operator=(const DecimalFormatImpl &other) {
-    if (this == &other) {
+DecimalFormatImpl::assign(const DecimalFormatImpl &other, UErrorCode &status) {
+    if (U_FAILURE(status) || this == &other) {
         return (*this);
     }
     UObject::operator=(other);
@@ -149,6 +156,7 @@ DecimalFormatImpl::operator=(const DecimalFormatImpl &other) {
     fFormatter = other.fFormatter;
     fAap = other.fAap;
     *fSymbols = *other.fSymbols;
+    u_strcpy(fCurr, other.fCurr);
     if (fRules != NULL && other.fRules != NULL) {
         *fRules = *other.fRules;
     } else {
@@ -156,9 +164,12 @@ DecimalFormatImpl::operator=(const DecimalFormatImpl &other) {
         fRules = other.fRules;
         if (fRules != NULL) {
             fRules = new PluralRules(*fRules);
+            if (fRules == NULL) {
+                status = U_MEMORY_ALLOCATION_ERROR;
+                return *this;
+            }
         }
     }
-    u_strcpy(fCurr, other.fCurr);
     return *this;
 }
 

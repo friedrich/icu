@@ -621,9 +621,9 @@ DecimalFormat::operator=(const DecimalFormat& rhs)
         UErrorCode status = U_ZERO_ERROR;
         NumberFormat::operator=(rhs);
         if (fImpl == NULL) {
-            fImpl = new DecimalFormatImpl(*rhs.fImpl);
+            fImpl = new DecimalFormatImpl(*rhs.fImpl, status);
         } else {
-            *fImpl = *rhs.fImpl;
+            fImpl->assign(*rhs.fImpl, status);
         }
         fStaticSets     = DecimalFormatStaticSets::getStaticSets(status);
         fStyle = rhs.fStyle;
