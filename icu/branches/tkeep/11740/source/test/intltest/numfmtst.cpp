@@ -570,6 +570,7 @@ void NumberFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &n
   TESTCASE_AUTO(TestToPatternScientific11648);
   TESTCASE_AUTO(TestBenchmark);
   TESTCASE_AUTO(TestCtorApplyPatternDifference);
+  TESTCASE_AUTO(TestFractionalDigitsForCurrency);
   TESTCASE_AUTO(TestFormatCurrencyPlural);
   TESTCASE_AUTO_END;
 }
@@ -8408,6 +8409,18 @@ void NumberFormatTest::TestBenchmark() {
     assertSuccess("", status);
 */
 }
+
+void NumberFormatTest::TestFractionalDigitsForCurrency() {
+    UErrorCode status = U_ZERO_ERROR;
+    LocalPointer<NumberFormat> fmt(NumberFormat::createCurrencyInstance("en", status));
+    UChar JPY[] = {0x4A, 0x50, 0x59, 0x0};
+    fmt->setCurrency(JPY, status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
+    assertEquals("", 0, fmt->getMaximumFractionDigits());
+}
+
 
 void NumberFormatTest::TestFormatCurrencyPlural() {
     UErrorCode status = U_ZERO_ERROR;

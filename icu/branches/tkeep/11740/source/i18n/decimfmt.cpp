@@ -2939,10 +2939,12 @@ void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {
     // set the currency before compute affixes to get the right currency names
     NumberFormat::setCurrency(theCurrency, ec);
     fImpl->setCurrency(theCurrency, ec);
+    updateSuper();
 }
 
 void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){
     fImpl->setCurrencyUsage(newContext, *ec);
+    updateSuper();
 }
 
 UCurrencyUsage DecimalFormat::getCurrencyUsage() const {

@@ -192,6 +192,7 @@ class NumberFormatTest: public CalendarTimeZoneTest {
     void TestToPatternScientific11648();
     void TestBenchmark();
     void TestCtorApplyPatternDifference();
+    void TestFractionalDigitsForCurrency();
     void TestFormatCurrencyPlural();
 
  private:
