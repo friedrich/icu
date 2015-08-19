@@ -99,7 +99,7 @@ zh{
             patternsLong{
                 decimalFormat{
                     1000{
-                        other{"0千"}
+                        other{"0"}
                     }
                     10000{
                         other{"0万"}
@@ -139,7 +139,7 @@ zh{
             patternsShort{
                 currencyFormat{
                     1000{
-                        other{"¤0千"}
+                        other{"0"}
                     }
                     10000{
                         other{"¤0万"}
@@ -177,7 +177,7 @@ zh{
                 }
                 decimalFormat{
                     1000{
-                        other{"0千"}
+                        other{"0"}
                     }
                     10000{
                         other{"0万"}
@@ -233,7 +233,7 @@ zh{
         native{"hanidec"}
         traditional{"hans"}
     }
-    Version{"2.1.19.74"}
+    Version{"2.1.19.89"}
     calendar{
         buddhist{
             DateTimePatterns{

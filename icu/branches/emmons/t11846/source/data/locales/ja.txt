@@ -97,7 +97,7 @@ ja{
             patternsLong{
                 decimalFormat{
                     1000{
-                        other{"0千"}
+                        other{"0"}
                     }
                     10000{
                         other{"0万"}
@@ -137,7 +137,7 @@ ja{
             patternsShort{
                 currencyFormat{
                     1000{
-                        other{"¤0千"}
+                        other{"0"}
                     }
                     10000{
                         other{"¤0万"}
@@ -175,7 +175,7 @@ ja{
                 }
                 decimalFormat{
                     1000{
-                        other{"0千"}
+                        other{"0"}
                     }
                     10000{
                         other{"0万"}
@@ -231,7 +231,7 @@ ja{
         native{"latn"}
         traditional{"jpan"}
     }
-    Version{"2.1.19.77"}
+    Version{"2.1.19.89"}
     calendar{
         buddhist{
             DateTimePatterns{

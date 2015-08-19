@@ -1018,7 +1018,7 @@ zh_Hant{
         VALLADER{"瑞士瓦勒德方言"}
         WADEGILE{"威妥瑪式拼音"}
     }
-    Version{"2.1.19.74"}
+    Version{"2.1.19.89"}
     codePatterns{
         language{"語言：{0}"}
         script{"文字：{0}"}

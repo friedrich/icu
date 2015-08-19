@@ -209,7 +209,7 @@ az{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.83"}
     calendar{
         generic{
             DateTimePatterns{

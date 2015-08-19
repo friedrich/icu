@@ -32,7 +32,7 @@ es_MX{
             }
         }
     }
-    Version{"2.1.19.79"}
+    Version{"2.1.19.82"}
     calendar{
         generic{
             DateTimePatterns{
@@ -264,7 +264,11 @@ es_MX{
     fields{
         day{
             relative{
+                "-1"{"ayer"}
                 "-2"{"antier"}
+                "0"{"hoy"}
+                "1"{"mañana"}
+                "2"{"pasado mañana"}
             }
         }
         day-narrow{

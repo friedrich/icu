@@ -26,5 +26,5 @@ de_CH{
             other{"Weissrussische Rubel"}
         }
     }
-    Version{"2.1.19.81"}
+    Version{"2.1.19.87"}
 }

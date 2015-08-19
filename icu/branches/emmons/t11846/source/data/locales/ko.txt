@@ -63,7 +63,7 @@ ko{
             patternsLong{
                 decimalFormat{
                     1000{
-                        other{"0000"}
+                        other{"0"}
                     }
                     10000{
                         other{"0만"}
@@ -103,7 +103,7 @@ ko{
             patternsShort{
                 currencyFormat{
                     1000{
-                        other{"¤0000"}
+                        other{"0"}
                     }
                     10000{
                         other{"¤0만"}
@@ -141,7 +141,7 @@ ko{
                 }
                 decimalFormat{
                     1000{
-                        other{"0000"}
+                        other{"0"}
                     }
                     10000{
                         other{"0만"}
@@ -196,7 +196,7 @@ ko{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.89"}
     calendar{
         buddhist{
             eras{
