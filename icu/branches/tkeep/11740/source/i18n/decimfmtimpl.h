@@ -32,15 +32,20 @@ class DecimalFormatImpl : public UObject {
 public:
 
 DecimalFormatImpl(
+        NumberFormat *super,
         const Locale &locale,
         const UnicodeString &pattern,
         UErrorCode &status);
 DecimalFormatImpl(
+        NumberFormat *super,
         const UnicodeString &pattern,
         DecimalFormatSymbols *symbolsToAdopt,
         UParseError &parseError,
         UErrorCode &status);
-DecimalFormatImpl(const DecimalFormatImpl &other, UErrorCode &status);
+DecimalFormatImpl(
+        NumberFormat *super,
+        const DecimalFormatImpl &other,
+        UErrorCode &status);
 DecimalFormatImpl &assign(
         const DecimalFormatImpl &other, UErrorCode &status);
 virtual ~DecimalFormatImpl();
@@ -122,25 +127,12 @@ void setFailIfMoreThanMaxDigits(UBool b) {
     fEffPrecision.fMantissa.fFailIfOverMax = b;
 }
 UBool isFailIfMoreThanMaxDigits() const { return fEffPrecision.fMantissa.fFailIfOverMax; }
-void setMinimumIntegerDigits(int32_t newValue);
-void setMaximumIntegerDigits(int32_t newValue);
-void setMinMaxIntegerDigits(int32_t min, int32_t max);
-void setMinimumFractionDigits(int32_t newValue);
-void setMaximumFractionDigits(int32_t newValue);
-void setMinMaxFractionDigits(int32_t min, int32_t max);
 void setMinimumSignificantDigits(int32_t newValue);
 void setMaximumSignificantDigits(int32_t newValue);
 void setMinMaxSignificantDigits(int32_t min, int32_t max);
 void setScientificNotation(UBool newValue);
 void setSignificantDigitsUsed(UBool newValue);
-int32_t getMinimumIntegerDigits() const { 
-        return fMinIntDigits; }
-int32_t getMaximumIntegerDigits() const { 
-        return fMaxIntDigits; }
-int32_t getMinimumFractionDigits() const { 
-        return fMinFracDigits; }
-int32_t getMaximumFractionDigits() const { 
-        return fMaxFracDigits; }
+
 int32_t getMinimumSignificantDigits() const { 
         return fMinSigDigits; }
 int32_t getMaximumSignificantDigits() const { 
@@ -150,13 +142,9 @@ UBool areSignificantDigitsUsed() const { return fUseSigDigits; }
 void setGroupingSize(int32_t newValue);
 void setSecondaryGroupingSize(int32_t newValue);
 void setMinimumGroupingDigits(int32_t newValue);
-void setGroupingUsed(UBool newValue);
 int32_t getGroupingSize() const { return fGrouping.fGrouping; }
 int32_t getSecondaryGroupingSize() const { return fGrouping.fGrouping2; }
 int32_t getMinimumGroupingDigits() const { return fGrouping.fMinGrouping; }
-UBool isGroupingUsed() const { return fUseGrouping; }
-void setCurrency(const UChar *currency, UErrorCode &status);
-const UChar *getCurrency() const { return fCurr; }
 void applyPattern(const UnicodeString &pattern, UErrorCode &status);
 void applyPatternFavorCurrencyPrecision(
         const UnicodeString &pattern, UErrorCode &status);
@@ -228,12 +216,16 @@ initVisibleDigitsWithExponent(
         VisibleDigitsWithExponent &digits,
         UErrorCode &status) const;
 
+void updatePrecision();
+void updateGrouping();
+void updateCurrency(UErrorCode &status);
+
 
 private:
 // Disallow copy and assign
 DecimalFormatImpl(const DecimalFormatImpl &other);
 DecimalFormatImpl &operator=(const DecimalFormatImpl &other);
-
+NumberFormat *fSuper;
 DigitList fMultiplier;
 int32_t fScale;
 
@@ -250,20 +242,19 @@ DecimalFormat::ERoundingMode fRoundingMode;
 // We have this two phase update because of backward compatibility. 
 // DecimalFormat has to remember all settings even if those settings are
 // invalid or disabled.
-int32_t fMinIntDigits;
-int32_t fMaxIntDigits;
-int32_t fMinFracDigits;
-int32_t fMaxFracDigits;
 int32_t fMinSigDigits;
 int32_t fMaxSigDigits;
 UBool fUseScientific;
 UBool fUseSigDigits;
+// In addition to these listed above, changes to min/max int digits and
+// min/max frac digits from fSuper also trigger an update.
 
 // Updating any of the following fields triggers an update to
 // fEffGrouping field Again we do it this way because original
 // grouping settings have to be retained if grouping is turned off.
 DigitGrouping fGrouping;
-UBool fUseGrouping;
+// In addition to these listed above, changes to isGroupingUsed in
+// fSuper also triggers an update to fEffGrouping.
 
 // Updating any of the following fields triggers updates on the following:
 // fMonetary, fRules, fAffixParser, fCurrencyAffixInfo,
@@ -277,8 +268,9 @@ AffixPattern fNegativePrefixPattern;
 AffixPattern fPositiveSuffixPattern;
 AffixPattern fNegativeSuffixPattern;
 DecimalFormatSymbols *fSymbols;
-UChar fCurr[4];
 UCurrencyUsage fCurrencyUsage;
+// In addition to these listed above, changes to getCurrency() in
+// fSuper also triggers an update.
 
 // Optional may be NULL
 PluralRules *fRules;
@@ -377,12 +369,6 @@ void updateAll(
 // Updates from formatting pattern changes
 void updateForApplyPattern(UErrorCode &status);
 void updateForApplyPatternFavorCurrencyPrecision(UErrorCode &status);
-
-// Updates from changes to first group of attributes
-void updatePrecision();
-
-// Updates from changes to second group of attributes
-void updateGrouping();
 
 // Updates from changes to third group of attributes
 void updateFormatting(int32_t changedFormattingFields, UErrorCode &status);

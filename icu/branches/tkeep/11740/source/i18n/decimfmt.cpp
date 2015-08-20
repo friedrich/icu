@@ -337,17 +337,6 @@ DecimalFormat::init() {
     fImpl = NULL;
 }
 
-void
-DecimalFormat::updateSuper() {
-    NumberFormat::setGroupingUsed(fImpl->isGroupingUsed());
-    NumberFormat::setMinimumIntegerDigits(fImpl->getMinimumIntegerDigits());
-    NumberFormat::setMaximumIntegerDigits(fImpl->getMaximumIntegerDigits());
-    NumberFormat::setMinimumFractionDigits(fImpl->getMinimumFractionDigits());
-    NumberFormat::setMaximumFractionDigits(fImpl->getMaximumFractionDigits());
-    UErrorCode ec = U_ZERO_ERROR;
-    NumberFormat::setCurrency(fImpl->getCurrency(), ec);
-}
-
 //------------------------------------------------------------------------------
 // Constructs a DecimalFormat instance with the specified number format
 // pattern and the number format symbols in the desired locale.  The
@@ -412,7 +401,7 @@ DecimalFormat::construct(UErrorCode&            status,
         ures_close(top);
     }
 
-    fImpl = new DecimalFormatImpl(*pattern, adoptedSymbols.getAlias(), parseErr, status);
+    fImpl = new DecimalFormatImpl(this, *pattern, adoptedSymbols.getAlias(), parseErr, status);
     if (fImpl) {
         adoptedSymbols.orphan();
     } else if (U_SUCCESS(status)) {
@@ -421,7 +410,6 @@ DecimalFormat::construct(UErrorCode&            status,
     if (U_FAILURE(status)) {
         return;
     }
-    updateSuper();
 
     if (U_FAILURE(status))
     {
@@ -448,7 +436,6 @@ DecimalFormat::construct(UErrorCode&            status,
         // TODO(refactor): Revisit, we are setting the pattern twice.
         fImpl->applyPatternFavorCurrencyPrecision(
                 currencyPluralPatternForOther, status);
-        updateSuper();
         patternUsed = &currencyPluralPatternForOther;
 
     } else {
@@ -622,7 +609,7 @@ DecimalFormat::operator=(const DecimalFormat& rhs)
         UErrorCode status = U_ZERO_ERROR;
         NumberFormat::operator=(rhs);
         if (fImpl == NULL) {
-            fImpl = new DecimalFormatImpl(*rhs.fImpl, status);
+            fImpl = new DecimalFormatImpl(this, *rhs.fImpl, status);
         } else {
             fImpl->assign(*rhs.fImpl, status);
         }
@@ -1237,7 +1224,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     UChar32 groupingChar = groupingString->char32At(0);
     int32_t groupingStringLength = groupingString->length();
     int32_t groupingCharLength   = U16_LENGTH(groupingChar);
-    UBool   groupingUsed = fImpl->isGroupingUsed();
+    UBool   groupingUsed = isGroupingUsed();
 #ifdef FMT_DEBUG
     UChar dbgbuf[300];
     UnicodeString s(dbgbuf,0,300);;
@@ -2813,7 +2800,6 @@ void
 DecimalFormat::applyPattern(const UnicodeString& pattern, UErrorCode& status)
 {
     fImpl->applyPattern(pattern, status);
-    updateSuper();
 }
 
 //------------------------------------------------------------------------------
@@ -2824,7 +2810,6 @@ DecimalFormat::applyPattern(const UnicodeString& pattern,
                             UErrorCode& status)
 {
     fImpl->applyPattern(pattern, parseError, status);
-    updateSuper();
 }
 //------------------------------------------------------------------------------
 
@@ -2832,7 +2817,6 @@ void
 DecimalFormat::applyLocalizedPattern(const UnicodeString& pattern, UErrorCode& status)
 {
     fImpl->applyLocalizedPattern(pattern, status);
-    updateSuper();
 }
 
 //------------------------------------------------------------------------------
@@ -2843,7 +2827,6 @@ DecimalFormat::applyLocalizedPattern(const UnicodeString& pattern,
                                      UErrorCode& status)
 {
     fImpl->applyLocalizedPattern(pattern, parseError, status);
-    updateSuper();
 }
 
 //------------------------------------------------------------------------------
@@ -2856,9 +2839,7 @@ DecimalFormat::applyLocalizedPattern(const UnicodeString& pattern,
 void DecimalFormat::setMaximumIntegerDigits(int32_t newValue) {
     newValue = _min(newValue, gDefaultMaxIntegerDigits);
     NumberFormat::setMaximumIntegerDigits(newValue);
-    fImpl->setMinMaxIntegerDigits(
-            NumberFormat::getMinimumIntegerDigits(),
-            NumberFormat::getMaximumIntegerDigits());
+    fImpl->updatePrecision();
 }
 
 /**
@@ -2869,9 +2850,7 @@ void DecimalFormat::setMaximumIntegerDigits(int32_t newValue) {
 void DecimalFormat::setMinimumIntegerDigits(int32_t newValue) {
     newValue = _min(newValue, kDoubleIntegerDigits);
     NumberFormat::setMinimumIntegerDigits(newValue);
-    fImpl->setMinMaxIntegerDigits(
-            NumberFormat::getMinimumIntegerDigits(),
-            NumberFormat::getMaximumIntegerDigits());
+    fImpl->updatePrecision();
 }
 
 /**
@@ -2882,9 +2861,7 @@ void DecimalFormat::setMinimumIntegerDigits(int32_t newValue) {
 void DecimalFormat::setMaximumFractionDigits(int32_t newValue) {
     newValue = _min(newValue, kDoubleFractionDigits);
     NumberFormat::setMaximumFractionDigits(newValue);
-    fImpl->setMinMaxFractionDigits(
-            NumberFormat::getMinimumFractionDigits(),
-            NumberFormat::getMaximumFractionDigits());
+    fImpl->updatePrecision();
 }
 
 /**
@@ -2895,9 +2872,7 @@ void DecimalFormat::setMaximumFractionDigits(int32_t newValue) {
 void DecimalFormat::setMinimumFractionDigits(int32_t newValue) {
     newValue = _min(newValue, kDoubleFractionDigits);
     NumberFormat::setMinimumFractionDigits(newValue);
-    fImpl->setMinMaxFractionDigits(
-            NumberFormat::getMinimumFractionDigits(),
-            NumberFormat::getMaximumFractionDigits());
+    fImpl->updatePrecision();
 }
 
 int32_t DecimalFormat::getMinimumSignificantDigits() const {
@@ -2938,13 +2913,11 @@ void DecimalFormat::setSignificantDigitsUsed(UBool useSignificantDigits) {
 void DecimalFormat::setCurrency(const UChar* theCurrency, UErrorCode& ec) {
     // set the currency before compute affixes to get the right currency names
     NumberFormat::setCurrency(theCurrency, ec);
-    fImpl->setCurrency(theCurrency, ec);
-    updateSuper();
+    fImpl->updateCurrency(ec);
 }
 
 void DecimalFormat::setCurrencyUsage(UCurrencyUsage newContext, UErrorCode* ec){
     fImpl->setCurrencyUsage(newContext, *ec);
-    updateSuper();
 }
 
 UCurrencyUsage DecimalFormat::getCurrencyUsage() const {
@@ -3041,7 +3014,7 @@ DecimalFormat::copyHashForAffixPattern(const Hashtable* source,
 void
 DecimalFormat::setGroupingUsed(UBool newValue) {
   NumberFormat::setGroupingUsed(newValue);
-  fImpl->setGroupingUsed(newValue);
+  fImpl->updateGrouping();
 }
 
 void

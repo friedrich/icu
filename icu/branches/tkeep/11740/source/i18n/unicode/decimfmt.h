@@ -2050,8 +2050,6 @@ private:
 
     DecimalFormat(); // default constructor not implemented
 
-    void updateSuper();
-
     /**
      *   Initialize all fields of a new DecimalFormatter to a safe default value.
      *      Common code for use by constructors.

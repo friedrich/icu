@@ -15,6 +15,7 @@
 #include "plurrule_impl.h"
 #include <math.h>
 #include "visibledigits.h"
+#include "unicode/numfmt.h"
 
 U_NAMESPACE_BEGIN
 
@@ -38,10 +39,12 @@ static const int32_t kFormattingAffixParserWithCurrency =
         kFormattingAffixParser | kFormattingCurrencyAffixInfo;
 
 DecimalFormatImpl::DecimalFormatImpl(
+        NumberFormat *super,
         const Locale &locale,
         const UnicodeString &pattern,
         UErrorCode &status)
-        : fScale(0),
+        : fSuper(super),
+          fScale(0),
           fRoundingMode(DecimalFormat::kRoundHalfEven),
           fSymbols(NULL),
           fCurrencyUsage(UCURR_USAGE_STANDARD),
@@ -57,43 +60,38 @@ DecimalFormatImpl::DecimalFormatImpl(
         return;
     }
     UParseError parseError;
-    fCurr[0] = 0;
     applyPattern(pattern, FALSE, parseError, status);
     updateAll(status);
 }
 
 DecimalFormatImpl::DecimalFormatImpl(
+        NumberFormat *super,
         const UnicodeString &pattern,
         DecimalFormatSymbols *symbolsToAdopt,
         UParseError &parseError,
         UErrorCode &status)
-        : fScale(0),
+        : fSuper(super),
+          fScale(0),
           fRoundingMode(DecimalFormat::kRoundHalfEven),
           fSymbols(symbolsToAdopt),
           fCurrencyUsage(UCURR_USAGE_STANDARD),
           fRules(NULL),
           fMonetary(FALSE) {
-    fCurr[0] = 0;
     applyPattern(pattern, FALSE, parseError, status);
     updateAll(status);
 }
 
 DecimalFormatImpl::DecimalFormatImpl(
-    const DecimalFormatImpl &other, UErrorCode &status) :
-          UObject(other),
+    NumberFormat *super, const DecimalFormatImpl &other, UErrorCode &status) :
+          fSuper(super),
           fMultiplier(other.fMultiplier),
           fScale(other.fScale),
           fRoundingMode(other.fRoundingMode),
-          fMinIntDigits(other.fMinIntDigits),
-          fMaxIntDigits(other.fMaxIntDigits),
-          fMinFracDigits(other.fMinFracDigits),
-          fMaxFracDigits(other.fMaxFracDigits),
           fMinSigDigits(other.fMinSigDigits),
           fMaxSigDigits(other.fMaxSigDigits),
           fUseScientific(other.fUseScientific),
           fUseSigDigits(other.fUseSigDigits),
           fGrouping(other.fGrouping),
-          fUseGrouping(other.fUseGrouping),
           fPositivePrefixPattern(other.fPositivePrefixPattern),
           fNegativePrefixPattern(other.fNegativePrefixPattern),
           fPositiveSuffixPattern(other.fPositiveSuffixPattern),
@@ -109,7 +107,6 @@ DecimalFormatImpl::DecimalFormatImpl(
           fOptions(other.fOptions),
           fFormatter(other.fFormatter),
           fAap(other.fAap) {
-    u_strcpy(fCurr, other.fCurr);
     fSymbols = new DecimalFormatSymbols(*fSymbols);
     if (fSymbols == NULL && U_SUCCESS(status)) {
         status = U_MEMORY_ALLOCATION_ERROR;
@@ -132,16 +129,11 @@ DecimalFormatImpl::assign(const DecimalFormatImpl &other, UErrorCode &status) {
     fMultiplier = other.fMultiplier;
     fScale = other.fScale;
     fRoundingMode = other.fRoundingMode;
-    fMinIntDigits = other.fMinIntDigits;
-    fMaxIntDigits = other.fMaxIntDigits;
-    fMinFracDigits = other.fMinFracDigits;
-    fMaxFracDigits = other.fMaxFracDigits;
     fMinSigDigits = other.fMinSigDigits;
     fMaxSigDigits = other.fMaxSigDigits;
     fUseScientific = other.fUseScientific;
     fUseSigDigits = other.fUseSigDigits;
     fGrouping = other.fGrouping;
-    fUseGrouping = other.fUseGrouping;
     fPositivePrefixPattern = other.fPositivePrefixPattern;
     fNegativePrefixPattern = other.fNegativePrefixPattern;
     fPositiveSuffixPattern = other.fPositiveSuffixPattern;
@@ -156,7 +148,6 @@ DecimalFormatImpl::assign(const DecimalFormatImpl &other, UErrorCode &status) {
     fFormatter = other.fFormatter;
     fAap = other.fAap;
     *fSymbols = *other.fSymbols;
-    u_strcpy(fCurr, other.fCurr);
     if (fRules != NULL && other.fRules != NULL) {
         *fRules = *other.fRules;
     } else {
@@ -181,16 +172,11 @@ DecimalFormatImpl::operator==(const DecimalFormatImpl &other) const {
     return (fMultiplier == other.fMultiplier)
             && (fScale == other.fScale)
             && (fRoundingMode == other.fRoundingMode)
-            && (fMinIntDigits == other.fMinIntDigits)
-            && (fMaxIntDigits == other.fMaxIntDigits)
-            && (fMinFracDigits == other.fMinFracDigits)
-            && (fMaxFracDigits == other.fMaxFracDigits)
             && (fMinSigDigits == other.fMinSigDigits)
             && (fMaxSigDigits == other.fMaxSigDigits)
             && (fUseScientific == other.fUseScientific)
             && (fUseSigDigits == other.fUseSigDigits)
             && fGrouping.equals(other.fGrouping)
-            && fUseGrouping == other.fUseGrouping
             && fPositivePrefixPattern.equals(other.fPositivePrefixPattern)
             && fNegativePrefixPattern.equals(other.fNegativePrefixPattern)
             && fPositiveSuffixPattern.equals(other.fPositiveSuffixPattern)
@@ -207,8 +193,7 @@ DecimalFormatImpl::operator==(const DecimalFormatImpl &other) const {
             && ((fRules == other.fRules) || (
                     (fRules != NULL) && (other.fRules != NULL)
                     && (*fRules == *other.fRules)))
-            && (fMonetary == other.fMonetary)
-            && u_strcmp(fCurr, other.fCurr) == 0;
+            && (fMonetary == other.fMonetary);
 }
 
 DecimalFormatImpl::~DecimalFormatImpl() {
@@ -656,44 +641,6 @@ DecimalFormatImpl::setMinMaxSignificantDigits(int32_t min, int32_t max) {
 }
 
 void
-DecimalFormatImpl::setMinimumIntegerDigits(int32_t newValue) {
-    fMinIntDigits = newValue;
-    updatePrecision();
-}
-        
-void
-DecimalFormatImpl::setMaximumIntegerDigits(int32_t newValue) {
-    fMaxIntDigits = newValue;
-    updatePrecision();
-}
-
-void
-DecimalFormatImpl::setMinMaxIntegerDigits(int32_t min, int32_t max) {
-    fMinIntDigits = min;
-    fMaxIntDigits = max;
-    updatePrecision();
-}
-        
-void
-DecimalFormatImpl::setMinimumFractionDigits(int32_t newValue) {
-    fMinFracDigits = newValue;
-    updatePrecision();
-}
-        
-void
-DecimalFormatImpl::setMaximumFractionDigits(int32_t newValue) {
-    fMaxFracDigits = newValue;
-    updatePrecision();
-}
-
-void
-DecimalFormatImpl::setMinMaxFractionDigits(int32_t min, int32_t max) {
-    fMinFracDigits = min;
-    fMaxFracDigits = max;
-    updatePrecision();
-}
-
-void
 DecimalFormatImpl::setScientificNotation(UBool newValue) {
     fUseScientific = newValue;
     updatePrecision();
@@ -721,23 +668,6 @@ void
 DecimalFormatImpl::setMinimumGroupingDigits(int32_t newValue) {
     fGrouping.fMinGrouping = newValue;
     updateGrouping();
-}
-
-void
-DecimalFormatImpl::setGroupingUsed(UBool newValue) {
-    fUseGrouping = newValue;
-    updateGrouping();
-}
-
-void
-DecimalFormatImpl::setCurrency(const UChar *currency, UErrorCode &status) {
-    if (currency == NULL) {
-        fCurr[0] = 0;
-    } else {
-        u_strncpy(fCurr, currency, UPRV_LENGTHOF(fCurr) - 1);
-        fCurr[UPRV_LENGTHOF(fCurr) - 1] = 0;
-    }
-    updateFormatting(kFormattingCurrency, status);
 }
 
 void
@@ -904,15 +834,15 @@ DecimalFormatImpl::applyPattern(
     }
     fUseScientific = out.fUseExponentialNotation;
     fUseSigDigits = out.fUseSignificantDigits;
-    fMinIntDigits = out.fMinimumIntegerDigits;
-    fMaxIntDigits = out.fMaximumIntegerDigits;
-    fMinFracDigits = out.fMinimumFractionDigits;
-    fMaxFracDigits = out.fMaximumFractionDigits;
+    fSuper->NumberFormat::setMinimumIntegerDigits(out.fMinimumIntegerDigits);
+    fSuper->NumberFormat::setMaximumIntegerDigits(out.fMaximumIntegerDigits);
+    fSuper->NumberFormat::setMinimumFractionDigits(out.fMinimumFractionDigits);
+    fSuper->NumberFormat::setMaximumFractionDigits(out.fMaximumFractionDigits);
     fMinSigDigits = out.fMinimumSignificantDigits;
     fMaxSigDigits = out.fMaximumSignificantDigits;
     fEffPrecision.fMinExponentDigits = out.fMinExponentDigits;
     fOptions.fExponent.fAlwaysShowSign = out.fExponentSignAlwaysShown;
-    fUseGrouping = out.fGroupingUsed;
+    fSuper->NumberFormat::setGroupingUsed(out.fGroupingUsed);
     fGrouping.fGrouping = out.fGroupingSize;
     fGrouping.fGrouping2 = out.fGroupingSize2;
     fOptions.fMantissa.fAlwaysShowDecimal = out.fDecimalSeparatorAlwaysShown;
@@ -1059,10 +989,10 @@ DecimalFormatImpl::updatePrecisionForFixed() {
 void
  DecimalFormatImpl::extractMinMaxDigits(
         DigitInterval &min, DigitInterval &max) const {
-    min.setIntDigitCount(fMinIntDigits < 0 ? 0 : fMinIntDigits);
-    max.setIntDigitCount(fMaxIntDigits < 0 ? 0 : fMaxIntDigits);
-    min.setFracDigitCount(fMinFracDigits < 0 ? 0 : fMinFracDigits);
-    max.setFracDigitCount(fMaxFracDigits < 0 ? 0 : fMaxFracDigits);
+    min.setIntDigitCount(fSuper->getMinimumIntegerDigits());
+    max.setIntDigitCount(fSuper->getMaximumIntegerDigits());
+    min.setFracDigitCount(fSuper->getMinimumFractionDigits());
+    max.setFracDigitCount(fSuper->getMaximumFractionDigits());
 }
 
 void
@@ -1074,11 +1004,16 @@ void
 
 void
 DecimalFormatImpl::updateGrouping() {
-    if (fUseGrouping) {
+    if (fSuper->isGroupingUsed()) {
         fEffGrouping = fGrouping;
     } else {
         fEffGrouping.clear();
     }
+}
+
+void
+DecimalFormatImpl::updateCurrency(UErrorCode &status) {
+    updateFormatting(kFormattingCurrency, TRUE, status);
 }
 
 void
@@ -1188,11 +1123,13 @@ DecimalFormatImpl::updateFormattingCurrencyAffixInfo(
         }
         changedFormattingFields |= kFormattingCurrencyAffixInfo;
     } else {
-        const UChar *currency = fCurr;
+        const UChar *currency = fSuper->getCurrency();
+        UChar localeCurr[4];
         if (currency[0] == 0) {
-            ucurr_forLocale(fSymbols->getLocale().getName(), fCurr, UPRV_LENGTHOF(fCurr), &status);
+            ucurr_forLocale(fSymbols->getLocale().getName(), localeCurr, UPRV_LENGTHOF(localeCurr), &status);
             if (U_SUCCESS(status)) {
-                currency = fCurr;
+                currency = localeCurr;
+                fSuper->NumberFormat::setCurrency(currency, status);
             } else {
                 currency = NULL;
                 status = U_ZERO_ERROR;
@@ -1224,8 +1161,10 @@ DecimalFormatImpl::updateFormattingCurrencyAffixInfo(
             if (U_FAILURE(status)) {
                 return;
             }
-            fMinFracDigits = precision.fMin.getFracDigitCount();
-            fMaxFracDigits = precision.fMax.getFracDigitCount();
+            fSuper->NumberFormat::setMinimumFractionDigits(
+                    precision.fMin.getFracDigitCount());
+            fSuper->NumberFormat::setMaximumFractionDigits(
+                    precision.fMax.getFracDigitCount());
             updatePrecision();
             fEffPrecision.fMantissa.fRoundingIncrement =
                     precision.fRoundingIncrement;
