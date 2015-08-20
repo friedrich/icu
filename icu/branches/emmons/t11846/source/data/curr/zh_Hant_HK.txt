@@ -448,5 +448,5 @@ zh_Hant_HK{
             other{"贊比亞克瓦查"}
         }
     }
-    Version{"2.1.19.79"}
+    Version{"2.1.19.94"}
 }

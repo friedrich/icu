@@ -370,7 +370,7 @@ km{
             tibt{"លេខទីបេ"}
         }
     }
-    Version{"2.1.19.77"}
+    Version{"2.1.19.94"}
     codePatterns{
         language{"ភាសា៖ {0}"}
         script{"អក្សរ៖ {0}"}

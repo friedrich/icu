@@ -868,7 +868,7 @@ uk{
         VALENCIA{"Валенсійська"}
         WADEGILE{"Романізація Вейда-Джайлза"}
     }
-    Version{"2.1.19.77"}
+    Version{"2.1.19.94"}
     codePatterns{
         language{"Мова: {0}"}
         script{"Система письма: {0}"}

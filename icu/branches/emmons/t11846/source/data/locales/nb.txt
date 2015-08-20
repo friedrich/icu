@@ -238,7 +238,7 @@ nb{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.94"}
     calendar{
         buddhist{
             availableFormats{
@@ -4117,7 +4117,10 @@ nb{
         day-short{
             dn{"dag"}
             relative{
+                "-1"{"i går"}
                 "-2"{"i forgårs"}
+                "0"{"i dag"}
+                "1"{"i morgen"}
                 "2"{"i overmorgen"}
             }
             relativeTime{
@@ -4315,6 +4318,7 @@ nb{
             dn{"kvartal"}
             relative{
                 "-1"{"forrige kvartal"}
+                "0"{"dette kvartal"}
                 "1"{"neste kvartal"}
             }
             relativeTime{

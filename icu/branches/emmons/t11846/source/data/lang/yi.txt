@@ -177,7 +177,7 @@ yi{
             gregorian{"גרעגארישער קאַלענדאַר"}
         }
     }
-    Version{"2.1.19.14"}
+    Version{"2.1.19.94"}
     codePatterns{
         language{"שפראַך: {0}"}
         script{"שריפֿט: {0}"}

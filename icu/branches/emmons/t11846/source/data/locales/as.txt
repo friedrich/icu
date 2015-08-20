@@ -24,7 +24,7 @@ as{
         }
         native{"beng"}
     }
-    Version{"2.1.19.77"}
+    Version{"2.1.19.94"}
     calendar{
         gregorian{
             AmPmMarkers{
@@ -102,6 +102,8 @@ as{
             dn{"দিন"}
             relative{
                 "-1"{"কালি"}
+                "-2"{"পৰহি"}
+                "0"{"আজি"}
                 "1"{"কাইলৈ"}
                 "2"{"পৰহিলৈ"}
             }

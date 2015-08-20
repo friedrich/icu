@@ -19,7 +19,7 @@ es_PY{
             }
         }
     }
-    Version{"2.1.19.14"}
+    Version{"2.1.19.94"}
     calendar{
         gregorian{
             dayNames{
@@ -131,7 +131,11 @@ es_PY{
     fields{
         day{
             relative{
+                "-1"{"ayer"}
                 "-2"{"antes de ayer"}
+                "0"{"hoy"}
+                "1"{"mañana"}
+                "2"{"pasado mañana"}
             }
         }
         mon-narrow{

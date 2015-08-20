@@ -97,7 +97,7 @@ zh_Hant_HK{
             }
         }
     }
-    Version{"2.1.19.79"}
+    Version{"2.1.19.94"}
     calendar{
         buddhist{
             availableFormats{
@@ -543,6 +543,7 @@ zh_Hant_HK{
         month-narrow{
             relative{
                 "-1"{"上月"}
+                "0"{"本月"}
                 "1"{"下月"}
             }
             relativeTime{
@@ -556,7 +557,9 @@ zh_Hant_HK{
         }
         quarter{
             relative{
+                "-1"{"上一季"}
                 "0"{"今季"}
+                "1"{"下一季"}
             }
         }
         quarter-narrow{
@@ -709,12 +712,14 @@ zh_Hant_HK{
         year{
             relative{
                 "-1"{"上年"}
+                "0"{"今年"}
                 "1"{"下年"}
             }
         }
         year-narrow{
             relative{
                 "-1"{"上年"}
+                "0"{"今年"}
                 "1"{"下年"}
             }
             relativeTime{
@@ -729,6 +734,7 @@ zh_Hant_HK{
         year-short{
             relative{
                 "-1"{"上年"}
+                "0"{"今年"}
                 "1"{"下年"}
             }
         }

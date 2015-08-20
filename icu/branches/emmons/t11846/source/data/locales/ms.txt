@@ -172,7 +172,7 @@ ms{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.48"}
+    Version{"2.1.19.94"}
     calendar{
         buddhist{
             eras{
@@ -941,7 +941,10 @@ ms{
             dn{"hari"}
             relative{
                 "-1"{"semlm"}
+                "-2"{"kelmarin"}
+                "0"{"hari ini"}
                 "1"{"esok"}
+                "2"{"lusa"}
             }
             relativeTime{
                 future{
@@ -956,7 +959,10 @@ ms{
             dn{"hari"}
             relative{
                 "-1"{"semlm"}
+                "-2"{"kelmarin"}
+                "0"{"hari ini"}
                 "1"{"esok"}
+                "2"{"lusa"}
             }
             relativeTime{
                 future{

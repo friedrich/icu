@@ -1743,5 +1743,5 @@ lo{
     CurrencyUnitPatterns{
         other{"{0} {1}"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.94"}
 }

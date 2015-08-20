@@ -209,7 +209,7 @@ af{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.74"}
+    Version{"2.1.19.94"}
     calendar{
         generic{
             DateTimePatterns{
@@ -845,7 +845,10 @@ af{
             dn{"d."}
             relative{
                 "-1"{"gister"}
+                "-2"{"eergister"}
+                "0"{"vandag"}
                 "1"{"môre"}
+                "2"{"oormôre"}
             }
             relativeTime{
                 future{
@@ -862,7 +865,10 @@ af{
             dn{"d."}
             relative{
                 "-1"{"gister"}
+                "-2"{"eergister"}
+                "0"{"vandag"}
                 "1"{"môre"}
+                "2"{"oormôre"}
             }
             relativeTime{
                 future{

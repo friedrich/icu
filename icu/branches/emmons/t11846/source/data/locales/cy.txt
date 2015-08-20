@@ -364,7 +364,7 @@ cy{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.74"}
+    Version{"2.1.19.94"}
     calendar{
         generic{
             DateTimePatterns{
@@ -980,8 +980,10 @@ cy{
             dn{"dydd"}
             relative{
                 "-1"{"ddoe"}
+                "-2"{"echdoe"}
                 "0"{"heddiw"}
                 "1"{"yfory"}
+                "2"{"drennydd"}
             }
             relativeTime{
                 future{

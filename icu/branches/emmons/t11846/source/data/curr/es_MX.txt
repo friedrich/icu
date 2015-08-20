@@ -446,5 +446,5 @@ es_MX{
             other{"kwachas zambianos"}
         }
     }
-    Version{"2.1.19.82"}
+    Version{"2.1.19.94"}
 }

@@ -209,7 +209,7 @@ es{
         minimumGroupingDigits{"2"}
         native{"latn"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.94"}
     calendar{
         buddhist{
             eras{
@@ -1165,7 +1165,9 @@ es{
         month-narrow{
             dn{"m"}
             relative{
+                "-1"{"el mes pasado"}
                 "0"{"este mes"}
+                "1"{"el próximo mes"}
             }
             relativeTime{
                 future{
@@ -1181,7 +1183,9 @@ es{
         month-short{
             dn{"m"}
             relative{
+                "-1"{"el mes pasado"}
                 "0"{"este mes"}
+                "1"{"el próximo mes"}
             }
             relativeTime{
                 future{
@@ -1448,7 +1452,9 @@ es{
         year-narrow{
             dn{"a"}
             relative{
+                "-1"{"el año pasado"}
                 "0"{"este año"}
+                "1"{"el próximo año"}
             }
             relativeTime{
                 future{
@@ -1464,7 +1470,9 @@ es{
         year-short{
             dn{"a"}
             relative{
+                "-1"{"el año pasado"}
                 "0"{"este año"}
+                "1"{"el próximo año"}
             }
             relativeTime{
                 future{

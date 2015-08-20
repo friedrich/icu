@@ -312,5 +312,5 @@ af{
         FK{"Falklandeilande (Malvinas)"}
         MK{"Macedonië (VJRM)"}
     }
-    Version{"2.1.19.74"}
+    Version{"2.1.19.94"}
 }

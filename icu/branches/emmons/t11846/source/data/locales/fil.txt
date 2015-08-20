@@ -206,7 +206,7 @@ fil{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.94"}
     calendar{
         generic{
             DateTimePatterns{
@@ -853,6 +853,7 @@ fil{
             relative{
                 "-1"{"kahapon"}
                 "-2"{"Araw bago ang kahapon"}
+                "0"{"ngayong araw"}
                 "1"{"bukas"}
                 "2"{"Samakalawa"}
             }
@@ -872,6 +873,7 @@ fil{
             relative{
                 "-1"{"kahapon"}
                 "-2"{"Araw bago ang kahapon"}
+                "0"{"ngayong araw"}
                 "1"{"bukas"}
                 "2"{"Samakalawa"}
             }

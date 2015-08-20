@@ -159,7 +159,7 @@ gl{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.94"}
     calendar{
         generic{
             DateTimePatterns{
@@ -1128,6 +1128,7 @@ gl{
         thu-short{
             relative{
                 "-1"{"xov. pasado"}
+                "0"{"este xov."}
                 "1"{"próximo xov."}
             }
         }

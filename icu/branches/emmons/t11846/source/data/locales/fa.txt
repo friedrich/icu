@@ -243,7 +243,7 @@ fa{
         minimumGroupingDigits{"1"}
         native{"arabext"}
     }
-    Version{"2.1.19.14"}
+    Version{"2.1.19.94"}
     calendar{
         chinese{
             cyclicNameSets{
@@ -1504,6 +1504,7 @@ fa{
             relative{
                 "-1"{"سه‌ماههٔ گذشته"}
                 "0"{"سه‌ماههٔ کنونی"}
+                "1"{"سه‌ماههٔ آینده"}
             }
             relativeTime{
                 future{
@@ -1519,7 +1520,9 @@ fa{
         quarter-narrow{
             dn{"سه‌ماهه"}
             relative{
+                "-1"{"سه‌ماههٔ گذشته"}
                 "0"{"سه‌ماههٔ کنونی"}
+                "1"{"سه‌ماههٔ آینده"}
             }
             relativeTime{
                 future{
@@ -1535,7 +1538,9 @@ fa{
         quarter-short{
             dn{"سه‌ماهه"}
             relative{
+                "-1"{"سه‌ماههٔ گذشته"}
                 "0"{"سه‌ماههٔ کنونی"}
+                "1"{"سه‌ماههٔ آینده"}
             }
             relativeTime{
                 future{
@@ -1722,7 +1727,9 @@ fa{
         week-narrow{
             dn{"هفته"}
             relative{
+                "-1"{"هفتهٔ گذشته"}
                 "0"{"این هفته"}
+                "1"{"هفتهٔ آینده"}
             }
             relativeTime{
                 future{
@@ -1738,7 +1745,9 @@ fa{
         week-short{
             dn{"هفته"}
             relative{
+                "-1"{"هفتهٔ گذشته"}
                 "0"{"این هفته"}
+                "1"{"هفتهٔ آینده"}
             }
             relativeTime{
                 future{

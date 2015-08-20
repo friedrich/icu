@@ -221,7 +221,7 @@ sv{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.94"}
     calendar{
         buddhist{
             eras{
@@ -1613,7 +1613,9 @@ sv{
             relative{
                 "-1"{"i går"}
                 "-2"{"i förrgår"}
+                "0"{"i dag"}
                 "1"{"i morgon"}
+                "2"{"i övermorgon"}
             }
             relativeTime{
                 future{
@@ -1631,6 +1633,7 @@ sv{
             relative{
                 "-1"{"i går"}
                 "-2"{"i förrgår"}
+                "0"{"i dag"}
                 "1"{"i morgon"}
                 "2"{"i övermorgon"}
             }

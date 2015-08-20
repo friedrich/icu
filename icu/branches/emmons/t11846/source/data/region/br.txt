@@ -314,5 +314,5 @@ br{
         MK{"Makedonia (RYKM)"}
         TL{"Timor ar Reter"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.94"}
 }

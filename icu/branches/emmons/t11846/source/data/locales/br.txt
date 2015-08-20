@@ -48,7 +48,7 @@ br{
         }
         native{"latn"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.94"}
     calendar{
         gregorian{
             AmPmMarkers{
@@ -700,6 +700,7 @@ br{
         month{
             dn{"miz"}
             relative{
+                "-1"{"ar miz diaraok"}
                 "0"{"ar miz-mañ"}
                 "1"{"ar miz a zeu"}
             }
@@ -723,7 +724,8 @@ br{
         month-narrow{
             dn{"miz"}
             relative{
-                "0"{"this month"}
+                "-1"{"ar miz diaraok"}
+                "0"{"ar miz-mañ"}
                 "1"{"ar miz a zeu"}
             }
             relativeTime{
@@ -746,6 +748,7 @@ br{
         month-short{
             dn{"miz"}
             relative{
+                "-1"{"ar miz diaraok"}
                 "0"{"ar miz-mañ"}
                 "1"{"ar miz a zeu"}
             }
@@ -997,6 +1000,7 @@ br{
         week{
             dn{"sizhun"}
             relative{
+                "-1"{"ar sizhun diaraok"}
                 "0"{"ar sizhun-mañ"}
                 "1"{"ar sizhun a zeu"}
             }

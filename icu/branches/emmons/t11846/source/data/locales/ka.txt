@@ -213,7 +213,7 @@ ka{
         native{"latn"}
         traditional{"geor"}
     }
-    Version{"2.1.19.19"}
+    Version{"2.1.19.94"}
     calendar{
         generic{
             DateTimePatterns{
@@ -850,6 +850,7 @@ ka{
             relative{
                 "-1"{"გუშინ"}
                 "-2"{"გუშინწინ"}
+                "0"{"დღეს"}
                 "1"{"ხვალ"}
                 "2"{"ზეგ"}
             }
@@ -869,6 +870,7 @@ ka{
             relative{
                 "-1"{"გუშინ"}
                 "-2"{"გუშინწინ"}
+                "0"{"დღეს"}
                 "1"{"ხვალ"}
                 "2"{"ზეგ"}
             }
@@ -1270,7 +1272,9 @@ ka{
         week-narrow{
             dn{"კვ."}
             relative{
+                "-1"{"გასულ კვირაში"}
                 "0"{"ამ კვირაში"}
+                "1"{"მომავალ კვირაში"}
             }
             relativeTime{
                 future{
@@ -1286,7 +1290,9 @@ ka{
         week-short{
             dn{"კვ."}
             relative{
+                "-1"{"გასულ კვირაში"}
                 "0"{"ამ კვირაში"}
+                "1"{"მომავალ კვირაში"}
             }
             relativeTime{
                 future{
@@ -1323,7 +1329,9 @@ ka{
         year-narrow{
             dn{"წ."}
             relative{
+                "-1"{"გასულ წელს"}
                 "0"{"ამ წელს"}
+                "1"{"მომავალ წელს"}
             }
             relativeTime{
                 future{
@@ -1339,7 +1347,9 @@ ka{
         year-short{
             dn{"წ."}
             relative{
+                "-1"{"გასულ წელს"}
                 "0"{"ამ წელს"}
+                "1"{"მომავალ წელს"}
             }
             relativeTime{
                 future{

@@ -494,7 +494,7 @@ hy{
         AREVELA{"արևելահայերեն"}
         AREVMDA{"արեւմտահայերէն"}
     }
-    Version{"2.1.19.14"}
+    Version{"2.1.19.94"}
     codePatterns{
         language{"Լեզու՝ {0}"}
         script{"Գիր՝ {0}"}

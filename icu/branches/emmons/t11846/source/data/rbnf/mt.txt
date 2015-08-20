@@ -241,7 +241,7 @@ mt{
             "100: mitt;",
             "101: mija u >%spellout-cardinal-feminine>;",
             "200: mitejn[ u >%spellout-cardinal-feminine>];",
-            "300: <%spellout-cardinal-masculine< mija[>%%and-typeA-feminine>];",
+            "300: <%spellout-cardinal-masculine< mija[>%%and-type-a-feminine>];",
             "1000: elf[>%%and-type-a-feminine>];",
             "2000: elfejn[>%%and-type-a-feminine>];",
             "3000: <%%thousands< elef[>%%and-type-a-feminine>];",

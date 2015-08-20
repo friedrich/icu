@@ -281,7 +281,7 @@ uk{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.77"}
+    Version{"2.1.19.94"}
     calendar{
         coptic{
             monthNames{
@@ -1765,6 +1765,8 @@ uk{
             dn{"р."}
             relative{
                 "-1"{"торік"}
+                "0"{"цього року"}
+                "1"{"наступного року"}
             }
             relativeTime{
                 future{
@@ -1785,6 +1787,8 @@ uk{
             dn{"р."}
             relative{
                 "-1"{"торік"}
+                "0"{"цього року"}
+                "1"{"наступного року"}
             }
             relativeTime{
                 future{

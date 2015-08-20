@@ -209,7 +209,7 @@ ca{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.94"}
     calendar{
         buddhist{
             DateTimePatterns{
@@ -1152,6 +1152,7 @@ ca{
             relative{
                 "-1"{"ahir"}
                 "-2"{"abans-d’ahir"}
+                "0"{"avui"}
                 "1"{"demà"}
                 "2"{"demà passat"}
             }
@@ -1171,6 +1172,7 @@ ca{
             relative{
                 "-1"{"ahir"}
                 "-2"{"abans-d’ahir"}
+                "0"{"avui"}
                 "1"{"demà"}
                 "2"{"demà passat"}
             }
@@ -1646,6 +1648,7 @@ ca{
             relative{
                 "-1"{"l’any passat"}
                 "0"{"enguany"}
+                "1"{"l’any que ve"}
             }
             relativeTime{
                 future{
