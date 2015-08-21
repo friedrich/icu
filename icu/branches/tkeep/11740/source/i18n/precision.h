@@ -190,6 +190,33 @@ public:
             UErrorCode &status) const;
     
 private:
+    /**
+     * Attempts to initialize 'digits' using simple mod 10 arithmetic.
+     * Returns FALSE if this is not possible such as when rounding
+     * would change the value. Otherwise returns TRUE.
+     *
+     * If the method returns FALSE, caller should create a DigitList
+     * and use it to initialize 'digits'. If this method returns TRUE,
+     * caller should accept the value stored in 'digits'. If this
+     * method returns TRUE along with a non zero error, caller must accept
+     * the error and not try again with a DigitList.
+     *
+     * Before calling this method, caller must verify that this object
+     * has no rounding increment set.
+     *
+     * The value that 'digits' is initialized to is mantissa * 10^exponent.
+     * For example mantissa = 54700 and exponent = -3 means 54.7. The
+     * properties of this object (such as min and max fraction digits),
+     * not the number of trailing zeros in the mantissa, determine whether or
+     * not the result contains any trailing 0's after the decimal point.
+     *
+     * @param mantissa the digits. May be positive or negative. May contain
+     *  trailing zeros.
+     * @param exponent must always be zero or negative. An exponent > 0
+     *  yields undefined results! 
+     * @param digits result stored here.
+     * @param status any error returned here.
+     */
     UBool
     initVisibleDigits(
             int64_t mantissa,

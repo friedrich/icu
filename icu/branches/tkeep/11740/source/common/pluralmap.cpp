@@ -13,26 +13,26 @@ U_NAMESPACE_BEGIN
 static const char * const gPluralForms[] = {
         "other", "zero", "one", "two", "few", "many"};
 
-PluralMapBase::Variant
-PluralMapBase::toVariant(const char *pluralForm) {
+PluralMapBase::Category
+PluralMapBase::toCategory(const char *pluralForm) {
     for (int32_t i = 0; i < UPRV_LENGTHOF(gPluralForms); ++i) {
         if (uprv_strcmp(pluralForm, gPluralForms[i]) == 0) {
-            return static_cast<Variant>(i);
+            return static_cast<Category>(i);
         }
     }
     return NONE;
 }
 
-PluralMapBase::Variant
-PluralMapBase::toVariant(const UnicodeString &pluralForm) {
-    CharString cvariant;
+PluralMapBase::Category
+PluralMapBase::toCategory(const UnicodeString &pluralForm) {
+    CharString cCategory;
     UErrorCode status = U_ZERO_ERROR;
-    cvariant.appendInvariantChars(pluralForm, status);    
-    return U_FAILURE(status) ? NONE : toVariant(cvariant.data());
+    cCategory.appendInvariantChars(pluralForm, status);    
+    return U_FAILURE(status) ? NONE : toCategory(cCategory.data());
 }
 
-const char *PluralMapBase::getVariantName(Variant v) {
-    int32_t index = v;
+const char *PluralMapBase::getCategoryName(Category c) {
+    int32_t index = c;
     return (index < 0 || index >= UPRV_LENGTHOF(gPluralForms)) ?
             NULL : gPluralForms[index];
 }

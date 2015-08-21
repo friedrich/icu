@@ -20,7 +20,11 @@ class UnicodeString;
 
 class U_COMMON_API PluralMapBase : public UMemory {
 public:
-    enum Variant {
+    /**
+     * The names of all the plural categories. NONE is not an actual plural
+     * category, but rather represents the absense of a plural category.
+     */
+    enum Category {
         NONE = -1,
         OTHER,
         ZERO,
@@ -28,30 +32,32 @@ public:
         TWO,
         FEW,
         MANY,
-        VARIANT_COUNT
+        CATEGORY_COUNT
     };
 
     /**
-     * Converts a variant name to a variant.
-     * Returns NONE for bad variant name.
+     * Converts a category name such as "zero", "one", "two", "few", "many"
+     * or "other" to a category enum. Returns NONE for an unrecognized
+     * category name.
      */
-    static Variant toVariant(const char *variantName);
+    static Category toCategory(const char *categoryName);
 
     /**
-     * Converts a variant name to a variant.
-     * Returns NONE for bad variant name.
+     * Converts a category name such as "zero", "one", "two", "few", "many"
+     * or "other" to a category enum.  Returns NONE for urecongized
+     * category name.
      */
-    static Variant toVariant(const UnicodeString &variantName);
+    static Category toCategory(const UnicodeString &categoryName);
 
     /**
-     * Converts a variant to a name.
-     * Passing NONE or VARIANT_COUNT for variant returns NULL.
+     * Converts a category to a name.
+     * Passing NONE or CATEGORY_COUNT for category returns NULL.
      */
-    static const char *getVariantName(Variant variant);
+    static const char *getCategoryName(Category category);
 };
 
 /**
- * A Map of plural variants to values. It maintains ownership of the
+ * A Map of plural categories to values. It maintains ownership of the
  * values.
  *
  * Type T is the value type. T must provide the followng:
@@ -64,14 +70,14 @@ template<typename T>
 class PluralMap : public PluralMapBase {
 public:
     /**
-     * Other variant is mapped to a copy of the default value.
+     * Other category is maps to a copy of the default value.
      */
     PluralMap() : fOtherVariant() {
         initializeNew();
     }
 
     /**
-     * Other variant is mapped to otherVariant.
+     * Other category is mapped to otherVariant.
      */
     PluralMap(const T &otherVariant) : fOtherVariant(otherVariant) {
         initializeNew();
@@ -125,43 +131,44 @@ public:
      * Iterates through the mappings in this instance, set index to NONE
      * prior to using. Call next repeatedly to get the values until it
      * returns NULL. Each time next returns, caller may pass index
-     * to pluralMap_getName() to get the name of the plural variant.
-     * When this function returns NULL, index is VARIANT_COUNT
+     * to getCategoryName() to get the name of the plural category.
+     * When this function returns NULL, index is CATEGORY_COUNT
      */
-    const T *next(Variant &index) const {
+    const T *next(Category &index) const {
         int32_t idx = index;
         ++idx;
         for (; idx < UPRV_LENGTHOF(fVariants); ++idx) {
             if (fVariants[idx] != NULL) {
-                index = static_cast<Variant>(idx);
+                index = static_cast<Category>(idx);
                 return fVariants[idx];
             }
         }
-        index = static_cast<Variant>(idx);
+        index = static_cast<Category>(idx);
         return NULL;
     }
 
     /**
      * non const version of next.
      */
-    T *nextMutable(Variant &index) {
+    T *nextMutable(Category &index) {
         const T *result = next(index);
         return const_cast<T *>(result);
     }
 
     /**
-     * Returns the 'other' variant value.
+     * Returns the 'other' variant.
+     * Same as calling get(OTHER).
      */
     const T &getOther() const {
         return get(OTHER);
     }
 
     /**
-     * Returns the value associated with a variant.
-     * If no value found, or v is NONE or VARIANT_COUNT, falls
-     * back to returning the 'other' variant value.
+     * Returns the value associated with a category.
+     * If no value found, or v is NONE or CATEGORY_COUNT, falls
+     * back to returning the value for the 'other' category.
      */
-    const T &get(Variant v) const {
+    const T &get(Category v) const {
         int32_t index = v;
         if (index < 0 || index >= UPRV_LENGTHOF(fVariants) || fVariants[index] == NULL) {
             return *fVariants[0];
@@ -170,58 +177,58 @@ public:
     }
 
     /**
-     * Convenience routine to get the variant value by name. Otherwise
-     * works just like get(Variant).
+     * Convenience routine to get the value by category name. Otherwise
+     * works just like get(Category).
      */
-    const T &get(const char *variant) const {
-        return get(toVariant(variant));
+    const T &get(const char *category) const {
+        return get(toCategory(category));
     }
 
     /**
-     * Convenience routine to get the variant value by name as a
-     * UnicodeString. Otherwise works just like get(Variant).
+     * Convenience routine to get the value by category name as a
+     * UnicodeString. Otherwise works just like get(category).
      */
-    const T &get(const UnicodeString &variant) const {
-        return get(toVariant(variant));
+    const T &get(const UnicodeString &category) const {
+        return get(toCategory(category));
     }
 
     /**
-     * Returns a pointer to the variant value that caller can
-     * freely modify. If it was defaulting to the 'other'
-     * variant value because no explicit value was stored,
-     * it stores a copy of the default value at the returned pointer.
+     * Returns a pointer to the value associated with a category
+     * that caller can safely modify. If the value was defaulting to the 'other'
+     * variant because no explicit value was stored, this method creates a
+     * new value using the default constructor at the returned pointer.
      *
-     * @param index the variant caller wishes to change.
-     * @param status error returned here if index is NONE or VARIANT_COUNT
+     * @param category the category with the value to change.
+     * @param status error returned here if index is NONE or CATEGORY_COUNT
      *  or memory could not be allocated, or any other error happens.
      */
     T *getMutable(
-            Variant v,
+            Category category,
             UErrorCode &status) {
-        return getMutable(v, NULL, status);
+        return getMutable(category, NULL, status);
     }
 
     /**
-     * Convenience routine to get a pointer to a variant value by name.
-     * Otherwise works just like getMutable(Variant, UErrorCode &).
-     * reports an error if the variant name is invalid.
+     * Convenience routine to get a mutable pointer to a value by category name.
+     * Otherwise works just like getMutable(Category, UErrorCode &).
+     * reports an error if the category name is invalid.
      */
     T *getMutable(
-            const char *variant,
+            const char *category,
             UErrorCode &status) {
-        return getMutable(toVariant(variant), NULL, status);
+        return getMutable(toCategory(category), NULL, status);
     }
 
     /**
-     * Just like getMutable(Variant, UErrorCode &) but copies defaultValue to
+     * Just like getMutable(Category, UErrorCode &) but copies defaultValue to
      * returned pointer if it was defaulting to the 'other' variant
-     * before because no explicit value was stored.
+     * because no explicit value was stored.
      */
     T *getMutableWithDefault(
-            Variant v,
+            Category category,
             const T &defaultValue,
             UErrorCode &status) {
-        return getMutable(v, &defaultValue, status);
+        return getMutable(category, &defaultValue, status);
     }
 
     /**
@@ -249,13 +256,13 @@ private:
     T* fVariants[6];
 
     T *getMutable(
-            Variant v,
+            Category category,
             const T *defaultValue,
             UErrorCode &status) {
         if (U_FAILURE(status)) {
             return NULL;
         }
-        int32_t index = v;
+        int32_t index = category;
         if (index < 0 || index >= UPRV_LENGTHOF(fVariants)) {
             status = U_ILLEGAL_ARGUMENT_ERROR;
             return NULL;

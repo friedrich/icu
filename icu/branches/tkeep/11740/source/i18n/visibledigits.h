@@ -24,8 +24,6 @@ class DigitList;
  * VisibleDigits represents the digits visible for formatting.
  * Once initialized, VisibleDigits instances remain unchanged until they
  * are initialized again.
- * For the value 3, a VisibleDigits instance may represent 3, 3.0, 3.00 or
- * even 003.0 depending on how the client initialized it.
  */
 class U_I18N_API VisibleDigits : public UMemory {
 public:

@@ -32,7 +32,7 @@ PluralAffix::remove() {
 void
 PluralAffix::appendUChar(
         const UChar value, int32_t fieldId) {
-    PluralMapBase::Variant index = PluralMapBase::NONE;
+    PluralMapBase::Category index = PluralMapBase::NONE;
     for (DigitAffix *current = affixes.nextMutable(index);
             current != NULL; current = affixes.nextMutable(index)) {
         current->appendUChar(value, fieldId);
@@ -42,7 +42,7 @@ PluralAffix::appendUChar(
 void
 PluralAffix::append(
         const UnicodeString &value, int32_t fieldId) {
-    PluralMapBase::Variant index = PluralMapBase::NONE;
+    PluralMapBase::Category index = PluralMapBase::NONE;
     for (DigitAffix *current = affixes.nextMutable(index);
             current != NULL; current = affixes.nextMutable(index)) {
         current->append(value, fieldId);
@@ -52,7 +52,7 @@ PluralAffix::append(
 void
 PluralAffix::append(
         const UChar *value, int32_t charCount, int32_t fieldId) {
-    PluralMapBase::Variant index = PluralMapBase::NONE;
+    PluralMapBase::Category index = PluralMapBase::NONE;
     for (DigitAffix *current = affixes.nextMutable(index);
             current != NULL; current = affixes.nextMutable(index)) {
         current->append(value, charCount, fieldId);
@@ -65,7 +65,7 @@ PluralAffix::append(
     if (U_FAILURE(status)) {
         return FALSE;
     }
-    PluralMapBase::Variant index = PluralMapBase::NONE;
+    PluralMapBase::Category index = PluralMapBase::NONE;
     while(rhs.affixes.next(index) != NULL) {
         affixes.getMutableWithDefault(index, affixes.getOther(), status);
     }
@@ -78,19 +78,19 @@ PluralAffix::append(
 }
 
 const DigitAffix &
-PluralAffix::getByVariant(const char *variant) const {
-    return affixes.get(variant);
+PluralAffix::getByCategory(const char *category) const {
+    return affixes.get(category);
 }
 
 const DigitAffix &
-PluralAffix::getByVariant(const UnicodeString &variant) const {
-    return affixes.get(variant);
+PluralAffix::getByCategory(const UnicodeString &category) const {
+    return affixes.get(category);
 }
 
 UBool
 PluralAffix::hasMultipleVariants() const {
     // This works because OTHER is guaranteed to be the first enum value
-    PluralMapBase::Variant index = PluralMapBase::OTHER;
+    PluralMapBase::Category index = PluralMapBase::OTHER;
     return (affixes.next(index) != NULL);
 }
 

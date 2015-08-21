@@ -26,9 +26,31 @@ class FieldPositionHandler;
  * A plural aware prefix or suffix of a formatted number.
  *
  * PluralAffix is essentially a map of DigitAffix objects keyed by plural
- * variant. The 'other' plural variant is the default and always has some
- * value. The rest of the variants are optional. Querying for a variant that
- * is not set always returns the 'other' variant.
+ * category. The 'other' category is the default and always has some
+ * value. The rest of the categories are optional. Querying for a category that
+ * is not set always returns the DigitAffix stored in the 'other' category.
+ *
+ * To use one of these objects, build it up first using append() and
+ * setVariant() methods. Once built, leave unchanged and let multiple threads
+ * safely access.
+ * 
+ * The following code is sample code for building up:
+ *   one: US Dollar -
+ *   other: US Dollars -
+ *
+ * and storing it in "negativeCurrencyPrefix"
+ *
+ * UErrorCode status = U_ZERO_ERROR;
+ *
+ * PluralAffix negativeCurrencyPrefix;
+ *
+ * PluralAffix currencyName;
+ * currencyName.setVariant("one", "US Dollar", status);
+ * currencyName.setVariant("other", "US Dollars", status);
+ *
+ * negativeCurrencyPrefix.append(currencyName, UNUM_CURRENCY_FIELD, status);
+ * negativeCurrencyPrefix.append(" ");
+ * negativeCurrencyPrefix.append("-", UNUM_SIGN_FIELD, status);
  */
 class U_I18N_API PluralAffix : public UMemory {
 public:
@@ -44,72 +66,74 @@ public:
     PluralAffix(const DigitAffix &otherVariant) : affixes(otherVariant) { }
 
     /**
-     * Sets a particular plural variant while overwritting anything that
-     * may have been previously stored for that variant. The set variant
-     * has no field annotations.
-     * @param variant "one", "two", "few", ...
-     * @param value the value for the plural variant
+     * Sets a particular variant for a plural category while overwriting
+     * anything that may have been previously stored for that plural
+     * category. The set value has no field annotations.
+     * @param category "one", "two", "few", ...
+     * @param variant the variant to store under the particular category
      * @param status Any error returned here.
      */
     UBool setVariant(
-            const char *variant,
-            const UnicodeString &value,
+            const char *category,
+            const UnicodeString &variant,
             UErrorCode &status);
     /**
-     * Remove all plural variants and make the 'other' variant be the
-     * empty string with no field annotations.
+     * Make the 'other' variant be the empty string with no field annotations
+     * and remove the variants for the rest of the plural categories.
      */
     void remove();
 
     /**
-     * Append value to all set variants. If fieldId present, value is that
-     * field type.
+     * Append value to all set plural categories. If fieldId present, value
+     * is that field type.
      */
     void appendUChar(UChar value, int32_t fieldId=UNUM_FIELD_COUNT);
 
     /**
-     * Append value to all set variants. If fieldId present, value is that
-     * field type.
+     * Append value to all set plural categories. If fieldId present, value
+     * is that field type.
      */
     void append(const UnicodeString &value, int32_t fieldId=UNUM_FIELD_COUNT);
 
     /**
-     * Append value to all set variants. If fieldId present, value is that
-     * field type.
+     * Append value to all set plural categories. If fieldId present, value
+     * is that field type.
      */
     void append(const UChar *value, int32_t charCount, int32_t fieldId=UNUM_FIELD_COUNT);
 
     /**
-     * Append each variant in rhs to the corresponding variant in this
-     * instance. Each variant appended from rhs is of type fieldId.
+     * Append the value for each plural category in rhs to the corresponding
+     * plural category in this instance. Each value appended from rhs is
+     * of type fieldId.
      */
     UBool append(
             const PluralAffix &rhs,
             int32_t fieldId,
             UErrorCode &status);
     /**
-     * Get the DigitAffix for a paricular variant such as "zero", "one", ...
-     * If the particular variant is not set, returns the 'other' variant
+     * Get the DigitAffix for a paricular category such as "zero", "one", ...
+     * If the particular category is not set, returns the 'other' category
      * which is always set.
      */
-    const DigitAffix &getByVariant(const char *variant) const;
+    const DigitAffix &getByCategory(const char *category) const;
 
     /**
-     * Get the DigitAffix for a paricular variant such as "zero", "one", ...
-     * If the particular variant is not set, returns the 'other' variant
+     * Get the DigitAffix for a paricular category such as "zero", "one", ...
+     * If the particular category is not set, returns the 'other' category
      * which is always set.
      */
-    const DigitAffix &getByVariant(const UnicodeString &variant) const;
+    const DigitAffix &getByCategory(const UnicodeString &category) const;
 
     /**
-     * Get the DigitAffix for the other variant which is always set.
+     * Get the DigitAffix for the other category which is always set.
      */
     const DigitAffix &getOtherVariant() const {
         return affixes.getOther();
     }
 
     /**
-     * Returns TRUE if this instance has variants besides "other"
+     * Returns TRUE if this instance has variants stored besides the "other"
+     * variant.
      */
     UBool hasMultipleVariants() const;
 

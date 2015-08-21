@@ -31,7 +31,7 @@ U_NAMESPACE_BEGIN
  *     for (int32_t i = 0; i < 100; ++i) {
  *        appender.append((UChar) i);
  *     }
- *     appender flushed automatically when it goes out of scope.
+ *     // appender flushed automatically when it goes out of scope.
  * }
  */
 class UnicodeStringAppender : public UMemory {

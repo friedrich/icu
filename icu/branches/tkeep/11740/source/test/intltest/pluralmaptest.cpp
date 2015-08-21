@@ -27,15 +27,15 @@ class PluralMapTest : public IntlTest {
 public:
     PluralMapTest() {
     }
-    void TestToVariant();
-    void TestGetVariantName();
+    void TestToCategory();
+    void TestGetCategoryName();
     void TestGet();
     void TestIterate();
     void TestEqual();
     void TestCopyAndAssign();
     void runIndexedTest(int32_t index, UBool exec, const char *&name, char *par=0);
     void addVariant(
-            PluralMapBase::Variant v,
+            PluralMapBase::Category v,
             const UnicodeString &value,
             PluralMapForPluralMapTest &map);
 private:
@@ -43,8 +43,8 @@ private:
 
 void PluralMapTest::runIndexedTest(int32_t index, UBool exec, const char* &name, char* /*par*/) {
   TESTCASE_AUTO_BEGIN;
-  TESTCASE_AUTO(TestToVariant);
-  TESTCASE_AUTO(TestGetVariantName);
+  TESTCASE_AUTO(TestToCategory);
+  TESTCASE_AUTO(TestGetCategoryName);
   TESTCASE_AUTO(TestGet);
   TESTCASE_AUTO(TestIterate);
   TESTCASE_AUTO(TestEqual);
@@ -52,37 +52,37 @@ void PluralMapTest::runIndexedTest(int32_t index, UBool exec, const char* &name,
   TESTCASE_AUTO_END;
 }
 
-void PluralMapTest::TestToVariant() {
-    assertEquals("", PluralMapBase::OTHER, PluralMapBase::toVariant("other"));
-    assertEquals("", PluralMapBase::ZERO, PluralMapBase::toVariant("zero"));
-    assertEquals("", PluralMapBase::ONE, PluralMapBase::toVariant("one"));
-    assertEquals("", PluralMapBase::TWO, PluralMapBase::toVariant("two"));
-    assertEquals("", PluralMapBase::FEW, PluralMapBase::toVariant("few"));
-    assertEquals("", PluralMapBase::MANY, PluralMapBase::toVariant("many"));
-    assertEquals("", PluralMapBase::NONE, PluralMapBase::toVariant("Many"));
+void PluralMapTest::TestToCategory() {
+    assertEquals("", PluralMapBase::OTHER, PluralMapBase::toCategory("other"));
+    assertEquals("", PluralMapBase::ZERO, PluralMapBase::toCategory("zero"));
+    assertEquals("", PluralMapBase::ONE, PluralMapBase::toCategory("one"));
+    assertEquals("", PluralMapBase::TWO, PluralMapBase::toCategory("two"));
+    assertEquals("", PluralMapBase::FEW, PluralMapBase::toCategory("few"));
+    assertEquals("", PluralMapBase::MANY, PluralMapBase::toCategory("many"));
+    assertEquals("", PluralMapBase::NONE, PluralMapBase::toCategory("Many"));
     assertEquals(
             "",
             PluralMapBase::FEW,
-            PluralMapBase::toVariant(UnicodeString("few")));
+            PluralMapBase::toCategory(UnicodeString("few")));
     assertEquals(
             "",
             PluralMapBase::MANY,
-            PluralMapBase::toVariant(UnicodeString("many")));
+            PluralMapBase::toCategory(UnicodeString("many")));
     assertEquals(
             "",
             PluralMapBase::NONE,
-            PluralMapBase::toVariant(UnicodeString("Many")));
+            PluralMapBase::toCategory(UnicodeString("Many")));
 }
 
-void PluralMapTest::TestGetVariantName() {
-    assertTrue("", PluralMapBase::getVariantName(PluralMapBase::NONE) == NULL);
-    assertTrue("", PluralMapBase::getVariantName(PluralMapBase::VARIANT_COUNT) == NULL);
-    assertEquals("", "other", PluralMapBase::getVariantName(PluralMapBase::OTHER));
-    assertEquals("", "zero", PluralMapBase::getVariantName(PluralMapBase::ZERO));
-    assertEquals("", "one", PluralMapBase::getVariantName(PluralMapBase::ONE));
-    assertEquals("", "two", PluralMapBase::getVariantName(PluralMapBase::TWO));
-    assertEquals("", "few", PluralMapBase::getVariantName(PluralMapBase::FEW));
-    assertEquals("", "many", PluralMapBase::getVariantName(PluralMapBase::MANY));
+void PluralMapTest::TestGetCategoryName() {
+    assertTrue("", PluralMapBase::getCategoryName(PluralMapBase::NONE) == NULL);
+    assertTrue("", PluralMapBase::getCategoryName(PluralMapBase::CATEGORY_COUNT) == NULL);
+    assertEquals("", "other", PluralMapBase::getCategoryName(PluralMapBase::OTHER));
+    assertEquals("", "zero", PluralMapBase::getCategoryName(PluralMapBase::ZERO));
+    assertEquals("", "one", PluralMapBase::getCategoryName(PluralMapBase::ONE));
+    assertEquals("", "two", PluralMapBase::getCategoryName(PluralMapBase::TWO));
+    assertEquals("", "few", PluralMapBase::getCategoryName(PluralMapBase::FEW));
+    assertEquals("", "many", PluralMapBase::getCategoryName(PluralMapBase::MANY));
 }
 
 void PluralMapTest::TestGet() {
@@ -95,7 +95,7 @@ void PluralMapTest::TestGet() {
     assertEquals("", "picklefew", map.get(PluralMapBase::FEW));
     assertEquals("", "pickles", map.get(PluralMapBase::MANY));
     assertEquals("", "pickles", map.get(PluralMapBase::NONE));
-    assertEquals("", "pickles", map.get(PluralMapBase::VARIANT_COUNT));
+    assertEquals("", "pickles", map.get(PluralMapBase::CATEGORY_COUNT));
     assertEquals("", "picklefew", map.get("few"));
     assertEquals("", "pickles", map.get("many"));
     assertEquals("", "pickles", map.get("somebadform"));
@@ -111,7 +111,7 @@ void PluralMapTest::TestIterate() {
     addVariant(PluralMapBase::ONE, "pickle", map);
     addVariant(PluralMapBase::FEW, "pickleops", map);
     addVariant(PluralMapBase::FEW, "picklefew", map);
-    PluralMapBase::Variant index = PluralMapBase::NONE;
+    PluralMapBase::Category index = PluralMapBase::NONE;
     const UnicodeString *current = map.next(index);
     assertEquals("", "pickles", *current);
     assertEquals("", PluralMapBase::OTHER, index);
@@ -122,7 +122,7 @@ void PluralMapTest::TestIterate() {
     assertEquals("", "picklefew", *current);
     assertEquals("", PluralMapBase::FEW, index);
     current = map.next(index);
-    assertEquals("", PluralMapBase::VARIANT_COUNT, index);
+    assertEquals("", PluralMapBase::CATEGORY_COUNT, index);
     assertTrue("", current == NULL);
 
     PluralMapForPluralMapTest map2;
@@ -131,7 +131,7 @@ void PluralMapTest::TestIterate() {
     assertEquals("", "", *current);
     assertEquals("", PluralMapBase::OTHER, index);
     current = map2.next(index);
-    assertEquals("", PluralMapBase::VARIANT_COUNT, index);
+    assertEquals("", PluralMapBase::CATEGORY_COUNT, index);
     assertTrue("", current == NULL);
 }
 
@@ -201,7 +201,7 @@ void PluralMapTest::TestCopyAndAssign() {
 
 
 void PluralMapTest::addVariant(
-        PluralMapBase::Variant v,
+        PluralMapBase::Category v,
         const UnicodeString &value,
         PluralMapForPluralMapTest &map) {
     UErrorCode status = U_ZERO_ERROR;

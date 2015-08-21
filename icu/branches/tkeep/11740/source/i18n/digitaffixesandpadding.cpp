@@ -101,8 +101,8 @@ DigitAffixesAndPadding::format(
             suffix = &pluralSuffix->getOtherVariant();
         } else {
             UnicodeString count(optPluralRules->select(digits));
-            prefix = &pluralPrefix->getByVariant(count);
-            suffix = &pluralSuffix->getByVariant(count);
+            prefix = &pluralPrefix->getByCategory(count);
+            suffix = &pluralSuffix->getByCategory(count);
         }
     }
     if (fWidth <= 0) {

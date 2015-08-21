@@ -1311,7 +1311,7 @@ void NumberFormat2Test::TestPluralAffix() {
             {0, -1, 0}};
         verifyAffix(
                 "Dollars and Percents-",
-                pa.getByVariant("other"),
+                pa.getByCategory("other"),
                 expectedAttributes);
     }
     {
@@ -1323,7 +1323,7 @@ void NumberFormat2Test::TestPluralAffix() {
             {0, -1, 0}};
         verifyAffix(
                 "Dollars and Percents-",
-                pa.getByVariant("two"),
+                pa.getByCategory("two"),
                 expectedAttributes);
     }
     {
@@ -1335,7 +1335,7 @@ void NumberFormat2Test::TestPluralAffix() {
             {0, -1, 0}};
         verifyAffix(
                 "Dollars and Percents-",
-                pa.getByVariant("bad"),
+                pa.getByCategory("bad"),
                 expectedAttributes);
     }
     {
@@ -1347,7 +1347,7 @@ void NumberFormat2Test::TestPluralAffix() {
             {0, -1, 0}};
         verifyAffix(
                 "Dollar and Percent-",
-                pa.getByVariant("one"),
+                pa.getByCategory("one"),
                 expectedAttributes);
     }
     {
@@ -1359,7 +1359,7 @@ void NumberFormat2Test::TestPluralAffix() {
             {0, -1, 0}};
         verifyAffix(
                 "DollarFew and Percents-",
-                pa.getByVariant("few"),
+                pa.getByCategory("few"),
                 expectedAttributes);
     }
     {
@@ -1371,7 +1371,7 @@ void NumberFormat2Test::TestPluralAffix() {
             {0, -1, 0}};
         verifyAffix(
                 "Dollars and PercentMany-",
-                pa.getByVariant("many"),
+                pa.getByCategory("many"),
                 expectedAttributes);
     }
     assertTrue("", pa.hasMultipleVariants());
@@ -1389,26 +1389,26 @@ void NumberFormat2Test::TestCurrencyAffixInfo() {
     UnicodeString expectedSymbols("\u00a4\u00a4\u00a4");
     assertEquals("", expectedSymbol.unescape(), info.getSymbol());
     assertEquals("", expectedSymbolIso.unescape(), info.getISO());
-    assertEquals("", expectedSymbols.unescape(), info.getLong().getByVariant("one").toString());
-    assertEquals("", expectedSymbols.unescape(), info.getLong().getByVariant("other").toString());
-    assertEquals("", expectedSymbols.unescape(), info.getLong().getByVariant("two").toString());
+    assertEquals("", expectedSymbols.unescape(), info.getLong().getByCategory("one").toString());
+    assertEquals("", expectedSymbols.unescape(), info.getLong().getByCategory("other").toString());
+    assertEquals("", expectedSymbols.unescape(), info.getLong().getByCategory("two").toString());
     UErrorCode status = U_ZERO_ERROR;
     static UChar USD[] = {0x55, 0x53, 0x44, 0x0};
     LocalPointer<PluralRules> rules(PluralRules::forLocale("en", status));
     info.set("en", rules.getAlias(), USD, status);
     assertEquals("", "$", info.getSymbol());
     assertEquals("", "USD", info.getISO());
-    assertEquals("", "US dollar", info.getLong().getByVariant("one").toString());
-    assertEquals("", "US dollars", info.getLong().getByVariant("other").toString());
-    assertEquals("", "US dollars", info.getLong().getByVariant("two").toString());
+    assertEquals("", "US dollar", info.getLong().getByCategory("one").toString());
+    assertEquals("", "US dollars", info.getLong().getByCategory("other").toString());
+    assertEquals("", "US dollars", info.getLong().getByCategory("two").toString());
     assertFalse("", info.isDefault());
     info.set(NULL, NULL, NULL, status);
     assertTrue("", info.isDefault());
     assertEquals("", expectedSymbol.unescape(), info.getSymbol());
     assertEquals("", expectedSymbolIso.unescape(), info.getISO());
-    assertEquals("", expectedSymbols.unescape(), info.getLong().getByVariant("one").toString());
-    assertEquals("", expectedSymbols.unescape(), info.getLong().getByVariant("other").toString());
-    assertEquals("", expectedSymbols.unescape(), info.getLong().getByVariant("two").toString());
+    assertEquals("", expectedSymbols.unescape(), info.getLong().getByCategory("one").toString());
+    assertEquals("", expectedSymbols.unescape(), info.getLong().getByCategory("other").toString());
+    assertEquals("", expectedSymbols.unescape(), info.getLong().getByCategory("two").toString());
     info.setSymbol("$");
     assertFalse("", info.isDefault());
     info.set(NULL, NULL, NULL, status);
@@ -1526,7 +1526,7 @@ void NumberFormat2Test::TestAffixPatternParser() {
             {0, -1, 0}};
         verifyAffix(
                 "--y'dz%US dollars\u00a4 y US dollars or USD but $",
-                affix.getByVariant("other"),
+                affix.getByCategory("other"),
                 expectedAttributes);
     }
     {
@@ -1541,7 +1541,7 @@ void NumberFormat2Test::TestAffixPatternParser() {
             {0, -1, 0}};
         verifyAffix(
                 "--y'dz%US dollar\u00a4 y US dollar or USD but $",
-                affix.getByVariant("one"),
+                affix.getByCategory("one"),
                 expectedAttributes);
     }
     affix.remove();
@@ -1564,7 +1564,7 @@ void NumberFormat2Test::TestAffixPatternParser() {
             {0, -1, 0}};
         verifyAffix(
                 "%-",
-                affix.getByVariant("other"),
+                affix.getByCategory("other"),
                 expectedAttributes);
     }
     UnicodeString a4("\u00a4");
