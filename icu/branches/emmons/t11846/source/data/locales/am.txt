@@ -215,7 +215,7 @@ am{
         native{"latn"}
         traditional{"ethi"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.96"}
     calendar{
         buddhist{
             DateTimePatterns{
@@ -631,19 +631,6 @@ am{
                         "ነሐሴ",
                         "ጳጉሜን",
                     }
-                }
-            }
-        }
-        ethiopic-amete-alem{
-            eras{
-                abbreviated{
-                    "ERA0",
-                }
-                narrow{
-                    "ERA0",
-                }
-                wide{
-                    "ERA0",
                 }
             }
         }

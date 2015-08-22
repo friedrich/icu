@@ -312,5 +312,5 @@ nl{
         FK{"Falklandeilanden (Islas Malvinas)"}
         MK{"Macedonië (FYROM)"}
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.96"}
 }

@@ -36,7 +36,7 @@ lrc{
         }
         native{"arabext"}
     }
-    Version{"2.1.19.14"}
+    Version{"2.1.19.96"}
     calendar{
         default{"persian"}
         generic{
@@ -78,66 +78,6 @@ lrc{
                 "{1} {0}",
                 "{1} {0}",
                 "{1} {0}",
-            }
-            dayNames{
-                format{
-                    abbreviated{
-                        "Sun",
-                        "Mon",
-                        "Tue",
-                        "Wed",
-                        "Thu",
-                        "Fri",
-                        "Sat",
-                    }
-                    narrow{
-                        "S",
-                        "M",
-                        "T",
-                        "W",
-                        "T",
-                        "F",
-                        "S",
-                    }
-                    wide{
-                        "Sun",
-                        "Mon",
-                        "Tue",
-                        "Wed",
-                        "Thu",
-                        "Fri",
-                        "Sat",
-                    }
-                }
-                stand-alone{
-                    abbreviated{
-                        "Sun",
-                        "Mon",
-                        "Tue",
-                        "Wed",
-                        "Thu",
-                        "Fri",
-                        "Sat",
-                    }
-                    narrow{
-                        "S",
-                        "M",
-                        "T",
-                        "W",
-                        "T",
-                        "F",
-                        "S",
-                    }
-                    wide{
-                        "یأشأمە",
-                        "دۊشأمە",
-                        "Tue",
-                        "Wed",
-                        "Thu",
-                        "Fri",
-                        "Sat",
-                    }
-                }
             }
             eras{
                 abbreviated{

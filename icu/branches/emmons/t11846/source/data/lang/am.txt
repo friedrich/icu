@@ -572,7 +572,7 @@ am{
             vaii{"የቫይ አሃዞች"}
         }
     }
-    Version{"2.1.19.17"}
+    Version{"2.1.19.96"}
     codePatterns{
         language{"{0}"}
         script{"{0}"}

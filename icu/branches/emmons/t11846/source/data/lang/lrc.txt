@@ -302,7 +302,7 @@ lrc{
             latn{"عأدأدیا لاتین"}
         }
     }
-    Version{"2.1.19.14"}
+    Version{"2.1.19.96"}
     codePatterns{
         language{"{0}"}
         script{"{0}"}
