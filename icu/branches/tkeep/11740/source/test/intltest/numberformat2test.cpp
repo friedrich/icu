@@ -410,6 +410,7 @@ void NumberFormat2Test::TestQuantize() {
         digits.quantize(quantity, status);
         verifyDigitList(".99792", digits);
     }
+    assertSuccess("", status);
 }
 
 void NumberFormat2Test::TestConvertScientificNotation() {
@@ -819,6 +820,9 @@ void NumberFormat2Test::TestDigitFormatterDefaultCtor() {
 void NumberFormat2Test::TestDigitFormatterMonetary() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     symbols.setSymbol(
             DecimalFormatSymbols::kMonetarySeparatorSymbol,
             "decimal separator");
@@ -857,6 +861,9 @@ void NumberFormat2Test::TestDigitFormatterMonetary() {
 void NumberFormat2Test::TestDigitFormatter() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     DigitFormatter formatter(symbols);
     DigitInterval interval;
     {
@@ -1121,6 +1128,9 @@ void NumberFormat2Test::TestSciFormatter() {
 void NumberFormat2Test::TestValueFormatterIsFastFormattable() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     DigitFormatter formatter(symbols);
     DigitGrouping grouping;
     FixedPrecision precision;
@@ -1396,6 +1406,9 @@ void NumberFormat2Test::TestCurrencyAffixInfo() {
     UErrorCode status = U_ZERO_ERROR;
     static UChar USD[] = {0x55, 0x53, 0x44, 0x0};
     LocalPointer<PluralRules> rules(PluralRules::forLocale("en", status));
+    if (!assertSuccess("", status)) {
+        return;
+    }
     info.set("en", rules.getAlias(), USD, status);
     assertEquals("", "$", info.getSymbol());
     assertEquals("", "USD", info.getISO());
@@ -1416,6 +1429,7 @@ void NumberFormat2Test::TestCurrencyAffixInfo() {
     assertTrue("", info.isDefault());
     info.setISO("USD");
     assertFalse("", info.isDefault());
+    assertSuccess("", status);
 }
 
 void NumberFormat2Test::TestAffixPattern() {
@@ -2145,6 +2159,9 @@ void NumberFormat2Test::TestVisibleDigitsWithExponent() {
 void NumberFormat2Test::TestDigitAffixesAndPadding() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     DigitFormatter formatter(symbols);
     DigitGrouping grouping;
     grouping.fGrouping = 3;
@@ -2266,6 +2283,9 @@ void NumberFormat2Test::TestDigitAffixesAndPadding() {
     aap.fNegativeSuffix = aap.fPositiveSuffix;
     
     LocalPointer<PluralRules> rules(PluralRules::forLocale("en", status));
+    if (!assertSuccess("", status)) {
+        return;
+    }
 
     // Exercise the fastrack path
     {
@@ -2337,6 +2357,9 @@ void NumberFormat2Test::TestDigitAffixesAndPadding() {
 void NumberFormat2Test::TestPluralsAndRounding() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     DigitFormatter formatter(symbols);
     DigitGrouping grouping;
     FixedPrecision precision;
@@ -2361,6 +2384,9 @@ void NumberFormat2Test::TestPluralsAndRounding() {
     aap.fNegativeSuffix = aap.fPositiveSuffix;
     aap.fWidth = 14;
     LocalPointer<PluralRules> rules(PluralRules::forLocale("en", status));
+    if (!assertSuccess("", status)) {
+        return;
+    }
     {
         digits.set(0.999);
         verifyAffixesAndPadding(
@@ -2443,6 +2469,9 @@ void NumberFormat2Test::TestPluralsAndRounding() {
 void NumberFormat2Test::TestPluralsAndRoundingScientific() {
     UErrorCode status = U_ZERO_ERROR;
     DecimalFormatSymbols symbols("en", status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     DigitFormatter formatter(symbols);
     ScientificPrecision precision;
     precision.fMantissa.fSignificant.setMax(4);
@@ -2463,6 +2492,9 @@ void NumberFormat2Test::TestPluralsAndRoundingScientific() {
     }
     aap.fNegativeSuffix = aap.fPositiveSuffix;
     LocalPointer<PluralRules> rules(PluralRules::forLocale("en", status));
+    if (!assertSuccess("", status)) {
+        return;
+    }
     {
         digits.set(0.99996);
         NumberFormat2Test_Attributes expectedAttributes[] = {
@@ -2782,7 +2814,9 @@ void NumberFormat2Test::verifyAffixesAndPadding(
                     optPluralRules,
                     appendTo,
                     status));
-    assertSuccess("", status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     if (expectedAttributes != NULL) {
         verifyAttributes(expectedAttributes, handler.attributes);
     }
@@ -2808,7 +2842,9 @@ void NumberFormat2Test::verifyAffixesAndPaddingInt32(
                     optPluralRules,
                     appendTo,
                     status));
-    assertSuccess("", status);
+    if (!assertSuccess("", status)) {
+        return;
+    }
     if (expectedAttributes != NULL) {
         verifyAttributes(expectedAttributes, handler.attributes);
     }
