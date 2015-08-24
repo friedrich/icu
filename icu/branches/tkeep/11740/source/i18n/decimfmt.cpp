@@ -939,8 +939,8 @@ void DecimalFormat::parse(const UnicodeString& text,
 
     // Skip padding characters, if around prefix
     if (formatWidth > 0 && (
-            fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix ||
-            fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix)) {
+            fImpl->fAffixes.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix ||
+            fImpl->fAffixes.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix)) {
         i = skipPadding(text, i);
     }
 
@@ -955,7 +955,7 @@ void DecimalFormat::parse(const UnicodeString& text,
                       ? 0 : nan->length());
     if (nanLen) {
         i += nanLen;
-        if (formatWidth > 0 && (fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix || fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix)) {
+        if (formatWidth > 0 && (fImpl->fAffixes.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix || fImpl->fAffixes.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix)) {
             i = skipPadding(text, i);
         }
         parsePosition.setIndex(i);
@@ -982,10 +982,10 @@ void DecimalFormat::parse(const UnicodeString& text,
         }
     } else {
         if (!subparse(text,
-                      &fImpl->fAap.fNegativePrefix.getOtherVariant().toString(),
-                      &fImpl->fAap.fNegativeSuffix.getOtherVariant().toString(),
-                      &fImpl->fAap.fPositivePrefix.getOtherVariant().toString(),
-                      &fImpl->fAap.fPositiveSuffix.getOtherVariant().toString(),
+                      &fImpl->fAffixes.fNegativePrefix.getOtherVariant().toString(),
+                      &fImpl->fAffixes.fNegativeSuffix.getOtherVariant().toString(),
+                      &fImpl->fAffixes.fPositivePrefix.getOtherVariant().toString(),
+                      &fImpl->fAffixes.fPositiveSuffix.getOtherVariant().toString(),
                       FALSE, UCURR_SYMBOL_NAME,
                       parsePosition, *digits, status, currency)) {
             debug("!subparse(...) - rewind");
@@ -1143,10 +1143,10 @@ DecimalFormat::parseForCurrency(const UnicodeString& text,
 
     // Disable complex currency parsing and try it again.
     UBool result = subparse(text,
-                            &fImpl->fAap.fNegativePrefix.getOtherVariant().toString(),
-                            &fImpl->fAap.fNegativeSuffix.getOtherVariant().toString(),
-                            &fImpl->fAap.fPositivePrefix.getOtherVariant().toString(),
-                            &fImpl->fAap.fPositiveSuffix.getOtherVariant().toString(),
+                            &fImpl->fAffixes.fNegativePrefix.getOtherVariant().toString(),
+                            &fImpl->fAffixes.fNegativeSuffix.getOtherVariant().toString(),
+                            &fImpl->fAffixes.fPositivePrefix.getOtherVariant().toString(),
+                            &fImpl->fAffixes.fPositiveSuffix.getOtherVariant().toString(),
                             FALSE /* disable complex currency parsing */, UCURR_SYMBOL_NAME,
                             tmpPos_2, tmpDigitList_2, tmpStatus_2,
                             currency);
@@ -1352,7 +1352,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
   {
     int32_t formatWidth = fImpl->getOldFormatWidth();
     // Match padding before prefix
-    if (formatWidth > 0 && fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix) {
+    if (formatWidth > 0 && fImpl->fAffixes.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix) {
         position = skipPadding(text, position);
     }
 
@@ -1381,7 +1381,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     }
 
     // Match padding before prefix
-    if (formatWidth > 0 && fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix) {
+    if (formatWidth > 0 && fImpl->fAffixes.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix) {
         position = skipPadding(text, position);
     }
 
@@ -1690,7 +1690,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     }
 
     // Match padding before suffix
-    if (formatWidth > 0 && fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix) {
+    if (formatWidth > 0 && fImpl->fAffixes.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix) {
         position = skipPadding(text, position);
     }
 
@@ -1721,7 +1721,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
     position += (posSuffixMatch >= 0 ? posSuffixMatch : (negSuffixMatch >= 0 ? negSuffixMatch : 0));
 
     // Match padding before suffix
-    if (formatWidth > 0 && fImpl->fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix) {
+    if (formatWidth > 0 && fImpl->fAffixes.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix) {
         position = skipPadding(text, position);
     }
 
@@ -1788,9 +1788,9 @@ printf("PP -> %d, SLOW = [%s]!    pp=%d, os=%d, err=%s\n", position, parsedNum.d
  * character.  Result is >= position.
  */
 int32_t DecimalFormat::skipPadding(const UnicodeString& text, int32_t position) const {
-    int32_t padLen = U16_LENGTH(fImpl->fAap.fPadChar);
+    int32_t padLen = U16_LENGTH(fImpl->fAffixes.fPadChar);
     while (position < text.length() &&
-           text.char32At(position) == fImpl->fAap.fPadChar) {
+           text.char32At(position) == fImpl->fAffixes.fPadChar) {
         position += padLen;
     }
     return position;
@@ -1834,18 +1834,18 @@ int32_t DecimalFormat::compareAffix(const UnicodeString& text,
 
     if (isNegative) {
         if (isPrefix) {
-            patternToCompare = &fImpl->fAap.fNegativePrefix.getOtherVariant().toString();
+            patternToCompare = &fImpl->fAffixes.fNegativePrefix.getOtherVariant().toString();
         }
         else {
-            patternToCompare = &fImpl->fAap.fNegativeSuffix.getOtherVariant().toString();
+            patternToCompare = &fImpl->fAffixes.fNegativeSuffix.getOtherVariant().toString();
         }
     }
     else {
         if (isPrefix) {
-            patternToCompare = &fImpl->fAap.fPositivePrefix.getOtherVariant().toString();
+            patternToCompare = &fImpl->fAffixes.fPositivePrefix.getOtherVariant().toString();
         }
         else {
-            patternToCompare = &fImpl->fAap.fPositiveSuffix.getOtherVariant().toString();
+            patternToCompare = &fImpl->fAffixes.fPositiveSuffix.getOtherVariant().toString();
         }
     }
     return compareSimpleAffix(*patternToCompare, text, pos, isLenient());

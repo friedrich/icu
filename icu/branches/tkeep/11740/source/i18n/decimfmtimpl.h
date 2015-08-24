@@ -159,15 +159,15 @@ void setRoundingIncrement(double d);
 double getRoundingIncrement() const;
 int32_t getMultiplier() const;
 void setMultiplier(int32_t m);
-UChar32 getPadCharacter() const { return fAap.fPadChar; }
-void setPadCharacter(UChar32 c) { fAap.fPadChar = c; }
-int32_t getFormatWidth() const { return fAap.fWidth; }
-void setFormatWidth(int32_t x) { fAap.fWidth = x; }
+UChar32 getPadCharacter() const { return fAffixes.fPadChar; }
+void setPadCharacter(UChar32 c) { fAffixes.fPadChar = c; }
+int32_t getFormatWidth() const { return fAffixes.fWidth; }
+void setFormatWidth(int32_t x) { fAffixes.fWidth = x; }
 DigitAffixesAndPadding::EPadPosition getPadPosition() const {
-    return fAap.fPadPosition;
+    return fAffixes.fPadPosition;
 }
 void setPadPosition(DigitAffixesAndPadding::EPadPosition x) {
-    fAap.fPadPosition = x;
+    fAffixes.fPadPosition = x;
 }
 int32_t getMinimumExponentDigits() const {
     return fEffPrecision.fMinExponentDigits;
@@ -258,8 +258,8 @@ DigitGrouping fGrouping;
 
 // Updating any of the following fields triggers updates on the following:
 // fMonetary, fRules, fAffixParser, fCurrencyAffixInfo,
-// fFormatter, fAap.fPositivePrefiix, fAap.fPositiveSuffix,
-// fAap.fNegativePrefiix, fAap.fNegativeSuffix
+// fFormatter, fAffixes.fPositivePrefiix, fAffixes.fPositiveSuffix,
+// fAffixes.fNegativePrefiix, fAffixes.fNegativeSuffix
 // We do this two phase update because localizing the affix patterns
 // and formatters can be expensive. Better to do it once with the setters
 // than each time within format.
@@ -276,7 +276,7 @@ UCurrencyUsage fCurrencyUsage;
 PluralRules *fRules;
 
 // These fields are totally hidden from user and are used to derive the affixes
-// in fAap below from the four affix patterns above.
+// in fAffixes below from the four affix patterns above.
 UBool fMonetary;
 AffixPatternParser fAffixParser;
 CurrencyAffixInfo fCurrencyAffixInfo;
@@ -288,7 +288,7 @@ ScientificPrecision fEffPrecision;
 DigitGrouping fEffGrouping;
 SciFormatterOptions fOptions;   // Encapsulates fixed precision options
 DigitFormatter fFormatter;
-DigitAffixesAndPadding fAap;
+DigitAffixesAndPadding fAffixes;
 
 UnicodeString &formatInt32(
         int32_t number,

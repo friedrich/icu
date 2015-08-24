@@ -106,7 +106,7 @@ DecimalFormatImpl::DecimalFormatImpl(
           fEffGrouping(other.fEffGrouping),
           fOptions(other.fOptions),
           fFormatter(other.fFormatter),
-          fAap(other.fAap) {
+          fAffixes(other.fAffixes) {
     fSymbols = new DecimalFormatSymbols(*fSymbols);
     if (fSymbols == NULL && U_SUCCESS(status)) {
         status = U_MEMORY_ALLOCATION_ERROR;
@@ -146,7 +146,7 @@ DecimalFormatImpl::assign(const DecimalFormatImpl &other, UErrorCode &status) {
     fEffGrouping = other.fEffGrouping;
     fOptions = other.fOptions;
     fFormatter = other.fFormatter;
-    fAap = other.fAap;
+    fAffixes = other.fAffixes;
     *fSymbols = *other.fSymbols;
     if (fRules != NULL && other.fRules != NULL) {
         *fRules = *other.fRules;
@@ -188,7 +188,7 @@ DecimalFormatImpl::operator==(const DecimalFormatImpl &other) const {
             && fEffGrouping.equals(other.fEffGrouping)
             && fOptions.equals(other.fOptions)
             && fFormatter.equals(other.fFormatter)
-            && fAap.equals(other.fAap)
+            && fAffixes.equals(other.fAffixes)
             && (*fSymbols == *other.fSymbols)
             && ((fRules == other.fRules) || (
                     (fRules != NULL) && (other.fRules != NULL)
@@ -321,7 +321,7 @@ DecimalFormatImpl::formatInt32(
         return appendTo;
     }
     ValueFormatter vf;
-    return fAap.formatInt32(
+    return fAffixes.formatInt32(
             number,
             prepareValueFormatter(vf),
             handler,
@@ -486,7 +486,7 @@ DecimalFormatImpl::formatAdjustedDigitList(
         FieldPositionHandler &handler,
         UErrorCode &status) const {
     ValueFormatter vf;
-    return fAap.format(
+    return fAffixes.format(
             number,
             prepareValueFormatter(vf),
             handler,
@@ -502,7 +502,7 @@ DecimalFormatImpl::formatVisibleDigitsWithExponent(
         FieldPositionHandler &handler,
         UErrorCode &status) const {
     ValueFormatter vf;
-    return fAap.format(
+    return fAffixes.format(
             digits,
             prepareValueFormatter(vf),
             handler,
@@ -742,25 +742,25 @@ DecimalFormatImpl::setNegativeSuffix(const UnicodeString &str) {
 
 UnicodeString &
 DecimalFormatImpl::getPositivePrefix(UnicodeString &result) const {
-    result = fAap.fPositivePrefix.getOtherVariant().toString();
+    result = fAffixes.fPositivePrefix.getOtherVariant().toString();
     return result;
 }
 
 UnicodeString &
 DecimalFormatImpl::getPositiveSuffix(UnicodeString &result) const {
-    result = fAap.fPositiveSuffix.getOtherVariant().toString();
+    result = fAffixes.fPositiveSuffix.getOtherVariant().toString();
     return result;
 }
 
 UnicodeString &
 DecimalFormatImpl::getNegativePrefix(UnicodeString &result) const {
-    result = fAap.fNegativePrefix.getOtherVariant().toString();
+    result = fAffixes.fNegativePrefix.getOtherVariant().toString();
     return result;
 }
 
 UnicodeString &
 DecimalFormatImpl::getNegativeSuffix(UnicodeString &result) const {
-    result = fAap.fNegativeSuffix.getOtherVariant().toString();
+    result = fAffixes.fNegativeSuffix.getOtherVariant().toString();
     return result;
 }
 
@@ -851,7 +851,7 @@ DecimalFormatImpl::applyPattern(
     } else {
         fEffPrecision.fMantissa.fRoundingIncrement.clear();
     }
-    fAap.fPadChar = out.fPad;
+    fAffixes.fPadChar = out.fPad;
     fNegativePrefixPattern = out.fNegPrefixAffix;
     fNegativeSuffixPattern = out.fNegSuffixAffix;
     fPositivePrefixPattern = out.fPosPrefixAffix;
@@ -860,21 +860,21 @@ DecimalFormatImpl::applyPattern(
     // Work around. Pattern parsing code and DecimalFormat code don't agree
     // on the definition of field width, so we have to translate from
     // pattern field width to decimal format field width here.
-    fAap.fWidth = out.fFormatWidth == 0 ? 0 :
+    fAffixes.fWidth = out.fFormatWidth == 0 ? 0 :
             out.fFormatWidth + fPositivePrefixPattern.countChar32()
             + fPositiveSuffixPattern.countChar32();
     switch (out.fPadPosition) {
     case DecimalFormatPattern::kPadBeforePrefix:
-        fAap.fPadPosition = DigitAffixesAndPadding::kPadBeforePrefix;
+        fAffixes.fPadPosition = DigitAffixesAndPadding::kPadBeforePrefix;
         break;    
     case DecimalFormatPattern::kPadAfterPrefix:
-        fAap.fPadPosition = DigitAffixesAndPadding::kPadAfterPrefix;
+        fAffixes.fPadPosition = DigitAffixesAndPadding::kPadAfterPrefix;
         break;    
     case DecimalFormatPattern::kPadBeforeSuffix:
-        fAap.fPadPosition = DigitAffixesAndPadding::kPadBeforeSuffix;
+        fAffixes.fPadPosition = DigitAffixesAndPadding::kPadBeforeSuffix;
         break;    
     case DecimalFormatPattern::kPadAfterSuffix:
-        fAap.fPadPosition = DigitAffixesAndPadding::kPadAfterSuffix;
+        fAffixes.fPadPosition = DigitAffixesAndPadding::kPadAfterSuffix;
         break;    
     default:
         break;
@@ -1209,11 +1209,11 @@ DecimalFormatImpl::updateFormattingLocalizedPositivePrefix(
         // No work to do
         return;
     }
-    fAap.fPositivePrefix.remove();
+    fAffixes.fPositivePrefix.remove();
     fAffixParser.parse(
             fPositivePrefixPattern,
             fCurrencyAffixInfo,
-            fAap.fPositivePrefix,
+            fAffixes.fPositivePrefix,
             status);
 }
 
@@ -1228,11 +1228,11 @@ DecimalFormatImpl::updateFormattingLocalizedPositiveSuffix(
         // No work to do
         return;
     }
-    fAap.fPositiveSuffix.remove();
+    fAffixes.fPositiveSuffix.remove();
     fAffixParser.parse(
             fPositiveSuffixPattern,
             fCurrencyAffixInfo,
-            fAap.fPositiveSuffix,
+            fAffixes.fPositiveSuffix,
             status);
 }
 
@@ -1247,11 +1247,11 @@ DecimalFormatImpl::updateFormattingLocalizedNegativePrefix(
         // No work to do
         return;
     }
-    fAap.fNegativePrefix.remove();
+    fAffixes.fNegativePrefix.remove();
     fAffixParser.parse(
             fNegativePrefixPattern,
             fCurrencyAffixInfo,
-            fAap.fNegativePrefix,
+            fAffixes.fNegativePrefix,
             status);
 }
 
@@ -1266,11 +1266,11 @@ DecimalFormatImpl::updateFormattingLocalizedNegativeSuffix(
         // No work to do
         return;
     }
-    fAap.fNegativeSuffix.remove();
+    fAffixes.fNegativeSuffix.remove();
     fAffixParser.parse(
             fNegativeSuffixPattern,
             fCurrencyAffixInfo,
-            fAap.fNegativeSuffix,
+            fAffixes.fNegativeSuffix,
             status);
 }
 
@@ -1507,26 +1507,26 @@ UnicodeString&
 DecimalFormatImpl::toPattern(UnicodeString& result) const {
     result.remove();
     UnicodeString padSpec;
-    if (fAap.fWidth > 0) {
+    if (fAffixes.fWidth > 0) {
         padSpec.append(kPatternPadEscape);
-        padSpec.append(fAap.fPadChar);
+        padSpec.append(fAffixes.fPadChar);
     }
-    if (fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix) {
+    if (fAffixes.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix) {
         result.append(padSpec);
     }
     fPositivePrefixPattern.toUserString(result);
-    if (fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix) {
+    if (fAffixes.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix) {
         result.append(padSpec);
     }
     toNumberPattern(
-            fAap.fWidth > 0,
-            fAap.fWidth - fPositivePrefixPattern.countChar32() - fPositiveSuffixPattern.countChar32(),
+            fAffixes.fWidth > 0,
+            fAffixes.fWidth - fPositivePrefixPattern.countChar32() - fPositiveSuffixPattern.countChar32(),
             result);
-    if (fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix) {
+    if (fAffixes.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix) {
         result.append(padSpec);
     }
     fPositiveSuffixPattern.toUserString(result);
-    if (fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix) {
+    if (fAffixes.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix) {
         result.append(padSpec);
     }
     AffixPattern withNegative;
@@ -1535,22 +1535,22 @@ DecimalFormatImpl::toPattern(UnicodeString& result) const {
     if (!fPositiveSuffixPattern.equals(fNegativeSuffixPattern) ||
             !withNegative.equals(fNegativePrefixPattern)) {
         result.append(kPatternSeparator);
-        if (fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix) {
+        if (fAffixes.fPadPosition == DigitAffixesAndPadding::kPadBeforePrefix) {
             result.append(padSpec);
         }
         fNegativePrefixPattern.toUserString(result);
-        if (fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix) {
+        if (fAffixes.fPadPosition == DigitAffixesAndPadding::kPadAfterPrefix) {
             result.append(padSpec);
         }
         toNumberPattern(
-                fAap.fWidth > 0,
-                fAap.fWidth - fNegativePrefixPattern.countChar32() - fNegativeSuffixPattern.countChar32(),
+                fAffixes.fWidth > 0,
+                fAffixes.fWidth - fNegativePrefixPattern.countChar32() - fNegativeSuffixPattern.countChar32(),
                 result);
-        if (fAap.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix) {
+        if (fAffixes.fPadPosition == DigitAffixesAndPadding::kPadBeforeSuffix) {
             result.append(padSpec);
         }
         fNegativeSuffixPattern.toUserString(result);
-        if (fAap.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix) {
+        if (fAffixes.fPadPosition == DigitAffixesAndPadding::kPadAfterSuffix) {
             result.append(padSpec);
         }
     }
@@ -1559,10 +1559,10 @@ DecimalFormatImpl::toPattern(UnicodeString& result) const {
 
 int32_t
 DecimalFormatImpl::getOldFormatWidth() const {
-    if (fAap.fWidth == 0) {
+    if (fAffixes.fWidth == 0) {
         return 0;
     }
-    return fAap.fWidth - fPositiveSuffixPattern.countChar32() - fPositivePrefixPattern.countChar32();
+    return fAffixes.fWidth - fPositiveSuffixPattern.countChar32() - fPositivePrefixPattern.countChar32();
 }
 
 const UnicodeString &
@@ -1576,7 +1576,7 @@ DecimalFormatImpl::isParseFastpath() const {
     AffixPattern negative;
     negative.add(AffixPattern::kNegative);
 
-    return fAap.fWidth == 0 &&
+    return fAffixes.fWidth == 0 &&
     fPositivePrefixPattern.countChar32() == 0 &&
     fNegativePrefixPattern.equals(negative) &&
     fPositiveSuffixPattern.countChar32() == 0 &&
