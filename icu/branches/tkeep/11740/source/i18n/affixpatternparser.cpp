@@ -20,6 +20,7 @@
 static UChar gPercent = 0x25;
 static UChar gPerMill = 0x2030;
 static UChar gNegative = 0x2D;
+static UChar gPositive = 0x2B;
 
 #define PACK_TOKEN_AND_LENGTH(t, l) ((UChar) (((t) << 8) | (l & 0xFF)))
 
@@ -290,6 +291,11 @@ static void escapeLiteral(
                 appender.append((UChar) 0x2D);
                 appender.append((UChar) 0x27);
                 break;
+            case 0x2B:
+                appender.append((UChar) 0x27);
+                appender.append((UChar) 0x2B);
+                appender.append((UChar) 0x27);
+                break;
             default:
                 appender.append(ch);
                 break;
@@ -329,6 +335,10 @@ AffixPattern::toString(UnicodeString &appendTo) const {
             appender.append((UChar) 0x27);
             appender.append((UChar) 0x2D);
             break;
+        case kPositive:
+            appender.append((UChar) 0x27);
+            appender.append((UChar) 0x2B);
+            break;
         default:
             U_ASSERT(FALSE);
             break;
@@ -364,6 +374,9 @@ AffixPattern::toUserString(UnicodeString &appendTo) const {
             break;
         case kNegative:
             appender.append((UChar) 0x2D);
+            break;
+        case kPositive:
+            appender.append((UChar) 0x2B);
             break;
         default:
             U_ASSERT(FALSE);
@@ -453,6 +466,10 @@ AffixPattern::parseUserAffixString(
                 appender.flush();
                 appendTo.add(kNegative, 1);
                 break;
+            case 0x2B:
+                appender.flush();
+                appendTo.add(kPositive, 1);
+                break;
             case 0xA4:
                 appender.flush();
                 appendTo.add(kCurrency, tokenSize);
@@ -516,6 +533,9 @@ AffixPattern::parseAffixString(
             break;
         case 0x2D:
             appendTo.add(kNegative, 1);
+            break;
+        case 0x2B:
+            appendTo.add(kPositive, 1);
             break;
         case 0xA4:
             {
@@ -591,7 +611,7 @@ AffixPatternIterator::getTokenLength() const {
 }
 
 AffixPatternParser::AffixPatternParser()
-        : fPercent(gPercent), fPermill(gPerMill), fNegative(gNegative) {
+        : fPercent(gPercent), fPermill(gPerMill), fNegative(gNegative), fPositive(gPositive) {
 }
 
 AffixPatternParser::AffixPatternParser(
@@ -605,6 +625,7 @@ AffixPatternParser::setDecimalFormatSymbols(
     fPercent = symbols.getConstSymbol(DecimalFormatSymbols::kPercentSymbol);
     fPermill = symbols.getConstSymbol(DecimalFormatSymbols::kPerMillSymbol);
     fNegative = symbols.getConstSymbol(DecimalFormatSymbols::kMinusSignSymbol);
+    fPositive = symbols.getConstSymbol(DecimalFormatSymbols::kPlusSignSymbol);
 }
 
 PluralAffix &
@@ -629,6 +650,9 @@ AffixPatternParser::parse(
             break;
         case AffixPattern::kNegative:
             appendTo.append(fNegative, UNUM_SIGN_FIELD);
+            break;
+        case AffixPattern::kPositive:
+            appendTo.append(fPositive, UNUM_SIGN_FIELD);
             break;
         case AffixPattern::kCurrency:
             switch (iter.getTokenLength()) {

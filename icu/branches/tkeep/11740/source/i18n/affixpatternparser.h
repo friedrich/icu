@@ -127,7 +127,8 @@ public:
         kPercent,
         kPerMill,
         kCurrency,
-        kNegative
+        kNegative,
+        kPositive,
     };
 
     /**
@@ -379,13 +380,15 @@ PluralAffix &parse(
 UBool equals(const AffixPatternParser &other) const {
     return (fPercent == other.fPercent)
             && (fPermill == other.fPermill)
-            && (fNegative == other.fNegative);
+            && (fNegative == other.fNegative)
+            && (fPositive == other.fPositive);
 }
 
 private:
 UnicodeString fPercent;
 UnicodeString fPermill;
 UnicodeString fNegative;
+UnicodeString fPositive;
 };
 
 
