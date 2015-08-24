@@ -22,8 +22,10 @@ class DigitList;
 
 /**
  * VisibleDigits represents the digits visible for formatting.
- * Once initialized, VisibleDigits instances remain unchanged until they
- * are initialized again.
+ * Once initialized using a FixedPrecision instance, VisibleDigits instances
+ * remain unchanged until they are initialized again. A VisibleDigits with
+ * a numeric value equal to 3.0 could be "3", "3.0", "3.00" or even "003.0"
+ * depending on settings of the FixedPrecision instance used to initialize it.
  */
 class U_I18N_API VisibleDigits : public UMemory {
 public:
