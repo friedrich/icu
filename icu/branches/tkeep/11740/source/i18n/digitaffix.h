@@ -12,10 +12,10 @@
 #ifndef __DIGITAFFIX_H__
 #define __DIGITAFFIX_H__
 
-#include "unicode/utypes.h"
-#include "unicode/uobject.h"
 #include "unicode/unistr.h"
 #include "unicode/unum.h"
+#include "unicode/uobject.h"
+#include "unicode/utypes.h"
 
 U_NAMESPACE_BEGIN
 

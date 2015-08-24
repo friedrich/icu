@@ -12,9 +12,9 @@
 #ifndef __DIGITFORMATTER_H__
 #define __DIGITFORMATTER_H__
 
-#include "unicode/utypes.h"
-#include "unicode/uobject.h"
 #include "unicode/unistr.h"
+#include "unicode/uobject.h"
+#include "unicode/utypes.h"
 #include "digitaffix.h"
 
 U_NAMESPACE_BEGIN

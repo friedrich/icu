@@ -12,10 +12,11 @@
 #ifndef __PLURALAFFIX_H__
 #define __PLURALAFFIX_H__
 
-#include "unicode/utypes.h"
-#include "unicode/uobject.h"
-#include "digitaffix.h"
 #include "unicode/unum.h"
+#include "unicode/uobject.h"
+#include "unicode/utypes.h"
+
+#include "digitaffix.h"
 #include "pluralmap.h"
 
 U_NAMESPACE_BEGIN

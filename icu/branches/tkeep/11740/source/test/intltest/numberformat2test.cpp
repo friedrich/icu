@@ -14,24 +14,25 @@
 
 #if !UCONFIG_NO_FORMATTING
 
-#include "digitformatter.h"
-#include "digitinterval.h"
-#include "significantdigitinterval.h"
-#include "digitlst.h"
-#include "digitgrouping.h"
 #include "unicode/localpointer.h"
-#include "fphdlimp.h"
-#include "digitaffixesandpadding.h"
-#include "valueformatter.h"
-#include "precision.h"
-#include "plurrule_impl.h"
 #include "unicode/plurrule.h"
-#include "decimalformatpattern.h"
+
 #include "affixpatternparser.h"
-#include "datadrivennumberformattestsuite.h"
 #include "charstr.h"
+#include "datadrivennumberformattestsuite.h"
+#include "decimalformatpattern.h"
+#include "digitaffixesandpadding.h"
+#include "digitformatter.h"
+#include "digitgrouping.h"
+#include "digitinterval.h"
+#include "digitlst.h"
+#include "fphdlimp.h"
+#include "plurrule_impl.h"
+#include "precision.h"
+#include "significantdigitinterval.h"
 #include "smallintformatter.h"
 #include "uassert.h"
+#include "valueformatter.h"
 #include "visibledigits.h"
 
 struct NumberFormat2Test_Attributes {

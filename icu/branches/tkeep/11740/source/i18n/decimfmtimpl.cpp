@@ -5,17 +5,17 @@
  * file name: decimfmtimpl.cpp
  */
 
-#include "decimfmtimpl.h"
+#include <math.h>
+#include "unicode/numfmt.h"
 #include "unicode/plurrule.h"
 #include "unicode/ustring.h"
 #include "decimalformatpattern.h"
 #include "decimalformatpatternimpl.h"
-#include "valueformatter.h"
+#include "decimfmtimpl.h"
 #include "fphdlimp.h"
 #include "plurrule_impl.h"
-#include <math.h>
+#include "valueformatter.h"
 #include "visibledigits.h"
-#include "unicode/numfmt.h"
 
 U_NAMESPACE_BEGIN
 
@@ -336,7 +336,7 @@ DecimalFormatImpl::formatInt64(
         UnicodeString &appendTo,
         FieldPositionHandler &handler,
         UErrorCode &status) const {
-    if (number >= -2147483648LL && number <= 2147483647LL) {
+    if (number >= INT32_MIN && number <= INT32_MAX) {
         return formatInt32((int32_t) number, appendTo, handler, status);
     }
     VisibleDigitsWithExponent digits;

@@ -11,14 +11,14 @@
 #ifndef DECIMFMTIMPL_H
 #define DECIMFMTIMPL_H
 
-#include "unicode/utypes.h"
+#include "unicode/decimfmt.h"
 #include "unicode/uobject.h"
+#include "unicode/utypes.h"
 #include "affixpatternparser.h"
+#include "digitaffixesandpadding.h"
 #include "digitformatter.h"
 #include "digitgrouping.h"
 #include "precision.h"
-#include "digitaffixesandpadding.h"
-#include "unicode/decimfmt.h"
 
 U_NAMESPACE_BEGIN
 

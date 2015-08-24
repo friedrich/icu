@@ -4,15 +4,15 @@
 * others. All Rights Reserved.
 ******************************************************************************
 *
-* File PLURALMAP.H - The ICU Unified cache.
+* File PLURALMAP.H - PluralMap class that maps plural categories to values.
 ******************************************************************************
 */
 
 #ifndef __PLURAL_MAP_H__
 #define __PLURAL_MAP_H__
 
-#include "cmemory.h"
 #include "unicode/uobject.h"
+#include "cmemory.h"
 
 U_NAMESPACE_BEGIN
 

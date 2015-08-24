@@ -12,8 +12,8 @@
 #ifndef __SIGNIFICANTDIGITINTERVAL_H__
 #define __SIGNIFICANTDIGITINTERVAL_H__
 
-#include "unicode/utypes.h"
 #include "unicode/uobject.h"
+#include "unicode/utypes.h"
 
 U_NAMESPACE_BEGIN
 

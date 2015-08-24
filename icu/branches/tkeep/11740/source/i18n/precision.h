@@ -12,11 +12,12 @@
 #ifndef __PRECISION_H__
 #define __PRECISION_H__
 
-#include "unicode/utypes.h"
 #include "unicode/uobject.h"
+#include "unicode/utypes.h"
+
 #include "digitinterval.h"
-#include "significantdigitinterval.h"
 #include "digitlst.h"
+#include "significantdigitinterval.h"
 
 U_NAMESPACE_BEGIN
 

@@ -8,9 +8,10 @@
 *
 ********************************************************************************
 */
+#include "unicode/unistr.h"
+
 #include "intltest.h"
 #include "pluralmap.h"
-#include "unicode/unistr.h"
 
 class PluralMapForPluralMapTest : public PluralMap<UnicodeString> {
 public:

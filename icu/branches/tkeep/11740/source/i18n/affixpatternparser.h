@@ -12,9 +12,9 @@
 #ifndef __AFFIX_PATTERN_PARSER_H__
 #define __AFFIX_PATTERN_PARSER_H__
 
-#include "unicode/utypes.h"
-#include "unicode/uobject.h"
 #include "unicode/unistr.h"
+#include "unicode/uobject.h"
+#include "unicode/utypes.h"
 #include "pluralaffix.h"
 
 U_NAMESPACE_BEGIN
@@ -228,7 +228,7 @@ public:
      * same format that DecimalFormatPatternParser produces. Namely special
      * characters in the affix that correspond to a field type must be
      * prefixed with an apostrophe ('). These special character sequences
-     * inluce minus (-), percent (%), permile (U+2030),
+     * inluce minus (-), percent (%), permile (U+2030), plus (+),
      * short currency (U+00a4), medium currency (u+00a4 * 2),
      * long currency (u+a4 * 3), and apostrophe (')
      * (apostrophe does not correspond to a field type but has to be escaped

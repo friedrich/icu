@@ -12,8 +12,8 @@
 #ifndef __DIGITGROUPING_H__
 #define __DIGITGROUPING_H__
 
-#include "unicode/utypes.h"
 #include "unicode/uobject.h"
+#include "unicode/utypes.h"
 
 U_NAMESPACE_BEGIN
 

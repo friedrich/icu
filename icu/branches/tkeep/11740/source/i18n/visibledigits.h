@@ -11,8 +11,9 @@
 #ifndef __VISIBLEDIGITS_H__
 #define __VISIBLEDIGITS_H__
 
-#include "unicode/utypes.h"
 #include "unicode/uobject.h"
+#include "unicode/utypes.h"
+
 #include "charstr.h"
 #include "digitinterval.h"
 

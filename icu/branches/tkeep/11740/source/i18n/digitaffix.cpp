@@ -9,8 +9,8 @@
 
 #include "digitaffix.h"
 #include "fphdlimp.h"
+#include "uassert.h"
 #include "unistrappender.h"
-
 
 U_NAMESPACE_BEGIN
 
@@ -80,6 +80,7 @@ DigitAffix::format(FieldPositionHandler &handler, UnicodeString &appendTo) const
     if (!handler.isRecording()) {
         return appendTo.append(fAffix);
     }
+    U_ASSERT(fAffix.length() == fAnnotations.length());
     int32_t appendToStart = appendTo.length();
     int32_t lastId = (int32_t) fAnnotations.charAt(0);
     int32_t lastIdStart = 0;

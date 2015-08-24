@@ -12,8 +12,8 @@
 #ifndef __SMALLINTFORMATTER_H__
 #define __SMALLINTFORMATTER_H__
 
-#include "unicode/utypes.h"
 #include "unicode/uobject.h"
+#include "unicode/utypes.h"
 
 U_NAMESPACE_BEGIN
 

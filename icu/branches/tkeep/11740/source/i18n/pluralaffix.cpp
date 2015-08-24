@@ -6,6 +6,7 @@
  */
 
 #include "unicode/utypes.h"
+
 #include "cstring.h"
 #include "digitaffix.h"
 #include "pluralaffix.h"

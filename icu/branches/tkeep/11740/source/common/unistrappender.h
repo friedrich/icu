@@ -11,10 +11,10 @@
 #ifndef __UNISTRAPPENDER_H__
 #define __UNISTRAPPENDER_H__
 
-#include "unicode/utypes.h"
-#include "unicode/uobject.h"
 #include "unicode/unistr.h"
+#include "unicode/uobject.h"
 #include "unicode/utf16.h"
+#include "unicode/utypes.h"
 #include "cmemory.h"
 
 U_NAMESPACE_BEGIN

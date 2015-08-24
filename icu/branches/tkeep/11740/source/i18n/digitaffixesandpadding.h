@@ -12,8 +12,8 @@
 #ifndef __DIGITAFFIXESANDPADDING_H__
 #define __DIGITAFFIXESANDPADDING_H__
 
-#include "unicode/utypes.h"
 #include "unicode/uobject.h"
+#include "unicode/utypes.h"
 #include "pluralaffix.h"
 
 U_NAMESPACE_BEGIN

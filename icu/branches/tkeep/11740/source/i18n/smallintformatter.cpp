@@ -5,8 +5,9 @@
  * file name: smallintformatter.cpp
  */
 
-#include "smallintformatter.h"
 #include "unicode/unistr.h"
+
+#include "smallintformatter.h"
 
 static const int32_t gMaxFastInt = 4096;
 

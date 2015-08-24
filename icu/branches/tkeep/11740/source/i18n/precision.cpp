@@ -5,13 +5,14 @@
  * file name: precisison.cpp
  */
 
+#include <math.h>
+
 #include "unicode/utypes.h"
 
-#include "precision.h"
 #include "digitlst.h"
-#include "visibledigits.h"
 #include "fmtableimp.h"
-#include <math.h>
+#include "precision.h"
+#include "visibledigits.h"
 
 U_NAMESPACE_BEGIN
 

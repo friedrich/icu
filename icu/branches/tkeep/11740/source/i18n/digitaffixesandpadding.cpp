@@ -2,18 +2,18 @@
  * Copyright (C) 2015, International Business Machines
  * Corporation and others.  All Rights Reserved.
  *
- * file name: digitformatter.cpp
+ * file name: digitaffixesandpadding.cpp
  */
 
-#include "digitaffixesandpadding.h"
 
-#include "digitlst.h"
-#include "digitaffix.h"
-#include "valueformatter.h"
-#include "uassert.h"
-#include "charstr.h"
-#include "visibledigits.h"
 #include "unicode/plurrule.h"
+#include "charstr.h"
+#include "digitaffix.h"
+#include "digitaffixesandpadding.h"
+#include "digitlst.h"
+#include "uassert.h"
+#include "valueformatter.h"
+#include "visibledigits.h"
 
 U_NAMESPACE_BEGIN
 

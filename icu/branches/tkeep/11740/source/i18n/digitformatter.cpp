@@ -5,21 +5,18 @@
  * file name: digitformatter.cpp
  */
 
+#include "unicode/dcfmtsym.h"
+#include "unicode/unum.h"
 #include "unicode/utypes.h"
 
 #include "digitformatter.h"
+#include "digitgrouping.h"
 #include "digitinterval.h"
 #include "digitlst.h"
-#include "digitgrouping.h"
-#include "unicode/dcfmtsym.h"
-#include "unicode/unum.h"
 #include "fphdlimp.h"
 #include "smallintformatter.h"
 #include "unistrappender.h"
 #include "visibledigits.h"
-
-// Only here for backward compatibility
-#include "precision.h"
 
 U_NAMESPACE_BEGIN
 

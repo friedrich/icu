@@ -5,22 +5,21 @@
 *******************************************************************************
 */
 
+#include "unicode/plurrule.h"
+#include "unicode/unistr.h"
 #include "unicode/utypes.h"
 
 #if !UCONFIG_NO_FORMATTING
 
-#include "valueformatter.h"
-
+#include "digitformatter.h"
+#include "digitgrouping.h"
 #include "digitinterval.h"
 #include "digitlst.h"
-#include "digitformatter.h"
 #include "precision.h"
-#include "unicode/unistr.h"
-#include "unicode/plurrule.h"
 #include "plurrule_impl.h"
-#include "uassert.h"
 #include "smallintformatter.h"
-#include "digitgrouping.h"
+#include "uassert.h"
+#include "valueformatter.h"
 #include "visibledigits.h"
 
 U_NAMESPACE_BEGIN

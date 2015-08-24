@@ -3,10 +3,10 @@
  * others. All Rights Reserved.
  */
 
-#include "pluralmap.h"
-#include "cstring.h"
 #include "unicode/unistr.h"
 #include "charstr.h"
+#include "cstring.h"
+#include "pluralmap.h"
 
 U_NAMESPACE_BEGIN
 

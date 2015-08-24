@@ -5,13 +5,13 @@
  * file name: affixpatternparser.cpp
  */
 
-#include "affixpatternparser.h"
 
-#include "charstr.h"
-#include "unicode/ucurr.h"
-#include "unicode/plurrule.h"
-#include "precision.h"
 #include "unicode/dcfmtsym.h"
+#include "unicode/plurrule.h"
+#include "unicode/ucurr.h"
+#include "affixpatternparser.h"
+#include "charstr.h"
+#include "precision.h"
 #include "uassert.h"
 #include "unistrappender.h"
 

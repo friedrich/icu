@@ -5,14 +5,15 @@
  * file name: visibledigits.cpp
  */
 
+#include <math.h>
+
 #include "unicode/utypes.h"
 
-#include "visibledigits.h"
-#include "digitlst.h"
-#include "decNumber.h"
 #include "cstring.h"
+#include "decNumber.h"
+#include "digitlst.h"
 #include "uassert.h"
-#include <math.h>
+#include "visibledigits.h"
 
 static const int32_t kNegative = 1;
 static const int32_t kInfinite = 2;
