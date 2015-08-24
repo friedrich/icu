@@ -157,20 +157,7 @@ void Region::loadRegionData(UErrorCode &status) {
 
     while ( ures_hasNext(regionUnknown.getAlias()) ) {
         UnicodeString *regionName = new UnicodeString(ures_getNextUnicodeString(regionUnknown.getAlias(),NULL,&status));
-        int32_t rangeMarkerLocation = regionName->indexOf(RANGE_MARKER_STRING);
-        if ( rangeMarkerLocation > 0 ) {
-            UChar endRange = regionName->charAt(rangeMarkerLocation+1);
-            regionName->truncate(rangeMarkerLocation);
-            UChar lastChar = regionName->charAt(rangeMarkerLocation-1);
-            while ( lastChar <= endRange ) {
-                UnicodeString *newRegion = new UnicodeString(*regionName);
-                allRegions->addElement(newRegion,status);
-                lastChar++;
-                regionName->setCharAt(rangeMarkerLocation-1,lastChar);
-            }
-        } else {
-            allRegions->addElement(regionName,status);
-        }
+        allRegions->addElement(regionName,status);
     }
 
     while ( ures_hasNext(worldContainment.getAlias()) ) {
