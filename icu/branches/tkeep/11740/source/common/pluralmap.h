@@ -4,7 +4,7 @@
 * others. All Rights Reserved.
 ******************************************************************************
 *
-* File PLURALMAP.H - PluralMap class that maps plural categories to values.
+* File pluralmap.h - PluralMap class that maps plural categories to values.
 ******************************************************************************
 */
 

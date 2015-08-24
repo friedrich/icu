@@ -4,7 +4,7 @@
 *   Corporation and others.  All Rights Reserved.
 ********************************************************************************
 *
-* File DECIMFMTIMPL.H
+* File decimfmtimpl.h
 ********************************************************************************
 */
 
@@ -420,5 +420,5 @@ friend class DecimalFormat;
 
 U_NAMESPACE_END
 
-#endif // _DECIMFMT2
+#endif // DECIMFMTIMPL_H
 //eof

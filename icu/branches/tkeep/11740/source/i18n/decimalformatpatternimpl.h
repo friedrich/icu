@@ -4,7 +4,7 @@
 *   Corporation and others.  All Rights Reserved.
 ********************************************************************************
 *
-* File DECIMALFORMATPATTERNIMPL.H
+* File decimalformatpatternimpl.h
 ********************************************************************************
 */
 
