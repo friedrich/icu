@@ -766,7 +766,7 @@ public class PluralRulesTest extends TestFmwk {
             for (PluralType type : PluralType.values()) {
                 PluralRules rules = PluralRules.forLocale(locale, type);
                 for (SampleType sampleType : SampleType.values()) {
-                    if (sampleType == SampleType.DECIMAL && type == PluralType.ORDINAL) {
+                    if (type == PluralType.ORDINAL) {
                         logKnownIssue("10783", "Fix issues with isLimited vs computeLimited on ordinals");
                         continue;
                     }
