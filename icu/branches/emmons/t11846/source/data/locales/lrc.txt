@@ -36,7 +36,7 @@ lrc{
         }
         native{"arabext"}
     }
-    Version{"2.1.19.96"}
+    Version{"2.1.19.97"}
     calendar{
         default{"persian"}
         generic{
