@@ -48,36 +48,12 @@ class U_I18N_API DateFmtBestPattern : public SharedObject {
 public:
     UnicodeString fPattern;
 
-    DateFmtBestPattern(const UnicodeString pattern)
+    DateFmtBestPattern(const UnicodeString &pattern)
             : fPattern(pattern) { }
     ~DateFmtBestPattern();
 };
 
 DateFmtBestPattern::~DateFmtBestPattern() {
-}
-
-static int32_t U_CALLCONV ucharCompare(
-        const void * /*unusedContext*/,
-        const void *left,
-        const void *right) {
-    return (int32_t)(*(const UChar *) left - *(const UChar *) right);
-}
-
-static UnicodeString normalizeSkeleton(const UnicodeString &skeleton) {
-    UnicodeString result(skeleton);
-    int32_t len = result.length();
-    UChar *buffer = result.getBuffer(len);
-    UErrorCode status = U_ZERO_ERROR;
-    uprv_sortArray(
-            buffer,
-            len,
-            sizeof(UChar),
-            &ucharCompare,
-            NULL,
-            FALSE,
-            &status);
-    result.releaseBuffer(len);
-    return result;
 }
 
 template<> U_I18N_API
@@ -91,12 +67,12 @@ class U_I18N_API DateFmtBestPatternKey : public LocaleCacheKey<DateFmtBestPatter
 private:
     UnicodeString fSkeleton;
 public:
-    DateFmtBestPatternKey(const Locale &loc, const UnicodeString &skeleton) :
-            LocaleCacheKey<DateFmtBestPattern>(loc) {
-        UErrorCode status = U_ZERO_ERROR;
-        fSkeleton = normalizeSkeleton(
-            DateTimePatternGenerator::staticGetSkeleton(skeleton, status));
-    }
+    DateFmtBestPatternKey(
+        const Locale &loc,
+        const UnicodeString &skeleton,
+        UErrorCode &status)
+            : LocaleCacheKey<DateFmtBestPattern>(loc),
+              fSkeleton(DateTimePatternGenerator::staticGetSkeleton(skeleton, status)) { }
     DateFmtBestPatternKey(const DateFmtBestPatternKey &other) :
             LocaleCacheKey<DateFmtBestPattern>(other),
             fSkeleton(other.fSkeleton) { }
@@ -457,7 +433,7 @@ DateFormat::getBestPattern(
     if (U_FAILURE(status)) {
         return UnicodeString();
     }
-    DateFmtBestPatternKey key(locale, skeleton);
+    DateFmtBestPatternKey key(locale, skeleton, status);
     const DateFmtBestPattern *patternPtr = NULL;
     cache->get(key, patternPtr, status);
     if (U_FAILURE(status)) {
