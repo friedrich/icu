@@ -46,27 +46,21 @@ U_NAMESPACE_BEGIN
 
 class U_I18N_API DateFmtBestPattern : public SharedObject {
 public:
-UnicodeString fPattern;
+    UnicodeString fPattern;
 
-DateFmtBestPattern(UnicodeString pattern)
-        : fPattern(pattern) { }
-~DateFmtBestPattern();
+    DateFmtBestPattern(const UnicodeString pattern)
+            : fPattern(pattern) { }
+    ~DateFmtBestPattern();
 };
 
 DateFmtBestPattern::~DateFmtBestPattern() {
 }
 
-static int32_t ucharCompare(
+static int32_t U_CALLCONV ucharCompare(
         const void * /*unusedContext*/,
         const void *left,
         const void *right) {
-    if (*(const UChar *) left < *(const UChar *) right) {
-        return -1;
-    } else if (*(const UChar *) left > *(const UChar *) right) {
-        return 1;
-    } else {
-        return 0;
-    }
+    return (int32_t)(*(const UChar *) left - *(const UChar *) right);
 }
 
 static UnicodeString normalizeSkeleton(const UnicodeString &skeleton) {
@@ -98,8 +92,11 @@ private:
     UnicodeString fSkeleton;
 public:
     DateFmtBestPatternKey(const Locale &loc, const UnicodeString &skeleton) :
-            LocaleCacheKey<DateFmtBestPattern>(loc),
-            fSkeleton(normalizeSkeleton(skeleton)) { }
+            LocaleCacheKey<DateFmtBestPattern>(loc) {
+        UErrorCode status = U_ZERO_ERROR;
+        fSkeleton = normalizeSkeleton(
+            DateTimePatternGenerator::staticGetSkeleton(skeleton, status));
+    }
     DateFmtBestPatternKey(const DateFmtBestPatternKey &other) :
             LocaleCacheKey<DateFmtBestPattern>(other),
             fSkeleton(other.fSkeleton) { }
@@ -115,10 +112,10 @@ public:
        if (!LocaleCacheKey<DateFmtBestPattern>::operator==(other)) {
            return FALSE;
        }
-       // We know that this an other are of same class if we get this far.
-       const DateFmtBestPatternKey *realOther =
-               static_cast<const DateFmtBestPatternKey *>(&other);
-       return (realOther->fSkeleton == fSkeleton);
+       // We know that this and other are of same class if we get this far.
+       const DateFmtBestPatternKey &realOther =
+               static_cast<const DateFmtBestPatternKey &>(other);
+       return (realOther.fSkeleton == fSkeleton);
     }
     virtual CacheKeyBase *clone() const {
         return new DateFmtBestPatternKey(*this);
@@ -498,8 +495,15 @@ DateFormat::createInstanceForSkeleton(
         const UnicodeString& skeleton,
         const Locale &locale,
         UErrorCode &status) {
-    return _internalCreateInstanceForSkeleton(
-            skeleton, locale, status);
+    if (U_FAILURE(status)) {
+        return NULL;
+    }
+    LocalPointer<DateFormat> df(
+        new SimpleDateFormat(
+            getBestPattern(locale, skeleton, status),
+            locale, status),
+        status);
+    return U_SUCCESS(status) ? df.orphan() : NULL;
 }
 
 DateFormat* U_EXPORT2
@@ -508,29 +512,6 @@ DateFormat::createInstanceForSkeleton(
         UErrorCode &status) {
     return createInstanceForSkeleton(
             skeleton, Locale::getDefault(), status);
-}
-
-DateFormat* U_EXPORT2
-DateFormat::_internalCreateInstanceForSkeleton(
-        const UnicodeString& skeleton,
-        const Locale &locale,
-        UErrorCode &status) {
-    if (U_FAILURE(status)) {
-        return NULL;
-    }
-    DateFormat *fmt = new SimpleDateFormat(
-               getBestPattern(locale, skeleton, status),
-               locale,
-               status);
-   if (fmt == NULL) {
-       status = U_MEMORY_ALLOCATION_ERROR;
-       return NULL;
-   }
-   if (U_FAILURE(status)) {
-       delete fmt;
-       return NULL;
-   }
-   return fmt;
 }
 
 //----------------------------------------------------------------------

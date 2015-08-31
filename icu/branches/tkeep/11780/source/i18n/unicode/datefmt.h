@@ -573,6 +573,7 @@ public:
 
 #ifndef U_HIDE_DRAFT_API
 
+#ifndef U_HIDE_INTERNAL_API
     /**
      * Returns the best pattern given a skeleton and locale.
      * @param locale the locale
@@ -585,6 +586,7 @@ public:
             const Locale &locale,
             const UnicodeString &skeleton,
             UErrorCode &status);
+#endif
 
     /**
      * Creates a date/time formatter for the given skeleton and 
@@ -865,10 +867,6 @@ protected:
 
 
 private:
-    static DateFormat* U_EXPORT2 _internalCreateInstanceForSkeleton(
-            const UnicodeString& skeleton,
-            const Locale &locale,
-            UErrorCode &status);
 
     /**
      * Gets the date/time formatter with the given formatting styles for the

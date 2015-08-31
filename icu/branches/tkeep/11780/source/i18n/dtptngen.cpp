@@ -244,12 +244,12 @@ DateTimePatternGenerator::createInstance(UErrorCode& status) {
 
 DateTimePatternGenerator* U_EXPORT2
 DateTimePatternGenerator::createInstance(const Locale& locale, UErrorCode& status) {
-    LocalPointer<DateTimePatternGenerator> result(
-            new DateTimePatternGenerator(locale, status), status);
     if (U_FAILURE(status)) {
         return NULL;
     }
-    return result.orphan();
+    LocalPointer<DateTimePatternGenerator> result(
+            new DateTimePatternGenerator(locale, status), status);
+    return U_SUCCESS(status) ? result.orphan() : NULL;
 }
 
 DateTimePatternGenerator*  U_EXPORT2

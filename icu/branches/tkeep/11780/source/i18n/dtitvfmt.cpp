@@ -117,7 +117,7 @@ DateIntervalFormat::DateIntervalFormat()
     fDateFormat(NULL),
     fFromCalendar(NULL),
     fToCalendar(NULL),
-    fLocale(),
+    fLocale(Locale::getRoot()),
     fDatePattern(NULL),
     fTimePattern(NULL),
     fDateTimeFormat(NULL)
@@ -510,8 +510,10 @@ DateIntervalFormat::DateIntervalFormat(const Locale& locale,
         delete dtItvInfo;
         return;
     }
-    SimpleDateFormat* dtfmt = createSDFPatternInstance(
-            *skeleton, locale, status);
+    SimpleDateFormat* dtfmt =
+        static_cast<SimpleDateFormat *>(
+            DateFormat::createInstanceForSkeleton(
+                *skeleton, locale, status));
     if ( U_FAILURE(status) ) {
         delete dtItvInfo;
         delete dtfmt;
@@ -538,18 +540,6 @@ DateIntervalFormat::DateIntervalFormat(const Locale& locale,
     }
     initializePattern(status);
 }
-
-
-SimpleDateFormat* U_EXPORT2
-DateIntervalFormat::createSDFPatternInstance(const UnicodeString& skeleton,
-                                             const Locale& locale,
-                                             UErrorCode& status)
-{
-    DateFormat *df = DateFormat::createInstanceForSkeleton(
-            skeleton, locale, status);
-    return static_cast<SimpleDateFormat *>(df);
-}
-
 
 DateIntervalFormat* U_EXPORT2
 DateIntervalFormat::create(const Locale& locale,
