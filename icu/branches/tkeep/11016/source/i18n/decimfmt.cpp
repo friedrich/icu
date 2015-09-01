@@ -2739,6 +2739,22 @@ DecimalFormat::setSecondaryGroupingSize(int32_t newValue)
 }
 
 //------------------------------------------------------------------------------
+
+int32_t
+DecimalFormat::getMinimumGroupingDigits() const
+{
+    return fImpl->getMinimumGroupingDigits();
+}
+
+//------------------------------------------------------------------------------
+
+void
+DecimalFormat::setMinimumGroupingDigits(int32_t newValue)
+{
+    fImpl->setMinimumGroupingDigits(newValue);
+}
+
+//------------------------------------------------------------------------------
 // Checks if to show the decimal separator.
 
 UBool
