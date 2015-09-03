@@ -1,6 +1,6 @@
 /*
 ********************************************************************************
-*   Copyright (C) 1999-2014 International Business Machines Corporation and
+*   Copyright (C) 1999-2015 International Business Machines Corporation and
 *   others. All Rights Reserved.
 ********************************************************************************
 *   Date        Name        Description
@@ -90,6 +90,7 @@ UnicodeSetTest::runIndexedTest(int32_t index, UBool exec,
         CASE(21,TestFreezable);
         CASE(22,TestSpan);
         CASE(23,TestStringSpan);
+        CASE(24,TestUCAUnsafeBackwards);
         default: name = ""; break;
     }
 }
@@ -3811,4 +3812,28 @@ void UnicodeSetTest::TestStringSpan() {
     ) {
         errln("FAIL: UnicodeSet(%s).spanBack(while longest match) returns the wrong value", pattern);
     }
+}
+
+#if !UCONFIG_NO_COLLATION
+#include "collationroot.h"
+#include "collationtailoring.h"
+#endif
+
+void UnicodeSetTest::TestUCAUnsafeBackwards() {
+#if !UCONFIG_NO_COLLATION
+  if(!logKnownIssue("11891","UnicodeSet fails to round trip on CollationRoot...unsafeBackwards set")) {
+    UErrorCode errorCode = U_ZERO_ERROR;
+
+    // Get the unsafeBackwardsSet
+    const CollationCacheEntry *rootEntry = CollationRoot::getRootCacheEntry(errorCode);
+    if(U_FAILURE(errorCode)) {
+      errln("FAIL: %s getting root cache entry", u_errorName(errorCode));
+      return;
+    }
+    const UVersionInfo &version = rootEntry->tailoring->version;
+    const UnicodeSet *unsafeBackwardSet = rootEntry->tailoring->unsafeBackwardSet;
+
+    checkRoundTrip(*unsafeBackwardSet);
+  }
+#endif
 }
