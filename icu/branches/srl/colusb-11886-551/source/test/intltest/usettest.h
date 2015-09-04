@@ -18,6 +18,7 @@
 #include "unicode/uniset.h"
 #include "unicode/ucnv_err.h"
 #include "intltest.h"
+#include "cmemory.h"
 
 class UnicodeSetWithStrings;
 
@@ -138,6 +139,8 @@ private:
      * get the same thing back
      */
     void checkRoundTrip(const UnicodeSet& s);
+
+    void checkSerializeRoundTrip(const UnicodeSet& s, UErrorCode &ec);
     
     void copyWithIterator(UnicodeSet& t, const UnicodeSet& s, UBool withRange);
     
@@ -184,6 +187,8 @@ private:
     UConverter *openUTF8Converter();
 
     UConverter *utf8Cnv;
+
+    MaybeStackArray<uint16_t, 16> serializeBuffer;
 
 public:
     static UnicodeString escape(const UnicodeString& s);

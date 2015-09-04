@@ -1715,6 +1715,12 @@ void UnicodeSetTest::TestSurrogate() {
             errln((UnicodeString)"FAIL: " + UnicodeString(DATA[i], -1, US_INV) + ".size() == " + 
                   set.size() + ", expected 4");
         }
+
+        {
+          UErrorCode subErr = U_ZERO_ERROR;
+          checkRoundTrip(set);
+          checkSerializeRoundTrip(set, subErr);
+        }
     }
 }
 
@@ -1731,8 +1737,12 @@ void UnicodeSetTest::TestExhaustive() {
         logln((UnicodeString)"Testing " + i + ", " + x);
         _testComplement(i, x, y);
 
+        UnicodeSet &toTest = bitsToSet(i, aa);
+
         // AS LONG AS WE ARE HERE, check roundtrip
-        checkRoundTrip(bitsToSet(i, aa));
+        checkRoundTrip(toTest);
+        UErrorCode ec = U_ZERO_ERROR;
+        checkSerializeRoundTrip(toTest, ec);
 
         for (int32_t j = 0; j < limit; ++j) {
             _testAdd(i,j,  x,y,z);
@@ -1923,7 +1933,40 @@ void UnicodeSetTest::checkRoundTrip(const UnicodeSet& s) {
         checkEqual(s, t, "toPattern(true)");
     }
 }
-    
+
+void UnicodeSetTest::checkSerializeRoundTrip(const UnicodeSet& t, UErrorCode &status) {
+  if(U_FAILURE(status)) return;
+  int32_t len = t.serialize(serializeBuffer.getAlias(), serializeBuffer.getCapacity(), status);
+  if(status == U_BUFFER_OVERFLOW_ERROR) {
+    status = U_ZERO_ERROR;
+    serializeBuffer.resize(len);
+    len = t.serialize(serializeBuffer.getAlias(), serializeBuffer.getCapacity(), status);
+    // let 2nd error stand
+  }
+  if(U_FAILURE(status)) {
+    errln("checkSerializeRoundTrip: error %s serializing buffer\n", u_errorName(status));
+    return;
+  }
+
+#if 0
+  UnicodeString pat; t.toPattern(pat, FALSE);
+  infoln(pat);
+  printf(" %d: ", len);
+  for(int i=0;i<len;i++) {
+    printf( " %04X ", serializeBuffer.getAlias()[i]);
+  }
+  printf("\n");
+#endif
+  
+  UnicodeSet deserialized(serializeBuffer.getAlias(), len, UnicodeSet::kSerialized, status);
+  if(U_FAILURE(status)) {
+    errln("checkSerializeRoundTrip: error %s deserializing buffer: buf %p len %d, original %d\n", u_errorName(status), serializeBuffer.getAlias(), len, t.getRangeCount());
+    return;
+  }
+
+  checkEqual(t, deserialized, "Set was unequal when deserialized");
+}
+
 void UnicodeSetTest::copyWithIterator(UnicodeSet& t, const UnicodeSet& s, UBool withRange) {
     t.clear();
     UnicodeSetIterator it(s);
@@ -1947,6 +1990,8 @@ void UnicodeSetTest::copyWithIterator(UnicodeSet& t, const UnicodeSet& s, UBool 
 }
     
 UBool UnicodeSetTest::checkEqual(const UnicodeSet& s, const UnicodeSet& t, const char* message) {
+  assertEquals(UnicodeString("RangeCount: ","") + message, s.getRangeCount(), t.getRangeCount());
+  assertEquals(UnicodeString("size: ","") + message, s.size(), t.size());
     UnicodeString source; s.toPattern(source, TRUE);
     UnicodeString result; t.toPattern(result, TRUE);
     if (s != t) {
@@ -3821,7 +3866,6 @@ void UnicodeSetTest::TestStringSpan() {
 
 void UnicodeSetTest::TestUCAUnsafeBackwards() {
 #if !UCONFIG_NO_COLLATION
-  if(!logKnownIssue("11891","UnicodeSet fails to round trip on CollationRoot...unsafeBackwards set")) {
     UErrorCode errorCode = U_ZERO_ERROR;
 
     // Get the unsafeBackwardsSet
@@ -3830,10 +3874,13 @@ void UnicodeSetTest::TestUCAUnsafeBackwards() {
       errln("FAIL: %s getting root cache entry", u_errorName(errorCode));
       return;
     }
-    const UVersionInfo &version = rootEntry->tailoring->version;
+    //const UVersionInfo &version = rootEntry->tailoring->version;
     const UnicodeSet *unsafeBackwardSet = rootEntry->tailoring->unsafeBackwardSet;
 
-    checkRoundTrip(*unsafeBackwardSet);
-  }
+    checkSerializeRoundTrip(*unsafeBackwardSet, errorCode);
+
+    if(!logKnownIssue("11891","UnicodeSet fails to round trip on CollationRoot...unsafeBackwards set")) {
+      checkRoundTrip(*unsafeBackwardSet);
+    }
 #endif
 }
