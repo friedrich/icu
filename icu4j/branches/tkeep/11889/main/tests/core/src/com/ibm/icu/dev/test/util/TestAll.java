@@ -37,7 +37,8 @@ public class TestAll extends TestGroup {
             "LocaleBuilderTest",
             "LocaleMatcherTest",
             "LocalePriorityListTest",
-            "RegionTest"
+            "RegionTest",
+            "VisibleDigitsTest"
         },
               "Test miscellaneous public utilities");
     }
