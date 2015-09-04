@@ -11,7 +11,7 @@ package com.ibm.icu.impl;
  *
  */
 public class SignificantDigitInterval extends FreezableBase<SignificantDigitInterval> {
-    public static SignificantDigitInterval DEFAULT = new SignificantDigitInterval().freeze();
+    public static final SignificantDigitInterval DEFAULT = new SignificantDigitInterval().freeze();
     
     /**
      * No limits on significant digits.

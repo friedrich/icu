@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class FixedPrecision extends FreezableBase<FixedPrecision> {
     public static final FixedPrecision DEFAULT = new FixedPrecision().freeze();
     private static final double MAX_LONG_IN_DOUBLE = 9007199254740992.0;
-    private final int[] POWER_10 = {1, 10, 100, 1000};
+    private static final int[] POWER_10 = {1, 10, 100, 1000};
     
     public FixedPrecision() {       
     }
