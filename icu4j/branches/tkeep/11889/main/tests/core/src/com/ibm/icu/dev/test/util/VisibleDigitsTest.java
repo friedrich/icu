@@ -12,8 +12,10 @@ import java.math.RoundingMode;
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.DigitInterval;
 import com.ibm.icu.impl.FixedPrecision;
+import com.ibm.icu.impl.ScientificPrecision;
 import com.ibm.icu.impl.VisibleDigits;
 import com.ibm.icu.impl.VisibleDigits.VFixedDecimal;
+import com.ibm.icu.impl.VisibleDigitsWithExponent;
 
 /**
  * @author rocketman
@@ -316,6 +318,25 @@ public final class VisibleDigitsTest extends TestFmwk {
             }
         }
     }
+    
+    public void TestVisibleDigitsWithExponent() {
+        verifyVisibleDigitsWithExponent("3.89256E2", ScientificPrecision.DEFAULT.initVisibleDigitsWithExponent(389.256));
+        verifyVisibleDigitsWithExponent("-3.89256E2", ScientificPrecision.DEFAULT.initVisibleDigitsWithExponent(-389.256));
+        {
+            ScientificPrecision precision = new ScientificPrecision();
+            precision.setMinExponentDigits(3);
+            precision.getMutableMantissa().getMutableMin().setIntDigitCount(1);
+            precision.getMutableMantissa().getMutableMax().setIntDigitCount(3);
+            verifyVisibleDigitsWithExponent("12.34567E003", precision.initVisibleDigitsWithExponent(12345.67));
+        }
+        {
+            ScientificPrecision precision = new ScientificPrecision();
+            precision.getMutableMantissa().setRoundingIncrement(new BigDecimal("0.073"));
+            precision.getMutableMantissa().getMutableMin().setIntDigitCount(2);
+            precision.getMutableMantissa().getMutableMax().setIntDigitCount(2);
+            verifyVisibleDigitsWithExponent("10.001E2", precision.initVisibleDigitsWithExponent(999.74));
+        }
+    }
 
     private void verifyIFTVHasInt(long i, long f, long t, int v, boolean hasInt, VisibleDigits digits) {
         VFixedDecimal fd = digits.getFixedDecimal();
@@ -331,18 +352,11 @@ public final class VisibleDigitsTest extends TestFmwk {
     }
     
     private void verifyVisibleDigits(String expected, VisibleDigits digits) {
-        StringBuilder actual = new StringBuilder();
-        if (digits.isNegative()) {
-            actual.append('-');
-        }
-        DigitInterval interval = digits.getInterval();
-        for (int i = interval.getMostSignificantExclusive() - 1; i >= interval.getLeastSignificantInclusive(); --i) {
-            if (i == -1) {
-                actual.append('.');
-            }
-            actual.append((char) ('0' + digits.getDigitByExponent(i)));
-        }
-        assertEquals("", expected, actual.toString());
+        assertEquals("", expected, digits.toString());
+    }
+    
+    private void verifyVisibleDigitsWithExponent(String expected, VisibleDigitsWithExponent digits) {
+        assertEquals("", expected, digits.toString());
     }
     
 }

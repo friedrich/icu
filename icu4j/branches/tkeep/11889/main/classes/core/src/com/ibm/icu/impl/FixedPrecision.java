@@ -14,15 +14,33 @@ import java.math.BigDecimal;
  * @author rocketman
  *
  */
-public class FixedPrecision extends FreezableBase<FixedPrecision> {
+public final class FixedPrecision extends FreezableBase<FixedPrecision> {
     public static final FixedPrecision DEFAULT = new FixedPrecision().freeze();
     private static final double MAX_LONG_IN_DOUBLE = 9007199254740992.0;
     private static final int[] POWER_10 = {1, 10, 100, 1000};
     
     public FixedPrecision() {       
     }
+
+    // FreezableBase fields go here
     
     private DigitInterval fMin = DigitInterval.SINGLE_INT_DIGIT;
+    private DigitInterval fMax = DigitInterval.DEFAULT;
+    private SignificantDigitInterval fSignificant = SignificantDigitInterval.DEFAULT;
+    
+    @Override
+    protected void freezeFreezableBaseFields() {
+        fMin.freeze();
+        fMax.freeze();
+        fSignificant.freeze();
+    }
+    
+    // End FreezableBase fields.
+    
+    private BigDecimal fRoundingIncrement = null;
+    private boolean fExactOnly = false;
+    private boolean fFailIfOverMax = false;
+    private RoundingMode fRoundingMode = RoundingMode.HALF_EVEN;
     
     /**
      * The smallest format interval allowed. Default is 1 integer digit and no
@@ -43,7 +61,6 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
         fMin = interval.clone();
     }
 
-    DigitInterval fMax = DigitInterval.DEFAULT;
     
     /**
      * The largest format interval allowed. Must contain fMin.
@@ -64,7 +81,6 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
         fMax = interval.clone();
     }
     
-    SignificantDigitInterval fSignificant = SignificantDigitInterval.DEFAULT;
     
     /**
      * Min and max significant digits allowed. The default is no constraints.
@@ -84,7 +100,6 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
         fSignificant = interval.clone();
     }
 
-    BigDecimal fRoundingIncrement = null;
     
     /**
      * The rounding increment or zero if there is no rounding increment.
@@ -99,7 +114,6 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
         fRoundingIncrement = x;
     }
 
-    private boolean fExactOnly = false;
     
     /**
      * If set, causes round() to set status to U_FORMAT_INEXACT_ERROR if
@@ -114,7 +128,6 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
         fExactOnly = b;
     }
     
-    private boolean fFailIfOverMax = false;
     
     /**
      * If set, causes round() to set status to U_ILLEGAL_ARGUMENT_ERROR if
@@ -129,7 +142,6 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
         fFailIfOverMax = b;
     }
        
-    private RoundingMode fRoundingMode = RoundingMode.HALF_EVEN;
     
     
     public RoundingMode getRoundingMode() {
@@ -141,13 +153,6 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
         fRoundingMode = x;
     }
 
-    @Override
-    protected void freezeFreezableBaseFields() {
-        fMin.freeze();
-        fMax.freeze();
-        fSignificant.freeze();
-    }
-    
     /**
      * Returns TRUE if this object equals rhs.
      */
@@ -171,10 +176,9 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
      *  10^exponent, rounds and then multiplies by 10^exponent.
      * @return rounded value.
      */
-    BigDecimal roundAndTrim(BigDecimal value, int exponent, RoundingMode roundingMode) {
-        if (this.fExactOnly) {
-            roundingMode = RoundingMode.UNNECESSARY;
-        }
+    BigDecimal roundAndTrim(BigDecimal value, int exponent) {
+        RoundingMode roundingMode = fExactOnly ? RoundingMode.UNNECESSARY : fRoundingMode;
+        
         if (fRoundingIncrement != null) {
             if (exponent == 0) {
                 value = quantizeAndTrim(value, fRoundingIncrement, roundingMode);
@@ -243,7 +247,7 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
         return DigitInterval.forDigitRange(getLowerExponent(trimmedValue), getUpperExponent(trimmedValue));
     }
 
-    private static int getUpperExponent(BigDecimal value) {
+    static int getUpperExponent(BigDecimal value) {
         BigDecimal trimmedValue = value.stripTrailingZeros();
         return trimmedValue.precision() - trimmedValue.scale();
     }
@@ -286,7 +290,7 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
 
     
     public VisibleDigits initVisibleDigits(BigDecimal value) {
-        BigDecimal trimmedValue = roundAndTrim(value, 0, fRoundingMode);
+        BigDecimal trimmedValue = roundAndTrim(value, 0);
         DigitInterval interval = getInterval(trimmedValue).freeze();
         int exponent = getLowerExponent(trimmedValue);
         String unscaledStr = trimmedValue.unscaledValue().toString();
@@ -308,9 +312,8 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
         }
         return result;
     }
-
-   
-    public VisibleDigits initVisibleDigits(double value) {
+    
+    static VisibleDigits handleNonNumeric(double value) {
         if (Double.isNaN(value)) {
             return VisibleDigits.NOT_A_NUMBER;
         }
@@ -320,6 +323,15 @@ public class FixedPrecision extends FreezableBase<FixedPrecision> {
             } else {
                 return VisibleDigits.POSITIVE_INFINITY;
             }
+        }
+        return null;
+    }
+
+   
+    public VisibleDigits initVisibleDigits(double value) {
+        VisibleDigits nonNumeric = handleNonNumeric(value);
+        if (nonNumeric != null) {
+            return nonNumeric;
         }
         if (fRoundingIncrement != null) {
             return initVisibleDigits(new BigDecimal(String.valueOf(value)));

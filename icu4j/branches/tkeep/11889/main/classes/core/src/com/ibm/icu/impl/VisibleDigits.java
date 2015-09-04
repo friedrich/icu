@@ -88,6 +88,20 @@ public final class VisibleDigits {
         return fInterval;
     }
     
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        if (isNegative()) {
+            result.append('-');
+        }
+        for (int i = fInterval.getMostSignificantExclusive() - 1; i >= fInterval.getLeastSignificantInclusive(); --i) {
+            if (i == -1) {
+                result.append('.');
+            }
+            result.append((char) ('0' + getDigitByExponent(i)));
+        }
+        return result.toString();
+    }
+    
     private static boolean isOverMaxDigits(int exponent, byte[] digits, DigitInterval interval) {
         return (exponent + digits.length > interval.getIntDigitCount());
     }
