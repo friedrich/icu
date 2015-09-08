@@ -12,8 +12,6 @@
 package com.ibm.icu.impl;
 
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.ibm.icu.util.Freezable;
 import com.ibm.icu.util.ICUCloneNotSupportedException;
 
@@ -227,7 +225,7 @@ public abstract class FreezableBase<T extends FreezableBase<T>> implements Freez
      * Returns whether or not this object is frozen according to the contract of Freezable.
      */
     public final boolean isFrozen() {
-        return bFrozen.get();
+        return bFrozen;
     }
     
     /**
@@ -235,16 +233,16 @@ public abstract class FreezableBase<T extends FreezableBase<T>> implements Freez
      */
     @SuppressWarnings("unchecked")
     public T cloneAsThawed() {
-        T c;
+        FreezableBase<T> c;
         try {
-            c = (T)super.clone();
+            c = (FreezableBase<T>)super.clone();
         } catch (CloneNotSupportedException e) {
             // Should never happen.
             throw new ICUCloneNotSupportedException(e);
         }
-        c.bFrozen = new AtomicBoolean(false);
+        c.bFrozen = false;
         c.freezeFreezableBaseFields();
-        return c;   
+        return (T) c;   
     }
     
     /**
@@ -252,7 +250,8 @@ public abstract class FreezableBase<T extends FreezableBase<T>> implements Freez
      */
     @SuppressWarnings("unchecked")
     public final T freeze() { 
-        if (bFrozen.compareAndSet(false, true)) {
+        if (!bFrozen) {
+            bFrozen = true;
             freezeFreezableBaseFields();
         }
         return (T) this;
@@ -299,6 +298,6 @@ public abstract class FreezableBase<T extends FreezableBase<T>> implements Freez
         return fieldToBeMutated.cloneAsThawed();
     }
 
-    private AtomicBoolean bFrozen = new AtomicBoolean(false);
+    private volatile boolean bFrozen = false;
 }
 
