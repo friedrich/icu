@@ -7,7 +7,7 @@
 package com.ibm.icu.impl;
 
 /**
- * @author rocketman
+ * Immutable class representing the visible digits of a mantissa and optionally the visible digits of an exponent.
  *
  */
 public final class VisibleDigitsWithExponent {
@@ -24,7 +24,9 @@ public final class VisibleDigitsWithExponent {
             new VisibleDigitsWithExponent(VisibleDigits.POSITIVE_INFINITY);
     
     
-    
+    /**
+     * Converts a VisibleDigits to a VisibleDigitsWithExponent that has no exponent.
+     */
     public static VisibleDigitsWithExponent valueOf(VisibleDigits digits) {
         if (digits == VisibleDigits.NOT_A_NUMBER) {
             return VisibleDigitsWithExponent.NOT_A_NUMBER;
@@ -47,8 +49,15 @@ public final class VisibleDigitsWithExponent {
         fExponent = exponent;
     }
     
+    /**
+     * Returns the mantissa of this object.
+     */
     public VisibleDigits getMantissa() { return fMantissa; }
     
+    /**
+     * Returns the optional exponent of this object. Returns null if this object represents only a fixed
+     * point number.
+     */
     public VisibleDigits getExponent() { return fExponent; }
     
     public String toString() {

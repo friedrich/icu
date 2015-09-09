@@ -7,10 +7,10 @@
 package com.ibm.icu.impl;
 
 /**
- * @author rocketman
+ * JAVA equivalent to the C++ SignificantDigitInterval class
  *
  */
-public class SignificantDigitInterval extends FreezableBase<SignificantDigitInterval> {
+public final class SignificantDigitInterval extends FreezableBase<SignificantDigitInterval> {
     public static final SignificantDigitInterval DEFAULT = new SignificantDigitInterval().freeze();
     
     /**
@@ -30,7 +30,7 @@ public class SignificantDigitInterval extends FreezableBase<SignificantDigitInte
     }
 
     /**
-     * Returns TRUE if this object is equal to rhs.
+     * Returns true if this object is equal to other.
      */
     boolean equals(SignificantDigitInterval other) {
         SignificantDigitInterval rhs = (SignificantDigitInterval) other;

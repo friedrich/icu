@@ -11,7 +11,7 @@ import java.math.RoundingMode;
 import java.math.BigDecimal;
 
 /**
- * @author rocketman
+ * JAVA equivalent of the C++ FixedPrecision class
  *
  */
 public final class FixedPrecision extends FreezableBase<FixedPrecision> {
@@ -154,8 +154,9 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
     }
 
     /**
-     * Returns TRUE if this object equals rhs.
+     * Returns true if this object equals other.
      */
+    @Override
     public boolean equals(Object other) {
         FixedPrecision rhs = (FixedPrecision) other;
         return (fMin.equals(rhs.fMin) &&
@@ -165,6 +166,17 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
                 fExactOnly == rhs.fExactOnly &&
                 fFailIfOverMax == rhs.fFailIfOverMax &&
                 fRoundingMode == rhs.fRoundingMode);
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = fMin.hashCode();
+        result = 37 * result + fMax.hashCode();
+        result = 37 * result + fSignificant.hashCode();
+        result = 37 * result + (fRoundingIncrement == null ? 0 : fRoundingIncrement.hashCode());
+        result = 37 * result + fRoundingMode.hashCode();
+        result = 37 * result + (fExactOnly ? 1 : 0) + (fFailIfOverMax ? 2 : 0);
+        return result;
     }
 
 
@@ -288,7 +300,9 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
     }
 
 
-    
+    /**
+     * Creates a VisibleDigits for the given value
+     */
     public VisibleDigits initVisibleDigits(BigDecimal value) {
         BigDecimal trimmedValue = roundAndTrim(value, 0);
         DigitInterval interval = getInterval(trimmedValue).freeze();
@@ -327,7 +341,9 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
         return null;
     }
 
-   
+    /**
+     * Creates a VisibleDigits for the given value
+     */   
     public VisibleDigits initVisibleDigits(double value) {
         VisibleDigits nonNumeric = handleNonNumeric(value);
         if (nonNumeric != null) {
@@ -360,6 +376,9 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
         return initVisibleDigits(new BigDecimal(String.valueOf(value)));
     }
 
+    /**
+     * Creates a VisibleDigits for the given value
+     */
     public VisibleDigits initVisibleDigits(long value) {
         if (fRoundingIncrement != null) {
             return initVisibleDigits(new BigDecimal(value));

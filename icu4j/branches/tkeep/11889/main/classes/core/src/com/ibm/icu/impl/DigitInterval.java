@@ -7,18 +7,24 @@
 package com.ibm.icu.impl;
 
 /**
- * @author rocketman
- *
+ * JAVA equivalent of C++ DigitInterval.
  */
-public class DigitInterval extends FreezableBase<DigitInterval> {
+public final class DigitInterval extends FreezableBase<DigitInterval> {
+    /**
+     * Spans all the digits
+     */
     public static final DigitInterval DEFAULT = new DigitInterval().freeze();
+    
+    /**
+     * Spans only the ones place.
+     */
     public static final DigitInterval SINGLE_INT_DIGIT = new DigitInterval(1, 0).freeze();
     
     /**
-     * Returns a new unfrozen digit interval for the given digit range.
-     * @param lowerInclusive
-     * @param upperExclusive
-     * @return
+     * Returns a new unfrozen digit interval that contains the given digit range
+     * @param lowerInclusive least significant digit inclusive e.g -3 is thousanths place
+     * @param upperExclusive most significant digit exclusive e.g 4 is ten thousands place.
+     * @return the unfrozen digit interval.
      */
     public static DigitInterval forDigitRange(int lowerInclusive, int upperExclusive) {
         DigitInterval result = new DigitInterval();
@@ -49,7 +55,7 @@ public class DigitInterval extends FreezableBase<DigitInterval> {
     }
     
     /**
-     * Returns true if this object is the same as rhs.
+     * Returns true if this object is equal to other.
      */
     public boolean equals(DigitInterval other) {
         DigitInterval rhs = (DigitInterval) other;

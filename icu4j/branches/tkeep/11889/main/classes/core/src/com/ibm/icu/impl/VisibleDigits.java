@@ -7,16 +7,27 @@
 package com.ibm.icu.impl;
 
 /**
- * @author rocketman
- *
+ * Immutable class representing the visible digits of a fixed point value.
  */
 public final class VisibleDigits {
     static final int NEGATIVE = 1;
     static final int INFINITE = 2;
     static final int NAN = 4;
-    public static final byte[] NO_DIGITS = new byte[0];
+    static final byte[] NO_DIGITS = new byte[0];
+    
+    /**
+     * Equivalent to not a number. Has no digits
+     */
     public static final VisibleDigits NOT_A_NUMBER = createSpecial(NAN);
+    
+    /**
+     * Equivalent to negative infinity. Has no digits
+     */
     public static final VisibleDigits NEGATIVE_INFINITY = createSpecial(NEGATIVE | INFINITE);
+    
+    /**
+     * Equivalent to positive infinity. Has no digits
+     */
     public static final VisibleDigits POSITIVE_INFINITY = createSpecial(INFINITE);
     
     
@@ -31,11 +42,12 @@ public final class VisibleDigits {
     static VisibleDigits create(
             byte[] frozenDigits,
             int exponent,
-            DigitInterval frozenInterval,
+            DigitInterval interval,
             int flags,
             long absIntValue,
             double absDoubleValue,
             boolean absValueSet) {
+        DigitInterval frozenInterval = interval.clone().freeze();
         return new VisibleDigits(
                 frozenDigits,
                 exponent,
@@ -61,22 +73,40 @@ public final class VisibleDigits {
         fAbsValuesSet = absValuesSet;
     }
 
+    /**
+     * Returns true if this instance is negative.
+     */
     public boolean isNegative() {
         return (fFlags & NEGATIVE) != 0;
     }
     
+    /**
+     * Returns true if this instance is not a number.
+     */
     public boolean isNaN() {
         return (fFlags & NAN) != 0;
     }
     
+    /**
+     * Returns true if this instance is infinite.
+     */
     public boolean isInfinite() {
         return (fFlags & INFINITE) != 0;
     }
     
+    /**
+     * Returns true if this instance is non numeric.
+     */
     public boolean isNaNOrInfinity() {
         return (fFlags & (NAN | INFINITE)) != 0;
     }
     
+    /**
+     * Returns the digit 0-9 at the given position. Position 0 is the ones place; 1 is the tens place;
+     * 2 is the hundreds place; -2 is the hundreths place etc. If there is no digit at the given position,
+     * returns 0. Callers should call getInterval() to get the range of available digits first.
+     * This method always returns 0 for non numeric instances.
+     */
     public int getDigitByExponent(int digitPos) {
         if (digitPos < fExponent || digitPos >= fExponent + fDigits.length) {
             return 0;
@@ -84,6 +114,10 @@ public final class VisibleDigits {
         return fDigits[digitPos - fExponent] & 0xFF;    
     }
     
+    /**
+     * Returns the range of digits. For non numeric values such as infinity or Nan, returns
+     * <code>DigitInterval.SINGLE_INT_DIGIT</code>.
+     */
     public DigitInterval getInterval() {
         return fInterval;
     }
@@ -140,6 +174,9 @@ public final class VisibleDigits {
         return builder.toString();
     }
     
+    /**
+     * Data class to break dependency with FixedDecimal. 
+     */
     public static final class VFixedDecimal {
         
         public final double source;
@@ -224,8 +261,13 @@ public final class VisibleDigits {
         return new VFixedDecimal(source, intValue, f, t, v, hasIntValue);
     }
 
-    
+    /**
+     * Returns a VisibleDigits like this one, only negative. Equivalent to -Math.abs(x)
+     */
     public VisibleDigits withNegative() {
+        if (isNegative()) {
+            return this;
+        }
         return new VisibleDigits(
                 fDigits,
                 fExponent,
