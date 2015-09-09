@@ -1647,6 +1647,8 @@ public:
      */
     virtual void setSecondaryGroupingSize(int32_t newValue);
 
+#ifndef U_HIDE_INTERNAL_API
+
     /**
      * Returns minimum grouping digits. Caller can suppress groupings below
      * a certain value by setting this attribute. This formatter will suppress
@@ -1656,24 +1658,28 @@ public:
      * For example if this value is 2, and grouping size is 3, then
      * 9999 -> "9999" and 10000 -> "10,000"
      * 
-     * The default for this attribute is 0 which means this feature is
-     * disabled.
+     * Currently, the default for this attribute is 0 which currently means
+     * this feature is disabled. Currently, setting to 1 has the same effect
+     * as setting to 0. However, the meanings of 0 and 1 may change in
+     * future releases. In particular, 0 will likely mean use the CLDR data.
      *
      * @see setMinimumGroupingDigits
      * @see getGroupingSize
-     * @draft ICU 56
+     * @internal technology preview
      */
     int32_t getMinimumGroupingDigits() const;
 
     /**
-     * Set the minimum grouping digits. Setting to a value less than 1
-     * turns off minimum grouping digits.
+     * Set the minimum grouping digits. Setting to a value less than or
+     * equal to 1 turns off minimum grouping digits for now.
      *
      * @param newValue the new value of minimum grouping digits.
      * @see getMinimumGroupingDigits
-     * @draft ICU 56
+     * @internal technology preview
      */
     virtual void setMinimumGroupingDigits(int32_t newValue);
+
+#endif
 
     /**
      * Allows you to get the behavior of the decimal separator with integers.
