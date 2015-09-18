@@ -34,7 +34,7 @@ class CStr {
 
 CStr::CStr(const UnicodeString &in) {
     UErrorCode status = U_ZERO_ERROR;
-    int32_t length = in.extract(0, in.length(), NULL, (uint32_t)0) + 1;
+    int32_t length = in.extract(0, in.length(), NULL, (uint32_t)0);
     int32_t resultCapacity = 0;
     char *buf = s.getAppendBuffer(length, length, resultCapacity, status);
     if (U_SUCCESS(status)) {
@@ -635,6 +635,7 @@ RBBIMonkeyImpl::RBBIMonkeyImpl(UErrorCode &status) : fDumpExpansions(FALSE), fTh
     (void)status;    // suppress unused parameter compiler warning.
 }
 
+
 // RBBIMonkeyImpl setup       does all of the setup for a single rule set - compiling the
 //                            reference rules and creating the icu breakiterator to test,
 //                            with its type and locale coming from the reference rules.
@@ -678,6 +679,7 @@ void RBBIMonkeyImpl::startTest() {
 void RBBIMonkeyImpl::join() {
     fThread.join();
 }
+
 
 #define MONKEY_ERROR(msg, index) { \
     IntlTest::gTest->errln("%s:%d %s at index %d. Parameters to reproduce: @rules=%s,seed=%u,loop=1,verbose ", \
@@ -898,14 +900,15 @@ void RBBIMonkeyTest::testMonkey() {
     UErrorCode status = U_ZERO_ERROR;
 
     const char *tests[] = {"grapheme.txt", "word.txt", "line.txt", "sentence.txt", "line_normal.txt",
-                           "line_normal_cj.txt", "line_loose.txt", "line_loose_cj.txt", NULL };
+                           "line_normal_cj.txt", "line_loose.txt", "line_loose_cj.txt", "word_POSIX.txt",
+                           NULL };
     CharString testNameFromParams;
     if (getStringParam("rules", params, testNameFromParams, status)) {
         tests[0] = testNameFromParams.data();
         tests[1] = NULL;
     }
 
-    int64_t loopCount = 100;
+    int64_t loopCount = quick? 100 : 5000;
     getIntParam("loop", params, loopCount, status);
 
     UBool dumpExpansions = FALSE;
@@ -931,8 +934,9 @@ void RBBIMonkeyTest::testMonkey() {
         return;
     }
 
-    // Multi-threaded test. Each set of break rules to be tested is run in a separate thread.
-    //                      Each gets a separate RBBIMonkeyImpl object.
+    // Monkey testing is multi-threaded.
+    // Each set of break rules to be tested is run in a separate thread.
+    // Each thread/set of rules gets a separate RBBIMonkeyImpl object.
     int32_t i;
     for (i=0; tests[i] != NULL; ++i) {
         logln("beginning testing of %s", tests[i]);

@@ -1,12 +1,12 @@
 #
-# Copyright (C) 2002-2014, International Business Machines Corporation 
+# Copyright (C) 2002-2015, International Business Machines Corporation 
 # and others. All Rights Reserved.
 #
 # file:  word_POSIX.txt
 #
 # ICU Word Break Rules, POSIX locale.
 #      See Unicode Standard Annex #29.
-#      These rules are based on UAX #29 Revision 22 for Unicode Version 6.3
+#      These rules are based on UAX #29 Revision 27 for Unicode Version 8.0
 #
 # Note:  Updates to word.txt will usually need to be merged into
 #        word_POSIX.txt also.
@@ -67,8 +67,6 @@ $ALetterPlus  = [$ALetter-$dictionaryCJK [$ComplexContext-$Extend-$Control]];
 #
 # TODO: check if handling of katakana in dictionary makes rules incorrect/void
 $KatakanaEx           = $Katakana           ($Extend |  $Format)*;
-$Hebrew_LetterEx      = $Hebrew_Letter      ($Extend |  $Format)*;
-$ALetterEx            = $ALetterPlus        ($Extend |  $Format)*;
 $Single_QuoteEx       = $Single_Quote       ($Extend |  $Format)*;
 $Double_QuoteEx       = $Double_Quote       ($Extend |  $Format)*;
 $MidNumLetEx          = $MidNumLet          ($Extend |  $Format)*;
@@ -99,9 +97,9 @@ $CR $LF;
 [^$CR $LF $Newline]? ($Extend |  $Format)+;
 
 $NumericEx {100};
-$ALetterEx {200};
+$ALetterPlus ($Extend | $Format)* {200};
 $HangulSyllable {200};
-$Hebrew_LetterEx{200};
+$Hebrew_Letter ($Extend | $Format)* {200};
 $KatakanaEx {400};       # note:  these status values override those from rule 5
 $HiraganaEx {400};       #        by virtue of being numerically larger.
 $IdeographicEx {400};    #
@@ -110,16 +108,16 @@ $IdeographicEx {400};    #
 # rule 5
 #    Do not break between most letters.
 #
-($ALetterEx | $Hebrew_LetterEx)  ($ALetterEx | $Hebrew_LetterEx) {200};
+($ALetterPlus | $Hebrew_Letter) ($Extend | $Format)* ($ALetterPlus | $Hebrew_Letter);
 
 # rule 6 and 7
-($ALetterEx | $Hebrew_LetterEx) ($MidLetterEx | $MidNumLetEx | $Single_QuoteEx) ($ALetterEx | $Hebrew_LetterEx) {200};
+($ALetterPlus | $Hebrew_Letter) ($Extend | $Format)* ($MidLetterEx | $MidNumLetEx | $Single_QuoteEx) ($ALetterPlus | $Hebrew_Letter);
 
 # rule 7a
-$Hebrew_LetterEx $Single_QuoteEx {200};
+$Hebrew_Letter ($Extend | $Format)* $Single_QuoteEx {200};
 
 # rule 7b and 7c
-$Hebrew_LetterEx $Double_QuoteEx $Hebrew_LetterEx {200};
+$Hebrew_Letter ($Extend | $Format)* $Double_QuoteEx $Hebrew_Letter {200};
 
 # rule 8
 
@@ -127,11 +125,11 @@ $NumericEx $NumericEx {100};
 
 # rule 9
 
-($ALetterEx | $Hebrew_LetterEx) $NumericEx {200};
+($ALetterPlus | $Hebrew_Letter) ($Extend | $Format)* $NumericEx{200};
 
 # rule 10
 
-$NumericEx ($ALetterEx | $Hebrew_LetterEx) {200};
+$NumericEx ($ALetterPlus | $Hebrew_Letter) {200};
 
 # rule 11 and 12 
 
@@ -145,13 +143,13 @@ $KatakanaEx  $KatakanaEx {400};
 
 # rule 13a/b
 
-$ALetterEx       $ExtendNumLetEx {200};    #  (13a)
-$Hebrew_LetterEx $ExtendNumLetEx {200};    #  (13a)
+$ALetterPlus   ($Extend | $Format)*   $ExtendNumLetEx {200};    #  (13a)
+$Hebrew_Letter ($Extend | $Format)*   $ExtendNumLetEx {200};    #  (13a)
 $NumericEx       $ExtendNumLetEx {100};    #  (13a)
 $KatakanaEx      $ExtendNumLetEx {400};    #  (13a)
 $ExtendNumLetEx  $ExtendNumLetEx {200};    #  (13a)
 
-$ExtendNumLetEx  $ALetterEx      {200};    #  (13b)
+$ExtendNumLetEx  $ALetterPlus    {200};    #  (13b)
 $ExtendNumLetEx  $Hebrew_Letter  {200};    #  (13b)
 $ExtendNumLetEx  $NumericEx      {100};    #  (13b)
 $ExtendNumLetEx  $KatakanaEx     {400};    #  (13b)
@@ -263,13 +261,13 @@ $dictionary $dictionary;
 ($Extend | $Format)+ .?;
 
 # rule 6
-($MidLetterEx | $MidNumLetEx | $Single_QuoteEx) ($ALetterEx | $Hebrew_LetterEx);
+($MidLetterEx | $MidNumLetEx | $Single_QuoteEx) ($ALetterPlus | $Hebrew_Letter);
 
 # rule 7b
-$Double_QuoteEx $Hebrew_LetterEx;
+$Double_QuoteEx $Hebrew_Letter;
 
 # rule 11
-($MidNumEx | $MidNumLetEx | $Single_QuoteEx) $NumericEx;
+($MidNumEx | $MidNumLetEx | $Single_QuoteEx) $Numeric;
 
 # For dictionary-based break
 $dictionary $dictionary;
