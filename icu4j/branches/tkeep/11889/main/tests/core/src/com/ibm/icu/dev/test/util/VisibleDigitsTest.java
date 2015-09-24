@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.impl.DigitInterval;
 import com.ibm.icu.impl.FixedPrecision;
 import com.ibm.icu.impl.ScientificPrecision;
 import com.ibm.icu.impl.VisibleDigits;
