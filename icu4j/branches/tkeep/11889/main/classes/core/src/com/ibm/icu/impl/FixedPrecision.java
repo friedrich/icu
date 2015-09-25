@@ -303,7 +303,7 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
     /**
      * Creates a VisibleDigits for the given value
      */
-    public VisibleDigits initVisibleDigits(BigDecimal value) {
+    public VisibleDigits toVisibleDigits(BigDecimal value) {
         BigDecimal trimmedValue = roundAndTrim(value, 0);
         DigitInterval interval = getInterval(trimmedValue).freeze();
         int exponent = getLowerExponent(trimmedValue);
@@ -344,13 +344,13 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
     /**
      * Creates a VisibleDigits for the given value
      */   
-    public VisibleDigits initVisibleDigits(double value) {
+    public VisibleDigits toVisibleDigits(double value) {
         VisibleDigits nonNumeric = handleNonNumeric(value);
         if (nonNumeric != null) {
             return nonNumeric;
         }
         if (fRoundingIncrement != null) {
-            return initVisibleDigits(new BigDecimal(String.valueOf(value)));
+            return toVisibleDigits(new BigDecimal(String.valueOf(value)));
         }
         int n = -1;
         double scaled = value;
@@ -365,7 +365,7 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
             }
         }
         if (n >= 0) {
-            VisibleDigits result = initVisibleDigits((long) scaled, -n, value);
+            VisibleDigits result = toVisibleDigits((long) scaled, -n, value);
             if (result != null) {
                 if (scaled == 0.0 && Double.doubleToLongBits(scaled) < 0) {
                     result = result.withNegative();
@@ -373,24 +373,24 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
                 return result;
             }
         }
-        return initVisibleDigits(new BigDecimal(String.valueOf(value)));
+        return toVisibleDigits(new BigDecimal(String.valueOf(value)));
     }
 
     /**
      * Creates a VisibleDigits for the given value
      */
-    public VisibleDigits initVisibleDigits(long value) {
+    public VisibleDigits toVisibleDigits(long value) {
         if (fRoundingIncrement != null) {
-            return initVisibleDigits(new BigDecimal(value));
+            return toVisibleDigits(new BigDecimal(value));
         }
-        VisibleDigits result = initVisibleDigits(value, 0, value);
+        VisibleDigits result = toVisibleDigits(value, 0, value);
         if (result != null) {
             return result;
         }
-        return initVisibleDigits(new BigDecimal(value));
+        return toVisibleDigits(new BigDecimal(value));
     }
 
-    private VisibleDigits initVisibleDigits(long mantissa, int exponent, double value) {
+    private VisibleDigits toVisibleDigits(long mantissa, int exponent, double value) {
         // Precompute fAbsIntValue if it is small enough, but we don't know yet
         // if it will be valid.
         boolean absIntValueComputed = false;

@@ -34,7 +34,6 @@ public final class ScientificPrecision extends FreezableBase<ScientificPrecision
     
     /**
      * Return the FixedPrecision that controls the formatting of mantissas.
-     * @return
      */
     public FixedPrecision getMantissa() {
         return fMantissa;
@@ -79,7 +78,7 @@ public final class ScientificPrecision extends FreezableBase<ScientificPrecision
     /**
      * Create a VisibleDigitsWithExponent from given value.
      */
-    public VisibleDigitsWithExponent initVisibleDigitsWithExponent(BigDecimal value) {
+    public VisibleDigitsWithExponent toVisibleDigitsWithExponent(BigDecimal value) {
         BigDecimal trimmedValue = value.stripTrailingZeros();
         int exponent = getScientificExponent(trimmedValue);
         BigDecimal trimmedRounded = fMantissa.roundAndTrim(trimmedValue,  exponent);
@@ -87,27 +86,27 @@ public final class ScientificPrecision extends FreezableBase<ScientificPrecision
         // Have to recompute exponent in case rounding moved us into a different order of magnitude.
         exponent = getScientificExponent(trimmedRounded);
         
-        VisibleDigits mantissaDigits = fMantissa.initVisibleDigits(trimmedRounded.scaleByPowerOfTen(-exponent));
-        VisibleDigits exponentDigits = fExponent.initVisibleDigits(exponent);
+        VisibleDigits mantissaDigits = fMantissa.toVisibleDigits(trimmedRounded.scaleByPowerOfTen(-exponent));
+        VisibleDigits exponentDigits = fExponent.toVisibleDigits(exponent);
         return new VisibleDigitsWithExponent(mantissaDigits, exponentDigits);      
     }
 
     /**
      * Create a VisibleDigitsWithExponent from given value.
      */
-    public VisibleDigitsWithExponent initVisibleDigitsWithExponent(double value) {
+    public VisibleDigitsWithExponent toVisibleDigitsWithExponent(double value) {
         VisibleDigits nonNumeric = FixedPrecision.handleNonNumeric(value);
         if (nonNumeric != null) {
             return VisibleDigitsWithExponent.valueOf(nonNumeric);
         }
-        return initVisibleDigitsWithExponent(new BigDecimal(String.valueOf(value)));
+        return toVisibleDigitsWithExponent(new BigDecimal(String.valueOf(value)));
     }
     
     /**
      * Create a VisibleDigitsWithExponent from given value.
      */
-    public VisibleDigitsWithExponent initVisibleDigitsWithExponent(long value) {
-        return initVisibleDigitsWithExponent(new BigDecimal(value));
+    public VisibleDigitsWithExponent toVisibleDigitsWithExponent(long value) {
+        return toVisibleDigitsWithExponent(new BigDecimal(value));
     }
     
     private int getScientificExponent(BigDecimal trimmedValue) {

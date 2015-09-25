@@ -48,14 +48,14 @@ public final class VisibleDigitsTest extends TestFmwk {
             // Last 18 digits for int values.
             verifyIFTVHasInt(
                     223372036854775807L, 0L, 0L, 0, true, 
-                    precision.initVisibleDigits(Long.MAX_VALUE));
+                    precision.toVisibleDigits(Long.MAX_VALUE));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableMax().setIntDigitCount(5);
 
             // Last 5 digits for int values.
-            digits = precision.initVisibleDigits(Long.MAX_VALUE);
+            digits = precision.toVisibleDigits(Long.MAX_VALUE);
             verifyIFTVHasInt(75807L, 0L, 0L, 0, true, digits);
             verifySource(75807.0, digits);
         }
@@ -65,39 +65,39 @@ public final class VisibleDigitsTest extends TestFmwk {
             // Last 18 digits for int values.
             verifyIFTVHasInt(
                     223372036854775808L, 0L, 0L, 0, true,
-                    precision.initVisibleDigits(Long.MIN_VALUE));
+                    precision.toVisibleDigits(Long.MIN_VALUE));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableMax().setIntDigitCount(5);
 
             // Last 5 digits for int values.
-            digits = precision.initVisibleDigits(Long.MIN_VALUE);
+            digits = precision.toVisibleDigits(Long.MIN_VALUE);
             verifyIFTVHasInt(75808L, 0L, 0L, 0, true, digits);
             verifySource(75808.0, digits);
         } 
     }
     
-    public void TestIntInitVisibleDigits() {
-        verifyVisibleDigits("13", FixedPrecision.DEFAULT.initVisibleDigits(13L));
-        verifyVisibleDigits("-17", FixedPrecision.DEFAULT.initVisibleDigits(-17L));
-        verifyVisibleDigits("-9223372036854775808", FixedPrecision.DEFAULT.initVisibleDigits(Long.MIN_VALUE));
-        verifyVisibleDigits("9223372036854775807", FixedPrecision.DEFAULT.initVisibleDigits(Long.MAX_VALUE));
-        verifyVisibleDigits("-31536000", FixedPrecision.DEFAULT.initVisibleDigits(-31536000L));
-        verifyVisibleDigits("0", FixedPrecision.DEFAULT.initVisibleDigits(0L));
+    public void TestIntToVisibleDigits() {
+        verifyVisibleDigits("13", FixedPrecision.DEFAULT.toVisibleDigits(13L));
+        verifyVisibleDigits("-17", FixedPrecision.DEFAULT.toVisibleDigits(-17L));
+        verifyVisibleDigits("-9223372036854775808", FixedPrecision.DEFAULT.toVisibleDigits(Long.MIN_VALUE));
+        verifyVisibleDigits("9223372036854775807", FixedPrecision.DEFAULT.toVisibleDigits(Long.MAX_VALUE));
+        verifyVisibleDigits("-31536000", FixedPrecision.DEFAULT.toVisibleDigits(-31536000L));
+        verifyVisibleDigits("0", FixedPrecision.DEFAULT.toVisibleDigits(0L));
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableMin().setIntDigitCount(4);
             precision.getMutableMin().setFracDigitCount(2);
-            verifyVisibleDigits("0000.00", precision.initVisibleDigits(0L));
-            verifyVisibleDigits("0057.00", precision.initVisibleDigits(57L));
-            verifyVisibleDigits("-0057.00", precision.initVisibleDigits(-57L));
+            verifyVisibleDigits("0000.00", precision.toVisibleDigits(0L));
+            verifyVisibleDigits("0057.00", precision.toVisibleDigits(57L));
+            verifyVisibleDigits("-0057.00", precision.toVisibleDigits(-57L));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableMax().setIntDigitCount(2);
             precision.getMutableMin().setFracDigitCount(1);
-            verifyVisibleDigits("35.0", precision.initVisibleDigits(235L));
+            verifyVisibleDigits("35.0", precision.toVisibleDigits(235L));
         }
         {
             FixedPrecision precision = new FixedPrecision();
@@ -105,7 +105,7 @@ public final class VisibleDigitsTest extends TestFmwk {
             precision.getMutableMin().setFracDigitCount(1);
             precision.setFailIfOverMax(true);
             try {
-                precision.initVisibleDigits(239L);
+                precision.toVisibleDigits(239L);
                 fail("expected IllegalArgumentException");
             } catch (IllegalArgumentException expected) {
             }
@@ -113,24 +113,24 @@ public final class VisibleDigitsTest extends TestFmwk {
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMin(5);
-            verifyVisibleDigits("153.00", precision.initVisibleDigits(153L));
+            verifyVisibleDigits("153.00", precision.toVisibleDigits(153L));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(3);
-            verifyVisibleDigits("153", precision.initVisibleDigits(153L));
+            verifyVisibleDigits("153", precision.toVisibleDigits(153L));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(4);
-            verifyVisibleDigits("153", precision.initVisibleDigits(153L));
+            verifyVisibleDigits("153", precision.toVisibleDigits(153L));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(2);
             precision.setExactOnly(true);
             try {
-                precision.initVisibleDigits(154L);
+                precision.toVisibleDigits(154L);
                 fail("expected ArithmeticException");
             } catch (ArithmeticException expected) {
             }
@@ -138,53 +138,53 @@ public final class VisibleDigitsTest extends TestFmwk {
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(2);
-            verifyVisibleDigits("150", precision.initVisibleDigits(153L));      
+            verifyVisibleDigits("150", precision.toVisibleDigits(153L));      
         }       
     }
     
-    public void TestIntInitVisibleDigitsToBigDecimal() {
+    public void TestIntToVisibleDigitsToBigDecimal() {
         {
             FixedPrecision precision = new FixedPrecision();
             precision.setRoundingIncrement(new BigDecimal("7.3"));
-            verifyVisibleDigits("-29.2", precision.initVisibleDigits(-30L));
+            verifyVisibleDigits("-29.2", precision.toVisibleDigits(-30L));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.setRoundingIncrement(new BigDecimal("7.3"));
             precision.setRoundingMode(RoundingMode.FLOOR);
-            verifyVisibleDigits("-36.5", precision.initVisibleDigits(-30L));
+            verifyVisibleDigits("-36.5", precision.toVisibleDigits(-30L));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(3);
             precision.setRoundingMode(RoundingMode.CEILING);
-            verifyVisibleDigits("1390", precision.initVisibleDigits(1381L));
+            verifyVisibleDigits("1390", precision.toVisibleDigits(1381L));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(3);
             precision.setRoundingMode(RoundingMode.FLOOR);
-            verifyVisibleDigits("1380", precision.initVisibleDigits(1381L));
+            verifyVisibleDigits("1380", precision.toVisibleDigits(1381L));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(1);
             precision.setRoundingMode(RoundingMode.FLOOR);
-            verifyVisibleDigits("-2000", precision.initVisibleDigits(-1381L));
+            verifyVisibleDigits("-2000", precision.toVisibleDigits(-1381L));
         }
     }
     
-    public void TeestDoubleInitVisibleDigits() {
-        verifyVisibleDigits("2.05", FixedPrecision.DEFAULT.initVisibleDigits(2.05));
-        verifyVisibleDigits("3547", FixedPrecision.DEFAULT.initVisibleDigits(3547.0));
-        verifyVisibleDigits("-2.05", FixedPrecision.DEFAULT.initVisibleDigits(-2.05));
+    public void TeestDoubleToVisibleDigits() {
+        verifyVisibleDigits("2.05", FixedPrecision.DEFAULT.toVisibleDigits(2.05));
+        verifyVisibleDigits("3547", FixedPrecision.DEFAULT.toVisibleDigits(3547.0));
+        verifyVisibleDigits("-2.05", FixedPrecision.DEFAULT.toVisibleDigits(-2.05));
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableMax().setFracDigitCount(2);
             precision.getMutableMax().setIntDigitCount(1);
             precision.setFailIfOverMax(true);
             precision.setExactOnly(true);
-            verifyVisibleDigits("-2.05", precision.initVisibleDigits(-2.05));
+            verifyVisibleDigits("-2.05", precision.toVisibleDigits(-2.05));
         }
         {
             FixedPrecision precision = new FixedPrecision();
@@ -193,7 +193,7 @@ public final class VisibleDigitsTest extends TestFmwk {
             precision.setFailIfOverMax(true);
             precision.setExactOnly(true);
             try {
-                precision.initVisibleDigits(-2.05);
+                precision.toVisibleDigits(-2.05);
                 fail("Arithmetic exception expected");
             } catch (ArithmeticException expected) {
             }
@@ -205,7 +205,7 @@ public final class VisibleDigitsTest extends TestFmwk {
             precision.setFailIfOverMax(true);
             precision.setExactOnly(true);
             try {
-                precision.initVisibleDigits(-2.05);
+                precision.toVisibleDigits(-2.05);
                 fail("Illegal argument exception expected");
             } catch (IllegalArgumentException expected) {
             }
@@ -215,20 +215,20 @@ public final class VisibleDigitsTest extends TestFmwk {
             precision.getMutableMin().setFracDigitCount(2);
             precision.getMutableMin().setIntDigitCount(5);
             precision.setExactOnly(true);
-            verifyVisibleDigits("06245.30", precision.initVisibleDigits(6245.3));
+            verifyVisibleDigits("06245.30", precision.toVisibleDigits(6245.3));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(5);
             precision.setExactOnly(true);
-            verifyVisibleDigits("6245.3", precision.initVisibleDigits(6245.3));
+            verifyVisibleDigits("6245.3", precision.toVisibleDigits(6245.3));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(4);
             precision.setExactOnly(true);
             try {
-                precision.initVisibleDigits(6245.3);
+                precision.toVisibleDigits(6245.3);
                 fail("Arithmetic exception expected");
             } catch (ArithmeticException expected) {
             }
@@ -237,7 +237,7 @@ public final class VisibleDigitsTest extends TestFmwk {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableMin().setFracDigitCount(2);
             precision.getMutableMax().setIntDigitCount(3);
-            verifyVisibleDigits("384.90", precision.initVisibleDigits(2384.9));
+            verifyVisibleDigits("384.90", precision.toVisibleDigits(2384.9));
         }
         {
             FixedPrecision precision = new FixedPrecision();
@@ -245,61 +245,61 @@ public final class VisibleDigitsTest extends TestFmwk {
             precision.getMutableMax().setIntDigitCount(3);
             precision.setFailIfOverMax(true);
             try {
-                precision.initVisibleDigits(2384.9);
+                precision.toVisibleDigits(2384.9);
                 fail("Illegal argument exception expected");
             } catch (IllegalArgumentException expected) {
             }            
         }
     }
     
-    public void TestDoubleInitVisibleDigitsToBigDecimal() {
-        verifyVisibleDigits("2.01", FixedPrecision.DEFAULT.initVisibleDigits(2.01));
-        verifyVisibleDigits("-2.01", FixedPrecision.DEFAULT.initVisibleDigits(-2.01));
+    public void TestDoubleToVisibleDigitsToBigDecimal() {
+        verifyVisibleDigits("2.01", FixedPrecision.DEFAULT.toVisibleDigits(2.01));
+        verifyVisibleDigits("-2.01", FixedPrecision.DEFAULT.toVisibleDigits(-2.01));
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableSignificant().setMax(3);
             precision.getMutableMin().setFracDigitCount(2);
-            verifyVisibleDigits("2380.00", precision.initVisibleDigits(2385.0));
+            verifyVisibleDigits("2380.00", precision.toVisibleDigits(2385.0));
         }
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableMax().setFracDigitCount(2);
-            verifyVisibleDigits("-45.83", precision.initVisibleDigits(-45.8251));
+            verifyVisibleDigits("-45.83", precision.toVisibleDigits(-45.8251));
         }
     }
     
-    public void TestSpecialInitVisibleDigits() {
+    public void TestSpecialToVisibleDigits() {
         FixedPrecision precision = new FixedPrecision();
         precision.getMutableSignificant().setMax(3);
         precision.getMutableMin().setFracDigitCount(2);
         {
-            VisibleDigits digits = precision.initVisibleDigits(Double.NEGATIVE_INFINITY);
+            VisibleDigits digits = precision.toVisibleDigits(Double.NEGATIVE_INFINITY);
             assertFalse("", digits.isNaN());
             assertTrue("", digits.isInfinite());
             assertTrue("", digits.isNegative());
         }
         {
-            VisibleDigits digits = precision.initVisibleDigits(Double.POSITIVE_INFINITY);
+            VisibleDigits digits = precision.toVisibleDigits(Double.POSITIVE_INFINITY);
             assertFalse("", digits.isNaN());
             assertTrue("", digits.isInfinite());
             assertFalse("", digits.isNegative());
         } 
         {
-            VisibleDigits digits = precision.initVisibleDigits(Double.NaN);
+            VisibleDigits digits = precision.toVisibleDigits(Double.NaN);
             assertTrue("", digits.isNaN());
             assertFalse("", digits.isInfinite());
             assertFalse("", digits.isNegative());
         } 
     }
 
-    public void TestBigDecimalInitVisibleDigits() {
+    public void TestBigDecimalToVisibleDigits() {
         {
             FixedPrecision precision = new FixedPrecision();
             precision.getMutableMax().setIntDigitCount(3);
             precision.getMutableMin().setFracDigitCount(2);
             precision.setFailIfOverMax(true);
             try {
-                precision.initVisibleDigits(new BigDecimal(2384.9));
+                precision.toVisibleDigits(new BigDecimal(2384.9));
                 fail("Expected illegal argument exception.");
             } catch (IllegalArgumentException expected) {
                 // expected
@@ -310,7 +310,7 @@ public final class VisibleDigitsTest extends TestFmwk {
             precision.getMutableSignificant().setMax(4);
             precision.setExactOnly(true);
             try {
-                precision.initVisibleDigits(new BigDecimal(6245.3));
+                precision.toVisibleDigits(new BigDecimal(6245.3));
                 fail("Expected arithmetic exception.");
             } catch (ArithmeticException expected) {
                 // expected
@@ -319,21 +319,21 @@ public final class VisibleDigitsTest extends TestFmwk {
     }
     
     public void TestVisibleDigitsWithExponent() {
-        verifyVisibleDigitsWithExponent("3.89256E2", ScientificPrecision.DEFAULT.initVisibleDigitsWithExponent(389.256));
-        verifyVisibleDigitsWithExponent("-3.89256E2", ScientificPrecision.DEFAULT.initVisibleDigitsWithExponent(-389.256));
+        verifyVisibleDigitsWithExponent("3.89256E2", ScientificPrecision.DEFAULT.toVisibleDigitsWithExponent(389.256));
+        verifyVisibleDigitsWithExponent("-3.89256E2", ScientificPrecision.DEFAULT.toVisibleDigitsWithExponent(-389.256));
         {
             ScientificPrecision precision = new ScientificPrecision();
             precision.setMinExponentDigits(3);
             precision.getMutableMantissa().getMutableMin().setIntDigitCount(1);
             precision.getMutableMantissa().getMutableMax().setIntDigitCount(3);
-            verifyVisibleDigitsWithExponent("12.34567E003", precision.initVisibleDigitsWithExponent(12345.67));
+            verifyVisibleDigitsWithExponent("12.34567E003", precision.toVisibleDigitsWithExponent(12345.67));
         }
         {
             ScientificPrecision precision = new ScientificPrecision();
             precision.getMutableMantissa().setRoundingIncrement(new BigDecimal("0.073"));
             precision.getMutableMantissa().getMutableMin().setIntDigitCount(2);
             precision.getMutableMantissa().getMutableMax().setIntDigitCount(2);
-            verifyVisibleDigitsWithExponent("10.001E2", precision.initVisibleDigitsWithExponent(999.74));
+            verifyVisibleDigitsWithExponent("10.001E2", precision.toVisibleDigitsWithExponent(999.74));
         }
     }
 
