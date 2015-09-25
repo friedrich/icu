@@ -57,7 +57,8 @@ public final class DigitInterval extends FreezableBase<DigitInterval> {
     /**
      * Returns true if this object is equal to other.
      */
-    public boolean equals(DigitInterval other) {
+    @Override
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
@@ -69,6 +70,7 @@ public final class DigitInterval extends FreezableBase<DigitInterval> {
                 (fSmallestInclusive == rhs.fSmallestInclusive));
     }
     
+    @Override
     public int hashCode() {
         return 37*fLargestExclusive + fSmallestInclusive;
     }

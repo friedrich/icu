@@ -32,7 +32,8 @@ public final class SignificantDigitInterval extends FreezableBase<SignificantDig
     /**
      * Returns true if this object is equal to other.
      */
-    boolean equals(SignificantDigitInterval other) {
+    @Override
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
@@ -43,6 +44,7 @@ public final class SignificantDigitInterval extends FreezableBase<SignificantDig
         return ((fMax == rhs.fMax) && (fMin == rhs.fMin));
     }
     
+    @Override
     public int hashCode() {
         return 37 * fMax + fMin;
     }
