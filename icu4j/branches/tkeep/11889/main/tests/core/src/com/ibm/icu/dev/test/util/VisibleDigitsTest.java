@@ -15,6 +15,7 @@ import com.ibm.icu.impl.ScientificPrecision;
 import com.ibm.icu.impl.VisibleDigits;
 import com.ibm.icu.impl.VisibleDigits.VFixedDecimal;
 import com.ibm.icu.impl.VisibleDigitsWithExponent;
+import com.ibm.icu.text.DecimalFormat;
 
 /**
  * @author rocketman
@@ -335,6 +336,12 @@ public final class VisibleDigitsTest extends TestFmwk {
             precision.getMutableMantissa().getMutableMax().setIntDigitCount(2);
             verifyVisibleDigitsWithExponent("10.001E2", precision.toVisibleDigitsWithExponent(999.74));
         }
+    }
+    
+    public void Test11913LongBigDecimal() {
+        String formatStr = FixedPrecision.DEFAULT.toVisibleDigits(new BigDecimal("1.23456789E400")).toString();
+        assertTrue("", formatStr.startsWith("12345678900000000000000000000"));
+        assertEquals("", 401, formatStr.length());
     }
 
     private void verifyIFTVHasInt(long i, long f, long t, int v, boolean hasInt, VisibleDigits digits) {
