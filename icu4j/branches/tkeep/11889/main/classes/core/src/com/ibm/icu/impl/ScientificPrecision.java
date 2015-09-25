@@ -66,6 +66,12 @@ public final class ScientificPrecision extends FreezableBase<ScientificPrecision
      */
     @Override
     public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof ScientificPrecision)) {
+            return false;
+        }
         ScientificPrecision rhs = (ScientificPrecision) other;
         return fMantissa.equals(rhs.fMantissa) && fExponent.equals(rhs.fExponent);
     }

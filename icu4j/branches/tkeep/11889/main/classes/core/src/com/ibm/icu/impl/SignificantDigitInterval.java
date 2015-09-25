@@ -33,6 +33,12 @@ public final class SignificantDigitInterval extends FreezableBase<SignificantDig
      * Returns true if this object is equal to other.
      */
     boolean equals(SignificantDigitInterval other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SignificantDigitInterval)) {
+            return false;
+        }
         SignificantDigitInterval rhs = (SignificantDigitInterval) other;
         return ((fMax == rhs.fMax) && (fMin == rhs.fMin));
     }

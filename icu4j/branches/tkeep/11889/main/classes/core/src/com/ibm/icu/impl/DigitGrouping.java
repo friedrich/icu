@@ -86,6 +86,28 @@ public final class DigitGrouping extends FreezableBase<DigitGrouping> {
         updateEffFields();
     }
     
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof DigitGrouping)) {
+            return false;
+        }
+        DigitGrouping rhs = (DigitGrouping) other;
+        // the fEff* fields are dependent on these fields so we only check these fields.
+        return (fGroupingUsed == rhs.fGroupingUsed && fMinGrouping == rhs.fMinGrouping
+                && fGrouping == rhs.fGrouping && fGrouping2 == rhs.fGrouping2);
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = fMinGrouping;
+        result = 37 * result + fGrouping;
+        result = 37 * result + fGrouping2;
+        return 37 * result + (fGroupingUsed ? 1 : 0);
+    }
+    
     /**
      * Determine whether or not a grouping separator belongs after the specified digit.
      * @param digitsLeftOfDecimal the number of digits appearing to the left of the decimal.

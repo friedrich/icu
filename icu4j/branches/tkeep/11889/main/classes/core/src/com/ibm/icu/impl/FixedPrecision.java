@@ -158,6 +158,12 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
      */
     @Override
     public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof FixedPrecision)) {
+            return false;
+        }
         FixedPrecision rhs = (FixedPrecision) other;
         return (fMin.equals(rhs.fMin) &&
                 fMax.equals(rhs.fMax) &&
@@ -175,8 +181,7 @@ public final class FixedPrecision extends FreezableBase<FixedPrecision> {
         result = 37 * result + fSignificant.hashCode();
         result = 37 * result + (fRoundingIncrement == null ? 0 : fRoundingIncrement.hashCode());
         result = 37 * result + fRoundingMode.hashCode();
-        result = 37 * result + (fExactOnly ? 1 : 0) + (fFailIfOverMax ? 2 : 0);
-        return result;
+        return 37 * result + (fExactOnly ? 1 : 0) + (fFailIfOverMax ? 2 : 0);
     }
 
 

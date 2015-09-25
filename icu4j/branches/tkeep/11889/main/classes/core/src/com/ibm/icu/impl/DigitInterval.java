@@ -58,6 +58,12 @@ public final class DigitInterval extends FreezableBase<DigitInterval> {
      * Returns true if this object is equal to other.
      */
     public boolean equals(DigitInterval other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof DigitInterval)) {
+            return false;
+        }
         DigitInterval rhs = (DigitInterval) other;
         return ((fLargestExclusive == rhs.fLargestExclusive) &&
                 (fSmallestInclusive == rhs.fSmallestInclusive));
