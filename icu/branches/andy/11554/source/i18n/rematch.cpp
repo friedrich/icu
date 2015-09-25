@@ -782,7 +782,7 @@ UBool RegexMatcher::find(UErrorCode &status) {
                     if (fMatch) {
                         return TRUE;
                     }
-                    UTEXT_SETNATIVEINDEX(fInputText, pos);
+                    UTEXT_SETNATIVEINDEX(fInputText, startPos);
                 }
                 if (startPos > testStartLimit) {
                     fMatch = FALSE;
@@ -3936,6 +3936,11 @@ GC_Done:
                 //   of this op in the pattern.
                 int32_t minML = (int32_t)pat[fp->fPatIdx++];
                 int32_t maxML = (int32_t)pat[fp->fPatIdx++];
+                if (!UTEXT_USES_U16(fInputText)) {
+                    // utf-8 fix to maximum match length. The pattern compiler assumes utf-16.
+                    // The max length need not be exact; it just needs to be >= actual maximum.
+                    maxML *= 3;
+                }
                 U_ASSERT(minML <= maxML);
                 U_ASSERT(minML >= 0);
 
@@ -3945,6 +3950,7 @@ GC_Done:
                 if (*lbStartIdx < 0) {
                     // First time through loop.
                     *lbStartIdx = fp->fInputIdx - minML;
+                    // TODO: put on code point boundary.
                 } else {
                     // 2nd through nth time through the loop.
                     // Back up start position for match by one.
@@ -4009,6 +4015,11 @@ GC_Done:
                 // Fetch the extra parameters of this op.
                 int32_t minML       = (int32_t)pat[fp->fPatIdx++];
                 int32_t maxML       = (int32_t)pat[fp->fPatIdx++];
+                if (!UTEXT_USES_U16(fInputText)) {
+                    // utf-8 fix to maximum match length. The pattern compiler assumes utf-16.
+                    // The max length need not be exact; it just needs to be >= actual maximum.
+                    maxML *= 3;
+                }
                 int32_t continueLoc = (int32_t)pat[fp->fPatIdx++];
                         continueLoc = URX_VAL(continueLoc);
                 U_ASSERT(minML <= maxML);
@@ -4021,6 +4032,11 @@ GC_Done:
                 if (*lbStartIdx < 0) {
                     // First time through loop.
                     *lbStartIdx = fp->fInputIdx - minML;
+                    if (lbStartIdx > 0) {
+                        // move index to a code point boudary, if it's not on one already.
+                        UTEXT_SETNATIVEINDEX(fInputText, *lbStartIdx);
+                        *lbStartIdx = UTEXT_GETNATIVEINDEX(fInputText);
+                    }
                 } else {
                     // 2nd through nth time through the loop.
                     // Back up start position for match by one.
