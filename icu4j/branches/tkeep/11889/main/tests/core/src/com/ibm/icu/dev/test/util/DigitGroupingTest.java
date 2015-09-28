@@ -30,7 +30,6 @@ public class DigitGroupingTest extends TestFmwk {
     
     public void TestSimpleGrouping() {
         DigitGrouping dg = new DigitGrouping();
-        dg.setGroupingUsed(true);
         dg.setGrouping(3);
         assertFalse("", dg.isSeparatorAt(7, -3));
         assertFalse("", dg.isSeparatorAt(7, -2));
@@ -55,7 +54,6 @@ public class DigitGroupingTest extends TestFmwk {
     
     public void TestGrouping2() {
         DigitGrouping dg = new DigitGrouping();
-        dg.setGroupingUsed(true);
         dg.setGrouping(3);
         dg.setGrouping2(2);
         assertFalse("", dg.isSeparatorAt(7, -3));
@@ -81,7 +79,6 @@ public class DigitGroupingTest extends TestFmwk {
     
     public void TestMinGrouping() {
         DigitGrouping dg = new DigitGrouping();
-        dg.setGroupingUsed(true);
         dg.setGrouping(3);
         dg.setMinGrouping(2);
         assertFalse("", dg.isSeparatorAt(7, -3));

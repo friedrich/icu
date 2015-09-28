@@ -28,7 +28,11 @@ public final class DigitGrouping extends FreezableBase<DigitGrouping> {
      * Default is no digit grouping
      */
     public DigitGrouping() {
-        clear();
+        fGroupingUsed = true;
+        fMinGrouping = 0;
+        fGrouping = 0;
+        fGrouping2 = 0;
+        updateEffFields();    
     }
     
     /**
@@ -71,18 +75,6 @@ public final class DigitGrouping extends FreezableBase<DigitGrouping> {
     public void setMinGrouping(int i) {
         checkThawed();
         fMinGrouping = i;
-        updateEffFields();
-    }
-    
-    /**
-     * Clears all attributes in this object to turn grouping off.
-     */
-    public void clear() {
-        checkThawed();
-        fGroupingUsed = false;
-        fMinGrouping = 0;
-        fGrouping = 0;
-        fGrouping2 = 0;
         updateEffFields();
     }
     
