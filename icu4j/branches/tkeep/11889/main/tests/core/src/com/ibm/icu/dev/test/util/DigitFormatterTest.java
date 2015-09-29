@@ -6,6 +6,7 @@
  */
 package com.ibm.icu.dev.test.util;
 
+import java.text.FieldPosition;
 import java.util.Locale;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -289,6 +290,35 @@ public class DigitFormatterTest extends TestFmwk {
         handler.verify(-1,  Field.EXPONENT, 6, 9);
         handler.verifyNoMoreFields();
         
+    }
+    
+    public void TestFieldPositionHandlersFieldPositionInteger() {
+        FieldPosition fp = new FieldPosition(NumberFormat.INTEGER_FIELD);
+        FieldPositionHandler fph = FieldPositionHandlers.forFieldPosition(fp);
+        fph.addAttribute(-1, Field.CURRENCY, 3, 4);
+        fph.addAttribute(NumberFormat.FRACTION_FIELD, Field.FRACTION, 5, 7);
+        assertEquals("begin not found", 0, fp.getBeginIndex());
+        assertEquals("end not found", 0, fp.getEndIndex());
+        fph.addAttribute(NumberFormat.INTEGER_FIELD, Field.INTEGER, 7, 9);
+        fph.addAttribute(-1, Field.EXPONENT, 13, 14);
+        fph.addAttribute(NumberFormat.INTEGER_FIELD, Field.INTEGER, 17, 20);
+        assertEquals("begin", 7, fp.getBeginIndex());
+        assertEquals("end", 9, fp.getEndIndex());
+    }
+    
+    public void TestFieldPositionHandlersFieldPositionField() {
+        FieldPosition fp = new FieldPosition(Field.EXPONENT);
+        FieldPositionHandler fph = FieldPositionHandlers.forFieldPosition(fp);
+        fph.addAttribute(-1, Field.CURRENCY, 3, 4);
+        fph.addAttribute(NumberFormat.FRACTION_FIELD, Field.FRACTION, 5, 7);
+        fph.addAttribute(NumberFormat.INTEGER_FIELD, Field.INTEGER, 7, 9);
+        assertEquals("begin not found", 0, fp.getBeginIndex());
+        assertEquals("end not found", 0, fp.getEndIndex());
+        fph.addAttribute(-1, Field.EXPONENT, 13, 14);
+        fph.addAttribute(NumberFormat.INTEGER_FIELD, Field.INTEGER, 17, 20);
+        fph.addAttribute(-1, Field.EXPONENT, 25, 28);
+        assertEquals("begin", 13, fp.getBeginIndex());
+        assertEquals("end", 14, fp.getEndIndex());
     }
 
 }
