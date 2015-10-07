@@ -1331,7 +1331,7 @@
 
 "(?<!a\x{100000})spam"          "***a\x{100000}spam**"
 "(?<!aą)spam"                   "**aąspam**"
-"(?<!ąabc)spam"       dt          "**ąabcspam**"
+"(?<!ąabc)spam"                 "**ąabcspam**"
 
 "(?<!a\x{100000})spam"          "***a\x{100001}<0>spam</0>**"
 "(?<!aą)spam"                   "**bą<0>spam</0>**"
