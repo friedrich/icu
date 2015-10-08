@@ -26,16 +26,14 @@
  * default code page conversion, which will do the best job possible,
  * but may be lossy, depending on the platform.
  *
- * Usage:   CStr(aUnicodeString)()
+ * Example Usage:
+ *   UnicodeString s = whatever;
+ *   printf("%s", CStr(s)());
  *
  *   The explicit call to the CStr() constructor creates a temporary object.
  *   Operator () on the temporary object returns a (const char *) pointer.
  *   The lifetime of the (const char *) data is that of the temporary object,
  *   which works well when passing it as a parameter to another function, such as printf.
- *
- * Example:
- *   UnicodeString s = whatever;
- *   printf("%s", CStr(s)());
  */
 
 U_NAMESPACE_BEGIN
