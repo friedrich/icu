@@ -4,7 +4,7 @@ WHAT IS THIS
 
 WHY DO I NEED THIS
 ===
-See https://github.com/joyent/node/wiki/Intl for more details
+See [node Intl wiki](https://github.com/nodejs/node/wiki/Intl) for more details
 
 WHAT VERSION DO I NEED
 ===
@@ -23,6 +23,5 @@ node --icu-data-dir=node_modules/icu4c-data -e "console.dir(new Date().toLocaleS
 
 LICENSE
 ===
-
-MIT/X, see [license.html](license.html)
+MIT/X, see [license.html](http://source.icu-project.org/repos/icu/icu/trunk/license.html)
 
