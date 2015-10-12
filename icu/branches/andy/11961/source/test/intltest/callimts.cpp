@@ -16,6 +16,7 @@
 #include "unicode/smpdtfmt.h"
 #include "putilimp.h"
 #include "cstring.h"
+#include "simplethread.h"
 
 U_NAMESPACE_USE
 void CalendarLimitTest::runIndexedTest( int32_t index, UBool exec, const char* &name, char* /*par*/ )
@@ -144,33 +145,51 @@ CalendarLimitTest::TestLimits(void) {
     static const UDate DEFAULT_START = 944006400000.0; // 1999-12-01T00:00Z
     static const int32_t DEFAULT_END = -120; // Default for non-quick is run 2 minutes
 
-    static const struct {
+    class ThreadedTestCase;
+    static struct TestCase {
         const char *type;
         UBool hasLeapMonth;
         UDate actualTestStart;
         int32_t actualTestEnd;
+        ThreadedTestCase  *thread;
     } TestCases[] = {
-        {"gregorian",       FALSE,      DEFAULT_START, DEFAULT_END},
-        {"japanese",        FALSE,      596937600000.0, DEFAULT_END}, // 1988-12-01T00:00Z, Showa 63
-        {"buddhist",        FALSE,      DEFAULT_START, DEFAULT_END},
-        {"roc",             FALSE,      DEFAULT_START, DEFAULT_END},
-        {"persian",         FALSE,      DEFAULT_START, DEFAULT_END},
-        {"islamic-civil",   FALSE,      DEFAULT_START, DEFAULT_END},
-        {"islamic",         FALSE,      DEFAULT_START, 800000}, // Approx. 2250 years from now, after which some rounding errors occur in Islamic calendar
-        {"hebrew",          TRUE,       DEFAULT_START, DEFAULT_END},
-        {"chinese",         TRUE,       DEFAULT_START, DEFAULT_END},
-        {"dangi",           TRUE,       DEFAULT_START, DEFAULT_END},
-        {"indian",          FALSE,      DEFAULT_START, DEFAULT_END},
-        {"coptic",          FALSE,      DEFAULT_START, DEFAULT_END},
-        {"ethiopic",        FALSE,      DEFAULT_START, DEFAULT_END},
-        {"ethiopic-amete-alem", FALSE,  DEFAULT_START, DEFAULT_END},
-        {NULL,              FALSE,      0, 0}
+        {"gregorian",       FALSE,      DEFAULT_START, DEFAULT_END, NULL},
+        {"japanese",        FALSE,      596937600000.0, DEFAULT_END, NULL}, // 1988-12-01T00:00Z, Showa 63
+        {"buddhist",        FALSE,      DEFAULT_START, DEFAULT_END, NULL},
+        {"roc",             FALSE,      DEFAULT_START, DEFAULT_END, NULL},
+        {"persian",         FALSE,      DEFAULT_START, DEFAULT_END, NULL},
+        {"islamic-civil",   FALSE,      DEFAULT_START, DEFAULT_END, NULL},
+        {"islamic",         FALSE,      DEFAULT_START, 800000, NULL}, // Approx. 2250 years from now, after which some rounding errors occur in Islamic calendar
+        {"hebrew",          TRUE,       DEFAULT_START, DEFAULT_END, NULL},
+        {"chinese",         TRUE,       DEFAULT_START, DEFAULT_END, NULL},
+        {"dangi",           TRUE,       DEFAULT_START, DEFAULT_END, NULL},
+        {"indian",          FALSE,      DEFAULT_START, DEFAULT_END, NULL},
+        {"coptic",          FALSE,      DEFAULT_START, DEFAULT_END, NULL},
+        {"ethiopic",        FALSE,      DEFAULT_START, DEFAULT_END, NULL},
+        {"ethiopic-amete-alem", FALSE,  DEFAULT_START, DEFAULT_END, NULL}
+    };
+
+    class ThreadedTestCase: public SimpleThread {
+      private:
+        CalendarLimitTest *fThis;
+        TestCase *fTestCase;
+        Calendar *fCal;        // Calendar is adopted by this class
+      public:
+        ThreadedTestCase(CalendarLimitTest *This, TestCase *testCase, Calendar *cal) :
+                fThis(This), fTestCase(testCase), fCal(cal)  { };
+        ~ThreadedTestCase() {delete fCal;};
+        void run() {
+            fThis->logln("begin test of %s calendar.", fTestCase->type);
+            fThis->doTheoreticalLimitsTest(*fCal, fTestCase->hasLeapMonth);
+            fThis->doLimitsTest(*fCal, fTestCase->actualTestStart, fTestCase->actualTestEnd);
+            fThis->logln("end test of %s calendar.", fTestCase->type);
+        };
     };
 
     int16_t i = 0;
     char buf[64];
 
-    for (i = 0; TestCases[i].type; i++) {
+    for (i = 0; i < UPRV_LENGTHOF(TestCases); i++) {
         UErrorCode status = U_ZERO_ERROR;
         uprv_strcpy(buf, "root@calendar=");
         strcat(buf, TestCases[i].type);
@@ -184,10 +203,27 @@ CalendarLimitTest::TestLimits(void) {
             delete cal;
             continue;
         }
-        // Do the test
-        doTheoreticalLimitsTest(*cal, TestCases[i].hasLeapMonth);
-        doLimitsTest(*cal, TestCases[i].actualTestStart,TestCases[i].actualTestEnd);
-        delete cal;
+
+        TestCases[i].thread = new ThreadedTestCase(this, &TestCases[i], cal);
+        if (TestCases[i].thread == NULL) {
+            errln("%s:%d new ThreadedTestCase() failed.", __FILE__, __LINE__);
+            continue;
+        }
+        if (threadCount == 1) {
+            TestCases[i].thread->run();    // Do the work in this thread.
+        } else {
+            TestCases[i].thread->start();  // Spawn a separate thread.
+        }
+    }
+
+    for (i = 0; i < UPRV_LENGTHOF(TestCases); i++) {
+        if (TestCases[i].thread) {
+            if (threadCount > 1) {
+                TestCases[i].thread->join();
+            }
+            delete TestCases[i].thread;
+            TestCases[i].thread = NULL;
+        }
     }
 }
 
