@@ -546,7 +546,7 @@ IntlTest::IntlTest()
     warn_on_missing_data = FALSE;
     quick = FALSE;
     leaks = FALSE;
-    threadCount = 1;
+    threadCount = 12;
     testoutfp = stdout;
     LL_indentlevel = indentLevel_offset;
     numProps = 0;
@@ -1196,7 +1196,7 @@ main(int argc, char* argv[])
     const char *summary_file = NULL;
     UBool warnOnMissingData = FALSE;
     UBool defaultDataFound = FALSE;
-    int32_t threadCount = 1;
+    int32_t threadCount = 12;
     UErrorCode errorCode = U_ZERO_ERROR;
     UConverter *cnv = NULL;
     const char *warnOrErr = "Failure";

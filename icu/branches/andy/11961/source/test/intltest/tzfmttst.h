@@ -15,6 +15,7 @@
 #include "intltest.h"
 
 class TimeZoneFormatTest : public IntlTest {
+  public:
     // IntlTest override
     void runIndexedTest(int32_t index, UBool exec, const char*& name, char* par);
 
@@ -24,6 +25,8 @@ class TimeZoneFormatTest : public IntlTest {
     void TestISOFormat(void);
     void TestFormat(void);
     void TestFormatTZDBNames(void);
+
+    void RunTimeRoundTripTests(int32_t threadNumber);
 };
 
 #endif /* #if !UCONFIG_NO_FORMATTING */
