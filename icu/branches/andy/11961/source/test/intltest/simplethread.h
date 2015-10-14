@@ -23,5 +23,41 @@ class U_EXPORT SimpleThread
     void *fImplementation;
 };
 
+
+class IntlTest;
+
+class ThreadPoolBase {
+  public:
+    ThreadPoolBase(IntlTest *test, int32_t howMany);
+    virtual ~ThreadPoolBase();
+    
+    void start();
+    void join();
+
+    virtual void callFn(int32_t param) = 0;
+    void initThreads();
+
+    friend class ThreadPoolThread;
+  private:
+    IntlTest  *fIntlTest;
+    int32_t  fNumThreads;
+    SimpleThread **fThreads;
+};
+
+
+template<class TestClass>
+class ThreadPool : public ThreadPoolBase {
+  private:
+    TestClass *fTest;
+    void (TestClass::*fRunFnPtr)(int32_t);
+  public:
+    ThreadPool(TestClass *test, int howMany, void (TestClass::*runFnPtr)(int32_t threadNumber)) :
+        ThreadPoolBase(test, howMany), fTest(test), fRunFnPtr(runFnPtr) {initThreads(); };
+    virtual ~ThreadPool() {};
+  protected:
+    virtual void callFn(int32_t param) {
+        (fTest->*fRunFnPtr)(param);
+    }
+};
 #endif
 

@@ -14,8 +14,9 @@
 #include "unicode/gregocal.h"
 #include "unicode/datefmt.h"
 #include "unicode/smpdtfmt.h"
-#include "putilimp.h"
 #include "cstring.h"
+#include "mutex.h"
+#include "putilimp.h"
 #include "simplethread.h"
 
 U_NAMESPACE_USE
@@ -140,93 +141,90 @@ CalendarLimitTest::TestCalendarExtremeLimit()
     delete fmt;
 }
 
+namespace {
+
+struct TestCase {
+    const char *type;
+    UBool hasLeapMonth;
+    UDate actualTestStart;
+    int32_t actualTestEnd;
+};
+    
+const UDate DEFAULT_START = 944006400000.0; // 1999-12-01T00:00Z
+const int32_t DEFAULT_END = -120; // Default for non-quick is run 2 minutes
+
+TestCase TestCases[] = {
+        {"gregorian",       FALSE,      DEFAULT_START, DEFAULT_END},
+        {"japanese",        FALSE,      596937600000.0, DEFAULT_END}, // 1988-12-01T00:00Z, Showa 63
+        {"buddhist",        FALSE,      DEFAULT_START, DEFAULT_END},
+        {"roc",             FALSE,      DEFAULT_START, DEFAULT_END},
+        {"persian",         FALSE,      DEFAULT_START, DEFAULT_END},
+        {"islamic-civil",   FALSE,      DEFAULT_START, DEFAULT_END},
+        {"islamic",         FALSE,      DEFAULT_START, 800000}, // Approx. 2250 years from now, after which 
+                                                                // some rounding errors occur in Islamic calendar
+        {"hebrew",          TRUE,       DEFAULT_START, DEFAULT_END},
+        {"chinese",         TRUE,       DEFAULT_START, DEFAULT_END},
+        {"dangi",           TRUE,       DEFAULT_START, DEFAULT_END},
+        {"indian",          FALSE,      DEFAULT_START, DEFAULT_END},
+        {"coptic",          FALSE,      DEFAULT_START, DEFAULT_END},
+        {"ethiopic",        FALSE,      DEFAULT_START, DEFAULT_END},
+        {"ethiopic-amete-alem", FALSE,  DEFAULT_START, DEFAULT_END}
+};
+    
+struct {
+    int32_t fIndex;
+    UBool next (int32_t &rIndex) {
+        Mutex lock;
+        if (fIndex >= UPRV_LENGTHOF(TestCases)) {
+            return FALSE;
+        }
+        rIndex = fIndex++;
+        return TRUE;
+    }
+    void reset() {
+        fIndex = 0;
+    }
+} gTestCaseIterator;
+
+}  // anonymous name space
+
 void
 CalendarLimitTest::TestLimits(void) {
-    static const UDate DEFAULT_START = 944006400000.0; // 1999-12-01T00:00Z
-    static const int32_t DEFAULT_END = -120; // Default for non-quick is run 2 minutes
+    gTestCaseIterator.reset();
 
-    class ThreadedTestCase;
-    static struct TestCase {
-        const char *type;
-        UBool hasLeapMonth;
-        UDate actualTestStart;
-        int32_t actualTestEnd;
-        ThreadedTestCase  *thread;
-    } TestCases[] = {
-        {"gregorian",       FALSE,      DEFAULT_START, DEFAULT_END, NULL},
-        {"japanese",        FALSE,      596937600000.0, DEFAULT_END, NULL}, // 1988-12-01T00:00Z, Showa 63
-        {"buddhist",        FALSE,      DEFAULT_START, DEFAULT_END, NULL},
-        {"roc",             FALSE,      DEFAULT_START, DEFAULT_END, NULL},
-        {"persian",         FALSE,      DEFAULT_START, DEFAULT_END, NULL},
-        {"islamic-civil",   FALSE,      DEFAULT_START, DEFAULT_END, NULL},
-        {"islamic",         FALSE,      DEFAULT_START, 800000, NULL}, // Approx. 2250 years from now, after which some rounding errors occur in Islamic calendar
-        {"hebrew",          TRUE,       DEFAULT_START, DEFAULT_END, NULL},
-        {"chinese",         TRUE,       DEFAULT_START, DEFAULT_END, NULL},
-        {"dangi",           TRUE,       DEFAULT_START, DEFAULT_END, NULL},
-        {"indian",          FALSE,      DEFAULT_START, DEFAULT_END, NULL},
-        {"coptic",          FALSE,      DEFAULT_START, DEFAULT_END, NULL},
-        {"ethiopic",        FALSE,      DEFAULT_START, DEFAULT_END, NULL},
-        {"ethiopic-amete-alem", FALSE,  DEFAULT_START, DEFAULT_END, NULL}
-    };
+    ThreadPool<CalendarLimitTest> threads(this, threadCount, &CalendarLimitTest::TestLimitsThread);
+    threads.start();
+    threads.join();
+}
 
-    class ThreadedTestCase: public SimpleThread {
-      private:
-        CalendarLimitTest *fThis;
-        TestCase *fTestCase;
-        Calendar *fCal;        // Calendar is adopted by this class
-      public:
-        ThreadedTestCase(CalendarLimitTest *This, TestCase *testCase, Calendar *cal) :
-                fThis(This), fTestCase(testCase), fCal(cal)  { };
-        ~ThreadedTestCase() {delete fCal;};
-        void run() {
-            fThis->logln("begin test of %s calendar.", fTestCase->type);
-            fThis->doTheoreticalLimitsTest(*fCal, fTestCase->hasLeapMonth);
-            fThis->doLimitsTest(*fCal, fTestCase->actualTestStart, fTestCase->actualTestEnd);
-            fThis->logln("end test of %s calendar.", fTestCase->type);
-        };
-    };
 
-    int16_t i = 0;
-    char buf[64];
-
-    for (i = 0; i < UPRV_LENGTHOF(TestCases); i++) {
+void CalendarLimitTest::TestLimitsThread(int32_t threadNum) {
+    logln("thread %d starting", threadNum);
+    int32_t testIndex = 0;
+    LocalPointer<Calendar> cal;
+    while (gTestCaseIterator.next(testIndex)) {
+        TestCase &testCase = TestCases[testIndex];
+        logln("begin test of %s calendar.", testCase.type);
         UErrorCode status = U_ZERO_ERROR;
+        char buf[64];
         uprv_strcpy(buf, "root@calendar=");
-        strcat(buf, TestCases[i].type);
-        Calendar *cal = Calendar::createInstance(buf, status);
+        strcat(buf, testCase.type);
+        cal.adoptInstead(Calendar::createInstance(buf, status));
         if (failure(status, "Calendar::createInstance", TRUE)) {
             continue;
         }
-        if (uprv_strcmp(cal->getType(), TestCases[i].type) != 0) {
+        if (uprv_strcmp(cal->getType(), testCase.type) != 0) {
             errln((UnicodeString)"FAIL: Wrong calendar type: " + cal->getType()
-                + " Requested: " + TestCases[i].type);
-            delete cal;
+                + " Requested: " + testCase.type);
             continue;
         }
-
-        TestCases[i].thread = new ThreadedTestCase(this, &TestCases[i], cal);
-        if (TestCases[i].thread == NULL) {
-            errln("%s:%d new ThreadedTestCase() failed.", __FILE__, __LINE__);
-            continue;
-        }
-        if (threadCount == 1) {
-            TestCases[i].thread->run();    // Do the work in this thread.
-        } else {
-            TestCases[i].thread->start();  // Spawn a separate thread.
-        }
-    }
-
-    for (i = 0; i < UPRV_LENGTHOF(TestCases); i++) {
-        if (TestCases[i].thread) {
-            if (threadCount > 1) {
-                TestCases[i].thread->join();
-            }
-            delete TestCases[i].thread;
-            TestCases[i].thread = NULL;
-        }
+        doTheoreticalLimitsTest(*(cal.getAlias()), testCase.hasLeapMonth);
+        doLimitsTest(*(cal.getAlias()), testCase.actualTestStart, testCase.actualTestEnd);
+        logln("end test of %s calendar.", testCase.type);
     }
 }
 
+    
 void
 CalendarLimitTest::doTheoreticalLimitsTest(Calendar& cal, UBool leapMonth) {
     const char* calType = cal.getType();

@@ -427,18 +427,6 @@ struct LocaleData {
 
 static LocaleData *gLocaleData = NULL;
 
-class TestTimeRoundTripThread: public SimpleThread {
-public:
-    TestTimeRoundTripThread(TimeZoneFormatTest *This, int32_t threadNumber)
-        : fThis(This), fThreadNumber(threadNumber) {}
-    virtual void run() {
-        fThis->RunTimeRoundTripTests(fThreadNumber);
-    }
-private:
-    TimeZoneFormatTest *fThis;
-    int32_t fThreadNumber;
-};
-
 void
 TimeZoneFormatTest::TestTimeRoundTrip(void) {
     int32_t nThreads = threadCount;
@@ -447,7 +435,7 @@ TimeZoneFormatTest::TestTimeRoundTrip(void) {
     int32_t testCounts = 0;
 
     UErrorCode status = U_ZERO_ERROR;
-    Calendar *cal = Calendar::createInstance(TimeZone::createTimeZone((UnicodeString) "UTC"), status);
+    LocalPointer <Calendar> cal(Calendar::createInstance(TimeZone::createTimeZone((UnicodeString) "UTC"), status));
     if (U_FAILURE(status)) {
         dataerrln("Calendar::createInstance failed: %s", u_errorName(status));
         return;
@@ -514,27 +502,11 @@ TimeZoneFormatTest::TestTimeRoundTrip(void) {
     gLocaleData->numDone = 0;
     gLocaleData->resetTestIteration();
 
-    TestTimeRoundTripThread **threads = new TestTimeRoundTripThread*[nThreads];
-    int32_t i;
-    for (i = 0; i < nThreads; i++) {
-        threads[i] = new TestTimeRoundTripThread(this, i);
-        if (threads[i]->start() != 0) {
-            errln("Error starting thread %d", i);
-        }
-    }
+    // start nThreads threads, each running the function RunTimeRoundTripTests().
 
-    for (i = 0; i < nThreads; i++) {
-        threads[i]->join();
-    }
-    if (gLocaleData->numDone != nLocales * UPRV_LENGTHOF(PATTERNS)) {
-        errln("%s:%d gLocaleData.numDone = %d, nLocales = %d, num patterns = %d",
-            __FILE__, __LINE__, gLocaleData->numDone, nLocales, UPRV_LENGTHOF(PATTERNS));
-    }
-
-    for (i = 0; i < nThreads; i++) {
-        delete threads[i];
-    }
-    delete [] threads;
+    ThreadPool<TimeZoneFormatTest> threads(this, nThreads, &TimeZoneFormatTest::RunTimeRoundTripTests);
+    threads.start();
+    threads.join();  // Wait for all threads to finish.
 
     UDate total = 0;
     logln("### Elapsed time by patterns ###");
@@ -544,8 +516,6 @@ TimeZoneFormatTest::TestTimeRoundTrip(void) {
     }
     logln((UnicodeString) "Total: " + total + "ms");
     logln((UnicodeString) "Iteration: " + gLocaleData->testCounts);
-
-    delete cal;
 }
 
 void TimeZoneFormatTest::RunTimeRoundTripTests(int32_t threadNumber) {

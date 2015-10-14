@@ -36,6 +36,7 @@ public:
     virtual void TestCalendarExtremeLimit(void);
 
     void TestLimits(void);
+    void TestLimitsThread(int threadNumber);
 
 private:
     /*

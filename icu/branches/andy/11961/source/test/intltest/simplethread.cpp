@@ -282,3 +282,47 @@ void SimpleThread::join() {
 #ifndef HAVE_IMP
 #error  No implementation for threads! Cannot test.
 #endif
+
+
+class ThreadPoolThread: public SimpleThread {
+  public:
+    ThreadPoolThread(ThreadPoolBase *pool, int32_t threadNum) : fPool(pool), fNum(threadNum) {};
+    virtual void run() {fPool->callFn(fNum); }
+    ThreadPoolBase *fPool;
+    int32_t         fNum;
+};
+
+
+ThreadPoolBase::ThreadPoolBase(IntlTest *test, int32_t howMany) :
+        fIntlTest(test), fNumThreads(howMany), fThreads(NULL) {
+}
+
+void ThreadPoolBase::initThreads() {
+    fThreads = new SimpleThread *[fNumThreads];
+    for (int i=0; i<fNumThreads; i++) {
+        fThreads[i] = new ThreadPoolThread(this, i);
+    }
+}
+
+void ThreadPoolBase::start() {
+    for (int i=0; i<fNumThreads; i++) {
+        fThreads[i]->start();
+    }
+}
+
+void ThreadPoolBase::join() {
+    for (int i=0; i<fNumThreads; i++) {
+        fThreads[i]->join();
+    }
+}
+
+ThreadPoolBase::~ThreadPoolBase() {
+    for (int i=0; i<fNumThreads; i++) {
+        delete fThreads[i];
+        fThreads[i] = NULL;
+    }
+    delete fThreads;
+}
+
+
+
