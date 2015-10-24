@@ -17,8 +17,11 @@
 <%
 	ULocale from = new ULocale("en_US_POSIX");
 	ULocale to = new ULocale("es_SV");
+	ULocale tocfacct = to;
 	try {
 		to = new ULocale(escapeString(request.getParameter("to")));
+		tocfacct = ULocale.forLocale(new java.util.Locale.Builder()
+				.setLocale(to.toLocale()).setUnicodeLocaleKeyword("cf", "account").build());
 	} catch(Throwable t) {
 		// ;
 	}
@@ -51,6 +54,17 @@
 
 <b><%= rbnf.format(n) %></b><br>
 To: <%= to.getDisplayName() %>
+ToCF: <%= tocfacct.getDisplayName() %> = <%= tocfacct.toLanguageTag() %>
+
+<hr>
+Currency: <%= NumberFormat.getCurrencyInstance(to).format(n) %>
+Account Currency: <%= NumberFormat.getInstance(to, NumberFormat.ACCOUNTINGCURRENCYSTYLE).format(n) %>
+
+<br>
+Scientific:
+<%= 
+ ScientificNumberFormatter.getMarkupInstance(to, "<sup>", "</sup>").format(n) 
+ %>
 
 </div>
 <hr>
