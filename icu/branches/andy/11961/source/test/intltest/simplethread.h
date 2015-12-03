@@ -30,15 +30,16 @@ class IntlTest;
 //              a multi-threaded test.
 //
 //   Usage: from within an intltest test function,
-//       ThreadPool<TestClass> pool(this,              // The current intltest test object,
-//                                                     //     of type "TestClass *"
-//                                  numberOfThreads,   // How many threads to spawn.
-//                                  TestClass::func);  // The function to be run by each thread.
-//                                                     //     It takes one int32_t parameter which
-//                                                     //     is set to the thread number, 0 to numberOfThreads-1.
+//       ThreadPool<TestClass> pool(
+//               this,              // The current intltest test object,
+//                                  //     of type "TestClass *"
+//               numberOfThreads,   // How many threads to spawn.
+//               &TestClass::func); // The function to be run by each thread.
+//                                  //     It takes one int32_t parameter which
+//                                  //     is set to the thread number, 0 to numberOfThreads-1.
 //
-//       pool.start();          // Start all threads running.
-//       pool.join();           // Wait until all threads have terminated.
+//       pool.start();              // Start all threads running.
+//       pool.join();               // Wait until all threads have terminated.
 
 class ThreadPoolBase {
   public:
