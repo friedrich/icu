@@ -119,8 +119,8 @@ TimeZoneFormatTest::TestTimeZoneRoundTrip(void) {
     }
 
     // Set up test dates
-    UDate DATES[(sizeof(testDateData)/sizeof(int32_t))/3];
-    const int32_t nDates = (sizeof(testDateData)/sizeof(int32_t))/3;
+    UDate DATES[UPRV_LENGTHOF(testDateData)];
+    const int32_t nDates = UPRV_LENGTHOF(testDateData);
     cal->clear();
     for (int32_t i = 0; i < nDates; i++) {
         cal->set(testDateData[i][0], testDateData[i][1], testDateData[i][2]);
@@ -144,7 +144,7 @@ TimeZoneFormatTest::TestTimeZoneRoundTrip(void) {
 
     if (quick) {
         LOCALES = testLocales;
-        nLocales = sizeof(testLocales)/sizeof(Locale);
+        nLocales = UPRV_LENGTHOF(testLocales);
     } else {
         LOCALES = Locale::getAvailableLocales(nLocales);
     }
@@ -372,7 +372,7 @@ static UBool isSpecialTimeRoundTripCase(const char* loc,
     return isExcluded;
 }
 
-// LocaleData. Somewhat misnamed. for TestTimeZoneRoundTrip, specifies the locales and patterns
+// LocaleData. Somewhat misnamed. For TestTimeZoneRoundTrip, specifies the locales and patterns
 //             to be tested, and provides an iterator over these for the multi-threaded test
 //             functions to pick up the next combination to be tested.
 //
@@ -388,21 +388,26 @@ struct LocaleData {
     int32_t localeIndex;
     int32_t patternIndex;
     int32_t testCounts;
-    UDate *times;      // Performance data, Elapsed time, array indexed by pattern index.
-    const Locale* locales; // Static
-    int32_t nLocales; // Static
-    UBool quick; // Static
-    UDate START_TIME; // Static
-    UDate END_TIME; // Static
+    UDate times[UPRV_LENGTHOF(PATTERNS)];    // Performance data, Elapsed time for each pattern.
+    const Locale* locales;
+    int32_t nLocales;
+    UDate START_TIME;
+    UDate END_TIME;
     int32_t numDone;
 
-    LocaleData() : localeIndex(0), patternIndex(0), testCounts(0), times(NULL), locales(NULL),
-                   nLocales(0), quick(FALSE), START_TIME(0), END_TIME(0), numDone(0) {};
+    LocaleData() : localeIndex(0), patternIndex(0), testCounts(0), locales(NULL),
+                   nLocales(0), START_TIME(0), END_TIME(0), numDone(0) {
+        for (int i=0; i<UPRV_LENGTHOF(times); i++) {
+            times[i] = 0;
+        }
+    };
+
     void resetTestIteration() {
         localeIndex = -1;
         patternIndex = UPRV_LENGTHOF(PATTERNS);
         numDone = 0;
     }
+
     UBool nextTest(int &rLocaleIndex, int &rPatternIndex) {
         Mutex lock;
         if (patternIndex >= UPRV_LENGTHOF(PATTERNS) - 1) {
@@ -418,6 +423,7 @@ struct LocaleData {
         ++numDone;
         return TRUE;
     }
+
     void addTime(UDate amount, int32_t patIdx) {
         Mutex lock;
         U_ASSERT(patIdx < UPRV_LENGTHOF(PATTERNS));
@@ -429,11 +435,6 @@ static LocaleData *gLocaleData = NULL;
 
 void
 TimeZoneFormatTest::TestTimeRoundTrip(void) {
-    int32_t nThreads = threadCount;
-    const Locale *LOCALES;
-    int32_t nLocales;
-    int32_t testCounts = 0;
-
     UErrorCode status = U_ZERO_ERROR;
     LocalPointer <Calendar> cal(Calendar::createInstance(TimeZone::createTimeZone((UnicodeString) "UTC"), status));
     if (U_FAILURE(status)) {
@@ -460,10 +461,8 @@ TimeZoneFormatTest::TestTimeRoundTrip(void) {
         return;
     }
 
-    UDate times[UPRV_LENGTHOF(PATTERNS)];
-    for (int32_t i = 0; i < UPRV_LENGTHOF(PATTERNS); i++) {
-        times[i] = 0;
-    }
+    LocaleData localeData;
+    gLocaleData = &localeData;
 
     // Set up test locales
     const Locale locales1[] = {Locale("en")};
@@ -480,33 +479,24 @@ TimeZoneFormatTest::TestTimeRoundTrip(void) {
     };
 
     if (bTestAll) {
-        LOCALES = Locale::getAvailableLocales(nLocales);
+        gLocaleData->locales = Locale::getAvailableLocales(gLocaleData->nLocales);
     } else if (quick) {
-        LOCALES = locales1;
-        nLocales = sizeof(locales1)/sizeof(Locale);
+        gLocaleData->locales = locales1;
+        gLocaleData->nLocales = UPRV_LENGTHOF(locales1);
     } else {
-        LOCALES = locales2;
-        nLocales = sizeof(locales2)/sizeof(Locale);
+        gLocaleData->locales = locales2;
+        gLocaleData->nLocales = UPRV_LENGTHOF(locales2);
     }
 
-    LocaleData localeData;
-
-    gLocaleData = &localeData;
-    gLocaleData->testCounts = testCounts;
-    gLocaleData->times = times;
-    gLocaleData->locales = LOCALES;
-    gLocaleData->nLocales = nLocales;
-    gLocaleData->quick = quick;
     gLocaleData->START_TIME = START_TIME;
     gLocaleData->END_TIME = END_TIME;
-    gLocaleData->numDone = 0;
     gLocaleData->resetTestIteration();
 
-    // start nThreads threads, each running the function RunTimeRoundTripTests().
+    // start IntlTest.threadCount threads, each running the function RunTimeRoundTripTests().
 
-    ThreadPool<TimeZoneFormatTest> threads(this, nThreads, &TimeZoneFormatTest::RunTimeRoundTripTests);
-    threads.start();
-    threads.join();  // Wait for all threads to finish.
+    ThreadPool<TimeZoneFormatTest> threads(this, threadCount, &TimeZoneFormatTest::RunTimeRoundTripTests);
+    threads.start();   // Start all threads.
+    threads.join();    // Wait for all threads to finish.
 
     UDate total = 0;
     logln("### Elapsed time by patterns ###");
@@ -518,6 +508,12 @@ TimeZoneFormatTest::TestTimeRoundTrip(void) {
     logln((UnicodeString) "Iteration: " + gLocaleData->testCounts);
 }
 
+
+// TimeZoneFormatTest::RunTimeRoundTripTests()
+//    This function loops, running time zone format round trip test cases until there are no more, then returns.
+//    Threading: multiple invocations of this function are started in parallel 
+//               by TimeZoneFormatTest::TestTimeRoundTrip()
+//    
 void TimeZoneFormatTest::RunTimeRoundTripTests(int32_t threadNumber) {
     UErrorCode status = U_ZERO_ERROR;
     UBool REALLY_VERBOSE = FALSE;
@@ -544,11 +540,8 @@ void TimeZoneFormatTest::RunTimeRoundTripTests(int32_t threadNumber) {
     StringEnumeration *tzids = TimeZone::createTimeZoneIDEnumeration(UCAL_ZONE_TYPE_CANONICAL, NULL, NULL, status);
     if (U_FAILURE(status)) {
         if (status == U_MISSING_RESOURCE_ERROR) {
-            /* This error is generally caused by data not being present. However, an infinite loop will occur
-             * because the thread thinks that the test data is never done so we should treat the data as done.
-             */
+            // This error is generally caused by data not being present.
             dataerrln("TimeZone::createTimeZoneIDEnumeration failed - %s", u_errorName(status));
-            gLocaleData->numDone = gLocaleData->nLocales;
         } else {
             errln("TimeZone::createTimeZoneIDEnumeration failed: %s", u_errorName(status));
         }
@@ -557,13 +550,6 @@ void TimeZoneFormatTest::RunTimeRoundTripTests(int32_t threadNumber) {
 
     int32_t locidx = -1;
     int32_t patidx = -1;
-
-    UDate times[UPRV_LENGTHOF(PATTERNS)];
-    for (int32_t i = 0; i < UPRV_LENGTHOF(PATTERNS); i++) {
-        times[i] = 0;
-    }
-
-    int32_t testCounts = 0;
 
     while (gLocaleData->nextTest(locidx, patidx)) {
 
@@ -652,14 +638,17 @@ void TimeZoneFormatTest::RunTimeRoundTripTests(int32_t threadNumber) {
                     }
                 }
                 for (int32_t testidx = 0; testidx < testLen; testidx++) {
-                    if (gLocaleData->quick) {
+                    if (quick) {
                         // reduce regular test time
                         if (!expectedRoundTrip[testidx]) {
                             continue;
                         }
                     }
 
-                    testCounts++;
+                    {
+                        Mutex lock;
+                        gLocaleData->testCounts++;
+                    }
 
                     UnicodeString text;
                     FieldPosition fpos(0);
@@ -958,7 +947,7 @@ TimeZoneFormatTest::TestISOFormat(void) {
     }
     UDate d = Calendar::getNow();
 
-    for (uint32_t i = 0; i < sizeof(OFFSET)/sizeof(OFFSET[0]); i++) {
+    for (uint32_t i = 0; i < UPRV_LENGTHOF(OFFSET); i++) {
         SimpleTimeZone* tz = new SimpleTimeZone(OFFSET[i], UnicodeString("Zone Offset:") + OFFSET[i] + "ms");
         sdf->adoptTimeZone(tz);
         for (int32_t j = 0; PATTERN[j] != 0; j++) {

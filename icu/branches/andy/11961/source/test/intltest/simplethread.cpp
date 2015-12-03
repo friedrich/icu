@@ -295,33 +295,45 @@ class ThreadPoolThread: public SimpleThread {
 
 ThreadPoolBase::ThreadPoolBase(IntlTest *test, int32_t howMany) :
         fIntlTest(test), fNumThreads(howMany), fThreads(NULL) {
-}
-
-void ThreadPoolBase::initThreads() {
     fThreads = new SimpleThread *[fNumThreads];
+    if (fThreads == NULL) {
+        fIntlTest->errln("%s:%d memory allocation failure.", __FILE__, __LINE__);
+        return;
+    }
+
     for (int i=0; i<fNumThreads; i++) {
         fThreads[i] = new ThreadPoolThread(this, i);
+        if (fThreads[i] == NULL) {
+            fIntlTest->errln("%s:%d memory allocation failure.", __FILE__, __LINE__);
+        }
     }
 }
 
 void ThreadPoolBase::start() {
     for (int i=0; i<fNumThreads; i++) {
-        fThreads[i]->start();
+        if (fThreads && fThreads[i]) {
+            fThreads[i]->start();
+        }
     }
 }
 
 void ThreadPoolBase::join() {
     for (int i=0; i<fNumThreads; i++) {
-        fThreads[i]->join();
+        if (fThreads && fThreads[i]) {
+            fThreads[i]->join();
+        }
     }
 }
 
 ThreadPoolBase::~ThreadPoolBase() {
-    for (int i=0; i<fNumThreads; i++) {
-        delete fThreads[i];
-        fThreads[i] = NULL;
+    if (fThreads) {
+        for (int i=0; i<fNumThreads; i++) {
+            delete fThreads[i];
+            fThreads[i] = NULL;
+        }
+        delete fThreads;
+        fThreads = NULL;
     }
-    delete fThreads;
 }
 
 
