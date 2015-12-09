@@ -271,8 +271,8 @@ void IntlTestSimpleDateFormatAPI::testAPI(/*char *par*/)
     }
 
 // ====== Test ticket 11295 getNumberFormatForField returns wild pointer
-    if (object.getNumberFormatForField('B') != NULL) {
-        errln("B is not a valid field, "
+    if (object.getNumberFormatForField('N') != NULL) {
+        errln("N is not a valid field, "
               "getNumberFormatForField should return NULL");
     }
 }

@@ -408,6 +408,25 @@ public:
      */
     void setAmPmStrings(const UnicodeString* ampms, int32_t count);
 
+    /**
+     * Gets day period strings by width and context. For example: "in the morning", "in the afternoon", etc.
+     * @param count Filled in with length of the array.
+     * @param context The formatting context, either FORMAT or STANDALONE
+     * @param width   The width of returned strings, WIDE, NARROW, or ABBREVIATED (= SHORT).
+     * @return the day period strings. (DateFormatSymbols retains ownership.)
+     */
+    const UnicodeString* getDayPeriods(int32_t& count, DtContextType context, DtWidthType width) const;
+
+    /**
+     * Sets day period strings by width and context. For example: "in the morning", "in the afternoon", etc.
+     *
+     * @param dayPeriods  The new day period strings. (not adopted; caller retains ownership)
+     * @param count   Filled in with length of the array.
+     * @param context The formatting context, either FORMAT or STANDALONE
+     * @param width   The width of returned strings, WIDE, NARROW, or ABBREVIATED (= SHORT). 
+     */
+    void setDayPeriods(const UnicodeString* dayPeriods, int32_t count, DtContextType context, DtWidthType width);
+
 #ifndef U_HIDE_INTERNAL_API
     /**
      * This default time separator is used for formatting when the locale
@@ -795,6 +814,28 @@ private:
      */
     UnicodeString  *fShortZodiacNames;
     int32_t         fShortZodiacNamesCount;
+
+    /**
+     * Day period strings. e.g. "in the morning", "at night", etc.
+     * Short = Abbreviated.
+     */
+    UnicodeString  *fAbbreviatedDayPeriods;
+    int32_t         fAbbreviatedDayPeriodsCount;
+
+    UnicodeString  *fWideDayPeriods;
+    int32_t         fWideDayPeriodsCount;
+
+    UnicodeString  *fNarrowDayPeriods;
+    int32_t         fNarrowDayPeriodsCount;
+
+    UnicodeString  *fStandaloneAbbreviatedDayPeriods;
+    int32_t         fStandaloneAbbreviatedDayPeriodsCount;
+
+    UnicodeString  *fStandaloneWideDayPeriods;
+    int32_t         fStandaloneWideDayPeriodsCount;
+
+    UnicodeString  *fStandaloneNarrowDayPeriods;
+    int32_t         fStandaloneNarrowDayPeriodsCount;
 
     /**
      * Localized names of time zones in this locale.  This is a

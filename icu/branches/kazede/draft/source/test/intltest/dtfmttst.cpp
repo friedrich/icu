@@ -9,19 +9,24 @@
 #if !UCONFIG_NO_FORMATTING
 
 #include "dtfmttst.h"
-#include "unicode/localpointer.h"
-#include "unicode/timezone.h"
-#include "unicode/gregocal.h"
-#include "unicode/smpdtfmt.h"
+
 #include "unicode/datefmt.h"
-#include "unicode/dtptngen.h"
-#include "unicode/simpletz.h"
-#include "unicode/strenum.h"
 #include "unicode/dtfmtsym.h"
-#include "cmemory.h"
-#include "cstring.h"
+#include "unicode/dtptngen.h"
+#include "unicode/gregocal.h"
+#include "unicode/localpointer.h"
+#include "unicode/simpletz.h"
+#include "unicode/smpdtfmt.h"
+#include "unicode/strenum.h"
+#include "unicode/timezone.h"
+
 #include "caltest.h"  // for fieldName
+#include "cstr.h"
+#include "cstring.h"
+#include "cmemory.h"
+
 #include <stdio.h> // for sprintf
+
 
 #if U_PLATFORM_HAS_WIN32_API
 #include "windttst.h"
@@ -115,7 +120,221 @@ void DateFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &nam
 
     TESTCASE_AUTO(TestPatternFromSkeleton);
 
+    TESTCASE_AUTO(TestAmPmNoonMidnightGeneralBehavior);
+    TESTCASE_AUTO(TestDayPeriodGeneralBehavior);
+    TESTCASE_AUTO(TestMidnightDisplayPrecision);
+
     TESTCASE_AUTO_END;
+}
+
+void DateFormatTest::TestAmPmNoonMidnightGeneralBehavior() {
+    UErrorCode error = U_ZERO_ERROR;
+    SimpleDateFormat sdf = SimpleDateFormat(UnicodeString(), Locale::getUS(), error);
+    sdf.setTimeZone(*TimeZone::getGMT());
+    UnicodeString out;
+    FieldPosition pos(0);
+
+    // Some moments on 2015-11-13.
+    UDate kTime_00 = 1447372800000.0;  // 12 am.
+    UDate kTime_06 = 1447394400000.0;  //  6 am.
+    UDate kTime_12 = 1447416000000.0;  // 12 pm.
+    UDate kTime_18 = 1447437600000.0;  //  6 pm.
+
+    // Short.
+    sdf.applyPattern(UnicodeString("hh:mm:ss bbb"));
+    
+    sdf.format(kTime_00, out, pos, error);
+    assertEquals("hh:mm:ss bbb | 12 am", "12:00:00 midnight", out);
+    out.remove();
+
+    sdf.format(kTime_06, out, pos, error);
+    assertEquals("hh:mm:ss bbb | 6 am", "06:00:00 AM", out);
+    out.remove();
+
+    sdf.format(kTime_12, out, pos, error);
+    assertEquals("hh:mm:ss bbb | 12 pm", "12:00:00 noon", out);
+    out.remove();
+
+    sdf.format(kTime_18, out, pos, error);
+    assertEquals("hh:mm:ss bbb | 6 pm", "06:00:00 PM", out);
+    out.remove();
+
+    // Wide.
+    sdf.applyPattern(UnicodeString("hh:mm:ss bbbb"));
+    
+    sdf.format(kTime_00, out, pos, error);
+    assertEquals("hh:mm:ss bbbb | 12 am", "12:00:00 midnight", out);
+    out.remove();
+
+    sdf.format(kTime_06, out, pos, error);
+    assertEquals("hh:mm:ss bbbb | 6 am", "06:00:00 AM", out);
+    out.remove();
+
+    sdf.format(kTime_12, out, pos, error);
+    assertEquals("hh:mm:ss bbbb | 12 pm", "12:00:00 noon", out);
+    out.remove();
+
+    sdf.format(kTime_18, out, pos, error);
+    assertEquals("hh:mm:ss bbbb | 6 pm", "06:00:00 PM", out);
+    out.remove();
+
+    // Narrow.
+    sdf.applyPattern(UnicodeString("hh:mm:ss bbbbb"));
+    
+    sdf.format(kTime_00, out, pos, error);
+    assertEquals("hh:mm:ss bbbbb | 12 am", "12:00:00 mi", out);
+    out.remove();
+
+    sdf.format(kTime_06, out, pos, error);
+    assertEquals("hh:mm:ss bbbbb | 6 am", "06:00:00 AM", out);
+    out.remove();
+
+    sdf.format(kTime_12, out, pos, error);
+    assertEquals("hh:mm:ss bbbbb | 12 pm", "12:00:00 n", out);
+    out.remove();
+
+    sdf.format(kTime_18, out, pos, error);
+    assertEquals("hh:mm:ss bbbbb | 6 pm", "06:00:00 PM", out);
+    out.remove();
+}
+
+void DateFormatTest::TestDayPeriodGeneralBehavior() {
+    UErrorCode error = U_ZERO_ERROR;
+    SimpleDateFormat sdf = SimpleDateFormat(UnicodeString(), Locale::getUS(), error);
+    sdf.setTimeZone(*TimeZone::getGMT());
+    UnicodeString out;
+    FieldPosition pos(0);
+
+    UDate kTime_00 = 1447372800000.0;  // 12 am; midnight.
+    UDate kTime_01 = 1447376400000.0;  //  1 am; night.
+    UDate kTime_06 = 1447394400000.0;  //  6 am; morning.
+    UDate kTime_12 = 1447416000000.0;  // 12 pm; noon.
+    UDate kTime_13 = 1447419600000.0;  //  1 pm; afternoon.
+    UDate kTime_18 = 1447437600000.0;  //  6 pm; evening.
+    UDate kTime_21 = 1447448400000.0;  //  9 pm; night (again).
+
+    // Short. Same as wide ("BBBB"), at least for now in the US.
+    sdf.applyPattern(UnicodeString("h BBB"));
+
+    sdf.format(kTime_00, out, pos, error);
+    assertEquals("h BBB | 12 am", "12 midnight", out);
+    out.remove();
+
+    sdf.format(kTime_01, out, pos, error);
+    assertEquals("h BBB | 1 am", "1 at night", out);
+    out.remove();
+
+    sdf.format(kTime_06, out, pos, error);
+    assertEquals("h BBB | 6 am", "6 in the morning", out);
+    out.remove();
+
+    sdf.format(kTime_12, out, pos, error);
+    assertEquals("h BBB | 12 pm", "12 noon", out);
+    out.remove();
+
+    sdf.format(kTime_13, out, pos, error);
+    assertEquals("h BBB | 1 pm", "1 in the afternoon", out);
+    out.remove();
+
+    sdf.format(kTime_18, out, pos, error);
+    assertEquals("h BBB | 6 pm", "6 in the evening", out);
+    out.remove();
+
+    sdf.format(kTime_21, out, pos, error);
+    assertEquals("h BBB | 9 pm", "9 at night", out);
+    out.remove();
+
+    // Narrow.
+    sdf.applyPattern(UnicodeString("h BBBBB"));
+
+    sdf.format(kTime_00, out, pos, error);
+    assertEquals("h BBBBB | 12 am", "12 mi", out);
+    out.remove();
+
+    sdf.format(kTime_01, out, pos, error);
+    assertEquals("h BBBBB | 1 am", "1 at night", out);
+    out.remove();
+
+    sdf.format(kTime_06, out, pos, error);
+    assertEquals("h BBBBB | 6 am", "6 in the morning", out);
+    out.remove();
+
+    sdf.format(kTime_12, out, pos, error);
+    assertEquals("h BBBBB | 12 pm", "12 n", out);
+    out.remove();
+
+    sdf.format(kTime_13, out, pos, error);
+    assertEquals("h BBBBB | 1 pm", "1 in the afternoon", out);
+    out.remove();
+
+    sdf.format(kTime_18, out, pos, error);
+    assertEquals("h BBBBB | 6 pm", "6 in the evening", out);
+    out.remove();
+
+    sdf.format(kTime_21, out, pos, error);
+    assertEquals("h BBBBB | 9 pm", "9 at night", out);
+    out.remove(); 
+}
+
+void DateFormatTest::TestMidnightDisplayPrecision() {
+    // For date pattern characters 'b' and 'B':
+    // "Midnight" should be printed, and only printed, when the formatted time
+    // could be interpreted as exactly midnight.
+
+    UErrorCode error = U_ZERO_ERROR;
+    SimpleDateFormat sdf = SimpleDateFormat(UnicodeString(), error);
+    sdf.setTimeZone(*TimeZone::getGMT());
+    UnicodeString out;
+    FieldPosition pos(0);
+
+    UDate kMidnight = 1447372800000.0;     // 2015-11-13 00:00:00 UTC
+    UDate kSecondsPast = 1447372830000.0;  // 2015-11-13 00:00:30 UTC
+    UDate kMinutesPast = 1447374600000.0;  // 2015-11-13 00:30:00 UTC
+
+    sdf.applyPattern(UnicodeString("hh:mm:ss bbb"));
+    
+    sdf.format(kMidnight, out, pos, error);
+    assertEquals("hh:mm:ss bbb | kMidnight", "12:00:00 midnight", out);
+    out.remove();
+
+    sdf.format(kSecondsPast, out, pos, error);
+    assertEquals("hh:mm:ss bbb | kSecondsPast", "12:00:30 AM", out);
+    out.remove();
+
+
+    sdf.format(kMinutesPast, out, pos, error);
+    assertEquals("hh:mm:ss bbb | kMinutesPast", "12:30:00 AM", out);
+    out.remove();
+
+    /******************************************************/
+
+    sdf.applyPattern(UnicodeString("hh:mm bbb"));
+    sdf.format(kMidnight, out, pos, error);
+    assertEquals("hh:mm bbb | kMidnight", "12:00 midnight", out);
+    out.remove();
+
+    sdf.format(kSecondsPast, out, pos, error);
+    assertEquals("hh:mm bbb | kSecondsPast", "12:00 midnight", out);
+    out.remove();
+
+    sdf.format(kMinutesPast, out, pos, error);
+    assertEquals("hh:mm bbb | kMinutesPast", "12:30 AM", out);
+    out.remove();
+
+    /******************************************************/
+
+    sdf.applyPattern(UnicodeString("hh bbb"));
+    sdf.format(kMidnight, out, pos, error);
+    assertEquals("hh bbb | kMidnight", "12 midnight", out);
+    out.remove();
+
+    sdf.format(kSecondsPast, out, pos, error);
+    assertEquals("hh bbb | kSecondsPast", "12 midnight", out);
+    out.remove();
+
+    sdf.format(kMinutesPast, out, pos, error);
+    assertEquals("hh bbb | kMinutesPast", "12 midnight", out);
+    out.remove();
 }
 
 void DateFormatTest::TestPatterns() {
@@ -436,9 +655,9 @@ DateFormatTest::escape(UnicodeString& s)
  * This MUST be kept in sync with DateFormatSymbols.gPatternChars.
  */
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
-static const char* PATTERN_CHARS = "GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxr:";
+static const char* PATTERN_CHARS = "GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxrbB:";
 #else
-static const char* PATTERN_CHARS = "GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxr";
+static const char* PATTERN_CHARS = "GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxrbB";
 #endif
 
 /**
@@ -481,6 +700,8 @@ static const char* DATEFORMAT_FIELD_NAMES[] = {
     "TIMEZONE_ISO_FIELD",
     "TIMEZONE_ISO_LOCAL_FIELD",
     "RELATED_YEAR_FIELD",
+    "AM_PM_NOON_MIDNIGHT_FIELD",
+    "DAY_PERIOD_FIELD",
     "UDAT_TIME_SEPARATOR_FIELD",
 };
 
@@ -540,38 +761,40 @@ void DateFormatTest::TestFieldPosition() {
     const char* EXPECTED[] = {
         "", "1997", "August", "13", "", "", "34", "12", "", "Wednesday",
         "", "", "", "", "PM", "2", "", "Pacific Daylight Time", "", "",
-        "", "", "", "", "", "", "", "", "", "",
+        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
-        "", "", "", "", "", ":",
+        ":",
 #else
-        "", "", "", "", "", "",
+        "",
 #endif
 
         "", "1997", "ao\\u00FBt", "13", "", "14", "34", "12", "", "mercredi",
         "", "", "", "", "", "", "", "heure d\\u2019\\u00E9t\\u00E9 du Pacifique", "", "",
-        "", "", "", "", "",  "", "", "", "", "",
+        "", "", "", "", "",  "", "", "", "", "", "", "", "", "", "", "", "",
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
-        "", "", "", "", "", ":",
+        ":",
 #else
-        "", "", "", "", "", "",
+        "",
 #endif
 
         "AD", "1997", "8", "13", "14", "14", "34", "12", "5", "Wed",
         "225", "2", "33", "3", "PM", "2", "2", "PDT", "1997", "4",
         "1997", "2450674", "52452513", "-0700", "PT",  "4", "8", "3", "3", "uslax",
+        "1997", "GMT-7", "-07", "-07", "1997", "PM", "in the afternoon",
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
-        "1997", "GMT-7", "-07", "-07", "1997", ":",
+         ":",
 #else
-        "1997", "GMT-7", "-07", "-07", "1997", "",
+         "",
 #endif
 
         "Anno Domini", "1997", "August", "0013", "0014", "0014", "0034", "0012", "5130", "Wednesday",
         "0225", "0002", "0033", "0003", "PM", "0002", "0002", "Pacific Daylight Time", "1997", "Wednesday",
         "1997", "2450674", "52452513", "GMT-07:00", "Pacific Time",  "Wednesday", "August", "3rd quarter", "3rd quarter", "Los Angeles Time",
+        "1997", "GMT-07:00", "-0700", "-0700", "1997", "PM", "in the afternoon",
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
-        "1997", "GMT-07:00", "-0700", "-0700", "1997", ":",
+        ":",
 #else
-        "1997", "GMT-07:00", "-0700", "-0700", "1997", "",
+        "",
 #endif
     };
 
@@ -4863,6 +5086,8 @@ void DateFormatTest::TestPatternFromSkeleton() {
         assertEquals("Format pattern", TESTDATA[i].pattern, pattern);
     }
 }
+
+
 
 
 #endif /* #if !UCONFIG_NO_FORMATTING */

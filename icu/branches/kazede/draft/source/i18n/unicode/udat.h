@@ -761,6 +761,10 @@ typedef enum UDateFormatField {
     UDAT_RELATED_YEAR_FIELD = 34,
 #endif /* U_HIDE_INTERNAL_API */
 
+    UDAT_AM_PM_NOON_MIDNIGHT_FIELD = 35,
+
+    UDAT_DAY_PERIOD_FIELD = 36,
+
 #ifndef U_HIDE_DRAFT_API
     /**
      * FieldPosition and UFieldPosition selector for time separator,
@@ -768,8 +772,10 @@ typedef enum UDateFormatField {
      * defined for this.
      * @draft ICU 55
      */
-    UDAT_TIME_SEPARATOR_FIELD = 35,
+    UDAT_TIME_SEPARATOR_FIELD = 37,
 #endif  /* U_HIDE_DRAFT_API */
+
+    
 
    /**
      * Number of FieldPosition and UFieldPosition selectors for
@@ -779,7 +785,7 @@ typedef enum UDateFormatField {
      * in the future.
      * @stable ICU 3.0
      */
-    UDAT_FIELD_COUNT = 36
+    UDAT_FIELD_COUNT = 38
 
 } UDateFormatField;
 

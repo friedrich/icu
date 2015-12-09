@@ -29,39 +29,41 @@
 #include "unicode/utypes.h"
 
 #if !UCONFIG_NO_FORMATTING
-#include "unicode/smpdtfmt.h"
-#include "unicode/dtfmtsym.h"
-#include "unicode/ures.h"
-#include "unicode/msgfmt.h"
-#include "unicode/calendar.h"
-#include "unicode/gregocal.h"
-#include "unicode/timezone.h"
-#include "unicode/decimfmt.h"
-#include "unicode/dcfmtsym.h"
-#include "unicode/uchar.h"
-#include "unicode/uniset.h"
-#include "unicode/ustring.h"
 #include "unicode/basictz.h"
-#include "unicode/simpletz.h"
+#include "unicode/brkiter.h"
+#include "unicode/calendar.h"
+#include "unicode/dcfmtsym.h"
+#include "unicode/decimfmt.h"
+#include "unicode/dtfmtsym.h"
+#include "unicode/gregocal.h"
+#include "unicode/msgfmt.h"
 #include "unicode/rbtz.h"
+#include "unicode/simpletz.h"
+#include "unicode/smpdtfmt.h"
+#include "unicode/timezone.h"
 #include "unicode/tzfmt.h"
+#include "unicode/uchar.h"
+#include "unicode/udisplaycontext.h"
+#include "unicode/uniset.h"
+#include "unicode/ures.h"
+#include "unicode/ustring.h"
 #include "unicode/utf16.h"
 #include "unicode/vtzone.h"
-#include "unicode/udisplaycontext.h"
-#include "unicode/brkiter.h"
-#include "olsontz.h"
-#include "patternprops.h"
+
+#include "cmemory.h"
+#include "cstring.h"
 #include "fphdlimp.h"
 #include "gregoimp.h"
 #include "hebrwcal.h"
-#include "cstring.h"
-#include "uassert.h"
-#include "cmemory.h"
-#include "umutex.h"
-#include <float.h>
-#include "smpdtfst.h"
+#include "olsontz.h"
+#include "patternprops.h"
 #include "sharednumberformat.h"
+#include "smpdtfst.h"
+#include "uassert.h"
+#include "umutex.h"
 #include "ustr_imp.h"
+
+#include <float.h>
 
 #if defined( U_DEBUG_CALSVC ) || defined (U_DEBUG_CAL)
 #include <stdio.h>
@@ -401,9 +403,13 @@ SimpleDateFormat::SimpleDateFormat(const UnicodeString& pattern,
     fDateOverride.setToBogus();
     fTimeOverride.setToBogus();
     initializeBooleanAttributes();
+    
     initializeCalendar(NULL,fLocale,status);
+    
     fSymbols = DateFormatSymbols::createForLocale(fLocale, status);
+    
     initialize(fLocale, status);
+    
     initializeDefaultCentury();
 
 }
@@ -1019,6 +1025,7 @@ SimpleDateFormat::_format(Calendar& cal, UnicodeString& appendTo,
     SimpleDateFormatMutableNFs mutableNFs;
     // loop through the pattern string character by character
     for (int32_t i = 0; i < fPattern.length() && U_SUCCESS(status); ++i) {
+        //printf("%d - %c %d\n", i, prevCh, count);
         UChar ch = fPattern[i];
 
         // Use subFormat() to format a repeated pattern character
@@ -1178,6 +1185,8 @@ SimpleDateFormat::fgPatternIndexToCalendarField[] =
     /*O*/   UCAL_ZONE_OFFSET,
     /*Xx*/  UCAL_ZONE_OFFSET, UCAL_ZONE_OFFSET,
     /*r*/   UCAL_EXTENDED_YEAR,
+    /*b*/ UCAL_AM_PM_NOON_MIDNIGHT,
+    /*B*/ UCAL_DAY_PERIOD,
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
     /*:*/   UCAL_FIELD_COUNT, /* => no useful mapping to any calendar field */
 #else
@@ -1206,6 +1215,8 @@ SimpleDateFormat::fgPatternIndexToDateFormatField[] = {
     /*O*/   UDAT_TIMEZONE_LOCALIZED_GMT_OFFSET_FIELD,
     /*Xx*/  UDAT_TIMEZONE_ISO_FIELD, UDAT_TIMEZONE_ISO_LOCAL_FIELD,
     /*r*/   UDAT_RELATED_YEAR_FIELD,
+    /*b*/   UDAT_AM_PM_NOON_MIDNIGHT_FIELD,
+    /*B*/   UDAT_DAY_PERIOD_FIELD,
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
     /*:*/   UDAT_TIME_SEPARATOR_FIELD,
 #else
@@ -1404,6 +1415,7 @@ SimpleDateFormat::subFormat(UnicodeString &appendTo,
     // text for an individual pattern symbol (e.g., "HH" or "yyyy")
 
     UDateFormatField patternCharIndex = DateFormatSymbols::getPatternCharIndex(ch);
+    
     const int32_t maxIntCount = 10;
     int32_t beginOffset = appendTo.length();
     NumberFormat *currentNumberFormat;
@@ -1420,8 +1432,10 @@ SimpleDateFormat::subFormat(UnicodeString &appendTo,
         }
         return;
     }
+    
 
     UCalendarDateFields field = fgPatternIndexToCalendarField[patternCharIndex];
+
     int32_t value = 0;
     // Don't get value unless it is useful
     if (field < UCAL_FIELD_COUNT) {
@@ -1437,7 +1451,7 @@ SimpleDateFormat::subFormat(UnicodeString &appendTo,
         return;
     }
     UnicodeString hebr("hebr", 4, US_INV);
-    
+
     switch (patternCharIndex) {
 
     // for any "G" symbol, write out the appropriate era string
@@ -1806,6 +1820,102 @@ SimpleDateFormat::subFormat(UnicodeString &appendTo,
             zeroPaddingNumber(currentNumberFormat,appendTo, (value/3) + 1, count, maxIntCount);
         break;
 
+    case UDAT_AM_PM_NOON_MIDNIGHT_FIELD:
+        if (value == 0 || value == 1) {
+            // am or pm
+            _appendSymbol(appendTo, value, fSymbols->fAmPms, fSymbols->fAmPmsCount);
+        } else {
+            UnicodeString toAppend;
+            int32_t arrayIndex;  // f...DayPeriods[0] == noon, [1] == midnight
+            int32_t fallbackValue;  // fAmPms[0] == am, [1] == pm
+
+            if (value == 2) {
+                // noon -- fall back to pm
+                arrayIndex = 0;
+                fallbackValue = 1;
+            } else if (value == 3) {
+                // midnight -- fall back to am
+                arrayIndex = 1;
+                fallbackValue = 0;
+            }
+
+            if (count <= 3) {
+                toAppend = fSymbols->fAbbreviatedDayPeriods[arrayIndex];
+            } else if (count == 4) {
+                toAppend = fSymbols->fWideDayPeriods[arrayIndex];
+            } else if (count == 5) {
+                toAppend = fSymbols->fNarrowDayPeriods[arrayIndex];
+            }
+
+            // If non-zero seconds or non-zero minutes are displayed, use am/pm instead 
+            // of noon/midnight. E.g., thirty seconds past midnight could be formatted as
+            // either "12:00:30 am" or "12:00 midnight", depending on the format string.
+            // Setting toAppend to bogus will force the fallback.
+            if (fPattern.indexOf(UnicodeString("s")) != -1 && cal.get(UCAL_SECOND, status) != 0) {
+                toAppend.setToBogus();
+            }
+            if (fPattern.indexOf(UnicodeString("m")) != -1 && cal.get(UCAL_MINUTE, status) != 0) {
+                toAppend.setToBogus();
+            }
+
+            // toAppend is bogus if resource string does not exist, or if we set it to bogus 
+            // because displayed time shows non-zero seconds or minutes.
+            if (toAppend.isBogus()) {
+                _appendSymbol(appendTo, fallbackValue, fSymbols->fAmPms, fSymbols->fAmPmsCount);
+            } else {
+                appendTo += toAppend;
+            }
+        }
+        break;
+
+    case UDAT_DAY_PERIOD_FIELD:
+    {
+        // Keep a copy of current values of minute and second; see below.
+        int32_t old_minute = cal.get(UCAL_MINUTE, status);
+        int32_t old_second = cal.get(UCAL_SECOND, status);
+        UnicodeString toAppend;
+
+        // If minutes or seconds aren't displayed, set it to zero so that displayed time matches
+        // displayed day period. For example, normally we would return "at night" for 12:30 am, 
+        // but if only the hour is displayed, then it might become "12 midnight".
+        if (fPattern.indexOf(UnicodeString("m")) == -1) {
+            cal.set(UCAL_MINUTE, 0);
+        }
+        if (fPattern.indexOf(UnicodeString("s")) == -1) {
+            cal.set(UCAL_SECOND, 0);
+        }
+
+        // Recalculate value.
+        value = cal.get(UCAL_DAY_PERIOD, status);
+
+        // -1 indicates error of some kind. Fall back to am/pm.
+        if (value == -1) {
+            value = cal.get(UCAL_AM_PM, status);
+            _appendSymbol(appendTo, value, fSymbols->fAmPms, fSymbols->fAmPmsCount);
+            break;
+        }
+
+        if (count <= 3) {
+            toAppend = fSymbols->fAbbreviatedDayPeriods[value];
+        } else if (count == 4) {
+            toAppend = fSymbols->fWideDayPeriods[value];
+        } else if (count == 5) {
+            toAppend = fSymbols->fNarrowDayPeriods[value];
+        }
+
+        // If localized string for this day period doesn't exist, fall back to am/pm.
+        if (toAppend.isBogus()) {
+            value = cal.get(UCAL_AM_PM, status);
+            _appendSymbol(appendTo, value, fSymbols->fAmPms, fSymbols->fAmPmsCount);
+        } else {
+            appendTo += toAppend;
+        }
+
+        // Restore old values for minutes and seconds.
+        cal.set(UCAL_MINUTE, old_minute);
+        cal.set(UCAL_SECOND, old_second);
+        break;
+    }
 
     // all of the other pattern symbols can be formatted as simple numbers with
     // appropriate zero padding
@@ -3287,6 +3397,39 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
 
             return matchString(text, start, UCAL_FIELD_COUNT /* => nothing to set */, data, count, NULL, cal);
         }
+
+    case UDAT_AM_PM_NOON_MIDNIGHT_FIELD:
+        {
+            // f[...]DayPeriods arrays contain 10 strings each, with the first one being noon and second one being midnight.
+            // Restrict search to the first two element to avoid matching phrases such as "in the morning".
+
+            int32_t newStart = 0;
+            // short (== abbreviated): b, bb, bbb
+            if( getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status) || count <= 3 ) {
+
+                if ((newStart = matchString(text, start, UCAL_AM_PM_NOON_MIDNIGHT, fSymbols->fAbbreviatedDayPeriods, 2, NULL, cal)) > 0) {
+                    return newStart;
+                }
+            }
+            // wide: bbbb
+            if( getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status) || count == 4 ) {
+                if ((newStart = matchString(text, start, UCAL_AM_PM_NOON_MIDNIGHT, fSymbols->fWideDayPeriods, 2, NULL, cal)) > 0) {
+                    return newStart;
+                }
+            }
+            // narrow: bbbbb
+            if( getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status) || count == 6 ) {
+                if ((newStart = matchString(text, start, UCAL_AM_PM_NOON_MIDNIGHT, fSymbols->fNarrowDayPeriods, 2, NULL, cal)) > 0) {
+                    return newStart;
+                }
+            }
+
+            // no matches for given options
+            return -start;
+        }
+
+    case UDAT_DAY_PERIOD_FIELD:
+        return start;
 
     default:
         // Handle "generic" fields

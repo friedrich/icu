@@ -22,25 +22,26 @@
 #include "unicode/utypes.h"
 
 #if !UCONFIG_NO_FORMATTING
-#include "unicode/ustring.h"
-#include "unicode/localpointer.h"
+#include "unicode/calendar.h"
 #include "unicode/dtfmtsym.h"
-#include "unicode/smpdtfmt.h"
+#include "unicode/localpointer.h"
 #include "unicode/msgfmt.h"
 #include "unicode/numsys.h"
+#include "unicode/smpdtfmt.h"
 #include "unicode/tznames.h"
-#include "cpputils.h"
-#include "umutex.h"
+#include "unicode/ustring.h"
+
 #include "cmemory.h"
+#include "cpputils.h"
 #include "cstring.h"
-#include "locbased.h"
 #include "gregoimp.h"
 #include "hash.h"
+#include "locbased.h"
+#include "shareddateformatsymbols.h"
+#include "umutex.h"
+#include "unifiedcache.h"
 #include "uresimp.h"
 #include "ureslocs.h"
-#include "shareddateformatsymbols.h"
-#include "unicode/calendar.h"
-#include "unifiedcache.h"
 
 // *****************************************************************************
 // class DateFormatSymbols
@@ -52,9 +53,9 @@
  */
 
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
-#define PATTERN_CHARS_LEN 36
+#define PATTERN_CHARS_LEN 38
 #else
-#define PATTERN_CHARS_LEN 35
+#define PATTERN_CHARS_LEN 37
 #endif
 
 /**
@@ -63,18 +64,18 @@
  */
 static const UChar gPatternChars[] = {
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
-    // GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxr:
+    // GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxrbB:
 #else
-    // GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxr
+    // GyMdkHmsSEDFwWahKzYeugAZvcLQqVUOXxrbB
 #endif
     0x47, 0x79, 0x4D, 0x64, 0x6B, 0x48, 0x6D, 0x73, 0x53, 0x45,
     0x44, 0x46, 0x77, 0x57, 0x61, 0x68, 0x4B, 0x7A, 0x59, 0x65,
     0x75, 0x67, 0x41, 0x5A, 0x76, 0x63, 0x4c, 0x51, 0x71, 0x56,
+    0x55, 0x4F, 0x58, 0x78, 0x72, 0x62, 0x42,
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
-    0x55, 0x4F, 0x58, 0x78, 0x72, 0x3a, 0
-#else
-    0x55, 0x4F, 0x58, 0x78, 0x72, 0
+    0x3a,
 #endif
+    0
 };
 
 /* length of an array */
@@ -219,6 +220,7 @@ static const char gQuartersTag[]="quarters";
 static const char gNumberElementsTag[]="NumberElements";
 static const char gSymbolsTag[]="symbols";
 static const char gTimeSeparatorTag[]="timeSeparator";
+static const char gDayPeriodsTag[]="dayPeriod";
 
 // static const char gZoneStringsTag[]="zoneStrings";
 
@@ -387,6 +389,12 @@ DateFormatSymbols::copyData(const DateFormatSymbols& other) {
     assignArray(fShortQuarters, fShortQuartersCount, other.fShortQuarters, other.fShortQuartersCount);
     assignArray(fStandaloneQuarters, fStandaloneQuartersCount, other.fStandaloneQuarters, other.fStandaloneQuartersCount);
     assignArray(fStandaloneShortQuarters, fStandaloneShortQuartersCount, other.fStandaloneShortQuarters, other.fStandaloneShortQuartersCount);
+    assignArray(fWideDayPeriods, fWideDayPeriodsCount, other.fWideDayPeriods, other.fWideDayPeriodsCount);
+    assignArray(fNarrowDayPeriods, fNarrowDayPeriodsCount, other.fNarrowDayPeriods, other.fNarrowDayPeriodsCount);
+    assignArray(fAbbreviatedDayPeriods, fAbbreviatedDayPeriodsCount, other.fAbbreviatedDayPeriods, other.fAbbreviatedDayPeriodsCount);
+    assignArray(fStandaloneWideDayPeriods, fStandaloneWideDayPeriodsCount, other.fStandaloneWideDayPeriods, other.fStandaloneWideDayPeriodsCount);
+    assignArray(fStandaloneNarrowDayPeriods, fStandaloneNarrowDayPeriodsCount, other.fStandaloneNarrowDayPeriods, other.fStandaloneNarrowDayPeriodsCount);
+    assignArray(fStandaloneAbbreviatedDayPeriods, fStandaloneAbbreviatedDayPeriodsCount, other.fStandaloneAbbreviatedDayPeriods, other.fStandaloneAbbreviatedDayPeriodsCount);
     if (other.fLeapMonthPatterns != NULL) {
         assignArray(fLeapMonthPatterns, fLeapMonthPatternsCount, other.fLeapMonthPatterns, other.fLeapMonthPatternsCount);
     } else {
@@ -470,6 +478,12 @@ void DateFormatSymbols::dispose()
     if (fLeapMonthPatterns)         delete[] fLeapMonthPatterns;
     if (fShortYearNames)            delete[] fShortYearNames;
     if (fShortZodiacNames)          delete[] fShortZodiacNames;
+    if (fAbbreviatedDayPeriods)     delete[] fAbbreviatedDayPeriods;
+    if (fWideDayPeriods)            delete[] fWideDayPeriods;
+    if (fNarrowDayPeriods)          delete[] fNarrowDayPeriods;
+    if (fStandaloneAbbreviatedDayPeriods) delete[] fStandaloneAbbreviatedDayPeriods;
+    if (fStandaloneWideDayPeriods)        delete[] fStandaloneWideDayPeriods;
+    if (fStandaloneNarrowDayPeriods)      delete[] fStandaloneNarrowDayPeriods;
 
     disposeZoneStrings();
 }
@@ -542,6 +556,12 @@ DateFormatSymbols::operator==(const DateFormatSymbols& other) const
         fLeapMonthPatternsCount == other.fLeapMonthPatternsCount &&
         fShortYearNamesCount == other.fShortYearNamesCount &&
         fShortZodiacNamesCount == other.fShortZodiacNamesCount &&
+        fAbbreviatedDayPeriodsCount == other.fAbbreviatedDayPeriodsCount &&
+        fWideDayPeriodsCount == other.fWideDayPeriodsCount &&
+        fNarrowDayPeriodsCount == other.fNarrowDayPeriodsCount &&
+        fAbbreviatedDayPeriodsCount == other.fAbbreviatedDayPeriodsCount &&
+        fStandaloneWideDayPeriodsCount == other.fStandaloneWideDayPeriodsCount &&
+        fStandaloneNarrowDayPeriodsCount == other.fStandaloneNarrowDayPeriodsCount &&
         (uprv_memcmp(fCapitalization, other.fCapitalization, sizeof(fCapitalization))==0))
     {
         // Now compare the arrays themselves
@@ -571,7 +591,13 @@ DateFormatSymbols::operator==(const DateFormatSymbols& other) const
             arrayCompare(fStandaloneShortQuarters, other.fStandaloneShortQuarters, fStandaloneShortQuartersCount) &&
             arrayCompare(fLeapMonthPatterns, other.fLeapMonthPatterns, fLeapMonthPatternsCount) &&
             arrayCompare(fShortYearNames, other.fShortYearNames, fShortYearNamesCount) &&
-            arrayCompare(fShortZodiacNames, other.fShortZodiacNames, fShortZodiacNamesCount))
+            arrayCompare(fShortZodiacNames, other.fShortZodiacNames, fShortZodiacNamesCount) &&
+            arrayCompare(fAbbreviatedDayPeriods, other.fAbbreviatedDayPeriods, fAbbreviatedDayPeriodsCount) &&
+            arrayCompare(fWideDayPeriods, other.fWideDayPeriods, fWideDayPeriodsCount) &&
+            arrayCompare(fNarrowDayPeriods, other.fNarrowDayPeriods, fNarrowDayPeriodsCount) &&
+            arrayCompare(fStandaloneAbbreviatedDayPeriods, other.fStandaloneAbbreviatedDayPeriods, fStandaloneAbbreviatedDayPeriodsCount) &&
+            arrayCompare(fStandaloneWideDayPeriods, other.fStandaloneWideDayPeriods, fStandaloneWideDayPeriodsCount) &&
+            arrayCompare(fStandaloneNarrowDayPeriods, other.fStandaloneNarrowDayPeriods, fStandaloneWideDayPeriodsCount))
         {
             // Compare the contents of fZoneStrings
             if (fZoneStrings == NULL && other.fZoneStrings == NULL) {
@@ -864,6 +890,125 @@ DateFormatSymbols::setZodiacNames(const UnicodeString* zodiacNames, int32_t coun
         fShortZodiacNamesCount = count;
     }
 }
+
+const UnicodeString*
+DateFormatSymbols::getDayPeriods(int32_t &count, DtContextType context, DtWidthType width ) const
+{
+    UnicodeString *returnValue = NULL;
+
+    switch (context) {
+    case FORMAT:
+        switch(width) {
+        case WIDE:
+            count = fWideDayPeriodsCount;
+            returnValue = fWideDayPeriods;
+            break;
+        case ABBREVIATED:
+        case SHORT: // Spec says 'short' but data says 'abbreviated'; treated as the same.
+            count = fAbbreviatedDayPeriodsCount;
+            returnValue = fAbbreviatedDayPeriods;
+            break;
+        case NARROW:
+            count = fNarrowDayPeriodsCount;
+            returnValue = fNarrowDayPeriods;
+            break;
+        default:
+            break;
+        }
+        break;
+    case STANDALONE:
+        switch(width) {
+        case WIDE:
+            count = fStandaloneWideDayPeriodsCount;
+            returnValue = fStandaloneWideDayPeriods;
+            break;
+        case ABBREVIATED:
+        case SHORT: // See above.
+            count = fStandaloneAbbreviatedDayPeriodsCount;
+            returnValue = fStandaloneAbbreviatedDayPeriods;
+            break;
+        case NARROW:
+            count = fStandaloneNarrowDayPeriodsCount;
+            returnValue = fStandaloneNarrowDayPeriods;
+            break;
+        default:
+            break;
+        }
+        break;
+    default:
+        break;
+    }
+    return returnValue;
+}
+
+void
+DateFormatSymbols::setDayPeriods(const UnicodeString* inArray, int32_t count, DtContextType context, DtWidthType width)
+{
+    // Caller retains ownership of inArray.
+    // We delete[] the original array if present, then make a copy of inArray.
+
+    switch (context) {
+    case FORMAT:
+        switch (width) {
+        case WIDE:
+            if (fWideDayPeriods)
+                delete[] fWideDayPeriods;
+            fWideDayPeriods = newUnicodeStringArray(count);
+            uprv_arrayCopy(inArray, fWideDayPeriods, count);
+            fWideDayPeriodsCount = count;
+            break;
+        case ABBREVIATED:
+        case SHORT: // See getter note.
+            if (fAbbreviatedDayPeriods)
+                delete[] fAbbreviatedDayPeriods;
+            fAbbreviatedDayPeriods = newUnicodeStringArray(count);
+            uprv_arrayCopy(inArray, fAbbreviatedDayPeriods, count);
+            fAbbreviatedDayPeriodsCount = count;
+            break;
+        case NARROW:
+            if (fNarrowDayPeriods)
+                delete[] fNarrowDayPeriods;
+            fNarrowDayPeriods = newUnicodeStringArray(count);
+            uprv_arrayCopy(inArray, fNarrowDayPeriods, count);
+            fNarrowDayPeriodsCount = count;
+            break; 
+        default:
+            break;
+        }
+        break;
+    case STANDALONE:
+        switch (width) {
+        case WIDE:
+            if (fStandaloneWideDayPeriods)
+                delete[] fStandaloneWideDayPeriods;
+            fStandaloneWideDayPeriods = newUnicodeStringArray(count);
+            uprv_arrayCopy(inArray, fStandaloneWideDayPeriods, count);
+            fStandaloneWideDayPeriodsCount = count;
+            break;
+        case ABBREVIATED:
+        case SHORT: // See getter note.
+            if (fStandaloneAbbreviatedDayPeriods)
+                delete[] fStandaloneAbbreviatedDayPeriods;
+            fStandaloneAbbreviatedDayPeriods = newUnicodeStringArray(count);
+            uprv_arrayCopy(inArray, fStandaloneAbbreviatedDayPeriods, count);
+            fStandaloneAbbreviatedDayPeriodsCount = count;
+            break;
+        case NARROW:
+           if (fStandaloneNarrowDayPeriods)
+                delete[] fStandaloneNarrowDayPeriods;
+            fStandaloneNarrowDayPeriods = newUnicodeStringArray(count);
+            uprv_arrayCopy(inArray, fStandaloneNarrowDayPeriods, count);
+            fStandaloneNarrowDayPeriodsCount = count;
+            break; 
+        default:
+            break;
+        }
+        break;
+    default:
+        break;
+    }
+}
+
 
 //------------------------------------------------------
 
@@ -1535,6 +1680,18 @@ DateFormatSymbols::initializeData(const Locale& locale, const char *type, UError
     fShortYearNamesCount = 0;
     fShortZodiacNames = NULL;
     fShortZodiacNamesCount = 0;
+    fAbbreviatedDayPeriods = NULL;
+    fAbbreviatedDayPeriodsCount = 0;
+    fWideDayPeriods = NULL;
+    fWideDayPeriodsCount = 0;
+    fNarrowDayPeriods = NULL;
+    fNarrowDayPeriodsCount = 0;
+    fStandaloneAbbreviatedDayPeriods = NULL;
+    fStandaloneAbbreviatedDayPeriodsCount = 0;
+    fStandaloneWideDayPeriods = NULL;
+    fStandaloneWideDayPeriodsCount = 0;
+    fStandaloneNarrowDayPeriods = NULL;
+    fStandaloneNarrowDayPeriodsCount = 0;
     fZoneStringsRowCount = 0;
     fZoneStringsColCount = 0;
     fZoneStrings = NULL;
@@ -1695,6 +1852,91 @@ DateFormatSymbols::initializeData(const Locale& locale, const char *type, UError
     if (fTimeSeparator.isBogus()) {
         fTimeSeparator.setTo(DateFormatSymbols::DEFAULT_TIME_SEPARATOR);
     }
+
+
+    // refactor needed
+    static const char *dayPeriodKeys[] = {"noon", "midnight", 
+                         "morning1", "afternoon1", "evening1", "night1",
+                         "morning2", "afternoon2", "evening2", "night2"};
+
+    UResourceBundle *dayPeriodsData = calData.getByKey2(gDayPeriodsTag, gNamesWideTag, status);
+    fWideDayPeriodsCount = 10;
+    fWideDayPeriods = new UnicodeString[fWideDayPeriodsCount];
+    for (int i = 0; i < fWideDayPeriodsCount; ++i) {
+        resStr = ures_getStringByKey(dayPeriodsData, dayPeriodKeys[i], &len, &status);
+        if (U_SUCCESS(status)) {
+            fWideDayPeriods[i].setTo(TRUE, resStr, len);
+        } else if (status == U_MISSING_RESOURCE_ERROR) {
+            fWideDayPeriods[i].setToBogus();
+            status = U_ZERO_ERROR;
+        }
+    }
+
+    dayPeriodsData = calData.getByKey2(gDayPeriodsTag, gNamesNarrowTag, status);
+    fNarrowDayPeriodsCount = 10;
+    fNarrowDayPeriods = new UnicodeString[fNarrowDayPeriodsCount];
+    for (int i = 0; i < fNarrowDayPeriodsCount; ++i) {
+        resStr = ures_getStringByKey(dayPeriodsData, dayPeriodKeys[i], &len, &status);
+        if (U_SUCCESS(status)) {
+            fNarrowDayPeriods[i].setTo(TRUE, resStr, len);
+        } else if (status == U_MISSING_RESOURCE_ERROR) {
+            fNarrowDayPeriods[i].setToBogus();
+            status = U_ZERO_ERROR;
+        }
+    }
+
+    dayPeriodsData = calData.getByKey2(gDayPeriodsTag, gNamesAbbrTag, status);
+    fAbbreviatedDayPeriodsCount = 10;
+    fAbbreviatedDayPeriods = new UnicodeString[fAbbreviatedDayPeriodsCount];
+    for (int i = 0; i < fAbbreviatedDayPeriodsCount; ++i) {
+        resStr = ures_getStringByKey(dayPeriodsData, dayPeriodKeys[i], &len, &status);
+        if (U_SUCCESS(status)) {
+            fAbbreviatedDayPeriods[i].setTo(TRUE, resStr, len);
+        } else if (status == U_MISSING_RESOURCE_ERROR) {
+            fAbbreviatedDayPeriods[i].setToBogus();
+            status = U_ZERO_ERROR;
+        }
+    }
+
+    dayPeriodsData = calData.getByKey3(gDayPeriodsTag, gNamesStandaloneTag, gNamesWideTag, status);
+    fStandaloneWideDayPeriodsCount = 10;
+    fStandaloneWideDayPeriods = new UnicodeString[fStandaloneWideDayPeriodsCount];
+    for (int i = 0; i < fStandaloneWideDayPeriodsCount; ++i) {
+        resStr = ures_getStringByKey(dayPeriodsData, dayPeriodKeys[i], &len, &status);
+        if (U_SUCCESS(status)) {
+            fStandaloneWideDayPeriods[i].setTo(TRUE, resStr, len);
+        } else if (status == U_MISSING_RESOURCE_ERROR) {
+            fStandaloneWideDayPeriods[i].setToBogus();
+            status = U_ZERO_ERROR;
+        }
+    }
+
+    dayPeriodsData = calData.getByKey3(gDayPeriodsTag, gNamesStandaloneTag, gNamesNarrowTag, status);
+    fStandaloneNarrowDayPeriodsCount = 10;
+    fStandaloneNarrowDayPeriods = new UnicodeString[fStandaloneNarrowDayPeriodsCount];
+    for (int i = 0; i < fStandaloneNarrowDayPeriodsCount; ++i) {
+        resStr = ures_getStringByKey(dayPeriodsData, dayPeriodKeys[i], &len, &status);
+        if (U_SUCCESS(status)) {
+            fStandaloneNarrowDayPeriods[i].setTo(TRUE, resStr, len);
+        } else if (status == U_MISSING_RESOURCE_ERROR) {
+            fStandaloneNarrowDayPeriods[i].setToBogus();
+            status = U_ZERO_ERROR;
+        }
+    }
+
+    dayPeriodsData = calData.getByKey3(gDayPeriodsTag, gNamesStandaloneTag, gNamesAbbrTag, status);
+    fStandaloneAbbreviatedDayPeriodsCount = 10;
+    fStandaloneAbbreviatedDayPeriods = new UnicodeString[fStandaloneAbbreviatedDayPeriodsCount];
+    for (int i = 0; i < fStandaloneAbbreviatedDayPeriodsCount; ++i) {
+        resStr = ures_getStringByKey(dayPeriodsData, dayPeriodKeys[i], &len, &status);
+        if (U_SUCCESS(status)) {
+            fStandaloneAbbreviatedDayPeriods[i].setTo(TRUE, resStr, len);
+        } else if (status == U_MISSING_RESOURCE_ERROR) {
+            fStandaloneAbbreviatedDayPeriods[i].setToBogus();
+            status = U_ZERO_ERROR;
+        }
+    }
+
 
     UResourceBundle *weekdaysData = NULL; // Data closed by calData
     UResourceBundle *abbrWeekdaysData = NULL; // Data closed by calData
@@ -1986,6 +2228,7 @@ DateFormatSymbols::initializeData(const Locale& locale, const char *type, UError
         fStandaloneNarrowWeekdays[i+1].setTo(TRUE, resStr, len);
     }
     fStandaloneNarrowWeekdaysCount++;
+
 
 cleanup:
     ures_close(eras);

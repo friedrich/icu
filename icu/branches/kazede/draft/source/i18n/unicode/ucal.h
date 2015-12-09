@@ -423,6 +423,12 @@ enum UCalendarDateFields {
    */
   UCAL_IS_LEAP_MONTH,
 
+  /* Similar to UCAL_AM_PM, but with noon and midnight. */
+  UCAL_AM_PM_NOON_MIDNIGHT,
+
+  /* Finer day periods, such as "in the morning". */
+  UCAL_DAY_PERIOD,
+
   /**
    * Field count
    * @stable ICU 2.6
@@ -437,7 +443,8 @@ enum UCalendarDateFields {
    * Synonym for UCAL_DATE
    * @stable ICU 2.8
    **/
-  UCAL_DAY_OF_MONTH=UCAL_DATE
+  UCAL_DAY_OF_MONTH=UCAL_DATE,
+
 };
 
 /** @stable ICU 2.0 */

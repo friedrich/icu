@@ -198,6 +198,7 @@ DateFormat::format(const Formattable& obj,
                    UErrorCode& status) const
 {
     if (U_FAILURE(status)) return appendTo;
+    
 
     // if the type of the Formattable is double or long, treat it as if it were a Date
     UDate date = 0;
@@ -277,6 +278,7 @@ DateFormat::format(Calendar& /* unused cal */,
 
 UnicodeString&
 DateFormat::format(UDate date, UnicodeString& appendTo, FieldPosition& fieldPosition) const {
+    
     if (fCalendar != NULL) {
         // Use a clone of our calendar instance
         Calendar* calClone = fCalendar->clone();
@@ -297,6 +299,7 @@ DateFormat::format(UDate date, UnicodeString& appendTo, FieldPosition& fieldPosi
 UnicodeString&
 DateFormat::format(UDate date, UnicodeString& appendTo, FieldPositionIterator* posIter,
                    UErrorCode& status) const {
+
     if (fCalendar != NULL) {
         Calendar* calClone = fCalendar->clone();
         if (calClone != NULL) {

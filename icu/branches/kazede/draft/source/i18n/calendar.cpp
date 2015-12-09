@@ -30,35 +30,38 @@
 
 #if !UCONFIG_NO_FORMATTING
 
-#include "unicode/gregocal.h"
 #include "unicode/basictz.h"
-#include "unicode/simpletz.h"
+#include "unicode/calendar.h"
+#include "unicode/gregocal.h"
 #include "unicode/rbtz.h"
+#include "unicode/simpletz.h"
 #include "unicode/vtzone.h"
-#include "gregoimp.h"
+
 #include "buddhcal.h"
-#include "taiwncal.h"
-#include "japancal.h"
-#include "islamcal.h"
-#include "hebrwcal.h"
-#include "persncal.h"
-#include "indiancal.h"
 #include "chnsecal.h"
 #include "coptccal.h"
 #include "dangical.h"
 #include "ethpccal.h"
-#include "unicode/calendar.h"
+#include "gregoimp.h"
+#include "hebrwcal.h"
+#include "indiancal.h"
+#include "islamcal.h"
+#include "japancal.h"
+#include "persncal.h"
+#include "taiwncal.h"
+
+#include "charstr.h"
 #include "cpputils.h"
-#include "servloc.h"
-#include "ucln_in.h"
 #include "cstring.h"
 #include "locbased.h"
+#include "olsontz.h"
+#include "servloc.h"
+#include "sharedcalendar.h"
+#include "uassert.h"
+#include "ucln_in.h"
+#include "unifiedcache.h"
 #include "uresimp.h"
 #include "ustrenum.h"
-#include "uassert.h"
-#include "olsontz.h"
-#include "sharedcalendar.h"
-#include "unifiedcache.h"
 
 #if !UCONFIG_NO_SERVICE
 static icu::ICULocaleService* gService = NULL;
@@ -637,6 +640,8 @@ static const int32_t kCalendarLimits[UCAL_FIELD_COUNT][4] = {
     { -0x7F000000,  -0x7F000000,    0x7F000000,    0x7F000000  }, // JULIAN_DAY
     {           0,            0, 24*kOneHour-1, 24*kOneHour-1  }, // MILLISECONDS_IN_DAY
     {           0,            0,             1,             1  }, // IS_LEAP_MONTH
+    {           0,            0,             3,             3  }, // AM_PM_NOON_MIDNIGHT
+    {           0,            0,             9,             9  }, // DAY_PERIOD
 };
 
 // Resource bundle tags read by this class
@@ -1471,6 +1476,184 @@ void Calendar::pinField(UCalendarDateFields field, UErrorCode& status) {
     }
 }
 
+UBool satisfiesConstraint(int32_t secondInDay, const UnicodeString &cutoffTime, const char *constraintType) {
+    // From UTS #35, Chapter 4.5.1, Section Variable Periods, Rule 6, cutoffTime will only have
+    // whole-hour values such as "3:00". Therefore we only need to know what comes before the
+    // first colon in cutoffTime, and convert that into seconds.
+    // TODO: check that cutoffTime actually conforms to the spec and report an error if not.
+    
+    int32_t firstColonPos = cutoffTime.indexOf(UnicodeString(":"));
+    UnicodeString hour_str;
+    cutoffTime.extract(0, firstColonPos, hour_str);
+
+    int32_t hour_num = 0;
+    for (int32_t i = 0; i < firstColonPos; ++i) {
+        UChar32 p = hour_str.char32At(i);  // p is codepoint.
+        p = p - 0x30;  // 0x30 == '0'; p is now the number.
+        hour_num = 10 * hour_num + p;
+    }
+
+    int32_t cutoffSecondInDay = hour_num * 3600;  // 1 hour == 3600 seconds.
+    // from  to  after  before  at
+    //  >=   <=    >      <     =
+    if ((uprv_strcmp(constraintType,   "from") == 0 && secondInDay >= cutoffSecondInDay) ||
+        (uprv_strcmp(constraintType,     "to") == 0 && secondInDay <= cutoffSecondInDay) ||
+        (uprv_strcmp(constraintType,  "after") == 0 && secondInDay  > cutoffSecondInDay) ||
+        (uprv_strcmp(constraintType, "before") == 0 && secondInDay  < cutoffSecondInDay) ||
+        (uprv_strcmp(constraintType,     "at") == 0 && secondInDay == cutoffSecondInDay)) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+
+}
+
+void Calendar::computeDayPeriod(UErrorCode &ec) {
+    if (U_FAILURE(ec)) {
+        return;
+    }
+
+    int32_t secondInDay = fFields[UCAL_HOUR_OF_DAY] * 3600
+                          + fFields[UCAL_MINUTE] * 60 + fFields[UCAL_SECOND];
+
+    // Given locale, find rule set number.
+    const char *localeBaseName = getLocale(ULOC_ACTUAL_LOCALE, ec).getBaseName();  // getLanguage()? fall back?
+    UResourceBundle *rb_dayPeriods = ures_openDirect(NULL, "dayPeriods", &ec);
+    if (U_FAILURE(ec)) {
+        return;
+    }
+    UResourceBundle *rb_dayPeriods_locales = ures_getByKey(rb_dayPeriods, "locales", NULL, &ec);
+    if (U_FAILURE(ec)) {
+        return;
+    }
+    UnicodeString ruleSetNumber_u = ures_getUnicodeStringByKey(rb_dayPeriods_locales, localeBaseName, &ec);
+    if (U_FAILURE(ec)) {
+        return;
+    }
+
+    // Rule set number needs to be const char * for further processing
+    CharString cs;
+    cs.appendInvariantChars(ruleSetNumber_u, ec);
+    if (U_FAILURE(ec)) {
+        return;
+    }
+    const char *ruleSetNumber = cs.data();
+
+
+    // Terms used.
+    // rules: the entire rules{...} table.
+    // oneRuleSet: e.g. set2{...}.
+    // oneRule: e.g. afternoon1{...}.
+    // oneConstraint: e.g. after{...}.
+    // a cutoff: e.g. before 6:00 -- different from a constraint for reasons explained below.
+
+    // Get rules. 
+    // Abandon computation if failed (most likely because of missing resource). Same hereinafter.
+    UResourceBundle *rb_dayPeriods_rules = ures_getByKey(rb_dayPeriods, "rules", NULL, &ec);
+    if (U_FAILURE(ec)) {
+        return;
+    }
+
+    // Get rule set.
+    UResourceBundle *rb_dayPeriods_oneRuleSet = ures_getByKey(rb_dayPeriods_rules, ruleSetNumber, NULL, &ec);
+    if (U_FAILURE(ec)) {
+        return;
+    }
+
+    UResourceBundle *rb_dayPeriods_oneRule;
+    UResourceBundle *rb_dayPeriods_oneConstraint;
+    const char *correctDayPeriodKey = NULL;  // The day period secondInDay falls in, e.g. "night1".
+
+    // For each rule, check if it's the one.
+    int32_t numRules = ures_getSize(rb_dayPeriods_oneRuleSet);
+    for (int32_t i = 0; i < numRules; ++i) {
+        rb_dayPeriods_oneRule = ures_getByIndex(rb_dayPeriods_oneRuleSet, i, NULL, &ec);
+        if (U_FAILURE(ec)) {
+            return;
+        }
+        int32_t numConstraints = ures_getSize(rb_dayPeriods_oneRule);  // "before", "after", "at", etc.
+        // Check if the time (hour and minutes) satisfies all constraints
+        // Note. When a rule (typically night1) spans over midnight, the rule might look like this:
+        //
+        // night1{
+        //   after{"0:00"}
+        //   before{
+        //     "6:00",
+        //     "24:00",
+        //   }
+        //   from{"21:00"}
+        // }
+        //
+        // or like this:
+        //
+        // night1{
+        //   before{
+        //     "4:00",
+        //     "24:00",
+        //   }
+        //   from{
+        //     "0:00",
+        //     "20:00",
+        //   }
+        // }
+        //
+        // These are clearly intended to be two different rules (e.g. the first example 
+        // actually means (0, 6) union [21, 24) ). For both examples above, if we regard 
+        // each cutoff time as a separate constraint, then satisfying three of the four
+        // constraints happens to be equivalent to satisfying both intended rules. This 
+        // seems to be provable as long as the two intended time intervals don't overlap, 
+        // although I have not proven it. It also happens to be that all other rules have
+        // either 1 or 2 constraints, so the "3 out of 4" method doesn't conflict with them.
+        //
+        // Note that UTS #35, Ch. 4.5.1, Section Variable Periods, Rule 1 guarantees the 
+        // rule set will cover the entire 24-hour period with non-overlapping intervals. 
+        int32_t numSatisfiedCutoffs = 0;
+        for (int32_t j = 0; j < numConstraints; ++j) {
+            rb_dayPeriods_oneConstraint = ures_getByIndex(rb_dayPeriods_oneRule, j, NULL, &ec);
+            if (U_FAILURE(ec)) {
+                return;
+            }
+            const char *constraintType = ures_getKey(rb_dayPeriods_oneConstraint);  // e.g. "after".
+            int32_t numCutoffs = ures_getSize(rb_dayPeriods_oneConstraint);  // 1 or 2.
+            for (int32_t k = 0; k < numCutoffs; ++k) {
+                UnicodeString cutoffTime = ures_getUnicodeStringByIndex(rb_dayPeriods_oneConstraint, k, &ec);
+                if (U_FAILURE(ec)) {
+                    return;
+                }
+                if (satisfiesConstraint(secondInDay, cutoffTime, constraintType)) {
+                    ++numSatisfiedCutoffs;
+                }
+            }
+        }
+        if (numSatisfiedCutoffs == numConstraints || numSatisfiedCutoffs == 3) {
+            correctDayPeriodKey = ures_getKey(rb_dayPeriods_oneRule);
+            break;
+        }
+    }
+
+    if (correctDayPeriodKey == NULL) {
+        ec = U_ILLEGAL_ARGUMENT_ERROR;
+        return;
+    }
+
+    // Same list exists in dtfmtsym.cpp -- refactor?
+    static const char *dayPeriodKeys[] = {"noon", "midnight", 
+                         "morning1", "afternoon1", "evening1", "night1",
+                         "morning2", "afternoon2", "evening2", "night2"};
+    for (int32_t i = 0; i < 10; ++i) {
+        if (uprv_strcmp(correctDayPeriodKey, dayPeriodKeys[i]) == 0) {
+            fFields[UCAL_DAY_PERIOD] = i;
+            break;
+        }
+    }
+
+    ures_close(rb_dayPeriods);
+    ures_close(rb_dayPeriods_locales);
+    ures_close(rb_dayPeriods_rules);
+    ures_close(rb_dayPeriods_oneRuleSet);
+    ures_close(rb_dayPeriods_oneRule);
+    ures_close(rb_dayPeriods_oneConstraint);
+}
 
 void Calendar::computeFields(UErrorCode &ec)
 {
@@ -1546,6 +1729,23 @@ void Calendar::computeFields(UErrorCode &ec)
     millisInDay /= 60;
     fFields[UCAL_HOUR_OF_DAY] = millisInDay;
     fFields[UCAL_AM_PM] = millisInDay / 12; // Assume AM == 0
+
+    // At this point millisInDay is just the hour (0 thru 23).
+    // AM == 0, PM == 1, NOON == 2, MIDNIGHT == 3.
+    fFields[UCAL_AM_PM_NOON_MIDNIGHT] = fFields[UCAL_AM_PM];
+    if (millisInDay == 0) { //midnight
+        fFields[UCAL_AM_PM_NOON_MIDNIGHT] = 3;
+    }
+    if (millisInDay == 12) { //noon
+        fFields[UCAL_AM_PM_NOON_MIDNIGHT] = 2;
+    }
+
+    computeDayPeriod(ec);
+    if (U_FAILURE(ec)) {
+        fFields[UCAL_DAY_PERIOD] = -1;  // What's an appropriate "invalid" value?
+        ec = U_ZERO_ERROR;
+    }
+
     fFields[UCAL_HOUR] = millisInDay % 12;
     fFields[UCAL_ZONE_OFFSET] = rawOffset;
     fFields[UCAL_DST_OFFSET] = dstOffset;
@@ -2689,6 +2889,8 @@ int32_t Calendar::getLimit(UCalendarDateFields field, ELimitType limitType) cons
     case UCAL_JULIAN_DAY:
     case UCAL_MILLISECONDS_IN_DAY:
     case UCAL_IS_LEAP_MONTH:
+    case UCAL_AM_PM_NOON_MIDNIGHT:
+    case UCAL_DAY_PERIOD:
         return kCalendarLimits[field][limitType];
 
     case UCAL_WEEK_OF_MONTH:

@@ -252,6 +252,11 @@ public:
 
     void TestPatternFromSkeleton();
 
+    void TestAmPmNoonMidnightGeneralBehavior();
+    void TestDayPeriodGeneralBehavior();
+    void TestMidnightDisplayPrecision();
+
+
 private:
     UBool showParse(DateFormat &format, const UnicodeString &formattedString);
 

@@ -1853,6 +1853,10 @@ private:
      */
     int32_t getActualHelper(UCalendarDateFields field, int32_t startValue, int32_t endValue, UErrorCode &status) const;
 
+    /**
+     * Helper function for computing day period.
+     */
+    void computeDayPeriod(UErrorCode &ec);
 
 protected:
     /**
