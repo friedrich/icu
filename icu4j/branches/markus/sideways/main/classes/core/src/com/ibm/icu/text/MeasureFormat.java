@@ -748,7 +748,7 @@ public class MeasureFormat extends UFormat {
         class UnitPatternSink extends UResource.TableSink {
             SimplePatternFormatter[] patterns;
 
-            void setFormatterIfAbsent(int index, UResource.Value value) {
+            void setFormatterIfAbsent(int index, UResource.Value value, int minPlaceholders) {
                 if (patterns == null) {
                     EnumMap<FormatWidth, SimplePatternFormatter[]> styleToPatterns =
                             cacheData.unitToStyleToPatterns.get(unit);
@@ -766,7 +766,7 @@ public class MeasureFormat extends UFormat {
                 }
                 if (patterns[index] == null) {
                     patterns[index] = SimplePatternFormatter.
-                            compileMinMaxPlaceholders(value.getString(), 0, 1);
+                            compileMinMaxPlaceholders(value.getString(), minPlaceholders, 1);
                 }
             }
 
@@ -776,12 +776,14 @@ public class MeasureFormat extends UFormat {
                     // Skip the unit display name for now.
                 } else if (key.contentEquals("per")) {
                     // For example, "{0}/h".
-                    setFormatterIfAbsent(MeasureFormatData.PER_UNIT_INDEX, value);
+                    // TODO: Set minPlaceholders=1
+                    // after http://unicode.org/cldr/trac/ticket/9129 is fixed.
+                    setFormatterIfAbsent(MeasureFormatData.PER_UNIT_INDEX, value, 0);
                 } else {
                     // The key must be one of the plural form strings. For example:
                     // one{"{0} hr"}
                     // other{"{0} hrs"}
-                    setFormatterIfAbsent(StandardPluralCategories.getIndex(key), value);
+                    setFormatterIfAbsent(StandardPluralCategories.getIndex(key), value, 0);
                 }
             }
         }
@@ -812,7 +814,7 @@ public class MeasureFormat extends UFormat {
             public void put(UResource.Key key, UResource.Value value) {
                 if (key.contentEquals("per")) {
                     cacheData.styleToPerPattern.put(width,
-                            SimplePatternFormatter.compile(value.getString()));
+                            SimplePatternFormatter.compileMinMaxPlaceholders(value.getString(), 2, 2));
                 }
             }
         }
@@ -1459,7 +1461,7 @@ public class MeasureFormat extends UFormat {
             } catch ( MissingResourceException ex ) {
                 resultString = rb.getStringWithFallback("NumberElements/latn/patterns/range");
             }
-            result = SimplePatternFormatter.compile(resultString);
+            result = SimplePatternFormatter.compileMinMaxPlaceholders(resultString, 2, 2);
             localeIdToRangeFormat.put(forLocale, result);
             if (!forLocale.equals(realLocale)) {
                 localeIdToRangeFormat.put(realLocale, result);
