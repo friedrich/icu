@@ -749,5 +749,14 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         } catch (IllegalArgumentException expected) {
         }
     }
-    
+
+    public void TestSidewaysDataLoading() {
+        RelativeDateTimeFormatter fmt = RelativeDateTimeFormatter.getInstance(
+                new ULocale("en_GB"),
+                null,
+                RelativeDateTimeFormatter.Style.NARROW,
+                DisplayContext.CAPITALIZATION_NONE);
+        String s = fmt.format(3.0, Direction.NEXT, RelativeUnit.MONTHS);
+        assertEquals("narrow: in 3 months", "in 3 mo", s);
+    }
 }

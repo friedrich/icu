@@ -13,8 +13,11 @@ import com.ibm.icu.impl.CalendarData;
 import com.ibm.icu.impl.ICUCache;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.SimpleCache;
+import com.ibm.icu.impl.StandardPlural;
 import com.ibm.icu.lang.UCharacter;
+import com.ibm.icu.text.MeasureFormat.FormatWidth;
 import com.ibm.icu.util.ULocale;
+import com.ibm.icu.impl.UResource;
 import com.ibm.icu.util.UResourceBundle;
 
 
@@ -88,7 +91,9 @@ public final class RelativeDateTimeFormatter {
          * Use single letters when possible.
          * @stable ICU 54
          */
-        NARROW,
+        NARROW;
+        
+        private static final int INDEX_COUNT = 3;  // NARROW.ordinal() + 1
     }
     
     /**
@@ -139,6 +144,12 @@ public final class RelativeDateTimeFormatter {
          * @stable ICU 53
          */
         YEARS,
+        
+        /**
+         * Quarters
+         * TODO: add in ICU57
+         */
+        QUARTERS,
     }
     
     /**
@@ -218,6 +229,12 @@ public final class RelativeDateTimeFormatter {
          * @stable ICU 53
          */
         NOW,
+        
+        /*
+         * Quarter
+         * ADDED ICU57.
+         */
+        QUARTER,
       }
 
       /**
@@ -540,6 +557,10 @@ public final class RelativeDateTimeFormatter {
     private final BreakIterator breakIterator;
     private final ULocale locale;
     
+    // 
+    private static final Style fallbackCache[] = new Style[Style.INDEX_COUNT];
+
+    
     private static class RelativeDateTimeFormatterData {
         public RelativeDateTimeFormatterData(
                 EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap,
@@ -570,6 +591,433 @@ public final class RelativeDateTimeFormatter {
         }
     }
     
+    private static RelativeUnit stringToRelativeUnit(String keyString) {
+      if (keyString.equals("second")) {
+          return RelativeUnit.SECONDS;
+      }
+      if (keyString.equals("minute")) {
+          return RelativeUnit.MINUTES;
+      }
+      if (keyString.equals("hour")) {
+          return RelativeUnit.HOURS;
+      }
+      if (keyString.equals("day")) {
+          return RelativeUnit.DAYS;
+      }
+      if (keyString.equals("week")) {
+          return RelativeUnit.WEEKS;
+      }
+      if (keyString.equals("month")) {
+          return RelativeUnit.MONTHS;
+      }
+      if (keyString.equals("year")) {
+          return RelativeUnit.YEARS;
+      }
+      if (keyString.equals("quarter")) {
+          return RelativeUnit.QUARTERS;
+      }
+      // TODO: check on "quarter"
+      return null;
+  }
+
+
+  private static AbsoluteUnit stringToAbsoluteUnit(String keyString) {
+      if (keyString.equals("sun")) {
+          return AbsoluteUnit.SUNDAY;
+      }
+      if (keyString.equals("mon")) {
+          return AbsoluteUnit.MONDAY;
+      }
+      if (keyString.equals("tue")) {
+          return AbsoluteUnit.TUESDAY;
+      }
+      if (keyString.equals("wed")) {
+          return AbsoluteUnit.WEDNESDAY;
+      }
+      if (keyString.equals("thu")) {
+          return AbsoluteUnit.THURSDAY;
+      }
+      if (keyString.equals("fri")) {
+          return AbsoluteUnit.FRIDAY;
+      }
+      if (keyString.equals("sat")) {
+          return AbsoluteUnit.SATURDAY;
+      }
+      if (keyString.equals("day")) {
+          return AbsoluteUnit.DAY;
+      }
+      if (keyString.equals("week")) {
+          return AbsoluteUnit.WEEK;
+      }
+      if (keyString.equals("month")) {
+          return AbsoluteUnit.MONTH;
+      }
+      if (keyString.equals("year")) {
+          return AbsoluteUnit.YEAR;
+      }
+      if (keyString.equals("now")) {
+          return AbsoluteUnit.NOW;
+      }
+      if (keyString.equals("quarter")) {       // TODO: check on "quarter"
+
+          return AbsoluteUnit.QUARTER;
+      }
+      return null;
+  }
+
+
+private static Direction keyToDirection(UResource.Key key) {
+    if (key.contentEquals("-2")) {
+        return Direction.LAST_2;
+    }
+    if (key.contentEquals("-1")) {
+        return Direction.LAST;
+    }
+    if (key.contentEquals("0")) {
+        return Direction.THIS;
+    }
+    if (key.contentEquals("1")) {
+        return Direction.NEXT;
+    }
+    if (key.contentEquals("2")) {
+        return Direction.NEXT_2;
+    }
+    // TODO: check on PLAIN
+    return null;
+}
+
+
+/**
+     * Sink for enumerating all of the relative data time formatter names.
+     * Contains inner sink classes, each one corresponding to a type of resource table.
+     * The outer sink handles the top-level fields, calendar tables.
+     *
+     * More specific bundles (en_GB) are enumerated before their parents (en_001, en, root):
+     * Only store a value if it is still missing, that is, it has not been overridden.
+     *
+     * C++: Each inner sink class has a reference to the main outer sink.
+     * Java: Use non-static inner classes instead.
+     */
+    private static final class RelDateTimeFmtDataSink extends UResource.TableSink {
+        
+        // For white list of units to handle in RelativeDateTimeFormatter.
+        private enum DateTimeUnit {
+            SECOND("second"),
+            MINUTE("minute"),
+            HOUR("hour"),
+            DAY("day"),
+            WEEK("week"),
+            MONTH("month"),
+            QUARTER("quarter"),  // NEEDED?
+            YEAR("year"),
+            SUNDAY("sun"),
+            MONDAY("mon"),
+            TUESDAY("tue"),
+            WEDNESDAY("wed"),
+            THURSDAY("thu"),
+            FRIDAY("fri"),
+            SATURDAY("sat");
+            
+            private final String keyword;
+
+            private DateTimeUnit(String kw) {
+                keyword = kw;
+            }
+            
+            private static final DateTimeUnit orNullFromString(CharSequence keyword) {
+                // Quick check from string to enum.
+                switch (keyword.length()) {
+                case 3:
+                    if ("day".contentEquals(keyword)) {
+                        return DAY;
+                    } else if ("sun".contentEquals(keyword)) {
+                        return SUNDAY;
+                    } else if ("mon".contentEquals(keyword)) {
+                        return MONDAY;
+                    } else if ("tue".contentEquals(keyword)) {
+                        return TUESDAY;
+                    } else if ("wed".contentEquals(keyword)) {
+                        return WEDNESDAY;
+                    } else if ("thu".contentEquals(keyword)) {
+                        return THURSDAY;
+                    }    else if ("fri".contentEquals(keyword)) {
+                        return FRIDAY;
+                    } else if ("sat".contentEquals(keyword)) {
+                        return SATURDAY;
+                    }
+                    break;
+                case 4:
+                    if ("hour".contentEquals(keyword)) {
+                        return HOUR;
+                    } else if ("week".contentEquals(keyword)) {
+                        return WEEK;
+                    } else if ("year".contentEquals(keyword)) {
+                        return YEAR;
+                    }
+                    break;
+                case 5:
+                    if ("month".contentEquals(keyword)) {
+                        return MONTH;
+                    }
+                    break;
+                case 6:
+                    if ("minute".contentEquals(keyword)) {
+                        return MINUTE;
+                    }else if ("second".contentEquals(keyword)) {
+                        return SECOND;
+                    }
+                    break;
+                case 7:
+                    if ("quarter".contentEquals(keyword)) {
+                        return QUARTER;
+                    }
+                    break;                    
+                default:
+                    break;
+                }
+                return null;
+            }
+        }
+        
+        // Constructor
+        RelDateTimeFmtDataSink() {}
+
+        EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> sinkQualitativeUnitMap;
+        EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> sinkQuantitativeUnitMap;
+        
+        private String[] toppings = {"Cheese", "Pepperoni", "Black Olives"};
+
+        
+        Style style;                        // {LONG, SHORT, NARROW} Derived from name of unit.
+        
+        // TODO: get rid of this, replacing with local Enum.
+        String unitString;                  // From the unit name, with qualifier stripped, e.g., "-short"
+        DateTimeUnit dateTimeUnit;
+        AbsoluteUnit absUnit;
+        String displayName;                 // From "dn".
+        int formatterArrayLength;           // Counts items in relativeTime structure.
+        String parentKeyString;
+        RelativeUnit relativeUnit;          // For relativeTime and relative keys, e.g., "one", "other", "-1", etc.
+                
+        // Sinks for additional levels under /fields/*/relative/ and /fields/*/relativeTime/
+ 
+        // Sets values under relativeTime paths, e.g., "hour/relativeTime/future/one"
+        class RelativeTimeDetailSink extends UResource.TableSink {
+            @Override
+            public void put(UResource.Key key, UResource.Value value) {
+                // TODO: get the reference to the sink data map.
+                EnumMap<RelativeUnit, QuantityFormatter[]> relUnitQuantFmtMap = sinkQuantitativeUnitMap.get(style);
+                
+                // Get the right index from futureOrPast for adding.
+                int futurePastIndex = -1;
+                if (parentKeyString.contentEquals("past")) {
+                    futurePastIndex = 0;
+                } else if (parentKeyString.contentEquals("future")) {
+                    futurePastIndex = 1;    
+                } else {
+                    // Not a value relativeTime.
+                    return;
+                }
+
+                if (relUnitQuantFmtMap.get(relativeUnit)[futurePastIndex] == null) {
+                    relUnitQuantFmtMap.get(relativeUnit)[futurePastIndex] = new QuantityFormatter();
+                }
+                relUnitQuantFmtMap.get(relativeUnit)[futurePastIndex].addIfAbsent(key, value.getString()); 
+            }
+        }
+        RelativeTimeDetailSink relativeTimeDetailSink = new RelativeTimeDetailSink();
+        
+        // Handles "relativeTime" entries, e.g., under "day", "hour", "minute", "minute-short", etc.
+        class RelativeTimeSink extends UResource.TableSink {
+            @Override
+            public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+                if (key.contentEquals("future") || key.contentEquals("past")) {
+                    // Attach QuantityFormatter to the UnitMap.
+                    relativeUnit = stringToRelativeUnit(unitString);
+                    if (relativeUnit == null) {
+                        int x = -1;
+                        // stop
+                    }
+                    // Remember which key it is.
+                    parentKeyString = key.toString();
+                    
+                    // See if the mapping is already there.
+                    EnumMap<RelativeUnit, QuantityFormatter[]> relUnitQuantFmtMap = sinkQuantitativeUnitMap.get(style);
+                    if (relUnitQuantFmtMap == null) {
+                        relUnitQuantFmtMap = new EnumMap<RelativeUnit, QuantityFormatter[]>(RelativeUnit.class);
+                        sinkQuantitativeUnitMap.put(style, relUnitQuantFmtMap);
+                    }
+                    // Add new mapping for relativeUnit, if needed.
+                    QuantityFormatter futureOrPast[] = relUnitQuantFmtMap.get(relativeUnit);
+                    if (futureOrPast == null) {
+                        futureOrPast = new QuantityFormatter[formatterArrayLength];
+                        relUnitQuantFmtMap.put(relativeUnit, new QuantityFormatter[2]);
+                    }
+                    return relativeTimeDetailSink;
+                }
+                return null;
+            }
+        }
+        RelativeTimeSink relativeTimeSink = new RelativeTimeSink();
+ 
+        // Handles "relative" entries, e.g., under "day", "day-short", "fri", "fri-narrow", "fri-short", etc.
+        class RelativeSink extends UResource.TableSink {
+
+            @Override
+            public void put(UResource.Key key, UResource.Value value) {
+                // TODO: fill in for "-2", "-1", ...
+                // Get the ENUM and the value.
+                Direction keyDirection = keyToDirection(key);
+                String valueString = value.getString();
+                absUnit = stringToAbsoluteUnit(unitString);
+                if (absUnit == null) {
+                    return;  // not interesting.
+                }
+                EnumMap<AbsoluteUnit, EnumMap<Direction, String>> absMap = sinkQualitativeUnitMap.get(style);
+                
+                if (absMap == null) {
+                    absMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
+                    sinkQualitativeUnitMap.put(style, absMap);
+                }
+                EnumMap<Direction, String> dirMap = absMap.get(absUnit);
+                if (dirMap == null) {
+                    dirMap = new EnumMap<Direction, String>(Direction.class);
+                    absMap.put(absUnit, dirMap);
+                }
+                dirMap.put(keyDirection, valueString);
+                                
+                // TODO: If needed, create the EnumMap and add PLAIN value.
+                // Add value to map.
+            }
+        }
+        RelativeSink relativeSink = new RelativeSink();
+
+        // Handles entries under units, recognizing "relative" and "relativeTime" entries.
+        class UnitSink extends UResource.TableSink {
+            @Override
+            public void put(UResource.Key key, UResource.Value value) {
+                if (key.contentEquals("dn")) {  // Handle Display Name
+                    displayName = value.toString();
+                    // TODO: follow aliases if this is missing.
+                }
+            }
+            
+            @Override
+            public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+                // If this is 'fields', create and return the fieldsSink.
+                if (key.contentEquals("relative")) {
+                    return relativeSink;
+                } else if (key.contentEquals("relativeTime")) {
+                    formatterArrayLength = initialSize;
+                    return relativeTimeSink;
+                }
+                return null;
+            }
+        }
+        UnitSink unitSink = new UnitSink();
+        
+        // Deals with items under /field/
+        class FieldsSink extends UResource.TableSink {
+            private Style getKeyStyle(UResource.Key key) {
+                int limit;
+                Style style = null; 
+                if (key.endsWith("-short")) {
+                    style = Style.SHORT;
+                    limit = key.length()-6;
+                    unitString = key.substring(0, limit);
+                }
+                else if (key.endsWith("-narrow")) {
+                    style  = Style.NARROW;
+                    limit = key.length()-7;
+                    unitString = key.substring(0, limit);
+                } else {
+                    style = Style.LONG;
+                    limit = key.length();
+                    unitString = key.toString();
+                }
+                return style;
+            }
+            
+            private Style styleFromAlias(UResource.Value value) {
+                    String s = value.getAliasString();
+                    Style style = null; 
+                    if (s.endsWith("-short")) {
+                        style = Style.SHORT;
+                    } else if (s.endsWith("-narrow")) {
+                        style  = Style.NARROW;
+                    } else {
+                        style = Style.LONG;
+                    }
+                    return style;
+            }
+            
+            private int limitFromKeyStyle(UResource.Key key, Style style) {
+                // Finds the last character of the base string, before appended style.
+                int limit = -1;
+                if (style == Style.SHORT) {
+                    limit = key.length()-6;
+                }
+                else if (style == Style.NARROW) {
+                    limit = key.length()-7;
+                } else {
+                    limit = key.length();
+                }
+                return limit;
+            }
+            
+            @Override
+            public void put(UResource.Key key, UResource.Value value) {
+                // Mostly here to detect aliases.
+                if (value.getType() != ICUResourceBundle.ALIAS) { return; }
+
+                Style sourceStyle = getKeyStyle(key);
+                int limit = limitFromKeyStyle(key, sourceStyle);
+                dateTimeUnit = DateTimeUnit.orNullFromString(key.subSequence(0, limit));
+                
+                if (dateTimeUnit != null) {
+                    // Record the fallback chain for the values.
+                    // At formatting time, limit to 2 levels of backup.
+                    Style targetStyle = styleFromAlias(value);
+                    
+                    // Should I keep this list for each relative/absolute unit and direction?
+                    fallbackCache[sourceStyle.ordinal()] = targetStyle;
+                } 
+            }
+
+            @Override
+            public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+                // Determine if the style is LONG, SHORT, or NARROW.
+                // Also get the base unit from the key, i.e., remove any "-short" or "-narrow"
+                // TODO: do we filter here on key values, e.g., reject dayperiod", accept "hour*"?
+                int limit;
+                style = getKeyStyle(key);
+                limit = limitFromKeyStyle(key, style);
+
+                displayName = ""; // Needed?
+               
+                // Check if the unitString is in the white list.
+                dateTimeUnit = DateTimeUnit.orNullFromString(key.subSequence(0, limit));
+                if (dateTimeUnit == null) {
+                    return null;
+                }
+                unitString = key.substring(0, limit);
+                return unitSink;  // Continue parsing this path.
+            }
+        }
+        FieldsSink fieldsSink = new FieldsSink();
+
+        @Override
+        public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+            // If this is 'fields', create and return the fieldsSink.
+            String stringVal = key.toString();
+            if (key.contentEquals("fields")) {
+                return fieldsSink;
+            }
+            return null;
+        }
+        
+    }
+    
     private static class Loader {
         private final ULocale ulocale;
         
@@ -578,6 +1026,24 @@ public final class RelativeDateTimeFormatter {
         }
 
         public RelativeDateTimeFormatterData load() {
+          
+            // TODO: finish.
+            // Sink 
+            RelDateTimeFmtDataSink sink = new RelDateTimeFmtDataSink();
+            // New maps for loading with sink.
+            EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> sinkQualitativeUnitMap = 
+                new EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>>(Style.class);
+            
+            // TODO: use the other data structure.
+            // sink.sinkQualitativeUnitMap = qualitativeUnitMap;
+            sink.sinkQualitativeUnitMap = sinkQualitativeUnitMap;
+
+            EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> sinkQuantitativeUnitMap =
+                new EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>>(Style.class);
+            // sink.sinkQuantitativeUnitMap = quantitativeUnitMap;
+            sink.sinkQuantitativeUnitMap = sinkQuantitativeUnitMap;
+
+            // Previous maps
             EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap = 
                     new EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>>(Style.class);
             
@@ -587,10 +1053,18 @@ public final class RelativeDateTimeFormatter {
             for (Style style : Style.values()) {
                 qualitativeUnitMap.put(style, new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class));
                 quantitativeUnitMap.put(style, new EnumMap<RelativeUnit, QuantityFormatter[]>(RelativeUnit.class));                
+                
+                // New maps.
+                // TODO: consider if these should be initialized using the sink structure.
+                sinkQualitativeUnitMap.put(style, new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class));
+                sinkQuantitativeUnitMap.put(style, new EnumMap<RelativeUnit, QuantityFormatter[]>(RelativeUnit.class));                
             }
                     
             ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.
                     getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, ulocale);
+            
+            r.getAllTableItemsWithFallback("", sink);
+
             addTimeUnits(
                     r,
                     "fields/day", "fields/day-short", "fields/day-narrow",
@@ -714,7 +1188,12 @@ public final class RelativeDateTimeFormatter {
                     AbsoluteUnit.SUNDAY,
                     qualitativeUnitMap);   
             CalendarData calData = new CalendarData(
-                    ulocale, r.getStringWithFallback("calendar/default"));  
+                    ulocale, r.getStringWithFallback("calendar/default"));
+            
+            // TODO: Return with new sinkQualitativeUnitMap and sinkQuantitativeUnitMap
+            // return new RelativeDateTimeFormatterData(
+            //    sinkQualitativeUnitMap, sinkQuantitativeUnitMap, calData.getDateTimePattern());
+
             return new RelativeDateTimeFormatterData(
                     qualitativeUnitMap, quantitativeUnitMap, calData.getDateTimePattern());
         }
