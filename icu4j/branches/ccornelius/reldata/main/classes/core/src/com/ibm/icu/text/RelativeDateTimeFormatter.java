@@ -7,15 +7,15 @@
 package com.ibm.icu.text;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Locale;
 
 import com.ibm.icu.impl.CalendarData;
 import com.ibm.icu.impl.ICUCache;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.SimpleCache;
-import com.ibm.icu.impl.StandardPlural;
 import com.ibm.icu.lang.UCharacter;
-import com.ibm.icu.text.MeasureFormat.FormatWidth;
+import com.ibm.icu.util.ICUException;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.impl.UResource;
 import com.ibm.icu.util.UResourceBundle;
@@ -147,7 +147,8 @@ public final class RelativeDateTimeFormatter {
         
         /**
          * Quarters
-         * TODO: add in ICU57
+         * @internal TODO: propose for addition in ICU 57
+         * @provisional This API might change or be removed in a future release.
          */
         QUARTERS,
     }
@@ -232,7 +233,7 @@ public final class RelativeDateTimeFormatter {
         
         /*
          * Quarter
-         * ADDED ICU57.
+         * @provisional This may be added in ICU57.
          */
         QUARTER,
       }
@@ -393,12 +394,13 @@ public final class RelativeDateTimeFormatter {
             throw new IllegalArgumentException("direction must be NEXT or LAST");
         }
         String result;
+        int quantIndex = (direction == Direction.NEXT ? 1 : 0);
+
         // This class is thread-safe, yet numberFormat is not. To ensure thread-safety of this
         // class we must guarantee that only one thread at a time uses our numberFormat.
         synchronized (numberFormat) {
-            result = getQuantity(
-                    unit, direction == Direction.NEXT).format(
-                            quantity, numberFormat, pluralRules);
+            QuantityFormatter fmt = getQuantitativeResultWithFallback(style, unit, quantIndex);
+            result = fmt.format(quantity, numberFormat, pluralRules);
         }
         return adjustForContext(result);
     }
@@ -419,10 +421,73 @@ public final class RelativeDateTimeFormatter {
         if (unit == AbsoluteUnit.NOW && direction != Direction.PLAIN) {
             throw new IllegalArgumentException("NOW can only accept direction PLAIN.");
         }
-        String result = this.qualitativeUnitMap.get(style).get(unit).get(direction);
+        // Get formatting string with fallback.
+        String result = getQualitativeResultWithFallback(style, unit, direction);
         return result != null ? adjustForContext(result) : null;
     }
 
+    /**
+     * Gets the string value from qualitativeUnitMap with fall back based on style.
+     * @param style
+     * @param unit
+     * @param direction
+     * @return
+     */
+    private String getQualitativeResultWithFallback(Style style, AbsoluteUnit unit, Direction direction) {
+        if (style == null || unit == null || direction == null) {
+            return null;
+        }
+        String result;
+        EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap;
+        EnumMap<Direction, String> dirMap;
+
+        unitMap = qualitativeUnitMap.get(style);
+        if (unitMap != null) {
+            dirMap = unitMap.get(unit);
+            if (dirMap != null) {
+                result = dirMap.get(direction);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+
+        // Consider new styles from alias fall back.
+        Style newStyle = fallbackCache[style.ordinal()];
+        if (newStyle == null) {
+            // No fall back possible.
+            return null;
+        }
+        unitMap = qualitativeUnitMap.get(newStyle);
+        if (unitMap != null) {
+            dirMap = unitMap.get(unit);
+            if (dirMap != null) {
+                result = dirMap.get(direction);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        // Second fallback.
+        newStyle = fallbackCache[newStyle.ordinal()];
+        if (newStyle == null) {
+            // No fall back possible.
+            return null;
+        }
+        unitMap = qualitativeUnitMap.get(newStyle);
+        if (unitMap != null) {
+            dirMap = unitMap.get(unit);
+            if (dirMap != null) {
+                result = dirMap.get(direction);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        // Only two fall back steps are supported. 
+        return null;
+    }
+            
     /**
      * Combines a relative date string and a time string in this object's
      * locale. This is done with the same date-time separator used for the
@@ -483,39 +548,13 @@ public final class RelativeDateTimeFormatter {
         }
     }
     
-    private static void addQualitativeUnit(
+    // Sets PLAIN direction string for AbsoluteUnit NOW.
+    private static void addQualitativeUnitForNow(
             EnumMap<AbsoluteUnit, EnumMap<Direction, String>> qualitativeUnits,
-            AbsoluteUnit unit,
             String current) {
-        EnumMap<Direction, String> unitStrings =
-                new EnumMap<Direction, String>(Direction.class);
+        EnumMap<Direction, String> unitStrings = new EnumMap<Direction, String>(Direction.class);
         unitStrings.put(Direction.PLAIN, current);
-        qualitativeUnits.put(unit,  unitStrings);       
-    }
-
-    private static void addQualitativeUnit(
-            EnumMap<AbsoluteUnit, EnumMap<Direction, String>> qualitativeUnits,
-            AbsoluteUnit unit, ICUResourceBundle bundle, String plain) {
-        EnumMap<Direction, String> unitStrings =
-                new EnumMap<Direction, String>(Direction.class);
-        unitStrings.put(Direction.LAST, bundle.getStringWithFallback("-1"));
-        unitStrings.put(Direction.THIS, bundle.getStringWithFallback("0"));
-        unitStrings.put(Direction.NEXT, bundle.getStringWithFallback("1"));
-        addOptionalDirection(unitStrings, Direction.LAST_2, bundle, "-2");
-        addOptionalDirection(unitStrings, Direction.NEXT_2, bundle, "2");
-        unitStrings.put(Direction.PLAIN, plain);
-        qualitativeUnits.put(unit,  unitStrings);
-    }
- 
-    private static void addOptionalDirection(
-            EnumMap<Direction, String> unitStrings,
-            Direction direction,
-            ICUResourceBundle bundle,
-            String key) {
-        String s = bundle.findStringWithFallback(key);
-        if (s != null) {
-            unitStrings.put(direction, s);
-        }
+        qualitativeUnits.put(AbsoluteUnit.NOW,  unitStrings);       
     }
 
     private RelativeDateTimeFormatter(
@@ -541,10 +580,53 @@ public final class RelativeDateTimeFormatter {
         this.breakIterator = breakIterator;
         this.locale = locale;
     }
-    
-    private QuantityFormatter getQuantity(RelativeUnit unit, boolean isFuture) {
-        QuantityFormatter[] quantities = quantitativeUnitMap.get(style).get(unit);
-        return isFuture ? quantities[1] : quantities[0];
+     
+    private QuantityFormatter getQuantitativeResultWithFallback(Style style, RelativeUnit unit, int quantIndex) {
+        if (style == null || unit == null) {
+            return null;
+        }
+        EnumMap<RelativeUnit, QuantityFormatter[]> unitMap = quantitativeUnitMap.get(style);
+        QuantityFormatter [] quantFormatterArray;
+        
+        /* TODO: find a way to remove the isValid() call, since that only checks for plurality OTHER. */
+        if (unitMap != null) {
+            quantFormatterArray = unitMap.get(unit);
+            if (quantFormatterArray != null) {
+                if (quantFormatterArray != null && quantFormatterArray[quantIndex].isValid()) {
+                    return quantFormatterArray[quantIndex];
+                }
+            }
+        }
+
+        // Consider other styles from alias fall back.
+        Style newStyle = fallbackCache[style.ordinal()];
+        if (newStyle == null) {
+            return null;
+        }
+        unitMap = quantitativeUnitMap.get(newStyle);
+        if (unitMap != null) {
+            quantFormatterArray = unitMap.get(unit);
+            if (quantFormatterArray != null) {
+                if (quantFormatterArray != null && quantFormatterArray[quantIndex].isValid()) {
+                    return quantFormatterArray[quantIndex];
+                }
+            }
+        }
+        // Second fall back.
+        newStyle = fallbackCache[style.ordinal()];
+        if (newStyle == null) {
+            return null;
+        }
+        unitMap = quantitativeUnitMap.get(newStyle);
+        if (unitMap != null) {
+            quantFormatterArray = unitMap.get(unit);
+            if (quantFormatterArray != null) {
+                if (quantFormatterArray != null && quantFormatterArray[quantIndex].isValid()) {
+                    return quantFormatterArray[quantIndex];
+                }
+            }
+        }
+        return null;
     }
     
     private final EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap;
@@ -614,9 +696,8 @@ public final class RelativeDateTimeFormatter {
           return RelativeUnit.YEARS;
       }
       if (keyString.equals("quarter")) {
-          return RelativeUnit.QUARTERS;
+          return RelativeUnit.QUARTERS;  // TODO: Check @provisional
       }
-      // TODO: check on "quarter"
       return null;
   }
 
@@ -655,11 +736,10 @@ public final class RelativeDateTimeFormatter {
       if (keyString.equals("year")) {
           return AbsoluteUnit.YEAR;
       }
-      if (keyString.equals("now")) {
+      if (keyString.equals("second")) {
           return AbsoluteUnit.NOW;
       }
-      if (keyString.equals("quarter")) {       // TODO: check on "quarter"
-
+      if (keyString.equals("quarter")) {       // TODO: Check @provisional
           return AbsoluteUnit.QUARTER;
       }
       return null;
@@ -682,7 +762,6 @@ private static Direction keyToDirection(UResource.Key key) {
     if (key.contentEquals("2")) {
         return Direction.NEXT_2;
     }
-    // TODO: check on PLAIN
     return null;
 }
 
@@ -701,14 +780,14 @@ private static Direction keyToDirection(UResource.Key key) {
     private static final class RelDateTimeFmtDataSink extends UResource.TableSink {
         
         // For white list of units to handle in RelativeDateTimeFormatter.
-        private enum DateTimeUnit {
+        private static enum DateTimeUnit {
             SECOND("second"),
             MINUTE("minute"),
             HOUR("hour"),
             DAY("day"),
             WEEK("week"),
             MONTH("month"),
-            QUARTER("quarter"),  // NEEDED?
+            QUARTER("quarter"),  // TODO: Check @provisional
             YEAR("year"),
             SUNDAY("sun"),
             MONDAY("mon"),
@@ -769,7 +848,7 @@ private static Direction keyToDirection(UResource.Key key) {
                     break;
                 case 7:
                     if ("quarter".contentEquals(keyword)) {
-                        return QUARTER;
+                        return QUARTER;  // TODO: Check @provisional
                     }
                     break;                    
                 default:
@@ -778,51 +857,106 @@ private static Direction keyToDirection(UResource.Key key) {
                 return null;
             }
         }
-        
-        // Constructor
-        RelDateTimeFmtDataSink() {}
 
         EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> sinkQualitativeUnitMap;
         EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> sinkQuantitativeUnitMap;
-        
-        private String[] toppings = {"Cheese", "Pepperoni", "Black Olives"};
 
-        
-        Style style;                        // {LONG, SHORT, NARROW} Derived from name of unit.
-        
-        // TODO: get rid of this, replacing with local Enum.
-        String unitString;                  // From the unit name, with qualifier stripped, e.g., "-short"
-        DateTimeUnit dateTimeUnit;
-        AbsoluteUnit absUnit;
-        String displayName;                 // From "dn".
-        int formatterArrayLength;           // Counts items in relativeTime structure.
-        String parentKeyString;
+        // Values keep between levels of parsing the CLDR data.
+        String displayName;                 // From the "dn" key, used for some Direction.PLAIN values. 
+        int pastFutureIndex;
         RelativeUnit relativeUnit;          // For relativeTime and relative keys, e.g., "one", "other", "-1", etc.
+        Style style;                        // {LONG, SHORT, NARROW} Derived from name of unit.
+        String unitString;                  // From the unit name, with qualifier stripped, e.g., "-short"
+    
+        private Style styleFromKey(UResource.Key key) {
+            if (key.endsWith("-short")) {
+                return Style.SHORT;
+            } else if (key.endsWith("-narrow")) {
+                return Style.NARROW;
+            } else {
+                return Style.LONG;
+            }
+        }
+        
+        private Style styleFromAlias(UResource.Value value) {
+                String s = value.getAliasString();
+                if (s.endsWith("-short")) {
+                    return Style.SHORT;
+                } else if (s.endsWith("-narrow")) {
+                    return Style.NARROW;
+                } else {
+                    return Style.LONG;
+                }
+        }
+
+        private static int styleSuffixLength(Style style) {
+            switch (style) {
+            case SHORT: return 6;
+            case NARROW: return 7;
+            default: return 0;
+            }
+        }
+
+        @Override
+        public void put(UResource.Key key, UResource.Value value) {
+            // Mostly here to detect aliases.
+            if (value.getType() != ICUResourceBundle.ALIAS) { return; }
+
+            Style sourceStyle = styleFromKey(key);
+            int limit = key.length() - styleSuffixLength(sourceStyle);
+            DateTimeUnit unit = DateTimeUnit.orNullFromString(key.substring(0, limit));
+            if (unit != null) {
+                // Record the fall back chain for the values.
+                // At formatting time, limit to 2 levels of backup.
+                Style targetStyle = styleFromAlias(value);
                 
+                // Check for inconsistent fall back or loop in fallback.
+                if (fallbackCache[sourceStyle.ordinal()] == null) {
+                    fallbackCache[sourceStyle.ordinal()] = targetStyle;
+                } else if (fallbackCache[sourceStyle.ordinal()] != targetStyle ||
+                        fallbackCache[sourceStyle.ordinal()] == sourceStyle) {
+                    throw new ICUException("Invalid style fallback for style in: " + value.getAliasString());
+                }
+            } 
+        }
+
+        @Override
+        public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+            // Figure out the style:is LONG, SHORT, or NARROW.
+            // Get base unit from the key, i.e., remove any "-short" or "-narrow"
+            style = styleFromKey(key);
+            int limit = key.length() - styleSuffixLength(style);
+            unitString = key.substring(0, limit);
+
+            // Check if the unitString is in the white list.
+            if (DateTimeUnit.orNullFromString(unitString) == null) {
+                unitString = "";
+                return null;
+            }
+            return unitSink;  // Continue parsing this path.
+        }
+
         // Sinks for additional levels under /fields/*/relative/ and /fields/*/relativeTime/
  
         // Sets values under relativeTime paths, e.g., "hour/relativeTime/future/one"
         class RelativeTimeDetailSink extends UResource.TableSink {
             @Override
             public void put(UResource.Key key, UResource.Value value) {
-                // TODO: get the reference to the sink data map.
+                // TODO: Replace QuantityFormatter values with arrays of SimplePatterFormatters. 
                 EnumMap<RelativeUnit, QuantityFormatter[]> relUnitQuantFmtMap = sinkQuantitativeUnitMap.get(style);
-                
-                // Get the right index from futureOrPast for adding.
-                int futurePastIndex = -1;
-                if (parentKeyString.contentEquals("past")) {
-                    futurePastIndex = 0;
-                } else if (parentKeyString.contentEquals("future")) {
-                    futurePastIndex = 1;    
-                } else {
-                    // Not a value relativeTime.
-                    return;
+                if (relUnitQuantFmtMap == null) {
+                    relUnitQuantFmtMap = new EnumMap<RelativeUnit, QuantityFormatter[]>(RelativeUnit.class);
+                    sinkQuantitativeUnitMap.put(style, relUnitQuantFmtMap);
                 }
-
-                if (relUnitQuantFmtMap.get(relativeUnit)[futurePastIndex] == null) {
-                    relUnitQuantFmtMap.get(relativeUnit)[futurePastIndex] = new QuantityFormatter();
+                QuantityFormatter futureOrPast[] = relUnitQuantFmtMap.get(relativeUnit);
+                if (futureOrPast == null) {
+                    futureOrPast = new QuantityFormatter[2];
+                    relUnitQuantFmtMap.put(relativeUnit, futureOrPast);
                 }
-                relUnitQuantFmtMap.get(relativeUnit)[futurePastIndex].addIfAbsent(key, value.getString()); 
+                if (relUnitQuantFmtMap.get(relativeUnit)[pastFutureIndex] == null) {
+                    relUnitQuantFmtMap.get(relativeUnit)[pastFutureIndex] = new QuantityFormatter();
+                }
+                relUnitQuantFmtMap.get(relativeUnit)[pastFutureIndex].addIfAbsent(key, value.getString()); 
             }
         }
         RelativeTimeDetailSink relativeTimeDetailSink = new RelativeTimeDetailSink();
@@ -831,47 +965,35 @@ private static Direction keyToDirection(UResource.Key key) {
         class RelativeTimeSink extends UResource.TableSink {
             @Override
             public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
-                if (key.contentEquals("future") || key.contentEquals("past")) {
-                    // Attach QuantityFormatter to the UnitMap.
-                    relativeUnit = stringToRelativeUnit(unitString);
-                    if (relativeUnit == null) {
-                        int x = -1;
-                        // stop
-                    }
-                    // Remember which key it is.
-                    parentKeyString = key.toString();
-                    
-                    // See if the mapping is already there.
-                    EnumMap<RelativeUnit, QuantityFormatter[]> relUnitQuantFmtMap = sinkQuantitativeUnitMap.get(style);
-                    if (relUnitQuantFmtMap == null) {
-                        relUnitQuantFmtMap = new EnumMap<RelativeUnit, QuantityFormatter[]>(RelativeUnit.class);
-                        sinkQuantitativeUnitMap.put(style, relUnitQuantFmtMap);
-                    }
-                    // Add new mapping for relativeUnit, if needed.
-                    QuantityFormatter futureOrPast[] = relUnitQuantFmtMap.get(relativeUnit);
-                    if (futureOrPast == null) {
-                        futureOrPast = new QuantityFormatter[formatterArrayLength];
-                        relUnitQuantFmtMap.put(relativeUnit, new QuantityFormatter[2]);
-                    }
-                    return relativeTimeDetailSink;
+                if (key.contentEquals("past")) {
+                    pastFutureIndex = 0;
+                } else if (key.contentEquals("future")) {
+                    pastFutureIndex = 1;
+                } else {
+                    return null;
                 }
-                return null;
+                // Attach QuantityFormatter to the UnitMap.
+                relativeUnit = stringToRelativeUnit(unitString);
+                if (relativeUnit == null) {
+                    return null;
+                }
+                return relativeTimeDetailSink;
             }
         }
         RelativeTimeSink relativeTimeSink = new RelativeTimeSink();
  
         // Handles "relative" entries, e.g., under "day", "day-short", "fri", "fri-narrow", "fri-short", etc.
         class RelativeSink extends UResource.TableSink {
-
             @Override
             public void put(UResource.Key key, UResource.Value value) {
-                // TODO: fill in for "-2", "-1", ...
-                // Get the ENUM and the value.
                 Direction keyDirection = keyToDirection(key);
+                if (keyDirection == null) {
+                    return;
+                }
                 String valueString = value.getString();
-                absUnit = stringToAbsoluteUnit(unitString);
+                AbsoluteUnit absUnit = stringToAbsoluteUnit(unitString);
                 if (absUnit == null) {
-                    return;  // not interesting.
+                    return;
                 }
                 EnumMap<AbsoluteUnit, EnumMap<Direction, String>> absMap = sinkQualitativeUnitMap.get(style);
                 
@@ -884,10 +1006,10 @@ private static Direction keyToDirection(UResource.Key key) {
                     dirMap = new EnumMap<Direction, String>(Direction.class);
                     absMap.put(absUnit, dirMap);
                 }
-                dirMap.put(keyDirection, valueString);
-                                
-                // TODO: If needed, create the EnumMap and add PLAIN value.
-                // Add value to map.
+                if (dirMap.get(keyDirection) == null) {
+                    // Do not override values already entered.
+                    dirMap.put(keyDirection, valueString);
+                }            
             }
         }
         RelativeSink relativeSink = new RelativeSink();
@@ -896,126 +1018,42 @@ private static Direction keyToDirection(UResource.Key key) {
         class UnitSink extends UResource.TableSink {
             @Override
             public void put(UResource.Key key, UResource.Value value) {
-                if (key.contentEquals("dn")) {  // Handle Display Name
+                if (key.contentEquals("dn")) {
+                    // Handle Display Name for PLAIN direction for some units.
                     displayName = value.toString();
-                    // TODO: follow aliases if this is missing.
+           
+                    // For consistency in display names with aliases in some locales, e.g., "en".
+                    displayName = displayName.toLowerCase();
+                    
+                    AbsoluteUnit absUnit = stringToAbsoluteUnit(unitString);
+                    if (absUnit == null) {
+                        return;  // Not interesting.
+                    }
+                    EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap = sinkQualitativeUnitMap.get(style);
+                    if (unitMap == null) {
+                        unitMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
+                        sinkQualitativeUnitMap.put(style, unitMap);
+                    }
+                    EnumMap<Direction,String> dirMap = unitMap.get(absUnit);
+                    if (dirMap == null) {
+                        dirMap = new EnumMap<Direction,String>(Direction.class);
+                        unitMap.put(absUnit, dirMap);
+                    }
+                    dirMap.put(Direction.PLAIN, displayName);
                 }
             }
             
             @Override
             public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
-                // If this is 'fields', create and return the fieldsSink.
                 if (key.contentEquals("relative")) {
                     return relativeSink;
                 } else if (key.contentEquals("relativeTime")) {
-                    formatterArrayLength = initialSize;
                     return relativeTimeSink;
                 }
                 return null;
             }
         }
         UnitSink unitSink = new UnitSink();
-        
-        // Deals with items under /field/
-        class FieldsSink extends UResource.TableSink {
-            private Style getKeyStyle(UResource.Key key) {
-                int limit;
-                Style style = null; 
-                if (key.endsWith("-short")) {
-                    style = Style.SHORT;
-                    limit = key.length()-6;
-                    unitString = key.substring(0, limit);
-                }
-                else if (key.endsWith("-narrow")) {
-                    style  = Style.NARROW;
-                    limit = key.length()-7;
-                    unitString = key.substring(0, limit);
-                } else {
-                    style = Style.LONG;
-                    limit = key.length();
-                    unitString = key.toString();
-                }
-                return style;
-            }
-            
-            private Style styleFromAlias(UResource.Value value) {
-                    String s = value.getAliasString();
-                    Style style = null; 
-                    if (s.endsWith("-short")) {
-                        style = Style.SHORT;
-                    } else if (s.endsWith("-narrow")) {
-                        style  = Style.NARROW;
-                    } else {
-                        style = Style.LONG;
-                    }
-                    return style;
-            }
-            
-            private int limitFromKeyStyle(UResource.Key key, Style style) {
-                // Finds the last character of the base string, before appended style.
-                int limit = -1;
-                if (style == Style.SHORT) {
-                    limit = key.length()-6;
-                }
-                else if (style == Style.NARROW) {
-                    limit = key.length()-7;
-                } else {
-                    limit = key.length();
-                }
-                return limit;
-            }
-            
-            @Override
-            public void put(UResource.Key key, UResource.Value value) {
-                // Mostly here to detect aliases.
-                if (value.getType() != ICUResourceBundle.ALIAS) { return; }
-
-                Style sourceStyle = getKeyStyle(key);
-                int limit = limitFromKeyStyle(key, sourceStyle);
-                dateTimeUnit = DateTimeUnit.orNullFromString(key.subSequence(0, limit));
-                
-                if (dateTimeUnit != null) {
-                    // Record the fallback chain for the values.
-                    // At formatting time, limit to 2 levels of backup.
-                    Style targetStyle = styleFromAlias(value);
-                    
-                    // Should I keep this list for each relative/absolute unit and direction?
-                    fallbackCache[sourceStyle.ordinal()] = targetStyle;
-                } 
-            }
-
-            @Override
-            public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
-                // Determine if the style is LONG, SHORT, or NARROW.
-                // Also get the base unit from the key, i.e., remove any "-short" or "-narrow"
-                // TODO: do we filter here on key values, e.g., reject dayperiod", accept "hour*"?
-                int limit;
-                style = getKeyStyle(key);
-                limit = limitFromKeyStyle(key, style);
-
-                displayName = ""; // Needed?
-               
-                // Check if the unitString is in the white list.
-                dateTimeUnit = DateTimeUnit.orNullFromString(key.subSequence(0, limit));
-                if (dateTimeUnit == null) {
-                    return null;
-                }
-                unitString = key.substring(0, limit);
-                return unitSink;  // Continue parsing this path.
-            }
-        }
-        FieldsSink fieldsSink = new FieldsSink();
-
-        @Override
-        public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
-            // If this is 'fields', create and return the fieldsSink.
-            String stringVal = key.toString();
-            if (key.contentEquals("fields")) {
-                return fieldsSink;
-            }
-            return null;
-        }
-        
     }
     
     private static class Loader {
@@ -1026,314 +1064,102 @@ private static Direction keyToDirection(UResource.Key key) {
         }
 
         public RelativeDateTimeFormatterData load() {
-          
-            // TODO: finish.
-            // Sink 
-            RelDateTimeFmtDataSink sink = new RelDateTimeFmtDataSink();
-            // New maps for loading with sink.
-            EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> sinkQualitativeUnitMap = 
-                new EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>>(Style.class);
-            
-            // TODO: use the other data structure.
-            // sink.sinkQualitativeUnitMap = qualitativeUnitMap;
-            sink.sinkQualitativeUnitMap = sinkQualitativeUnitMap;
-
-            EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> sinkQuantitativeUnitMap =
-                new EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>>(Style.class);
-            // sink.sinkQuantitativeUnitMap = quantitativeUnitMap;
-            sink.sinkQuantitativeUnitMap = sinkQuantitativeUnitMap;
-
-            // Previous maps
+            // EnumMaps
             EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap = 
                     new EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>>(Style.class);
-            
             EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> quantitativeUnitMap =
                     new EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>>(Style.class);
+
+            // Sink for traversing data.
+            RelDateTimeFmtDataSink sink = new RelDateTimeFmtDataSink();
+            sink.sinkQualitativeUnitMap = qualitativeUnitMap;
+            sink.sinkQuantitativeUnitMap = quantitativeUnitMap;
             
+            // Creat top level Style entries in maps.
             for (Style style : Style.values()) {
                 qualitativeUnitMap.put(style, new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class));
                 quantitativeUnitMap.put(style, new EnumMap<RelativeUnit, QuantityFormatter[]>(RelativeUnit.class));                
-                
-                // New maps.
-                // TODO: consider if these should be initialized using the sink structure.
-                sinkQualitativeUnitMap.put(style, new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class));
-                sinkQuantitativeUnitMap.put(style, new EnumMap<RelativeUnit, QuantityFormatter[]>(RelativeUnit.class));                
             }
                     
             ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.
                     getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, ulocale);
             
-            r.getAllTableItemsWithFallback("", sink);
+            // Use sink mechanism to traverse data structure.
+            r.getAllTableItemsWithFallback("fields", sink);
 
-            addTimeUnits(
-                    r,
-                    "fields/day", "fields/day-short", "fields/day-narrow",
-                    RelativeUnit.DAYS,
-                    AbsoluteUnit.DAY,
-                    quantitativeUnitMap,
-                    qualitativeUnitMap);
-            addTimeUnits(
-                    r,
-                    "fields/week", "fields/week-short", "fields/week-narrow",
-                    RelativeUnit.WEEKS,
-                    AbsoluteUnit.WEEK,
-                    quantitativeUnitMap,
-                    qualitativeUnitMap);
-            addTimeUnits(
-                    r,
-                    "fields/month", "fields/month-short", "fields/month-narrow",
-                    RelativeUnit.MONTHS,
-                    AbsoluteUnit.MONTH,
-                    quantitativeUnitMap,
-                    qualitativeUnitMap);
-            addTimeUnits(
-                    r,
-                    "fields/year", "fields/year-short", "fields/year-narrow",
-                    RelativeUnit.YEARS,
-                    AbsoluteUnit.YEAR,
-                    quantitativeUnitMap,
-                    qualitativeUnitMap);
-            initRelativeUnits(
-                    r,
-                    "fields/second", "fields/second-short", "fields/second-narrow",
-                    RelativeUnit.SECONDS,
-                    quantitativeUnitMap);
-            initRelativeUnits(
-                    r,
-                    "fields/minute", "fields/minute-short", "fields/minute-narrow",
-                    RelativeUnit.MINUTES,
-                    quantitativeUnitMap);
-            initRelativeUnits(
-                    r,
-                    "fields/hour", "fields/hour-short", "fields/hour-narrow",
-                    RelativeUnit.HOURS,
-                    quantitativeUnitMap);
-            
-            addQualitativeUnit(
+            // Check fall backs array for loops or too many levels.
+            for (Style testStyle : Style.values()) {
+                Style newStyle1 = fallbackCache[testStyle.ordinal()];
+                if (newStyle1 == testStyle) {
+                    throw new IllegalStateException("Loop in style fallback");
+                }
+                if (newStyle1 != null) {
+                    Style newStyle2 = fallbackCache[newStyle1.ordinal()];
+                    if (newStyle2 == newStyle1 || newStyle2 == testStyle) {
+                        throw new IllegalStateException("Loop in style fallback");
+                    }
+                    if (newStyle2 != null) {
+                        // No fallback should take more than
+                        if (fallbackCache[newStyle2.ordinal()] != null) {
+                            throw new IllegalStateException("Loop in style fallback");
+                        }
+                    }
+                }
+            }
+      
+            /* Special case: Direction PLAIN for seconds needs a specific value. */
+            addQualitativeUnitForNow(
                     qualitativeUnitMap.get(Style.LONG),
-                    AbsoluteUnit.NOW,
                     r.getStringWithFallback("fields/second/relative/0"));
-            addQualitativeUnit(
+            addQualitativeUnitForNow(
                     qualitativeUnitMap.get(Style.SHORT),
-                    AbsoluteUnit.NOW,
                     r.getStringWithFallback("fields/second-short/relative/0"));
-            addQualitativeUnit(
+            addQualitativeUnitForNow(
                     qualitativeUnitMap.get(Style.NARROW),
-                    AbsoluteUnit.NOW,
                     r.getStringWithFallback("fields/second-narrow/relative/0"));
             
-            EnumMap<Style, EnumMap<AbsoluteUnit, String>> dayOfWeekMap = 
-                    new EnumMap<Style, EnumMap<AbsoluteUnit, String>>(Style.class);
-            dayOfWeekMap.put(Style.LONG, readDaysOfWeek(
-                    r.getWithFallback("calendar/gregorian/dayNames/stand-alone/wide")));
-            dayOfWeekMap.put(Style.SHORT, readDaysOfWeek(
-                    r.getWithFallback("calendar/gregorian/dayNames/stand-alone/short")));
-            dayOfWeekMap.put(Style.NARROW, readDaysOfWeek(
-                    r.getWithFallback("calendar/gregorian/dayNames/stand-alone/narrow")));
-            
-            addWeekDays(
-                    r,
-                    "fields/mon/relative",
-                    "fields/mon-short/relative",
-                    "fields/mon-narrow/relative",
-                    dayOfWeekMap,
-                    AbsoluteUnit.MONDAY,
+            // Special case for week days
+            setDaysOfWeekForStyle(Style.LONG, "calendar/gregorian/dayNames/stand-alone/wide", r,
+                    qualitativeUnitMap);      
+            setDaysOfWeekForStyle(Style.SHORT, "calendar/gregorian/dayNames/stand-alone/short", r,
                     qualitativeUnitMap);
-            addWeekDays(
-                    r,
-                    "fields/tue/relative",
-                    "fields/tue-short/relative",
-                    "fields/tue-narrow/relative",
-                    dayOfWeekMap,
-                    AbsoluteUnit.TUESDAY,
-                    qualitativeUnitMap);
-            addWeekDays(
-                    r,
-                    "fields/wed/relative",
-                    "fields/wed-short/relative",
-                    "fields/wed-narrow/relative",
-                    dayOfWeekMap,
-                    AbsoluteUnit.WEDNESDAY,
-                    qualitativeUnitMap);
-            addWeekDays(
-                    r,
-                    "fields/thu/relative",
-                    "fields/thu-short/relative",
-                    "fields/thu-narrow/relative",
-                    dayOfWeekMap,
-                    AbsoluteUnit.THURSDAY,
-                    qualitativeUnitMap);
-            addWeekDays(
-                    r,
-                    "fields/fri/relative",
-                    "fields/fri-short/relative",
-                    "fields/fri-narrow/relative",
-                    dayOfWeekMap,
-                    AbsoluteUnit.FRIDAY,
-                    qualitativeUnitMap);
-            addWeekDays(
-                    r,
-                    "fields/sat/relative",
-                    "fields/sat-short/relative",
-                    "fields/sat-narrow/relative",
-                    dayOfWeekMap,
-                    AbsoluteUnit.SATURDAY,
-                    qualitativeUnitMap);
-            addWeekDays(
-                    r,
-                    "fields/sun/relative",
-                    "fields/sun-short/relative",
-                    "fields/sun-narrow/relative",
-                    dayOfWeekMap,
-                    AbsoluteUnit.SUNDAY,
-                    qualitativeUnitMap);   
+            setDaysOfWeekForStyle(Style.NARROW, "calendar/gregorian/dayNames/stand-alone/narrow", r,
+                    qualitativeUnitMap);           
+         
             CalendarData calData = new CalendarData(
                     ulocale, r.getStringWithFallback("calendar/default"));
-            
-            // TODO: Return with new sinkQualitativeUnitMap and sinkQuantitativeUnitMap
-            // return new RelativeDateTimeFormatterData(
-            //    sinkQualitativeUnitMap, sinkQuantitativeUnitMap, calData.getDateTimePattern());
 
             return new RelativeDateTimeFormatterData(
                     qualitativeUnitMap, quantitativeUnitMap, calData.getDateTimePattern());
         }
-
-        private void addTimeUnits(
-                ICUResourceBundle r,
-                String path, String pathShort, String pathNarrow,
-                RelativeUnit relativeUnit, 
-                AbsoluteUnit absoluteUnit,
-                EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> quantitativeUnitMap,
+       
+        // Set up PLAIN elements for weekdays.
+        private void setDaysOfWeekForStyle(Style style, String path, ICUResourceBundle r,
                 EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap) {
-           addTimeUnit(
-                   r.getWithFallback(path),
-                   relativeUnit,
-                   absoluteUnit,
-                   quantitativeUnitMap.get(Style.LONG),
-                   qualitativeUnitMap.get(Style.LONG));
-           addTimeUnit(
-                   r.getWithFallback(pathShort),
-                   relativeUnit,
-                   absoluteUnit,
-                   quantitativeUnitMap.get(Style.SHORT),
-                   qualitativeUnitMap.get(Style.SHORT));
-           addTimeUnit(
-                   r.getWithFallback(pathNarrow),
-                   relativeUnit,
-                   absoluteUnit,
-                   quantitativeUnitMap.get(Style.NARROW),
-                   qualitativeUnitMap.get(Style.NARROW));
+
+            // Get day of week text from resources.
+            ICUResourceBundle daysOfWeekBundle = r.getWithFallback(path);
             
-        }
-
-        private void addTimeUnit(
-                ICUResourceBundle timeUnitBundle,
-                RelativeUnit relativeUnit,
-                AbsoluteUnit absoluteUnit,
-                EnumMap<RelativeUnit, QuantityFormatter[]> quantitativeUnitMap,
-                EnumMap<AbsoluteUnit, EnumMap<Direction, String>> qualitativeUnitMap) {
-            addTimeUnit(timeUnitBundle, relativeUnit, quantitativeUnitMap);
-            String unitName = timeUnitBundle.getStringWithFallback("dn");
-            // TODO(Travis Keep): This is a hack to get around CLDR bug 6818.
-            if (ulocale.getLanguage().equals("en")) {
-                unitName = unitName.toLowerCase();
-            }
-            timeUnitBundle = timeUnitBundle.getWithFallback("relative");
-            addQualitativeUnit(
-                    qualitativeUnitMap,
-                    absoluteUnit,
-                    timeUnitBundle,
-                    unitName);
-        }
-        
-        private void initRelativeUnits(
-                ICUResourceBundle r, 
-                String path,
-                String pathShort,
-                String pathNarrow,
-                RelativeUnit relativeUnit,
-                EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> quantitativeUnitMap) {
-            addTimeUnit(
-                    r.getWithFallback(path),
-                    relativeUnit,
-                    quantitativeUnitMap.get(Style.LONG));
-            addTimeUnit(
-                    r.getWithFallback(pathShort),
-                    relativeUnit,
-                    quantitativeUnitMap.get(Style.SHORT));
-            addTimeUnit(
-                    r.getWithFallback(pathNarrow),
-                    relativeUnit,
-                    quantitativeUnitMap.get(Style.NARROW));
-        }
-
-        private static void addTimeUnit(
-                ICUResourceBundle timeUnitBundle,
-                RelativeUnit relativeUnit,
-                EnumMap<RelativeUnit, QuantityFormatter[]> quantitativeUnitMap) {
-            QuantityFormatter future = new QuantityFormatter();
-            QuantityFormatter past = new QuantityFormatter();
-            timeUnitBundle = timeUnitBundle.getWithFallback("relativeTime");
-            addTimeUnit(
-                    timeUnitBundle.getWithFallback("future"),
-                    future);
-            addTimeUnit(
-                    timeUnitBundle.getWithFallback("past"),
-                    past);
-            quantitativeUnitMap.put(
-                    relativeUnit, new QuantityFormatter[] { past, future });
-        }
-
-        private static void addTimeUnit(
-                ICUResourceBundle pastOrFuture, QuantityFormatter qf) {
-            int size = pastOrFuture.getSize();
-            for (int i = 0; i < size; i++) {
-                UResourceBundle r = pastOrFuture.get(i);
-                qf.addIfAbsent(r.getKey(), r.getString());
-            }
-        }
-        
-        private void addWeekDays(
-                ICUResourceBundle r,
-                String path,
-                String pathShort,
-                String pathNarrow,
-                EnumMap<Style, EnumMap<AbsoluteUnit, String>> dayOfWeekMap,
-                AbsoluteUnit weekDay,
-                EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap) {
-            addQualitativeUnit(
-                    qualitativeUnitMap.get(Style.LONG),
-                    weekDay,
-                    r.findWithFallback(path),
-                    dayOfWeekMap.get(Style.LONG).get(weekDay)); 
-            addQualitativeUnit(
-                    qualitativeUnitMap.get(Style.SHORT),
-                    weekDay,
-                    r.findWithFallback(pathShort),
-                    dayOfWeekMap.get(Style.SHORT).get(weekDay)); 
-            addQualitativeUnit(
-                    qualitativeUnitMap.get(Style.NARROW),
-                    weekDay,
-                    r.findWithFallback(pathNarrow),
-                    dayOfWeekMap.get(Style.NARROW).get(weekDay)); 
-            
-        }
-
-        private static EnumMap<AbsoluteUnit, String> readDaysOfWeek(ICUResourceBundle daysOfWeekBundle) {
-            EnumMap<AbsoluteUnit, String> dayOfWeekMap = new EnumMap<AbsoluteUnit, String>(AbsoluteUnit.class);
             if (daysOfWeekBundle.getSize() != 7) {
-                throw new IllegalStateException(String.format("Expect 7 days in a week, got %d", daysOfWeekBundle.getSize()));
+                throw new IllegalStateException(
+                        String.format("Expect 7 days in a week, got %d", daysOfWeekBundle.getSize()));
             }
+            
+            EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap = qualitativeUnitMap.get(style);
+            
+            AbsoluteUnit[] weekdays = {AbsoluteUnit.SUNDAY, AbsoluteUnit.MONDAY, AbsoluteUnit.TUESDAY,
+                    AbsoluteUnit.WEDNESDAY, AbsoluteUnit.THURSDAY, AbsoluteUnit.FRIDAY, AbsoluteUnit.SATURDAY};
+            
             // Sunday always comes first in CLDR data.
             int idx = 0;
-            dayOfWeekMap.put(AbsoluteUnit.SUNDAY, daysOfWeekBundle.getString(idx++));
-            dayOfWeekMap.put(AbsoluteUnit.MONDAY, daysOfWeekBundle.getString(idx++));
-            dayOfWeekMap.put(AbsoluteUnit.TUESDAY, daysOfWeekBundle.getString(idx++));
-            dayOfWeekMap.put(AbsoluteUnit.WEDNESDAY, daysOfWeekBundle.getString(idx++));
-            dayOfWeekMap.put(AbsoluteUnit.THURSDAY, daysOfWeekBundle.getString(idx++));
-            dayOfWeekMap.put(AbsoluteUnit.FRIDAY, daysOfWeekBundle.getString(idx++));
-            dayOfWeekMap.put(AbsoluteUnit.SATURDAY, daysOfWeekBundle.getString(idx++));
-            return dayOfWeekMap;
+            for (AbsoluteUnit dayOfWeek : weekdays) {
+                String dayText = daysOfWeekBundle.getString(idx++);
+                EnumMap<Direction, String> dirMap = unitMap.get(dayOfWeek);
+                if (dirMap == null) {
+                    dirMap = new EnumMap<Direction, String>(Direction.class);
+                }
+                dirMap.put(Direction.PLAIN, dayText);
+            }
         }
     }
 
