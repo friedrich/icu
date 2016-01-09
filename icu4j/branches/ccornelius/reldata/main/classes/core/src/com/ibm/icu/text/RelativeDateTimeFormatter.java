@@ -14,6 +14,8 @@ import com.ibm.icu.impl.CalendarData;
 import com.ibm.icu.impl.ICUCache;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.SimpleCache;
+import com.ibm.icu.impl.SimplePatternFormatter;
+import com.ibm.icu.impl.StandardPlural;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.util.ICUException;
 import com.ibm.icu.util.ULocale;
@@ -394,14 +396,18 @@ public final class RelativeDateTimeFormatter {
             throw new IllegalArgumentException("direction must be NEXT or LAST");
         }
         String result;
-        int quantIndex = (direction == Direction.NEXT ? 1 : 0);
+        int pastFutureIndex = (direction == Direction.NEXT ? 1 : 0);
 
         // This class is thread-safe, yet numberFormat is not. To ensure thread-safety of this
         // class we must guarantee that only one thread at a time uses our numberFormat.
         synchronized (numberFormat) {
-            QuantityFormatter fmt = getQuantitativeResultWithFallback(style, unit, quantIndex);
+            QuantityFormatter fmt = getQuantitativeResultWithFallback(style, unit, pastFutureIndex);
             result = fmt.format(quantity, numberFormat, pluralRules);
-        }
+
+            SimplePatternFormatter spFormatter =
+                    getQuantitativeSimpleFormatterWithFallback(style, unit, pastFutureIndex, quantity);
+            // TODO: Use this formatter. Remove old QuantityFormatter reference.
+            }
         return adjustForContext(result);
     }
     
@@ -560,6 +566,9 @@ public final class RelativeDateTimeFormatter {
     private RelativeDateTimeFormatter(
             EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap,
             EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> quantitativeUnitMap,
+            // TODO:
+            EnumMap<Style, EnumMap<RelativeUnit, SimplePatternFormatter[][]>> spfQuantitativeUnitMap,
+
             MessageFormat combinedDateAndTime,
             PluralRules pluralRules,
             NumberFormat numberFormat,
@@ -629,8 +638,62 @@ public final class RelativeDateTimeFormatter {
         return null;
     }
     
+    private SimplePatternFormatter getQuantitativeSimpleFormatterWithFallback(
+            Style style, RelativeUnit unit, int pastFutureIndex, double quantity) {
+        if (style == null || unit == null) {
+            return null;
+        }
+        EnumMap<RelativeUnit, SimplePatternFormatter[][]> unitMap = spfQuantitativeUnitMap.get(style);
+        /* SimplePatternFormatter[][] = unitMap.get(unit);
+       
+        */
+        /* TODO: find a way to remove the isValid() call, since that only checks for plurality OTHER. */
+        /* if (unitMap != null) {
+            quantFormatterArray = unitMap.get(unit);
+            if (quantFormatterArray != null) {
+                if (quantFormatterArray != null && quantFormatterArray[quantIndex].isValid()) {
+                    return quantFormatterArray[quantIndex];
+                }
+            }
+        }
+
+        // Consider other styles from alias fall back.
+        Style newStyle = fallbackCache[style.ordinal()];
+        if (newStyle == null) {
+            return null;
+        }
+        unitMap = quantitativeUnitMap.get(newStyle);
+        if (unitMap != null) {
+            quantFormatterArray = unitMap.get(unit);
+            if (quantFormatterArray != null) {
+                if (quantFormatterArray != null && quantFormatterArray[quantIndex].isValid()) {
+                    return quantFormatterArray[quantIndex];
+                }
+            }
+        }
+        // Second fall back.
+        newStyle = fallbackCache[style.ordinal()];
+        if (newStyle == null) {
+            return null;
+        }
+        unitMap = quantitativeUnitMap.get(newStyle);
+        if (unitMap != null) {
+            quantFormatterArray = unitMap.get(unit);
+            if (quantFormatterArray != null) {
+                if (quantFormatterArray != null && quantFormatterArray[quantIndex].isValid()) {
+                    return quantFormatterArray[quantIndex];
+                }
+            }
+        }     
+        */
+        return null;
+    }
+
+    
     private final EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap;
     private final EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> quantitativeUnitMap;
+    private final EnumMap<Style, EnumMap<RelativeUnit, SimplePatternFormatter[][]>> spfQuantitativeUnitMap;
+
     private final MessageFormat combinedDateAndTime;
     private final PluralRules pluralRules;
     private final NumberFormat numberFormat;
@@ -860,6 +923,7 @@ private static Direction keyToDirection(UResource.Key key) {
 
         EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> sinkQualitativeUnitMap;
         EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> sinkQuantitativeUnitMap;
+        EnumMap<Style, EnumMap<RelativeUnit, SimplePatternFormatter[][]>> simplePatFmtQuantitativeUnitMap;
 
         // Values keep between levels of parsing the CLDR data.
         String displayName;                 // From the "dn" key, used for some Direction.PLAIN values. 
@@ -949,6 +1013,36 @@ private static Direction keyToDirection(UResource.Key key) {
                     sinkQuantitativeUnitMap.put(style, relUnitQuantFmtMap);
                 }
                 QuantityFormatter futureOrPast[] = relUnitQuantFmtMap.get(relativeUnit);
+
+                /* Make two lists of simplePatternFmtList, one for past and one for future.
+                 *  Set a SimplePatternFormatter for the <style, relative unit, plurality>
+                 *
+                 * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, ETC.
+                 * Use StandardPlural.fromString(CharSequence keyword) to get the plurality.
+                 * StandardPlural.indexOrNegativeFromString(CharSequence keyword)
+                 * 
+                 * */
+                if (simplePatFmtQuantitativeUnitMap == null) {
+                    simplePatFmtQuantitativeUnitMap = 
+                            new EnumMap<Style, EnumMap<RelativeUnit, SimplePatternFormatter[][]>>(Style.class);
+                }
+                EnumMap<RelativeUnit, SimplePatternFormatter[][]> relSPFList = simplePatFmtQuantitativeUnitMap.get(style);
+                if (relSPFList == null) {
+                    relSPFList = new EnumMap<RelativeUnit, SimplePatternFormatter[][]>(RelativeUnit.class);
+                    simplePatFmtQuantitativeUnitMap.put(style, relSPFList);
+                }
+                SimplePatternFormatter[][] spfList = relSPFList.get(relativeUnit);
+                if (spfList == null) {
+                    // Create two lists of SimplePatternFormatters, one for past and one for future.
+                    spfList = new SimplePatternFormatter[2][StandardPlural.COUNT];
+                    relSPFList.put(relativeUnit, spfList);
+                }
+                SimplePatternFormatter[] simplePatternFmtList = spfList[pastFutureIndex];
+                int pluralIndex = StandardPlural.indexFromString(key.toString());
+                simplePatternFmtList[pluralIndex] =
+                        SimplePatternFormatter.compileMinMaxPlaceholders(value.getString(), 0, 1);
+                
+                // TODO: remove these once formatter is using SPF.
                 if (futureOrPast == null) {
                     futureOrPast = new QuantityFormatter[2];
                     relUnitQuantFmtMap.put(relativeUnit, futureOrPast);
@@ -972,7 +1066,6 @@ private static Direction keyToDirection(UResource.Key key) {
                 } else {
                     return null;
                 }
-                // Attach QuantityFormatter to the UnitMap.
                 relativeUnit = stringToRelativeUnit(unitString);
                 if (relativeUnit == null) {
                     return null;
@@ -1070,15 +1163,23 @@ private static Direction keyToDirection(UResource.Key key) {
             EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>> quantitativeUnitMap =
                     new EnumMap<Style, EnumMap<RelativeUnit, QuantityFormatter[]>>(Style.class);
 
+            // This one uses SimplePatternFormatter instead of QuantityFormatter
+            EnumMap<Style, EnumMap<RelativeUnit, SimplePatternFormatter[][]>> simplePatFmtQuantitativeUnitMap = 
+                    new EnumMap<Style, EnumMap<RelativeUnit, SimplePatternFormatter[][]>>(Style.class);
+
             // Sink for traversing data.
             RelDateTimeFmtDataSink sink = new RelDateTimeFmtDataSink();
             sink.sinkQualitativeUnitMap = qualitativeUnitMap;
             sink.sinkQuantitativeUnitMap = quantitativeUnitMap;
+            sink.simplePatFmtQuantitativeUnitMap = simplePatFmtQuantitativeUnitMap;
+
             
             // Creat top level Style entries in maps.
             for (Style style : Style.values()) {
                 qualitativeUnitMap.put(style, new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class));
-                quantitativeUnitMap.put(style, new EnumMap<RelativeUnit, QuantityFormatter[]>(RelativeUnit.class));                
+                quantitativeUnitMap.put(style, new EnumMap<RelativeUnit, QuantityFormatter[]>(RelativeUnit.class));
+                simplePatFmtQuantitativeUnitMap.put(style, 
+                        new EnumMap<RelativeUnit, SimplePatternFormatter[][]>(RelativeUnit.class));
             }
                     
             ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.
