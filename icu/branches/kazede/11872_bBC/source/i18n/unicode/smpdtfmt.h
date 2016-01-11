@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1997-2015, International Business Machines Corporation and
+* Copyright (C) 1997-2016, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 *
@@ -1555,6 +1555,14 @@ private:
      * through the API method parseAmbiguousDatesAsAfter().
      */
     UDate                fDefaultCenturyStart;
+
+    UBool                fHasMinute;
+    UBool                fHasSecond;
+
+    /**
+     * Sets fHasMinutes and fHasSeconds.
+     */
+    void                 parsePattern();
 
     /**
      * See documentation for defaultCenturyStart.

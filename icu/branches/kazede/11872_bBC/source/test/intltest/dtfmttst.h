@@ -1,12 +1,12 @@
 /********************************************************************
- * COPYRIGHT: 
- * Copyright (c) 1997-2015, International Business Machines Corporation and
+ * COPYRIGHT:
+ * Copyright (c) 1997-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
 #ifndef _DATEFORMATTEST_
 #define _DATEFORMATTEST_
- 
+
 #include "unicode/utypes.h"
 
 #if !UCONFIG_NO_FORMATTING
@@ -15,7 +15,7 @@
 #include "unicode/smpdtfmt.h"
 #include "caltztst.h"
 
-/** 
+/**
  * Performs many different tests for DateFormat and SimpleDateFormat
  **/
 class DateFormatTest: public CalendarTimeZoneTest {
@@ -40,23 +40,23 @@ public:
      * Test the parsing of 2-digit years.
      */
     virtual void TestTwoDigitYearDSTParse(void);
- 
+
 public: // package
     // internal utility routine (genrates escape sequences for characters)
     static UnicodeString& escape(UnicodeString& s);
- 
+
 public:
     /**
      * Verify that returned field position indices are correct.
      */
     void TestFieldPosition(void);
- 
+
     void TestGeneral();
 
 public: // package
     // internal utility function
     static void getFieldText(DateFormat* df, int32_t field, UDate date, UnicodeString& str);
- 
+
 public:
     /**
      * Verify that strings which contain incomplete specifications are parsed
@@ -262,7 +262,7 @@ public:
     void TestNumberAsStringParsing(void);
 
  private:
-      void TestRelative(int daysdelta, 
+      void TestRelative(int daysdelta,
                                   const Locale& loc,
                                   const char *expectChars);
 
@@ -275,9 +275,15 @@ public:
 
     void expectFormat(const char **data, int32_t data_length,
                       const Locale &locale);
+
+public:
+    void TestAmPmMidnightNoon();
+    void TestFlexibleDayPeriod();
+    void TestDayPeriodWithLocales();
+    void TestMinuteSecondFieldsInOddPlaces();
 };
 
 #endif /* #if !UCONFIG_NO_FORMATTING */
- 
+
 #endif // _DATEFORMATTEST_
 //eof

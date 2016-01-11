@@ -1,6 +1,6 @@
 /*
 **********************************************************************
-*   Copyright (C) 1997-2012,2014, International Business Machines
+*   Copyright (C) 1997-2016, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 *
@@ -12,7 +12,7 @@
 *   04/01/97    aliu        Creation.
 *   02/22/99    damiba      overhaul.
 *   04/04/99    helena      Fixed internal header inclusion.
-*   04/15/99    Madhu       Updated Javadoc  
+*   04/15/99    Madhu       Updated Javadoc
 *   06/14/99    stephen     Removed functions taking a filename suffix.
 *   07/20/99    stephen     Language-independent ypedef to void*
 *   11/09/99    weiv        Added ures_getLocale()
@@ -29,7 +29,7 @@
 
 /**
  * \file
- * \brief C API: Resource Bundle 
+ * \brief C API: Resource Bundle
  *
  * <h2>C API: Resource Bundle</h2>
  *
@@ -40,7 +40,7 @@
  * <P>
  * Resource bundles in ICU4C are currently defined using text files which conform to the following
  * <a href="http://source.icu-project.org/repos/icu/icuhtml/trunk/design/bnf_rb.txt">BNF definition</a>.
- * More on resource bundle concepts and syntax can be found in the 
+ * More on resource bundle concepts and syntax can be found in the
  * <a href="http://icu-project.org/userguide/ResourceManagement.html">Users Guide</a>.
  * <P>
  */
@@ -803,9 +803,15 @@ inline UnicodeString
 ures_getUnicodeString(const UResourceBundle *resB, 
                       UErrorCode* status) 
 {
+    UnicodeString result;
     int32_t len = 0;
     const UChar *r = ures_getString(resB, &len, status);
-    return UnicodeString(TRUE, r, len);
+    if(U_SUCCESS(*status)) {
+        result.setTo(TRUE, r, len);
+    } else {
+        result.setToBogus();
+    }
+    return result;
 }
 
 /**
@@ -842,9 +848,15 @@ ures_getUnicodeStringByIndex(const UResourceBundle *resB,
                              int32_t indexS, 
                              UErrorCode* status) 
 {
+    UnicodeString result;
     int32_t len = 0;
     const UChar* r = ures_getStringByIndex(resB, indexS, &len, status);
-    return UnicodeString(TRUE, r, len);
+    if(U_SUCCESS(*status)) {
+        result.setTo(TRUE, r, len);
+    } else {
+        result.setToBogus();
+    }
+    return result;
 }
 
 /**
@@ -862,9 +874,15 @@ ures_getUnicodeStringByKey(const UResourceBundle *resB,
                            const char* key, 
                            UErrorCode* status) 
 {
+    UnicodeString result;
     int32_t len = 0;
     const UChar* r = ures_getStringByKey(resB, key, &len, status);
-    return UnicodeString(TRUE, r, len);
+    if(U_SUCCESS(*status)) {
+        result.setTo(TRUE, r, len);
+    } else {
+        result.setToBogus();
+    }
+    return result;
 }
 
 U_NAMESPACE_END

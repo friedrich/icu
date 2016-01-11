@@ -1,6 +1,6 @@
 /*
 *******************************************************************************
-* Copyright (C) 1997-2015, International Business Machines Corporation and    *
+* Copyright (C) 1997-2016, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 *
@@ -17,7 +17,7 @@
 *                             Removed getZoneIndex (added in DateFormatSymbols)
 *                             Removed subParseLong
 *                             Removed chk
-*  02/22/99     stephen     Removed character literals for EBCDIC safety
+*   02/22/99    stephen     Removed character literals for EBCDIC safety
 *   10/14/99    aliu        Updated 2-digit year parsing so that only "00" thru
 *                           "99" are recognized. {j28 4182066}
 *   11/15/99    weiv        Added support for week of year/day of week format
@@ -62,6 +62,9 @@
 #include "smpdtfst.h"
 #include "sharednumberformat.h"
 #include "ustr_imp.h"
+#include "charstr.h"
+#include "uvector.h"
+#include "cstr.h"
 
 #if defined( U_DEBUG_CALSVC ) || defined (U_DEBUG_CAL)
 #include <stdio.h>
@@ -109,6 +112,175 @@ typedef enum OvrStrType {
     kOvrStrTime = 1,
     kOvrStrBoth = 2
 } OvrStrType;
+
+// ================================
+// START DayPeriod stuff
+
+enum CutoffType {
+    CUTOFF_TYPE_BEFORE,
+    CUTOFF_TYPE_AFTER,
+    CUTOFF_TYPE_FROM,
+    CUTOFF_TYPE_TO,
+    CUTOFF_TYPE_AT,
+    CUTOFF_TYPE_UNKNOWN
+};
+
+enum DayPeriod {
+    DAYPERIOD_UNKNOWN = -1,
+    DAYPERIOD_MIDNIGHT,
+    DAYPERIOD_NOON,
+    DAYPERIOD_MORNING1,
+    DAYPERIOD_AFTERNOON1,
+    DAYPERIOD_EVENING1,
+    DAYPERIOD_NIGHT1,
+    DAYPERIDO_MORNING2,
+    DAYPERIOD_AFTERNOON2,
+    DAYPERIOD_EVENING2,
+    DAYPERIOD_NIGHT2
+};
+
+struct DayPeriodRuleSet : public UMemory {
+    UBool hasMidnight;
+    UBool hasNoon;
+    DayPeriod periodTypeForHour[24];
+
+    DayPeriodRuleSet() : hasMidnight(FALSE), hasNoon(FALSE) {
+        for (int32_t i = 0; i < 24; ++i) {
+            periodTypeForHour[i] = DAYPERIOD_UNKNOWN;
+        }
+    }
+
+    static DayPeriod getDayPeriodFromString(const char *type_str) {
+        if (uprv_strcmp(type_str, "midnight") == 0) {
+            return DAYPERIOD_MIDNIGHT;
+        } else if (uprv_strcmp(type_str, "noon") == 0) {
+            return DAYPERIOD_NOON;
+        } else if (uprv_strcmp(type_str, "morning1") == 0) {
+            return DAYPERIOD_MORNING1;
+        } else if (uprv_strcmp(type_str, "afternoon1") == 0) {
+            return DAYPERIOD_AFTERNOON1;
+        } else if (uprv_strcmp(type_str, "evening1") == 0) {
+            return DAYPERIOD_EVENING1;
+        } else if (uprv_strcmp(type_str, "night1") == 0) {
+            return DAYPERIOD_NIGHT1;
+        } else if (uprv_strcmp(type_str, "morning2") == 0) {
+            return DAYPERIDO_MORNING2;
+        } else if (uprv_strcmp(type_str, "afternoon2") == 0) {
+            return DAYPERIOD_AFTERNOON2;
+        } else if (uprv_strcmp(type_str, "evening2") == 0) {
+            return DAYPERIOD_EVENING2;
+        } else if (uprv_strcmp(type_str, "night2") == 0) {
+            return DAYPERIOD_NIGHT2;
+        } else {
+            return DAYPERIOD_UNKNOWN;
+        }
+    }
+
+    void add(int32_t startHour, int32_t limitHour, const char *type_str) {
+        DayPeriod type = getDayPeriodFromString(type_str);
+        for (int32_t i = startHour; i != limitHour; ++i) {
+            if (i == 24) {
+                i = 0;
+            }
+            periodTypeForHour[i] = type;
+        }
+    }
+
+    // Returns TRUE if for all i, periodTypeForHour[i] has a type other than UNKNOWN.
+    // Values of HasNoon and HasMidnight do not affect the return value.
+    UBool allHoursAreSet() {
+        for (int32_t i = 0; i < 24; ++i) {
+            if (periodTypeForHour[i] == DAYPERIOD_UNKNOWN) {
+                return FALSE;
+            }
+        }
+
+        return TRUE;
+    }
+};
+
+struct Cutoff : public UObject {
+    CutoffType type;
+    int32_t hour;
+
+    Cutoff(const char *type, const UnicodeString &time, UErrorCode &errorCode) {
+        this->type = getCutoffTypeFromString(type);
+        this->hour = parseHour(time, errorCode);
+    }
+
+    Cutoff(CutoffType type, int32_t hour) : type(type), hour(hour) {}
+
+    virtual ~Cutoff();
+
+    static CutoffType getCutoffTypeFromString(const char *type_str) {
+        if (uprv_strcmp(type_str, "from") == 0) {
+            return CUTOFF_TYPE_FROM;
+        } else if (uprv_strcmp(type_str, "to") == 0) {
+            return CUTOFF_TYPE_TO;
+        } else if (uprv_strcmp(type_str, "before") == 0) {
+            return CUTOFF_TYPE_BEFORE;
+        } else if (uprv_strcmp(type_str, "after") == 0) {
+            return CUTOFF_TYPE_AFTER;
+        } else if (uprv_strcmp(type_str, "at") == 0) {
+            return CUTOFF_TYPE_AT;
+        } else {
+            return CUTOFF_TYPE_UNKNOWN;
+        }
+    }
+
+    static int32_t parseHour(const UnicodeString &time, UErrorCode &errorCode) {
+        if (U_FAILURE(errorCode)) {
+            return 0;
+        }
+
+        int32_t hourLimit = time.length() - 3;
+        // `time` must look like "x:00" or "xx:00".
+        // If length is wrong or `time` doesn't end with ":00", error out.
+        if ((hourLimit != 1 && hourLimit != 2) ||
+                time[hourLimit] != 0x3A || time[hourLimit + 1] != 0x30 ||
+                time[hourLimit + 2] != 0x30) {
+            errorCode = U_INVALID_FORMAT_ERROR;
+            return 0;
+        }
+
+        // If `time` doesn't begin with a number in [0, 24], error out.
+        // Note: "24:00" is possible in "before 24:00".
+        int32_t hour = time[0] - 0x30;
+        if (hour < 0 || 9 < hour) {
+            errorCode = U_INVALID_FORMAT_ERROR;
+            return 0;
+        }
+        if (hourLimit == 2) {
+            int32_t hourDigit2 = time[1] - 0x30;
+            if (hourDigit2 < 0 || 9 < hourDigit2) {
+                errorCode = U_INVALID_FORMAT_ERROR;
+                return 0;
+            }
+            hour = hour * 10 + hourDigit2;
+            if (hour > 24) {
+                errorCode = U_INVALID_FORMAT_ERROR;
+                return 0;
+            }
+        }
+
+        return hour;
+    }
+
+    static int8_t compare(UElement a, UElement b) {
+        int32_t hour_a = static_cast<Cutoff *>(a.pointer)->hour;
+        int32_t hour_b = static_cast<Cutoff *>(b.pointer)->hour;
+
+        // TODO: check if we have to return 0/1/-1, or can we return (hour_a - hour_b).
+        if (hour_a < hour_b) { return -1; }
+        else if (hour_a > hour_b) { return 1; }
+        else { return 0; }
+    }
+};
+
+Cutoff::~Cutoff() {}
+
+// END DayPeriod stuff
+// ================================
 
 static const UDateFormatField kDateFields[] = {
     UDAT_YEAR_FIELD,
@@ -621,6 +793,8 @@ SimpleDateFormat& SimpleDateFormat::operator=(const SimpleDateFormat& other)
     fHaveDefaultCentury          = other.fHaveDefaultCentury;
 
     fPattern = other.fPattern;
+    fHasMinute = other.fHasMinute;
+    fHasSecond = other.fHasSecond;
 
     // TimeZoneFormat in ICU4C only depends on a locale for now
     if (fLocale != other.fLocale) {
@@ -906,6 +1080,8 @@ SimpleDateFormat::initialize(const Locale& locale,
     {
         status = U_MISSING_RESOURCE_ERROR;
     }
+
+    parsePattern();
 }
 
 /* Initialize the fields we use to disambiguate ambiguous years. Separate
@@ -986,7 +1162,7 @@ SimpleDateFormat::_format(Calendar& cal, UnicodeString& appendTo,
                             FieldPositionHandler& handler, UErrorCode& status) const
 {
     if ( U_FAILURE(status) ) {
-       return appendTo; 
+       return appendTo;
     }
     Calendar* workCal = &cal;
     Calendar* calClone = NULL;
@@ -1178,6 +1354,7 @@ SimpleDateFormat::fgPatternIndexToCalendarField[] =
     /*O*/   UCAL_ZONE_OFFSET,
     /*Xx*/  UCAL_ZONE_OFFSET, UCAL_ZONE_OFFSET,
     /*r*/   UCAL_EXTENDED_YEAR,
+    /*bB*/   UCAL_FIELD_COUNT, UCAL_FIELD_COUNT,  // no mappings to calendar fields
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
     /*:*/   UCAL_FIELD_COUNT, /* => no useful mapping to any calendar field */
 #else
@@ -1206,6 +1383,7 @@ SimpleDateFormat::fgPatternIndexToDateFormatField[] = {
     /*O*/   UDAT_TIMEZONE_LOCALIZED_GMT_OFFSET_FIELD,
     /*Xx*/  UDAT_TIMEZONE_ISO_FIELD, UDAT_TIMEZONE_ISO_LOCAL_FIELD,
     /*r*/   UDAT_RELATED_YEAR_FIELD,
+    /*bB*/  UDAT_AM_PM_MIDNIGHT_NOON_FIELD, UDAT_FLEXIBLE_DAY_PERIOD_FIELD,
 #if UDAT_HAS_PATTERN_CHAR_FOR_TIME_SEPARATOR
     /*:*/   UDAT_TIME_SEPARATOR_FIELD,
 #else
@@ -1806,6 +1984,224 @@ SimpleDateFormat::subFormat(UnicodeString &appendTo,
             zeroPaddingNumber(currentNumberFormat,appendTo, (value/3) + 1, count, maxIntCount);
         break;
 
+    case UDAT_AM_PM_MIDNIGHT_NOON_FIELD:
+    {
+        const UnicodeString *toAppend = NULL;
+        int32_t hour = cal.get(UCAL_HOUR_OF_DAY, status);
+
+        // For "midnight" and "noon":
+        // Time, as displayed, must be exactly noon or midnight.
+        // This means minutes and seconds, if present, must be zero.
+        if ((hour == 0 || hour == 12) &&
+                (!fHasMinute || cal.get(UCAL_MINUTE, status) == 0) &&
+                (!fHasSecond || cal.get(UCAL_SECOND, status) == 0)) {
+            // Stealing am/pm value to use as our array index.
+            // It works out: am/midnight are both 0, pm/noon are both 1,
+            // 12 am is 12 midnight, and 12 pm is 12 noon.
+            int32_t value = cal.get(UCAL_AM_PM, status);
+
+            if (count <= 3) {
+                toAppend = &fSymbols->fAbbreviatedDayPeriods[value];
+            } else if (count == 4 || count > 5) {
+                toAppend = &fSymbols->fWideDayPeriods[value];
+            } else { // count == 5
+                toAppend = &fSymbols->fNarrowDayPeriods[value];
+            }
+        }
+
+        // toAppend is NULL if time isn't exactly midnight or noon (as displayed).
+        // toAppend is bogus if time is midnight or noon, but no localized string exists.
+        // In either case, fall back to am/pm.
+        if (toAppend == NULL || toAppend->isBogus()) {
+            // Reformat with identical arguments except ch, now changed to 'a'.
+            subFormat(appendTo, 0x61, count, capitalizationContext, fieldNum,
+                      handler, cal, mutableNFs, status);
+        } else {
+            appendTo += *toAppend;
+        }
+
+        break;
+    }
+
+    case UDAT_FLEXIBLE_DAY_PERIOD_FIELD:
+    {
+        // Teminologies.
+        // a rule set: e.g. set2{...}.
+        // a rule: e.g. afternoon1{...}.
+        // a cutoff set: e.g. after{...}.
+        // a cutoff: a type + a time, such as "before 6:00".
+        //           Current data structure allows more than one cutoff in a cutoff set.
+
+        // TODO: handle u_res error codes.
+        UErrorCode ec = U_ZERO_ERROR;
+
+        // Get current locale.
+        // TODO: do it properly, with fall back and all.
+        const char *locale = this->getSmpFmtLocale().getLanguage();
+
+        // Get rule set number for the locale and convert that string to char *
+        LocalUResourceBundlePointer rb_dayPeriods(ures_openDirect(NULL, "dayPeriods", &ec));
+        LocalUResourceBundlePointer rb_dayPeriods_locales(
+            ures_getByKey(rb_dayPeriods.getAlias(), "locales", NULL, &ec));
+        UnicodeString ruleSetNumber_u = ures_getUnicodeStringByKey(
+            rb_dayPeriods_locales.getAlias(), locale, &ec);
+        CharString cs;
+        cs.appendInvariantChars(ruleSetNumber_u, ec);
+        const char *ruleSetNumber = cs.data();
+
+        // From rule set number, get the rule set.
+        LocalUResourceBundlePointer rb_dayPeriods_rules(ures_getByKey(
+            rb_dayPeriods.getAlias(), "rules", NULL, &ec));
+        LocalUResourceBundlePointer rb_dayPeriods_ruleSet(ures_getByKey(
+            rb_dayPeriods_rules.getAlias(), ruleSetNumber, NULL, &ec));
+
+        if (U_FAILURE(ec)) {
+            // Rule set doesn't exist. Fall back to am/pm.
+            subFormat(appendTo, 0x61, count, capitalizationContext, fieldNum,
+                      handler, cal, mutableNFs, status);
+        }
+
+        // Construct a DayPeriodRuleSet object for easier lookup.
+        DayPeriodRuleSet ruleSet;
+
+        // Load rules and populate ruleSet.
+        int32_t numRules = ures_getSize(rb_dayPeriods_ruleSet.getAlias());
+        for (int32_t i = 0; i < numRules; ++i) {
+            // Rules could contain two time periods, for example,
+            // night1{ after{"0:00"}, before{"4:00", "24:00"}, from{"21:00"} },
+            // so collect all cutoffs and sort them.
+            LocalUResourceBundlePointer rb_dayPeriods_oneRule(
+                ures_getByIndex(rb_dayPeriods_ruleSet.getAlias(), i, NULL, &ec));
+            const char *ruleType = ures_getKey(rb_dayPeriods_oneRule.getAlias());
+
+            UVector cutoffs(ec);
+            cutoffs.setDeleter(uprv_deleteUObject);
+
+            // Cutoffs live in cutoff types, so we iterate over all cutoff types.
+            int32_t numCutoffTypes = ures_getSize(rb_dayPeriods_oneRule.getAlias());
+            for (int32_t j = 0; j < numCutoffTypes; ++j) {
+                LocalUResourceBundlePointer rb_dayPeriods_oneCutoffSet(
+                    ures_getByIndex(rb_dayPeriods_oneRule.getAlias(), j, NULL, &ec));
+                const char *cutoffType = ures_getKey(rb_dayPeriods_oneCutoffSet.getAlias());  // e.g. "after".
+                int32_t numCutoffs = ures_getSize(rb_dayPeriods_oneCutoffSet.getAlias());  // 1 or 2.
+                for (int32_t k = 0; k < numCutoffs; ++k) {
+                    UnicodeString cutoffTime = ures_getUnicodeStringByIndex(
+                        rb_dayPeriods_oneCutoffSet.getAlias(), k, &ec);
+                    cutoffs.addElement(new Cutoff(cutoffType, cutoffTime, ec), ec);
+                }
+            }
+
+            cutoffs.sort(Cutoff::compare, ec);
+
+            // Rules could go past midnight, e.g. night1{ before{"4:00"}, from{"21:00"} }.
+            // If first cutoff is "before" or "to", it's wrapped around midnight.
+            // Bring it to the end and add 24 to it (to signify the next day).
+            Cutoff *firstElement = (Cutoff *)cutoffs.firstElement();
+            if (firstElement->type == CUTOFF_TYPE_BEFORE || firstElement->type == CUTOFF_TYPE_TO) {
+                Cutoff *firstElementCopy = new Cutoff(firstElement->type, firstElement->hour);
+                cutoffs.insertElementAt(firstElementCopy, cutoffs.size(), ec);
+                cutoffs.removeElementAt(0);
+            }
+
+            for (int32_t j = 0; j < cutoffs.size(); ++j) {
+                Cutoff *thisOne = (Cutoff *)cutoffs.elementAt(j);
+
+                // "at" cutoffs -- either noon or midnight.
+                if (thisOne->type == CUTOFF_TYPE_AT) {
+                    if (thisOne->hour == 0) {
+                        ruleSet.hasMidnight = TRUE;
+                    } else if (thisOne->hour == 12) {
+                        ruleSet.hasNoon = TRUE;
+                    } else {
+                        ec = U_INVALID_FORMAT_ERROR;  // Bad data. This should not happen.
+                        break;
+                    }
+                } else {
+                    // Grab the next cutoff.
+                    // Assuming "thisOne" is from/after and "nextOne" is before.
+                    if (j + 1 >= cutoffs.size()) {
+                        ec = U_INVALID_FORMAT_ERROR;  // Bad data. This should not happen.
+                        break;
+                    }
+                    ++j;
+                    Cutoff *nextOne = (Cutoff *)cutoffs.elementAt(j);
+                    ruleSet.add(thisOne->hour, nextOne->hour, ruleType);
+                }
+            }
+
+            if (U_FAILURE(ec)) {
+                break;
+            }
+        }
+
+        // If at least one hour range has day period type UNKNOWN, we have bad data. Error out.
+        if (!ruleSet.allHoursAreSet()) {
+            ec = U_INVALID_FORMAT_ERROR;
+            break;
+        }
+
+        // Get current display time.
+        int32_t hour = cal.get(UCAL_HOUR_OF_DAY, ec);
+        int32_t minute = 0;
+        if (fHasMinute) {
+            minute = cal.get(UCAL_MINUTE, ec);
+        }
+        int32_t second = 0;
+        if (fHasSecond) {
+            second = cal.get(UCAL_SECOND, ec);
+        }
+
+        // Determine day period.
+        DayPeriod periodType;
+        if (hour == 0 && minute == 0 && second == 0 && ruleSet.hasMidnight) {
+            periodType = DAYPERIOD_MIDNIGHT;
+        } else if (hour == 12 && minute == 0 && second == 0 && ruleSet.hasNoon) {
+            periodType = DAYPERIOD_NOON;
+        } else {
+            periodType = ruleSet.periodTypeForHour[hour];
+        }
+
+        // Get localized string.
+        UnicodeString *toAppend = NULL;
+
+        int32_t index = (int32_t)periodType;  // Can't be UNKNOWN; would have bailed out 30 lines ago.
+        if (count <= 3) {
+            toAppend = &fSymbols->fAbbreviatedDayPeriods[index];  // i.e. short
+        } else if (count == 4 || count > 5) {
+            toAppend = &fSymbols->fWideDayPeriods[index];
+        } else {  // count == 5
+            toAppend = &fSymbols->fNarrowDayPeriods[index];
+        }
+
+        // Fallback schedule:
+        // Midnight/Noon -> General Periods -> AM/PM.
+
+        // Midnight/Noon -> General Periods.
+        if (toAppend->isBogus() &&
+                (periodType == DAYPERIOD_MIDNIGHT || periodType == DAYPERIOD_NOON)) {
+            periodType = ruleSet.periodTypeForHour[hour];
+            index = (int32_t)periodType;
+
+            if (count <= 3) {
+                toAppend = &fSymbols->fAbbreviatedDayPeriods[index];  // i.e. short
+            } else if (count == 4 || count > 5) {
+                toAppend = &fSymbols->fWideDayPeriods[index];
+            } else {  // count == 5
+                toAppend = &fSymbols->fNarrowDayPeriods[index];
+            }
+        }
+
+        // General Periods -> AM/PM.
+        if (toAppend->isBogus()) {
+            subFormat(appendTo, 0x61, count, capitalizationContext, fieldNum,
+                      handler, cal, mutableNFs, status);
+        }
+        else {
+            appendTo += *toAppend;
+        }
+
+        break;
+    }
 
     // all of the other pattern symbols can be formatted as simple numbers with
     // appropriate zero padding
@@ -3265,7 +3661,7 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
         }
     // currently no pattern character is defined for UDAT_TIME_SEPARATOR_FIELD
     // so we should not get here. Leave support in for future definition.
-    case UDAT_TIME_SEPARATOR_FIELD: //
+    case UDAT_TIME_SEPARATOR_FIELD:
         {
             static const UChar def_sep = DateFormatSymbols::DEFAULT_TIME_SEPARATOR;
             static const UChar alt_sep = DateFormatSymbols::ALTERNATE_TIME_SEPARATOR;
@@ -3427,7 +3823,7 @@ void SimpleDateFormat::translatePattern(const UnicodeString& originalPattern,
                                         UErrorCode& status)
 {
     // run through the pattern and convert any pattern symbols from the version
-    // in "from" to the corresponding character ion "to".  This code takes
+    // in "from" to the corresponding character in "to".  This code takes
     // quoted strings into account (it doesn't try to translate them), and it signals
     // an error if a particular "pattern character" doesn't appear in "from".
     // Depending on the values of "from" and "to" this can convert from generic
@@ -3491,6 +3887,7 @@ void
 SimpleDateFormat::applyPattern(const UnicodeString& pattern)
 {
     fPattern = pattern;
+    parsePattern();
 }
 
 //----------------------------------------------------------------------
@@ -3816,6 +4213,28 @@ SimpleDateFormat::tzFormat() const {
         umtx_unlock(&LOCK);
     }
     return fTimeZoneFormat;
+}
+
+void SimpleDateFormat::parsePattern() {
+    fHasMinute = FALSE;
+    fHasSecond = FALSE;
+
+    int len = fPattern.length();
+    UBool inQuote = FALSE;
+    for (int32_t i = 0; i < len; ++i) {
+        UChar ch = fPattern[i];
+        if (ch == QUOTE) {
+            inQuote = !inQuote;
+        }
+        if (!inQuote) {
+            if (ch == 0x6D) {  // 0x6D == 'm'
+                fHasMinute = TRUE;
+            }
+            if (ch == 0x73) {  // 0x73 == 's'
+                fHasSecond = TRUE;
+            }
+        }
+    }
 }
 
 U_NAMESPACE_END
