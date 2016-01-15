@@ -6,7 +6,6 @@
  */
 package com.ibm.icu.text;
 
-import java.lang.Double;
 import java.util.EnumMap;
 import java.util.Locale;
 
@@ -96,10 +95,10 @@ public final class RelativeDateTimeFormatter {
          * @stable ICU 54
          */
         NARROW;
-        
+
         private static final int INDEX_COUNT = 3;  // NARROW.ordinal() + 1
     }
-    
+
     /**
      * Represents the unit for formatting a relative date. e.g "in 5 days"
      * or "in 3 months"
@@ -148,12 +147,13 @@ public final class RelativeDateTimeFormatter {
          * @stable ICU 53
          */
         YEARS,
-        
+
         /**
          * Quarters
          * @internal TODO: propose for addition in ICU 57
-         * @provisional This API might change or be removed in a future release.
+         * @deprecated This API is ICU internal only.
          */
+        @Deprecated
         QUARTERS,
     }
     
@@ -234,11 +234,13 @@ public final class RelativeDateTimeFormatter {
          * @stable ICU 53
          */
         NOW,
-        
+
         /*
          * Quarter
-         * @provisional This may be added in ICU57.
+         * @internal TODO: propose for addition in ICU 57
+         * @deprecated This API is ICU internal only.
          */
+        @Deprecated
         QUARTER,
       }
 
@@ -395,7 +397,7 @@ public final class RelativeDateTimeFormatter {
         if (direction != Direction.LAST && direction != Direction.NEXT) {
             throw new IllegalArgumentException("direction must be NEXT or LAST");
         }
-        String resultFromCompiledPattern;
+        String result;
         int pastFutureIndex = (direction == Direction.NEXT ? 1 : 0);
 
         // This class is thread-safe, yet numberFormat is not. To ensure thread-safety of this
@@ -403,16 +405,13 @@ public final class RelativeDateTimeFormatter {
         synchronized (numberFormat) {
             StringBuffer formatStr = new StringBuffer();
             DontCareFieldPosition fieldPosition = DontCareFieldPosition.INSTANCE;
-            Double dQuant = new Double(quantity);
-            StandardPlural pluralForm = QuantityFormatter.selectPlural(dQuant,
+            StandardPlural pluralForm = QuantityFormatter.selectPlural(quantity,
                     numberFormat, pluralRules, formatStr, fieldPosition);
 
-            // Use formatting string with SimplePatternFormatter
-            String compiledFormat = getRelativeUnitPluralCompiledPattern(style, unit, pastFutureIndex, pluralForm);
-            resultFromCompiledPattern =
-                    SimplePatternFormatter.formatCompiledPattern(compiledFormat, formatStr);
+            String formatter = getRelativeUnitPluralPattern(style, unit, pastFutureIndex, pluralForm);
+            result = SimplePatternFormatter.formatCompiledPattern(formatter, formatStr);
         }
-        return adjustForContext(resultFromCompiledPattern);
+        return adjustForContext(result);
 
     }
 
@@ -437,7 +436,7 @@ public final class RelativeDateTimeFormatter {
         }
         String result;
         // Get plain day of week names from DateFormatSymbols.
-        if ((direction == Direction.PLAIN) &&  (unit.ordinal() >= AbsoluteUnit.SUNDAY.ordinal() && 
+        if ((direction == Direction.PLAIN) &&  (AbsoluteUnit.SUNDAY.ordinal() <= unit.ordinal() &&
                 unit.ordinal() <= AbsoluteUnit.SATURDAY.ordinal())) {
             // Convert from AbsoluteUnit days to Calendar class indexing.
             int dateSymbolsDayOrdinal = (unit.ordinal() - AbsoluteUnit.SUNDAY.ordinal()) + Calendar.SUNDAY;
@@ -447,23 +446,19 @@ public final class RelativeDateTimeFormatter {
             result = dayNames[dateSymbolsDayOrdinal];
         } else {
             // Not PLAIN, or not a weekday.
-            result = getQualitativeResultWithFallback(style, unit, direction);
+            result = getAbsoluteUnitString(style, unit, direction);
         }
         return result != null ? adjustForContext(result) : null;
     }
 
     /**
-     * Gets the string value from qualitativeUnitMap with fall back based on style.
+     * Gets the string value from qualitativeUnitMap with fallback based on style.
      * @param style
      * @param unit
      * @param direction
      * @return
      */
-    private String getQualitativeResultWithFallback(Style style, AbsoluteUnit unit, Direction direction) {
-        if (style == null || unit == null || direction == null) {
-            return null;
-        }
-        String result;
+    private String getAbsoluteUnitString(Style style, AbsoluteUnit unit, Direction direction) {
         EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap;
         EnumMap<Direction, String> dirMap;
 
@@ -472,7 +467,7 @@ public final class RelativeDateTimeFormatter {
             if (unitMap != null) {
                 dirMap = unitMap.get(unit);
                 if (dirMap != null) {
-                    result = dirMap.get(direction);
+                    String result = dirMap.get(direction);
                     if (result != null) {
                         return result;
                     }
@@ -480,7 +475,7 @@ public final class RelativeDateTimeFormatter {
 
             }
 
-            // Consider other styles from alias fall back.
+            // Consider other styles from alias fallback.
             // Data loading guaranteed no endless loops.
         } while ((style = fallbackCache[style.ordinal()]) != null);
         return null;
@@ -548,7 +543,7 @@ public final class RelativeDateTimeFormatter {
 
     private RelativeDateTimeFormatter(
             EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap,
-            EnumMap<Style, EnumMap<RelativeUnit, String[][]>> spfCompiledPatternMap, 
+            EnumMap<Style, EnumMap<RelativeUnit, String[][]>> patternMap, 
             MessageFormat combinedDateAndTime,
             PluralRules pluralRules,
             NumberFormat numberFormat,
@@ -557,7 +552,7 @@ public final class RelativeDateTimeFormatter {
             BreakIterator breakIterator,
             ULocale locale) {
         this.qualitativeUnitMap = qualitativeUnitMap;
-        this.spfCompiledPatternMap = spfCompiledPatternMap;
+        this.patternMap = patternMap;
         this.combinedDateAndTime = combinedDateAndTime;
         this.pluralRules = pluralRules;
         this.numberFormat = numberFormat;
@@ -571,26 +566,22 @@ public final class RelativeDateTimeFormatter {
         this.dateFormatSymbols = new DateFormatSymbols(locale);
     }
 
-    private String getRelativeUnitPluralCompiledPattern(
+    private String getRelativeUnitPluralPattern(
             Style style, RelativeUnit unit, int pastFutureIndex, StandardPlural pluralForm) {
         if (pluralForm != StandardPlural.OTHER) {
-            String formatter = getRelativeUnitCompiledPattern(style, unit, pastFutureIndex, pluralForm);
+            String formatter = getRelativeUnitPattern(style, unit, pastFutureIndex, pluralForm);
             if (formatter != null) {
                 return formatter;
             }
         }
-        return getRelativeUnitCompiledPattern(style, unit, pastFutureIndex, StandardPlural.OTHER);
+        return getRelativeUnitPattern(style, unit, pastFutureIndex, StandardPlural.OTHER);
     }
-    
-    private String getRelativeUnitCompiledPattern(
-            Style style, RelativeUnit unit, int pastFutureIndex, StandardPlural pluralForm) {
-        //if (style == null || unit == null) {  // TODO: do we need to test for these?
-        //    return null;
-        //}
 
+    private String getRelativeUnitPattern(
+            Style style, RelativeUnit unit, int pastFutureIndex, StandardPlural pluralForm) {
         int pluralIndex = pluralForm.ordinal();
         do {
-            EnumMap<RelativeUnit, String[][]> unitMap = spfCompiledPatternMap.get(style);
+            EnumMap<RelativeUnit, String[][]> unitMap = patternMap.get(style);
             if (unitMap != null) {
                 String[][] spfCompiledPatterns = unitMap.get(unit);
                 if (spfCompiledPatterns != null) {
@@ -601,14 +592,14 @@ public final class RelativeDateTimeFormatter {
 
             }
 
-            // Consider other styles from alias fall back.
+            // Consider other styles from alias fallback.
             // Data loading guaranteed no endless loops.
         } while ((style = fallbackCache[style.ordinal()]) != null);
         return null;
     }
 
     private final EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap;
-    private final EnumMap<Style, EnumMap<RelativeUnit, String[][]>> spfCompiledPatternMap;
+    private final EnumMap<Style, EnumMap<RelativeUnit, String[][]>> patternMap;
 
     private final MessageFormat combinedDateAndTime;
     private final PluralRules pluralRules;
@@ -618,20 +609,18 @@ public final class RelativeDateTimeFormatter {
     private final DisplayContext capitalizationContext;
     private final BreakIterator breakIterator;
     private final ULocale locale;
- 
+
     private final DateFormatSymbols dateFormatSymbols;
 
-    // 
     private static final Style fallbackCache[] = new Style[Style.INDEX_COUNT];
-
 
     private static class RelativeDateTimeFormatterData {
         public RelativeDateTimeFormatterData(
                 EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap,
-                EnumMap<Style, EnumMap<RelativeUnit, String[][]>> relUnitCompiledPatternMap,
+                EnumMap<Style, EnumMap<RelativeUnit, String[][]>> relUnitPatternMap,
                 String dateTimePattern) {
             this.qualitativeUnitMap = qualitativeUnitMap;
-            this.relUnitCompiledPatternMap = relUnitCompiledPatternMap;
+            this.relUnitCompiledPatternMap = relUnitPatternMap;
 
             this.dateTimePattern = dateTimePattern;
         }
@@ -678,7 +667,7 @@ public final class RelativeDateTimeFormatter {
     /**
      * Sink for enumerating all of the relative data time formatter names.
      * Contains inner sink classes, each one corresponding to a type of resource table.
-     * The outer sink handles the top-level fields, calendar tables.
+     * The outer sink handles the top-level 'fields'.
      *
      * More specific bundles (en_GB) are enumerated before their parents (en_001, en, root):
      * Only store a value if it is still missing, that is, it has not been overridden.
@@ -695,7 +684,7 @@ public final class RelativeDateTimeFormatter {
             DAY(RelativeUnit.DAYS, AbsoluteUnit.DAY),
             WEEK(RelativeUnit.WEEKS, AbsoluteUnit.WEEK),
             MONTH(RelativeUnit.MONTHS, AbsoluteUnit.MONTH),
-            QUARTER(RelativeUnit.QUARTERS, AbsoluteUnit.QUARTER),  // TODO: Check @provisional
+            QUARTER(RelativeUnit.QUARTERS, AbsoluteUnit.QUARTER),
             YEAR(RelativeUnit.YEARS, AbsoluteUnit.YEAR),
             SUNDAY(null, AbsoluteUnit.SUNDAY),
             MONDAY(null, AbsoluteUnit.MONDAY),
@@ -768,8 +757,10 @@ public final class RelativeDateTimeFormatter {
             }
         }
 
-        EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> sinkQualitativeUnitMap;
-        EnumMap<Style, EnumMap<RelativeUnit, String[][]>> spfCompiledPatternMap;
+        EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap =
+                new EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>>(Style.class);
+        EnumMap<Style, EnumMap<RelativeUnit, String[][]>> styleRelUnitPatterns =
+                new EnumMap<Style, EnumMap<RelativeUnit, String[][]>>(Style.class);
 
         private ULocale ulocale = null;
 
@@ -780,11 +771,9 @@ public final class RelativeDateTimeFormatter {
         }
 
         // Values keep between levels of parsing the CLDR data.
-        String displayName;                 // From the "dn" key, used for some Direction.PLAIN values. 
         int pastFutureIndex;
-        RelativeUnit relativeUnit;          // For relativeTime and relative keys, e.g., "one", "other", "-1", etc.
-        Style style;                        // {LONG, SHORT, NARROW} Derived from name of unit.
-        DateTimeUnit unit;                  // From the unit name, with qualifier stripped, e.g., "-short"
+        Style style;                        // {LONG, SHORT, NARROW} Derived from unit key string.
+        DateTimeUnit unit;                  // From the unit key string, with the style (e.g., "-short") separated out.
 
         private Style styleFromKey(UResource.Key key) {
             if (key.endsWith("-short")) {
@@ -817,25 +806,26 @@ public final class RelativeDateTimeFormatter {
 
         @Override
         public void put(UResource.Key key, UResource.Value value) {
-            // Mostly here to detect aliases.
+            // Parse and store aliases.
             if (value.getType() != ICUResourceBundle.ALIAS) { return; }
 
             Style sourceStyle = styleFromKey(key);
             int limit = key.length() - styleSuffixLength(sourceStyle);
             DateTimeUnit unit = DateTimeUnit.orNullFromString(key.substring(0, limit));
             if (unit != null) {
-                // Record the fall back chain for the values.
-                // At formatting time, limit to 2 levels of backup.
+                // Record the fallback chain for the values.
+                // At formatting time, limit to 2 levels of fallback.
                 Style targetStyle = styleFromAlias(value);
                 if (sourceStyle == targetStyle) {
-                    throw new ICUException("Invalid style fallback for style " + sourceStyle + " to " + targetStyle);
+                    throw new ICUException("Invalid style fallback from " + sourceStyle + " to itself");
                 }
 
-                // Check for inconsistent fall back or loop in fall back.
+                // Check for inconsistent fallbacks.
                 if (fallbackCache[sourceStyle.ordinal()] == null) {
                     fallbackCache[sourceStyle.ordinal()] = targetStyle;
                 } else if (fallbackCache[sourceStyle.ordinal()] != targetStyle) {
-                    throw new ICUException("Invalid style fallback for style " + sourceStyle + " to " + targetStyle);
+                    throw new ICUException(
+                            "Inconsistent style fallback for style " + sourceStyle + " to " + targetStyle);
                 }
             } 
         }
@@ -864,30 +854,22 @@ public final class RelativeDateTimeFormatter {
                 /* Make two lists of simplePatternFmtList, one for past and one for future.
                  *  Set a SimplePatternFormatter for the <style, relative unit, plurality>
                  *
-                 * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, ETC.
-                 * Use StandardPlural.fromString(CharSequence keyword) to get the plurality.
-                 * StandardPlural.indexOrNegativeFromString(CharSequence keyword)
-                 * 
-                 * */
-
+                 * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, etc.
+                 */
+                EnumMap<RelativeUnit, String[][]> unitPatterns  =
+                        styleRelUnitPatterns.get(style);
+                if (unitPatterns == null) {
+                    unitPatterns = new EnumMap<RelativeUnit, String[][]>(RelativeUnit.class);
+                    styleRelUnitPatterns.put(style, unitPatterns);
+                }
+                String[][] patterns = unitPatterns.get(unit.relUnit);
+                if (patterns == null) {
+                    patterns = new String[2][StandardPlural.COUNT];
+                    unitPatterns.put(unit.relUnit, patterns);
+                }
                 int pluralIndex = StandardPlural.indexFromString(key.toString());
-                if (spfCompiledPatternMap == null) {
-                    spfCompiledPatternMap = 
-                            new EnumMap<Style, EnumMap<RelativeUnit, String[][]>>(Style.class);
-                }
-                EnumMap<RelativeUnit, String[][]> compiledFormatStringList =
-                        spfCompiledPatternMap.get(style);
-                if (compiledFormatStringList == null) {
-                    compiledFormatStringList = new EnumMap<RelativeUnit, String[][]>(RelativeUnit.class);
-                    spfCompiledPatternMap.put(style, compiledFormatStringList);
-                }
-                String[][] spfStringList = compiledFormatStringList.get(relativeUnit);
-                if (spfStringList == null) {
-                    spfStringList = new String[2][StandardPlural.COUNT];
-                    compiledFormatStringList.put(relativeUnit, spfStringList);
-                }
-                if (spfStringList[pastFutureIndex][pluralIndex] == null) {
-                    spfStringList[pastFutureIndex][pluralIndex] = 
+                if (patterns[pastFutureIndex][pluralIndex] == null) {
+                    patterns[pastFutureIndex][pluralIndex] = 
                             SimplePatternFormatter.compileToStringMinMaxPlaceholders(value.getString(),
                                     sb, 0, 1); 
                 }
@@ -906,8 +888,7 @@ public final class RelativeDateTimeFormatter {
                 } else {
                     return null;
                 }
-                relativeUnit = unit.relUnit;
-                if (relativeUnit == null) {
+                if (unit.relUnit == null) {
                     return null;
                 }
                 return relativeTimeDetailSink;
@@ -920,14 +901,18 @@ public final class RelativeDateTimeFormatter {
             @Override
             public void put(UResource.Key key, UResource.Value value) {
 
-                EnumMap<AbsoluteUnit, EnumMap<Direction, String>> absMap = sinkQualitativeUnitMap.get(style);
+                EnumMap<AbsoluteUnit, EnumMap<Direction, String>> absMap = qualitativeUnitMap.get(style);
 
                 if (unit.relUnit == RelativeUnit.SECONDS) {
                     if (key.contentEquals("0")) {
                         // Handle Zero seconds for "now".
                         EnumMap<Direction, String> unitStrings = new EnumMap<Direction, String>(Direction.class);
-                        unitStrings.put(Direction.PLAIN, value.getString());
-                        absMap.put(AbsoluteUnit.NOW,  unitStrings);
+                        if (unitStrings.get(Direction.PLAIN) == null) {
+                            unitStrings.put(Direction.PLAIN, value.getString());
+                        }
+                        if (absMap.get(AbsoluteUnit.NOW) == null) {
+                            absMap.put(AbsoluteUnit.NOW,  unitStrings);
+                        }
                         return;
                     }
                 }
@@ -942,7 +927,7 @@ public final class RelativeDateTimeFormatter {
 
                 if (absMap == null) {
                     absMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
-                    sinkQualitativeUnitMap.put(style, absMap);
+                    qualitativeUnitMap.put(style, absMap);
                 }
                 EnumMap<Direction, String> dirMap = absMap.get(absUnit);
                 if (dirMap == null) {
@@ -963,21 +948,15 @@ public final class RelativeDateTimeFormatter {
             public void put(UResource.Key key, UResource.Value value) {
                 if (key.contentEquals("dn")) {
                     // Handle Display Name for PLAIN direction for some units.
-                    displayName = value.toString();
-
-                    // TODO(Travis Keep): This is a hack to get around CLDR bug 6818.
-                    if (ulocale.getLanguage().equals("en")) {
-                        displayName = displayName.toLowerCase();
-                    }
-
                     AbsoluteUnit absUnit = unit.absUnit;
                     if (absUnit == null) {
                         return;  // Not interesting.
                     }
-                    EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap = sinkQualitativeUnitMap.get(style);
+                    EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap =
+                            qualitativeUnitMap.get(style);
                     if (unitMap == null) {
                         unitMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
-                        sinkQualitativeUnitMap.put(style, unitMap);
+                        qualitativeUnitMap.put(style, unitMap);
                     }
                     EnumMap<Direction,String> dirMap = unitMap.get(absUnit);
                     if (dirMap == null) {
@@ -985,6 +964,11 @@ public final class RelativeDateTimeFormatter {
                         unitMap.put(absUnit, dirMap);
                     }
                     if (dirMap.get(Direction.PLAIN) == null) {
+                        String displayName = value.toString();
+                        // TODO(Travis Keep): This is a hack to get around CLDR bug 6818.
+                        if (ulocale.getLanguage().equals("en")) {
+                            displayName = displayName.toLowerCase(Locale.ROOT);
+                        }
                         dirMap.put(Direction.PLAIN, displayName);
                     }
                 }
@@ -1011,25 +995,17 @@ public final class RelativeDateTimeFormatter {
         }
 
         public RelativeDateTimeFormatterData load() {
-            // EnumMaps
-            EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap = 
-                    new EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>>(Style.class);
-
-            // This stores uses compiled format patterns.
-            EnumMap<Style, EnumMap<RelativeUnit, String[][]>> relUnitCompiledPatternMap = new
-                    EnumMap<Style, EnumMap<RelativeUnit, String[][]>>(Style.class);
- 
             // Sink for traversing data.
             RelDateTimeFmtDataSink sink = new RelDateTimeFmtDataSink(ulocale);
-            sink.sinkQualitativeUnitMap = qualitativeUnitMap;
-            sink.spfCompiledPatternMap = relUnitCompiledPatternMap;
 
-            // Creat top level Style entries in maps.
+            /*
+             * // Create top level Style entries in maps.
             for (Style style : Style.values()) {
                 qualitativeUnitMap.put(style, new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class));
                 relUnitCompiledPatternMap.put(style, 
                         new EnumMap<RelativeUnit, String[][]>(RelativeUnit.class));
             }
+             */
 
             ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.
                     getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, ulocale);
@@ -1037,14 +1013,14 @@ public final class RelativeDateTimeFormatter {
             // Use sink mechanism to traverse data structure.
             r.getAllTableItemsWithFallback("fields", sink);
 
-            // Check fall backs array for loops or too many levels.
+            // Check fallbacks array for loops or too many levels.
             for (Style testStyle : Style.values()) {
                 Style newStyle1 = fallbackCache[testStyle.ordinal()];
                 // Data loading guaranteed newStyle1 != testStyle.
                 if (newStyle1 != null) {
                     Style newStyle2 = fallbackCache[newStyle1.ordinal()];
                     if (newStyle2 != null) {
-                        // No fall back should take more than 2 steps.
+                        // No fallback should take more than 2 steps.
                         if (fallbackCache[newStyle2.ordinal()] != null) {
                             throw new IllegalStateException("Style fallback too deep");
                         }
@@ -1052,12 +1028,12 @@ public final class RelativeDateTimeFormatter {
                 }
             }
 
-            // TODO: replace this calendar loading with backups.
+            // TODO: Replace this use of CalendarData.
             CalendarData calData = new CalendarData(
                     ulocale, r.getStringWithFallback("calendar/default"));
 
             return new RelativeDateTimeFormatterData(
-                    qualitativeUnitMap, relUnitCompiledPatternMap,
+                    sink.qualitativeUnitMap, sink.styleRelUnitPatterns,
                     calData.getDateTimePattern());
         }
     }
