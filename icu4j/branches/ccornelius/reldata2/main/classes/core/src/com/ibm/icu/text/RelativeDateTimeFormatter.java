@@ -355,7 +355,7 @@ public final class RelativeDateTimeFormatter {
         }
         return new RelativeDateTimeFormatter(
                 data.qualitativeUnitMap,
-                data.relUnitCompiledPatternMap,
+                data.relUnitPatternMap,
                 new MessageFormat(data.dateTimePattern),
                 PluralRules.forLocale(locale),
                 nf,
@@ -620,13 +620,13 @@ public final class RelativeDateTimeFormatter {
                 EnumMap<Style, EnumMap<RelativeUnit, String[][]>> relUnitPatternMap,
                 String dateTimePattern) {
             this.qualitativeUnitMap = qualitativeUnitMap;
-            this.relUnitCompiledPatternMap = relUnitPatternMap;
+            this.relUnitPatternMap = relUnitPatternMap;
 
             this.dateTimePattern = dateTimePattern;
         }
 
         public final EnumMap<Style, EnumMap<AbsoluteUnit, EnumMap<Direction, String>>> qualitativeUnitMap;
-        EnumMap<Style, EnumMap<RelativeUnit, String[][]>> relUnitCompiledPatternMap;
+        EnumMap<Style, EnumMap<RelativeUnit, String[][]>> relUnitPatternMap;
         public final String dateTimePattern;  // Example: "{1}, {0}"
     }
 
@@ -906,12 +906,13 @@ public final class RelativeDateTimeFormatter {
                 if (unit.relUnit == RelativeUnit.SECONDS) {
                     if (key.contentEquals("0")) {
                         // Handle Zero seconds for "now".
-                        EnumMap<Direction, String> unitStrings = new EnumMap<Direction, String>(Direction.class);
+                        EnumMap<Direction, String> unitStrings = absMap.get(AbsoluteUnit.NOW);
+                        if (unitStrings == null) {
+                            unitStrings = new EnumMap<Direction, String>(Direction.class);
+                            absMap.put(AbsoluteUnit.NOW, unitStrings);
+                        }
                         if (unitStrings.get(Direction.PLAIN) == null) {
                             unitStrings.put(Direction.PLAIN, value.getString());
-                        }
-                        if (absMap.get(AbsoluteUnit.NOW) == null) {
-                            absMap.put(AbsoluteUnit.NOW,  unitStrings);
                         }
                         return;
                     }
@@ -997,16 +998,6 @@ public final class RelativeDateTimeFormatter {
         public RelativeDateTimeFormatterData load() {
             // Sink for traversing data.
             RelDateTimeFmtDataSink sink = new RelDateTimeFmtDataSink(ulocale);
-
-            /*
-             * // Create top level Style entries in maps.
-            for (Style style : Style.values()) {
-                qualitativeUnitMap.put(style, new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class));
-                relUnitCompiledPatternMap.put(style, 
-                        new EnumMap<RelativeUnit, String[][]>(RelativeUnit.class));
-            }
-             */
-
             ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.
                     getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, ulocale);
 
