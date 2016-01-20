@@ -23,8 +23,6 @@
 
 //
 //  TODO:
-//     Document the rule format.
-//     Remove the sort-by-rule-number support.
 //     Develop a tailoring format.
 //     Hook to old tests that use monkey impl to get expected data.
 //     Remove old tests.
@@ -82,13 +80,10 @@ class BreakRule: public UObject {
   public:
     BreakRule();
     ~BreakRule();
-    UnicodeString    fName;                            // Original name from source rules.
-    UnicodeString    fPaddedName;                      // Name, adjusted so it will compare in desired sort order.
-                                                       //   (First numeric field expanded with leading '0's)
-    UnicodeString    fRule;                            // Rule expression, excluding the name.
+    UnicodeString    fName;                            // Name of the rule.
+    UnicodeString    fRule;                            // Rule expression, excluding the name, as written in user source.
     UnicodeString    fExpandedRule;                    // Rule expression after expanding the set definitions.
     LocalPointer<RegexMatcher>  fRuleMatcher;          // Regular expression that matches the rule.
-    static int8_t comparator(UElement a, UElement b);  // See uelement.h
 };
 
 
@@ -107,7 +102,7 @@ class BreakRules: public UObject {
     
     RBBIMonkeyImpl    *fMonkeyImpl;        // Pointer back to the owning MonkeyImpl instance.
     icu::UVector       fBreakRules;        // Contents are of type (BreakRule *).
-                                           // Contents are ordered by the order of application.
+
     LocalUHashtablePointer fCharClasses;   // Key is set name (UnicodeString).
                                            // Value is (CharClass *)
     LocalPointer<UVector>  fCharClassList; // Char Classes, same contents as fCharClasses values,
@@ -125,7 +120,6 @@ class BreakRules: public UObject {
     LocalPointer<RegexMatcher> fCommentsMatcher;
     LocalPointer<RegexMatcher> fClassDefMatcher;
     LocalPointer<RegexMatcher> fRuleDefMatcher;
-    LocalPointer<RegexMatcher> fNumericFieldMatcher;
 };
 
 
@@ -161,7 +155,7 @@ class MonkeyTestData: public UObject {
 // class RBBIMonkeyImpl     holds (some indirectly) everything associated with running a monkey
 //                          test for one set of break rules.
 //
-//                          When running RBBIMonkeyTest with multiple hreads, there is a 1:1 correspondence
+//                          When running RBBIMonkeyTest with multiple threads, there is a 1:1 correspondence
 //                          between instances of RBBIMonkeyImpl and threads.
 //
 class RBBIMonkeyImpl: public UObject {

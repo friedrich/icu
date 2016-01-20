@@ -66,16 +66,6 @@ BreakRule::BreakRule()      // :  all field default initialized.
 BreakRule::~BreakRule() {};
 
 
-// Break rules are ordered in the order they should be applied,
-// which is based on the rule name but with the first numeric field treated in numeric order.
-
-int8_t BreakRule::comparator(UElement a, UElement b) {
-    BreakRule *bra = static_cast<BreakRule *>(a.pointer);
-    BreakRule *brb = static_cast<BreakRule *>(b.pointer);
-    return bra->fPaddedName.compare(brb->fPaddedName);
-}
-
-
 //---------------------------------------------------------------------------------------
 //
 //   class BreakRules implementation.
@@ -128,9 +118,6 @@ BreakRules::BreakRules(RBBIMonkeyImpl *monkeyImpl, UErrorCode &status)  :
                 "[ \\t]*;$"),                            // ; <end of line>
             0, status));
 
-    // Find a numeric field within a rule name.
-    fNumericFieldMatcher.adoptInstead(new RegexMatcher(UnicodeString(
-                 "[0-9]+"), 0, status));
 }
 
 
@@ -193,16 +180,6 @@ void BreakRules::addRule(const UnicodeString &name, const UnicodeString &definit
     // If the rule name contains embedded digits, pad the first numeric field to a fixed length with leading zeroes,
     // This gives a numeric sort order that matches Unicode UAX rule numbering conventions.
     UnicodeString emptyString;
-    fNumericFieldMatcher->reset(name);
-    if (fNumericFieldMatcher->find()) {
-        fNumericFieldMatcher->appendReplacement(thisRule->fPaddedName, emptyString, status);
-        int32_t paddingWidth = 6 - fNumericFieldMatcher->group(status).length();
-        if (paddingWidth > 0) {
-            thisRule->fPaddedName.padTrailing(thisRule->fPaddedName.length() + paddingWidth, (UChar)0x30);
-        }
-        thisRule->fPaddedName.append(fNumericFieldMatcher->group(status));
-    }
-    fNumericFieldMatcher->appendTail(thisRule->fPaddedName);
 
     // Expand the char class definitions within the rule.
     fSetRefsMatcher->reset(definition);
