@@ -150,11 +150,6 @@ import com.ibm.icu.lang.UProperty;
  * <li>{@link #OPTION_STREAMING}
  * </ul>
  *
- *
- * @author Simon Montagu, Matitiahu Allouche (ported from C code written by Markus W. Scherer)
- * @stable ICU 3.8
- *
- *
  * <h4> Sample code for the ICU Bidi API </h4>
  *
  * <h5>Rendering a paragraph with the ICU Bidi API</h5>
@@ -428,6 +423,9 @@ import com.ibm.icu.lang.UProperty;
  *  }
  *
  * </pre>
+ *
+ * @author Simon Montagu, Matitiahu Allouche (ported from C code written by Markus W. Scherer)
+ * @stable ICU 3.8
  */
 
 /*
