@@ -12,6 +12,8 @@ import java.util.GregorianCalendar;
 
 import com.ibm.icu.util.VersionInfo;
 
+import org.junit.Assert;
+
 public abstract class AbstractTestLog implements TestLog {
     /**
      * Returns true if ICU_Version < major.minor.
@@ -45,42 +47,50 @@ public abstract class AbstractTestLog implements TestLog {
      * Add a message.
      */
     public final void log(String message) {
-        msg(message, LOG, true, false);
+        // Probably temporary - must decide what to do with these
+        System.out.print(message);
+        //msg(message, LOG, true, false);
     }
 
     /**
      * Add a message and newline.
      */
     public final void logln(String message) {
-        msg(message, LOG, true, true);
+        // Probably temporary - must decide what to do with these
+        System.out.println(message);
+        //msg(message, LOG, true, true);
     }
 
     /**
      * Report an error.
      */
     public final void err(String message) {
-        msg(message, ERR, true, false);
+        Assert.fail(message);
+        //msg(message, ERR, true, false);
     }
 
     /**
      * Report an error and newline.
      */
     public final void errln(String message) {
-        msg(message, ERR, true, true);
+        Assert.fail(message);
+        //msg(message, ERR, true, true);
     }
 
     /**
      * Report a warning (generally missing tests or data).
      */
     public final void warn(String message) {
-        msg(message, WARN, true, false);
+        System.out.print(message);
+        //msg(message, WARN, true, false);
     }
 
     /**
      * Report a warning (generally missing tests or data) and newline.
      */
     public final void warnln(String message) {
-        msg(message, WARN, true, true);
+        System.out.println(message);
+        //msg(message, WARN, true, true);
     }
 
     /**
