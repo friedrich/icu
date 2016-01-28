@@ -252,6 +252,11 @@ public:
 
     void TestPatternFromSkeleton();
 
+    void TestAmPmMidnightNoon();
+    void TestFlexibleDayPeriod();
+    void TestDayPeriodWithLocales();
+    void TestMinuteSecondFieldsInOddPlaces();
+
 private:
     UBool showParse(DateFormat &format, const UnicodeString &formattedString);
 
@@ -276,11 +281,6 @@ public:
     void expectFormat(const char **data, int32_t data_length,
                       const Locale &locale);
 
-public:
-    void TestAmPmMidnightNoon();
-    void TestFlexibleDayPeriod();
-    void TestDayPeriodWithLocales();
-    void TestMinuteSecondFieldsInOddPlaces();
 };
 
 #endif /* #if !UCONFIG_NO_FORMATTING */
