@@ -1,11 +1,16 @@
-﻿# ***************************************************************************
-# *
-# *  Copyright (C) 2004-2015, International Business Machines
-# *  Corporation; Unicode, Inc.; and others.  All Rights Reserved.
-# *
-# ***************************************************************************
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
 # File: nl_Title.txt
-# Generated from CLDR 
+# Generated from Unicode CLDR
 #
+
+# Copyright (C) 2011-2013, Apple Inc. and others. All Rights Reserved.
+# Special titlecasing for Dutch initial "ij".
 ::Any-Title();
+# Fix up Ij at the beginning of a "word" (per Any-Title, notUAX #29)
 [:^WB=ALetter:] [:WB=Extend:]* [[:WB=MidLetter:][:WB=MidNumLet:]]? { Ij } → IJ ;
+

@@ -1,12 +1,15 @@
-﻿# ***************************************************************************
-# *
-# *  Copyright (C) 2004-2015, International Business Machines
-# *  Corporation; Unicode, Inc.; and others.  All Rights Reserved.
-# *
-# ***************************************************************************
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
 # File: InterIndic_Telugu.txt
-# Generated from CLDR 
+# Generated from Unicode CLDR
 #
+
+# InterIndic-Telugu
+#:: NFD (NFC) ;
 \uE001→ఁ; # SIGN CANDRABINDU
 \uE002→ం; # SIGN ANUSVARA
 \uE003→ః; # SIGN VISARGA
@@ -137,3 +140,6 @@
 \uE083→త\u0C4D;  # Bengali Khanda-ta
 0 → ౦;    # FALLBACK FOR TAMIL
 1 → ౧;
+#    :: NFC (NFD) ;
+# eof
+

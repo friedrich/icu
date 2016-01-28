@@ -1,12 +1,16 @@
-﻿# ***************************************************************************
-# *
-# *  Copyright (C) 2004-2015, International Business Machines
-# *  Corporation; Unicode, Inc.; and others.  All Rights Reserved.
-# *
-# ***************************************************************************
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
 # File: Devanagari_InterIndic.txt
-# Generated from CLDR 
+# Generated from Unicode CLDR
 #
+
+# Devanagari-InterIndic
+# :: NFD;
+#Rules for Decomposed characters
 \u0901→\uE001;  # SIGN CANDRABINDU
 \u0902→\uE002;  # SIGN ANUSVARA
 ः→\uE003;  # SIGN VISARGA
@@ -113,3 +117,5 @@
 ९→\uE06F;  # DIGIT NINE
 ॰→\uE070;  # Devanagari-InterIndic: ABBREVIATION SIGN
 ॽ→\uE082;  # Devanagari Glottal Stop
+#    :: NFC (NFD) ;
+

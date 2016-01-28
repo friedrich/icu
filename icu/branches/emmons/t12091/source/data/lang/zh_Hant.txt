@@ -1,6 +1,6 @@
 ﻿// ***************************************************************************
 // *
-// * Copyright (C) 2015 International Business Machines
+// * Copyright (C) 2016 International Business Machines
 // * Corporation and others. All Rights Reserved.
 // * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
 // * Source File: <path>/common/main/zh_Hant.xml
@@ -534,8 +534,8 @@ zh_Hant{
         sux{"蘇美文"}
         sv{"瑞典文"}
         sw{"史瓦希里文"}
+        sw_CD{"史瓦希里文（剛果）"}
         swb{"葛摩文"}
-        swc{"史瓦希里文（剛果）"}
         syc{"古敘利亞文"}
         syr{"敘利亞文"}
         szl{"西利西亞文"}
@@ -1018,7 +1018,7 @@ zh_Hant{
         VALLADER{"瑞士瓦勒德方言"}
         WADEGILE{"威妥瑪式拼音"}
     }
-    Version{"2.1.19.89"}
+    Version{"2.1.23.7"}
     codePatterns{
         language{"語言：{0}"}
         script{"文字：{0}"}

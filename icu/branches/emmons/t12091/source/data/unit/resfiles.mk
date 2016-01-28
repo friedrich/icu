@@ -1,4 +1,4 @@
-# *   Copyright (C) 1998-2015, International Business Machines
+# *   Copyright (C) 1998-2016, International Business Machines
 # *   Corporation and others.  All Rights Reserved.
 UNIT_CLDR_VERSION = %version%
 # A list of txt's to build
@@ -112,7 +112,7 @@ UNIT_SOURCE = af.txt agq.txt ak.txt am.txt\
  ur.txt ur_IN.txt uz.txt uz_Arab.txt uz_Cyrl.txt\
  uz_Latn.txt vai.txt vai_Latn.txt vai_Vaii.txt vi.txt\
  vun.txt wae.txt xog.txt yav.txt yi.txt\
- yo.txt zgh.txt zh.txt zh_Hans.txt zh_Hans_HK.txt\
- zh_Hans_MO.txt zh_Hans_SG.txt zh_Hant.txt zh_Hant_HK.txt zh_Hant_MO.txt\
- zu.txt
+ yo.txt yue.txt zgh.txt zh.txt zh_Hans.txt\
+ zh_Hans_HK.txt zh_Hans_MO.txt zh_Hans_SG.txt zh_Hant.txt zh_Hant_HK.txt\
+ zh_Hant_MO.txt zu.txt
 

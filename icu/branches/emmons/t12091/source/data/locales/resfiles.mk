@@ -1,4 +1,4 @@
-# *   Copyright (C) 1998-2015, International Business Machines
+# *   Copyright (C) 1998-2016, International Business Machines
 # *   Corporation and others.  All Rights Reserved.
 GENRB_CLDR_VERSION = %version%
 # A list of txt's to build
@@ -178,7 +178,8 @@ GENRB_SOURCE = af.txt af_NA.txt af_ZA.txt agq.txt\
  vi.txt vi_VN.txt vun.txt vun_TZ.txt wae.txt\
  wae_CH.txt xog.txt xog_UG.txt yav.txt yav_CM.txt\
  yi.txt yi_001.txt yo.txt yo_BJ.txt yo_NG.txt\
- zgh.txt zgh_MA.txt zh.txt zh_Hans.txt zh_Hans_CN.txt\
- zh_Hans_HK.txt zh_Hans_MO.txt zh_Hans_SG.txt zh_Hant.txt zh_Hant_HK.txt\
- zh_Hant_MO.txt zh_Hant_TW.txt zu.txt zu_ZA.txt
+ yue.txt yue_HK.txt zgh.txt zgh_MA.txt zh.txt\
+ zh_Hans.txt zh_Hans_CN.txt zh_Hans_HK.txt zh_Hans_MO.txt zh_Hans_SG.txt\
+ zh_Hant.txt zh_Hant_HK.txt zh_Hant_MO.txt zh_Hant_TW.txt zu.txt\
+ zu_ZA.txt
 

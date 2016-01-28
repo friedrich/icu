@@ -1,4 +1,4 @@
-# *   Copyright (C) 1998-2015, International Business Machines
+# *   Copyright (C) 1998-2016, International Business Machines
 # *   Corporation and others.  All Rights Reserved.
 REGION_CLDR_VERSION = %version%
 # A list of txt's to build
@@ -113,6 +113,7 @@ REGION_SOURCE = af.txt agq.txt ak.txt am.txt\
  uk.txt ur.txt ur_IN.txt uz.txt uz_Arab.txt\
  uz_Cyrl.txt uz_Latn.txt vai.txt vai_Latn.txt vai_Vaii.txt\
  vi.txt vun.txt wae.txt xog.txt yav.txt\
- yi.txt yo.txt yo_BJ.txt zgh.txt zh.txt\
- zh_Hans.txt zh_Hant.txt zh_Hant_HK.txt zh_Hant_MO.txt zu.txt
+ yi.txt yo.txt yo_BJ.txt yue.txt zgh.txt\
+ zh.txt zh_Hans.txt zh_Hant.txt zh_Hant_HK.txt zh_Hant_MO.txt\
+ zu.txt
 

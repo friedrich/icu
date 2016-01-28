@@ -1,18 +1,18 @@
-﻿# ***************************************************************************
-# *
-# *  Copyright (C) 2004-2015, International Business Machines
-# *  Corporation; Unicode, Inc.; and others.  All Rights Reserved.
-# *
-# ***************************************************************************
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
 # File: ky_ky_FONIPA.txt
-# Generated from CLDR 
+# Generated from Unicode CLDR
 #
 
+# Transformation from Kyrgyz (ky) to its IPA transcription (ky_FONIPA).
+# http://en.wikipedia.org/wiki/Kyrgyz_alphabet#Correspondence_chart
 ::Lower;
 ::NFC;
-
 $consonant_sound = [bdfɡklmnŋpqrʁsʃtvzʒχ];
-
 аа → ɑː;
 а  → ɑ;
 б  → b;
@@ -38,9 +38,9 @@ $consonant_sound = [bdfɡklmnŋpqrʁsʃtvzʒχ];
 $consonant_sound {к} [$] → q; # eg. даңк, калк, кырк
 [ŋ] {к} → q;
 к → k;
-
+# TODO(sascha): Verify whether /lʲ/ is really phonemic in Kyrgyz;
+# is there really a minimal pair with /l/ versus /lʲ/?
 [eøy] ː? {л}к → lʲ;  # eg. мүлк, күлкү, өлкө, эзелки
-
 лл → lː;
 л  → l;
 мм → mː;
@@ -76,3 +76,5 @@ $consonant_sound {к} [$] → q; # eg. даңк, калк, кырк
 э  → e;
 ю  → ju;
 я  → jɑ;
+\-  → ' ';
+
