@@ -1,0 +1,16 @@
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
+# File: Mlym_Taml.txt
+# Generated from Unicode CLDR
+#
+
+::[ം-ഃഅ-ഌഎ-ഐഒ-നപ-ഹാ-\u0D43െ-ൈൊ-\u0D4Dൗൠ-ൡ൦-൯];
+::NFD;
+::Malayalam-InterIndic;
+::InterIndic-Tamil;
+::NFC;
+

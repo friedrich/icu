@@ -1,0 +1,16 @@
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
+# File: Taml_Deva.txt
+# Generated from Unicode CLDR
+#
+
+::[\u0BE6\u0B82-ஃஅ-ஊஎ-ஐஒ-கங-சஜஞ-டண-தந-பம-வஷ-ஹா-ூெ-ைொ-\u0BCDௗ௧-௲ஶ];
+::NFD;
+::Tamil-InterIndic;
+::InterIndic-Devanagari;
+::NFC;
+

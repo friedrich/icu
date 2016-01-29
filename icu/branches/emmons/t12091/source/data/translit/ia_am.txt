@@ -1,0 +1,13 @@
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
+# File: ia_am.txt
+# Generated from Unicode CLDR
+#
+
+::ia-ia_FONIPA;
+::am_FONIPA-am;
+

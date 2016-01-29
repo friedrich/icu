@@ -1,0 +1,16 @@
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
+# File: Latn_Thai.txt
+# Generated from Unicode CLDR
+#
+
+::[[:Latin:][:Mn:][:Me:] \u0020\u0026 ;0-9|~«»ʹʹ‡ˌ];
+::NFD;
+::Latin-ThaiLogical;
+::ThaiLogical-Thai;
+::NFC;
+

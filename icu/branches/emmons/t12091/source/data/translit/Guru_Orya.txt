@@ -1,0 +1,16 @@
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
+# File: Guru_Orya.txt
+# Generated from Unicode CLDR
+#
+
+::[।-॥\u0A01\u0A02ਅ-ਊਏ-ਐਓ-ਨਪ-ਰਲ-ਲ਼ਵ-ਸ਼ਸ-ਹ\u0A3Cਾ-\u0A42\u0A47-\u0A48\u0A4B-\u0A4Dਖ਼-ੜਫ਼੦-ੴ];
+::NFD;
+::Gurmukhi-InterIndic;
+::InterIndic-Oriya;
+::NFC;
+

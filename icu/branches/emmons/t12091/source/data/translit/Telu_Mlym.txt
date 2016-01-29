@@ -1,0 +1,16 @@
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
+# File: Telu_Mlym.txt
+# Generated from Unicode CLDR
+#
+
+::[ఁ-ఃఅ-ఌఎ-ఐఒ-నప-ళవ-హ\u0C3E-ౄ\u0C46-\u0C48\u0C4A-\u0C4D\u0C55-\u0C56ౠ-ౡ౦-౯];
+::NFD;
+::Telugu-InterIndic;
+::InterIndic-Malayalam;
+::NFC;
+

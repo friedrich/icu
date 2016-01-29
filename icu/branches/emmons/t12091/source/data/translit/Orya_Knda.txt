@@ -1,0 +1,16 @@
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
+# File: Orya_Knda.txt
+# Generated from Unicode CLDR
+#
+
+::[\u0B01-ଃଅ-ଌଏ-ଐଓ-ନପ-ରଲ-ଳଵ-ହ\u0B3C-\u0B43େ-ୈୋ-\u0B4D\u0B56-ୗଡ଼-ଢ଼ୟ-ୡ୦-ୱ];
+::NFD;
+::Oriya-InterIndic;
+::InterIndic-Kannada;
+::NFC;
+

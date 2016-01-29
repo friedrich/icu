@@ -1,0 +1,16 @@
+﻿# ************************************************************
+# Copyright © 1991-2016 Unicode, Inc.
+# CLDR data files are interpreted according to the LDML
+# specification (http://unicode.org/reports/tr35/)
+# For terms of use, see http://www.unicode.org/copyright.html
+# ************************************************************
+# File: Gujr_Deva.txt
+# Generated from Unicode CLDR
+#
+
+::[।-॥\u0A81-ઃઅ-ઍએ-ઑઓ-નપ-રલ-ળવ-હ\u0ABC-\u0AC5\u0AC7-ૉો-\u0ACDૐૠૡ૦-૯];
+::NFD;
+::Gujarati-InterIndic;
+::InterIndic-Devanagari;
+::NFC;
+
