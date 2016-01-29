@@ -51,6 +51,8 @@
 		<include locales="as_IN"/>
 		<include locales="asa"/>
 		<include locales="asa_TZ"/>
+		<include locales="ast"/>
+		<include locales="ast_ES"/>
 		<include locales="az"/>
 		<include locales="az_AZ"/>
 		<include locales="az_Cyrl"/>
