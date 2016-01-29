@@ -29,6 +29,9 @@ import java.util.Map.Entry;
 import java.util.MissingResourceException;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.junit.BeforeClass;
 
 import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
@@ -509,6 +512,19 @@ public class TestFmwk extends AbstractTestLog {
     }
 
     protected void init() throws Exception{
+    }
+
+    protected static AtomicReference<TestParams> paramsReference = new AtomicReference<TestParams>();
+
+    @BeforeClass
+    public static void testInitialize() {
+        if (paramsReference.get() != null) {
+            return;
+        }
+        synchronized (paramsReference) {
+            TestParams params = TestParams.create(new String[0], new PrintWriter(System.out));
+            paramsReference.set(params);
+        }
     }
 
     /**
