@@ -533,6 +533,7 @@ private:
             const RelativeDateTimeFormatter& fmt,
             UDateDirection direction,
             UDateAbsoluteUnit unit);
+    void VerifySidewaysDataLoading(void);
 };
 
 void RelativeDateTimeFormatterTest::runIndexedTest(
@@ -558,6 +559,7 @@ void RelativeDateTimeFormatterTest::runIndexedTest(
     TESTCASE_AUTO(TestGetters);
     TESTCASE_AUTO(TestCombineDateAndTime);
     TESTCASE_AUTO(TestBadDisplayContext);
+    TESTCASE_AUTO(VerifySidewaysDataLoading);
     TESTCASE_AUTO_END;
 }
 
@@ -893,6 +895,24 @@ void RelativeDateTimeFormatterTest::VerifyIllegalArgument(
     if (status != U_ILLEGAL_ARGUMENT_ERROR) {
         errln("Expected U_ILLEGAL_ARGUMENT_ERROR, got %s", u_errorName(status));
     }
+}
+
+/* Add tests to check "sideways" data loading. */
+void RelativeDateTimeFormatterTest::VerifySidewaysDataLoading(void) {
+  UErrorCode status = U_ZERO_ERROR;
+  UnicodeString actual;
+  UnicodeString expected;
+  Locale enGbLocale("en_GB");
+
+  RelativeDateTimeFormatter fmt(enGbLocale, NULL, UDAT_STYLE_NARROW,
+                                UDISPCTX_CAPITALIZATION_NONE, status);
+
+  status = U_ZERO_ERROR;
+  fmt.format(3.0, UDAT_DIRECTION_NEXT, UDAT_RELATIVE_MONTHS, actual, status);
+  expected = "in 3 mo";
+  assertEquals("narrow in 3 mo", expected, actual);
+  assertEquals("PURPOSEFUL FAIL: narrow in 3 mo", "in 3 big months", actual);
+  /* TODO: Add tests with QUARTERS */
 }
 
 static const char *kLast2 = "Last_2";

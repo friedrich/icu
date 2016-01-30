@@ -12,10 +12,13 @@
 
 #if !UCONFIG_NO_FORMATTING && !UCONFIG_NO_BREAK_ITERATION
 
+#include "cstr.h"
 #include "unicode/ureldatefmt.h"
 #include "unicode/udisplaycontext.h"
 #include "unicode/unum.h"
 #include "unicode/localpointer.h"
+#include "resource.h"
+#include "unicode/simpleformatter.h"
 #include "quantityformatter.h"
 #include "unicode/plurrule.h"
 #include "unicode/msgfmt.h"
@@ -33,9 +36,15 @@
 #include "sharedbreakiterator.h"
 #include "sharedpluralrules.h"
 #include "sharednumberformat.h"
+#include "standardplural.h"
 #include "unifiedcache.h"
 
 // Copied from uscript_props.cpp
+
+// TODO: Remove when done debugging.
+#include <iostream>
+
+using namespace std;
 
 static UMutex gBrkIterMutex = U_MUTEX_INITIALIZER;
 
@@ -52,7 +61,15 @@ public:
 
     // has numbers: e.g Next Tuesday; Yesterday; etc. For second index, 0
     // means past e.g 5 days ago; 1 means future e.g in 5 days.
+    // TODO: remove this eventually.
     QuantityFormatter relativeUnits[UDAT_STYLE_COUNT][UDAT_RELATIVE_UNIT_COUNT][2];
+
+    // The new data structure to be used in formatting.
+    SimpleFormatter *relativeUnitsFormatter[UDAT_STYLE_COUNT]
+      [UDAT_RELATIVE_UNIT_COUNT][2][StandardPlural::COUNT];
+
+    // Mappping from source to target styles for alias fallback.
+    int fallBackCache[UDAT_STYLE_COUNT];
 
     void adoptCombinedDateAndTime(MessageFormat *mfToAdopt) {
         delete combinedDateAndTime;
@@ -440,10 +457,501 @@ static void addWeekDays(
     }
 }
 
+namespace {
+
+/**
+ * Sink for enumerating all of the measurement unit display names.
+ * Contains inner sink classes, each one corresponding to a type of resource table.
+ * The outer sink handles the top-level units, unitsNarrow, and unitsShort tables.
+ *
+ * More specific bundles (en_GB) are enumerated before their parents (en_001, en, root):
+ * Only store a value if it is still missing, that is, it has not been overridden.
+ *
+ * C++: Each inner sink class has a reference to the main outer sink.
+ */
+struct RelDateTimeFmtDataSink : public ResourceTableSink {
+
+    /**
+     * Sink for patterns for relative dates and times. For example,
+     * fields/relative/...
+     * TODO: Fix comment
+     */
+
+  // Generic unit enum for storing Unit info.
+  typedef enum RelAbsUnit {
+    SECOND,
+    MINUTE,
+    HOUR,
+    DAY,
+    WEEK,
+    MONTH,
+    QUARTER,
+    YEAR,
+    SUNDAY,
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY,
+    INVALID_UNIT
+  } RelAbsUnit;
+
+  static int genericToRelUnit(RelAbsUnit genUnit) {
+    // Converts the generic units to UDAT_RELATIVE version.
+    switch (genUnit) {
+      case SECOND:
+        return UDAT_RELATIVE_SECONDS;
+      case MINUTE:
+        return UDAT_RELATIVE_MINUTES;
+      case HOUR:
+        return UDAT_RELATIVE_HOURS;
+      case DAY:
+        return UDAT_RELATIVE_DAYS;
+      case WEEK:
+        return UDAT_RELATIVE_WEEKS;
+      case MONTH:
+        return UDAT_RELATIVE_MONTHS;
+        /*
+         * case QUARTER:
+         * return UDATE_RELATIVE_QUARTERS;
+         */
+      case YEAR:
+        return UDAT_RELATIVE_YEARS;
+      default:
+        return -1;
+    }
+  }
+
+  static int genericToAbsUnit(RelAbsUnit genUnit) {
+    // Converts the generic units to UDAT_RELATIVE version.
+    switch (genUnit) {
+      case DAY:
+        return UDAT_ABSOLUTE_DAY;
+      case WEEK:
+        return UDAT_ABSOLUTE_WEEK;
+      case MONTH:
+        return UDAT_ABSOLUTE_MONTH;
+        /* TODO: Add in QUARTER
+         *  case QUARTER:
+         * return UDAT_ABSOLUTE_QUARTER;
+         */
+      case YEAR:
+        return UDAT_ABSOLUTE_YEAR;
+      case SUNDAY:
+        return UDAT_ABSOLUTE_SUNDAY;
+      case MONDAY:
+        return UDAT_ABSOLUTE_MONDAY;
+      case TUESDAY:
+        return UDAT_ABSOLUTE_TUESDAY;
+      case WEDNESDAY:
+        return UDAT_ABSOLUTE_WEDNESDAY;
+      case THURSDAY:
+        return UDAT_ABSOLUTE_THURSDAY;
+      case FRIDAY:
+        return UDAT_ABSOLUTE_FRIDAY;
+      case SATURDAY:
+        return UDAT_ABSOLUTE_SATURDAY;
+      default:
+        return -1;
+    }
+  }
+
+    static int32_t keyToDirection(const char* key) {
+      cout << "&&&&& Direction gets " << key << "\n";
+      if (uprv_strcmp(key, "-2")) {
+        return int(UDAT_DIRECTION_LAST_2);
+      }
+      if (uprv_strcmp(key, "-1")) {
+        return UDAT_DIRECTION_LAST;
+      }
+      if (uprv_strcmp(key, "0")) {
+        return UDAT_DIRECTION_THIS;
+      }
+      if (uprv_strcmp(key, "1")) {
+        return UDAT_DIRECTION_NEXT;
+      }
+      if (uprv_strcmp(key, "2")) {
+        return UDAT_DIRECTION_NEXT_2;
+      }
+      return -1;
+    }
+
+
+
+  // Sinks for additional levels under /fields/*/relative/ and /fields/*/relativeTime/
+  /* Make list of simplePatternFmtList, for past and for future.
+   *  Set a SimpleFormatter for the <style, relative unit, plurality>
+   *
+   * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, etc.
+   */
+  struct RelDateTimeDetailSink : public ResourceTableSink {
+    RelDateTimeDetailSink(RelDateTimeFmtDataSink &sink) : outer(sink) {}
+    ~RelDateTimeDetailSink();
+
+    virtual void put(const char *key, const ResourceValue &value,
+                     UErrorCode &errorCode) {
+      if (U_FAILURE(errorCode)) { return; }
+
+      outer.absUnitIndex = genericToAbsUnit(outer.genericUnit);
+      if (outer.absUnitIndex == -1) {
+        return;
+      }
+
+      // /* Make two lists of simplePatternFmtList, one for past and one for future.
+      //  *  Set a SimpleFormatter pattern for the <style, relative unit, plurality>
+      //  *
+      //  * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, etc.
+      int pluralIndex = StandardPlural::indexOrNegativeFromString(key);
+      SimpleFormatter **pattern =
+            &outer.formatPatterns[outer.style][outer.relUnitIndex]
+          [outer.pastFutureIndex][pluralIndex];
+
+      if (pluralIndex != -1) {
+          // Only set if not already established.
+        if (U_SUCCESS(errorCode) && *pattern == NULL) {
+          *pattern = new SimpleFormatter(
+              value.getUnicodeString(errorCode), 0, 1, errorCode);
+
+          if (U_SUCCESS(errorCode) && *pattern == NULL) {
+            errorCode = U_MEMORY_ALLOCATION_ERROR;
+          }
+          cout << "   ADDED relUnit set for [" << outer.style << "][" <<
+              outer.relUnitIndex << "][" << outer.pastFutureIndex <<
+              "][" << pluralIndex << "] = " <<
+              CStr(value.getUnicodeString(errorCode))() << "\n";
+        }
+      }
+    }
+
+    RelDateTimeFmtDataSink &outer;
+  } relDateTimeDetailSink;
+
+  /*
+   * Handles "relativeTime" entries, e.g., under "day", "hour", "minute",
+   * "minute-short", etc.
+   */
+  struct RelativeTimeSink : public ResourceTableSink {
+        RelativeTimeSink(RelDateTimeFmtDataSink &sink) : outer(sink) {}
+        ~RelativeTimeSink();
+
+    virtual ResourceTableSink *getOrCreateTableSink(
+        const char *key, int32_t /* initialSize */, UErrorCode &errorCode) {
+      outer.relUnitIndex = genericToRelUnit(outer.genericUnit);
+      if (outer.relUnitIndex == -1) {
+        return NULL;
+      }
+
+      if (uprv_strcmp(key, "past")) {
+        outer.pastFutureIndex = 0;
+      } else if (uprv_strcmp(key, "future")) {
+        outer.pastFutureIndex = 1;
+      } else {
+        // Unknown key.
+        return NULL;
+      }
+      return &outer.relDateTimeDetailSink;
+    }
+
+    RelDateTimeFmtDataSink &outer;
+  } relativeTimeSink;
+
+  /*
+   * Handles "relative" entries, e.g., under "day", "day-short", "fri",
+   * "fri-narrow", "fri-short", etc.
+  */
+  struct RelativeSink : public ResourceTableSink {
+        RelativeSink(RelDateTimeFmtDataSink &sink) : outer(sink) {}
+        ~RelativeSink();
+
+    virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
+      int relUnitIndex = genericToRelUnit(outer.genericUnit);
+      if (relUnitIndex == UDAT_RELATIVE_SECONDS && uprv_strcmp(key, "0")) {
+        // Handle "NOW".
+        outer.outputData.absoluteUnits[outer.style][UDAT_ABSOLUTE_NOW]
+            [UDAT_DIRECTION_PLAIN].fastCopyFrom(value.getUnicodeString(errorCode));
+        cout << "   *** ADDED absUnits[" << outer.style << "][" <<
+            "NOW" << "][" << "PLAIN" << '] = ' <<
+            CStr(outer.outputData.absoluteUnits[outer.style][UDAT_ABSOLUTE_NOW]
+                 [UDAT_DIRECTION_PLAIN])();
+      }
+
+      int32_t direction = keyToDirection(key);
+      if (direction == -1) {
+        return;
+      }
+      int absUnitIndex = genericToAbsUnit(outer.genericUnit);
+      if (absUnitIndex == -1) {
+        return;
+      }
+      cout << "*** Direction " << key << " -> " << direction << "\n";
+
+      // TODO: Make sure the check for empty is correct.
+      cout << "   *** CHECK absUnits[" << outer.style << "][" <<
+          absUnitIndex << "][" << direction << "] !!\n";
+
+      cout << "           " << 
+          CStr(outer.outputData.absoluteUnits[outer.style][absUnitIndex]
+               [direction])() << "\n";
+      if (outer.outputData.absoluteUnits[outer.style][absUnitIndex]
+           [direction].isEmpty()) {
+        outer.outputData.absoluteUnits[outer.style][absUnitIndex]
+            [direction].fastCopyFrom(value.getUnicodeString(errorCode));
+        cout << "   *** ADDED = " << 
+          CStr(outer.outputData.absoluteUnits[outer.style][absUnitIndex]
+               [direction])() << "\n";;
+      }
+    }
+
+    RelDateTimeFmtDataSink &outer;
+  } relativeSink;
+
+  /*
+   * Handles entries under units, recognizing "relative" and "relativeTime" entries.
+   */
+  struct UnitSink : public ResourceTableSink {
+        UnitSink(RelDateTimeFmtDataSink &sink) : outer(sink) {}
+        ~UnitSink();
+
+    virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
+      if (uprv_strcmp(key, "dn") != 0) {
+        return;
+      }
+
+      // Handle Display Name for PLAIN direction for some units.
+      int absUnit = genericToAbsUnit(outer.genericUnit);
+      if (absUnit == -1) {
+        return;  // Not interesting.
+      }
+
+      const UnicodeString unitName = value.getUnicodeString(errorCode);
+
+      // TODO(Travis Keep): This is a hack to get around CLDR bug 6818.
+      /*
+      const char *localId = ures_getLocaleByType(
+          outer.outputData.topLevel.getAlias(), ULOC_ACTUAL_LOCALE, errorCode);
+      if (U_SUCCESS(errorCode)) {
+        if (uprv_strcmp("en", outer.top) == 0) {
+          displayName.toLower();
+        }
+      }
+      // end hack
+      */
+
+      // Store displayname.
+      outer.outputData.absoluteUnits[outer.style]
+          [absUnit][UDAT_DIRECTION_PLAIN].fastCopyFrom(
+              value.getUnicodeString(errorCode));
+      cout << "  UnitSink SET displayName in [" << outer.style << "][" <<
+          absUnit << "][PLAIN] = " <<
+          CStr(outer.outputData.absoluteUnits[outer.style]
+               [absUnit][UDAT_DIRECTION_PLAIN])() <<
+          "\n" << flush;
+
+      return;
+    }
+
+    virtual ResourceTableSink *getOrCreateTableSink(
+        const char *key, int32_t /* initialSize */, UErrorCode &errorCode) {
+      if (uprv_strcmp(key, "relative") == 0) {
+        return &outer.relativeSink;
+      } else if (uprv_strcmp(key, "relativeTime") == 0) {
+        return &outer.relativeTimeSink;
+      }
+    }
+
+    RelDateTimeFmtDataSink &outer;
+  } unitSink;
+
+  // Output data.
+  UnicodeString absoluteUnits[UDAT_STYLE_COUNT][UDAT_ABSOLUTE_UNIT_COUNT]
+    [UDAT_DIRECTION_COUNT];
+
+  SimpleFormatter *formatPatterns[UDAT_STYLE_COUNT]
+    [UDAT_RELATIVE_UNIT_COUNT][2][StandardPlural::COUNT];
+
+  // TODO: Remove this when SimpleFormatter is ready.
+  QuantityFormatter relativeUnits[UDAT_STYLE_COUNT][UDAT_RELATIVE_UNIT_COUNT][2];
+
+  // Values kept between levels of parsing the CLDR data.
+  // LOCAL DATA
+  int32_t pastFutureIndex;  // 0 == past or 1 ==  future
+  UDateRelativeDateTimeFormatterStyle style;  // {LONG, SHORT, NARROW }}
+  RelAbsUnit genericUnit;
+  int32_t relUnitIndex;
+  int32_t absUnitIndex;
+  int32_t width; // Ordinal for style
+  int32_t unitIndex;
+
+  RelativeDateTimeCacheData &outputData;
+
+  // Constructor
+  RelDateTimeFmtDataSink(RelativeDateTimeCacheData& cacheData)
+    : relDateTimeDetailSink(*this), relativeTimeSink(*this), relativeSink(*this),
+      unitSink(*this), outputData(cacheData) {
+    // Clear cacheData.fallBackCache
+    cacheData.fallBackCache[UDAT_STYLE_LONG] = -1;
+    cacheData.fallBackCache[UDAT_STYLE_SHORT] = -1;
+    cacheData.fallBackCache[UDAT_STYLE_NARROW] = -1;
+}
+
+  ~RelDateTimeFmtDataSink();
+
+  // Utility functions
+  static UDateRelativeDateTimeFormatterStyle styleFromString(const char *s) {
+    int len = uprv_strlen(s);
+    if (uprv_strcmp(s + len - 7, "-narrow") == 0) {
+      return UDAT_STYLE_NARROW;
+    }
+    if (uprv_strcmp(s + len - 6, "-short") == 0) {
+      return UDAT_STYLE_SHORT;
+    }
+    return UDAT_STYLE_LONG;
+  }
+
+  static int styleSuffixLength(UDateRelativeDateTimeFormatterStyle style) {
+    switch (style) {
+      case UDAT_STYLE_NARROW:
+        return 7;
+      case UDAT_STYLE_SHORT:
+        return 6;
+      default:
+        return 0;
+    }
+  }
+
+  // Utility functions
+  static UDateRelativeDateTimeFormatterStyle styleFromAliasUnicodeString(UnicodeString s) {
+    const UnicodeString narrow = UnicodeString("-narrow");
+    if (s.endsWith(narrow)) {
+      return UDAT_STYLE_NARROW;
+    }
+    const UnicodeString sshort = UnicodeString("-short");
+    if (s.endsWith(sshort)) {
+      return UDAT_STYLE_SHORT;
+    }
+    return UDAT_STYLE_LONG;
+  }
+
+  static RelAbsUnit unitOrNullFromString(const char* keyword, int32_t length) {
+    // Quick check from string to enum.
+    switch (length) {
+      case 3:
+        if (uprv_strncmp(keyword, "day", length) == 0) {
+          return DAY;
+        } else if (uprv_strncmp(keyword, "sun", length) == 0) {
+          return SUNDAY;
+        } else if (uprv_strncmp(keyword, "mon", length) == 0) {
+          return MONDAY;
+        } else if (uprv_strncmp(keyword, "tue", length) == 0) {
+          return TUESDAY;
+        } else if (uprv_strncmp(keyword, "wed", length) == 0) {
+          return WEDNESDAY;
+        } else if (uprv_strncmp(keyword, "thu", length) == 0) {
+          return THURSDAY;
+        } else if (uprv_strncmp(keyword, "fri", length) == 0) {
+          return FRIDAY;
+        } else if (uprv_strncmp(keyword, "sat", length) == 0) {
+          return SATURDAY;
+        }
+        break;
+      case 4:
+        if (uprv_strncmp(keyword, "hour", length) == 0) {
+          return HOUR;
+        } else if (uprv_strncmp(keyword, "week", length) == 0) {
+          return WEEK;
+        } else if (uprv_strncmp(keyword, "year", length) == 0) {
+          return YEAR;
+        }
+        break;
+      case 5:
+        if (uprv_strncmp(keyword, "month", length) == 0) {
+          return MONTH;
+        }
+        break;
+      case 6:
+        if (uprv_strncmp(keyword, "minute", length) == 0) {
+          return MINUTE;
+        } else if (uprv_strncmp(keyword, "second", length) == 0) {
+          return SECOND;
+        }
+        break;
+      case 7:
+        if (uprv_strncmp(keyword, "quarter", length) == 0) {
+          return QUARTER;  // TODO: Check @provisional
+        }
+        break;
+      default:
+        break;
+    }
+    return INVALID_UNIT;
+  }
+
+  // Member functions of top level sink.
+  virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
+    // Only handle aliases, storing information about alias fallback.
+
+    if (U_SUCCESS(errorCode)) {
+      int32_t length;
+
+      if (value.getType() != URES_ALIAS) {
+        return;
+      }
+      const UnicodeString valueStr = value.getAliasUnicodeString(errorCode);
+      if (U_SUCCESS(errorCode)) {
+        UDateRelativeDateTimeFormatterStyle sourceStyle= styleFromString(key);
+        UDateRelativeDateTimeFormatterStyle targetStyle = styleFromAliasUnicodeString(valueStr);
+
+        if (sourceStyle == targetStyle) {
+          // TODO: Report an circularity error in the alias.
+          cout << "^^^^^^ CIRCULARITY ERROR in alias \n";
+          return;
+        }
+        if (outputData.fallBackCache[sourceStyle] != -1 &&
+            outputData.fallBackCache[sourceStyle] != targetStyle) {
+          // TODO: Report an reset error in the alias
+          cout << "^^^^^^ RESET ERROR in alias \n";
+          return;
+        }
+        outputData.fallBackCache[sourceStyle] = targetStyle;
+      }
+    }
+    return;
+  }
+
+  // Top level sink
+  virtual ResourceTableSink *getOrCreateTableSink(
+      const char *key, int32_t /* initialSize */, UErrorCode &errorCode) {
+    style= styleFromString(key);
+    int unitSize = uprv_strlen(key) - styleSuffixLength(style);
+    genericUnit = unitOrNullFromString(key, unitSize);
+    if (genericUnit == INVALID_UNIT) {
+      return NULL;
+    }
+    return &unitSink;
+  }
+
+};
+
+// Virtual descructors must be defined out of line.
+RelDateTimeFmtDataSink::RelDateTimeDetailSink::~RelDateTimeDetailSink() {};
+RelDateTimeFmtDataSink::RelativeTimeSink::~RelativeTimeSink() {};
+RelDateTimeFmtDataSink::RelativeSink::~RelativeSink() {};
+RelDateTimeFmtDataSink::UnitSink::~UnitSink() {};
+RelDateTimeFmtDataSink::~RelDateTimeFmtDataSink() {};
+
+} // namespace
+
 static UBool loadUnitData(
         const UResourceBundle *resource,
         RelativeDateTimeCacheData &cacheData,
         UErrorCode &status) {
+
+    // The new way, with data sink.
+    RelativeDateTimeCacheData sinkCacheData;
+    RelDateTimeFmtDataSink sink(sinkCacheData);
+    ures_getAllTableItemsWithFallback(resource, "fields", sink, status);
+
     addTimeUnits(
             resource,
             "fields/day", "fields/day-short", "fields/day-narrow",
@@ -1105,4 +1613,3 @@ ureldatefmt_combineDateAndTime( const URelativeDateTimeFormatter* reldatefmt,
 }
 
 #endif /* !UCONFIG_NO_FORMATTING */
-
