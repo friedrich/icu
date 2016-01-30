@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.util;
 
 import java.util.HashMap;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.util.ULocale;
 
@@ -48,6 +50,7 @@ public class LocaleAliasCollationTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void TestCollation() {
         ULocale defLoc = ULocale.getDefault();
         ULocale.setDefault(_DEFAULT_LOCALE);

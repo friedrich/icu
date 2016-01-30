@@ -8,6 +8,8 @@ package com.ibm.icu.dev.test.util;
 
 import java.util.Arrays;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.IllformedLocaleException;
 import com.ibm.icu.util.ULocale;
@@ -22,6 +24,7 @@ public class LocaleBuilderTest extends TestFmwk {
         new LocaleBuilderTest().run(args);
     }
 
+    @Test
     public void TestLocaleBuilder() {
         // "L": +1 = language
         // "S": +1 = script
@@ -194,6 +197,7 @@ public class LocaleBuilderTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestSetLocale() {
         ULocale loc = new ULocale("th_TH@calendar=gregorian");
         Builder bld = new Builder();

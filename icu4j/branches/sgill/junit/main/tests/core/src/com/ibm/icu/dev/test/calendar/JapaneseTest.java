@@ -11,6 +11,8 @@ import java.text.ParsePosition;
 import java.util.Date;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -27,6 +29,7 @@ public class JapaneseTest extends CalendarTest {
         new JapaneseTest().run(args);
     }
 
+    @Test
     public void TestCoverage() {
     {
         // new JapaneseCalendar(TimeZone)
@@ -142,6 +145,7 @@ public class JapaneseTest extends CalendarTest {
     }
     }
     
+    @Test
     public void Test3860()
     {
         ULocale loc = new ULocale("ja_JP@calendar=japanese");
@@ -200,6 +204,7 @@ public class JapaneseTest extends CalendarTest {
         }
     }
 
+    @Test
     public void Test5345parse() {
         // Test parse with incomplete information
         DateFormat fmt2= DateFormat.getDateInstance(); //DateFormat.LONG, Locale.US);
@@ -272,6 +277,7 @@ public class JapaneseTest extends CalendarTest {
         }
     }
 
+    @Test
     public void Test5345calendar() {
         logln("** testIncompleteCalendar()");
         // Test calendar with incomplete information
@@ -329,6 +335,7 @@ public class JapaneseTest extends CalendarTest {
     }
 
     
+    @Test
     public void TestJapaneseYear3282() {
         Calendar c = Calendar.getInstance(ULocale.ENGLISH);
         c.set(2003,Calendar.SEPTEMBER,25);
@@ -363,6 +370,7 @@ public class JapaneseTest extends CalendarTest {
     /**
      * Test limits of the Japanese calendar
      */
+    @Test
     public void TestLimits() {
         Calendar cal = Calendar.getInstance();
         cal.set(1988, Calendar.DECEMBER, 1);

@@ -16,6 +16,8 @@ import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.util.Date;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
@@ -37,6 +39,7 @@ public class IntlTestDateFormatAPIC extends com.ibm.icu.dev.test.TestFmwk {
      * We test the entire hierarchy, even though this test is located in
      * the DateFormat API test.
      */
+    @Test
     public void TestNameHiding() {
     
         // N.B.: This test passes if it COMPILES, since it's a test of

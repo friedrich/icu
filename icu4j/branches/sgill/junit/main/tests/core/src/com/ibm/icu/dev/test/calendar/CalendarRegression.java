@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -69,6 +71,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
       result=1901-04-05 06:08:13.1234567 
       */
 
+    @Test
     public void Test4031502() {
         try{
             // This bug actually occurs on Windows NT as well, and doesn't
@@ -127,6 +130,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void Test4035301() {
         
         try {
@@ -145,6 +149,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void Test4040996() {
         try {
             String[] ids = TimeZone.getAvailableIDs(-8 * 60 * 60 * 1000);
@@ -181,6 +186,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void Test4051765() {
         try {
             Calendar cal = Calendar.getInstance();
@@ -243,6 +249,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * in hours }
      */
 
+    @Test
     public void Test4059654() {
    //     try {
             // work around bug for jdk1.4 on solaris 2.6, which uses funky
@@ -275,6 +282,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
   //      }
     }
 
+    @Test
     public void Test4061476() {
         SimpleDateFormat fmt = new SimpleDateFormat("ddMMMyy", Locale.UK);
         Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT"), 
@@ -296,6 +304,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
             errln("Fail: Want 19 Got " + cal.get(Calendar.HOUR_OF_DAY));
     }
 
+    @Test
     public void Test4070502() {
         java.util.Calendar tempcal = java.util.Calendar.getInstance();
         tempcal.clear();
@@ -334,6 +343,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         return cal.getTime();
     }
 
+    @Test
     public void Test4071197() {
         dowTest(false);
         dowTest(true);
@@ -358,6 +368,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
             errln("FAIL: Day of week should be SUNDAY Got " + dow);
     }
 
+    @Test
     public void Test4071385() {
     // work around bug for jdk1.4 on solaris 2.6, which uses funky timezone
     // names
@@ -377,6 +388,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
             errln("Fail");
     }
 
+    @Test
     public void Test4073929() {
         GregorianCalendar foo1 = new GregorianCalendar(1997, 8, 27);
         foo1.add(Calendar.DAY_OF_MONTH, +1);
@@ -389,6 +401,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
             errln("Fail: Calendar not initialized");
     }
 
+    @Test
     public void Test4083167() {
         TimeZone saveZone = TimeZone.getDefault();
         try {
@@ -420,6 +433,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void Test4086724() {
         SimpleDateFormat date;
         TimeZone saveZone = TimeZone.getDefault();
@@ -449,6 +463,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         logln("*** THE RESULTS OF THIS TEST MUST BE VERIFIED MANUALLY ***");
     }
 
+    @Test
     public void Test4092362() {
         GregorianCalendar cal1 = new GregorianCalendar(1997, 10, 11, 10, 20, 40); 
         /*
@@ -476,6 +491,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
             errln("Fail: Milliseconds randomized");
     }
 
+    @Test
     public void Test4095407() {
         GregorianCalendar a = new GregorianCalendar(1997,Calendar.NOVEMBER, 13);
         int dow = a.get(Calendar.DAY_OF_WEEK);
@@ -483,6 +499,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
             errln("Fail: Want THURSDAY Got " + dow);
     }
 
+    @Test
     public void Test4096231() {
         TimeZone GMT = TimeZone.getTimeZone("GMT");
         TimeZone PST = TimeZone.getTimeZone("PST");
@@ -539,6 +556,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
             errln("Fail: Calendar zone behavior faulty");
     }
 
+    @Test
     public void Test4096539() {
         int[] y = {31,28,31,30,31,30,31,31,30,31,30,31};
 
@@ -561,6 +579,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         
     }
 
+    @Test
     public void Test4100311() {
         GregorianCalendar cal = (GregorianCalendar)Calendar.getInstance();
         cal.set(Calendar.YEAR, 1997);
@@ -571,6 +590,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
             errln("Fail: DAY_OF_YEAR not set");
     }
 
+    @Test
     public void Test4103271() {
         SimpleDateFormat sdf = new SimpleDateFormat(); 
         int numYears=40, startYear=1997, numDays=15; 
@@ -753,6 +773,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         if (fail) errln("Fail: Week of year misbehaving");
     } 
 
+    @Test
     public void Test4106136() {
         Locale saveLocale = Locale.getDefault();
         String[] names = { "Calendar", "DateFormat", "NumberFormat" };
@@ -776,6 +797,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void Test4108764() {
         java.util.Calendar tempcal = java.util.Calendar.getInstance();
         tempcal.clear();
@@ -833,6 +855,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void Test4114578() {
         int ONE_HOUR = 60*60*1000;
         Calendar cal = Calendar.getInstance();
@@ -897,6 +920,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Make sure maximum for HOUR field is 11, not 12.
      */
+    @Test
     public void Test4118384() {
         Calendar cal = Calendar.getInstance();
         if (cal.getMaximum(Calendar.HOUR) != 11 ||
@@ -908,6 +932,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Check isLeapYear for BC years.
      */
+    @Test
     public void Test4125881() {
         GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance();
         DateFormat fmt = new SimpleDateFormat("MMMM d, yyyy G");
@@ -931,6 +956,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Prove that GregorianCalendar is proleptic (it used to cut off at 45 BC,
      * and not have leap years before then).
      */
+    @Test
     public void Test4125892() {
         GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance();
         //DateFormat fmt = new SimpleDateFormat("MMMM d, yyyy G");
@@ -951,6 +977,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Calendar needs a good implementation that subclasses can override, and
      * GregorianCalendar should use that implementation.
      */
+    @Test
     public void Test4136399() {
         /*
          * Note: This test is actually more strict than it has to be.
@@ -1023,6 +1050,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * GregorianCalendar.equals() ignores cutover date
      */
+    @Test
     public void Test4141665() {
         GregorianCalendar cal = new GregorianCalendar();
         GregorianCalendar cal2 = (GregorianCalendar)cal.clone();
@@ -1042,6 +1070,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Bug states that ArrayIndexOutOfBoundsException is thrown by
      * GregorianCalendar.roll() when IllegalArgumentException should be.
      */
+    @Test
     public void Test4142933() {
         GregorianCalendar calendar = new GregorianCalendar();
         try {
@@ -1066,6 +1095,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * to therefore only check the behavior of a calendar with a zero raw offset
      * zone.
      */
+    @Test
     public void Test4145158() {
         GregorianCalendar calendar = new GregorianCalendar();
 
@@ -1087,6 +1117,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Maximum value for YEAR field wrong.
      */
+    @Test
     public void Test4145983() {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -1108,6 +1139,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * report test was written. In reality the bug is restricted to the
      * DAY_OF_YEAR field. - liu 6/29/98
      */
+    @Test
     public void Test4147269() {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setLenient(false);
@@ -1142,6 +1174,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Date(Long.MAX_VALUE) doesn't behave as a pure Julian calendar. CANNOT
      * REPRODUCE THIS BUG
      */
+    @Test
     public void Test4149677() {
         TimeZone[] zones = { TimeZone.getTimeZone("GMT"),
                              TimeZone.getTimeZone("PST"),
@@ -1175,6 +1208,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Calendar and Date HOUR broken. If HOUR is out-of-range, Calendar and Date
      * classes will misbehave.
      */
+    @Test
     public void Test4162587() {
         TimeZone tz = TimeZone.getTimeZone("PST");
         TimeZone.setDefault(tz);
@@ -1211,6 +1245,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Adding 12 months behaves differently from adding 1 year
      */
+    @Test
     public void Test4165343() {
         GregorianCalendar calendar = new GregorianCalendar(1996, Calendar.FEBRUARY, 29);
         Date start = calendar.getTime();
@@ -1233,6 +1268,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * GregorianCalendar.getActualMaximum() does not account for first day of
      * week.
      */
+    @Test
     public void Test4166109() {
         /*
          * Test month:
@@ -1272,6 +1308,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Calendar.getActualMaximum(YEAR) works wrong.
      */
+    @Test
     public void Test4167060() {
         int field = Calendar.YEAR;
         DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy G",
@@ -1334,6 +1371,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Calendar.roll broken This bug relies on the TimeZone bug 4173604 to also
      * be fixed.
      */
+    @Test
     public void Test4173516() {
         int fieldsList[][] = {
             { 1997, Calendar.FEBRUARY,  1, 10, 45, 15, 900 },
@@ -1433,6 +1471,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void Test4174361() {
         GregorianCalendar calendar = new GregorianCalendar(1996, 1, 29);
 
@@ -1455,6 +1494,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Calendar does not update field values when setTimeZone is called.
      */
+    @Test
     public void Test4177484() {
         TimeZone PST = TimeZone.getTimeZone("PST");
         TimeZone EST = TimeZone.getTimeZone("EST");
@@ -1485,6 +1525,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Week of year is wrong at the start and end of the year.
      */
+    @Test
     public void Test4197699() {
         GregorianCalendar cal = new GregorianCalendar();
         cal.setFirstDayOfWeek(Calendar.MONDAY);
@@ -1523,6 +1564,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * MONTH + DAY_OF_MONTH MONTH + WEEK_OF_MONTH + DAY_OF_WEEK MONTH +
      * DAY_OF_WEEK_IN_MONTH + DAY_OF_WEEK DAY_OF_YEAR WEEK_OF_YEAR + DAY_OF_WEEK
      */
+    @Test
     public void Test4209071() {
         Calendar cal = Calendar.getInstance(Locale.US);
 
@@ -1662,6 +1704,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * WEEK_OF_YEAR computed incorrectly. A failure of this test can indicate a problem in several different places in
      * the
      */
+    @Test
     public void Test4288792() throws Exception {
         TimeZone savedTZ = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
@@ -1715,6 +1758,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Test fieldDifference().
      */
+    @Test
     public void TestJ438() throws Exception {
         int DATA[] = {
             2000, Calendar.JANUARY, 20,   2010, Calendar.JUNE, 15,
@@ -1762,6 +1806,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
     
+    @Test
     public void TestT5555() throws Exception
     {
         Calendar cal = Calendar.getInstance();
@@ -1796,6 +1841,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Set behavior of DST_OFFSET field. ICU4J Jitterbug 9.
      */
+    @Test
     public void TestJ9() {
         int HOURS = 60*60*1000;
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("PST"),
@@ -1871,6 +1917,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * DateFormat.getDateInstance, it returns time instance - If a Calendar is
      * passed to DateFormat.getTimeInstance, it returns date instance
      */
+    @Test
     public void TestDateFormatFactoryJ26() {
         TimeZone zone = TimeZone.getDefault();
         try {
@@ -1929,6 +1976,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void TestRegistration() {
         /*
          * Set names = Calendar.getCalendarFactoryNames();
@@ -1970,6 +2018,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * test serialize-and-modify.
      * @throws ClassNotFoundException 
      */
+    @Test
     public void TestSerialization3474() {
         try {
             ByteArrayOutputStream icuStream = new ByteArrayOutputStream();
@@ -2068,6 +2117,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         
     }
 
+    @Test
     public void TestYearJump3279() {
         final long time = 1041148800000L;
         Calendar c = new GregorianCalendar();
@@ -2090,6 +2140,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
             logln("Year remained " + year2 + " - PASS.");
         }
     }
+    @Test
     public void TestCalendarType6816() {
         Locale loc = new Locale("en", "TH");
         Calendar cal = Calendar.getInstance(loc);
@@ -2099,6 +2150,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void TestGetKeywordValuesForLocale(){
 
         final String[][] PREFERRED = {
@@ -2163,6 +2215,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
     
+    @Test
     public void TestTimeStamp() {
         long start = 0, time;
 
@@ -2193,6 +2246,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * validation should be done only for fields set by user code explicitly
      * in non-lenient mode.
      */
+    @Test
     public void TestT8057() {
         // Set the calendar to the last day in a leap year
         GregorianCalendar cal = new GregorianCalendar();
@@ -2221,6 +2275,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Setting an year followed by getActualMaximum(Calendar.WEEK_OF_YEAR)
      * may result wrong maximum week.
      */
+    @Test
     public void TestT8596() {
         GregorianCalendar gc = new GregorianCalendar(TimeZone.getTimeZone("Etc/GMT"));
         gc.setFirstDayOfWeek(Calendar.MONDAY);
@@ -2247,6 +2302,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Test case for ticket:9019
      */
+    @Test
     public void Test9019() {
         GregorianCalendar cal1 = new GregorianCalendar(TimeZone.GMT_ZONE,ULocale.US);
         GregorianCalendar cal2 = new GregorianCalendar(TimeZone.GMT_ZONE,ULocale.US);
@@ -2267,6 +2323,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Test case for ticket 9452
      * Calendar addition fall onto the missing date - 2011-12-30 in Samoa
      */
+    @Test
     public void TestT9452() {
         TimeZone samoaTZ = TimeZone.getTimeZone("Pacific/Apia");
         GregorianCalendar cal = new GregorianCalendar(samoaTZ);
@@ -2303,6 +2360,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * In strict mode an IllegalIcuArgumentException will be thrown
      * In lenient mode the value will be pinned to the relative min/max 
      */
+    @Test
     public void TestT9403() {
     	Calendar myCal = Calendar.getInstance();
     	long dateBit1, dateBit2, testMillis = 0L;
@@ -2339,6 +2397,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Test case for ticket 9968
      * subparse fails to return an error indication when start pos is 0 
      */
+    @Test
     public void TestT9968() {
         SimpleDateFormat sdf0 = new SimpleDateFormat("-MMMM");
         ParsePosition pos0 = new ParsePosition(0);
@@ -2359,6 +2418,7 @@ public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
         assertTrue("Fail: failed to detect bad parse", pos2.getErrorIndex() == 0);
     }
     
+    @Test
     public void TestWeekendData_10560() {
         final Calendar.WeekData worldWeekData = new Calendar.WeekData(2, 1, 7, 0, 1, 86400000);
         final Calendar.WeekData usWeekData = new Calendar.WeekData(1, 1, 7, 0, 1, 86400000);

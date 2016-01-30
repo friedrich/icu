@@ -22,6 +22,7 @@ public class ReplaceableTest extends TestFmwk {
         new ReplaceableTest().run(args);
     }
   
+    @org.junit.Test
     public void Test() {
         check("Lower", "ABCD", "1234");
         check("Upper", "abcd\u00DF", "123455"); // must map 00DF to SS
@@ -181,6 +182,7 @@ public class ReplaceableTest extends TestFmwk {
         static final boolean DEBUG = false;
     }
     
+    @org.junit.Test
     public void Test5789() {
         String rules =
             "IETR > IET | \\' R; # (1) do split ietr between t and r\r\n" +

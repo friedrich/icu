@@ -9,6 +9,8 @@
 
 package com.ibm.icu.dev.test.duration.languages;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.duration.LanguageTestRoot;
 import com.ibm.icu.impl.duration.BasicPeriodFormatterFactory;
 import com.ibm.icu.impl.duration.Period;
@@ -37,6 +39,7 @@ public class Test_ja extends LanguageTestRoot implements TimeUnitConstants {
         setLocale("ja");
   }
 
+  @Test
   public void testNoMillis() {
     // explicit test that japanese doesn't use both seconds
     // and milliseconds when formatting.  if both appear,
@@ -55,6 +58,7 @@ public class Test_ja extends LanguageTestRoot implements TimeUnitConstants {
       */
   }
 
+  @Test
   public void testOmitZeros() {
     // zeros are treated as omitted
 

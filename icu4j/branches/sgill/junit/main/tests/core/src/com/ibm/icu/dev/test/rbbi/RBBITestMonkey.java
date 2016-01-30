@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.lang.UProperty;
@@ -1937,6 +1939,7 @@ void RunMonkey(BreakIterator  bi, RBBIMonkeyKind mk, String name, int  seed, int
     }
 }
 
+    @Test
 public void TestCharMonkey() {
     
     int        loopCount = 500;
@@ -1951,6 +1954,7 @@ public void TestCharMonkey() {
     RunMonkey(bi, m, "char", seed, loopCount);
 }
 
+    @Test
 public void TestWordMonkey() {
     
     int        loopCount = 500;
@@ -1966,6 +1970,7 @@ public void TestWordMonkey() {
     RunMonkey(bi, m, "word", seed, loopCount);
 }
 
+    @Test
 public void TestLineMonkey() {
     int        loopCount = 500;
     int        seed      = 1;
@@ -1983,6 +1988,7 @@ public void TestLineMonkey() {
     RunMonkey(bi, m, "line", seed, loopCount);
 }
 
+    @Test
 public void TestSentMonkey() {
     
     int        loopCount = 500;
@@ -2010,6 +2016,7 @@ public void TestSentMonkey() {
 //  round-trip rule recompile tests verify that the Java rule compiler can
 //  rebuild break iterators from the original source rules.
 //
+    @Test
 public void TestRTCharMonkey() {
     
     int        loopCount = 200;
@@ -2026,6 +2033,7 @@ public void TestRTCharMonkey() {
     RunMonkey(rtbi, m, "char", seed, loopCount);
 }
 
+    @Test
 public void TestRTWordMonkey() {
     
     int        loopCount = 200;
@@ -2042,6 +2050,7 @@ public void TestRTWordMonkey() {
     RunMonkey(rtbi, m, "word", seed, loopCount);
 }
 
+    @Test
 public void TestRTLineMonkey() {
     int        loopCount = 200;
     int        seed      = 1;
@@ -2061,6 +2070,7 @@ public void TestRTLineMonkey() {
     RunMonkey(rtbi, m, "line", seed, loopCount);
 }
 
+    @Test
 public void TestRTSentMonkey() {
     
     int        loopCount = 200;

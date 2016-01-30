@@ -7,6 +7,8 @@
 
 package com.ibm.icu.dev.test.normalizer;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.Normalizer;
 
@@ -15,6 +17,7 @@ public class NormalizerRegressionTests extends TestFmwk {
         new NormalizerRegressionTests().run(args);
     }
 
+    @Test
     public void TestJB4472() {
         // submitter's test case
         String tamil = "\u0b87\u0ba8\u0bcd\u0ba4\u0bbf\u0baf\u0bbe";

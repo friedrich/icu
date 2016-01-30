@@ -15,6 +15,8 @@ import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
 import com.ibm.icu.impl.Norm2AllModes;
@@ -267,6 +269,7 @@ public class CollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestMinMax() {
         setRootCollator();
         RuleBasedCollator rbc = (RuleBasedCollator)coll;
@@ -293,6 +296,7 @@ public class CollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestImplicits() {
         CollationData cd = CollationRoot.getData();
 
@@ -358,6 +362,7 @@ public class CollationTest extends TestFmwk {
     }
 
     // ICU4C: TestNulTerminated / renamed for ICU4J
+    @Test
     public void TestSubSequence() {
         CollationData data = CollationRoot.getData();
         final String s = "abab"; // { 0x61, 0x62, 0x61, 0x62 }
@@ -390,6 +395,7 @@ public class CollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestShortFCDData() {
         UnicodeSet expectedLccc = new UnicodeSet("[:^lccc=0:]");
         expectedLccc.add(0xdc00, 0xdfff);   // add all trail surrogates
@@ -526,6 +532,7 @@ public class CollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestFCD() {
         CollationData data = CollationRoot.getData();
 
@@ -615,6 +622,7 @@ public class CollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestCollationWeights() {
         CollationWeights cw = new CollationWeights();
 
@@ -842,6 +850,7 @@ public class CollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestRootElements() {
         CollationData root = CollationRoot.getData();
 
@@ -957,6 +966,7 @@ public class CollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestTailoredElements() {
         CollationData root = CollationRoot.getData();
         CollationRootElements rootElements = new CollationRootElements(root.rootElements);
@@ -1661,6 +1671,7 @@ public class CollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestDataDriven() {
         nfd = Normalizer2.getNFDInstance();
         fcd = Norm2AllModes.getFCDNormalizer2();

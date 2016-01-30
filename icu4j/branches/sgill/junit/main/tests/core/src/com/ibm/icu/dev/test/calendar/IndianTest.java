@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -47,6 +49,7 @@ public class IndianTest extends CalendarTest
     /** A huge list of test cases to make sure that computeTime and computeFields
      * work properly for a wide range of data in the Indian civil calendar.
      */
+    @Test
     public void TestCases()
     {
         final TestCase[] tests = {
@@ -104,6 +107,7 @@ public class IndianTest extends CalendarTest
         doTestCases(tests, testCalendar);
     }
 
+    @Test
     public void TestBasic() {
         IndianCalendar cal = new IndianCalendar();
         cal.clear();
@@ -120,6 +124,7 @@ public class IndianTest extends CalendarTest
               cal.get(DATE));
     }
 
+    @Test
     public void TestCoverage() {
 
         {
@@ -210,6 +215,7 @@ public class IndianTest extends CalendarTest
         }
     }
 
+    @Test
     public void TestYear() {
         // Gregorian Calendar
         Calendar gCal= new GregorianCalendar();
@@ -234,6 +240,7 @@ public class IndianTest extends CalendarTest
     /**
      * Test limits of the Indian calendar
      */
+    @Test
     public void TestLimits() {
         Calendar cal = Calendar.getInstance();
         cal.set(2007, Calendar.JANUARY, 1);
@@ -247,6 +254,7 @@ public class IndianTest extends CalendarTest
      *  -- see ticket 8419 -- http://bugs.icu-project.org/trac/ticket/8419
      * Problem with months out of range 0-11
      */
+    @Test
     public void TestYearEdge() {
         // Display dates in ISO 8601 format.
         DateFormat fmt = new SimpleDateFormat("YYYY-MM-dd", ULocale.US);

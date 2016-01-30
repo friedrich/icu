@@ -8,6 +8,8 @@ package com.ibm.icu.dev.test.util;
 
 import java.util.MissingResourceException;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.text.Collator;
@@ -25,6 +27,7 @@ public final class ICUResourceBundleCollationTest extends TestFmwk {
         new ICUResourceBundleCollationTest().run(args);
     }
 
+    @Test
     public void TestFunctionalEquivalent(){
        String[] collCases = {
        //  avail   locale                               equiv
@@ -75,6 +78,7 @@ public final class ICUResourceBundleCollationTest extends TestFmwk {
                COLLATION_RESNAME, COLLATION_KEYWORD, true, collCases);
     }
 
+    @Test
     public void TestGetWithFallback(){
         /*
         UResourceBundle bundle =(UResourceBundle) UResourceBundle.getBundleInstance("com/ibm/icu/dev/data/testdata","te_IN");
@@ -112,6 +116,7 @@ public final class ICUResourceBundleCollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestKeywordValues(){
         String kwVals[];
         boolean foundStandard = false;
@@ -140,6 +145,7 @@ public final class ICUResourceBundleCollationTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestOpen(){
         UResourceBundle bundle = (UResourceBundle)UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_COLLATION_BASE_NAME, "en_US_POSIX");
         if(bundle==null){

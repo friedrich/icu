@@ -7,6 +7,8 @@
 
 package com.ibm.icu.dev.test.bidi;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Bidi;
 import com.ibm.icu.text.BidiClassifier;
 
@@ -108,6 +110,7 @@ public class TestClassOverride extends BidiTest {
 
     CustomClassifier classifier = null;
 
+    @Test
     public void testClassOverride()
     {
         Bidi bidi;

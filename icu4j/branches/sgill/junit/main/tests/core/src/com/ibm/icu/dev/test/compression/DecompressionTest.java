@@ -6,6 +6,8 @@
  */
 package com.ibm.icu.dev.test.compression;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.UnicodeDecompressor;
 
@@ -73,6 +75,7 @@ public class DecompressionTest extends TestFmwk {
     }
 
 
+    @Test
     public void TestDecompression() throws Exception {
         String result;
 
@@ -123,6 +126,7 @@ public class DecompressionTest extends TestFmwk {
     /* Testing the method
      *      public int decompress(*** 
      */
+    @Test
     public void TestDecompress(){
         char[] charBufferBlank = {};
         char[] charBuffer1 = {'a'};

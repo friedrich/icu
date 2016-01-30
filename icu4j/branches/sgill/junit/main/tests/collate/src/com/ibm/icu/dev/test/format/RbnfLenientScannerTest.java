@@ -11,6 +11,8 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.Random;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.text.RbnfScannerProviderImpl;
 import com.ibm.icu.text.RbnfLenientScannerProvider;
@@ -35,6 +37,7 @@ public class RbnfLenientScannerTest extends TestFmwk {
      * Ensure that the default provider is instantiated and used if none is set
      * and lenient parse is on.
      */
+    @Test
     public void TestDefaultProvider() {
         RuleBasedNumberFormat formatter
             = new RuleBasedNumberFormat(Locale.US,
@@ -55,6 +58,7 @@ public class RbnfLenientScannerTest extends TestFmwk {
     /**
      * Perform a simple spot check on the English spellout rules
      */
+    @Test
     public void TestEnglishSpellout() {
         RuleBasedNumberFormat formatter
             = new RuleBasedNumberFormat(Locale.US,
@@ -82,6 +86,7 @@ public class RbnfLenientScannerTest extends TestFmwk {
     /**
      * Perform a simple spot check on the duration-formatting rules
      */
+    @Test
     public void TestDurations() {
         RuleBasedNumberFormat formatter
             = new RuleBasedNumberFormat(Locale.US,
@@ -97,6 +102,7 @@ public class RbnfLenientScannerTest extends TestFmwk {
     /**
      * Perform a simple spot check on the French spellout rules
      */
+    @Test
     public void TestFrenchSpellout() {
         RuleBasedNumberFormat formatter
             = new RuleBasedNumberFormat(Locale.FRANCE,
@@ -113,6 +119,7 @@ public class RbnfLenientScannerTest extends TestFmwk {
     /**
      * Perform a simple spot check on the German spellout rules
      */
+    @Test
     public void TestGermanSpellout() {
         RuleBasedNumberFormat formatter
             = new RuleBasedNumberFormat(Locale.GERMANY,
@@ -125,6 +132,7 @@ public class RbnfLenientScannerTest extends TestFmwk {
         doLenientParseTest(formatter, lpTestData);
     }
 
+    @Test
     public void TestAllLocales() {
         StringBuffer errors = null;
         ULocale[] locales = ULocale.getAvailableLocales();

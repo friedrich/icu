@@ -21,6 +21,8 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestBoilerplate;
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.util.CollectionUtilities;
@@ -49,6 +51,7 @@ public class TestUtilities extends TestFmwk {
     static String[] TEST_VALUES = {null, "A", "B", "C", "D", "E", "F"};
     static Random random = new Random(12345);
     
+    @Test
     public void TestUnicodeMap() {
         random.setSeed(12345);
         // do random change to both, then compare
@@ -135,6 +138,7 @@ public class TestUtilities extends TestFmwk {
         new UnicodeSetBoilerplate().run(args);       
     }
     
+    @Test
     public void TestCollectionUtilitySpeed() {
         TreeSet ts1 = new TreeSet();
         TreeSet ts2 = new TreeSet();
@@ -205,6 +209,7 @@ public class TestUtilities extends TestFmwk {
         return utilityTime;
     }
     
+    @Test
     public void TestCollectionUtilities() {
         String[][] test = {{"a", "c", "e", "g", "h", "z"}, {"b", "d", "f", "h", "w"}, { "a", "b" }, { "a", "d" }, {"d"}, {}}; // 
         int resultMask = 0;
@@ -362,6 +367,7 @@ public class TestUtilities extends TestFmwk {
     static final NumberFormat pf = NumberFormat.getPercentInstance();
     static final NumberFormat nf = NumberFormat.getInstance();
     
+    @Test
     public void TestTime() {
         double hashTime, umTime, icuTime, treeTime;
         umTime = checkSetTime(20, 0);

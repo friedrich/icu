@@ -9,6 +9,8 @@
 
 package com.ibm.icu.dev.test.duration.languages;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.duration.LanguageTestRoot;
 import com.ibm.icu.impl.duration.TimeUnitConstants;
 
@@ -31,6 +33,7 @@ public class Test_hi extends LanguageTestRoot implements TimeUnitConstants {
     super("hi", false);
   }
 
+  @Test
   public void testMonthNames() {
     // test that month uses the plural form with singular digit
     // in these cases:

@@ -22,6 +22,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestLog;
 import com.ibm.icu.impl.ICULocaleService;
@@ -377,6 +379,7 @@ public class ICUServiceThreadTest extends TestFmwk
     private ICUService stableService;
 
     // run multiple get on a stable service
+    @Test
     public void Test00_ConcurrentGet() {
         for(int i = 0; i < 10; ++i) {
             new GetThread("[" + Integer.toString(i) + "]",  stableService(), 0, this).start();
@@ -386,6 +389,7 @@ public class ICUServiceThreadTest extends TestFmwk
     }
 
     // run multiple getVisibleID on a stable service
+    @Test
     public void Test01_ConcurrentGetVisible() {
         for(int i = 0; i < 10; ++i) {
             new GetVisibleThread("[" + Integer.toString(i) + "]",  stableService(), 0, this).start();
@@ -395,6 +399,7 @@ public class ICUServiceThreadTest extends TestFmwk
     }
 
     // run multiple getDisplayName on a stable service
+    @Test
     public void Test02_ConcurrentGetDisplay() {
         String[] localeNames = {
             "en", "es", "de", "fr", "zh", "it", "no", "sv"
@@ -412,6 +417,7 @@ public class ICUServiceThreadTest extends TestFmwk
     }
 
     // run register/unregister on a service
+    @Test
     public void Test03_ConcurrentRegUnreg() {
         ICUService service = new ICULocaleService();
         if (PRINTSTATS) service.stats();    // Enable the stats collection
@@ -425,6 +431,7 @@ public class ICUServiceThreadTest extends TestFmwk
         if (PRINTSTATS) System.out.println(service.stats());
     }
 
+    @Test
     public void Test04_WitheringService() {
         ICUService service = new ICULocaleService();
         if (PRINTSTATS) service.stats();    // Enable the stats collection
@@ -453,6 +460,7 @@ public class ICUServiceThreadTest extends TestFmwk
     // one visible id thread, delay 50ms
     // fifteen get threads, delay 0
     // run for ten seconds
+    @Test
     public void Test05_ConcurrentEverything() {
         ICUService service = new ICULocaleService();
         if (PRINTSTATS) service.stats();    // Enable the stats collection

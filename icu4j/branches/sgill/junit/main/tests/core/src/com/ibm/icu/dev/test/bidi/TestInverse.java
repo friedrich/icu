@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.bidi;
 
 import java.util.Arrays;
 
+import org.junit.Test;
+
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.text.Bidi;
 
@@ -31,6 +33,7 @@ public class TestInverse extends BidiTest {
         "\u0061\u0062\u0020\u0061\u0062\u0020\u0661\u0662"
     };
 
+    @Test
     public void testInverse() {
         Bidi bidi;
         int i;

@@ -14,6 +14,8 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -247,6 +249,7 @@ public class CollationEnglishTest extends TestFmwk{
     }
     
     //performs test with strength PRIMARY
+    @Test
     public void TestPrimary() {
         int i;
         myCollation.setStrength(Collator.PRIMARY);
@@ -256,6 +259,7 @@ public class CollationEnglishTest extends TestFmwk{
     }
     
     //perform test with strength SECONDARY
+    @Test
     public void TestSecondary() {
         int i;
         myCollation.setStrength(Collator.SECONDARY);
@@ -281,6 +285,7 @@ public class CollationEnglishTest extends TestFmwk{
     }
     
     //perform test with strength TERTIARY
+    @Test
     public void TestTertiary() {
         int i = 0;
         myCollation.setStrength(Collator.TERTIARY);

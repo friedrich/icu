@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.localespi;
 import java.text.DateFormatSymbols;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.ULocale;
 
@@ -20,6 +22,7 @@ public class DateFormatSymbolsTest extends TestFmwk {
     /*
      * Check if getInstance returns the ICU implementation.
      */
+    @Test
     public void TestGetInstance() {
         for (Locale loc : DateFormatSymbols.getAvailableLocales()) {
             if (TestUtil.isExcluded(loc)) {
@@ -59,6 +62,7 @@ public class DateFormatSymbolsTest extends TestFmwk {
      * Testing the contents of DateFormatSymbols between ICU instance and its
      * equivalent created via the Locale SPI framework.
      */
+    @Test
     public void TestICUEquivalent() {
         Locale[] TEST_LOCALES = {
                 new Locale("en", "US"),
@@ -85,6 +89,7 @@ public class DateFormatSymbolsTest extends TestFmwk {
     /*
      * Testing setters
      */
+    @Test
     public void TestSetSymbols() {
         // ICU's JDK DateFormatSymbols implementation for ja_JP locale
         DateFormatSymbols dfs = DateFormatSymbols.getInstance(new Locale("ja", "JP", "ICU"));
@@ -154,6 +159,7 @@ public class DateFormatSymbolsTest extends TestFmwk {
     /*
      * Testing Nynorsk locales
      */
+    @Test
     public void TestNynorsk() {
         Locale nnNO = new Locale("nn", "NO");
         Locale noNONY = new Locale("no", "NO", "NY");
@@ -182,6 +188,7 @@ public class DateFormatSymbolsTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestCalendarKeyword() {
         // ICU provider variant is appended
         ULocale uloc0 = new ULocale("en_US_" + TestUtil.ICU_VARIANT + "@calendar=japanese");

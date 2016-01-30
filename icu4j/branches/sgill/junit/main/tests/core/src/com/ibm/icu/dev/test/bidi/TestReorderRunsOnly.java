@@ -7,6 +7,8 @@
 
 package com.ibm.icu.dev.test.bidi;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Bidi;
 
 /**
@@ -107,6 +109,7 @@ public class TestReorderRunsOnly extends BidiTest {
                      new int[] {0, 0})
     };
 
+    @Test
     public void testReorderRunsOnly() {
 
         Bidi bidi = new Bidi();

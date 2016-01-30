@@ -6,6 +6,8 @@
  */
 package com.ibm.icu.dev.test.sample;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.ModuleTest;
 
 public class ModuleTestSample extends ModuleTest {
@@ -46,6 +48,7 @@ public class ModuleTestSample extends ModuleTest {
 //    }
 
     // no cases, just uses info for test
+    @Test
     public void Test03() {
 //    DataMap info = testInfo();
 //    if (info != null) {
@@ -56,6 +59,7 @@ public class ModuleTestSample extends ModuleTest {
     }
 
     // no data, ModuleTest should not allow this to execute by default
+    @Test
     public void Test04() {
     errln("Test04 should not execute!");
     }
@@ -67,6 +71,7 @@ public class ModuleTestSample extends ModuleTest {
     }
 
     // no data, but override of validateMethod allows it to execute
+    @Test
     public void Test05() {
     logln("Test05 executed.");
     }

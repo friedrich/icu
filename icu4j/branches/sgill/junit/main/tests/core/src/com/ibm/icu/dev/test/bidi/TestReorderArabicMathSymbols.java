@@ -6,6 +6,8 @@
  */
 package com.ibm.icu.dev.test.bidi;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Bidi;
 
 
@@ -103,6 +105,7 @@ public class TestReorderArabicMathSymbols extends BidiTest {
         "\uD83B\uDE4B\uD83B\uDE49\uD83B\uDE47\uD83B\uDE42"
     };
 
+    @Test
     public void testReorderArabicMathSymbols() {
         Bidi bidi = new Bidi();
         int testNumber;

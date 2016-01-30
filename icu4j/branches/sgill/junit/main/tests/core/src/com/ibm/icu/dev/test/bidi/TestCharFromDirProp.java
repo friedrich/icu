@@ -7,6 +7,8 @@
 
 package com.ibm.icu.dev.test.bidi;
 
+import org.junit.Test;
+
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.lang.UCharacterDirection;
@@ -20,6 +22,7 @@ import com.ibm.icu.lang.UCharacterDirection;
 public class TestCharFromDirProp extends BidiTest {
 
     /* verify that the exemplar characters have the expected bidi classes */
+    @Test
     public void testCharFromDirProp() {
 
         logln("\nEntering TestCharFromDirProp");

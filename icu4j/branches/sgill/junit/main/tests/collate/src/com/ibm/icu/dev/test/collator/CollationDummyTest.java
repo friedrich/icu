@@ -15,6 +15,8 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationElementIterator;
 import com.ibm.icu.text.CollationKey;
@@ -180,6 +182,7 @@ public class CollationDummyTest extends TestFmwk {
     }
     
     // perform test with strength tertiary
+    @Test
     public void TestTertiary() {
         int i = 0;
         myCollation.setStrength(Collator.TERTIARY);
@@ -189,6 +192,7 @@ public class CollationDummyTest extends TestFmwk {
     }
 
     // perform test with strength PRIMARY
+    @Test
     public void TestPrimary() {
        // problem in strcollinc for unfinshed contractions 
        myCollation.setStrength(Collator.PRIMARY);
@@ -198,6 +202,7 @@ public class CollationDummyTest extends TestFmwk {
     }
 
     //perform test with strength SECONDARY
+    @Test
     public void TestSecondary() {
         int i;
         myCollation.setStrength(Collator.SECONDARY);
@@ -207,6 +212,7 @@ public class CollationDummyTest extends TestFmwk {
     }
 
     // perform extra tests
+    @Test
     public void TestExtra() {
         int i, j;
         myCollation.setStrength(Collator.TERTIARY);
@@ -217,6 +223,7 @@ public class CollationDummyTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestIdentical() {
         int i;
         myCollation.setStrength(Collator.IDENTICAL);
@@ -225,6 +232,7 @@ public class CollationDummyTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestJB581() {
         String source = "THISISATEST.";
         String target = "Thisisatest.";
@@ -268,6 +276,7 @@ public class CollationDummyTest extends TestFmwk {
     /**
     * Tests surrogate support.
     */
+    @Test
     public void TestSurrogates() 
     {
         String rules = "&z<'\ud800\udc00'<'\ud800\udc0a\u0308'<A";
@@ -334,6 +343,7 @@ public class CollationDummyTest extends TestFmwk {
     * tag has the value shifted, any codepoints before [variable top] should give
     * a primary ce of 0.
     */
+    @Test
     public void TestVariableTop() {
         /*
          * Starting with ICU 53, setting the variable top via a pseudo relation string
@@ -399,6 +409,7 @@ public class CollationDummyTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestJB1401() {
         Collator     myCollator = null;
         char[] NFD_UnsafeStartChars = {

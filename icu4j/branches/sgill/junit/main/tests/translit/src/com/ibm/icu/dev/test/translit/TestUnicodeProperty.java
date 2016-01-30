@@ -8,6 +8,8 @@ package com.ibm.icu.dev.test.translit;
 
 import java.util.List;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.util.ICUPropertyFactory;
 import com.ibm.icu.dev.util.UnicodeProperty;
@@ -27,6 +29,7 @@ public class TestUnicodeProperty extends TestFmwk{
     static final UnicodeSet letter = new UnicodeSet("[:gc=L:]");
 
 
+    @Test
     public void TestBasic() {
         Factory factory = ICUPropertyFactory.make();
         UnicodeProperty property = factory.getProperty("gc");
@@ -38,6 +41,7 @@ public class TestUnicodeProperty extends TestFmwk{
         }
     }
 
+    @Test
     public void TestSymbolTable() {
         Factory factory = ICUPropertyFactory.make();
         UnicodePropertySymbolTable upst = new UnicodePropertySymbolTable(factory);
@@ -55,6 +59,7 @@ public class TestUnicodeProperty extends TestFmwk{
         }
     }
 
+    @Test
     public void TestSymbolTable2() {
         Factory factory = new MyUnicodePropertyFactory();
         UnicodePropertySymbolTable upst = new UnicodePropertySymbolTable(factory);

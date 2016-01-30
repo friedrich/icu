@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
 
+import org.junit.Test;
+
 import com.ibm.icu.impl.CalendarAstronomer;
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.impl.ZoneMeta;
@@ -45,6 +47,7 @@ public class IBMCalendarTest extends CalendarTest {
      *       a Calendar in the given locale (using getInstance()) and call
      *       that Calendar's isWeekend() etc. methods.
      */
+    @Test
     public void TestWeekend() {
         SimpleDateFormat fmt = new SimpleDateFormat("EEE MMM dd yyyy G HH:mm:ss.SSS");
 
@@ -201,6 +204,7 @@ public class IBMCalendarTest extends CalendarTest {
      * Verify that BuddhistCalendar shifts years to Buddhist Era but otherwise
      * behaves like GregorianCalendar.
      */
+    @Test
     public void TestBuddhist() {
         quasiGregorianTest(new BuddhistCalendar(),
                            new int[] {
@@ -209,6 +213,7 @@ public class IBMCalendarTest extends CalendarTest {
                            });
     }
 
+    @Test
     public void TestBuddhistCoverage() {
     {
         // new BuddhistCalendar(ULocale)
@@ -305,6 +310,7 @@ public class IBMCalendarTest extends CalendarTest {
     /**
      * Test limits of the Buddhist calendar.
      */
+    @Test
     public void TestBuddhistLimits() {
         // Final parameter is either number of days, if > 0, or test
         // duration in seconds, if < 0.
@@ -318,6 +324,7 @@ public class IBMCalendarTest extends CalendarTest {
     /**
      * Default calendar for Thai (Ticket#6302)
      */
+    @Test
     public void TestThaiDefault() {
         // Buddhist calendar is used as the default calendar for
         // Thai locale
@@ -332,6 +339,7 @@ public class IBMCalendarTest extends CalendarTest {
      * Verify that TaiwanCalendar shifts years to Minguo Era but otherwise
      * behaves like GregorianCalendar.
      */
+    @Test
     public void TestTaiwan() {
         quasiGregorianTest(new TaiwanCalendar(),
                            new int[] {
@@ -345,6 +353,7 @@ public class IBMCalendarTest extends CalendarTest {
     /**
      * Test limits of the Taiwan calendar.
      */
+    @Test
     public void TestTaiwanLimits() {
         // Final parameter is either number of days, if > 0, or test
         // duration in seconds, if < 0.
@@ -355,6 +364,7 @@ public class IBMCalendarTest extends CalendarTest {
         doTheoreticalLimitsTest(taiwan, false);
     }
 
+    @Test
     public void TestTaiwanCoverage() {
     {
         // new TaiwanCalendar(ULocale)
@@ -452,6 +462,7 @@ public class IBMCalendarTest extends CalendarTest {
      * Verify that JapaneseCalendar shifts years to Japanese Eras but otherwise
      * behaves like GregorianCalendar.
      */
+    @Test
     public void TestJapanese() {
         // First make sure this test works for GregorianCalendar
         int[] control = {
@@ -478,6 +489,7 @@ public class IBMCalendarTest extends CalendarTest {
     /**
      * Test limits of the Gregorian calendar.
      */
+    @Test
     public void TestGregorianLimits() {
         // Final parameter is either number of days, if > 0, or test
         // duration in seconds, if < 0.
@@ -492,6 +504,7 @@ public class IBMCalendarTest extends CalendarTest {
      * Test behavior of fieldDifference around leap years.  Also test a large
      * field difference to check binary search.
      */
+    @Test
     public void TestLeapFieldDifference() {
         Calendar cal = Calendar.getInstance();
         cal.set(2004, Calendar.FEBRUARY, 29);
@@ -532,6 +545,7 @@ public class IBMCalendarTest extends CalendarTest {
     /**
      * Test ms_MY "Malay (Malaysia)" locale.  Bug 1543.
      */
+    @Test
     public void TestMalaysianInstance() {
         Locale loc = new Locale("ms", "MY");  // Malay (Malaysia)
         Calendar cal = Calendar.getInstance(loc);
@@ -545,6 +559,7 @@ public class IBMCalendarTest extends CalendarTest {
      * field <=> time mapping, since they affect the interpretation of
      * the WEEK_OF_MONTH or WEEK_OF_YEAR fields.
      */
+    @Test
     public void TestWeekShift() {
         Calendar cal = new GregorianCalendar(
                              TimeZone.getTimeZone("America/Los_Angeles"),
@@ -614,6 +629,7 @@ public class IBMCalendarTest extends CalendarTest {
      * different day.  The DST adjustments we use to keep the hour
      * constant across DST changes can backfire and change the day.
      */
+    @Test
     public void TestTimeZoneTransitionAdd() {
         Locale locale = Locale.US; // could also be CHINA
         SimpleDateFormat dateFormat =
@@ -645,6 +661,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestJB1684() {
         class TestData {
             int year;
@@ -789,6 +806,7 @@ public class IBMCalendarTest extends CalendarTest {
     /**
      * Test the ZoneMeta API.
      */
+    @Test
     public void TestZoneMeta() {
         // Test index by country API
 
@@ -847,6 +865,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestComparable() {
     GregorianCalendar c0 = new GregorianCalendar();
     GregorianCalendar c1 = new GregorianCalendar();
@@ -869,6 +888,7 @@ public class IBMCalendarTest extends CalendarTest {
     /**
      * Miscellaneous tests to increase coverage.
      */
+    @Test
     public void TestCoverage() {
         // BuddhistCalendar
         BuddhistCalendar bcal = new BuddhistCalendar();
@@ -959,6 +979,7 @@ public class IBMCalendarTest extends CalendarTest {
     }
 
     // Tests for jb 4541
+    @Test
     public void TestJB4541() {
         ULocale loc = new ULocale("en_US");
 
@@ -1005,6 +1026,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestTypes() {
         String[] locs = {
                 "en_US_VALLEYGIRL",
@@ -1048,6 +1070,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestISO8601() {
         final ULocale[] TEST_LOCALES = {
             new ULocale("en_US@calendar=iso8601"),
@@ -1159,6 +1182,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestAmbiguousWallTimeAPIs() {
         Calendar cal = Calendar.getInstance();
 
@@ -1187,6 +1211,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestRepeatedWallTime() {
         final Object[][] TESTDATA = {
             // Time zone            Input wall time                     WALLTIME_LAST in GMT                WALLTIME_FIRST in GMT
@@ -1251,6 +1276,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestSkippedWallTime() {
         final Object[][] TESTDATA = {
             // Time zone            Input wall time                     Valid wall time?
@@ -1387,6 +1413,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestFieldDifference() {
         class TFDItem {
             public String tzname;
@@ -1492,6 +1519,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestAddRollEra0AndEraBounds() {
         final String[] localeIDs = {
             // calendars with non-modern era 0 that goes backwards, max era == 1
@@ -1660,6 +1688,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestWeekData() {
         // Each line contains two locales using the same set of week rule data.
         final String LOCALE_PAIRS[] = {
@@ -1700,6 +1729,7 @@ public class IBMCalendarTest extends CalendarTest {
         }
     }
 
+    @Test
     public void TestAddAcrossZoneTransition() {
         class TestData {
             String zone;

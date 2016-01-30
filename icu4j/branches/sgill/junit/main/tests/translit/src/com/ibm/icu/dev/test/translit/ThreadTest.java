@@ -8,6 +8,8 @@ package com.ibm.icu.dev.test.translit;
 
 import java.util.ArrayList;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Transliterator;
 
 // Test for ICU Ticket #7201.  With threading bugs in RuleBasedTransliterator, this
@@ -21,6 +23,7 @@ public class ThreadTest extends TransliteratorTest {
     private ArrayList<Worker> threads = new ArrayList<Worker>();
     private int iterationCount = 100000;
     
+    @Test
     public void TestThreads()  {
         if (getInclusion() >= 9) {
             // Exhaustive test.  Run longer.
@@ -68,6 +71,7 @@ public class ThreadTest extends TransliteratorTest {
     // this test will fairly reliably take the code path for races in 
     // populating the cache.
     // 
+    @Test
     public void TestAnyTranslit() {
         final Transliterator tx = Transliterator.getInstance("Any-Latin");
         ArrayList<Thread> threads = new ArrayList<Thread>();

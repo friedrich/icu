@@ -18,6 +18,8 @@ package com.ibm.icu.dev.test.format;
 
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.DateFormatSymbols;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.ULocale;
@@ -29,6 +31,7 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
     }
 
     // Test getMonths
+    @Test
     public void TestGetMonths()
     {
         final String[] month;
@@ -47,6 +50,7 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
         }
     }
 
+    @Test
     public void TestGetMonths2()
     {
         DateFormatSymbols symbol;
@@ -69,6 +73,7 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
         }
     }
     
+    @Test
     public void TestGetWeekdays2(){
         DateFormatSymbols symbol;
         symbol=new DateFormatSymbols(Locale.getDefault());
@@ -91,6 +96,7 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
         
     }
     
+    @Test
     public void TestGetEraNames(){
         DateFormatSymbols symbol;
         symbol=new DateFormatSymbols(Locale.getDefault());
@@ -117,6 +123,7 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
 
 
     // Test the API of DateFormatSymbols; primarily a simple get/set set.
+    @Test
     public void TestSymbols()
     {
         DateFormatSymbols fr = new DateFormatSymbols(Locale.FRENCH);
@@ -539,6 +546,7 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
         }
     }
 
+    @Test
     public void TestConstructorWithCalendar() {
         ULocale[] TestLocales = {
             new ULocale("en_US@calendar=gregorian"),

@@ -14,6 +14,8 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -123,6 +125,7 @@ public class CollationFrenchTest extends TestFmwk{
     }
      
     // perform tests with strength TERTIARY
+    @Test
     public void TestTertiary() {
         int i = 0;
         myCollation.setStrength(Collator.TERTIARY);
@@ -133,6 +136,7 @@ public class CollationFrenchTest extends TestFmwk{
     }
     
     // perform tests with strength SECONDARY
+    @Test
     public void TestSecondary() {
         //test acute and grave ordering
         int i = 0;
@@ -156,6 +160,7 @@ public class CollationFrenchTest extends TestFmwk{
     }
 
     // perform extra tests
+    @Test
     public void TestExtra() {
         int i, j;
         myCollation.setStrength(Collator.TERTIARY);
@@ -166,6 +171,7 @@ public class CollationFrenchTest extends TestFmwk{
         }
     }
     
+    @Test
     public void TestContinuationReordering()
     {
         String rule = "&0x2f00 << 0x2f01";

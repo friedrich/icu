@@ -6,6 +6,8 @@
  */
 package com.ibm.icu.dev.test.lang;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.lang.UCharacterDirection;
 
@@ -44,6 +46,7 @@ public class UCharacterDirectionTest extends TestFmwk
     * Gets the name of the argument category
     * @returns category name
     */
+    @Test
     public void TestToString()
     {
         String name[] = {"Left-to-Right",

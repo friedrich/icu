@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.bidi;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
 import com.ibm.icu.lang.UCharacterDirection;
@@ -26,6 +28,7 @@ public class BiDiConformanceTest extends TestFmwk {
     }
     public BiDiConformanceTest() {}
 
+    @Test
     public void TestBidiTest() throws IOException {
         BufferedReader bidiTestFile = TestUtil.getDataReader("unicode/BidiTest.txt");
         try {
@@ -161,6 +164,7 @@ outerLoop:
     *
     *******************************************************************************
     */
+    @Test
     public void TestBidiCharacterTest() throws IOException {
         BufferedReader bidiTestFile = TestUtil.getDataReader("unicode/BidiCharacterTest.txt");
         try {

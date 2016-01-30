@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Assert;
 import com.ibm.icu.impl.InvalidFormatException;
@@ -33,6 +35,7 @@ public class UtilityTest extends TestFmwk {
         new UtilityTest().run(args);
     }
 
+    @Test
     public void TestUnescape() {
         final String input =
             "Sch\\u00f6nes Auto: \\u20ac 11240.\\fPrivates Zeichen: \\U00102345\\e\\cC\\n \\x1b\\x{263a}";
@@ -46,6 +49,7 @@ public class UtilityTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestFormat()
     {
         String data[] = {
@@ -80,6 +84,7 @@ public class UtilityTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestHighBit()
     {
         int data[] = {-1, -1276, 0, 0xFFFF, 0x1234};
@@ -93,6 +98,7 @@ public class UtilityTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestCompareUnsigned()
     {
         int data[] = {0, 1, 0x8fffffff, -1, Integer.MAX_VALUE, 
@@ -112,6 +118,7 @@ public class UtilityTest extends TestFmwk {
     // Seems that the class is somewhat incomplete, for example
     //      - getHashCode(Object) is weird
     //      - PatternMatch feature(search part of array within the whole one) lacks
+    @Test
     public void TestByteArrayWrapper()
     {
         byte[] ba = {0x00, 0x01, 0x02};
@@ -157,6 +164,7 @@ public class UtilityTest extends TestFmwk {
         }
         return 0;
     }
+    @Test
     public void TestUnicodeSet(){
         String[] array = new String[]{"a", "b", "c", "{de}"};
         List list = Arrays.asList(array);
@@ -171,6 +179,7 @@ public class UtilityTest extends TestFmwk {
 
     }
 
+    @Test
     public void TestAssert(){
         try {
             Assert.assrt(false);
@@ -217,6 +226,7 @@ public class UtilityTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestCaseInsensitiveString() {
         CaseInsensitiveString str1 = new CaseInsensitiveString("ThIs is A tEst");
         CaseInsensitiveString str2 = new CaseInsensitiveString("This IS a test");
@@ -228,6 +238,7 @@ public class UtilityTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestSourceLocation() {
         String here = TestFmwk.sourceLocation();
         String there = CheckSourceLocale();

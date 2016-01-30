@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Normalizer2Impl.UTF16Plus;
 import com.ibm.icu.text.IDNA;
@@ -34,6 +36,7 @@ public class UTS46Test extends TestFmwk {
                                        IDNA.NONTRANSITIONAL_TO_ASCII|IDNA.NONTRANSITIONAL_TO_UNICODE);
     }
 
+    @Test
     public void TestAPI() {
         StringBuilder result=new StringBuilder();
         IDNA.Info info=new IDNA.Info();
@@ -68,6 +71,7 @@ public class UTS46Test extends TestFmwk {
         }
     }
 
+    @Test
     public void TestNotSTD3() {
         IDNA not3=IDNA.getUTS46Instance(IDNA.CHECK_BIDI);
         String input="\u0000A_2+2=4\n.e\u00DFen.net";
@@ -461,6 +465,7 @@ public class UTS46Test extends TestFmwk {
         //   "", "" },
     };
 
+    @Test
     public void TestSomeCases() {
         StringBuilder aT=new StringBuilder(), uT=new StringBuilder();
         StringBuilder aN=new StringBuilder(), uN=new StringBuilder();

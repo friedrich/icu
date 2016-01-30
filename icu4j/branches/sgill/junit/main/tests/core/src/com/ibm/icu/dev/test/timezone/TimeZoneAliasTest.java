@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.TimeZone;
 
@@ -41,6 +43,7 @@ public class TimeZoneAliasTest extends TestFmwk {
      * 1. the alias set must be uniform: if a isAlias b, then aliasSet(a) == aliasSet(b)<br>
      * 2. all aliases must have the same offsets
       */
+    @Test
     public void TestAliases() {
         Zone.Seconds seconds = new Zone.Seconds();
         for (Iterator it = Zone.getZoneSet().iterator(); it.hasNext(); ) {
@@ -81,6 +84,7 @@ public class TimeZoneAliasTest extends TestFmwk {
     /**
      * We check to see that every timezone that is not an alias is actually different!
      */
+    @Test
     public void TestDifferences() {
         Zone last = null;
         Zone.Seconds diffDate = new Zone.Seconds();        

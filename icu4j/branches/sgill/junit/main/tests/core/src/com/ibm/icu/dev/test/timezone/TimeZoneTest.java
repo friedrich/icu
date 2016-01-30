@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -122,6 +124,7 @@ public class TimeZoneTest extends TestFmwk
      * else. E.g., EST usually indicates the US Eastern zone, so it cannot be
      * used for Brazil (BET).
      */
+    @Test
     public void TestShortZoneIDs() throws Exception {
 
         // Note: If the default TimeZone type is JDK, some time zones
@@ -262,6 +265,7 @@ public class TimeZoneTest extends TestFmwk
      *
      * Bug 4044013
      */
+    @Test
     public void TestCustomParse() {
         String[] DATA = {
             // ID               offset(sec)     output ID
@@ -324,6 +328,7 @@ public class TimeZoneTest extends TestFmwk
      * 4/21/98 - make smarter, so the test works if the ext resources
      * are present or not.
      */
+    @Test
     public void TestDisplayName() {
         TimeZone zone = TimeZone.getTimeZone("PST");
         String name = zone.getDisplayName(Locale.ENGLISH);
@@ -451,6 +456,7 @@ public class TimeZoneTest extends TestFmwk
     }
 
 
+    @Test
     public void TestDisplayName2() {
         Date now = new Date();
 
@@ -483,6 +489,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestGenericAPI() {
         String id = "NewGMT";
         int offset = 12345;
@@ -549,6 +556,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestRuleAPI()
     {
         // ErrorCode status = ZERO_ERROR;
@@ -662,6 +670,7 @@ public class TimeZoneTest extends TestFmwk
     static final int INTERVAL = 100;
 
     // Bug 006; verify the offset for a specific zone.
+    @Test
     public void TestPRTOffset()
     {
         TimeZone tz = TimeZone.getTimeZone( "PRT" );
@@ -677,6 +686,7 @@ public class TimeZoneTest extends TestFmwk
     }
 
     // Test various calls
+    @Test
     public void TestVariousAPI518()
     {
         TimeZone time_zone = TimeZone.getTimeZone("PST");
@@ -705,6 +715,7 @@ public class TimeZoneTest extends TestFmwk
     }
 
     // Test getAvailableID API
+    @Test
     public void TestGetAvailableIDs913()
     {
         StringBuffer buf = new StringBuffer("TimeZone.getAvailableIDs() = { ");
@@ -748,6 +759,7 @@ public class TimeZoneTest extends TestFmwk
             errln("FAIL: getTimeZone(NON_EXISTENT) = " + tz.getID());
     }
 
+    @Test
     public void TestGetAvailableIDsNew() {
         Set<String> any = TimeZone.getAvailableIDs(SystemTimeZoneType.ANY, null, null);
         Set<String> canonical = TimeZone.getAvailableIDs(SystemTimeZoneType.CANONICAL, null, null);
@@ -857,6 +869,7 @@ public class TimeZoneTest extends TestFmwk
     /**
      * Bug 4107276
      */
+    @Test
     public void TestDSTSavings() {
         // It might be better to find a way to integrate this test into the main TimeZone
         // tests above, but I don't have time to figure out how to do this (or if it's
@@ -903,6 +916,7 @@ public class TimeZoneTest extends TestFmwk
     /**
      * Bug 4107570
      */
+    @Test
     public void TestAlternateRules() {
         // Like TestDSTSavings, this test should probably be integrated somehow with the main
         // test at the top of this class, but I didn't have time to figure out how to do that.
@@ -967,6 +981,7 @@ public class TimeZoneTest extends TestFmwk
                   + (offset / millisPerHour) + " hours.");
     }
 
+    @Test
     public void TestEquivalencyGroups() {
         String id = "America/Los_Angeles";
         int n = TimeZone.countEquivalentIDs(id);
@@ -1020,6 +1035,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestCountries() {
         // Make sure America/Los_Angeles is in the "US" group, and
         // Asia/Tokyo isn't.  Vice versa for the "JP" group.
@@ -1061,6 +1077,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestFractionalDST() {
         String tzName = "Australia/Lord_Howe"; // 30 min offset
         java.util.TimeZone tz_java = java.util.TimeZone.getTimeZone(tzName);
@@ -1102,6 +1119,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestGetOffsetDate() {
         Calendar cal = Calendar.getInstance();
         cal.set(1997, Calendar.JANUARY, 30);
@@ -1122,6 +1140,7 @@ public class TimeZoneTest extends TestFmwk
     }
 
     // jb4484
+    @Test
     public void TestSimpleTimeZoneSerialization() 
     {
         SimpleTimeZone stz0 = new SimpleTimeZone(32400000, "MyTimeZone");
@@ -1306,6 +1325,7 @@ public class TimeZoneTest extends TestFmwk
         "Zulu", "Etc/GMT",
     };
 
+    @Test
     public void TestOddTimeZoneNames() {
         for (int i = 0; i < timeZoneTestNames.length; i += 2) {
             String funkyName = timeZoneTestNames[i];
@@ -1338,6 +1358,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
     
+    @Test
     public void TestCoverage(){
         class StubTimeZone extends TimeZone{
             /**
@@ -1360,6 +1381,7 @@ public class TimeZoneTest extends TestFmwk
      
         }
     }
+    @Test
     public void TestMark(){
         String tzid = "America/Argentina/ComodRivadavia";
         TimeZone tz = TimeZone.getTimeZone(tzid);
@@ -1370,6 +1392,7 @@ public class TimeZoneTest extends TestFmwk
             errln("Could create the time zone but it is not in getAvailableIDs");
         }
     }
+    @Test
     public void TestZoneMeta() {
         java.util.TimeZone save = java.util.TimeZone.getDefault();
         java.util.TimeZone newZone = java.util.TimeZone.getTimeZone("GMT-08:00");
@@ -1391,6 +1414,7 @@ public class TimeZoneTest extends TestFmwk
     private static final int MILLIS_PER_HOUR = 60*60*1000;
 
     //  Test that a transition at the end of February is handled correctly.
+    @Test
     public void TestFebruary() {
         // Time zone with daylight savings time from the first Sunday in November
         // to the last Sunday in February.
@@ -1471,6 +1495,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestCanonicalID() {
         // Some canonical IDs in CLDR are defined as "Link"
         // in Olson tzdata.
@@ -1662,6 +1687,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestSetDefault() {
         java.util.TimeZone save = java.util.TimeZone.getDefault();
 
@@ -1723,6 +1749,7 @@ public class TimeZoneTest extends TestFmwk
      * Test Display Names, choosing zones and lcoales where there are multiple
      * meta-zones defined.
      */
+    @Test
     public void TestDisplayNamesMeta() {
         final Integer TZSHORT = new Integer(TimeZone.SHORT);
         final Integer TZLONG = new Integer(TimeZone.LONG);
@@ -1809,6 +1836,7 @@ public class TimeZoneTest extends TestFmwk
     /*
      * Test case for hashCode problem reported by ticket#7690 OlsonTimeZone.hashCode() throws NPE.
      */
+    @Test
     public void TestHashCode() {
         String[] ids = TimeZone.getAvailableIDs();
 
@@ -1830,6 +1858,7 @@ public class TimeZoneTest extends TestFmwk
     /*
      * Test case for getRegion
      */
+    @Test
     public void TestGetRegion() {
         final String[][] TEST_DATA = {
             {"America/Los_Angeles",             "US"},
@@ -1870,6 +1899,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestZoneFields() {
         assertEquals("UNKNOWN_ZONE wrong ID", "Etc/Unknown", TimeZone.UNKNOWN_ZONE.getID());
         assertEquals("UNKNOWN_ZONE wrong offset", 0, TimeZone.UNKNOWN_ZONE.getRawOffset());
@@ -1883,6 +1913,7 @@ public class TimeZoneTest extends TestFmwk
     /*
      * Test case for Freezable
      */
+    @Test
     public void TestFreezable() {
         // Test zones - initially thawed
         TimeZone[] ZA1 = {
@@ -2129,6 +2160,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestObservesDaylightTime() {
         boolean observesDaylight;
         long current = System.currentTimeMillis();
@@ -2180,6 +2212,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
     
+    @Test
     public void Test11619_UnrecognizedTimeZoneID() {
         VTimeZone vzone = VTimeZone.create("ABadTimeZoneId");
         this.assertNull("", vzone);
@@ -2230,6 +2263,7 @@ public class TimeZoneTest extends TestFmwk
         return rbtz;
      }
 
+    @Test
     public void TestGetWindowsID() {
         String[][] TESTDATA = {
             {"America/New_York",        "Eastern Standard Time"},
@@ -2251,6 +2285,7 @@ public class TimeZoneTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestGetIDForWindowsID() {
         final String[][] TESTDATA = {
             {"Eastern Standard Time",   null,   "America/New_York"},

@@ -6,6 +6,8 @@
  */
 package com.ibm.icu.dev.test.compression;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.UnicodeCompressor;
 import com.ibm.icu.text.UnicodeDecompressor;
@@ -16,6 +18,7 @@ public class ExhaustiveTest extends TestFmwk {
     }
 
     /** Test simple compress/decompress API, returning # of errors */
+    @Test
     public void testSimple() throws Exception {
         for(int i = 0; i < fTestCases.length; i++) {
             simpleTest(fTestCases[i]);
@@ -37,6 +40,7 @@ public class ExhaustiveTest extends TestFmwk {
     }
 
     /** Test iterative compress/decompress API, returning # of errors */
+    @Test
     public void testIterative() throws Exception {
         for(int i = 0; i < fTestCases.length; i++) {
             myTest(fTestCases[i].toCharArray(), fTestCases[i].length());
@@ -74,6 +78,7 @@ public class ExhaustiveTest extends TestFmwk {
     }
 
     /** Test iterative compress/decompress API */
+    @Test
     public void testMultipass() throws Exception {
         for(int i = 0; i < fTestCases.length; i++) {
             myMultipassTest(fTestCases[i].toCharArray(), fTestCases[i].length());

@@ -21,6 +21,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Random;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.util.ULocale;
@@ -55,11 +57,13 @@ public class IntlTestDateFormat extends com.ibm.icu.dev.test.TestFmwk {
         new IntlTestDateFormat().run(args);
     }
 
+    @Test
     public void TestULocale() {
         localeTest(ULocale.getDefault(), "Default Locale");
     }
 
     // This test does round-trip testing (format -> parse -> format -> parse -> etc.) of DateFormat.
+    @Test
     public void localeTest(final ULocale locale, final String localeName) {
         int timeStyle, dateStyle;
 
@@ -109,6 +113,7 @@ public class IntlTestDateFormat extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void TestFormat() {
         if (fFormat == null) {
             errln("FAIL: DateFormat creation failed");
@@ -226,6 +231,7 @@ public class IntlTestDateFormat extends com.ibm.icu.dev.test.TestFmwk {
         return random.nextDouble();
     }
 
+    @Test
     public void TestAvailableLocales() {
         final ULocale[] locales = DateFormat.getAvailableULocales();
         long count = locales.length;
@@ -241,6 +247,7 @@ public class IntlTestDateFormat extends com.ibm.icu.dev.test.TestFmwk {
         else errln("********** FAIL: Zero available locales or null array pointer");
     }
 
+    @Test
     public void TestRoundtrip() {
         ULocale[] locales;
         if (isQuick()) {

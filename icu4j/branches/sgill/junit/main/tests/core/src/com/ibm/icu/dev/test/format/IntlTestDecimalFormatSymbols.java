@@ -19,6 +19,8 @@ package com.ibm.icu.dev.test.format;
 
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.DecimalFormatSymbols;
 import com.ibm.icu.util.Currency;
 
@@ -29,6 +31,7 @@ public class IntlTestDecimalFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
     }
 
     // Test the API of DecimalFormatSymbols; primarily a simple get/set set.
+    @Test
     public void TestSymbols()
     {
         DecimalFormatSymbols fr = new DecimalFormatSymbols(Locale.FRENCH);
@@ -174,6 +177,7 @@ public class IntlTestDecimalFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
         }
     }
     
+    @Test
     public void testCoverage() {
         DecimalFormatSymbols df = new DecimalFormatSymbols();
         DecimalFormatSymbols df2 = (DecimalFormatSymbols)df.clone();

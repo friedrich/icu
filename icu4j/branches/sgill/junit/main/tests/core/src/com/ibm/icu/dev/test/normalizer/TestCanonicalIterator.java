@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.lang.UCharacter;
@@ -39,6 +41,7 @@ public class TestCanonicalIterator extends TestFmwk {
         {"x\u0307\u0327", "x\u0307\u0327, x\u0327\u0307, \u1E8B\u0327"},
     };
 
+    @Test
     public void TestExhaustive() {
         int counter = 0;
         CanonicalIterator it = new CanonicalIterator("");
@@ -114,6 +117,7 @@ public class TestCanonicalIterator extends TestFmwk {
         return x;
     }
     
+    @Test
     public void TestBasic() {
 //      This is not interesting anymore as the data is already built 
 //      beforehand
@@ -188,6 +192,7 @@ public class TestCanonicalIterator extends TestFmwk {
         return "[" + (SHOW_NAMES ? hex(s) + "; " : "") + hex(s) + "]";
     }
     
+    @Test
     public void characterTest(String s, int ch, CanonicalIterator it)
     {
         int mixedCounter = 0;

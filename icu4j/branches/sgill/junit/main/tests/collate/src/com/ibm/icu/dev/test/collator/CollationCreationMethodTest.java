@@ -10,6 +10,8 @@ package com.ibm.icu.dev.test.collator;
 import java.util.Locale;
 import java.util.Random;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -32,6 +34,7 @@ public class CollationCreationMethodTest extends TestFmwk
         new CollationCreationMethodTest().run(args);
     }
 
+    @Test
     public void TestRuleVsLocaleCreationMonkey()
     {
         //create a RBC from a collator reader by reading in a locale collation file

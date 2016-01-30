@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.bidi;
 
 import java.util.Arrays;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Bidi;
 import com.ibm.icu.text.BidiRun;
 
@@ -23,6 +25,7 @@ public class TestBidi extends BidiTest {
     private static final int MAXLEN = 256;
     private static final String levelString = "............................";
 
+    @Test
     public void testBidi() {
         Bidi bidi;
         Bidi bidiLine;

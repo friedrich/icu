@@ -8,6 +8,8 @@ package com.ibm.icu.dev.test.format;
 
 import java.util.Arrays;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.StandardPlural;
 import com.ibm.icu.text.MeasureFormat;
@@ -28,6 +30,7 @@ public class PluralRangesTest extends TestFmwk {
         new PluralRangesTest().run(args);
     }
 
+    @Test
     public void TestLocaleData() {
         String[][] tests = {
                 {"de", "other", "one", "one"},
@@ -51,6 +54,7 @@ public class PluralRangesTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestRangePattern() {
         String[][] tests = {
                 {"de", "SHORT", "{0}–{1}"},
@@ -65,6 +69,7 @@ public class PluralRangesTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestFormatting() {
         Object[][] tests = {
                 {0.0, 1.0, ULocale.FRANCE, FormatWidth.WIDE, MeasureUnit.FAHRENHEIT, "0–1 degré Fahrenheit"},
@@ -108,6 +113,7 @@ public class PluralRangesTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestBasic() {
         PluralRanges a = new PluralRanges();
         a.add(StandardPlural.ONE, StandardPlural.OTHER, StandardPlural.ONE);

@@ -9,6 +9,9 @@ package com.ibm.icu.dev.test.util;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.junit.Test;
+
 import java.util.Map.Entry;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -32,6 +35,7 @@ public class TestLocaleValidity extends TestFmwk {
         new TestLocaleValidity().run(args);
     }
 
+    @Test
     public void testBasic() {
         String[][] tests = {
                 {"OK", "en-u-ca-chinese"},
@@ -142,6 +146,7 @@ public class TestLocaleValidity extends TestFmwk {
         check(tests, Datasubtype.regular, Datasubtype.unknown);
     }
 
+    @Test
     public void testMissing() {
         String[][] tests = {
                 {"OK", "en-u-lb-loose"},
@@ -152,6 +157,7 @@ public class TestLocaleValidity extends TestFmwk {
         check(tests, Datasubtype.regular, Datasubtype.unknown);
     }
 
+    @Test
     public void testTSubtags() {
         String[][] tests = {
                 //                {"OK", "und-Cyrl-t-und-latn-m0-ungegn-2007"},
@@ -165,6 +171,7 @@ public class TestLocaleValidity extends TestFmwk {
         check(tests, Datasubtype.regular, Datasubtype.unknown);
     }
 
+    @Test
     public void testDeprecated() {
         String[][] tests = {
                 {"OK", "en-u-co-direct"}, // deprecated
@@ -210,6 +217,7 @@ public class TestLocaleValidity extends TestFmwk {
 
     // Quick testing for now
 
+    @Test
     public void testValidIdentifierData() {
         showValid(Datasubtype.unknown, Datatype.script, EnumSet.of(Datasubtype.regular, Datasubtype.unknown), "Zzzz");
         showValid(null, Datatype.script, EnumSet.of(Datasubtype.regular), "Zzzz");

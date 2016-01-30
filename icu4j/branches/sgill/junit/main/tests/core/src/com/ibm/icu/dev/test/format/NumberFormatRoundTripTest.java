@@ -15,6 +15,8 @@ package com.ibm.icu.dev.test.format;
 import java.util.Locale;
 import java.util.Random;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
 
@@ -36,6 +38,7 @@ public class NumberFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
         new NumberFormatRoundTripTest().run(args);
     }
     
+    @Test
     public void TestNumberFormatRoundTrip() {
     
         NumberFormat fmt = null;
@@ -89,6 +92,7 @@ public class NumberFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
         return  random.nextDouble() * range;
     } 
     
+    @Test
     public void _test(NumberFormat fmt) {
     
         _test(fmt, Double.NaN);
@@ -141,14 +145,17 @@ public class NumberFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
     
+    @Test
     public void _test(NumberFormat fmt, double value) {
         _test(fmt, new Double(value));
     }
     
+    @Test
     public void _test(NumberFormat fmt, long value) {
         _test(fmt, new Long(value));
     }
     
+    @Test
     public void _test(NumberFormat fmt, Number value) {
         logln("test data = " + value);
         fmt.setMaximumFractionDigits(999);

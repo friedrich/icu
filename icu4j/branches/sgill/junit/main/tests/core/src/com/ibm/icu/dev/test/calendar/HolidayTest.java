@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.util.Calendar;
@@ -40,6 +42,7 @@ public class HolidayTest extends TestFmwk {
     static  Date now;
     static  long awhile = 3600L * 24 * 28; // 28 days
 
+    @Test
     public void TestAPI() {
         {
             // getHolidays
@@ -221,6 +224,7 @@ public class HolidayTest extends TestFmwk {
        // }
     }
 
+    @Test
     public void TestCoverage(){
         Holiday[] h = { new EasterHoliday("Ram's Easter"),
                         new SimpleHoliday(2, 29, 0, "Leap year", 1900, 2100)};
@@ -259,6 +263,7 @@ public class HolidayTest extends TestFmwk {
         exerciseHoliday(h[1], Locale.getDefault());
     }
     
+    @Test
     public void TestEaster(){        
         // Verify that Easter is working. Should be April 20, 2014
         final Holiday h = new EasterHoliday("Easter Sunday");
@@ -278,6 +283,7 @@ public class HolidayTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestIsOn() {
         // jb 1901
         SimpleHoliday sh = new SimpleHoliday(Calendar.AUGUST, 15, "Doug's Day", 1958, 2058);
@@ -322,6 +328,7 @@ public class HolidayTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestDisplayName() {
         Holiday[] holidays = Holiday.getHolidays(ULocale.US);
         for (int i = 0; i < holidays.length; ++i) {

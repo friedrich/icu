@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.duration.BasicPeriodFormatterService;
 import com.ibm.icu.impl.duration.Period;
@@ -226,6 +228,7 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         pbFactory = pfs.newPeriodBuilderFactory().setLocale(locale);
     }
 
+    @Test
     public void testFullPluralizedForms() throws Exception {
         setUp();
         int[] counts = data.getFullPluralizedFormCounts();
@@ -255,6 +258,7 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         }
     }
 
+    @Test
     public void testMediumForms() throws Exception {
         setUp();
         String[] targets = data.getMediumFormTargets();
@@ -276,6 +280,7 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         }
     }
 
+    @Test
     public void testShortForms() throws Exception {
         setUp();
         String[] targets = data.getShortFormTargets();
@@ -297,6 +302,7 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         }
     }
 
+    @Test
     public void testCustomMinutes() throws Exception {
         setUp();
         String[] targets = data.getCustomMinuteTargets();
@@ -319,6 +325,7 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         }
     }
 
+    @Test
     public void testLimitedUnits() throws Exception {
         setUp();
         String[] targets = data.getLimitedUnitTargets();
@@ -409,6 +416,7 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         }
     }
 
+    @Test
     public void testHalfUnits() throws Exception {
         setUp();
         int[] counts = data.getHalfUnitCounts();
@@ -439,6 +447,7 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         }
     }
 
+    @Test
     public void testFractionalUnits() throws Exception {
         setUp();
         float[] counts = data.getFractionalUnitCounts();
@@ -469,6 +478,7 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         }
     }
 
+    @Test
     public void testMultipleUnits() throws Exception {
         setUp();
         String[] targets = data.getMultipleUnitTargets();

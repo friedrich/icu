@@ -6,6 +6,8 @@
  */
 package com.ibm.icu.dev.test.util;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.SimplePatternFormatter;
 
@@ -30,6 +32,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
          }
      }
      
+    @Test
      public void TestWithNoPlaceholders() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile("This doesn''t have templates '{0}");
          assertEquals(
@@ -64,12 +67,14 @@ public class SimplePatternFormatterTest extends TestFmwk {
                  fmt.format("to"));
      }
      
+    @Test
      public void TestOnePlaceholder() {
         assertEquals("TestOnePlaceholder",
                 "1 meter",
                 SimplePatternFormatter.compile("{0} meter").format("1"));
      }
      
+    @Test
      public void TestGetPatternWithNoPlaceholders() {
          assertEquals(
                  "",
@@ -78,6 +83,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
                          "Templates {1}{2} and {3} are here.").getPatternWithNoPlaceholders());
      }
      
+    @Test
      public void TestTooFewPlaceholderValues() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile(
                  "Templates {2}{1} and {4} are out of order.");
@@ -103,6 +109,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
          }
      }
      
+    @Test
      public void TestWithPlaceholders() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile(
                  "Templates {2}{1} and {4} are out of order.");
@@ -127,6 +134,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
          verifyOffsets(expectedOffsets, offsets);
      }
      
+    @Test
      public void TestFormatUseAppendToAsPlaceholder() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile(
                  "Placeholders {0} and {1}");
@@ -139,6 +147,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
          }
      }
      
+    @Test
      public void TestFormatReplaceNoOptimization() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile("{2}, {0}, {1} and {3}");
          int[] offsets = new int[4];
@@ -156,6 +165,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
      }
      
      
+    @Test
      public void TestFormatReplaceNoOptimizationLeadingText() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile("boo {2}, {0}, {1} and {3}");
          int[] offsets = new int[4];
@@ -172,6 +182,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
          verifyOffsets(expectedOffsets, offsets);
      }
      
+    @Test
      public void TestFormatReplaceOptimization() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile("{2}, {0}, {1} and {3}");
          int[] offsets = new int[4];
@@ -188,6 +199,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
          verifyOffsets(expectedOffsets, offsets);  
      }
      
+    @Test
      public void TestFormatReplaceOptimizationNoOffsets() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile("{2}, {0}, {1} and {3}");
          StringBuilder result = new StringBuilder("original");
@@ -201,6 +213,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
          
      }
      
+    @Test
      public void TestFormatReplaceNoOptimizationNoOffsets() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile(
                  "Placeholders {0} and {1}");
@@ -211,6 +224,7 @@ public class SimplePatternFormatterTest extends TestFmwk {
                  fmt.formatAndReplace(result, null, result, "frog").toString());
      }
      
+    @Test
      public void TestFormatReplaceNoOptimizationLeadingPlaceholderUsedTwice() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile(
                  "{2}, {0}, {1} and {3} {2}");

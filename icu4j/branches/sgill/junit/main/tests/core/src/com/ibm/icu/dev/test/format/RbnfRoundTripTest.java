@@ -8,6 +8,8 @@ package com.ibm.icu.dev.test.format;
 
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.RuleBasedNumberFormat;
 
@@ -28,6 +30,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the English spellout rules
      */
+    @Test
     public void TestEnglishSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(Locale.US,
@@ -39,6 +42,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the duration-formatting rules
      */
+    @Test
     public void TestDurationsRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(Locale.US,
@@ -50,6 +54,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the Spanish spellout rules
      */
+    @Test
     public void TestSpanishSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(new Locale("es", "es",
@@ -61,6 +66,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the French spellout rules
      */
+    @Test
     public void TestFrenchSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(Locale.FRANCE,
@@ -72,6 +78,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the Swiss French spellout rules
      */
+    @Test
     public void TestSwissFrenchSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(new Locale("fr", "CH",
@@ -83,6 +90,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the Italian spellout rules
      */
+    @Test
     public void TestItalianSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(Locale.ITALIAN,
@@ -94,6 +102,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the German spellout rules
      */
+    @Test
     public void TestGermanSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(Locale.GERMANY,
@@ -105,6 +114,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the Swedish spellout rules
      */
+    @Test
     public void TestSwedishSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(new Locale("sv", "SE",
@@ -116,6 +126,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the Dutch spellout rules
      */
+    @Test
     public void TestDutchSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(new Locale("nl", "NL",
@@ -127,6 +138,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the Japanese spellout rules
      */
+    @Test
     public void TestJapaneseSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(Locale.JAPAN,
@@ -138,6 +150,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the Russian spellout rules
      */
+    @Test
     public void TestRussianSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(new Locale("ru", "RU",
@@ -149,6 +162,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the Greek spellout rules
      */
+    @Test
     public void TestGreekSpelloutRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(new Locale("el", "GR",
@@ -160,6 +174,7 @@ public class RbnfRoundTripTest extends TestFmwk {
     /**
      * Perform an exhaustive round-trip test on the Greek spellout rules
      */
+    @Test
     public void TestHebrewNumberingRT() {
         RuleBasedNumberFormat formatter
                         = new RuleBasedNumberFormat(new Locale("he", "IL",

@@ -11,6 +11,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.TimeZoneNames;
 import com.ibm.icu.text.TimeZoneNames.NameType;
@@ -37,6 +39,7 @@ public class TimeZoneNameTest extends TestFmwk {
         new TimeZoneNameTest().run(args);
     }
 
+    @Test
     public void TestTimeZoneNames() {
         Locale[] locales = Locale.getAvailableLocales();
         String[] tzids = TimeZone.getAvailableIDs();

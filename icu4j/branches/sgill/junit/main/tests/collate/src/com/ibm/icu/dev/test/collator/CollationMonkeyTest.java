@@ -15,6 +15,8 @@ package com.ibm.icu.dev.test.collator;
 import java.util.Locale;
 import java.util.Random;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -35,6 +37,7 @@ public class CollationMonkeyTest extends TestFmwk {
         new CollationMonkeyTest().run(args);
     }
     
+    @Test
     public void TestCollationKey() {
         if(source.length() == 0) {
             errln("CollationMonkeyTest.TestCollationKey(): source is empty - ICU_DATA not set or data missing?");
@@ -107,6 +110,7 @@ public class CollationMonkeyTest extends TestFmwk {
     }
     
     // perform monkey tests using Collator.compare
+    @Test
     public void TestCompare() {
         if(source.length() == 0) {
             errln("CollationMonkeyTest.TestCompare(): source is empty - ICU_DATA not set or data missing?");
@@ -185,6 +189,7 @@ public class CollationMonkeyTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestRules() {
         String testSourceCases[] = {
             "\u0061\u0062\u007a", 

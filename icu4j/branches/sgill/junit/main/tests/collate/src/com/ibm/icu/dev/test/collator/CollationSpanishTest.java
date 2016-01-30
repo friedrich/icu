@@ -14,6 +14,8 @@
  
  import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -70,6 +72,7 @@ import com.ibm.icu.text.Collator;
     protected void init()throws Exception{
         myCollation = Collator.getInstance(new Locale("es", "ES"));
     }
+    @Test
     public void TestTertiary(){
         int i = 0;
         myCollation.setStrength(Collator.TERTIARY);
@@ -78,6 +81,7 @@ import com.ibm.icu.text.Collator;
         }
     }
     
+    @Test
     public void TestPrimary(){
         int i;
         myCollation.setStrength(Collator.PRIMARY);

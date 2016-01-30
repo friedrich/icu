@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
 import com.ibm.icu.text.CollationElementIterator;
@@ -37,6 +39,7 @@ public class CollationThaiTest extends TestFmwk {
      * Odd corner conditions taken from "How to Sort Thai Without Rewriting Sort",
      * by Doug Cooper, http://seasrc.th.net/paper/thaisort.zip
      */
+    @Test
     public void TestCornerCases() {
         String TESTS[] = {
             // Shorter words precede longer
@@ -117,6 +120,7 @@ public class CollationThaiTest extends TestFmwk {
      * sorted order, and confirm that the collator compares each line as
      * preceding the following line.
      */
+    @Test
     public void TestDictionary() {
         RuleBasedCollator coll = null;
         try {
@@ -206,6 +210,7 @@ public class CollationThaiTest extends TestFmwk {
         logln("Words checked: " + wordCount);
     }
     
+    @Test
     public void TestInvalidThai() 
     {
         String tests[] = { "\u0E44\u0E01\u0E44\u0E01",
@@ -243,6 +248,7 @@ public class CollationThaiTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestReordering() 
     {
         String tests[] = {

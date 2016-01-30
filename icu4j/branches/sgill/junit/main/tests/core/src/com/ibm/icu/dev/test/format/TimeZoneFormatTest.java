@@ -20,6 +20,8 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
+import org.junit.Test;
+
 import com.ibm.icu.impl.TZDBTimeZoneNames;
 import com.ibm.icu.impl.ZoneMeta;
 import com.ibm.icu.lang.UCharacter;
@@ -78,6 +80,7 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
      * Test case for checking if a TimeZone is properly set in the result calendar
      * and if the result TimeZone has the expected behavior.
      */
+    @Test
     public void TestTimeZoneRoundTrip() {
         boolean TEST_ALL = getBooleanProperty("TimeZoneRoundTripAll", false);
 
@@ -290,6 +293,7 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
      * rule transition since 1900 until 2020, then check if time around each transition can
      * round trip as expected.
      */
+    @Test
     public void TestTimeRoundTrip() {
 
         boolean TEST_ALL = getBooleanProperty("TimeZoneRoundTripAll", false);
@@ -532,6 +536,7 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         return isExcluded;
     }
 
+    @Test
     public void TestParse() {
         final Object[][] DATA = {
         //   text                   inpos       locale      style
@@ -657,6 +662,7 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void TestISOFormat() {
         final int[] OFFSET = {
             0,          // 0
@@ -805,6 +811,7 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void TestFormat() {
         final Date dateJan = new Date(1358208000000L);  // 2013-01-15T00:00:00Z
         final Date dateJul = new Date(1373846400000L);  // 2013-07-15T00:00:00Z
@@ -903,6 +910,7 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void TestFormatTZDBNames() {
         final Date dateJan = new Date(1358208000000L);  // 2013-01-15T00:00:00Z
         final Date dateJul = new Date(1373846400000L);  // 2013-07-15T00:00:00Z
@@ -989,6 +997,7 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     // the reported problem cannot be reproduced with regular test
     // execution. Run this test alone reproduced the problem before
     // the fix was merged.
+    @Test
     public void TestTZDBNamesThreading() {
         final TZDBTimeZoneNames names = new TZDBTimeZoneNames(ULocale.ENGLISH);
         final AtomicInteger found = new AtomicInteger();

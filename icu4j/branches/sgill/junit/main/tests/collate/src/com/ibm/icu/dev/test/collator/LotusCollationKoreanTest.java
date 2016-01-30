@@ -14,6 +14,8 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -44,6 +46,7 @@ public class LotusCollationKoreanTest extends TestFmwk{
         myCollation.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
     }
     // performs test with strength TERIARY
+    @Test
     public void TestTertiary() {
         int i = 0;
         myCollation.setStrength(Collator.TERTIARY);

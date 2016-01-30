@@ -5,6 +5,8 @@
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.translit;
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.text.ReplaceableString;
@@ -22,6 +24,7 @@ public class CompoundTransliteratorTest extends TestFmwk {
         new CompoundTransliteratorTest().run(args);
     }
 
+    @Test
     public void TestConstruction(){
         logln("Testing the construction of the compound Transliterator");
         String names[]={"Greek-Latin", "Latin-Devanagari", "Devanagari-Latin", "Latin-Greek"};
@@ -90,6 +93,7 @@ public class CompoundTransliteratorTest extends TestFmwk {
    
     }
  
+    @Test
     public void TestGetTransliterator(){
         logln("Testing the getTransliterator() API of CompoundTransliterator");
         String ID="Latin-Greek;Greek-Latin;Latin-Devanagari;Devanagari-Latin;Latin-Cyrillic;Cyrillic-Latin;Any-Hex;Hex-Any";
@@ -122,6 +126,7 @@ public class CompoundTransliteratorTest extends TestFmwk {
     }
  
        
+    @Test
     public void TestTransliterate(){
         logln("Testing the handleTransliterate() API of CompoundTransliterator");
         Transliterator ct1=null;

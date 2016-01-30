@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.util.Calendar;
@@ -64,6 +66,7 @@ public class DisplayNameTest extends TestFmwk {
     String[] currencies = addUnknown(getCodes(new ULocale("en","",""), "Currencies"),3);
     // TODO fix once there is a way to get a list of all currency codes
 
+    @Test
     public void TestLocales() {
         ULocale[] locales = ULocale.getAvailableLocales();
         for (int i = 0; i < locales.length; ++i) {
@@ -80,10 +83,12 @@ public class DisplayNameTest extends TestFmwk {
         return (String[])temp.toArray(new String[temp.size()]);
     }
 
+    @Test
     public void TestEnglish() {
         checkLocale(ULocale.ENGLISH);
     }
 
+    @Test
     public void TestFrench() {
         checkLocale(ULocale.FRENCH);
     }

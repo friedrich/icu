@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.normalizer;
 
 import java.util.Random;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.lang.UCharacterCategory;
@@ -32,6 +34,7 @@ public class NormalizationMonkeyTest extends TestFmwk {
         new NormalizationMonkeyTest().run(args);
     }
     
+    @Test
     public void TestNormalize() {
         if (unicode_NFD == null) {
             try {

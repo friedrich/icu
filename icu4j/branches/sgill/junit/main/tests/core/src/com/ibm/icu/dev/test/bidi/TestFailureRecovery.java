@@ -7,6 +7,8 @@
 
 package com.ibm.icu.dev.test.bidi;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Bidi;
 
 /**
@@ -17,6 +19,7 @@ import com.ibm.icu.text.Bidi;
 
 public class TestFailureRecovery extends BidiTest {
 
+    @Test
     public void testFailureRecovery()
     {
         logln("\nEntering TestFailureRecovery\n");

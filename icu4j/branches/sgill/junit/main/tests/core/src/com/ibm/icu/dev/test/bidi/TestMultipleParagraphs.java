@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.bidi;
 
 import java.util.Arrays;
 
+import org.junit.Test;
+
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.text.Bidi;
 import com.ibm.icu.text.BidiRun;
@@ -73,6 +75,7 @@ public class TestMultipleParagraphs extends BidiTest {
         0, 0, 0, 0
     };
 
+    @Test
     public void testMultipleParagraphs()
     {
         byte gotLevel;

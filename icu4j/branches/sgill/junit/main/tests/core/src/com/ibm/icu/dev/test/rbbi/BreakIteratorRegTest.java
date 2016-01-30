@@ -10,6 +10,8 @@ import java.text.CharacterIterator;
 import java.util.Arrays;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.BreakIterator;
 
@@ -19,6 +21,7 @@ public class BreakIteratorRegTest extends TestFmwk
         new BreakIteratorRegTest().run(args);
     }
 
+    @Test
     public void TestRegUnreg() {
     Locale thailand_locale = new Locale("th", "TH", "");
     Locale foo_locale = new Locale("fu", "FU", "FOO");

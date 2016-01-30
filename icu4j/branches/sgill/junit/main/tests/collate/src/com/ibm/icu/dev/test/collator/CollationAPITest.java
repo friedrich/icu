@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.lang.UCharacter;
@@ -48,6 +50,7 @@ public class CollationAPITest extends TestFmwk {
      * - comparison between collation keys
      * - creating collation key with a byte array and vice versa
      */
+    @Test
     public void TestCollationKey() {
         logln("testing CollationKey begins...");
         Collator col = Collator.getInstance();
@@ -136,6 +139,7 @@ public class CollationAPITest extends TestFmwk {
         logln("testing sortkey ends...");
     }
     
+    @Test
     public void TestRawCollationKey()
     {
         // testing constructors
@@ -189,6 +193,7 @@ public class CollationAPITest extends TestFmwk {
      * - greater than or equal to
      * - equal to
      */
+    @Test
     public void TestCompare() {
         logln("The compare tests begin : ");
         Collator col = Collator.getInstance(Locale.ENGLISH);
@@ -217,6 +222,7 @@ public class CollationAPITest extends TestFmwk {
     /**
     * Tests decomposition setting
     */
+    @Test
     public void TestDecomposition() {
         Collator en_US = null, el_GR = null, vi_VN = null;
 
@@ -245,6 +251,7 @@ public class CollationAPITest extends TestFmwk {
     /**
      * This tests the duplication of a collator object.
      */
+    @Test
     public void TestDuplicate() {
         //Clone does not be implemented 
         Collator col1 = Collator.getInstance(Locale.ENGLISH);
@@ -273,6 +280,7 @@ public class CollationAPITest extends TestFmwk {
      * - reseting the iterator index
      * - requesting the order properties(primary, secondary or tertiary)
      */
+    @Test
     public void TestElemIter() {
         // logln("testing sortkey begins...");
         Collator col = Collator.getInstance(Locale.ENGLISH);
@@ -380,6 +388,7 @@ public class CollationAPITest extends TestFmwk {
     /**
      * This tests the hashCode method of a collator object.
      */
+    @Test
     public void TestHashCode() {
         logln("hashCode tests begin.");
         Collator col1 = Collator.getInstance(Locale.ENGLISH);
@@ -429,6 +438,7 @@ public class CollationAPITest extends TestFmwk {
      * - compare and getCollationKey
      * - get/set decomposition mode and comparison level
      */
+    @Test
     public void TestProperty() {
         /* 
           All the collations have the same version in an ICU
@@ -501,6 +511,7 @@ public class CollationAPITest extends TestFmwk {
         doAssert((col.getStrength() != Collator.SECONDARY), "collation object's strength is secondary difference");
     
     }
+    @Test
     public void TestJunkCollator(){
         logln("Create junk collation: ");
         Locale abcd = new Locale("ab", "CD", "");
@@ -530,6 +541,7 @@ public class CollationAPITest extends TestFmwk {
     * - constructor/destructor
     * - getRules
     */
+    @Test
     public void TestRuleBasedColl() {
         RuleBasedCollator col1 = null, col2 = null, col3 = null, col4 = null;
     
@@ -629,6 +641,7 @@ public class CollationAPITest extends TestFmwk {
     * This tests the RuleBasedCollator
     * - getRules
     */
+    @Test
     public void TestRules() {
         RuleBasedCollator coll = (RuleBasedCollator)Collator.getInstance(new Locale("","","")); //root
             // logln("PASS: RuleBased Collator creation passed");
@@ -640,6 +653,7 @@ public class CollationAPITest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestSafeClone() {
         String test1 = "abCda";
         String test2 = "abcda";
@@ -675,6 +689,7 @@ public class CollationAPITest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestGetTailoredSet() 
     {
         logln("testing getTailoredSet...");
@@ -716,6 +731,7 @@ public class CollationAPITest extends TestFmwk {
     /** 
      * Simple test to see if Collator is subclassable
      */
+    @Test
     public void TestSubClass() 
     {
         class TestCollator extends Collator
@@ -825,6 +841,7 @@ public class CollationAPITest extends TestFmwk {
      * Simple test the collator setter and getters.
      * Similar to C++ apicoll.cpp TestAttribute().
      */
+    @Test
     public void TestSetGet() 
     {
         RuleBasedCollator collator = (RuleBasedCollator)Collator.getInstance();
@@ -900,6 +917,7 @@ public class CollationAPITest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestVariableTopSetting() {
         // Use the root collator, not the default collator.
         // This test fails with en_US_POSIX which tailors the dollar sign after 'A'.
@@ -944,6 +962,7 @@ public class CollationAPITest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestMaxVariable() {
         RuleBasedCollator coll = (RuleBasedCollator)Collator.getInstance(ULocale.ROOT);
 
@@ -965,6 +984,7 @@ public class CollationAPITest extends TestFmwk {
         assertEquals("dollar<zero", -1, coll.compare("$", "0"));  // UCOL_LESS
     }
 
+    @Test
     public void TestGetLocale() {
         String rules = "&a<x<y<z";
 
@@ -1081,6 +1101,7 @@ public class CollationAPITest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestBounds() 
     {
         Collator coll = Collator.getInstance(new Locale("sh", ""));
@@ -1242,6 +1263,7 @@ public class CollationAPITest extends TestFmwk {
     }
 
     // capitst.c/TestGetContractionsAndUnsafes()
+    @Test
     public void TestGetContractions() throws Exception {
         /*        static struct {
          const char* locale;
@@ -1332,6 +1354,7 @@ public class CollationAPITest extends TestFmwk {
     private static final String bigone = "One";
     private static final String littleone = "one";
     
+    @Test
     public void TestClone() {
         logln("\ninit c0");
         RuleBasedCollator c0 = (RuleBasedCollator)Collator.getInstance();
@@ -1365,6 +1388,7 @@ public class CollationAPITest extends TestFmwk {
                            " u: " + c.isUpperCaseFirst());
     }
 
+    @Test
     public void TestIterNumeric() throws Exception {  // misnomer for Java, but parallel with C++ test
         // Regression test for ticket #9915.
         // The collation code sometimes masked the continuation marker away
@@ -1384,6 +1408,7 @@ public class CollationAPITest extends TestFmwk {
     /*
      * Tests the method public void setStrength(int newStrength)
      */
+    @Test
     public void TestSetStrength() {
         // Tests when if ((newStrength != PRIMARY) && ... ) is true
         int[] cases = { -1, 4, 5 };
@@ -1402,6 +1427,7 @@ public class CollationAPITest extends TestFmwk {
     /*
      * Tests the method public void setDecomposition(int decomposition)
      */
+    @Test
     public void TestSetDecomposition() {
         // Tests when if ((decomposition != NO_DECOMPOSITION) && ...) is true
         int[] cases = { 0, 1, 14, 15, 18, 19 };
@@ -1420,6 +1446,7 @@ public class CollationAPITest extends TestFmwk {
     /*
      * Tests the class CollatorFactory
      */
+    @Test
     public void TestCreateCollator() {
         // The following class override public Collator createCollator(Locale loc)
         class TestCreateCollator extends CollatorFactory {
@@ -1497,6 +1524,7 @@ public class CollationAPITest extends TestFmwk {
      * public static final String[] getKeywordValues(String keyword)
      */
     @SuppressWarnings("static-access")
+    @Test
     public void TestGetKeywordValues(){
         // Tests when "if (!keyword.equals(KEYWORDS[0]))" is true
         String[] cases = {"","dummy"};
@@ -1511,6 +1539,7 @@ public class CollationAPITest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestBadKeywords() {
         // Test locale IDs with errors.
         // Valid locale IDs are tested via data-driven tests.

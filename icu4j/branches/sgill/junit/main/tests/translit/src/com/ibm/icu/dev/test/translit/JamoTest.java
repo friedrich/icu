@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.translit;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Test;
+
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.text.Transliterator;
 
@@ -22,6 +24,7 @@ public class JamoTest extends TransliteratorTest {
         new JamoTest().run(args);
     }
 
+    @Test
     public void TestJamo() {
         Transliterator latinJamo = Transliterator.getInstance("Latin-Jamo");
         Transliterator jamoLatin = latinJamo.getInverse();
@@ -92,6 +95,7 @@ public class JamoTest extends TransliteratorTest {
      * These are problems turned up by the Hangul-Jamo;Jamo-Latin
      * round trip test.
      */
+    @Test
     public void TestRoundTrip() {
         String HANGUL[] = { "\uAC03\uC2F8",
                             "\uC544\uC5B4"};
@@ -126,6 +130,7 @@ public class JamoTest extends TransliteratorTest {
      * Test various step-at-a-time transformation of hangul to jamo to
      * latin and back.
      */
+    @Test
     public void TestPiecemeal() {
         String hangul = "\uBC0F";
         String jamo = nameToJamo("(Mi)(I)(Cf)");
@@ -162,6 +167,7 @@ public class JamoTest extends TransliteratorTest {
         expect(t, hangul, hangul);
     }
 
+    @Test
     public void TestRealText() {
         Transliterator latinJamo = Transliterator.getInstance("Latin-Jamo");
         Transliterator jamoLatin = latinJamo.getInverse();

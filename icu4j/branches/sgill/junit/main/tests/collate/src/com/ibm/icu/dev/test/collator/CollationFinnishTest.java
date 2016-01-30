@@ -12,6 +12,8 @@
  
 package com.ibm.icu.dev.test.collator;
  
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -57,6 +59,7 @@ public class CollationFinnishTest extends TestFmwk {
      
     
     // perform tests with strength PRIMARY
+    @Test
     public void TestPrimary() {
         int i = 0;
         myCollation.setStrength(Collator.PRIMARY);
@@ -66,6 +69,7 @@ public class CollationFinnishTest extends TestFmwk {
     }
     
     // perform test with strength TERTIARY
+    @Test
     public void TestTertiary() {
         int i = 0;
         myCollation.setStrength(Collator.TERTIARY);

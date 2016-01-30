@@ -7,6 +7,8 @@
 
 package com.ibm.icu.dev.test.util;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.CharTrie;
 import com.ibm.icu.impl.IntTrie;
@@ -464,6 +466,7 @@ public final class TrieTest extends TestFmwk
         new CheckRange(0x110000,9)
     };
     
+    @Test
     public void TestIntTrie() 
     {
         _testTrieRanges4(setRanges1, setRanges1.length, checkRanges1, 
@@ -480,6 +483,7 @@ public final class TrieTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestDummyCharTrie() {
         CharTrie trie;
         final int initialValue=0x313, leadUnitValue=0xaffe; 
@@ -504,6 +508,7 @@ public final class TrieTest extends TestFmwk
         }
     }
 
+    @Test
     public void TestDummyIntTrie() {
         IntTrie trie;
         final int initialValue=0x01234567, leadUnitValue=0x89abcdef; 

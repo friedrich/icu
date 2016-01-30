@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.localespi;
 import java.text.BreakIterator;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 
 public class BreakIteratorTest extends TestFmwk {
@@ -24,6 +26,7 @@ public class BreakIteratorTest extends TestFmwk {
     /*
      * Check if getInstance returns the ICU implementation.
      */
+    @Test
     public void TestGetInstance() {
         for (Locale loc : BreakIterator.getAvailableLocales()) {
             if (TestUtil.isExcluded(loc)) {
@@ -108,6 +111,7 @@ public class BreakIteratorTest extends TestFmwk {
      * Testing the behavior of text break between ICU instance and its
      * equivalent created via the Locale SPI framework.
      */
+    @Test
     public void TestICUEquivalent() {
         Locale[] TEST_LOCALES = {
                 new Locale("en", "US"),

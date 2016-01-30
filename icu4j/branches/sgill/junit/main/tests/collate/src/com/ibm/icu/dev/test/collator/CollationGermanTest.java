@@ -14,6 +14,8 @@
  
  import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -82,6 +84,7 @@ import com.ibm.icu.text.Collator;
         }
     }
     // perform test with strength TERTIARY
+    @Test
     public void TestTertiary(){
         if(myCollation == null ) {
             errln("decoll: cannot start test, collator is null\n");
@@ -99,10 +102,12 @@ import com.ibm.icu.text.Collator;
     
     // perform test with strength SECONDARY
     //This method in icu4c has no implementation.
+    @Test
     public void TestSecondary(){
     }
     
      // perform test with strength PRIMARY
+    @Test
     public void TestPrimary(){
         if(myCollation == null ) {
             errln("decoll: cannot start test, collator is null\n");

@@ -12,6 +12,8 @@ import java.awt.font.TextAttribute;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Bidi;
 
 /**
@@ -134,6 +136,7 @@ public class TestCompatibility extends BidiTest {
          */
     }
 
+    @Test
     public void testCompatibility()
     {
         // This test case does not work well on Java 1.4/1.4.1 environment,

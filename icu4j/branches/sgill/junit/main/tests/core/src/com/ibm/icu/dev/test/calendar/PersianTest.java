@@ -7,6 +7,8 @@
 package com.ibm.icu.dev.test.calendar;
 import java.util.Date;
 
+import org.junit.Test;
+
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.ULocale;
 
@@ -19,6 +21,7 @@ public class PersianTest extends CalendarTest {
     /**
      * Test basic mapping to and from Gregorian.
      */
+    @Test
     public void TestMapping() {
         final int[] DATA = {
             // (Note: months are 1-based)

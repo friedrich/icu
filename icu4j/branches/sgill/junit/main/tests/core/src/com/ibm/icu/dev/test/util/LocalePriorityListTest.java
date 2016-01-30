@@ -7,6 +7,8 @@
 
 package com.ibm.icu.dev.test.util;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.LocalePriorityList;
 import com.ibm.icu.util.ULocale;
@@ -21,6 +23,7 @@ public class LocalePriorityListTest extends TestFmwk {
         new LocalePriorityListTest().run(args);
       }
 
+  @Test
   public void testLanguagePriorityList() {
     final String expected = "af, en, fr";
 

@@ -7,6 +7,8 @@
 
 package com.ibm.icu.dev.test.bidi;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Bidi;
 
 /**
@@ -63,6 +65,7 @@ public class TestContext extends BidiTest {
     };
     private final int CONTEXT_COUNT = contextData.length;
 
+    @Test
     public void testContext()
     {
         String prologue, epilogue, src, dest;

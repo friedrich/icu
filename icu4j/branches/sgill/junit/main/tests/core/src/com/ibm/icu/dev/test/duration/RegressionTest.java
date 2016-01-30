@@ -6,6 +6,8 @@
  */
 package com.ibm.icu.dev.test.duration;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.duration.BasicPeriodFormatterService;
 import com.ibm.icu.impl.duration.DurationFormatter;
@@ -21,6 +23,7 @@ public class RegressionTest extends TestFmwk {
     }
     
     // bug6397
+    @Test
     public void TestDisallowedMillis() {
         // original test case
         // if we don't support milliseconds, format times less than 1 second as 

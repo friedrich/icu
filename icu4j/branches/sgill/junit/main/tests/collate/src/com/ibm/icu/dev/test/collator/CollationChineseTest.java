@@ -14,6 +14,8 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
@@ -27,6 +29,7 @@ public class CollationChineseTest extends TestFmwk{
     {
     }
     
+    @Test
     public void TestPinYin() 
     {
         String seq[] 

@@ -8,6 +8,8 @@ package com.ibm.icu.dev.test.util;
 
 import java.util.Iterator;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.TextTrieMap;
 
@@ -66,6 +68,7 @@ public class TextTrieMapTest extends TestFmwk {
         test.run(args);
     }
 
+    @Test
     public void TestCaseSensitive() {
         Iterator itr = null;
         TextTrieMap map = new TextTrieMap(false);
@@ -101,6 +104,7 @@ public class TextTrieMapTest extends TestFmwk {
         checkResult(itr, new Object[]{FOO, SUN});
     }
 
+    @Test
     public void TestCaseInsensitive() {
         Iterator itr = null;
         TextTrieMap map = new TextTrieMap(true);

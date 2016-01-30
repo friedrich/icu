@@ -9,6 +9,8 @@ package com.ibm.icu.dev.test.bidi;
 
 import java.util.Arrays;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.Bidi;
 
 /**
@@ -195,6 +197,7 @@ public class TestReorderingMode extends BidiTest {
     static final int OPTIONS_COUNT = options.length;
     static final int LEVELS_COUNT = paraLevels.length;
 
+    @Test
     public void testReorderingMode() {
 
         String src, dest;

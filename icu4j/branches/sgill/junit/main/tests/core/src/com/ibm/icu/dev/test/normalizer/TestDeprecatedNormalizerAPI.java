@@ -6,6 +6,8 @@
  */
 package com.ibm.icu.dev.test.normalizer;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.lang.UCharacter;
@@ -43,6 +45,7 @@ public class TestDeprecatedNormalizerAPI extends TestFmwk
     public TestDeprecatedNormalizerAPI() {
     }
 
+    @Test
     public void TestNormalizerAPI(){
          // instantiate a Normalizer from a CharacterIterator
         String s=Utility.unescape("a\u0308\uac00\\U0002f800");
@@ -92,10 +95,12 @@ public class TestDeprecatedNormalizerAPI extends TestFmwk
      *          have decompositions.
      * </ul>
      */
+    @Test
     public void TestComposedCharIter() {
         doTestComposedChars(false);
     }
 
+    @Test
     public void doTestComposedChars(boolean compat) {
         int options = Normalizer.IGNORE_HANGUL;
         ComposedCharIter iter = new ComposedCharIter(compat, options);
@@ -140,6 +145,7 @@ public class TestDeprecatedNormalizerAPI extends TestFmwk
     }
 
 
+    @Test
     public void TestRoundTrip() {
         int options = Normalizer.IGNORE_HANGUL;
         boolean compat = false;

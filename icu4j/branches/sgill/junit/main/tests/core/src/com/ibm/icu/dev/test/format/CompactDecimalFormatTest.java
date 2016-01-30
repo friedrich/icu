@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CompactDecimalFormat;
 import com.ibm.icu.text.CompactDecimalFormat.CompactStyle;
@@ -192,6 +194,7 @@ public class CompactDecimalFormatTest extends TestFmwk {
             {2000, "2Ks$s"},
     };
 
+    @Test
     public void TestACoreCompactFormat() {
         Map<String,String[][]> affixes = new HashMap();
         affixes.put("one", new String[][] {
@@ -241,6 +244,7 @@ public class CompactDecimalFormatTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestDefaultSignificantDigits() {
         // We are expecting two significant digits as default.
         CompactDecimalFormat cdf =
@@ -250,6 +254,7 @@ public class CompactDecimalFormatTest extends TestFmwk {
         assertEquals("Default significant digits", "120", cdf.format(123));
     }
 
+    @Test
     public void TestCharacterIterator() {
         CompactDecimalFormat cdf =
                 getCDFInstance(ULocale.forLanguageTag("sw"), CompactStyle.SHORT);
@@ -262,10 +267,12 @@ public class CompactDecimalFormatTest extends TestFmwk {
         assertEquals("Attributes", 2, iter.getRunLimit());
     }
 
+    @Test
     public void TestEnglishShort() {
         checkLocale(ULocale.ENGLISH, CompactStyle.SHORT, EnglishTestData);
     }
 
+    @Test
     public void TestArabicLongStyle() {
         NumberFormat cdf =
                 CompactDecimalFormat.getInstance(
@@ -273,38 +280,47 @@ public class CompactDecimalFormatTest extends TestFmwk {
         assertEquals("Arabic Long", "\u200F-\u0665\u066B\u0663 \u0623\u0644\u0641", cdf.format(-5300));
     }
 
+    @Test
     public void TestCsShort() {
         checkLocale(ULocale.forLanguageTag("cs"), CompactStyle.SHORT, CsTestDataShort);
     }
 
+    @Test
     public void TestSkLong() {
         checkLocale(ULocale.forLanguageTag("sk"), CompactStyle.LONG, SkTestDataLong);
     }
 
+    @Test
     public void TestSerbianShort() {
         checkLocale(ULocale.forLanguageTag("sr"), CompactStyle.SHORT, SerbianTestDataShort);
     }
 
+    @Test
     public void TestSerbianLong() {
         checkLocale(ULocale.forLanguageTag("sr"), CompactStyle.LONG, SerbianTestDataLong);
     }
 
+    @Test
     public void TestSerbianLongNegative() {
         checkLocale(ULocale.forLanguageTag("sr"), CompactStyle.LONG, SerbianTestDataLongNegative);
     }
 
+    @Test
     public void TestJapaneseShort() {
         checkLocale(ULocale.JAPANESE, CompactStyle.SHORT, JapaneseTestData);
     }
 
+    @Test
     public void TestSwahiliShort() {
         checkLocale(ULocale.forLanguageTag("sw"), CompactStyle.SHORT, SwahiliTestData);
     }
 
+    @Test
     public void TestSwahiliShortNegative() {
         checkLocale(ULocale.forLanguageTag("sw"), CompactStyle.SHORT, SwahiliTestDataNegative);
     }
 
+    @Test
     public void TestFieldPosition() {
         CompactDecimalFormat cdf = getCDFInstance(
                 ULocale.forLanguageTag("sw"), CompactStyle.SHORT);
@@ -316,6 +332,7 @@ public class CompactDecimalFormatTest extends TestFmwk {
         assertEquals("fp end", 2, fp.getEndIndex());
     }
 
+    @Test
     public void TestEquals() {
         CompactDecimalFormat cdf = CompactDecimalFormat.getInstance(
                 ULocale.forLanguageTag("sw"), CompactStyle.SHORT);
