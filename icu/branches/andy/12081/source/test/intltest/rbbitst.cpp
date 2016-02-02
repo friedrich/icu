@@ -1,6 +1,6 @@
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 1999-2015, International Business Machines Corporation and
+ * Copyright (c) 1999-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 /************************************************************************
@@ -3527,8 +3527,11 @@ int32_t RBBILineMonkey::next(int32_t startPos) {
             continue;
         }
 
-        // LB30a  Do not break between regional indicators.
-        //        RI x RI
+        // LB30a    RI RI <break> RI
+        //             RI    x    RI
+        if (fRI->contains(prevCharX2) && fRI->contains(prevChar) && fRI->contains(thisChar)) {
+            break;
+        }
         if (fRI->contains(prevChar) && fRI->contains(thisChar)) {
             continue;
         }
@@ -3608,6 +3611,9 @@ RBBILineMonkey::~RBBILineMonkey() {
 //                          0 or greater:  run length.
 //
 //       type = char | word | line | sent | title
+//
+//  Example:
+//     intltest  rbbi/RBBITest/TestMonkey@"type=line loop=-1"
 //
 //-------------------------------------------------------------------------------------------
 

@@ -1131,13 +1131,13 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
                 fLastRuleStatusIndex = lookaheadTagIdx;
                 lookaheadStatus      = 0;
                 // TODO:  make a standalone hard break in a rule work.
-                if (lookAheadHardBreak) {
+                // if (lookAheadHardBreak) {
                     UTEXT_SETNATIVEINDEX(fText, result);
                     return result;
-                }
+                // }
                 // Look-ahead completed, but other rules may match further.  Continue on
                 //  TODO:  junk this feature?  I don't think it's used anywhwere.
-                goto continueOn;
+                // goto continueOn;
             }
 
             int32_t  r = (int32_t)UTEXT_GETNATIVEINDEX(fText);
@@ -1151,7 +1151,7 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
         if (row->fAccepting != 0) {
             // Because this is an accepting state, any in-progress look-ahead match
             //   is no longer relavant.  Clear out the pending lookahead status.
-            lookaheadStatus = 0;           // clear out any pending look-ahead match.
+            // lookaheadStatus = 0;           // clear out any pending look-ahead match.
         }
 
 continueOn:
@@ -1345,13 +1345,13 @@ int32_t RuleBasedBreakIterator::handlePrevious(const RBBIStateTable *statetable)
                 result               = lookaheadResult;
                 lookaheadStatus      = 0;
                 // TODO:  make a standalone hard break in a rule work.
-                if (lookAheadHardBreak) {
+                // if (lookAheadHardBreak) {
                     UTEXT_SETNATIVEINDEX(fText, result);
                     return result;
-                }
+                // }
                 // Look-ahead completed, but other rules may match further.  Continue on
                 //  TODO:  junk this feature?  I don't think it's used anywhwere.
-                goto continueOn;
+                // goto continueOn;
             }
 
             int32_t  r = (int32_t)UTEXT_GETNATIVEINDEX(fText);
@@ -1364,7 +1364,7 @@ int32_t RuleBasedBreakIterator::handlePrevious(const RBBIStateTable *statetable)
         if (row->fAccepting != 0) {
             // Because this is an accepting state, any in-progress look-ahead match
             //   is no longer relavant.  Clear out the pending lookahead status.
-            lookaheadStatus = 0;    
+            // lookaheadStatus = 0;    
         }
 
 continueOn:
