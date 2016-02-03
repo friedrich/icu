@@ -908,10 +908,36 @@ void RelativeDateTimeFormatterTest::VerifySidewaysDataLoading(void) {
                                 UDISPCTX_CAPITALIZATION_NONE, status);
 
   status = U_ZERO_ERROR;
+  actual = "";
   fmt.format(3.0, UDAT_DIRECTION_NEXT, UDAT_RELATIVE_MONTHS, actual, status);
   expected = "in 3 mo";
   assertEquals("narrow in 3 mo", expected, actual);
-  assertEquals("PURPOSEFUL FAIL: narrow in 3 mo", "in 3 big months", actual);
+
+  actual = "";
+  fmt.format(3.0, UDAT_DIRECTION_LAST, UDAT_RELATIVE_DAYS, actual, status);
+  expected = "3 days ago";
+  assertEquals("3 days ago (positive 3.0): ", expected, actual);
+
+  actual = "";
+  expected = "-3 days ago";
+  fmt.format(-3.0, UDAT_DIRECTION_LAST, UDAT_RELATIVE_DAYS, actual, status);
+  assertEquals("3 days ago (negative 3.0): ", expected, actual);
+
+  expected = "next yr.";
+  actual = "";
+  fmt.format(UDAT_DIRECTION_NEXT, UDAT_ABSOLUTE_YEAR, actual, status);
+  assertEquals("next year: ", expected, actual);
+
+  // Testing the SHORT style
+  RelativeDateTimeFormatter fmtshort(enGbLocale, NULL, UDAT_STYLE_SHORT,
+                                UDISPCTX_CAPITALIZATION_NONE, status);
+  expected = "now";
+  actual = "";
+  fmtshort.format(0.0, UDAT_DIRECTION_NEXT, UDAT_RELATIVE_SECONDS, actual, status);
+  expected = "next yr.";
+  actual = "";
+  fmt.format(UDAT_DIRECTION_NEXT, UDAT_ABSOLUTE_YEAR, actual, status);
+  assertEquals("next year: ", expected, actual);
   /* TODO: Add tests with QUARTERS */
 }
 
