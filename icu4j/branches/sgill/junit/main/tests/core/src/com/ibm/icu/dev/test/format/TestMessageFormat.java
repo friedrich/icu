@@ -38,11 +38,6 @@ import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 
 public class TestMessageFormat extends com.ibm.icu.dev.test.TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new TestMessageFormat().run(args);
-    }
-
     @Test
     public void TestBug3()
     {

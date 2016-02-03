@@ -35,10 +35,6 @@ import com.ibm.icu.text.SimpleDateFormat;
 */
 public class IntlTestSimpleDateFormatAPI extends com.ibm.icu.dev.test.TestFmwk
 {
-    public static void main(String[] args) throws Exception {
-        new IntlTestSimpleDateFormatAPI().run(args);
-    }
-
     // This test checks various generic API methods in DecimalFormat to achieve 100% API coverage.
     @Test
     public void TestAPI()

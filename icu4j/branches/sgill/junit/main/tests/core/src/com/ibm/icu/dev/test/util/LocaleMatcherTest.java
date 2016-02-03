@@ -50,10 +50,6 @@ public class LocaleMatcherTest extends TestFmwk {
     // public LocaleMatcher(LocalePriorityList languagePriorityList,
     // LocaleMatcherData matcherData, double threshold)
 
-    public static void main(String[] args) throws Exception {
-        new LocaleMatcherTest().run(args);
-    }
-
     @Test
     public void testParentLocales() {
         assertCloser("es_AR", "es_419", "es_ES");

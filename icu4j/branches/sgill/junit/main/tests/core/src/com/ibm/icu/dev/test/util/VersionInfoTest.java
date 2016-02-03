@@ -35,16 +35,6 @@ public final class VersionInfoTest extends TestFmwk
 
     // public methods -----------------------------------------------
     
-    public static void main(String arg[]) 
-    {
-        VersionInfoTest test = new VersionInfoTest();
-        try {
-            test.run(arg);
-        } catch (Exception e) {
-            test.errln("Error testing VersionInfo");
-        }
-    }
-    
     /**
      * Test that the instantiation works
      */

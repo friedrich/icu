@@ -55,14 +55,14 @@ public class CompatibilityTest extends TestFmwk
         
         protected void execute() throws Exception
         {
-            params.indentLevel += 1;
+            incrementIndentLevel();
             
             for (Target target = head.getNext(); target != null; target = target.getNext())
             {
                 target.run();
             }
             
-            params.indentLevel -= 1;
+            decrementIndentLevel();
         }
     }
 
@@ -301,12 +301,5 @@ element_loop:
             errln("Don't know how to test " + dataURL);
             return null;
         }
-    }
-
-    public static void main(String[] args)
-    {
-        CompatibilityTest test = new CompatibilityTest();
-        
-        test.run(args);
     }
 }

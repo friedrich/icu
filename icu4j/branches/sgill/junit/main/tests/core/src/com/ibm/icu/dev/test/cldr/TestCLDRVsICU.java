@@ -104,10 +104,6 @@ public class TestCLDRVsICU extends TestFmwk {
         return temp;
     }
 
-    public static void main(String[] args) throws Exception {
-        new TestCLDRVsICU().run(args);
-    }
-
     Set allLocales = new TreeSet();
 
     @Test

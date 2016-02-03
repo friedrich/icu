@@ -32,10 +32,6 @@ import com.ibm.icu.text.NumberFormat;
 
 public class IntlTestDecimalFormatAPI extends com.ibm.icu.dev.test.TestFmwk
 {
-    public static void main(String[] args)  throws Exception {
-        new IntlTestDecimalFormatAPI().run(args);
-    }
-    
     /**
      * Problem 1: simply running 
      * decF4.setRoundingMode(java.math.BigDecimal.ROUND_HALF_UP) does not work 

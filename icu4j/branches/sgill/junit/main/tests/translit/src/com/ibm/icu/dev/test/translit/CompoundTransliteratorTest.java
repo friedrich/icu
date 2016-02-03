@@ -19,11 +19,6 @@ import com.ibm.icu.text.Transliterator;
  * @summary General test of CompoundTransliterator
  */
 public class CompoundTransliteratorTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new CompoundTransliteratorTest().run(args);
-    }
-
     @Test
     public void TestConstruction(){
         logln("Testing the construction of the compound Transliterator");

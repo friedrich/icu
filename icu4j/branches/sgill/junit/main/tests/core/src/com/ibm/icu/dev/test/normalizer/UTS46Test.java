@@ -24,9 +24,6 @@ import com.ibm.icu.text.IDNA;
  * @since 2010jul10
  */
 public class UTS46Test extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new UTS46Test().run(args);
-    }
     public UTS46Test() {
         int commonOptions=
             IDNA.USE_STD3_RULES|IDNA.CHECK_BIDI|

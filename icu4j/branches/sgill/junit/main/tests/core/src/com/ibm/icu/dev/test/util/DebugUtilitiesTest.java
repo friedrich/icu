@@ -16,13 +16,6 @@ import com.ibm.icu.dev.test.TestFmwk;
  */
 public class DebugUtilitiesTest extends TestFmwk {
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-            new DebugUtilitiesTest().run(args);
-    }
-    
     @Test
     public void TestStrings() {
         logln("ICU4C version was "+DebugUtilitiesData.ICU4C_VERSION);

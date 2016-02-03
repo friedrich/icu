@@ -28,13 +28,6 @@ import com.ibm.icu.util.VersionInfo;
 
 public class UCAConformanceTest extends TestFmwk {
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        new UCAConformanceTest().run(args);
-    }
-
     public UCAConformanceTest() {
     }
     @Override

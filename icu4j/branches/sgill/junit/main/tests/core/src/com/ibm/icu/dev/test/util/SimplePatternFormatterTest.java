@@ -22,16 +22,6 @@ public class SimplePatternFormatterTest extends TestFmwk {
        
      // public methods -----------------------------------------------
      
-     public static void main(String arg[]) 
-     {
-         SimplePatternFormatterTest test = new SimplePatternFormatterTest();
-         try {
-             test.run(arg);
-         } catch (Exception e) {
-             test.errln("Error testing SimplePatternFormatterTest");
-         }
-     }
-     
     @Test
      public void TestWithNoPlaceholders() {
          SimplePatternFormatter fmt = SimplePatternFormatter.compile("This doesn''t have templates '{0}");

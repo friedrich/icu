@@ -15,10 +15,6 @@ import com.ibm.icu.text.RuleBasedNumberFormat;
 import com.ibm.icu.util.ULocale;
 
 public class RBNFParseTest extends TestFmwk {
-    public static void main(String[] args) {
-        new RBNFParseTest().run(args);
-    }
-
     @Test
     public void TestParse() {
 

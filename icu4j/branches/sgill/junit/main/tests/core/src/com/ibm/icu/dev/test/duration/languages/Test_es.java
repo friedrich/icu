@@ -15,17 +15,6 @@ import com.ibm.icu.dev.test.duration.LanguageTestRoot;
  * Test cases for es
  */
 public class Test_es extends LanguageTestRoot {
-
-  /**
-   * Invoke the tests.
-   */
-  public static void main(String[] args) {
-      new Test_es().run(args);
-  }
-
-  /**
-   * Constructor.
-   */
   public Test_es() {
     super("es", false);
   }

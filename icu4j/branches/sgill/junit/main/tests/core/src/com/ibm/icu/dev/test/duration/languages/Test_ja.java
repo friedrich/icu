@@ -23,16 +23,6 @@ import com.ibm.icu.impl.duration.TimeUnitConstants;
 public class Test_ja extends LanguageTestRoot implements TimeUnitConstants {
   private BasicPeriodFormatterFactory pff;
 
-  /**
-   * Invoke the tests.
-   */
-  public static void main(String[] args) {
-      new Test_ja().run(args);
-  }
-
-  /**
-   * Constructor.
-   */
   public Test_ja() {
     super("ja", false);
     this.pff = (BasicPeriodFormatterFactory)BasicPeriodFormatterFactory.getDefault().

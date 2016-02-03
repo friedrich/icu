@@ -130,7 +130,7 @@ public class TestUtilities extends TestFmwk {
         // check boilerplate
         List argList = new ArrayList();
         argList.add("TestMain");
-        if (params.verbose) argList.add("-verbose");
+        if (isVerbose()) argList.add("-verbose");
         String[] args = new String[argList.size()];
         argList.toArray(args);
         new UnicodeMapBoilerplate().run(args);

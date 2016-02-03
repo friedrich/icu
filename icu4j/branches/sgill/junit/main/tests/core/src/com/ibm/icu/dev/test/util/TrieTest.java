@@ -39,16 +39,6 @@ public final class TrieTest extends TestFmwk
       
     // public methods -----------------------------------------------
     
-    public static void main(String arg[]) 
-    {
-        TrieTest test = new TrieTest();
-        try {
-            test.run(arg);
-        } catch (Exception e) {
-            test.errln("Error testing trietest");
-        }
-    }
-    
     /** 
      * Values for setting possibly overlapping, out-of-order ranges of values
      */

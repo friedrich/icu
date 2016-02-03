@@ -20,11 +20,6 @@ import com.ibm.icu.text.RelativeDateTimeFormatter.RelativeUnit;
 import com.ibm.icu.util.ULocale;
 
 public class RelativeDateTimeFormatterTest extends TestFmwk {
-    
-    public static void main(String[] args) throws Exception {
-        new RelativeDateTimeFormatterTest().run(args);
-    }
-    
     @Test
     public void TestRelativeDateWithQuantity() {
         Object[][] data = {

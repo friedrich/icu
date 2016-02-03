@@ -20,10 +20,6 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.util.ULocale;
  
 public class CollationFinnishTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new CollationFinnishTest().run(args);
-    }
-    
     private static char[][] testSourceCases = {
         {0x77, 0x61, 0x74},
         {0x76, 0x61, 0x74},

@@ -16,9 +16,6 @@ import com.ibm.icu.dev.util.PrettyPrinter;
 import com.ibm.icu.text.UnicodeSet;
 
 public class PrettyPrinterTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new PrettyPrinterTest().run(args);
-    }
     public static final UnicodeSet TO_QUOTE = new UnicodeSet("[[:z:][:me:][:mn:][:di:][:c:]-[\u0020]]");
 
     @Test

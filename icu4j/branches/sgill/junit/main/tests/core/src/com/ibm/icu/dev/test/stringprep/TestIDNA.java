@@ -22,10 +22,8 @@ import com.ibm.icu.text.UTF16;
  * @author ram
  */
 public class TestIDNA extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new TestIDNA().run(args);
-    }
     private StringPrepParseException unassignedException = new StringPrepParseException("",StringPrepParseException.UNASSIGNED_ERROR);
+
     @Test
     public void TestToUnicode() throws Exception{
         for(int i=0; i<TestData.asciiIn.length; i++){

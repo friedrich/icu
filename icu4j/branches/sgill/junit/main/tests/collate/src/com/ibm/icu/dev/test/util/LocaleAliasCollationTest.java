@@ -36,10 +36,6 @@ public class LocaleAliasCollationTest extends com.ibm.icu.dev.test.TestFmwk {
     private HashMap availableMap = new HashMap();
     private static final ULocale _DEFAULT_LOCALE = ULocale.US;
 
-    public static void main(String[] args) {
-        new LocaleAliasCollationTest().run(args);
-    }
-
     public LocaleAliasCollationTest() {
     }
 

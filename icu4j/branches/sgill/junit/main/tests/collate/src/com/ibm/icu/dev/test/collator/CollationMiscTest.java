@@ -38,12 +38,6 @@ import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
 
 public class CollationMiscTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new CollationMiscTest().run(args);
-        // new CollationMiscTest().TestLocaleRuleBasedCollators();
-    }
-
     //private static final int NORM_BUFFER_TEST_LEN_ = 32;
     private static final class Tester
     {

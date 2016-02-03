@@ -621,15 +621,6 @@ public class ArabicShapingRegTest extends TestFmwk {
         return buf.toString();
     }
 
-    public static void main(String[] args) {
-        try {
-            new ArabicShapingRegTest().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-    
     /* Tests the method
      *      public int shape(char[] source, int sourceStart, int sourceLength,
      *      char[] dest, int destStart, int destSize) throws ArabicShapingException)

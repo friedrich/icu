@@ -39,10 +39,6 @@ public class DateFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
     private int DEPTH = 5;
     private Random ran;
 
-    public static void main(String[] args) throws Exception {
-        new DateFormatRoundTripTest().run(args);
-    }
-    
     @Test
     public void TestDateFormatRoundTrip() {
         dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss.SSS zzz yyyy G");

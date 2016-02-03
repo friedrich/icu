@@ -49,10 +49,6 @@ import com.ibm.icu.util.Output;
 import com.ibm.icu.util.ULocale;
 
 public class CollationTest extends TestFmwk {
-    public static void main(String[] args) throws Exception{
-        new CollationTest().run(args);
-    }
-
     public CollationTest() {
     }
 

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -35,7 +36,7 @@ import com.ibm.icu.impl.duration.impl.DataRecord.EUnitVariant;
 /**
  * Test cases for en
  */
-public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
+public abstract class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
 
     private static final TimeUnit[] units = {
         TimeUnit.YEAR, TimeUnit.MONTH, TimeUnit.WEEK, TimeUnit.DAY, TimeUnit.HOUR, 
@@ -103,7 +104,7 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         this(getTestData(locale), locale);
     }
 
-    public LanguageTestRoot(TestData data, String locale) {
+    private LanguageTestRoot(TestData data, String locale) {
         if (data == null) {
             data = DefaultData.getInstance();
         }
@@ -111,44 +112,44 @@ public class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
         this.locale = locale;
     }
 
-    public static void writeData(PrintWriter pw, String locale)
-            throws Exception {
-        LanguageTestRoot test = new LanguageTestRoot(DefaultData.getInstance(),
-                locale);
-        test.writeData(pw);
-    }
+//    public static void writeData(PrintWriter pw, String locale)
+//            throws Exception {
+//        LanguageTestRoot test = new LanguageTestRoot(DefaultData.getInstance(),
+//                locale);
+//        test.writeData(pw);
+//    }
 
-    private void writeData(PrintWriter writer) throws Exception {
-/*
-      pw = writer;
-      setUp();
-      testFullPluralizedForms();
-      tearDown();
-      setUp();
-      testMediumForms();
-      tearDown();
-      setUp();
-      testShortForms();
-      tearDown();
-      setUp();
-      testCustomMinutes();
-      tearDown();
-      setUp();
-      testLimitedUnits();
-      tearDown();
-      setUp();
-      testHalfUnits();
-      tearDown();
-      setUp();
-      testFractionalUnits();
-      tearDown();
-      setUp();
-      testMultipleUnits();
-      tearDown();
-      pw = null;
-      writer.flush();
-*/
-    }
+//    private void writeData(PrintWriter writer) throws Exception {
+///*
+//      pw = writer;
+//      setUp();
+//      testFullPluralizedForms();
+//      tearDown();
+//      setUp();
+//      testMediumForms();
+//      tearDown();
+//      setUp();
+//      testShortForms();
+//      tearDown();
+//      setUp();
+//      testCustomMinutes();
+//      tearDown();
+//      setUp();
+//      testLimitedUnits();
+//      tearDown();
+//      setUp();
+//      testHalfUnits();
+//      tearDown();
+//      setUp();
+//      testFractionalUnits();
+//      tearDown();
+//      setUp();
+//      testMultipleUnits();
+//      tearDown();
+//      pw = null;
+//      writer.flush();
+//*/
+//    }
 
     protected void xAssertEquals(String msg, String[] expected, int n,
             String actual) {

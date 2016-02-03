@@ -34,11 +34,6 @@ import com.ibm.icu.text.UTF16;
 import com.ibm.icu.text.UnicodeSet;
 
 public class TestSelection extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new TestSelection().run(args);
-    }
-
     @Test
     public void TestConversionUTF16() {
         List<String> testEncodings;

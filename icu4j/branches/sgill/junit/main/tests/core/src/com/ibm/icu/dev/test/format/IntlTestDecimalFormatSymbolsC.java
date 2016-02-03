@@ -24,11 +24,6 @@ import com.ibm.icu.text.DecimalFormatSymbols;
  * Tests for DecimalFormatSymbols
  **/
 public class IntlTestDecimalFormatSymbolsC extends com.ibm.icu.dev.test.TestFmwk {
-    
-    public static void main(String[] args) throws Exception {
-        new IntlTestDecimalFormatSymbolsC().run(args);
-    }
-
     /**
      * Test the API of DecimalFormatSymbols; primarily a simple get/set set.
      */

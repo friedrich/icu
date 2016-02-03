@@ -264,15 +264,4 @@ public class TestInverse extends BidiTest {
         assertEquals("\nInvalid output with RLM at both sides",
                      "\u200f   \u200f", out);
     }
-
-
-    public static void main(String[] args) {
-        try {
-            new TestInverse().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
 }

@@ -19,10 +19,6 @@ import com.ibm.icu.dev.test.TestFmwk;
 
 @SuppressWarnings("unchecked")
 public class CurrencyNameTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new CurrencyNameTest().run(args);
-    }
-
     private static final Set<Currency> AVAILABLE_CURRENCIES;
     private static final Method GETDISPLAYNAME_METHOD;
 

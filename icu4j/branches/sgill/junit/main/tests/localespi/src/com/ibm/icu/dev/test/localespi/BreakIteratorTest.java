@@ -14,10 +14,6 @@ import org.junit.Test;
 import com.ibm.icu.dev.test.TestFmwk;
 
 public class BreakIteratorTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new BreakIteratorTest().run(args);
-    }
-
     private static final int CHARACTER_BRK = 0;
     private static final int WORD_BRK = 1;
     private static final int LINE_BRK = 2;

@@ -22,10 +22,6 @@ public class UnicodeNormalizerConformanceTest extends TestFmwk {
 
     UnicodeNormalizer normalizer_C, normalizer_D, normalizer_KC, normalizer_KD;
 
-    public static void main(String[] args) throws Exception {
-        new UnicodeNormalizerConformanceTest().run(args);
-    }
-    
     public UnicodeNormalizerConformanceTest() {
         // Doesn't matter what the string and mode are; we'll change
         // them later as needed.

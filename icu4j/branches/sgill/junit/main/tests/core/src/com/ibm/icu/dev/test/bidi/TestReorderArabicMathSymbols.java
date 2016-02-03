@@ -138,14 +138,4 @@ public class TestReorderArabicMathSymbols extends BidiTest {
         
         logln("\nExiting TestReorderArabicMathSymbols\n");
     }
-    
-    public static void main(String[] args) {
-        try {
-            new TestReorderArabicMathSymbols().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
 }

@@ -74,10 +74,6 @@ public class TestConversion extends ModuleTest {
 
     // public methods --------------------------------------------------------
 
-    public static void main(String[] args) throws Exception {
-        new TestConversion().run(args);
-    }
-
     public TestConversion() {
         super("com/ibm/icu/dev/data/testdata/", "conversion");
     }

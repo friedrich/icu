@@ -21,10 +21,6 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
  
 public class CollationChineseTest extends TestFmwk{
-    public static void main(String[] args) throws Exception{
-        new CollationChineseTest().run(args);
-    }
-    
     public CollationChineseTest() 
     {
     }

@@ -33,17 +33,6 @@ public class Trie2Test extends TestFmwk {
        
      // public methods -----------------------------------------------
      
-     public static void main(String arg[]) 
-     {
-         Trie2Test test = new Trie2Test();
-         try {
-             test.run(arg);
-         } catch (Exception e) {
-             test.errln("Error testing trietest");
-         }
-     }
-     
-     
      //
      //  TestAPI.  Check that all API methods can be called, and do at least some minimal
      //            operation correctly.  This is not a full test of correct behavior.

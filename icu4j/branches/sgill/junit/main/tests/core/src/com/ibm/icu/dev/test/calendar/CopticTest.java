@@ -26,10 +26,6 @@ import com.ibm.icu.util.ULocale;
  */
 public class CopticTest extends CalendarTest 
 {
-    public static void main(String args[]) throws Exception {
-        new CopticTest().run(args);
-    }
-
     /** Constants to save typing. */
     public static final int TOUT      = CopticCalendar.TOUT;
     public static final int BABA      = CopticCalendar.BABA;

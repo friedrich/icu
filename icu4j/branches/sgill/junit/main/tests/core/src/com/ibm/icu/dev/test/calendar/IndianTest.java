@@ -25,9 +25,6 @@ import com.ibm.icu.util.ULocale;
  */
 public class IndianTest extends CalendarTest 
 {
-    public static void main(String args[]) throws Exception {
-        new IndianTest().run(args);
-    }
     // Months in indian calendar are 0-based. Here taking 1-based names:
     public static final int CHAITRA = IndianCalendar.CHAITRA + 1; 
     public static final int VAISAKHA = IndianCalendar.VAISAKHA + 1;

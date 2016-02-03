@@ -41,11 +41,7 @@ public class RoundTripTest extends TestFmwk {
     static final boolean EXTRA_TESTS = true;
     static final boolean PRINT_RULES = true;
 
-    public static void main(String[] args) throws Exception {
-        new RoundTripTest().run(args);
-    }
     /*
-    @org.junit.Test
     public void TestSingle() throws IOException, ParseException {
         Transliterator t = Transliterator.getInstance("Latin-Greek");
         String s = t.transliterate("\u0101\u0069");

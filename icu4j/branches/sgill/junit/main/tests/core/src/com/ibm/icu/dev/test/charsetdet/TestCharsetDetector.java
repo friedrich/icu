@@ -46,18 +46,6 @@ public class TestCharsetDetector extends TestFmwk
     {
     }
 
-    public static void main(String[] args) {
-        try
-        {
-            TestCharsetDetector test = new TestCharsetDetector();
-            test.run(args);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     private void CheckAssert(boolean exp) {
         if (exp == false) {
             String msg;

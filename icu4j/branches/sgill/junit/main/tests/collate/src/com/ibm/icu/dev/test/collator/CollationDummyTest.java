@@ -25,10 +25,6 @@ import com.ibm.icu.text.Normalizer;
 import com.ibm.icu.text.RuleBasedCollator;
  
 public class CollationDummyTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new CollationDummyTest().run(args);
-    }
-    
     //testSourceCases[][] and testTargetCases[][], testCases[][] are ported from the file callcoll.c in icu4c
     private static char[][] testSourceCases = {
         {0x61, 0x62, 0x27, 0x63},

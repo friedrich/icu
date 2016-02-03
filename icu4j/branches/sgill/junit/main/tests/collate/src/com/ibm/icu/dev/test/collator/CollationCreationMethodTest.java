@@ -28,12 +28,6 @@ import com.ibm.icu.text.RuleBasedCollator;
  */
 public class CollationCreationMethodTest extends TestFmwk 
 {
-    
-    public static void main(String[] args) throws Exception 
-    {
-        new CollationCreationMethodTest().run(args);
-    }
-
     @Test
     public void TestRuleVsLocaleCreationMonkey()
     {

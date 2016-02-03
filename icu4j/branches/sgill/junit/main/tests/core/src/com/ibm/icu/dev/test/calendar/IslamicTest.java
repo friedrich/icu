@@ -30,10 +30,6 @@ import com.ibm.icu.util.ULocale;
  * Tests for the <code>IslamicCalendar</code> class.
  */
 public class IslamicTest extends CalendarTest {
-    public static void main(String args[]) throws Exception {
-        new IslamicTest().run(args);
-    }
-
     /** Constants to save typing. */
     public static final int MUHARRAM = IslamicCalendar.MUHARRAM;
     public static final int SAFAR =  IslamicCalendar.SAFAR;

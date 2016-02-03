@@ -50,10 +50,6 @@ public class DateTimeGeneratorTest extends TestFmwk {
     public static int RANDOM_COUNT = 1000;
     public static boolean DEBUG = false;
     
-    public static void main(String[] args) throws Exception {
-        new DateTimeGeneratorTest().run(args);
-    }
-    
     @Test
     public void TestSimple() {
         // some simple use cases
@@ -537,7 +533,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
             count++;
             // Skipping some test case in the non-exhaustive mode to reduce the test time
             //ticket#6503
-            if(params.inclusion<=5 && count%3!=0){
+            if(getInclusion() <=5 && count%3!=0){
                 continue;
             }
             logln(locales[i].toString());

@@ -26,11 +26,6 @@ import com.ibm.icu.text.RuleBasedBreakIterator;
 import com.ibm.icu.util.ULocale;
 
 public class RBBITest extends TestFmwk {  
-    
-    public static void main(String[] args) throws Exception {
-        new RBBITest().run(args);
-    }
-
     public RBBITest() {
     }
   

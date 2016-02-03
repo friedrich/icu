@@ -104,10 +104,6 @@ public class TrieMapTest extends TestFmwk {
         }
     }
 
-    public static void main(String[] args) {
-        new TrieMapTest().run(args);
-    }
-
     @Test
     public void TestByteConversion() {
         byte bytes[] = new byte[200];

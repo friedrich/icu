@@ -17,11 +17,6 @@ import com.ibm.icu.text.DurationFormat;
 import com.ibm.icu.util.ULocale;
 
 public class RegressionTest extends TestFmwk {
-
-    public static void main(String[] args) {
-        new RegressionTest().run(args);
-    }
-    
     // bug6397
     @Test
     public void TestDisallowedMillis() {

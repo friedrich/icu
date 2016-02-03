@@ -46,10 +46,6 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     private static boolean JDKTZ = (TimeZone.getDefaultTimeZoneType() == TimeZone.TIMEZONE_JDK);
     private static final Pattern EXCL_TZ_PATTERN = Pattern.compile(".*/Riyadh8[7-9]");
 
-    public static void main(String[] args) throws Exception {
-        new TimeZoneFormatTest().run(args);
-    }
-
     private static final String[] PATTERNS = {
         "z",
         "zzzz",

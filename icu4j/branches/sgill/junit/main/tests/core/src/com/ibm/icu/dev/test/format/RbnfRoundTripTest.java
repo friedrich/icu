@@ -14,19 +14,6 @@ import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.RuleBasedNumberFormat;
 
 public class RbnfRoundTripTest extends TestFmwk {
-    public static void main(String[] args) {
-        RbnfRoundTripTest test = new RbnfRoundTripTest();
-
-        try {
-            test.run(args);
-        }
-        catch (Throwable e) {
-            System.out.println("Entire test failed because of exception: "
-                            + e.toString());
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Perform an exhaustive round-trip test on the English spellout rules
      */

@@ -27,13 +27,6 @@ public class PeriodBuilderFactoryTest extends TestFmwk implements TimeUnitConsta
       60*60*1000L, 60*1000L, 1000L, 1L
     };
     
-    /**
-     * Invoke the tests.
-     */
-    public static void main(String[] args) {
-        new PeriodBuilderFactoryTest().run(args);
-    }
-
     @Test
     public void testSetAvailableUnitRange() {
         // sanity check, make sure by default all units are set

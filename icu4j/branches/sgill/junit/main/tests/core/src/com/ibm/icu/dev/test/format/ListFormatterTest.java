@@ -16,10 +16,6 @@ import com.ibm.icu.text.ListFormatter;
 import com.ibm.icu.util.ULocale;
 
 public class ListFormatterTest extends TestFmwk {
-    public static void main(String[] args) {
-        new ListFormatterTest().run(args);
-    }
-
     String[] HardcodedTestData = {
             "",
             "A",

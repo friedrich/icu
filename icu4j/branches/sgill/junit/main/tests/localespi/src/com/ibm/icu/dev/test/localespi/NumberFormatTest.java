@@ -18,10 +18,6 @@ import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.ULocale;
 
 public class NumberFormatTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new NumberFormatTest().run(args);
-    }
-
     private static final int DEFAULT_TYPE = 0;
     private static final int NUMBER_TYPE = 1;
     private static final int INTEGER_TYPE  = 2;

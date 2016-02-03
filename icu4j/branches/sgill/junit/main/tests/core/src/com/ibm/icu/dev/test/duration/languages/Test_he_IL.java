@@ -16,16 +16,6 @@ import com.ibm.icu.dev.test.duration.LanguageTestRoot;
  * Test cases for he_IL
  */
 public class Test_he_IL extends LanguageTestRoot {
-  /**
-   * Invoke the tests.
-   */
-  public static void main(String[] args) {
-      new Test_he_IL().run(args);
-  }
-
-  /**
-   * Constructor.
-   */
   public Test_he_IL() {
     super("he_IL", false);
   }

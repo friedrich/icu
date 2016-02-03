@@ -257,9 +257,4 @@ public class TimeScaleDataTest extends TestFmwk
             }
         }
     }
-
-    public static void main(String[] args)
-    {
-        new TimeScaleDataTest().run(args);
-    }
 }

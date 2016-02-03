@@ -16,10 +16,6 @@ import com.ibm.icu.text.Transliterator;
 //   test would reliably crash.
 
 public class ThreadTest extends TransliteratorTest {
-    public static void main(String[] args) throws Exception {
-        new ThreadTest().run(args);
-    }
-    
     private ArrayList<Worker> threads = new ArrayList<Worker>();
     private int iterationCount = 100000;
     

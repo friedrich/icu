@@ -21,9 +21,6 @@ import com.ibm.icu.util.BytesTrieBuilder;
 import com.ibm.icu.util.StringTrieBuilder;
 
 public class BytesTrieTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new BytesTrieTest().run(args);
-    }
     public BytesTrieTest() {}
 
     // All test functions have a TestNN prefix where NN is a double-digit number.

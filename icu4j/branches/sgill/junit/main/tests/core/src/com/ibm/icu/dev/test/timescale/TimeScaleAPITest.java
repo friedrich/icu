@@ -359,9 +359,4 @@ public class TimeScaleAPITest extends TestFmwk
             logln("PASS: UniversalTimeScale.toLong failed as expected");
         }
     }
-    
-    public static void main(String[] args)
-    {
-        new TimeScaleAPITest().run(args);
-    }
 }

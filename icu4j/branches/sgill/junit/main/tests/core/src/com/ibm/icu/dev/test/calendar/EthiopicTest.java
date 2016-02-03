@@ -25,10 +25,6 @@ import com.ibm.icu.util.ULocale;
  */
 public class EthiopicTest extends CalendarTest 
 {
-    public static void main(String args[]) throws Exception {
-        new EthiopicTest().run(args);
-    }
-
     /** Constants to save typing. */
     public static final int MESKEREM = EthiopicCalendar.MESKEREM;
     public static final int TEKEMT   = EthiopicCalendar.TEKEMT;

@@ -26,10 +26,6 @@ import com.ibm.icu.util.TimeZone;
 // TODO: try finding next new moon after  07/28/1984 16:00 GMT
 
 public class AstroTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new AstroTest().run(args);
-    }
-
     static final double PI = Math.PI;
 
     @Test

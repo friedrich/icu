@@ -29,11 +29,6 @@ import com.ibm.icu.text.SimpleDateFormat;
  * verifies that it works on a basic level.
  */
 public class IntlTestDateFormatAPIC extends com.ibm.icu.dev.test.TestFmwk {
-    
-    public static void main(String[] args)  throws Exception {
-        new IntlTestDateFormatAPIC().run(args);
-    }
-    
     /**
      * Test hiding of parse() and format() APIs in the Format hierarchy.
      * We test the entire hierarchy, even though this test is located in

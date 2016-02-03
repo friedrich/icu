@@ -27,10 +27,6 @@ public class IntlTestNumberFormat extends com.ibm.icu.dev.test.TestFmwk {
     
     public NumberFormat fNumberFormat;
 
-    public static void main(String[] args) throws Exception {
-        new IntlTestNumberFormat().run(args);
-    }
-    
     /**
      * Internal use
      */

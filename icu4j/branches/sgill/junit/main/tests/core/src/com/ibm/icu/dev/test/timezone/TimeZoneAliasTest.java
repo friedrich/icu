@@ -33,11 +33,6 @@ import com.ibm.icu.util.TimeZone;
  * 
  */
 public class TimeZoneAliasTest extends TestFmwk {
-    
-    public static void main(String[] args) throws Exception {
-        new TimeZoneAliasTest().run(args);
-    }
-    
     /**
      * There are two things to check aliases for:<br>
      * 1. the alias set must be uniform: if a isAlias b, then aliasSet(a) == aliasSet(b)<br>

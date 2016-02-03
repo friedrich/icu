@@ -28,10 +28,6 @@ import com.ibm.icu.util.ULocale;
 
 public class IntlTestNumberFormatAPI extends com.ibm.icu.dev.test.TestFmwk
 {
-    public static void main(String[] args) throws Exception {
-        new IntlTestNumberFormatAPI().run(args);
-    }
-
     // This test checks various generic API methods in DecimalFormat to achieve 100% API coverage.
     @Test
     public void TestAPI()

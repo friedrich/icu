@@ -572,14 +572,4 @@ public class TestBidi extends BidiTest {
         String lastHebrewOthersEnglishDigit = "\u0031\u0032\u0033\u05F1";
         assertEquals("\nWrong direction through fast detection #15", Bidi.RTL, Bidi.getBaseDirection(lastHebrewOthersEnglishDigit));
     }
-
-
-    public static void main(String[] args) {
-        try {
-            new TestBidi().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
 }

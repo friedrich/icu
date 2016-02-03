@@ -16,10 +16,6 @@ import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.ULocale;
 
 public class DecimalFormatSymbolsTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new DecimalFormatSymbolsTest().run(args);
-    }
-
     /*
      * Check if getInstance returns the ICU implementation.
      */

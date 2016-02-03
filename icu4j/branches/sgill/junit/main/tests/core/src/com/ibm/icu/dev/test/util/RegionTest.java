@@ -26,11 +26,6 @@ import com.ibm.icu.util.Region.RegionType;
  */
 
 public class RegionTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new RegionTest().run(args);
-    }
-
     String[][] knownRegions = {
             //   Code  , Numeric , Parent, Type, Containing Continent
             { "001", "001", null , "WORLD", null },

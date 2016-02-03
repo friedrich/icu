@@ -178,16 +178,5 @@ public class TestReorderRunsOnly extends BidiTest {
 
         logln("\nExiting TestReorderRunsOnly\n");
     }
-
-
-    public static void main(String[] args) {
-        try {
-            new TestReorderRunsOnly().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
 }
 

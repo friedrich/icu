@@ -18,11 +18,6 @@ import com.ibm.icu.util.CompactCharArray;
  */
 public final class CompactArrayTest extends TestFmwk 
 { 
-    public static void main(String[] args) throws Exception
-    {
-        new CompactArrayTest().run(args);
-    }
-    
     @Test
     public void TestByteArrayCoverage() {
     CompactByteArray cba = new CompactByteArray();

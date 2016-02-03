@@ -36,24 +36,6 @@ public class ICUServiceThreadTest extends TestFmwk
 {
     private static final boolean PRINTSTATS = false;
 
-    public static void main(String[] args) throws Exception {
-        ICUServiceThreadTest test = new ICUServiceThreadTest();
-        test.run(args);
-
-        // get
-        // getvisibleids
-        // getdisplayname(locale)
-        // factories
-
-        // registerFactory
-        // unregisterFactory
-
-        // 1) concurrent access
-        // 2) access while factories change
-        // 3) iteration while factories change
-        // 4) concurrent conflicting access
-    }
-
     private static final String[] countries = {
         "ab", "bc", "cd", "de", "ef", "fg", "gh", "ji", "ij", "jk"
     };

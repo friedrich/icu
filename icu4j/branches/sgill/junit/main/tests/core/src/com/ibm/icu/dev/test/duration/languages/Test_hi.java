@@ -18,17 +18,6 @@ import com.ibm.icu.impl.duration.TimeUnitConstants;
  * Test cases for hi
  */
 public class Test_hi extends LanguageTestRoot implements TimeUnitConstants {
-
-  /**
-   * Invoke the tests.
-   */
-  public static void main(String[] args) {
-      new Test_hi().run(args);
-  }
-
-  /**
-   * Constructor.
-   */
   public Test_hi() {
     super("hi", false);
   }

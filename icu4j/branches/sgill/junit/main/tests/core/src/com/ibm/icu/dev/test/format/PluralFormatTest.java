@@ -22,11 +22,6 @@ import com.ibm.icu.util.ULocale;
  *
  */
 public class PluralFormatTest extends TestFmwk {
-  
-  public static void main(String[] args) throws Exception {
-    new PluralFormatTest().run(args);
-  }
-  
   private void helperTestRules(String localeIDs, String testPattern, Map<Integer,String> changes) {
     String[] locales = Utility.split(localeIDs, ',');
     

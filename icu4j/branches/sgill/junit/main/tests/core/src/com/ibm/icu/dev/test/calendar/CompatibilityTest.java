@@ -24,11 +24,6 @@ import com.ibm.icu.util.SimpleTimeZone;
 import com.ibm.icu.util.TimeZone;
 
 public class CompatibilityTest extends com.ibm.icu.dev.test.TestFmwk {
-
-    public static void main(String argv[]) throws Exception {
-        new CompatibilityTest().run(argv);
-    }
-
     static final String[] FIELD_NAME = {
         "ERA", "YEAR", "MONTH", "WEEK_OF_YEAR", "WEEK_OF_MONTH",
         "DAY_OF_MONTH", "DAY_OF_YEAR", "DAY_OF_WEEK",

@@ -30,12 +30,6 @@ import com.ibm.icu.util.ULocale;
  *
  */
 public class RBBITestExtended extends TestFmwk {
-
-    public static void main(String[] args)throws Exception {
-        new RBBITestExtended().run(args);
-    }
-
-
 public RBBITestExtended() {
     }
 

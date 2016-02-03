@@ -26,10 +26,6 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
 
 public class CollationRegressionTest extends TestFmwk {
-    public static void main(String[] args) throws Exception{
-        new CollationRegressionTest().run(args);
-    }
-    
     // @bug 4048446
     //
     // CollationElementIterator.reset() doesn't work

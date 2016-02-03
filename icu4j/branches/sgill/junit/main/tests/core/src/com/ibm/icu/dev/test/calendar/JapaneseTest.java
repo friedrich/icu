@@ -25,10 +25,6 @@ import com.ibm.icu.util.ULocale;
  * Tests for the <code>JapaneseCalendar</code> class.
  */
 public class JapaneseTest extends CalendarTest {
-    public static void main(String args[]) throws Exception {
-        new JapaneseTest().run(args);
-    }
-
     @Test
     public void TestCoverage() {
     {

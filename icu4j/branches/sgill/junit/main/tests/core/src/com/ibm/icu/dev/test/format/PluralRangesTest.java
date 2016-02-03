@@ -26,10 +26,6 @@ import com.ibm.icu.util.ULocale;
  * 
  */
 public class PluralRangesTest extends TestFmwk {
-    public static void main(String[] args) {
-        new PluralRangesTest().run(args);
-    }
-
     @Test
     public void TestLocaleData() {
         String[][] tests = {

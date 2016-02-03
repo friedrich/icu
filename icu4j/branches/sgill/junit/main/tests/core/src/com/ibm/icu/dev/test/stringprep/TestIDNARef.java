@@ -19,10 +19,8 @@ import com.ibm.icu.text.UCharacterIterator;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class TestIDNARef extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new TestIDNARef().run(args);
-    }
     private StringPrepParseException unassignedException = new StringPrepParseException("",StringPrepParseException.UNASSIGNED_ERROR);
+
     @Test
     public void TestToUnicode() throws Exception{
         try{

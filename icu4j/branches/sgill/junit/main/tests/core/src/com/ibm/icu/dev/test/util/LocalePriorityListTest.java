@@ -18,11 +18,6 @@ import com.ibm.icu.util.ULocale;
  * @author markdavis@google.com
  */
 public class LocalePriorityListTest extends TestFmwk {
-    
-    public static void main(String[] args) throws Exception {
-        new LocalePriorityListTest().run(args);
-      }
-
   @Test
   public void testLanguagePriorityList() {
     final String expected = "af, en, fr";

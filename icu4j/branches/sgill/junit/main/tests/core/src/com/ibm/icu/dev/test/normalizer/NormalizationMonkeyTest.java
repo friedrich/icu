@@ -30,10 +30,6 @@ public class NormalizationMonkeyTest extends TestFmwk {
     public NormalizationMonkeyTest() {
     }
     
-    public static void main(String[] args) throws Exception {
-        new NormalizationMonkeyTest().run(args);
-    }
-    
     @Test
     public void TestNormalize() {
         if (unicode_NFD == null) {

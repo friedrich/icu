@@ -22,10 +22,6 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
  
 public class CollationCurrencyTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new CollationCurrencyTest().run(args);
-    }
-    
     @Test
     public void TestCurrency() {
         // All the currency symbols, in collation order

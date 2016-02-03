@@ -21,10 +21,6 @@ import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
  
 public class LotusCollationKoreanTest extends TestFmwk{
-    public static void main(String[] args) throws Exception{
-        new LotusCollationKoreanTest().run(args);
-    }
-    
     private static char[][] testSourceCases = {
         {0xac00}
     };

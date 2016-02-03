@@ -13,10 +13,6 @@ import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.Normalizer;
 
 public class NormalizerRegressionTests extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new NormalizerRegressionTests().run(args);
-    }
-
     @Test
     public void TestJB4472() {
         // submitter's test case

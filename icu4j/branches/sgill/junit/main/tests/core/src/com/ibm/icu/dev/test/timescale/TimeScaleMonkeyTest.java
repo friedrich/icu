@@ -101,9 +101,4 @@ public class TimeScaleMonkeyTest extends TestFmwk
             }
         }
     }
-
-    public static void main(String[] args)
-    {
-        new TimeScaleMonkeyTest().run(args);
-    }
 }

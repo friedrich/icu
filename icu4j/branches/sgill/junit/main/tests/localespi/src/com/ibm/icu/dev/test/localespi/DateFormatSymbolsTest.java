@@ -15,10 +15,6 @@ import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.ULocale;
 
 public class DateFormatSymbolsTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new DateFormatSymbolsTest().run(args);
-    }
-
     /*
      * Check if getInstance returns the ICU implementation.
      */

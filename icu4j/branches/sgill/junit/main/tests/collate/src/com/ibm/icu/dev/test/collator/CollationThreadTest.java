@@ -17,10 +17,6 @@ import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.Collator;
 
 public class CollationThreadTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new CollationThreadTest().run(args);
-    }
-
     private static final String[] threadTestData;
     static {
         final Collator collator = Collator.getInstance(new Locale("pl", "", ""));

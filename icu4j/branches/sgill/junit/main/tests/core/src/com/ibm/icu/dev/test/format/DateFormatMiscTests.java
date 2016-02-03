@@ -26,11 +26,6 @@ import com.ibm.icu.text.SimpleDateFormat;
  * Performs miscellaneous tests for DateFormat, SimpleDateFormat, DateFormatSymbols
  **/
 public class DateFormatMiscTests extends com.ibm.icu.dev.test.TestFmwk {
-
-    public static void main(String[] args) throws Exception{
-        new DateFormatMiscTests().run(args);
-    }
-    
     /*
      * @bug 4097450
      */

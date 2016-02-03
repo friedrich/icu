@@ -33,11 +33,6 @@ import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 
 public class TimeZoneRegression extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new TimeZoneRegression().run(args);
-    }
-
     @Test
     public void Test4052967() {
         logln("*** CHECK TIMEZONE AGAINST HOST OS SETTING ***");

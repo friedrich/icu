@@ -31,20 +31,6 @@ public class UCharacterThreadTest extends TestFmwk {
     
       // public methods --------------------------------------------------------
       
-    public static void main(String[] arg)  
-    {
-        try
-        {
-            UCharacterThreadTest test = new UCharacterThreadTest();
-            test.run(arg);
-        }
-        catch (Exception e)
-        {
-              e.printStackTrace();
-        }
-    }
-    
-    
     //
     //  Test multi-threaded parallel calls to UCharacter.getName(codePoint)
     //  Regression test for ticket 6264.

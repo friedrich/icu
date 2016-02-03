@@ -24,10 +24,6 @@ public class ConformanceTest extends TestFmwk {
 
     Normalizer normalizer;
 
-    public static void main(String[] args) throws Exception {
-        new ConformanceTest().run(args);
-    }
-    
     public ConformanceTest() {
         // Doesn't matter what the string and mode are; we'll change
         // them later as needed.

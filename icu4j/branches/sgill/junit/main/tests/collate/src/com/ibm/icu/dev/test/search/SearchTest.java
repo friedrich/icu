@@ -546,10 +546,6 @@ public class SearchTest extends TestFmwk {
         m_es_ = new RuleBasedCollator(rules);
 
     }
-    public static void main(String[] args) throws Exception {
-        new SearchTest().run(args);
-        // new SearchTest().TestContraction();
-    }
 
     RuleBasedCollator getCollator(String collator) {
         if (collator == null) {

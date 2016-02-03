@@ -36,9 +36,6 @@ import com.ibm.icu.text.UTF16;
 import com.ibm.icu.text.UnicodeSet;
 
 public class TestCharset extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new TestCharset().run(args);
-    }
     @Test
     public void TestUTF16Converter(){
         CharsetProvider icu = new CharsetProviderICU();

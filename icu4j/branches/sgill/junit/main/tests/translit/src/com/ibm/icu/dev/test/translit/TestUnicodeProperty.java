@@ -22,12 +22,8 @@ import com.ibm.icu.text.UnicodeSet;
  *
  */
 public class TestUnicodeProperty extends TestFmwk{
-    public static void main(String[] args) {
-        new TestUnicodeProperty().run(args);
-    }
     static final UnicodeSet casedLetter = new UnicodeSet("[:gc=cased letter:]");
     static final UnicodeSet letter = new UnicodeSet("[:gc=L:]");
-
 
     @Test
     public void TestBasic() {

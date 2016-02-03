@@ -37,10 +37,6 @@ import com.ibm.icu.util.UResourceTypeMismatchException;
 public final class ICUResourceBundleTest extends TestFmwk {
     private static final ClassLoader testLoader = ICUResourceBundleTest.class.getClassLoader();
 
-    public static void main(String args[]) throws Exception {
-        ICUResourceBundleTest test = new ICUResourceBundleTest();
-        test.run(args);
-    }
     @Test
     public void TestGetResources(){
         try{

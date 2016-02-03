@@ -441,10 +441,6 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 }
     };
 
-    public static void main(String[] args) throws Exception {
-        new NumberFormatTest().run(args);
-    }
-    
     @Test
     public void TestRoundingScientific10542() {
         DecimalFormat format =

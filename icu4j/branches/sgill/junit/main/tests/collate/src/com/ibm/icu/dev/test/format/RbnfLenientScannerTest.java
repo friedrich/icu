@@ -22,17 +22,6 @@ import com.ibm.icu.util.ULocale;
 public class RbnfLenientScannerTest extends TestFmwk {
     private static final RbnfLenientScannerProvider provider = new RbnfScannerProviderImpl();
 
-    public static void main(String[] args) {
-        try {
-          new RbnfLenientScannerTest().run(args);
-        }
-        catch (Throwable e) {
-            System.out.println("Entire test failed because of exception: "
-                               + e.toString());
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Ensure that the default provider is instantiated and used if none is set
      * and lenient parse is on.

@@ -16,17 +16,6 @@ import com.ibm.icu.dev.test.duration.LanguageTestRoot;
  * Test cases for zh_Hans
  */
 public class Test_zh_Hans extends LanguageTestRoot {
-
-  /**
-   * Invoke the tests.
-   */
-  public static void main(String[] args) {
-      new Test_zh_Hans().run(args);
-  }
-
-  /**
-   * Constructor.
-   */
   public Test_zh_Hans() {
     super("zh_Hans", false);
   }

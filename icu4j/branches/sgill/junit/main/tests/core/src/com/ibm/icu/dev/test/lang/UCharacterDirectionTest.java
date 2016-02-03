@@ -29,19 +29,6 @@ public class UCharacterDirectionTest extends TestFmwk
     
     // public methods --------------------------------------------------------
       
-    public static void main(String[] arg)  
-    {
-        try
-        {
-            UCharacterDirectionTest test = new UCharacterDirectionTest();
-            test.run(arg);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-    
     /**
     * Gets the name of the argument category
     * @returns category name

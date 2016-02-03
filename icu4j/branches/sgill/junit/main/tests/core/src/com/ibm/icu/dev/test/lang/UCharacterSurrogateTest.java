@@ -16,11 +16,6 @@ import com.ibm.icu.text.UTF16;
  * Test JDK 1.5 cover APIs.
  */
 public final class UCharacterSurrogateTest extends TestFmwk {
-
-    public static void main(String[] args) {
-        new UCharacterSurrogateTest().run(args);
-    }
-
     @org.junit.Test
     public void TestUnicodeBlockForName() {
       String[] names = {"Latin-1 Supplement", 

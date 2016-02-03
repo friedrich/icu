@@ -26,11 +26,6 @@ import com.ibm.icu.util.TimeZone;
  * Testing getOffset APIs using local time
  */
 public class TimeZoneOffsetLocalTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new TimeZoneOffsetLocalTest().run(args);
-    }
-
     /*
      * Testing getOffset APIs around rule transition by local standard/wall time.
      */

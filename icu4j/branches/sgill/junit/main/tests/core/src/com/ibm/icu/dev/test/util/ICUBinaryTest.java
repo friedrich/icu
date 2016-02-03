@@ -35,16 +35,6 @@ public final class ICUBinaryTest extends TestFmwk
       
     // public methods -----------------------------------------------
     
-    public static void main(String arg[]) 
-    {
-        ICUBinaryTest test = new ICUBinaryTest();
-        try {
-            test.run(arg);
-        } catch (Exception e) {
-            test.errln("Error testing icubinarytest");
-        }
-    }
-    
     /**
      * Testing the constructors of the Tries
      */

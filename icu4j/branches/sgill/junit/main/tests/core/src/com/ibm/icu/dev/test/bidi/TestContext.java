@@ -99,13 +99,4 @@ public class TestContext extends BidiTest {
 
         logln("\nExiting TestContext\n");
     }
-
-    public static void main(String[] args) {
-        try {
-            new TestContext().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
 }

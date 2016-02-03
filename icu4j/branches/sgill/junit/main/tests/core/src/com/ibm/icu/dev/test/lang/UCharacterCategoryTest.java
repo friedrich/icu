@@ -28,19 +28,6 @@ public class UCharacterCategoryTest extends TestFmwk
     
       // public methods --------------------------------------------------------
       
-    public static void main(String[] arg)  
-    {
-        try
-        {
-              UCharacterCategoryTest test = new UCharacterCategoryTest();
-              test.run(arg);
-        }
-        catch (Exception e)
-        {
-              e.printStackTrace();
-        }
-    }
-    
     /**
     * Gets the name of the argument category
     * @returns category name

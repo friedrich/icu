@@ -26,11 +26,6 @@ import com.ibm.icu.text.UnicodeSet;
  * @author markdavis
  */
 public class RegexUtilitiesTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new RegexUtilitiesTest().run(args);
-    }
-
     /**
      * Check basic construction.
      */

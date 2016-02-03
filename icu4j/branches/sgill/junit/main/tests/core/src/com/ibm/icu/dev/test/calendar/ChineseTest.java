@@ -62,11 +62,6 @@ import com.ibm.icu.util.ULocale;
  * Sun Mar 22 2099 = 4736-02*-01, Year 56, Cycle 79
  */
 public class ChineseTest extends CalendarTest {
-
-    public static void main(String args[]) throws Exception {
-        new ChineseTest().run(args);
-    }
-
     /**
      * Test basic mapping to and from Gregorian.
      */

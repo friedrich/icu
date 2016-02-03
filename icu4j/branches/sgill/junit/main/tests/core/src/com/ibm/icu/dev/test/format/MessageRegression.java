@@ -50,11 +50,6 @@ import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.ULocale;
 
 public class MessageRegression extends com.ibm.icu.dev.test.TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new MessageRegression().run(args);
-    }
-
     /* @bug 4074764
      * Null exception when formatting pattern with MessageFormat
      * with no parameters.

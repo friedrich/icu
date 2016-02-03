@@ -27,11 +27,6 @@ import com.ibm.icu.util.ULocale;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class LocaleDataTest extends TestFmwk{
-
-    public static void main(String[] args) throws Exception{
-        new LocaleDataTest().run(args);
-    }
-
     private ULocale[] availableLocales = null;
 
     public LocaleDataTest(){

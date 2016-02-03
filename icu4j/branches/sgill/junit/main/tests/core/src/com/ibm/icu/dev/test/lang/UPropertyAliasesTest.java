@@ -20,10 +20,6 @@ public class UPropertyAliasesTest extends TestFmwk {
   
     public UPropertyAliasesTest() {}
     
-    public static void main(String[] args) throws Exception {
-        new UPropertyAliasesTest().run(args);
-    }
-
     /**
      * Test the property names and property value names API.
      */

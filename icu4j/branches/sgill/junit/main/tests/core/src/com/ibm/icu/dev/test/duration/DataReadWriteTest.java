@@ -19,14 +19,6 @@ import com.ibm.icu.impl.duration.impl.XMLRecordReader;
 import com.ibm.icu.impl.duration.impl.XMLRecordWriter;
 
 public class DataReadWriteTest extends TestFmwk {
-
-    /**
-     * Invoke the tests.
-     */
-    public static void main(String[] args) {
-        new DataReadWriteTest().run(args);
-    }
-
     // strip line ends and trailing spaces
     private String normalize(String str) {
         StringBuffer sb = new StringBuffer();

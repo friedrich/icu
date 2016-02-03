@@ -40,11 +40,6 @@ import com.ibm.icu.util.ULocale;
 
 public class ICUServiceTest extends TestFmwk
 {
-    public static void main(String[] args) throws Exception {
-    ICUServiceTest test = new ICUServiceTest();
-    test.run(args);
-    }
-
     private String lrmsg(String message, Object lhs, Object rhs) {
     return message + " lhs: " + lhs + " rhs: " + rhs;
     }

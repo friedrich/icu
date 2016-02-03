@@ -33,10 +33,6 @@ import com.ibm.icu.util.ULocale;
  *
  */
 public class PluralFormatUnitTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new PluralFormatUnitTest().run(args);
-    }
-
     @Test
     public void TestConstructor() {
         // Test correct formatting of numbers.

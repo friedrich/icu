@@ -229,11 +229,6 @@ public class MeasureUnitTest extends TestFmwk {
      * @author markdavis
      *
      */
-    public static void main(String[] args) {
-        //generateConstants(); if (true) return;
-        new MeasureUnitTest().run(args);
-    }
-    
     //public void testZZZ() {
     //    // various generateXXX calls go here, see
     //    // http://site.icu-project.org/design/formatting/measureformat/updating-measure-unit

@@ -1673,21 +1673,6 @@ public final class UTF16Test extends TestFmwk
     }
     }
 
-    public static void main(String[] arg)
-    {
-        try
-        {
-        UTF16Test test = new UTF16Test();
-        test.run(arg);
-        // test.TestCaseCompare();
-        }
-        catch (Exception e)
-        {
-        e.printStackTrace();
-        }
-    }
-
-
     // private data members ----------------------------------------------
 
     private final static String INDEXOF_SUPPLEMENTARY_STRING_ =

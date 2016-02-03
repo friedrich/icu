@@ -165,14 +165,6 @@ public class ICUDurationTest extends TestFmwk {
     }
 
     /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        new ICUDurationTest().run(args);
-    }
-    
-    
-    /**
      * Basic test
      */
     @Test

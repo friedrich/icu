@@ -17,10 +17,6 @@ import com.ibm.icu.util.GenderInfo.Gender;
 import com.ibm.icu.util.ULocale;
 
 public class GenderInfoTest extends TestFmwk {
-    public static void main(String[] args) {
-        new GenderInfoTest().run(args);
-    }
-
     public static GenderInfo NEUTRAL_LOCALE = GenderInfo.getInstance(ULocale.ENGLISH);
     public static GenderInfo MIXED_NEUTRAL_LOCALE = GenderInfo.getInstance(new ULocale("is"));
     public static GenderInfo MALE_TAINTS_LOCALE = GenderInfo.getInstance(ULocale.FRENCH);

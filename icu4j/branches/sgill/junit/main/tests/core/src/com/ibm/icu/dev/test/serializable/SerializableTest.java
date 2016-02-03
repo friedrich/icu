@@ -45,7 +45,7 @@ import com.ibm.icu.util.VTimeZone;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class SerializableTest extends TestFmwk.TestGroup
+public class SerializableTest //extends TestFmwk.TestGroup
 {
     public interface Handler
     {
@@ -778,23 +778,23 @@ public class SerializableTest extends TestFmwk.TestGroup
         map.put("com.ibm.icu.util.ICUCloneNotSupportedException", new ICUCloneNotSupportedExceptionHandler());
     }
     
-    public SerializableTest()
-    {
-        super(
-            new String[] {
-                "com.ibm.icu.dev.test.serializable.CoverageTest",
-                "com.ibm.icu.dev.test.serializable.CompatibilityTest"},
-            "All Serializable Tests"
-        );
-    }
-
-    public static final String CLASS_TARGET_NAME  = "Serializable";
-
-    public static void main(String[] args)
-    {
-        SerializableTest test = new SerializableTest();
-        
-        test.run(args);
-    }
+//    public SerializableTest()
+//    {
+//        super(
+//            new String[] {
+//                "com.ibm.icu.dev.test.serializable.CoverageTest",
+//                "com.ibm.icu.dev.test.serializable.CompatibilityTest"},
+//            "All Serializable Tests"
+//        );
+//    }
+//
+//    public static final String CLASS_TARGET_NAME  = "Serializable";
+//
+//    public static void main(String[] args)
+//    {
+//        SerializableTest test = new SerializableTest();
+//        
+//        test.run(args);
+//    }
 }
 //eof

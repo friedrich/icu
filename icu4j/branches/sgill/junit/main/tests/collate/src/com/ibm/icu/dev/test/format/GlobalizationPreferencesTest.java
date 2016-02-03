@@ -33,11 +33,6 @@ import com.ibm.icu.util.ULocale;
 
 
 public class GlobalizationPreferencesTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new GlobalizationPreferencesTest().run(args);
-    }
-
     @Test
     public void TestDefault() {
         GlobalizationPreferences gp = new GlobalizationPreferences();

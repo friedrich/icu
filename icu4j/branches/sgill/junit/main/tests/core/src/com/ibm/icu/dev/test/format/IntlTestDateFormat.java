@@ -48,15 +48,13 @@ public class IntlTestDateFormat extends com.ibm.icu.dev.test.TestFmwk {
 
     public IntlTestDateFormat() {
         //Constructure
-    } 
+    }
+    
+    // TODO: never used
     protected void init() throws Exception{
         fFormat = DateFormat.getInstance();
     }
     
-    public static void main(String[] args) throws Exception {
-        new IntlTestDateFormat().run(args);
-    }
-
     @Test
     public void TestULocale() {
         localeTest(ULocale.getDefault(), "Default Locale");

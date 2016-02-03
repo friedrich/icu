@@ -30,10 +30,6 @@ import com.ibm.icu.text.UnicodeSetIterator;
 
 
 public class BasicTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new BasicTest().run(args);
-    }
-
     String[][] canonTests = {
         // Input                Decomposed              Composed
         { "cat",                "cat",                  "cat"               },

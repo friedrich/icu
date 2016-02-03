@@ -17,31 +17,7 @@ import com.ibm.icu.text.Normalizer;
 import com.ibm.icu.text.StringCharacterIterator;
 
 public class TestDeprecatedNormalizerAPI extends TestFmwk
-{
-     
-    public static void main(String[] args) throws Exception
-    {
-        String[] tempArgs = new String[args.length];
-        int count = 0;
-
-        // Allow the test to be pointed at a specific version of the Unicode database
-        //for (int i = 0; i < args.length; i++)
-        //{
-        //    if (args[i].equals("-data")) {
-        //        tempInfo = new UInfo(args[++i], args[++i]);
-        //    } else {
-        //        tempArgs[count++] = args[i];
-        //    }
-        //}
-
-        args = new String[count];
-        System.arraycopy(tempArgs, 0, args, 0, count);
-
-
-
-        new TestDeprecatedNormalizerAPI().run(args);
-    }
-    
+{     
     public TestDeprecatedNormalizerAPI() {
     }
 

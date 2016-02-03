@@ -49,11 +49,6 @@ import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.VersionInfo;
 
 public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new NumberRegression().run(args);
-    }
-
     private static final char EURO = '\u20ac';
 
     /**

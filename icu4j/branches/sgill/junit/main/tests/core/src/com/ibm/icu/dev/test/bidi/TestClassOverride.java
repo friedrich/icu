@@ -134,14 +134,4 @@ public class TestClassOverride extends BidiTest {
 
         logln("\nExiting TestClassOverride\n");
     }
-
-
-    public static void main(String[] args) {
-        try {
-            new TestClassOverride().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
 }

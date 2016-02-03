@@ -31,10 +31,6 @@ public class CollationThaiTest extends TestFmwk {
     
     final int MAX_FAILURES_TO_SHOW = -1;
     
-    public static void main(String[] args) throws Exception {
-        new CollationThaiTest().run(args);
-    }
-    
     /**
      * Odd corner conditions taken from "How to Sort Thai Without Rewriting Sort",
      * by Doug Cooper, http://seasrc.th.net/paper/thaisort.zip

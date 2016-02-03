@@ -20,11 +20,7 @@ import com.ibm.icu.util.ULocale;
  * @author markdavis
  *
  */
-public class AnyScriptTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new AnyScriptTest().run(args);
-    }
-    
+public class AnyScriptTest extends TestFmwk {    
     @Test
     public void TestContext() {
         Transliterator t = Transliterator.createFromRules("foo", "::[bc]; a{b}d > B;", Transliterator.FORWARD);

@@ -18,10 +18,6 @@ import com.ibm.icu.text.UnicodeSet;
  */
 public class ErrorTest extends TestFmwk {
 
-    public static void main(String[] args) throws Exception {
-        new ErrorTest().run(args);
-    }
-
     @Test
     public void TestTransliteratorErrors() {
         String trans = "Latin-Greek";

@@ -30,11 +30,6 @@ import com.ibm.icu.util.CaseInsensitiveString;
  * @summary Test of internal Utility class
  */
 public class UtilityTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new UtilityTest().run(args);
-    }
-
     @Test
     public void TestUnescape() {
         final String input =

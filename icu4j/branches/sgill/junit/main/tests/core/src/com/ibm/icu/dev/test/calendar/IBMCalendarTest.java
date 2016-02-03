@@ -32,11 +32,6 @@ import com.ibm.icu.util.ULocale;
  * @summary Tests of new functionality in IBMCalendar
  */
 public class IBMCalendarTest extends CalendarTest {
-
-    public static void main(String[] args) throws Exception {
-        new IBMCalendarTest().run(args);
-    }
-
     /**
      * Test weekend support in IBMCalendar.
      *

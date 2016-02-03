@@ -21,10 +21,6 @@ import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
  
 public class CollationTurkishTest extends TestFmwk{
-    public static void main(String[] args) throws Exception{
-        new CollationTurkishTest().run(args);
-    }
-    
     private static char[][] testSourceCases = {
         {0x73, 0x0327},
         {0x76, 0x00E4, 0x74},

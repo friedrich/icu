@@ -28,10 +28,6 @@ import com.ibm.icu.util.ULocale;
  *
  */
 public class TimeUnitTest extends TestFmwk {
-    public static void main(String[] args) throws Exception{
-        new TimeUnitTest().run(args);
-    }
-    
     @Test
     public void Test10219FractionalPlurals() {
         TimeUnitFormat tuf = new TimeUnitFormat(ULocale.ENGLISH, TimeUnitFormat.FULL_NAME);

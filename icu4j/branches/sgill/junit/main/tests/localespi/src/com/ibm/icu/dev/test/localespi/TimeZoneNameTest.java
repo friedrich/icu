@@ -35,10 +35,6 @@ public class TimeZoneNameTest extends TestFmwk {
         ProblematicZones.add("Pacific/Johnston");
     }
 
-    public static void main(String[] args) throws Exception {
-        new TimeZoneNameTest().run(args);
-    }
-
     @Test
     public void TestTimeZoneNames() {
         Locale[] locales = Locale.getAvailableLocales();

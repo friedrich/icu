@@ -37,11 +37,6 @@ import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.VersionInfo;
 
 public class CollationAPITest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new CollationAPITest().run(args);
-        //new CollationAPITest().TestGetTailoredSet();
-    }
-    
     /**
      * This tests the collation key related APIs.
      * - constructor/destructor

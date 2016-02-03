@@ -25,10 +25,6 @@ public class BigNumberFormatTest extends TestFmwk {
 
     static final int ILLEGAL = -1;
 
-    public static void main(String[] args) throws Exception {
-        new BigNumberFormatTest().run(args);
-    }
-        
     @Test
     public void TestExponent() {
         DecimalFormatSymbols US = new DecimalFormatSymbols(Locale.US);

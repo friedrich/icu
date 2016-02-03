@@ -28,10 +28,6 @@ public class TestUScript extends TestFmwk {
     {
     }
 
-    public static void main(String[] args) throws Exception {
-        new TestUScript().run(args);
-    }
-
     private static String scriptsToString(int[] scripts) {
         if(scripts == null) {
             return "null";

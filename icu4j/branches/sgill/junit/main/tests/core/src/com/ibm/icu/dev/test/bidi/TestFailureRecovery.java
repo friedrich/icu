@@ -119,14 +119,4 @@ public class TestFailureRecovery extends BidiTest {
 
         logln("\nExiting TestFailureRecovery\n");
     }
-
-
-    public static void main(String[] args) {
-        try {
-            new TestFailureRecovery().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
 }

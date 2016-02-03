@@ -25,11 +25,6 @@ import com.ibm.icu.text.PluralRules;
 import com.ibm.icu.util.ULocale;
 
 public class CompactDecimalFormatTest extends TestFmwk {
-
-    public static void main(String[] args) {
-        new CompactDecimalFormatTest().run(args);
-    }
-
     Object[][] EnglishTestData = {
             // default is 2 digits of accuracy
             {0.0d, "0"},

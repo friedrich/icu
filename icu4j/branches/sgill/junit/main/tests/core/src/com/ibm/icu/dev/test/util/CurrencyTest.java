@@ -41,11 +41,6 @@ import com.ibm.icu.util.ULocale;
  * @summary General test of Currency
  */
 public class CurrencyTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new CurrencyTest().run(args);
-    }
-
     /**
      * Test of basic API.
      */

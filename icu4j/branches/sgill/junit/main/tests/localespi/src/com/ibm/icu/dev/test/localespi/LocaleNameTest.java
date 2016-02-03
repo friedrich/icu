@@ -17,10 +17,6 @@ import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.ULocale;
 
 public class LocaleNameTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new LocaleNameTest().run(args);
-    }
-
     private static final Method GETDISPLAYSCRIPT_METHOD;
 
     static {

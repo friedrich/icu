@@ -452,14 +452,4 @@ public class TestMultipleParagraphs extends BidiTest {
             }
         }
     }
-
-
-    public static void main(String[] args) {
-        try {
-            new TestMultipleParagraphs().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
 }

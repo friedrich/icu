@@ -13,10 +13,6 @@ import com.ibm.icu.text.UnicodeCompressor;
 import com.ibm.icu.text.UnicodeDecompressor;
 
 public class ExhaustiveTest extends TestFmwk {
-    public static void main(String args[]) throws Exception {
-        new ExhaustiveTest().run(args);
-    }
-
     /** Test simple compress/decompress API, returning # of errors */
     @Test
     public void testSimple() throws Exception {

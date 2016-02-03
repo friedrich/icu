@@ -88,11 +88,6 @@ The Management
  * @summary General test of Transliterator
  */
 public class TransliteratorTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new TransliteratorTest().run(args);
-    }
-
     @Test
     public void TestHangul() {
 

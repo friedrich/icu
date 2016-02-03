@@ -23,10 +23,6 @@ public final class ICUResourceBundleCollationTest extends TestFmwk {
     private static final String DEFAULT_NAME = "default";
     private static final String STANDARD_NAME = "standard";
 
-    public static void main(String args[]) throws Exception {
-        new ICUResourceBundleCollationTest().run(args);
-    }
-
     @Test
     public void TestFunctionalEquivalent(){
        String[] collCases = {

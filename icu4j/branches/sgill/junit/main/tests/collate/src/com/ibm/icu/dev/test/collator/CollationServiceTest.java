@@ -25,10 +25,6 @@ import com.ibm.icu.text.Collator.CollatorFactory;
 import com.ibm.icu.util.ULocale;
 
 public class CollationServiceTest extends TestFmwk {
-    public static void main(String[] args) {
-        new CollationServiceTest().run(args);
-    }
-
     @Test
     public void TestRegister() {
         // register a singleton

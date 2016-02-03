@@ -38,10 +38,6 @@ import com.ibm.icu.util.ULocale;
  * 4174361 4177484 4197699 4209071 4288792
  */
 public class CalendarRegression extends com.ibm.icu.dev.test.TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new CalendarRegression().run(args);
-    }
     static final String[] FIELD_NAME = {
             "ERA", "YEAR", "MONTH", "WEEK_OF_YEAR", "WEEK_OF_MONTH",
             "DAY_OF_MONTH", "DAY_OF_YEAR", "DAY_OF_WEEK",

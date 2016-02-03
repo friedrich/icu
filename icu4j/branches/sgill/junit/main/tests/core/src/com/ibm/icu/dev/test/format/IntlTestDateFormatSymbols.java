@@ -26,10 +26,6 @@ import com.ibm.icu.util.ULocale;
 
 public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
 {
-    public static void main(String[] args) throws Exception {
-        new IntlTestDateFormatSymbols().run(args);
-    }
-
     // Test getMonths
     @Test
     public void TestGetMonths()

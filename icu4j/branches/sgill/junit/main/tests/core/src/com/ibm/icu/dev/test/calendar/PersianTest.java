@@ -13,11 +13,6 @@ import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.ULocale;
 
 public class PersianTest extends CalendarTest {
-
-    public static void main(String args[]) throws Exception {
-        new PersianTest().run(args);
-    }
-
     /**
      * Test basic mapping to and from Gregorian.
      */

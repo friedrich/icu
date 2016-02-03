@@ -19,11 +19,6 @@ import com.ibm.icu.util.ULocale.Builder;
  * Test cases for ULocale.LocaleBuilder
  */
 public class LocaleBuilderTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new LocaleBuilderTest().run(args);
-    }
-
     @Test
     public void TestLocaleBuilder() {
         // "L": +1 = language

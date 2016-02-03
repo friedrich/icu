@@ -17,11 +17,6 @@ import com.ibm.icu.text.Transliterator;
  * @summary Round trip test of Transliterator
  */
 public class ReplaceableTest extends TestFmwk {
-    
-    public static void main(String[] args) throws Exception {
-        new ReplaceableTest().run(args);
-    }
-  
     @org.junit.Test
     public void Test() {
         check("Lower", "ABCD", "1234");

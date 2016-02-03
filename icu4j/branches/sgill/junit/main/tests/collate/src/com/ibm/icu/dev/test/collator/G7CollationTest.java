@@ -22,11 +22,6 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
  
 public class G7CollationTest extends TestFmwk{
-    public static void main(String[] args) throws Exception{
-        new G7CollationTest().run(args);
-        // new G7CollationTest().TestDemo3();
-    }
-    
     private static String[] testCases = {
         "blackbirds", "Pat", "p\u00E9ch\u00E9", "p\u00EAche", "p\u00E9cher",            
         "p\u00EAcher", "Tod", "T\u00F6ne", "Tofu", "blackbird", "Ton", 

@@ -27,9 +27,6 @@ import com.ibm.icu.util.ULocale;
  * Tests for the <code>Holiday</code> class.
  */
 public class HolidayTest extends TestFmwk {
-    public static void main(String args[]) throws Exception {
-        new HolidayTest().run(args);
-    }
     protected void init()throws Exception{
         if(cal==null){
             cal = new GregorianCalendar(1, 0, 1);

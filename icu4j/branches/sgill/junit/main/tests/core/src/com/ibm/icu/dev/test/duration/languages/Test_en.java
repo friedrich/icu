@@ -15,14 +15,6 @@ import com.ibm.icu.dev.test.duration.LanguageTestRoot;
  * Test cases for en
  */
 public class Test_en extends LanguageTestRoot {
-
-  public static void main(String[] args) {
-      new Test_en().run(args);
-  }
-
-  /**
-   * Constructor.
-   */
   public Test_en() {
     super("en", false);
   }

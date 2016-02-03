@@ -19,11 +19,6 @@ import com.ibm.icu.text.LocaleDisplayNames.DialectHandling;
 import com.ibm.icu.util.ULocale;
 
 public class TestLocaleNamePackaging extends TestFmwk {
-
-    public static void main(String[] args) {
-        new TestLocaleNamePackaging().run(args);
-    }
-
     public TestLocaleNamePackaging() {
     }
 

@@ -22,9 +22,6 @@ import com.ibm.icu.util.CharsTrieBuilder;
 import com.ibm.icu.util.StringTrieBuilder;
 
 public class CharsTrieTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new CharsTrieTest().run(args);
-    }
     public CharsTrieTest() {}
 
     // All test functions have a TestNN prefix where NN is a double-digit number.

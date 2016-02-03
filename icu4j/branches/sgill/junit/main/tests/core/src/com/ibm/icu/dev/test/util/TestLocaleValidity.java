@@ -28,13 +28,6 @@ import com.ibm.icu.util.ULocale;
  *
  */
 public class TestLocaleValidity extends TestFmwk {
-    /**
-     * Quick check
-     */
-    public static void main(String[] args) {
-        new TestLocaleValidity().run(args);
-    }
-
     @Test
     public void testBasic() {
         String[][] tests = {

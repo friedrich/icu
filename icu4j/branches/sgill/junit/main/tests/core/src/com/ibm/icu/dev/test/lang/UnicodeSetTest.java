@@ -52,10 +52,6 @@ public class UnicodeSetTest extends TestFmwk {
 
     static final String NOT = "%%%%";
 
-    public static void main(String[] args) throws Exception {
-        new UnicodeSetTest().run(args);
-    }
-
     private static final boolean isCccValue(int ccc) {
         switch (ccc) {
         case 0:

@@ -26,11 +26,6 @@ import com.ibm.icu.util.ULocale;
  * API Test the RuleBasedBreakIterator class
  */
 public class RBBIAPITest extends com.ibm.icu.dev.test.TestFmwk {
-    
-    public static void main(String[] args) throws Exception {
-        new RBBIAPITest().run(args);
-    }
-    
     /**
      * Tests clone() and equals() methods of RuleBasedBreakIterator         
      **/

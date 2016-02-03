@@ -543,20 +543,6 @@ public final class StringTokenizerTest extends TestFmwk
         }
     }
 
-    public static void main(String[] arg)
-    {
-        try
-        {
-            StringTokenizerTest test = new StringTokenizerTest();
-            test.run(arg);
-            // test.TestCaseCompare();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-    
     /* Tests the method
      *      public StringBuffer _generatePattern(StringBuffer result, boolean escapeUnprintable)
      */

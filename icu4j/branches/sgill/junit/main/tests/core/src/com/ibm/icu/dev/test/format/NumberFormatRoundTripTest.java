@@ -34,10 +34,6 @@ public class NumberFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
     public boolean DEBUG = false;
     public boolean quick = true;
     
-    public static void main(String[] args) throws Exception {
-        new NumberFormatRoundTripTest().run(args);
-    }
-    
     @Test
     public void TestNumberFormatRoundTrip() {
     

@@ -23,9 +23,6 @@ import com.ibm.icu.text.BidiClassifier;
  * Ported from ICU4C intltest/bidiconf.cpp .
  */
 public class BiDiConformanceTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new BiDiConformanceTest().run(args);
-    }
     public BiDiConformanceTest() {}
 
     @Test

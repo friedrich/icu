@@ -19,11 +19,6 @@ import com.ibm.icu.impl.jdkadapter.CalendarICU;
 import com.ibm.icu.util.ULocale;
 
 public class DateFormatTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new DateFormatTest().run(args);
-    }
-
     /*
      * Check if getInstance returns the ICU implementation.
      */

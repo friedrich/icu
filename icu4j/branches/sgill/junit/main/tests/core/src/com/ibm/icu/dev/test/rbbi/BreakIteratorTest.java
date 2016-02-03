@@ -26,9 +26,6 @@ public class BreakIteratorTest extends TestFmwk
     private BreakIterator sentenceBreak;
     private BreakIterator titleBreak;
 
-    public static void main(String[] args) throws Exception {
-        new BreakIteratorTest().run(args);
-    }
     public BreakIteratorTest()
     {
 

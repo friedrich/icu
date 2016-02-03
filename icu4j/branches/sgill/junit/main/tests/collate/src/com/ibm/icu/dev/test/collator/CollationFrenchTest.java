@@ -22,10 +22,6 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
  
 public class CollationFrenchTest extends TestFmwk{
-    public static void main(String[] args) throws Exception {
-        new CollationFrenchTest().run(args);
-    }
-    
     private static char[][] testSourceCases = {
         {0x0061/*'a'*/, 0x0062/*'b'*/, 0x0063/*'c'*/},
         {0x0043/*'C'*/, 0x004f/*'O'*/, 0x0054/*'T'*/, 0x0045/*'E'*/},

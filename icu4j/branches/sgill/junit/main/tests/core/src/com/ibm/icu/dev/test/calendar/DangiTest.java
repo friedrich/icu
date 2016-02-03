@@ -17,11 +17,6 @@ import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 
 public class DangiTest extends CalendarTest {
-
-    public static void main(String args[]) throws Exception {
-        new DangiTest().run(args);
-    }
-
     /**
      * Test basic mapping to and from Gregorian.
      */

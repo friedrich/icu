@@ -41,11 +41,6 @@ public class DateIntervalFormatTest extends com.ibm.icu.dev.test.TestFmwk {
      */
     private static final ULocale LA_SPANISH = new ULocale("es-419");
 
-    public static void main(String[] args) throws Exception {
-        new DateIntervalFormatTest().run(args);
-    }
-
-
     /**
      * Test format
      */

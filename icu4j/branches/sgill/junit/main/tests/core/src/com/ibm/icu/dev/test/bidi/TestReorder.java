@@ -250,15 +250,4 @@ public class TestReorder extends BidiTest {
 
         logln("\nExiting TestReorder\n");
     }
-
-
-    public static void main(String[] args) {
-        try {
-            new TestReorder().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
 }

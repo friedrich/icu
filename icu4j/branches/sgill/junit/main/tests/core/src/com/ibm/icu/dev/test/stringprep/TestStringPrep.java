@@ -19,9 +19,6 @@ import com.ibm.icu.text.StringPrepParseException;
  *
  */
 public class TestStringPrep extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new TestStringPrep().run(args);
-    }
     /*
        There are several special identifiers ("who") which need to be
        understood universally, rather than in the context of a particular

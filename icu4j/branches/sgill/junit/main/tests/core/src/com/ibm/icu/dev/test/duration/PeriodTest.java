@@ -16,14 +16,6 @@ import com.ibm.icu.impl.duration.Period;
 import com.ibm.icu.impl.duration.TimeUnit;
 
 public class PeriodTest extends TestFmwk {
-
-    /**
-     * Invoke the tests.
-     */
-    public static void main(String[] args) {
-        new PeriodTest().run(args);
-    }
-
     @Test
     public void testIsSet() {
         Period p = Period.at(0, TimeUnit.YEAR);

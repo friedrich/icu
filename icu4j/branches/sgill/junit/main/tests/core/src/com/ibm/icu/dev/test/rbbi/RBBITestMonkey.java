@@ -34,12 +34,7 @@ import com.ibm.icu.text.UnicodeSet;
  * Ported from ICU4C, original code in file source/test/intltest/rbbitst.cpp
  *
  */
-public class RBBITestMonkey extends TestFmwk {
-    
-    public static void main(String[] args) {
-        new RBBITestMonkey().run(args);
-    }
-    
+public class RBBITestMonkey extends TestFmwk {    
 //
 //     classs RBBIMonkeyKind
 //
@@ -1945,7 +1940,7 @@ public void TestCharMonkey() {
     int        loopCount = 500;
     int        seed      = 1;
     
-    if (params.inclusion >= 9) {
+    if (getInclusion()  >= 9) {
         loopCount = 10000;
     }
     
@@ -1960,7 +1955,7 @@ public void TestWordMonkey() {
     int        loopCount = 500;
     int        seed      = 1;
     
-    if (params.inclusion >= 9) {
+    if (getInclusion()  >= 9) {
         loopCount = 10000;
     }
     
@@ -1975,7 +1970,7 @@ public void TestLineMonkey() {
     int        loopCount = 500;
     int        seed      = 1;
     
-    if (params.inclusion >= 9) {
+    if (getInclusion() >= 9) {
         loopCount = 10000;
     }
     
@@ -1994,7 +1989,7 @@ public void TestSentMonkey() {
     int        loopCount = 500;
     int        seed      = 1;
     
-    if (params.inclusion >= 9) {
+    if (getInclusion() >= 9) {
         loopCount = 3000;
     }
     
@@ -2022,7 +2017,7 @@ public void TestRTCharMonkey() {
     int        loopCount = 200;
     int        seed      = 1;
     
-    if (params.inclusion >= 9) {
+    if (getInclusion() >= 9) {
         loopCount = 2000;
     }
     
@@ -2039,7 +2034,7 @@ public void TestRTWordMonkey() {
     int        loopCount = 200;
     int        seed      = 1;
     
-    if (params.inclusion >= 9) {
+    if (getInclusion() >= 9) {
         loopCount = 2000;
     }
     logln("Word Break Monkey Test");
@@ -2055,7 +2050,7 @@ public void TestRTLineMonkey() {
     int        loopCount = 200;
     int        seed      = 1;
     
-    if (params.inclusion >= 9) {
+    if (getInclusion() >= 9) {
         loopCount = 2000;
     }
     
@@ -2076,7 +2071,7 @@ public void TestRTSentMonkey() {
     int        loopCount = 200;
     int        seed      = 1;
     
-    if (params.inclusion >= 9) {
+    if (getInclusion() >= 9) {
         loopCount = 1000;
     }
     

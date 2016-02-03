@@ -21,10 +21,6 @@ import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
  
 public class CollationEnglishTest extends TestFmwk{
-    public static void main(String[] args) throws Exception{
-        new CollationEnglishTest().run(args);
-    }
-    
     private static char[][] testSourceCases = {
         {0x0061 /* 'a' */, 0x0062 /* 'b' */},
         {0x0062 /* 'b' */, 0x006C /* 'l' */, 0x0061 /* 'a' */, 0x0063 /* 'c' */, 0x006B /* 'k' */, 0x002D /* '-' */, 0x0062 /* 'b' */, 0x0069 /* 'i' */, 0x0072 /* 'r' */, 0x0064 /* 'd' */},

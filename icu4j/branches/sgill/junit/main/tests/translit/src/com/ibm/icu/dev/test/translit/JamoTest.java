@@ -19,11 +19,6 @@ import com.ibm.icu.text.Transliterator;
  * @summary Test the Latin-Jamo transliterator
  */
 public class JamoTest extends TransliteratorTest {
-
-    public static void main(String[] args) throws Exception {
-        new JamoTest().run(args);
-    }
-
     @Test
     public void TestJamo() {
         Transliterator latinJamo = Transliterator.getInstance("Latin-Jamo");

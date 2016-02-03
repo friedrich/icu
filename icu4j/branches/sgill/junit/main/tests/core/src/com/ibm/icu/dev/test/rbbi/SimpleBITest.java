@@ -130,10 +130,6 @@ public class SimpleBITest extends TestFmwk{
 + "statesmayofrightdo.Andforthesupportofthisdeclaration,withafirmrelianceontheprotectionofDivineProvidence,we"
 + "mutuallypledgetoeachotherourlives,ourfortunesandoursacredhonor.\n";
 
-    public static void main(String[] args) throws Exception {
-        new SimpleBITest().run(args);
-    }
-    
     protected boolean validate() {
         // TODO: remove when english.dict gets fixed
         return false;

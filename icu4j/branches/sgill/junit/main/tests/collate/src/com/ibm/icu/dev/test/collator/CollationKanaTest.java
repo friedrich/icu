@@ -23,10 +23,6 @@ import com.ibm.icu.text.RuleBasedCollator;
 import com.ibm.icu.util.ULocale;
  
 public class CollationKanaTest extends TestFmwk{
-    public static void main(String[] args) throws Exception{
-        new CollationKanaTest().run(args);
-    }
-
     private static char[][] testSourceCases = {
         {0xff9E},
         {0x3042},

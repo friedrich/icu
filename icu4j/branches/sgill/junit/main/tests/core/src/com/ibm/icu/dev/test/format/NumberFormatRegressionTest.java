@@ -33,11 +33,6 @@ import com.ibm.icu.util.ULocale;
  * Performs regression test for MessageFormat
  **/
 public class NumberFormatRegressionTest extends com.ibm.icu.dev.test.TestFmwk {
-    
-    public static void main(String[] args) throws Exception{
-        new NumberFormatRegressionTest().run(args);
-    }
-    
     /**
      * alphaWorks upgrade
      */

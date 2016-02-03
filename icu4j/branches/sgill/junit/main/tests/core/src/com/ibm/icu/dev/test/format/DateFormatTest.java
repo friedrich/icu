@@ -61,11 +61,6 @@ import com.ibm.icu.util.UResourceBundle;
 import com.ibm.icu.util.VersionInfo;
 
 public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
-    
-    public static void main(String[] args) throws Exception {
-        new DateFormatTest().run(args);
-    }
-
     /**
      * Verify that patterns have the correct values and could produce the 
      * the DateFormat instances that contain the correct localized patterns.

@@ -12,10 +12,6 @@ import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.UnicodeDecompressor;
 
 public class DecompressionTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new DecompressionTest().run(args);
-    }
-
     /** Print out a segment of a character array, if in verbose mode */
     private void log(char [] chars, int start, int count) {
         log("|");

@@ -33,10 +33,6 @@ import com.ibm.icu.util.TimeZone;
 
 public class IntlTestDateFormatAPI extends com.ibm.icu.dev.test.TestFmwk
 {
-    public static void main(String[] args) throws Exception {
-        new IntlTestDateFormatAPI().run(args);
-    }
-
     // Test that the equals method works correctly.
     @Test
     public void TestEquals()

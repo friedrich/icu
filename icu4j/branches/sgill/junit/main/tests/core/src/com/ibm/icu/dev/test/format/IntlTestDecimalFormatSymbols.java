@@ -26,10 +26,6 @@ import com.ibm.icu.util.Currency;
 
 public class IntlTestDecimalFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
 {
-    public static void main(String[] args) throws Exception {
-        new IntlTestDecimalFormatSymbols().run(args);
-    }
-
     // Test the API of DecimalFormatSymbols; primarily a simple get/set set.
     @Test
     public void TestSymbols()

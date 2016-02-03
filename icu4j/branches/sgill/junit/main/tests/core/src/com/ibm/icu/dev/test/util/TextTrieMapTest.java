@@ -62,11 +62,6 @@ public class TextTrieMapTest extends TestFmwk {
         {"super", null, SUN},
         {"NO", null, null}
     };
-    
-    public static void main(String[] args) throws Exception {
-        TextTrieMapTest test = new TextTrieMapTest();
-        test.run(args);
-    }
 
     @Test
     public void TestCaseSensitive() {

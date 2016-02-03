@@ -40,10 +40,6 @@ public class TimeZoneRuleTest extends TestFmwk {
 
     private static final int HOUR = 60 * 60 * 1000;
 
-    public static void main(String[] args) throws Exception {
-        new TimeZoneRuleTest().run(args);
-    }
-
     /*
      * RuleBasedTimeZone test cases
      */

@@ -35,13 +35,4 @@ public class TestCharFromDirProp extends BidiTest {
         }
         logln("\nExiting TestCharFromDirProp");
     }
-
-    public static void main(String[] args) {
-        try {
-            new TestCharFromDirProp().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
 }

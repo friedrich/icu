@@ -35,10 +35,6 @@ public class UnicodeMapTest extends TestFmwk {
     static final int MODIFY_TEST_LIMIT = 32;
     static final int MODIFY_TEST_ITERATIONS = 100000;
 
-    public static void main(String[] args) throws Exception {
-        new UnicodeMapTest().run(args);
-    }
-
     @Test
     public void TestIterations() {
         UnicodeMap<Double> foo = new UnicodeMap();

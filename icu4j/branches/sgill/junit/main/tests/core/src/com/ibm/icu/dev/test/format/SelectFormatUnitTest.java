@@ -20,10 +20,6 @@ public class SelectFormatUnitTest extends TestFmwk {
   
     static final String SIMPLE_PATTERN = "feminine {feminineVerbValue} other{otherVerbValue}";
 
-    public static void main(String[] args) throws Exception {
-        new SelectFormatUnitTest().run(args);
-    }
-  
     /**
      * Unit tests for pattern syntax
      */

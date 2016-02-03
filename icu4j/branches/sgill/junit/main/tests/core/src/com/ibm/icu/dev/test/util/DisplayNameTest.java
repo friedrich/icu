@@ -30,10 +30,6 @@ import com.ibm.icu.util.UResourceBundle;
 public class DisplayNameTest extends TestFmwk {
     static final boolean SHOW_ALL = false;
     
-    public static void main(String[] args) throws Exception {
-        new DisplayNameTest().run(args);
-    }
-        
     interface DisplayNameGetter {
         public String get(ULocale locale, String code, Object context);
     }

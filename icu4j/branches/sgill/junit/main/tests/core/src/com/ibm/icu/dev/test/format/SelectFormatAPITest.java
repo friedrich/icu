@@ -24,10 +24,6 @@ public class SelectFormatAPITest extends TestFmwk {
     static final String SIMPLE_PATTERN1 = "feminine {feminineVerbValue1} other{otherVerbValue1}";
     static final String SIMPLE_PATTERN2 = "feminine {feminineVerbValue2} other{otherVerbValue2}";
 
-    public static void main(String[] args) throws Exception {
-        new SelectFormatAPITest().run(args);
-    }
-  
     /**
      * API tests for constructors
      */

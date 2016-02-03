@@ -133,19 +133,6 @@ public class TestUCharacterIterator extends TestFmwk{
         }
     }
     
-    public static void main(String[] arg)
-    {
-        try
-        {
-            TestUCharacterIterator test = new TestUCharacterIterator();
-            test.run(arg);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-    
     //Tests for new API for utf-16 support 
     @Test
     public void TestIterationUChar32() {

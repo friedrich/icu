@@ -27,19 +27,6 @@ import com.ibm.icu.util.ULocale;
  * introduces a dependency on collation.  See RbnfLenientScannerTest.
  */
 public class RbnfTest extends TestFmwk {
-    public static void main(String[] args) {
-        RbnfTest test = new RbnfTest();
-
-        try {
-            test.run(args);
-        }
-        catch (Throwable e) {
-            System.out.println("Entire test failed because of exception: "
-                               + e.toString());
-            e.printStackTrace();
-        }
-    }
-
     static String fracRules =
         "%main:\n" +
         // this rule formats the number if it's 1 or more.  It formats

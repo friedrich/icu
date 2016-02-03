@@ -22,11 +22,6 @@ import com.ibm.icu.util.OutputInt;
  * @summary General test of UnicodeSet string span.
  */
 public class UnicodeSetStringSpanTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new UnicodeSetStringSpanTest().run(args);
-    }
-
     // Simple test first, easier to debug.
     @Test
     public void TestSimpleStringSpan() {

@@ -30,12 +30,9 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
     private static final long UTC_LONG = 974476860000L;
     private static SimpleDateFormat sdf_;
     
+    // TODO: never used - should be removed?
     protected void init()throws Exception{
-        sdf_ = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        
-    }
-    public static void main(String[] args) throws Exception {
-        new DateFormatRegressionTestJ().run(args);
+        sdf_ = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");        
     }
     
     //Return value of getAmPmStrings

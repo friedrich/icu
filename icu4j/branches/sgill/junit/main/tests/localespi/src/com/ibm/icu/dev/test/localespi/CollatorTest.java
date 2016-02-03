@@ -17,10 +17,6 @@ import com.ibm.icu.impl.jdkadapter.CollatorICU;
 import com.ibm.icu.util.ULocale;
 
 public class CollatorTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new CollatorTest().run(args);
-    }
-
     /*
      * Check if getInstance returns the ICU implementation.
      */

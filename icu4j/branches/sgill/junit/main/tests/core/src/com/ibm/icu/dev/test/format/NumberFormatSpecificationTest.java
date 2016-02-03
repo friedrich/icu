@@ -20,11 +20,6 @@ import com.ibm.icu.util.ULocale;
  *
  */
 public class NumberFormatSpecificationTest extends TestFmwk {
-    
-    public static void main(String[] args) throws Exception {
-        new NumberFormatSpecificationTest().run(args);
-    }
-    
     @Test
     public void TestBasicPatterns() {
         double num = 1234.567;

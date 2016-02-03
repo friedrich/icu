@@ -30,10 +30,6 @@ import com.ibm.icu.text.MessagePatternUtil.VariantNode;
  * by building parallel trees of nodes and verifying that they match.
  */
 public final class MessagePatternUtilTest extends com.ibm.icu.dev.test.TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new MessagePatternUtilTest().run(args);
-    }
-
     // The following nested "Expect..." classes are used to build
     // a tree structure parallel to what the MessagePatternUtil class builds.
     // These nested test classes are not static so that they have access to TestFmwk methods.

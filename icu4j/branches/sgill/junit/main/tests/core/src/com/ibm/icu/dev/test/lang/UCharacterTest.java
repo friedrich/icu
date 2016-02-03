@@ -62,19 +62,6 @@ public final class UCharacterTest extends TestFmwk
 
     // public methods ================================================
 
-    public static void main(String[] arg)
-    {
-        try
-        {
-            UCharacterTest test = new UCharacterTest();
-            test.run(arg);
-        }
-        catch (Exception e)
-        {
-        e.printStackTrace();
-        }
-    }
-
     /**
     * Testing the letter and number determination in UCharacter
     */

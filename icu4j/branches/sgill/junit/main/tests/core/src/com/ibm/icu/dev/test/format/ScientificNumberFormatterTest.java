@@ -19,10 +19,6 @@ import com.ibm.icu.util.ULocale;
  *
  */
 public class ScientificNumberFormatterTest extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new ScientificNumberFormatterTest().run(args);
-    }
-    
     @Test
     public void TestBasic() {
         ScientificNumberFormatter markup = ScientificNumberFormatter.getMarkupInstance(

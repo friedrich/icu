@@ -11,9 +11,6 @@ import org.junit.Test;
 import com.ibm.icu.dev.test.ModuleTest;
 
 public class ModuleTestSample extends ModuleTest {
-    public static void main(String[] args) throws Exception {
-    new ModuleTestSample().run(args);
-    }
     ModuleTestSample(){
         super("com/ibm/icu/dev/data/testdata/", "Test");
     }

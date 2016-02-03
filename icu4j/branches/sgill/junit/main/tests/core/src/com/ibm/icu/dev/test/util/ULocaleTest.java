@@ -52,10 +52,6 @@ public class ULocaleTest extends TestFmwk {
     private static final boolean JAVA7_OR_LATER =
             TestUtil.getJavaVendor() == JavaVendor.Android || TestUtil.getJavaVersion() >= 7;
 
-    public static void main(String[] args) throws Exception {
-        new ULocaleTest().run(args);
-    }
-
     @Test
     public void TestCalendar() {
         // TODO The CalendarFactory mechanism is not public,

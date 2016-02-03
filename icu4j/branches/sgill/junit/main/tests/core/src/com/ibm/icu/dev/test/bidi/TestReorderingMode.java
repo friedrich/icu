@@ -702,15 +702,4 @@ public class TestReorderingMode extends BidiTest {
         }
         return testOK;
     }
-
-
-    public static void main(String[] args) {
-        try {
-            new TestReorderingMode().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
 }

@@ -30,11 +30,6 @@ import com.ibm.icu.text.UTF16;
  * 
  */
 public class IDNAConformanceTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new IDNAConformanceTest().run(args);
-    }
-
     @Test
     public void TestConformance() {
 

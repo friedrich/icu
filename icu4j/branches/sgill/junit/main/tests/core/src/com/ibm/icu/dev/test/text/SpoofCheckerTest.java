@@ -38,11 +38,6 @@ import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.util.ULocale;
 
 public class SpoofCheckerTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new SpoofCheckerTest().run(args);
-    }
-
     /*
      * Identifiers for verifying that spoof checking is minimally alive and working.
      */

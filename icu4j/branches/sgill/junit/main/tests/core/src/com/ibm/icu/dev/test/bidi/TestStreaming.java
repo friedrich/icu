@@ -138,15 +138,4 @@ public class TestStreaming extends BidiTest {
         }
         logln("\nExiting TestStreaming\n");
     }
-
-
-    public static void main(String[] args) {
-        try {
-            new TestStreaming().run(args);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
 }

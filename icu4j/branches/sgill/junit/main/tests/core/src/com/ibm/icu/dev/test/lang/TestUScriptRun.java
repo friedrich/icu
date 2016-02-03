@@ -20,10 +20,6 @@ public class TestUScriptRun extends TestFmwk
         // nothing
     }
     
-    public static void main(String[] args) throws Exception {
-        new TestUScriptRun().run(args);
-    }
-
     private static final class RunTestData
     {
         String runText;

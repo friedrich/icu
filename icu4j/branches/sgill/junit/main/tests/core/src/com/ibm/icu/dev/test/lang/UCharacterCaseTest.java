@@ -46,19 +46,6 @@ public final class UCharacterCaseTest extends TestFmwk
 
     // public methods --------------------------------------------------------
 
-    public static void main(String[] arg)
-    {
-        try
-        {
-            UCharacterCaseTest test = new UCharacterCaseTest();
-            test.run(arg);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Testing the uppercase and lowercase function of UCharacter
      */

@@ -32,11 +32,6 @@ public class CollationIteratorTest extends TestFmwk {
     String test1 = "What subset of all possible test cases?";
     String test2 = "has the highest probability of detecting";
    
-    public static void main(String[] args) throws Exception {
-        new CollationIteratorTest().run(args);
-        // new CollationIteratorTest().TestNormalizedUnicodeChar();
-    }
-    
     /*
      * @bug 4157299
      */

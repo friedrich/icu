@@ -17,10 +17,6 @@ import com.ibm.icu.text.StringPrepParseException;
  *
  */
 public class TestStringPrepProfiles extends TestFmwk {
-    public static void main(String[] args) throws Exception {
-        new TestStringPrepProfiles().run(args);
-    }
-    
     /*
      * The format of the test cases should be the following:
      * {

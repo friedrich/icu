@@ -33,10 +33,6 @@ public class CollationMonkeyTest extends TestFmwk {
     
     private String source = "-abcdefghijklmnopqrstuvwxyz#&^$@";
     
-    public static void main(String[] args) throws Exception {
-        new CollationMonkeyTest().run(args);
-    }
-    
     @Test
     public void TestCollationKey() {
         if(source.length() == 0) {

@@ -32,11 +32,6 @@ import com.ibm.icu.util.IllformedLocaleException;
 import com.ibm.icu.util.ULocale;
 
 public class ULocaleCollationTest extends TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new ULocaleCollationTest().run(args);
-    }
-
     @Test
     public void TestCollator() {
         checkService("ja_JP_YOKOHAMA", new ServiceFacade() {

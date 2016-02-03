@@ -57,10 +57,6 @@ public class PluralRulesTest extends TestFmwk {
 
     PluralRulesFactory factory = PluralRulesFactory.NORMAL;
 
-    public static void main(String[] args) throws Exception {
-        new PluralRulesTest().run(args);
-    }
-
     @Test
     public void testOverUnderflow() {
         logln(String.valueOf(Long.MAX_VALUE + 1d));

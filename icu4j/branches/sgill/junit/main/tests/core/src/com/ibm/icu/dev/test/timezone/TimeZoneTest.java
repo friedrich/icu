@@ -60,10 +60,6 @@ public class TimeZoneTest extends TestFmwk
     // verbose mode with logln.
     static final boolean isDevelopmentBuild = (VersionInfo.ICU_VERSION.getMinor() == 0);
 
-    public static void main(String[] args) throws Exception {
-        new TimeZoneTest().run(args);
-    }
-
     /**
      * NOTE: As of ICU 2.8, the mapping of 3-letter legacy aliases
      * to `real' Olson IDs is under control of the underlying JDK.

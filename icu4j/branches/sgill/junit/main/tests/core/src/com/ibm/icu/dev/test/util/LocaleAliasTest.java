@@ -53,9 +53,7 @@ public class LocaleAliasTest extends com.ibm.icu.dev.test.TestFmwk {
             availableMap.put(available[i].toString(),"");
         }
     }
-    public static void main(String[] args) {
-        new LocaleAliasTest().run(args);
-    }
+
     @Test
     public void TestCalendar() {
         ULocale defLoc = ULocale.getDefault();

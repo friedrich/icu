@@ -23,10 +23,6 @@ import com.ibm.icu.util.ULocale;
  * Tests for the <code>HebrewCalendar</code> class.
  */
 public class HebrewTest extends CalendarTest {
-    public static void main(String args[]) throws Exception {
-        new HebrewTest().run(args);
-    }
-
     // Constants to save typing.
     public static final int TISHRI  = HebrewCalendar.TISHRI;
     public static final int HESHVAN = HebrewCalendar.HESHVAN;

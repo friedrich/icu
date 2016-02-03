@@ -17,10 +17,6 @@ import com.ibm.icu.text.BreakIterator;
 
 public class BreakIteratorRegTest extends TestFmwk
 {
-    public static void main(String[] args) throws Exception {
-        new BreakIteratorRegTest().run(args);
-    }
-
     @Test
     public void TestRegUnreg() {
     Locale thailand_locale = new Locale("th", "TH", "");

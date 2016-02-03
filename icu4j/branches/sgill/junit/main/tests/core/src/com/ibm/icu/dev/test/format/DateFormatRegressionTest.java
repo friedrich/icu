@@ -41,11 +41,6 @@ import com.ibm.icu.util.ULocale;
  * Performs regression test for DateFormat
  **/
 public class DateFormatRegressionTest extends com.ibm.icu.dev.test.TestFmwk {
-
-    public static void main(String[] args) throws Exception{
-        new DateFormatRegressionTest().run(args);
-    }
-    
     /**
      * @bug 4029195
      */

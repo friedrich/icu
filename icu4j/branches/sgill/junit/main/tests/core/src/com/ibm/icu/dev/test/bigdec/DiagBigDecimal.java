@@ -5518,10 +5518,6 @@ public class DiagBigDecimal extends TestFmwk {
      *   if the first word is '<code>continue</code>' then try and run
      *   all tests, otherwise stop after the first failing test group.
      */
-    public static void main(String[] args) throws Exception {
-        new DiagBigDecimal().run(args);
-    }
-
     @org.junit.Test
     public void TestBigDecimal() {
         boolean $continue;
