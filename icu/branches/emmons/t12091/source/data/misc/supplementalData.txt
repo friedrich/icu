@@ -30502,166 +30502,358 @@ supplementalData:table(nofallback){
             }
             preferred{"H"}
         }
+        AC{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
         AD{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         AE{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
+        }
+        AF{
+            allowed{
+                "H",
+                "hb",
+                "hB",
+                "h",
+            }
+            preferred{"H"}
         }
         AG{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
-        AL{
+        AI{
             allowed{
                 "H",
                 "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        AL{
+            allowed{
+                "h",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         AM{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         AO{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        AR{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
             preferred{"H"}
         }
         AS{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
         AT{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         AU{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         AW{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         AX{
             allowed{"H"}
             preferred{"H"}
         }
-        BB{
+        AZ{
             allowed{
                 "H",
+                "hB",
                 "h",
+            }
+            preferred{"H"}
+        }
+        BA{
+            allowed{
+                "H",
+                "hB",
+                "h",
+            }
+            preferred{"H"}
+        }
+        BB{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         BD{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "H",
             }
             preferred{"h"}
         }
         BE{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         BF{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        BG{
+            allowed{
+                "H",
+                "hB",
+                "h",
+            }
             preferred{"H"}
         }
         BH{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         BJ{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         BL{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         BM{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         BN{
             allowed{
+                "hb",
+                "hB",
                 "H",
                 "h",
             }
             preferred{"h"}
+        }
+        BO{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
         }
         BQ{
             allowed{"H"}
             preferred{"H"}
         }
         BR{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         BS{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         BT{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
         BW{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
-        CA{
+        BZ{
             allowed{
                 "H",
                 "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        CA{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
+        CC{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
         CD{
-            allowed{"H"}
+            allowed{
+                "hB",
+                "H",
+            }
+            preferred{"H"}
+        }
+        CF{
+            allowed{
+                "H",
+                "h",
+                "hB",
+            }
             preferred{"H"}
         }
         CG{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        CH{
+            allowed{
+                "H",
+                "hB",
+                "h",
+            }
             preferred{"H"}
         }
         CI{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        CK{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        CL{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        CM{
+            allowed{
+                "H",
+                "h",
+                "hB",
+            }
             preferred{"H"}
         }
         CN{
             allowed{
+                "hB",
+                "hb",
                 "H",
                 "h",
             }
@@ -30669,8 +30861,10 @@ supplementalData:table(nofallback){
         }
         CO{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hB",
+                "hb",
             }
             preferred{"h"}
         }
@@ -30678,14 +30872,46 @@ supplementalData:table(nofallback){
             allowed{"H"}
             preferred{"H"}
         }
+        CR{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        CU{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
         CV{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        CX{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
             preferred{"H"}
         }
         CY{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hb",
+                "hB",
             }
             preferred{"h"}
         }
@@ -30694,13 +30920,25 @@ supplementalData:table(nofallback){
             preferred{"H"}
         }
         DE{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        DG{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
             preferred{"H"}
         }
         DJ{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
@@ -30710,54 +30948,96 @@ supplementalData:table(nofallback){
         }
         DM{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         DO{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hB",
+                "hb",
             }
             preferred{"h"}
         }
         DZ{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
+        EA{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        EC{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
         EE{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         EG{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         EH{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         ER{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
-        ET{
+        ES{
             allowed{
                 "H",
+                "hB",
                 "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        ET{
+            allowed{
+                "hB",
+                "hb",
+                "h",
+                "H",
             }
             preferred{"h"}
         }
@@ -30767,263 +31047,595 @@ supplementalData:table(nofallback){
         }
         FJ{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
-        FM{
+        FK{
             allowed{
                 "H",
                 "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        FM{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         FR{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         GA{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        GB{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
             preferred{"H"}
         }
         GD{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
+        GE{
+            allowed{
+                "H",
+                "hB",
+                "h",
+            }
+            preferred{"H"}
+        }
         GF{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        GG{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
             preferred{"H"}
         }
         GH{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
-        GL{
+        GI{
             allowed{
                 "H",
                 "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        GL{
+            allowed{
+                "h",
+                "H",
             }
             preferred{"h"}
         }
         GM{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         GN{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         GP{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        GQ{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
             preferred{"H"}
         }
         GR{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hb",
+                "hB",
             }
             preferred{"h"}
         }
-        GU{
+        GT{
             allowed{
                 "H",
+                "hB",
                 "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        GU{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         GW{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         GY{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         HK{
             allowed{
+                "hB",
+                "hb",
                 "H",
                 "h",
             }
             preferred{"h"}
         }
+        HN{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
         HR{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        IC{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
             preferred{"H"}
         }
         ID{
             allowed{"H"}
             preferred{"H"}
         }
+        IE{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
         IL{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        IM{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
             preferred{"H"}
         }
         IN{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
-        IQ{
+        IO{
             allowed{
                 "H",
                 "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        IQ{
+            allowed{
+                "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
+        }
+        IR{
+            allowed{
+                "H",
+                "hb",
+                "hB",
+                "h",
+            }
+            preferred{"H"}
         }
         IS{
             allowed{"H"}
             preferred{"H"}
         }
         IT{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        JE{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
             preferred{"H"}
         }
         JM{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         JO{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         JP{
             allowed{
                 "H",
-                "K",
                 "h",
+                "K",
+            }
+            preferred{"H"}
+        }
+        KE{
+            allowed{
+                "hB",
+                "hb",
+                "h",
+                "H",
+            }
+            preferred{"H"}
+        }
+        KG{
+            allowed{
+                "H",
+                "h",
+                "hB",
+                "hb",
             }
             preferred{"H"}
         }
         KH{
             allowed{
-                "H",
+                "hB",
                 "h",
+                "H",
+                "hb",
             }
             preferred{"h"}
         }
         KI{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
-        KN{
+        KM{
             allowed{
                 "H",
                 "h",
+                "hB",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        KN{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         KP{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hB",
+                "hb",
             }
             preferred{"h"}
         }
         KR{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hB",
+                "hb",
             }
             preferred{"h"}
         }
         KW{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         KY{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
-        LB{
+        LA{
             allowed{
                 "H",
+                "hb",
+                "hB",
                 "h",
+            }
+            preferred{"H"}
+        }
+        LB{
+            allowed{
+                "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         LC{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
-        LR{
+        LI{
+            allowed{
+                "H",
+                "hB",
+                "h",
+            }
+            preferred{"H"}
+        }
+        LK{
             allowed{
                 "H",
                 "h",
+                "hB",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        LR{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         LS{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
-        LY{
+        LT{
             allowed{
                 "H",
                 "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        LU{
+            allowed{
+                "H",
+                "h",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        LV{
+            allowed{
+                "H",
+                "hB",
+                "hb",
+                "h",
+            }
+            preferred{"H"}
+        }
+        LY{
+            allowed{
+                "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
+        MA{
+            allowed{
+                "H",
+                "h",
+                "hB",
+                "hb",
+            }
+            preferred{"H"}
+        }
         MC{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         MD{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        ME{
+            allowed{
+                "H",
+                "hB",
+                "h",
+            }
             preferred{"H"}
         }
         MF{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         MH{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
+        }
+        MK{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
         }
         ML{
             allowed{"H"}
             preferred{"H"}
         }
+        MM{
+            allowed{
+                "hB",
+                "hb",
+                "h",
+                "H",
+            }
+            preferred{"H"}
+        }
+        MN{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
         MO{
             allowed{
+                "hB",
+                "hb",
                 "H",
                 "h",
             }
@@ -31031,150 +31643,297 @@ supplementalData:table(nofallback){
         }
         MP{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         MQ{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         MR{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
+        }
+        MS{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
         }
         MW{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
+        MX{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
         MY{
             allowed{
+                "hb",
+                "hB",
                 "H",
                 "h",
             }
             preferred{"h"}
         }
         MZ{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         NA{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hB",
+                "hb",
             }
             preferred{"h"}
         }
         NC{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         NE{
             allowed{"H"}
             preferred{"H"}
         }
-        NG{
+        NF{
             allowed{
                 "H",
                 "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        NG{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
+        NI{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
         NL{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        NP{
+            allowed{
+                "H",
+                "h",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        NR{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        NU{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
             preferred{"H"}
         }
         NZ{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         OM{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         PA{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hB",
+                "hb",
             }
             preferred{"h"}
         }
-        PG{
+        PE{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        PF{
             allowed{
                 "H",
                 "h",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        PG{
+            allowed{
+                "h",
+                "H",
             }
             preferred{"h"}
         }
         PH{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         PK{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "H",
             }
             preferred{"h"}
         }
         PM{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        PN{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
             preferred{"H"}
         }
         PR{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hB",
+                "hb",
             }
             preferred{"h"}
         }
         PS{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         PT{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         PW{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
         QA{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         RE{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         RO{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        RS{
+            allowed{
+                "H",
+                "hB",
+                "h",
+            }
             preferred{"H"}
         }
         RU{
@@ -31183,22 +31942,36 @@ supplementalData:table(nofallback){
         }
         SA{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         SB{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
-        SD{
+        SC{
             allowed{
                 "H",
                 "h",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        SD{
+            allowed{
+                "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
@@ -31208,13 +31981,27 @@ supplementalData:table(nofallback){
         }
         SG{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
+        SH{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
         SI{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         SJ{
@@ -31227,232 +32014,461 @@ supplementalData:table(nofallback){
         }
         SL{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         SM{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        SN{
+            allowed{
+                "H",
+                "h",
+                "hB",
+            }
             preferred{"H"}
         }
         SO{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
         SR{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         SS{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         ST{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        SV{
+            allowed{
+                "H",
+                "hB",
+                "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        SX{
+            allowed{
+                "H",
+                "h",
+                "hb",
+                "hB",
+            }
             preferred{"H"}
         }
         SY{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         SZ{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
-        TC{
+        TA{
             allowed{
                 "H",
                 "h",
+                "hb",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        TC{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         TD{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
+        TF{
+            allowed{
+                "H",
+                "h",
+                "hB",
+            }
+            preferred{"H"}
+        }
         TG{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
+            preferred{"H"}
+        }
+        TL{
+            allowed{
+                "H",
+                "hB",
+                "hb",
+                "h",
+            }
             preferred{"H"}
         }
         TN{
             allowed{
-                "H",
                 "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         TO{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
         TR{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         TT{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         TW{
             allowed{
+                "hB",
+                "hb",
                 "H",
                 "h",
             }
             preferred{"h"}
         }
-        UM{
+        TZ{
+            allowed{
+                "hB",
+                "hb",
+                "h",
+                "H",
+            }
+            preferred{"H"}
+        }
+        UA{
             allowed{
                 "H",
+                "hB",
                 "h",
+            }
+            preferred{"H"}
+        }
+        UG{
+            allowed{
+                "hB",
+                "hb",
+                "h",
+                "H",
+            }
+            preferred{"H"}
+        }
+        UM{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         US{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
-        VC{
+        UY{
             allowed{
                 "H",
+                "hB",
                 "h",
+                "hb",
+            }
+            preferred{"H"}
+        }
+        UZ{
+            allowed{
+                "H",
+                "hB",
+                "h",
+            }
+            preferred{"H"}
+        }
+        VA{
+            allowed{
+                "H",
+                "hB",
+                "h",
+            }
+            preferred{"H"}
+        }
+        VC{
+            allowed{
+                "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         VE{
             allowed{
-                "H",
                 "h",
+                "H",
+                "hB",
+                "hb",
             }
             preferred{"h"}
         }
         VG{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         VI{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         VU{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
         WF{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         WS{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
-        YE{
+        XK{
             allowed{
                 "H",
+                "hB",
                 "h",
+            }
+            preferred{"H"}
+        }
+        YE{
+            allowed{
+                "h",
+                "hB",
+                "hb",
+                "H",
             }
             preferred{"h"}
         }
         YT{
-            allowed{"H"}
+            allowed{
+                "H",
+                "hB",
+            }
             preferred{"H"}
         }
         ZA{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         ZM{
             allowed{
-                "H",
                 "h",
+                "hb",
+                "H",
+                "hB",
             }
             preferred{"h"}
         }
         ZW{
             allowed{
-                "H",
                 "h",
+                "H",
             }
             preferred{"h"}
         }
-        zh_CN{
+        af_ZA{
             allowed{
-                "H",
                 "h",
+                "H",
                 "hB",
+                "hb",
             }
-            preferred{"hB"}
+            preferred{"h"}
         }
-        zh_HK{
+        ca_ES{
             allowed{
                 "H",
                 "h",
                 "hB",
             }
-            preferred{"hB"}
+            preferred{"H"}
         }
-        zh_MO{
+        fr_CA{
             allowed{
-                "H",
                 "h",
+                "H",
                 "hB",
             }
-            preferred{"hB"}
+            preferred{"h"}
         }
-        zh_SG{
+        gl_ES{
             allowed{
                 "H",
                 "h",
                 "hB",
             }
-            preferred{"hB"}
+            preferred{"H"}
         }
-        zh_TW{
+        gu_IN{
             allowed{
-                "H",
-                "h",
                 "hB",
+                "hb",
+                "h",
+                "H",
             }
-            preferred{"hB"}
+            preferred{"h"}
+        }
+        kn_IN{
+            allowed{
+                "hB",
+                "h",
+                "H",
+            }
+            preferred{"h"}
+        }
+        ml_IN{
+            allowed{
+                "hB",
+                "h",
+                "H",
+            }
+            preferred{"h"}
+        }
+        mr_IN{
+            allowed{
+                "hB",
+                "hb",
+                "h",
+                "H",
+            }
+            preferred{"h"}
+        }
+        pa_IN{
+            allowed{
+                "hB",
+                "hb",
+                "h",
+                "H",
+            }
+            preferred{"h"}
+        }
+        ta_IN{
+            allowed{
+                "hB",
+                "h",
+                "hb",
+                "H",
+            }
+            preferred{"h"}
+        }
+        te_IN{
+            allowed{
+                "hB",
+                "h",
+                "H",
+            }
+            preferred{"h"}
+        }
+        zu_ZA{
+            allowed{
+                "hB",
+                "hb",
+                "h",
+                "H",
+            }
+            preferred{"h"}
         }
     }
     unitPreferenceData{

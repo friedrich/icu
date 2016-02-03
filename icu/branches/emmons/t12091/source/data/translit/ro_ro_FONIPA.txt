@@ -12,6 +12,10 @@
 # http://en.wikipedia.org/wiki/Romanian_phonology
 #
 # TODO: Currently this transform does not palatalize consonants.
+$VowelEI = [e i î];
+$VowelAOU = [a â ă o u];
+$Vowel = [$VowelEI $VowelAOU];
+$Boundary =  [^[:L:][:M:][:N:]];
 :: NFC () ;
 :: Lower () ;
 # Special cases.
@@ -25,7 +29,7 @@ ia\-i → jaj ;
 iau → jaw ;
 iei → jej ;
 ieu → jew ;
-[\uffff] { eu → jew ;
+$Boundary {eu} → jew ;
 ioa → jo\u032Fa ;
 ioi → joj ;
 i\-oi → joj ;
@@ -38,7 +42,7 @@ uăi → wəj ;
 ai → aj ;
 âi → ɨj ;
 ăi → əj ;
-au } r → au ;
+au} r → au ;
 au → aw ;
 âu → ɨw ;
 ău → əw ;
@@ -53,7 +57,7 @@ i\-a → ja ;
 ie → je ;
 ii → ij ;
 io → jo ;
-iu } [aâăeiîou$] → iw ;
+iu} [$Vowel $Boundary] → iw ;
 iu → ju ;
 oa → o\u032Fa ;
 oi → oj ;
@@ -69,13 +73,15 @@ a → a ;
 ă → ə ;
 b → b ;
 ch → k ;
-c } [ei] → t\u0361ʃ ;
+{c [ei]} $VowelAOU → t\u0361ʃ ;
+{c} [ei] → t\u0361ʃ ;
 c → k ;
 d → d ;
 e → e ;
 f → f ;
 gh → ɡ ;
-g } [ei] → d\u0361ʒ ;
+{g [ei]} $VowelAOU → d\u0361ʒ ;
+{g} [ei] → d\u0361ʒ ;
 g → ɡ ;
 h → h ;
 i → i ;
@@ -102,4 +108,25 @@ x → ks ;
 y → i ;
 z → z ;
 [:P:]+ → ' ';
+# Romanian does not have any gemination.
+# https://en.wikipedia.org/wiki/Gemination#Latin_and_Romance_languages
+::null;
+pp+ → p;
+bb+ → b;
+tt+ → t;
+dd+ → d;
+kk+ → k;
+dd+ → d;
+ɡɡ+ → ɡ;
+ff+ → f;
+vv+ → v;
+hh+ → h;
+ss+ → s;
+zz+ → z;
+ʃʃ+ → ʃ;
+ʒʒ+ → ʒ;
+rr+ → r;
+ll+ → l;
+jj+ → j;
+ww+ → w;
 

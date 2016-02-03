@@ -7,7 +7,7 @@
 // *
 // ***************************************************************************
 en{
-    Version{"2.1.22.93"}
+    Version{"2.1.23.80"}
     zoneStrings{
         "Africa:Sao_Tome"{
             ec{"São Tomé"}
@@ -590,6 +590,9 @@ en{
         }
         "meta:Ponape"{
             ls{"Ponape Time"}
+        }
+        "meta:Pyongyang"{
+            ls{"Pyongyang Time"}
         }
         "meta:Qyzylorda"{
             ld{"Qyzylorda Summer Time"}

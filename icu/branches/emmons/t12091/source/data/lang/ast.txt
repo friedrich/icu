@@ -762,7 +762,6 @@ ast{
         Qaaf{"qaaf"}
         Qaag{"qaag"}
         Qaah{"qaah"}
-        Qaaj{"qaaj"}
         Qaak{"qaak"}
         Qaal{"qaal"}
         Qaam{"qaam"}
@@ -1046,7 +1045,7 @@ ast{
         VALLADER{"VALLADER"}
         WADEGILE{"romanización de Wade-Giles"}
     }
-    Version{"2.1.22.93"}
+    Version{"2.1.23.79"}
     codePatterns{
         language{"Llingua: {0}"}
         script{"Alfabetu: {0}"}

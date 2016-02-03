@@ -422,7 +422,7 @@ my{
         REVISED{"ပြန်လည်စီစစ်ထားသော ရေးထုံး"}
         SCOTLAND{"စကော့ စံ အင်္ဂလိပ်"}
     }
-    Version{"2.1.22.93"}
+    Version{"2.1.23.84"}
     codePatterns{
         language{"ဘာသာစကား - {0}"}
         script{"စာ - {0}"}

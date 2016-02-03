@@ -18,6 +18,7 @@ $IVowel = [i ɪ e {e\u031E}];
 $UVowel = [y {ɨ} {ʉ} ɯ u ʏ {ɪ\u0308} {ʊ\u0308} {ɯ\u033D} {ʊ} ø ɤ o {ø\u031E} {ɤ\u031E} {o\u031E} ɞ ɔ w {w\u0325} ʍ ʷ];
 $AVowel = [ɛ œ ɜ ʌ æ ɐ a ɶ {ä} {ɒ\u0308} ɑ ɒ];
 $SchwaVowel = [ɘ ɵ ə {ɵ\u031E}];
+$Vowel = [$IVowel $UVowel $AVowel $SchwaVowel];
 $Click = [ʘ ɋ ǀ ʇ ǃ ʗ ǂ ʄ ǁ ʖ];
 $Boundary =  [^[:L:][:M:][:N:]];
 ::NFD;
@@ -34,50 +35,60 @@ $UVowel [j $IVowel] [e {e\u031E} $SchwaVowel] → uia;
 yʉ → iu;
 ::NULL;
 # Vowels
-$Boundary {$IVowel ː} → إ\u0650ي;
-$Boundary {$IVowel} → إ\u0650;
+$Boundary {ʔ? $IVowel ː} → إ\u0650ي;
+$Boundary {ʔ? $IVowel} → إ\u0650;
+{$IVowel ʔ} $Boundary → ئ;
+{$IVowel ː ʔ} $Boundary → يء;
+{$IVowel ː ʔ} [$Vowel] → ئ;
 $IVowel ː? → ي;
-$Boundary {$UVowel ː} → أو;
-$Boundary {$UVowel} → أ;
+$Boundary {ʔ? $UVowel ː} → أو;
+$Boundary {ʔ? $UVowel} → أ;
+{$UVowel ʔ} $Boundary → ؤ;
+{$UVowel ː ʔ} $Boundary → وء;
 $UVowel ː? → و;
-$Boundary {$AVowel ː} → آ;
-$Boundary {$AVowel} → أ;
+$Boundary {ʔ? $AVowel ː} → آ;
+$Boundary {ʔ? $AVowel} → أ;
+{$AVowel ʔ} $Boundary → أ;
+{$AVowel ː ʔ} $Boundary → اء;
+$AVowel ː? ʔ $AVowel ː? → اءا;
 $AVowel ː? → ا;
-$Boundary {$SchwaVowel ː} → إ\u0650ي;
-$Boundary {$SchwaVowel} → أ;
+$Boundary {ʔ? $SchwaVowel ː} → إ\u0650ي;
+$Boundary {ʔ? $SchwaVowel} → أ;
 $SchwaVowel ː → ي;
 $SchwaVowel → ;
+# TODO: Handle glottal stop.
+ʔ → ;
 # Shadda for long (geminated) consonants
 ː → \u0651;
 # Affricates
-[{t\u0361ʃ} ʧ] → تش;
+[{t\u0361ʃ} ʧ] → ت\u0652ش;
 # Clicks
-[ɡ g ɠ k] $Click → كش;
-$Click → تش;
+[ɡ g ɠ k] $Click → ك\u0652ش;
+$Click → ت\u0652ش;
 # Nasal stops
 [{m\u0325} m ɱ] → م;
 [{n\u033C\u030A} {n\u033C} {n\u0325} n {ɳ\u030A} ɳ {ɲ\u030A} {ɲ\u0325} ɲ] → ن;
 [{ŋ\u030A} ŋ {ɴ\u0325} ɴ] k → نك;
-[{ŋ\u030A} ŋ {ɴ\u0325} ɴ] [ɡ g ɠ]? → نغ;
+[{ŋ\u030A} ŋ {ɴ\u0325} ɴ] [ɡ g ɠ]? → ن\u0652غ;
 # Non-nasal stops
 [p b {p\u032A} {b\u032A} ɓ] → ب;
 [{d\u033C} d ɗ ᶑ] → د;
 [{t\u033C} t] → ت;
 [ʈ] → ط;
 [ɖ] → ض;
-c → تش;
+c → ت\u0652ش;
 ɟ → دج;
 k → ك;
 [ɡ g ɠ] → غ;
 [q ɢ ʡ ʛ] → ق;
-ʔ → ء;
 # Sibilant fricatives
 s → س;
 z → ز;
 [ʃ ʂ ɕ ʄ] → ش;
 [ʒ ʐ ʑ] → ج;
 # Non-sibilant fricatives
-[ɸ β f v] → ف;
+[ɸ f v] → ف;
+β → ب;
 [{θ\u033C} θ {θ\u0331}] → ث;
 [{ð\u033C} ð {ð\u0320}] → ذ;
 ç → ش;
@@ -97,8 +108,8 @@ z → ز;
 ʢ → ع;
 j $IVowel? ː? → ي;
 # Laterals
-ɬ → شل;
-ɮ → جل;
+ɬ → ش\u0652ل;
+ɮ → ج\u0652ل;
 {[{ʎ\u0325} ʎ]} [^ $IVowel j ʝ] → لي;
 [{l\u033C} {l\u0325} l {ɭ\u030A} ɭ {ʎ\u0325} ʎ] → ل;
 [ʟ {ʟ\u0320}] → غ;

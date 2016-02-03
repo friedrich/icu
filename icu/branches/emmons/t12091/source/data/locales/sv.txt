@@ -215,13 +215,16 @@ sv{
                 percentSign{"%"}
                 plusSign{"+"}
                 superscriptingExponent{"×"}
-                timeSeparator{":"}
+                timeSeparator{
+                    ":",
+                    ".",
+                }
             }
         }
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.22.93"}
+    Version{"2.1.23.66"}
     calendar{
         buddhist{
             eras{
@@ -439,9 +442,13 @@ sv{
         generic{
             DateTimePatterns{
                 "'kl'. HH:mm:ss zzzz",
+                "'kl'. HH.mm.ss zzzz",
                 "HH:mm:ss z",
+                "HH.mm.ss z",
                 "HH:mm:ss",
+                "HH.mm.ss",
                 "HH:mm",
+                "HH.mm",
                 "EEEE d MMMM y G",
                 "d MMMM y G",
                 "d MMM y G",
@@ -593,9 +600,13 @@ sv{
             }
             DateTimePatterns{
                 "'kl'. HH:mm:ss zzzz",
+                "'kl'. HH.mm.ss zzzz",
                 "HH:mm:ss z",
+                "HH.mm.ss z",
                 "HH:mm:ss",
+                "HH.mm.ss",
                 "HH:mm",
+                "HH.mm",
                 "EEEE d MMMM y",
                 "d MMMM y",
                 "d MMM y",
@@ -1239,9 +1250,13 @@ sv{
         japanese{
             DateTimePatterns{
                 "'kl'. HH:mm:ss zzzz",
+                "'kl'. HH.mm.ss zzzz",
                 "HH:mm:ss z",
+                "HH.mm.ss z",
                 "HH:mm:ss",
+                "HH.mm.ss",
                 "HH:mm",
+                "HH.mm",
                 "EEEE d MMMM y G",
                 "d MMMM y G",
                 "d MMM y G",

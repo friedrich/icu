@@ -212,7 +212,7 @@ tr{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.22.93"}
+    Version{"2.1.23.73"}
     calendar{
         buddhist{
             eras{

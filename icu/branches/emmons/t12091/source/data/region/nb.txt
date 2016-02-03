@@ -311,5 +311,5 @@ nb{
         FK{"Falklandsøyene (Islas Malvinas)"}
         MK{"Makedonia (FYROM)"}
     }
-    Version{"2.1.22.93"}
+    Version{"2.1.23.79"}
 }

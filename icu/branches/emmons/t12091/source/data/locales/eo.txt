@@ -19,7 +19,7 @@ eo{
             }
         }
     }
-    Version{"2.1.23.7"}
+    Version{"2.1.23.54"}
     calendar{
         generic{
             DateTimePatterns{

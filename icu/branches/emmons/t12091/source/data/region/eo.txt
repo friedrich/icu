@@ -9,7 +9,7 @@
 eo{
     Countries{
         AD{"Andoro"}
-        AE{"Unuiĝintaj Arabaj Emirlandos"}
+        AE{"Unuiĝintaj Arabaj Emirlandoj"}
         AF{"Afganujo"}
         AG{"Antigvo-Barbudo"}
         AI{"Angvilo"}
@@ -232,5 +232,5 @@ eo{
         ZM{"Zambio"}
         ZW{"Zimbabvo"}
     }
-    Version{"2.1.23.7"}
+    Version{"2.1.23.54"}
 }

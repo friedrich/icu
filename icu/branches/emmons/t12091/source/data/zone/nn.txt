@@ -7,7 +7,7 @@
 // *
 // ***************************************************************************
 nn{
-    Version{"2.1.23.7"}
+    Version{"2.1.23.66"}
     zoneStrings{
         "America:Belem"{
             ec{"Belém"}
@@ -112,6 +112,6 @@ nn{
         }
         fallbackFormat{"{1} ({0})"}
         gmtFormat{"GMT{0}"}
-        hourFormat{"+HH:mm;-HH:mm"}
+        hourFormat{"+HH.mm;-HH.mm"}
     }
 }

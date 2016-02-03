@@ -12,9 +12,13 @@ sv_FI{
         gregorian{
             DateTimePatterns{
                 "'kl'. HH:mm:ss zzzz",
+                "'kl'. HH.mm.ss zzzz",
                 "HH:mm:ss z",
+                "HH.mm.ss z",
                 "HH:mm:ss",
+                "HH.mm.ss",
                 "HH:mm",
+                "HH.mm",
                 "EEEE d MMMM y",
                 "d MMMM y",
                 "d MMM y",

@@ -1221,10 +1221,19 @@ root {
         und-t-d0-ascii {
             alias {"Latin-ASCII"}
         }
+        und-Latn-t-s0-ascii {
+            alias {"Latin-ASCII"}
+        }
         Latin-ASCII {
             file {
                 resource:process(transliterator) {"Latin_ASCII.txt"}
                 direction {"FORWARD"}
+            }
+        }
+        ASCII-Latin {
+            file {
+                resource:process(transliterator) {"Latin_ASCII.txt"}
+                direction {"REVERSE"}
             }
         }
 
@@ -2333,12 +2342,42 @@ root {
             }
         }
 
+        am-t-ch {
+            alias {"ch-am"}
+        }
+        ch-am {
+            file {
+                resource:process(transliterator) {"ch_am.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        ar-t-ch {
+            alias {"ch-ar"}
+        }
+        ch-ar {
+            file {
+                resource:process(transliterator) {"ch_ar.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
         ch-fonipa-t-ch {
             alias {"ch-ch_FONIPA"}
         }
         ch-ch_FONIPA {
             file {
                 resource:process(transliterator) {"ch_ch_FONIPA.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        fa-t-ch {
+            alias {"ch-fa"}
+        }
+        ch-fa {
+            file {
+                resource:process(transliterator) {"ch_fa.txt"}
                 direction {"FORWARD"}
             }
         }
@@ -2473,6 +2512,16 @@ root {
             }
         }
 
+        ar-t-eo {
+            alias {"eo-ar"}
+        }
+        eo-ar {
+            file {
+                resource:process(transliterator) {"eo_ar.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
         eo-fonipa-t-eo {
             alias {"eo-eo_FONIPA"}
         }
@@ -2499,6 +2548,16 @@ root {
         es-am {
             file {
                 resource:process(transliterator) {"es_am.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        ar-t-es {
+            alias {"es-ar"}
+        }
+        es-ar {
+            file {
+                resource:process(transliterator) {"es_ar.txt"}
                 direction {"FORWARD"}
             }
         }
@@ -2549,6 +2608,16 @@ root {
         es_419-am {
             file {
                 resource:process(transliterator) {"es_419_am.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        ar-t-es-419 {
+            alias {"es_419-ar"}
+        }
+        es_419-ar {
+            file {
+                resource:process(transliterator) {"es_419_ar.txt"}
                 direction {"FORWARD"}
             }
         }
@@ -2633,6 +2702,16 @@ root {
             }
         }
 
+        ar-t-hy {
+            alias {"hy-ar"}
+        }
+        hy-ar {
+            file {
+                resource:process(transliterator) {"hy_ar.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
         fa-t-hy {
             alias {"hy-fa"}
         }
@@ -2663,6 +2742,16 @@ root {
             }
         }
 
+        ar-t-hy-arevmda {
+            alias {"hy_AREVMDA-ar"}
+        }
+        hy_AREVMDA-ar {
+            file {
+                resource:process(transliterator) {"hy_AREVMDA_ar.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
         fa-t-hy-arevmda {
             alias {"hy_AREVMDA-fa"}
         }
@@ -2689,6 +2778,16 @@ root {
         ia-am {
             file {
                 resource:process(transliterator) {"ia_am.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        ar-t-ia {
+            alias {"ia-ar"}
+        }
+        ia-ar {
+            file {
+                resource:process(transliterator) {"ia_ar.txt"}
                 direction {"FORWARD"}
             }
         }
@@ -2763,6 +2862,16 @@ root {
             }
         }
 
+        ar-t-kk {
+            alias {"kk-ar"}
+        }
+        kk-ar {
+            file {
+                resource:process(transliterator) {"kk_ar.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
         fa-t-kk {
             alias {"kk-fa"}
         }
@@ -2789,6 +2898,16 @@ root {
         ky-am {
             file {
                 resource:process(transliterator) {"ky_am.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        ar-t-ky {
+            alias {"ky-ar"}
+        }
+        ky-ar {
+            file {
+                resource:process(transliterator) {"ky_ar.txt"}
                 direction {"FORWARD"}
             }
         }
@@ -2869,6 +2988,16 @@ root {
         my-am {
             file {
                 resource:process(transliterator) {"my_am.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        ar-t-my {
+            alias {"my-ar"}
+        }
+        my-ar {
+            file {
+                resource:process(transliterator) {"my_ar.txt"}
                 direction {"FORWARD"}
             }
         }
@@ -2969,6 +3098,16 @@ root {
         rm_SURSILV-am {
             file {
                 resource:process(transliterator) {"rm_SURSILV_am.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        ar-t-rm-sursilv {
+            alias {"rm_SURSILV-ar"}
+        }
+        rm_SURSILV-ar {
+            file {
+                resource:process(transliterator) {"rm_SURSILV_ar.txt"}
                 direction {"FORWARD"}
             }
         }
@@ -3096,6 +3235,16 @@ root {
             }
         }
 
+        ar-t-sat {
+            alias {"sat-ar"}
+        }
+        sat-ar {
+            file {
+                resource:process(transliterator) {"sat_ar.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
         fa-t-sat {
             alias {"sat-fa"}
         }
@@ -3122,6 +3271,16 @@ root {
         si-am {
             file {
                 resource:process(transliterator) {"si_am.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        ar-t-si {
+            alias {"si-ar"}
+        }
+        si-ar {
+            file {
+                resource:process(transliterator) {"si_ar.txt"}
                 direction {"FORWARD"}
             }
         }
@@ -3335,6 +3494,16 @@ root {
             }
         }
 
+        ar-t-xh {
+            alias {"xh-ar"}
+        }
+        xh-ar {
+            file {
+                resource:process(transliterator) {"xh_ar.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
         fa-t-xh {
             alias {"xh-fa"}
         }
@@ -3381,6 +3550,16 @@ root {
         zu-am {
             file {
                 resource:process(transliterator) {"zu_am.txt"}
+                direction {"FORWARD"}
+            }
+        }
+
+        ar-t-zu {
+            alias {"zu-ar"}
+        }
+        zu-ar {
+            file {
+                resource:process(transliterator) {"zu_ar.txt"}
                 direction {"FORWARD"}
             }
         }

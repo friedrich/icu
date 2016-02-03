@@ -167,7 +167,7 @@ nl{
         KP{"Noord-Korea"}
         KR{"Zuid-Korea"}
         KW{"Koeweit"}
-        KY{"Caymaneilanden"}
+        KY{"Kaaimaneilanden"}
         KZ{"Kazachstan"}
         LA{"Laos"}
         LB{"Libanon"}
@@ -311,5 +311,5 @@ nl{
         FK{"Falklandeilanden (Islas Malvinas)"}
         MK{"Macedonië (FYROM)"}
     }
-    Version{"2.1.22.93"}
+    Version{"2.1.23.81"}
 }

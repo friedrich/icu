@@ -311,5 +311,5 @@ sv{
         FK{"Falklandsöarna (Malvinerna)"}
         MK{"f.d. jugoslaviska republiken Makedonien"}
     }
-    Version{"2.1.22.93"}
+    Version{"2.1.23.66"}
 }

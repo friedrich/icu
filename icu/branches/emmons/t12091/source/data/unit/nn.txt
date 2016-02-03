@@ -7,11 +7,20 @@
 // *
 // ***************************************************************************
 nn{
-    Version{"2.1.23.7"}
+    Version{"2.1.23.66"}
     durationUnits{
-        hm{"h:mm"}
-        hms{"h:mm:ss"}
-        ms{"m:ss"}
+        hm{
+            "h.mm",
+            "h:mm",
+        }
+        hms{
+            "h.mm.ss",
+            "h:mm:ss",
+        }
+        ms{
+            "m.ss",
+            "m:ss",
+        }
     }
     unitsNarrow{
         area{

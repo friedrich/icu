@@ -137,7 +137,7 @@ to{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.23.7"}
+    Version{"2.1.23.79"}
     calendar{
         generic{
             DateTimePatterns{

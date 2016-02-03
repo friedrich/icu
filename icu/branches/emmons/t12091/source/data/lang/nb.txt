@@ -777,7 +777,6 @@ nb{
         Qaaf{"qaaf"}
         Qaag{"qaag"}
         Qaah{"qaah"}
-        Qaaj{"qaaj"}
         Qaak{"qaak"}
         Qaal{"qaal"}
         Qaam{"qaam"}
@@ -1104,7 +1103,7 @@ nb{
         VALLADER{"vallader"}
         WADEGILE{"Wade-Giles-romanisering"}
     }
-    Version{"2.1.22.93"}
+    Version{"2.1.23.79"}
     codePatterns{
         language{"Språk: {0}"}
         script{"Skrift: {0}"}

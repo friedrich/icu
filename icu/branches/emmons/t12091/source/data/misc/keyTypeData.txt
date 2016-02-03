@@ -39,6 +39,7 @@ keyTypeData:table(nofallback){
         colreorder{"kr"}
         colstrength{"ks"}
         currency{"cu"}
+        d0{""}
         em{""}
         fw{""}
         hours{"hc"}
@@ -47,10 +48,14 @@ keyTypeData:table(nofallback){
         kv{""}
         lb{""}
         lw{""}
+        m0{""}
+        measure{"ms"}
         numbers{"nu"}
         rg{""}
+        s0{""}
         sd{""}
         ss{""}
+        t0{""}
         timezone{"tz"}
         va{""}
         variabletop{"vt"}
@@ -456,6 +461,29 @@ keyTypeData:table(nofallback){
             zwl{""}
             zwr{""}
         }
+        d0{
+            accents{""}
+            ascii{""}
+            casefold{""}
+            digit{""}
+            fcc{""}
+            fcd{""}
+            fullwidth{"fwidth"}
+            halfwidth{"hwidth"}
+            hex{""}
+            lower{""}
+            name{"charname"}
+            nfc{""}
+            nfd{""}
+            nfkc{""}
+            nfkd{""}
+            null{""}
+            numericPinyin{"npinyin"}
+            publishing{"publish"}
+            remove{""}
+            title{""}
+            upper{""}
+        }
         em{
             default{""}
             emoji{""}
@@ -528,6 +556,33 @@ keyTypeData:table(nofallback){
             breakall{""}
             keepall{""}
             normal{""}
+        }
+        m0{
+            alaloc{""}
+            bgn{""}
+            buckwalt{""}
+            c{"c11"}
+            css{""}
+            din{""}
+            gost{""}
+            iso{""}
+            java{""}
+            mcst{""}
+            mns{""}
+            names{"prprname"}
+            percent{""}
+            perl{""}
+            plain{""}
+            satts{""}
+            ungegn{""}
+            unicode{""}
+            xml{""}
+            xml10{""}
+        }
+        measure{
+            imperial{"uksystem"}
+            metric{""}
+            ussystem{""}
         }
         numbers{
             ahom{""}
@@ -611,12 +666,22 @@ keyTypeData:table(nofallback){
         rg{
             RG_KEY_VALUE{""}
         }
+        s0{
+            accents{""}
+            ascii{""}
+            hex{""}
+            numericPinyin{"npinyin"}
+            publishing{"publish"}
+        }
         sd{
             SUBDIVISION_CODE{""}
         }
         ss{
             none{""}
             standard{""}
+        }
+        t0{
+            und{""}
         }
         timezone:alias{"/ICUDATA/timezoneTypes/typeMap/timezone"}
         va{
