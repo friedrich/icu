@@ -16,11 +16,11 @@ import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.SimpleCache;
 import com.ibm.icu.impl.SimpleFormatterImpl;
 import com.ibm.icu.impl.StandardPlural;
+import com.ibm.icu.impl.UResource;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.ICUException;
 import com.ibm.icu.util.ULocale;
-import com.ibm.icu.impl.UResource;
 import com.ibm.icu.util.UResourceBundle;
 
 
@@ -235,7 +235,7 @@ public final class RelativeDateTimeFormatter {
          */
         NOW,
 
-        /*
+        /**
          * Quarter
          * @internal TODO: propose for addition in ICU 57
          * @deprecated This API is ICU internal only.
@@ -454,10 +454,6 @@ public final class RelativeDateTimeFormatter {
 
     /**
      * Gets the string value from qualitativeUnitMap with fallback based on style.
-     * @param style
-     * @param unit
-     * @param direction
-     * @return
      */
     private String getAbsoluteUnitString(Style style, AbsoluteUnit unit, Direction direction) {
         EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap;
@@ -512,7 +508,7 @@ public final class RelativeDateTimeFormatter {
 
     /**
      * Return capitalization context.
-     *
+     * @return The capitalization context.
      * @stable ICU 54
      */
     public DisplayContext getCapitalizationContext() {
@@ -521,7 +517,7 @@ public final class RelativeDateTimeFormatter {
 
     /**
      * Return style
-     *
+     * @return The formatting style. 
      * @stable ICU 54
      */
     public Style getFormatStyle() {
