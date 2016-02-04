@@ -899,46 +899,41 @@ void RelativeDateTimeFormatterTest::VerifyIllegalArgument(
 
 /* Add tests to check "sideways" data loading. */
 void RelativeDateTimeFormatterTest::VerifySidewaysDataLoading(void) {
-  UErrorCode status = U_ZERO_ERROR;
-  UnicodeString actual;
-  UnicodeString expected;
-  Locale enGbLocale("en_GB");
+    UErrorCode status = U_ZERO_ERROR;
+    UnicodeString actual;
+    UnicodeString expected;
+    Locale enGbLocale("en_GB");
 
-  RelativeDateTimeFormatter fmt(enGbLocale, NULL, UDAT_STYLE_NARROW,
-                                UDISPCTX_CAPITALIZATION_NONE, status);
+    RelativeDateTimeFormatter fmt(enGbLocale, NULL, UDAT_STYLE_NARROW,
+                                  UDISPCTX_CAPITALIZATION_NONE, status);
 
-  status = U_ZERO_ERROR;
-  actual = "";
-  fmt.format(3.0, UDAT_DIRECTION_NEXT, UDAT_RELATIVE_MONTHS, actual, status);
-  expected = "in 3 mo";
-  assertEquals("narrow in 3 mo", expected, actual);
+    status = U_ZERO_ERROR;
+    actual = "";
+    fmt.format(3.0, UDAT_DIRECTION_NEXT, UDAT_RELATIVE_MONTHS, actual, status);
+    expected = "in 3 mo";
+    assertEquals("narrow in 3 mo", expected, actual);
 
-  actual = "";
-  fmt.format(3.0, UDAT_DIRECTION_LAST, UDAT_RELATIVE_DAYS, actual, status);
-  expected = "3 days ago";
-  assertEquals("3 days ago (positive 3.0): ", expected, actual);
+    fmt.format(3.0, UDAT_DIRECTION_LAST, UDAT_RELATIVE_DAYS, actual.remove(), status);
+    expected = "3 days ago";
+    assertEquals("3 days ago (positive 3.0): ", expected, actual);
 
-  actual = "";
-  expected = "-3 days ago";
-  fmt.format(-3.0, UDAT_DIRECTION_LAST, UDAT_RELATIVE_DAYS, actual, status);
-  assertEquals("3 days ago (negative 3.0): ", expected, actual);
+    expected = "-3 days ago";
+    fmt.format(-3.0, UDAT_DIRECTION_LAST, UDAT_RELATIVE_DAYS, actual.remove(), status);
+    assertEquals("3 days ago (negative 3.0): ", expected, actual);
 
-  expected = "next yr.";
-  actual = "";
-  fmt.format(UDAT_DIRECTION_NEXT, UDAT_ABSOLUTE_YEAR, actual, status);
-  assertEquals("next year: ", expected, actual);
+    expected = "next yr.";
+    fmt.format(UDAT_DIRECTION_NEXT, UDAT_ABSOLUTE_YEAR, actual.remove(), status);
+    assertEquals("next year: ", expected, actual);
 
-  // Testing the SHORT style
-  RelativeDateTimeFormatter fmtshort(enGbLocale, NULL, UDAT_STYLE_SHORT,
-                                UDISPCTX_CAPITALIZATION_NONE, status);
-  expected = "now";
-  actual = "";
-  fmtshort.format(0.0, UDAT_DIRECTION_NEXT, UDAT_RELATIVE_SECONDS, actual, status);
-  expected = "next yr.";
-  actual = "";
-  fmt.format(UDAT_DIRECTION_NEXT, UDAT_ABSOLUTE_YEAR, actual, status);
-  assertEquals("next year: ", expected, actual);
-  /* TODO: Add tests with QUARTERS */
+    // Testing the SHORT style
+    RelativeDateTimeFormatter fmtshort(enGbLocale, NULL, UDAT_STYLE_SHORT,
+                                  UDISPCTX_CAPITALIZATION_NONE, status);
+    expected = "now";
+    fmtshort.format(0.0, UDAT_DIRECTION_NEXT, UDAT_RELATIVE_SECONDS, actual.remove(), status);
+
+    expected = "next yr.";
+    fmt.format(UDAT_DIRECTION_NEXT, UDAT_ABSOLUTE_YEAR, actual.remove(), status);
+    assertEquals("next year: ", expected, actual);
 }
 
 static const char *kLast2 = "Last_2";

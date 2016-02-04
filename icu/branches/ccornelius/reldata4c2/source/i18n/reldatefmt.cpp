@@ -42,9 +42,6 @@
 
 // Copied from uscript_props.cpp
 
-// TODO: Remove when done debugging.
-#include <iostream>
-
 using namespace std;
 
 static UMutex gBrkIterMutex = U_MUTEX_INITIALIZER;
@@ -71,12 +68,9 @@ public:
                                                      int pastFutureIndex,
                                                      int pluralUnit) const;
 
-  // has numbers: e.g Next Tuesday; Yesterday; etc. For second index, 0
-    // means past e.g 5 days ago; 1 means future e.g in 5 days.
-    // TODO: remove this eventually.
-    QuantityFormatter relativeUnits[UDAT_STYLE_COUNT][UDAT_RELATIVE_UNIT_COUNT][2];
-
-    // The new data structure to be used in formatting.
+    // SimpleFormatter pointers for relative unit format,
+    // e.g., Next Tuesday; Yesterday; etc. For third index, 0
+    // means past, e.g., 5 days ago; 1 means future, e.g., in 5 days.
     SimpleFormatter *relativeUnitsFormatter[UDAT_STYLE_COUNT]
       [UDAT_RELATIVE_UNIT_COUNT][2][StandardPlural::COUNT];
 
@@ -99,6 +93,15 @@ private:
 };
 
 RelativeDateTimeCacheData::~RelativeDateTimeCacheData() {
+    // clear out the cache arrays
+    for (int style = 0; style < UDAT_STYLE_COUNT; ++style) {
+        for (int relUnit = 0; relUnit < UDAT_RELATIVE_UNIT_COUNT; ++relUnit) {
+            for (int pl = 0; pl < StandardPlural::COUNT; ++pl) {
+              delete relativeUnitsFormatter[style][relUnit][0][pl];
+              delete relativeUnitsFormatter[style][relUnit][1][pl];
+            }
+        }
+    }
     delete combinedDateAndTime;
 }
 
@@ -338,7 +341,7 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
          ~RelativeTimeSink();
 
      virtual ResourceTableSink *getOrCreateTableSink(
-         const char *key, int32_t /* initialSize */, UErrorCode &errorCode) {
+         const char *key, int32_t /* initialSize */, UErrorCode& /* &errorCode */) {
        outer.relUnitIndex = genericToRelUnit(outer.genericUnit);
        if (outer.relUnitIndex == -1) {
          return NULL;
@@ -429,7 +432,7 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
      }
 
      virtual ResourceTableSink *getOrCreateTableSink(
-         const char *key, int32_t initialSize, UErrorCode &errorCode) {
+         const char *key, int32_t /* initialSize */, UErrorCode& /* errorCode */) {
        if (uprv_strcmp(key, "relative") == 0) {
          return &outer.relativeSink;
        } else if (uprv_strcmp(key, "relativeTime") == 0) {
@@ -588,7 +591,7 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
 
    // Top level sink
    virtual ResourceTableSink *getOrCreateTableSink(
-       const char *key, int32_t /* initialSize */, UErrorCode &errorCode) {
+       const char *key, int32_t /* initialSize */, UErrorCode& /* errorCode */) {
      style= styleFromString(key);
      int unitSize = uprv_strlen(key) - styleSuffixLength(style);
      genericUnit = unitOrNullFromString(key, unitSize);
