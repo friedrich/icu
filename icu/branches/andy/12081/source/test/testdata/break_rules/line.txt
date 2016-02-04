@@ -152,7 +152,9 @@ LB29:        IS CM* (AL | HL);
 LB30.1:      (AL | CM | HL | NU) CM* OP;
 LB30.2:      CP CM* (AL | HL | NU);
 
-LB30a:       RI CM* RI;
+# LB31  keep pairs of RI together.
+LB30a.1:     RI CM* RI CM* [BK CR LF NL SP ZW WJ GL CL CP EX IS SY QU BA HY NS];
+LB30a.2:     RI CM* RI CM* ÷;
 
 # LB31 Break Everywhere Else.
 #      Include combining marks

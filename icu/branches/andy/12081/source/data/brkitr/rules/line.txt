@@ -634,9 +634,10 @@ $CM* ($ALPlus | $HL | $NU) $CM* $CP;
 #    WJ, GL, QU, etc. are classes with rules like "WJ x "   which includes "WJ x RI".
 #  
 [{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL] $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
-// We are going to need two of the above rules in play at the same time.
-// The second can start on RI. NO!. Start with a non-RI, plus two RIs 
-// Use rule status tags. Hack.
+[{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL] $CM* $RI $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
+# We are going to need two of the above rules in play at the same time.
+# The second can start on RI. NO!. Start with a non-RI, plus two RIs 
+# Use rule status tags. Hack.
 $RI $CM* $RI;
 $RI $CM* ([$WJ $GL $QU $BB] |  (($HY | $BA)$CM* $HL));
 

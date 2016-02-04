@@ -323,7 +323,7 @@ void RBBITest::TestStatusReturn() {
                                   "$Numbers = [:N:];\n"
                                   "$Letters+{1};\n"
                                   "$Numbers+{2};\n"
-                                  "Help\\ {4}/me\\!;\n"
+                                  "Help\\ /me\\!{4};\n"
                                   "[^$Letters $Numbers];\n"
                                   "!.*;\n", -1, US_INV);
      UnicodeString testString1  = "abc123..abc Help me Help me!";
@@ -334,28 +334,27 @@ void RBBITest::TestStatusReturn() {
      UErrorCode status=U_ZERO_ERROR;
      UParseError    parseError;
 
-     BreakIterator *bi = new RuleBasedBreakIterator(rulesString1, parseError, status);
+     LocalPointer <BreakIterator> bi(new RuleBasedBreakIterator(rulesString1, parseError, status));
      if(U_FAILURE(status)) {
-         dataerrln("FAIL : in construction - %s", u_errorName(status));
-     } else {
-         int32_t  pos;
-         int32_t  i = 0;
-         bi->setText(testString1);
-         for (pos=bi->first(); pos!= BreakIterator::DONE; pos=bi->next()) {
-             if (pos != bounds1[i]) {
-                 errln("FAIL:  expected break at %d, got %d\n", bounds1[i], pos);
-                 break;
-             }
-
-             int tag = bi->getRuleStatus();
-             if (tag != brkStatus[i]) {
-                 errln("FAIL:  break at %d, expected tag %d, got tag %d\n", pos, brkStatus[i], tag);
-                 break;
-             }
-             i++;
-         }
+         dataerrln("%s:%d error in break iterator construction - %s", __FILE__, __LINE__,  u_errorName(status));
+         return;
      }
-     delete bi;
+     int32_t  pos;
+     int32_t  i = 0;
+     bi->setText(testString1);
+     for (pos=bi->first(); pos!= BreakIterator::DONE; pos=bi->next()) {
+         if (pos != bounds1[i]) {
+             errln("%s:%d  expected break at %d, got %d\n", __FILE__, __LINE__, bounds1[i], pos);
+             break;
+         }
+
+         int tag = bi->getRuleStatus();
+         if (tag != brkStatus[i]) {
+             errln("%s:%d  break at %d, expected tag %d, got tag %d\n", __FILE__, __LINE__, pos, brkStatus[i], tag);
+             break;
+         }
+         i++;
+     }
 }
 
 
