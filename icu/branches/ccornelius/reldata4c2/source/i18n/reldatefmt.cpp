@@ -12,7 +12,6 @@
 
 #if !UCONFIG_NO_FORMATTING && !UCONFIG_NO_BREAK_ITERATION
 
-#include "cstr.h"
 #include "unicode/ureldatefmt.h"
 #include "unicode/udisplaycontext.h"
 #include "unicode/unum.h"
@@ -41,8 +40,6 @@
 #include "unifiedcache.h"
 
 // Copied from uscript_props.cpp
-
-using namespace std;
 
 static UMutex gBrkIterMutex = U_MUTEX_INITIALIZER;
 
