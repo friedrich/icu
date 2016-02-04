@@ -20,7 +20,6 @@ en_CA{
                 "MMMM d, r(U)",
                 "MMM d, r",
                 "r-MM-dd",
-                "d/M/r",
                 "{1}, {0}",
                 "{1} 'at' {0}",
                 "{1} 'at' {0}",
@@ -31,51 +30,24 @@ en_CA{
                 Ed{"d E"}
                 GyMMMEd{"E, MMM d, r(U)"}
                 GyMMMd{"MMM d, r"}
-                MEd{
-                    "E, MM-dd",
-                    "E, d/M",
-                }
+                MEd{"E, MM-dd"}
                 MMMEd{"E, MMM d"}
                 MMMMd{"MMMM d"}
                 MMMd{"MMM d"}
-                Md{
-                    "MM-dd",
-                    "d/M",
-                }
+                Md{"MM-dd"}
                 UMMMd{"MMM d, U"}
-                UMd{
-                    "U-MM-dd",
-                    "d/M/U",
-                }
-                yMd{
-                    "r-MM-dd",
-                    "d/M/r",
-                }
-                yyyyM{
-                    "r-MM",
-                    "M/r",
-                }
-                yyyyMEd{
-                    "E, r-MM-dd",
-                    "E, d/M/r",
-                }
+                UMd{"U-MM-dd"}
+                yMd{"r-MM-dd"}
+                yyyyM{"r-MM"}
+                yyyyMEd{"E, r-MM-dd"}
                 yyyyMMMEd{"E, MMM d, r(U)"}
                 yyyyMMMd{"MMM d, r"}
-                yyyyMd{
-                    "r-MM-dd",
-                    "d/M/r",
-                }
+                yyyyMd{"r-MM-dd"}
             }
             intervalFormats{
                 MEd{
-                    M{
-                        "E, MM-dd – E, MM-dd",
-                        "E, d/M – E, d/M",
-                    }
-                    d{
-                        "E, MM-dd – E, MM-dd",
-                        "E, d/M – E, d/M",
-                    }
+                    M{"E, MM-dd – E, MM-dd"}
+                    d{"E, MM-dd – E, MM-dd"}
                 }
                 MMMEd{
                     M{"E, MMM d – E, MMM d"}
@@ -86,38 +58,17 @@ en_CA{
                     d{"MMM d – d"}
                 }
                 Md{
-                    M{
-                        "MM-dd – MM-dd",
-                        "d/M – d/M",
-                    }
-                    d{
-                        "MM-dd – MM-dd",
-                        "d/M – d/M",
-                    }
+                    M{"MM-dd – MM-dd"}
+                    d{"MM-dd – MM-dd"}
                 }
                 yM{
-                    M{
-                        "y-MM – y-MM",
-                        "M/y – M/y",
-                    }
-                    y{
-                        "y-MM – y-MM",
-                        "M/y – M/y",
-                    }
+                    M{"y-MM – y-MM"}
+                    y{"y-MM – y-MM"}
                 }
                 yMEd{
-                    M{
-                        "E, y-MM-dd – E, y-MM-dd",
-                        "E, d/M/y – E, d/M/y",
-                    }
-                    d{
-                        "E, y-MM-dd – E, y-MM-dd",
-                        "E, d/M/y – E, d/M/y",
-                    }
-                    y{
-                        "E, y-MM-dd – E, y-MM-dd",
-                        "E, d/M/y – E, d/M/y",
-                    }
+                    M{"E, y-MM-dd – E, y-MM-dd"}
+                    d{"E, y-MM-dd – E, y-MM-dd"}
+                    y{"E, y-MM-dd – E, y-MM-dd"}
                 }
                 yMMMEd{
                     M{"E, MMM d – E, MMM d, U"}
@@ -130,18 +81,9 @@ en_CA{
                     y{"MMM d, U – MMM d, U"}
                 }
                 yMd{
-                    M{
-                        "y-MM-dd – y-MM-dd",
-                        "d/M/y – d/M/y",
-                    }
-                    d{
-                        "y-MM-dd – y-MM-dd",
-                        "d/M/y – d/M/y",
-                    }
-                    y{
-                        "y-MM-dd – y-MM-dd",
-                        "d/M/y – d/M/y",
-                    }
+                    M{"y-MM-dd – y-MM-dd"}
+                    d{"y-MM-dd – y-MM-dd"}
+                    y{"y-MM-dd – y-MM-dd"}
                 }
             }
         }
@@ -155,7 +97,6 @@ en_CA{
                 "MMMM d, y G",
                 "MMM d, y G",
                 "GGGGG y-MM-dd",
-                "d/M/y GGGGG",
                 "{1}, {0}",
                 "{1} 'at' {0}",
                 "{1} 'at' {0}",
@@ -166,41 +107,20 @@ en_CA{
                 Ed{"d E"}
                 GyMMMEd{"E, MMM d, y G"}
                 GyMMMd{"MMM d, y G"}
-                MEd{
-                    "E, MM-dd",
-                    "E, d/M",
-                }
+                MEd{"E, MM-dd"}
                 MMMEd{"E, MMM d"}
                 MMMd{"MMM d"}
-                Md{
-                    "MM-dd",
-                    "d/M",
-                }
-                yyyyM{
-                    "GGGGG y-MM",
-                    "M/y GGGGG",
-                }
-                yyyyMEd{
-                    "E, GGGGG y-MM-dd",
-                    "E, d/M/y GGGGG",
-                }
+                Md{"MM-dd"}
+                yyyyM{"GGGGG y-MM"}
+                yyyyMEd{"E, GGGGG y-MM-dd"}
                 yyyyMMMEd{"E, MMM d, y G"}
                 yyyyMMMd{"MMM d, y G"}
-                yyyyMd{
-                    "GGGGG y-MM-dd",
-                    "d/M/y GGGGG",
-                }
+                yyyyMd{"GGGGG y-MM-dd"}
             }
             intervalFormats{
                 MEd{
-                    M{
-                        "E, MM-dd – E, MM-dd",
-                        "E, d/M – E, d/M",
-                    }
-                    d{
-                        "E, MM-dd – E, MM-dd",
-                        "E, d/M – E, d/M",
-                    }
+                    M{"E, MM-dd – E, MM-dd"}
+                    d{"E, MM-dd – E, MM-dd"}
                 }
                 MMMEd{
                     M{"E, MMM d – E, MMM d"}
@@ -211,38 +131,17 @@ en_CA{
                     d{"MMM d – d"}
                 }
                 Md{
-                    M{
-                        "MM-dd – MM-dd",
-                        "d/M – d/M",
-                    }
-                    d{
-                        "MM-dd – MM-dd",
-                        "d/M – d/M",
-                    }
+                    M{"MM-dd – MM-dd"}
+                    d{"MM-dd – MM-dd"}
                 }
                 yM{
-                    M{
-                        "GGGGG y-MM – y-MM",
-                        "M/y – M/y GGGGG",
-                    }
-                    y{
-                        "GGGGG y-MM – y-MM",
-                        "M/y – M/y GGGGG",
-                    }
+                    M{"GGGGG y-MM – y-MM"}
+                    y{"GGGGG y-MM – y-MM"}
                 }
                 yMEd{
-                    M{
-                        "E, y-MM-dd – E, y-MM-dd",
-                        "E, d/M/y – E, d/M/y GGGGG",
-                    }
-                    d{
-                        "E, y-MM-dd – E, y-MM-dd",
-                        "E, d/M/y – E, d/M/y GGGGG",
-                    }
-                    y{
-                        "E, y-MM-dd – E, y-MM-dd",
-                        "E, d/M/y – E, d/M/y GGGGG",
-                    }
+                    M{"E, y-MM-dd – E, y-MM-dd"}
+                    d{"E, y-MM-dd – E, y-MM-dd"}
+                    y{"E, y-MM-dd – E, y-MM-dd"}
                 }
                 yMMMEd{
                     M{"E, MMM d – E, MMM d, y G"}
@@ -255,18 +154,9 @@ en_CA{
                     y{"MMM d, y – MMM d, y G"}
                 }
                 yMd{
-                    M{
-                        "GGGGG y-MM-dd – y-MM-dd",
-                        "d/M/y – d/M/y GGGGG",
-                    }
-                    d{
-                        "GGGGG y-MM-dd – y-MM-dd",
-                        "d/M/y – d/M/y GGGGG",
-                    }
-                    y{
-                        "GGGGG y-MM-dd – y-MM-dd",
-                        "d/M/y – d/M/y GGGGG",
-                    }
+                    M{"GGGGG y-MM-dd – y-MM-dd"}
+                    d{"GGGGG y-MM-dd – y-MM-dd"}
+                    y{"GGGGG y-MM-dd – y-MM-dd"}
                 }
             }
         }
@@ -280,7 +170,6 @@ en_CA{
                 "MMMM d, y",
                 "MMM d, y",
                 "y-MM-dd",
-                "d/M/yy",
                 "{1}, {0}",
                 "{1} 'at' {0}",
                 "{1} 'at' {0}",
@@ -290,46 +179,22 @@ en_CA{
             availableFormats{
                 GyMMMEd{"E, MMM d, y G"}
                 GyMMMd{"MMM d, y G"}
-                MEd{
-                    "E, MM-dd",
-                    "E, d/M",
-                }
+                MEd{"E, MM-dd"}
                 MMMEd{"E, MMM d"}
                 MMMMd{"MMMM d"}
                 MMMd{"MMM d"}
-                MMdd{
-                    "MM-dd",
-                    "dd/MM",
-                }
-                Md{
-                    "MM-dd",
-                    "d/M",
-                }
-                yM{
-                    "y-MM",
-                    "M/y",
-                }
-                yMEd{
-                    "E, y-MM-dd",
-                    "E, d/M/y",
-                }
+                MMdd{"MM-dd"}
+                Md{"MM-dd"}
+                yM{"y-MM"}
+                yMEd{"E, y-MM-dd"}
                 yMMMEd{"E, MMM d, y"}
                 yMMMd{"MMM d, y"}
-                yMd{
-                    "y-MM-dd",
-                    "d/M/y",
-                }
+                yMd{"y-MM-dd"}
             }
             intervalFormats{
                 MEd{
-                    M{
-                        "E, MM-dd – E, MM-dd",
-                        "E, d/M – E, d/M",
-                    }
-                    d{
-                        "E, MM-dd – E, MM-dd",
-                        "E, d/M – E, d/M",
-                    }
+                    M{"E, MM-dd – E, MM-dd"}
+                    d{"E, MM-dd – E, MM-dd"}
                 }
                 MMMEd{
                     M{"E, MMM d – E, MMM d"}
@@ -340,38 +205,17 @@ en_CA{
                     d{"MMM d – d"}
                 }
                 Md{
-                    M{
-                        "MM-dd – MM-dd",
-                        "d/M – d/M",
-                    }
-                    d{
-                        "MM-dd – MM-dd",
-                        "d/M – d/M",
-                    }
+                    M{"MM-dd – MM-dd"}
+                    d{"MM-dd – MM-dd"}
                 }
                 yM{
-                    M{
-                        "y-MM – y-MM",
-                        "M/y – M/y",
-                    }
-                    y{
-                        "y-MM – y-MM",
-                        "M/y – M/y",
-                    }
+                    M{"y-MM – y-MM"}
+                    y{"y-MM – y-MM"}
                 }
                 yMEd{
-                    M{
-                        "E, y-MM-dd – E, y-MM-dd",
-                        "E, d/M/y – E, d/M/y",
-                    }
-                    d{
-                        "E, y-MM-dd – E, y-MM-dd",
-                        "E, d/M/y – E, d/M/y",
-                    }
-                    y{
-                        "E, y-MM-dd – E, y-MM-dd",
-                        "E, d/M/y – E, d/M/y",
-                    }
+                    M{"E, y-MM-dd – E, y-MM-dd"}
+                    d{"E, y-MM-dd – E, y-MM-dd"}
+                    y{"E, y-MM-dd – E, y-MM-dd"}
                 }
                 yMMMEd{
                     M{"E, MMM d – E, MMM d, y"}
@@ -384,18 +228,9 @@ en_CA{
                     y{"MMM d, y – MMM d, y"}
                 }
                 yMd{
-                    M{
-                        "y-MM-dd – y-MM-dd",
-                        "d/M/y – d/M/y",
-                    }
-                    d{
-                        "y-MM-dd – y-MM-dd",
-                        "d/M/y – d/M/y",
-                    }
-                    y{
-                        "y-MM-dd – y-MM-dd",
-                        "d/M/y – d/M/y",
-                    }
+                    M{"y-MM-dd – y-MM-dd"}
+                    d{"y-MM-dd – y-MM-dd"}
+                    y{"y-MM-dd – y-MM-dd"}
                 }
             }
         }

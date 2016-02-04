@@ -1045,7 +1045,7 @@ ast{
         VALLADER{"VALLADER"}
         WADEGILE{"romanización de Wade-Giles"}
     }
-    Version{"2.1.23.79"}
+    Version{"2.1.23.94"}
     codePatterns{
         language{"Llingua: {0}"}
         script{"Alfabetu: {0}"}

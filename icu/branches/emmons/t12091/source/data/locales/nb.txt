@@ -232,10 +232,7 @@ nb{
                 percentSign{"%"}
                 plusSign{"+"}
                 superscriptingExponent{"×"}
-                timeSeparator{
-                    ".",
-                    ":",
-                }
+                timeSeparator{"."}
             }
         }
         minimumGroupingDigits{"1"}
@@ -257,13 +254,9 @@ nb{
         chinese{
             DateTimePatterns{
                 "HH.mm.ss zzzz",
-                "HH:mm:ss zzzz",
                 "HH.mm.ss z",
-                "HH:mm:ss z",
                 "HH.mm.ss",
-                "HH:mm:ss",
                 "HH.mm",
-                "HH:mm",
                 "EEEE d. MMMM r(U)",
                 "d. MMMM r(U)",
                 "d. MMM r",
@@ -816,13 +809,9 @@ nb{
         generic{
             DateTimePatterns{
                 "HH.mm.ss zzzz",
-                "HH:mm:ss zzzz",
                 "HH.mm.ss z",
-                "HH:mm:ss z",
                 "HH.mm.ss",
-                "HH:mm:ss",
                 "HH.mm",
-                "HH:mm",
                 "EEEE d. MMMM y G",
                 "d. MMMM y G",
                 "d. MMM y G",
@@ -980,13 +969,9 @@ nb{
             }
             DateTimePatterns{
                 "HH.mm.ss zzzz",
-                "HH:mm:ss zzzz",
                 "HH.mm.ss z",
-                "HH:mm:ss z",
                 "HH.mm.ss",
-                "HH:mm:ss",
                 "HH.mm",
-                "HH:mm",
                 "EEEE d. MMMM y",
                 "d. MMMM y",
                 "d. MMM y",
@@ -1759,13 +1744,9 @@ nb{
         japanese{
             DateTimePatterns{
                 "HH.mm.ss zzzz",
-                "HH:mm:ss zzzz",
                 "HH.mm.ss z",
-                "HH:mm:ss z",
                 "HH.mm.ss",
-                "HH:mm:ss",
                 "HH.mm",
-                "HH:mm",
                 "EEEE d. MMMM y G",
                 "d. MMMM y G",
                 "d. MMM y G",

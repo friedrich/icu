@@ -226,7 +226,7 @@ ast{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.23.79"}
+    Version{"2.1.23.94"}
     calendar{
         buddhist{
             DateTimePatterns{
@@ -434,7 +434,37 @@ ast{
                         }
                     }
                 }
-                days{
+                solarTerms{
+                    format{
+                        wide{
+                            "principia la primavera",
+                            "agua de lluvia",
+                            "esconsoñen los inseutos",
+                            "equinocciu de primavera",
+                            "brillante y claro",
+                            "lluvia del granu",
+                            "principia’l branu",
+                            "granu completu",
+                            "granu n’espiga",
+                            "solsticiu braniegu",
+                            "pequeña calor",
+                            "gran calor",
+                            "principia la seronda",
+                            "fin de la calor",
+                            "rosada blanca",
+                            "equinocciu serondiegu",
+                            "rosada fría",
+                            "descende’l xelu",
+                            "principia l’iviernu",
+                            "pequeña ñeve",
+                            "gran ñeve",
+                            "solsticiu d’iviernu",
+                            "pequeñu fríu",
+                            "gran fríu",
+                        }
+                    }
+                }
+                years{
                     format{
                         wide{
                             "ratu de madera yang",
@@ -497,36 +527,6 @@ ast{
                             "gallu de metal yin",
                             "perru d’agua yang",
                             "gochu d’agua yin",
-                        }
-                    }
-                }
-                solarTerms{
-                    format{
-                        wide{
-                            "principia la primavera",
-                            "agua de lluvia",
-                            "esconsoñen los inseutos",
-                            "equinocciu de primavera",
-                            "brillante y claro",
-                            "lluvia del granu",
-                            "principia’l branu",
-                            "granu completu",
-                            "granu n’espiga",
-                            "solsticiu braniegu",
-                            "pequeña calor",
-                            "gran calor",
-                            "principia la seronda",
-                            "fin de la calor",
-                            "rosada blanca",
-                            "equinocciu serondiegu",
-                            "rosada fría",
-                            "descende’l xelu",
-                            "principia l’iviernu",
-                            "pequeña ñeve",
-                            "gran ñeve",
-                            "solsticiu d’iviernu",
-                            "pequeñu fríu",
-                            "gran fríu",
                         }
                     }
                 }
