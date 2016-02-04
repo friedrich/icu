@@ -913,6 +913,7 @@ UnicodeString& RelativeDateTimeFormatter::format(
        if (dateSymbolIndex < count) {
          result.fastCopyFrom(weekdayNames[dateSymbolIndex]);
        }
+       delete dfSym;
      }
     else {
       result.fastCopyFrom(fCache->getAbsoluteUnitString(fStyle, unit, direction));
