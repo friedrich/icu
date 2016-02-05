@@ -12,19 +12,17 @@
 
 #if !UCONFIG_NO_FORMATTING && !UCONFIG_NO_BREAK_ITERATION
 
+#include "unicode/dtfmtsym.h"
 #include "unicode/ureldatefmt.h"
 #include "unicode/udisplaycontext.h"
 #include "unicode/unum.h"
 #include "unicode/localpointer.h"
-#include "resource.h"
-#include "unicode/dtfmtsym.h"
-#include "unicode/simpleformatter.h"
-#include "quantityformatter.h"
 #include "unicode/plurrule.h"
 #include "unicode/msgfmt.h"
 #include "unicode/decimfmt.h"
 #include "unicode/numfmt.h"
 #include "unicode/brkiter.h"
+#include "unicode/simpleformatter.h"
 #include "uresimp.h"
 #include "unicode/ures.h"
 #include "cstring.h"
@@ -32,7 +30,8 @@
 #include "mutex.h"
 #include "charstr.h"
 #include "uassert.h"
-
+#include "quantityformatter.h"
+#include "resource.h"
 #include "sharedbreakiterator.h"
 #include "sharedpluralrules.h"
 #include "sharednumberformat.h"
@@ -49,7 +48,7 @@ U_NAMESPACE_BEGIN
 class RelativeDateTimeCacheData: public SharedObject {
 public:
     RelativeDateTimeCacheData() : combinedDateAndTime(NULL) {
-        for (int i = 0; i < UDAT_STYLE_COUNT; ++i) {
+        for (int32_t i = 0; i < UDAT_STYLE_COUNT; ++i) {
           fallBackCache[i] = -1;
         }
     }
@@ -57,22 +56,25 @@ public:
 
     // no numbers: e.g Next Tuesday; Yesterday; etc.
     UnicodeString absoluteUnits[UDAT_STYLE_COUNT][UDAT_ABSOLUTE_UNIT_COUNT][UDAT_DIRECTION_COUNT];
-    const UnicodeString& getAbsoluteUnitString(int fStyle,
-                                                UDateAbsoluteUnit unit,
-                                                UDateDirection direction) const;
-    const SimpleFormatter* getRelativeUnitFormatter(int fStyle,
-                                                     UDateRelativeUnit unit,
-                                                     int pastFutureIndex,
-                                                     int pluralUnit) const;
 
     // SimpleFormatter pointers for relative unit format,
     // e.g., Next Tuesday; Yesterday; etc. For third index, 0
     // means past, e.g., 5 days ago; 1 means future, e.g., in 5 days.
-    SimpleFormatter *relativeUnitsFormatter[UDAT_STYLE_COUNT]
+    SimpleFormatter *relativeUnitsFormatters[UDAT_STYLE_COUNT]
       [UDAT_RELATIVE_UNIT_COUNT][2][StandardPlural::COUNT];
 
+    const UnicodeString& getAbsoluteUnitString(int32_t fStyle,
+                                               UDateAbsoluteUnit unit,
+                                               UDateDirection direction) const;
+    const SimpleFormatter* getRelativeUnitFormatter(int32_t fStyle,
+                                                    UDateRelativeUnit unit,
+                                                    int32_t pastFutureIndex,
+                                                    int32_t pluralUnit) const;
+
+    const UnicodeString emptyString;
+
     // Mappping from source to target styles for alias fallback.
-    int fallBackCache[UDAT_STYLE_COUNT];
+    int32_t fallBackCache[UDAT_STYLE_COUNT];
 
     void adoptCombinedDateAndTime(MessageFormat *mfToAdopt) {
         delete combinedDateAndTime;
@@ -91,11 +93,11 @@ private:
 
 RelativeDateTimeCacheData::~RelativeDateTimeCacheData() {
     // clear out the cache arrays
-    for (int style = 0; style < UDAT_STYLE_COUNT; ++style) {
-        for (int relUnit = 0; relUnit < UDAT_RELATIVE_UNIT_COUNT; ++relUnit) {
-            for (int pl = 0; pl < StandardPlural::COUNT; ++pl) {
-              delete relativeUnitsFormatter[style][relUnit][0][pl];
-              delete relativeUnitsFormatter[style][relUnit][1][pl];
+    for (int32_t style = 0; style < UDAT_STYLE_COUNT; ++style) {
+        for (int32_t relUnit = 0; relUnit < UDAT_RELATIVE_UNIT_COUNT; ++relUnit) {
+            for (int32_t pl = 0; pl < StandardPlural::COUNT; ++pl) {
+                delete relativeUnitsFormatters[style][relUnit][0][pl];
+                delete relativeUnitsFormatters[style][relUnit][1][pl];
             }
         }
     }
@@ -105,27 +107,27 @@ RelativeDateTimeCacheData::~RelativeDateTimeCacheData() {
 
 // Use fallback cache for absolute units.
 const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
-    int fStyle, UDateAbsoluteUnit unit, UDateDirection direction) const {
-      int style = fStyle;
-      do {
+        int32_t fStyle, UDateAbsoluteUnit unit, UDateDirection direction) const {
+    int32_t style = fStyle;
+    do {
         if (!absoluteUnits[style][unit][direction].isEmpty()) {
-          return absoluteUnits[style][unit][direction];
+            return absoluteUnits[style][unit][direction];
         }
-         style = fallBackCache[style];
-       } while (style != -1);
-       return absoluteUnits[fStyle][unit][direction]; //  The original, which is empty.
-     }
+        style = fallBackCache[style];
+    } while (style != -1);
+    return emptyString;
+}
 
  // Use fallback cache for SimpleFormatter relativeUnits.
  const SimpleFormatter* RelativeDateTimeCacheData::getRelativeUnitFormatter(
-     int fStyle,
+     int32_t fStyle,
      UDateRelativeUnit unit,
-     int pastFutureIndex,
-     int pluralUnit) const {
-   int style = fStyle;
+     int32_t pastFutureIndex,
+     int32_t pluralUnit) const {
+   int32_t style = fStyle;
    do {
-     if (relativeUnitsFormatter[style][unit][pastFutureIndex][pluralUnit]) {
-       return relativeUnitsFormatter[style][unit][pastFutureIndex][pluralUnit];
+     if (relativeUnitsFormatters[style][unit][pastFutureIndex][pluralUnit]) {
+       return relativeUnitsFormatters[style][unit][pastFutureIndex][pluralUnit];
      }
      style = fallBackCache[style];
    } while (style != -1);
@@ -167,8 +169,7 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
 
  /**
   * Sink for enumerating all of the measurement unit display names.
-  * Contains inner sink classes, each one corresponding to a type of resource table.
-  * The outer sink handles the top-level units, unitsNarrow, and unitsShort tables.
+  * Contains inner sink classes, each one corresponding to a level of the resource table.
   *
   * More specific bundles (en_GB) are enumerated before their parents (en_001, en, root):
   * Only store a value if it is still missing, that is, it has not been overridden.
@@ -180,11 +181,11 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
      /**
       * Sink for patterns for relative dates and times. For example,
       * fields/relative/...
-      * TODO: Fix comment
       */
 
    // Generic unit enum for storing Unit info.
    typedef enum RelAbsUnit {
+     INVALID_UNIT = -1,
      SECOND,
      MINUTE,
      HOUR,
@@ -199,11 +200,10 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
      WEDNESDAY,
      THURSDAY,
      FRIDAY,
-     SATURDAY,
-     INVALID_UNIT
+     SATURDAY
    } RelAbsUnit;
 
-   static int genericToRelUnit(RelAbsUnit genUnit) {
+   static int32_t relUnitFromGeneric(RelAbsUnit genUnit) {
      // Converts the generic units to UDAT_RELATIVE version.
      switch (genUnit) {
        case SECOND:
@@ -229,7 +229,7 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
      }
    }
 
-   static int genericToAbsUnit(RelAbsUnit genUnit) {
+   static int32_t absUnitFromGeneric(RelAbsUnit genUnit) {
      // Converts the generic units to UDAT_RELATIVE version.
      switch (genUnit) {
        case DAY:
@@ -282,10 +282,10 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
        return -1;
      }
 
-
-
    // Sinks for additional levels under /fields/*/relative/ and /fields/*/relativeTime/
-   /* Make list of simplePatternFmtList, for past and for future.
+
+   /**
+    * Make list of simplePatternFmtList, for past and for future.
     *  Set a SimpleFormatter for the <style, relative unit, plurality>
     *
     * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, etc.
@@ -296,34 +296,33 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
 
      virtual void put(const char *key, const ResourceValue &value,
                       UErrorCode &errorCode) {
-       if (U_FAILURE(errorCode)) { return; }
+         if (U_FAILURE(errorCode)) { return; }
 
-       outer.relUnitIndex = genericToRelUnit(outer.genericUnit);
-       if (outer.relUnitIndex == -1) {
-         return;
-       }
-
-       /* Make two lists of simplePatternFmtList, one for past and one for future.
-        *  Set a SimpleFormatter pattern for the <style, relative unit, plurality>
-        *
-        * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, etc.
-        */
-       int pluralIndex = StandardPlural::indexOrNegativeFromString(key);
-       SimpleFormatter **pattern =
-             &outer.outputData.relativeUnitsFormatter[outer.style][outer.relUnitIndex]
-           [outer.pastFutureIndex][pluralIndex];
-
-       if (pluralIndex != -1) {
-           // Only set if not already established.
-         if (U_SUCCESS(errorCode) && *pattern == NULL) {
-           *pattern = new SimpleFormatter(
-               value.getUnicodeString(errorCode), 0, 1, errorCode);
-
-           if (U_SUCCESS(errorCode) && *pattern == NULL) {
-             errorCode = U_MEMORY_ALLOCATION_ERROR;
-           }
+         outer.relUnitIndex = relUnitFromGeneric(outer.genericUnit);
+         if (outer.relUnitIndex == -1) {
+             return;
          }
-       }
+
+         /* Make two lists of simplePatternFmtList, one for past and one for future.
+          *  Set a SimpleFormatter pattern for the <style, relative unit, plurality>
+          *
+          * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, etc.
+          */
+         int32_t pluralIndex = StandardPlural::indexOrNegativeFromString(key);
+         SimpleFormatter **patterns =
+             outer.outputData.relativeUnitsFormatters[outer.style][outer.relUnitIndex]
+                 [outer.pastFutureIndex];
+
+         if (pluralIndex >= 0 && pluralIndex < StandardPlural::COUNT && 
+                 patterns[pluralIndex] == NULL) {
+             // Only set if not already established.
+             patterns[pluralIndex] = new SimpleFormatter(
+                 value.getUnicodeString(errorCode), 0, 1, errorCode);
+
+             if (U_SUCCESS(errorCode) && patterns[pluralIndex] == NULL) {
+                 errorCode = U_MEMORY_ALLOCATION_ERROR;
+             }
+         }
      }
 
      RelDateTimeFmtDataSink &outer;
@@ -339,7 +338,7 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
 
      virtual ResourceTableSink *getOrCreateTableSink(
          const char *key, int32_t /* initialSize */, UErrorCode& /* &errorCode */) {
-       outer.relUnitIndex = genericToRelUnit(outer.genericUnit);
+       outer.relUnitIndex = relUnitFromGeneric(outer.genericUnit);
        if (outer.relUnitIndex == -1) {
          return NULL;
        }
@@ -367,8 +366,10 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
          ~RelativeSink();
 
      virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
-       int relUnitIndex = genericToRelUnit(outer.genericUnit);
-       if (relUnitIndex == UDAT_RELATIVE_SECONDS && uprv_strcmp(key, "0") == 0) {
+       int32_t relUnitIndex = relUnitFromGeneric(outer.genericUnit);
+       if (relUnitIndex == UDAT_RELATIVE_SECONDS && uprv_strcmp(key, "0") == 0 &&
+           outer.outputData.absoluteUnits[outer.style][UDAT_ABSOLUTE_NOW]
+           [UDAT_DIRECTION_PLAIN].isEmpty()) {
          // Handle "NOW"
          outer.outputData.absoluteUnits[outer.style][UDAT_ABSOLUTE_NOW]
              [UDAT_DIRECTION_PLAIN].fastCopyFrom(value.getUnicodeString(errorCode));
@@ -378,11 +379,11 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
        if (direction == -1) {
          return;
        }
-       int absUnitIndex = genericToAbsUnit(outer.genericUnit);
+       int32_t absUnitIndex = absUnitFromGeneric(outer.genericUnit);
        if (absUnitIndex == -1) {
          return;
        }
-       // TODO: Make sure the check for empty is correct.
+       // Only reset if slot is empty.
        if (outer.outputData.absoluteUnits[outer.style][absUnitIndex]
             [direction].isEmpty()) {
          outer.outputData.absoluteUnits[outer.style][absUnitIndex]
@@ -394,65 +395,66 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
    } relativeSink;
 
    /*
-    * Handles entries under units, recognizing "relative" and "relativeTime" entries.
+    * Handles entries under "fields", recognizing "relative" and "relativeTime" entries.
     */
    struct UnitSink : public ResourceTableSink {
          UnitSink(RelDateTimeFmtDataSink &sink) : outer(sink) {}
          ~UnitSink();
 
      virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
-       if (uprv_strcmp(key, "dn") != 0) {
-         return;
-       }
-
-       // Handle Display Name for PLAIN direction for some units.
-       int absUnit = genericToAbsUnit(outer.genericUnit);
-       if (absUnit == -1) {
-         return;  // Not interesting.
-       }
-
-       const UnicodeString unitName = value.getUnicodeString(errorCode);
-
-       // TODO(Travis Keep): This is a hack to get around CLDR bug 6818.
-       UnicodeString displayName = value.getUnicodeString(errorCode);
-       if (U_SUCCESS(errorCode)) {
-         if (uprv_strcmp("en", outer.sinkLocaleId) == 0) {
-           displayName.toLower();
+         if (uprv_strcmp(key, "dn") != 0) {
+             return;
          }
-       }
-       // end hack
 
-       // Store displayname.
-       outer.outputData.absoluteUnits[outer.style]
-           [absUnit][UDAT_DIRECTION_PLAIN].fastCopyFrom(displayName);
-       return;
+         // Handle Display Name for PLAIN direction for some units.
+         int32_t absUnit = absUnitFromGeneric(outer.genericUnit);
+         if (absUnit == -1) {
+             return;  // Not interesting.
+         }
+
+         const UnicodeString unitName = value.getUnicodeString(errorCode);
+
+         // TODO(Travis Keep): This is a hack to get around CLDR bug 6818.
+         UnicodeString displayName = value.getUnicodeString(errorCode);
+         if (U_SUCCESS(errorCode)) {
+             if (uprv_strcmp("en", outer.sinkLocaleId) == 0) {
+                 displayName.toLower();
+             }
+         }
+         // end hack
+
+         // Store displayname if not set.
+         if (outer.outputData.absoluteUnits[outer.style]
+                 [absUnit][UDAT_DIRECTION_PLAIN].isEmpty()) {
+             outer.outputData.absoluteUnits[outer.style]
+                 [absUnit][UDAT_DIRECTION_PLAIN].fastCopyFrom(displayName);
+             return;
+         }
      }
 
      virtual ResourceTableSink *getOrCreateTableSink(
-         const char *key, int32_t /* initialSize */, UErrorCode& /* errorCode */) {
-       if (uprv_strcmp(key, "relative") == 0) {
-         return &outer.relativeSink;
-       } else if (uprv_strcmp(key, "relativeTime") == 0) {
-         return &outer.relativeTimeSink;
-       }
-       return NULL;
+            const char *key, int32_t /* initialSize */, UErrorCode& /* errorCode */) {
+         if (uprv_strcmp(key, "relative") == 0) {
+             return &outer.relativeSink;
+         } else if (uprv_strcmp(key, "relativeTime") == 0) {
+             return &outer.relativeTimeSink;
+         }
+         return NULL;
      }
 
      RelDateTimeFmtDataSink &outer;
-   } unitSink;
+    } unitSink;
 
    // For hack for locale "en".
+   // TODO(Travis Keep): This is a hack to get around CLDR bug 6818.
    const char* sinkLocaleId;
 
    // Values kept between levels of parsing the CLDR data.
-   // LOCAL DATA
    int32_t pastFutureIndex;  // 0 == past or 1 ==  future
    UDateRelativeDateTimeFormatterStyle style;  // {LONG, SHORT, NARROW }}
    RelAbsUnit genericUnit;
    int32_t relUnitIndex;
    int32_t absUnitIndex;
-   int32_t width; // Ordinal for style
-   int32_t unitIndex;
 
    RelativeDateTimeCacheData &outputData;
 
@@ -470,35 +472,35 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
 
    // Utility functions
    static UDateRelativeDateTimeFormatterStyle styleFromString(const char *s) {
-     int len = uprv_strlen(s);
-     if (uprv_strcmp(s + len - 7, "-narrow") == 0) {
-       return UDAT_STYLE_NARROW;
-     }
-     if (uprv_strcmp(s + len - 6, "-short") == 0) {
-       return UDAT_STYLE_SHORT;
-     }
-     return UDAT_STYLE_LONG;
+       int32_t len = uprv_strlen(s);
+       if (len >= 7 && uprv_strcmp(s + len - 7, "-narrow") == 0) {
+           return UDAT_STYLE_NARROW;
+       }
+       if (len >= 6 && uprv_strcmp(s + len - 6, "-short") == 0) {
+           return UDAT_STYLE_SHORT;
+       }
+       return UDAT_STYLE_LONG;
    }
 
-   static int styleSuffixLength(UDateRelativeDateTimeFormatterStyle style) {
-     switch (style) {
-       case UDAT_STYLE_NARROW:
-         return 7;
-       case UDAT_STYLE_SHORT:
-         return 6;
-       default:
-         return 0;
-     }
+   static int32_t styleSuffixLength(UDateRelativeDateTimeFormatterStyle style) {
+       switch (style) {
+           case UDAT_STYLE_NARROW:
+               return 7;
+           case UDAT_STYLE_SHORT:
+               return 6;
+           default:
+               return 0;
+       }
    }
 
    // Utility functions
    static UDateRelativeDateTimeFormatterStyle styleFromAliasUnicodeString(UnicodeString s) {
-     static const UnicodeString narrow = UnicodeString("-narrow");
-     static const UnicodeString sshort = UnicodeString("-short");
-     if (s.endsWith(narrow)) {
+     static const UChar narrow[7] = {0x002D, 0x006E, 0x0061, 0x0072, 0x0072, 0x006F, 0x0077};
+     static const UChar sshort[6] = {0x002D, 0x0073, 0x0068, 0x006F, 0x0072, 0x0074,};
+     if (s.endsWith(narrow, 7)) {
        return UDAT_STYLE_NARROW;
      }
-     if (s.endsWith(sshort)) {
+     if (s.endsWith(sshort, 6)) {
        return UDAT_STYLE_SHORT;
      }
      return UDAT_STYLE_LONG;
@@ -590,9 +592,9 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
    virtual ResourceTableSink *getOrCreateTableSink(
        const char *key, int32_t /* initialSize */, UErrorCode& /* errorCode */) {
      style= styleFromString(key);
-     int unitSize = uprv_strlen(key) - styleSuffixLength(style);
+     int32_t unitSize = uprv_strlen(key) - styleSuffixLength(style);
      genericUnit = unitOrNullFromString(key, unitSize);
-     if (genericUnit == INVALID_UNIT) {
+     if (style >= 0 && style < UDAT_STYLE_COUNT && genericUnit == INVALID_UNIT) {
        return NULL;
      }
      return &unitSink;
@@ -616,11 +618,11 @@ const UnicodeString& RelativeDateTimeCacheData::getAbsoluteUnitString(
          UErrorCode &status) {
 
      // Initialize the cache arrays
-     for (int style = 0; style < UDAT_STYLE_COUNT; ++style) {
-       for (int relUnit = 0; relUnit < UDAT_RELATIVE_UNIT_COUNT; ++relUnit) {
-         for (int pl = 0; pl < StandardPlural::COUNT; ++pl) {
-           cacheData.relativeUnitsFormatter[style][relUnit][0][pl] = NULL;
-           cacheData.relativeUnitsFormatter[style][relUnit][1][pl] = NULL;
+     for (int32_t style = 0; style < UDAT_STYLE_COUNT; ++style) {
+       for (int32_t relUnit = 0; relUnit < UDAT_RELATIVE_UNIT_COUNT; ++relUnit) {
+         for (int32_t pl = 0; pl < StandardPlural::COUNT; ++pl) {
+           cacheData.relativeUnitsFormatters[style][relUnit][0][pl] = NULL;
+           cacheData.relativeUnitsFormatters[style][relUnit][1][pl] = NULL;
          }
        }
      }
@@ -902,7 +904,7 @@ UnicodeString& RelativeDateTimeFormatter::format(
      if ((direction == UDAT_DIRECTION_PLAIN) &&
          (unit >= UDAT_ABSOLUTE_SUNDAY && unit <= UDAT_ABSOLUTE_SATURDAY)) {
        // Get play weekday names from DateFormatSymbols.
-       int dateSymbolIndex = (unit - UDAT_ABSOLUTE_SUNDAY) + UCAL_SUNDAY;
+       int32_t dateSymbolIndex = (unit - UDAT_ABSOLUTE_SUNDAY) + UCAL_SUNDAY;
        DateFormatSymbols::DtWidthType dtfmtWidth = styleToDateFormatSymbolWidth[fStyle];
        int32_t count;
        DateFormatSymbols* dfSym = new DateFormatSymbols(status);
@@ -967,10 +969,8 @@ UnicodeString& RelativeDateTimeFormatter::format(
         default: break;
     }
     if (direction != UDAT_DIRECTION_COUNT && absunit != UDAT_ABSOLUTE_UNIT_COUNT) {
-      UnicodeString unitFormatString =
+      UnicodeString result = 
           fCache->getAbsoluteUnitString(fStyle, absunit, direction);
-
-        UnicodeString result(unitFormatString);
         if (result.length() > 0) {
             if (fOptBreakIterator != NULL) {
                 adjustForContext(result);
