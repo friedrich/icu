@@ -9,36 +9,36 @@
 *   01/12/2000  Madhu        Updated for changed API and added new tests
 ************************************************************************/
 
-#include "utypeinfo.h"  // for 'typeid' to work
-
 #include "unicode/utypes.h"
-
 #if !UCONFIG_NO_BREAK_ITERATION
 
-#include "unicode/utypes.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "unicode/brkiter.h"
+#include "unicode/localpointer.h"
+#include "unicode/numfmt.h"
 #include "unicode/rbbi.h"
-#include "unicode/uchar.h"
-#include "unicode/utf16.h"
-#include "unicode/ucnv.h"
-#include "unicode/schriter.h"
-#include "unicode/uniset.h"
 #if !UCONFIG_NO_REGULAR_EXPRESSIONS
 #include "unicode/regex.h"
 #endif
+#include "unicode/schriter.h"
+#include "unicode/uchar.h"
+#include "unicode/utf16.h"
+#include "unicode/ucnv.h"
+#include "unicode/uniset.h"
+#include "unicode/uscript.h"
 #include "unicode/ustring.h"
 #include "unicode/utext.h"
+
+#include "charstr.h"
+#include "cmemory.h"
 #include "intltest.h"
 #include "rbbitst.h"
-#include <string.h>
-#include "charstr.h"
+#include "utypeinfo.h"  // for 'typeid' to work
 #include "uvector.h"
 #include "uvectr32.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include "unicode/numfmt.h"
-#include "unicode/uscript.h"
-#include "cmemory.h"
 
 #if !UCONFIG_NO_FILTERED_BREAK_ITERATION
 #include "unicode/filteredbrk.h"
@@ -2964,17 +2964,28 @@ private:
     UnicodeSet  *fHL;
     UnicodeSet  *fID;
     UnicodeSet  *fRI;
-    UnicodeSet  *fSA;
     UnicodeSet  *fXX;
+    UnicodeSet  *fEB;
+    UnicodeSet  *fEM;
 
     BreakIterator        *fCharBI;
     const UnicodeString  *fText;
     RegexMatcher         *fNumberMatcher;
 };
 
+RBBILineMonkey::RBBILineMonkey() :
+    RBBIMonkeyKind(),
+    fSets(NULL),
 
-RBBILineMonkey::RBBILineMonkey()
+    fCharBI(NULL),
+    fText(NULL),
+    fNumberMatcher(NULL)
+
 {
+    if (U_FAILURE(deferredStatus)) {
+        return;
+    }
+
     UErrorCode  status = U_ZERO_ERROR;
 
     fSets  = new UVector(status);
@@ -3016,23 +3027,28 @@ RBBILineMonkey::RBBILineMonkey()
     fHL    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=HL}]"), status);
     fID    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=ID}]"), status);
     fRI    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=RI}]"), status);
-    fSA    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=SA}]"), status);
     fSG    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\ud800-\\udfff]"), status);
     fXX    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=XX}]"), status);
+    fEB    = new UnicodeSet(UNICODE_STRING_SIMPLE(
+                "[\\u261D\\u26F9\\u270A-\\u270D\\U0001F385\\U0001F3C3-\\U0001F3C4\\U0001F3CA-\\U0001F3CB\\U0001F442-\\U0001F443"
+                "\\U0001F446-\\U0001F450\\U0001F466-\\U0001F469\\U0001F46E\\U0001F470-\\U0001F478\\U0001F47C\\U0001F481-\\U0001F483"
+                "\\U0001F485-\\U0001F487\\U0001F4AA\\U0001F575\\U0001F590\\U0001F595-\\U0001F596\\U0001F645-\\U0001F647"
+                "\\U0001F64B-\\U0001F64F\\U0001F6A3\\U0001F6B4-\\U0001F6B6\\U0001F6C0\\U0001F918]"), status);
+    fEM    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\U0001F3FB-\\U0001F3FF]"), status);
 
     if (U_FAILURE(status)) {
         deferredStatus = status;
-        fCharBI = NULL;
-        fNumberMatcher = NULL;
         return;
     }
 
     fAL->addAll(*fXX);     // Default behavior for XX is identical to AL
     fAL->addAll(*fAI);     // Default behavior for AI is identical to AL
-    fAL->addAll(*fSA);     // Default behavior for SA is XX, which defaults to AL
     fAL->addAll(*fSG);     // Default behavior for SG is identical to AL.
 
     fNS->addAll(*fCJ);     // Default behavior for CJ is identical to NS.
+
+    fID->addAll(*fEB);     // Emoji Base and Emoji Modifier behave as ID.
+    fID->addAll(*fEM);     //    TODO: move into the individual rules instead?
 
     fSets->addElement(fBK, status);
     fSets->addElement(fCR, status);
@@ -3071,8 +3087,9 @@ RBBILineMonkey::RBBILineMonkey()
     fSets->addElement(fID, status);
     fSets->addElement(fWJ, status);
     fSets->addElement(fRI, status);
-    fSets->addElement(fSA, status);
     fSets->addElement(fSG, status);
+    fSets->addElement(fEB, status);
+    fSets->addElement(fEM, status);
 
     const char *rules = 
             "((\\p{Line_Break=PR}|\\p{Line_Break=PO})\\p{Line_Break=CM}*)?"
@@ -3535,6 +3552,11 @@ int32_t RBBILineMonkey::next(int32_t startPos) {
             continue;
         }
 
+        // LB30b    Emoji Base x Emoji Modifier
+        if (fEB->contains(prevChar) && fEM->contains(thisChar)) {
+            continue;
+        }
+
         // LB 31    Break everywhere else
         break;
 
@@ -3589,9 +3611,9 @@ RBBILineMonkey::~RBBILineMonkey() {
     delete fHL;
     delete fID;
     delete fRI;
-    delete fSA;
     delete fSG;
-    delete fXX;
+    delete fEB;
+    delete fEM;
 
     delete fCharBI;
     delete fNumberMatcher;
@@ -3890,7 +3912,6 @@ void RBBITest::TestLineBreaks(void)
      "\\ufe3c\\u201c\\u000d\\u2025\\u2007\\u201c\\u002d\\u20a0\\u002d\\u30a7\\u17a4",
      "\\u2772\\u0020\\U000e010a\\u0020\\u2025\\u000a\\U000e0123",
      "\\u002d\\uff1b\\u02c8\\u2029\\ufeff\\u0f22\\u2044\\ufe09\\u003a\\u096d\\u2009\\u000a\\u06f7\\u02cc\\u1019\\u2060",
-     "\\u1781\\u0b68\\u0f0c\\u3010\\u0085\\U00011f7a\\u0020\\u0dd6\\u200b\\U000e007a\\u000a\\u2060\\u2026\\u002f\\u2026\\u24dc\\u101e\\u2014\\u2007\\u30a5",
      "\\u2770\\u0020\\U000e010f\\u0020\\u2060\\u000a\\u02cc\\u0bcc\\u060d\\u30e7\\u0f3b\\u002f",
      "\\ufeff\\u0028\\u003b\\U00012fec\\u2010\\u0020\\u0004\\u200b\\u0020\\u275c\\u002f\\u17b1",
      "\\u20a9\\u2014\\u00a2\\u31f1\\u002f\\u0020\\u05b8\\u200b\\u0cc2\\u003b\\u060d\\u02c8\\ua4e8\\u002f\\u17d5",
@@ -3906,25 +3927,19 @@ void RBBITest::TestLineBreaks(void)
      "\\u002f\\uf22e\\u1944\\ufe3d\\u0020\\u206f\\u31b3\\u2014\\u002d\\u2025\\u0f0c\\u0085\\u2763",
      "\\u002f\\u2563\\u202f\\u0085\\u17d5\\u200b\\u0020\\U000e0043\\u2014\\u058a\\u3d0a\\ufe57\\u2035\\u2028\\u2029",
      "\\u20ae\\U0001d169\\u9293\\uff1f\\uff1f\\u0021\\u2012\\u2039\\u0085\\u02cc\\u00a2\\u0020\\U000e01ab\\u3085\\u0f3a\\u1806\\u0f0c\\u1945\\u000a\\U0001d7e7",
-     "\\uffe6\\u00a0\\u200b\\u0085\\u2116\\u255b\\U0001d7f7\\u178c\\ufffc",
      "\\u02cc\\ufe6a\\u00a0\\u0021\\u002d\\u7490\\uec2e\\u200b\\u000a",
      "\\uec2e\\u200b\\u000a\\u0020\\u2028\\u2014\\u8945",
      "\\u7490\\uec2e\\u200b\\u000a\\u0020\\u2028\\u2014",
      "\\u0020\\u2028\\u2014\\u8945\\u002c\\u005b",
      "\\u000a\\ufe3c\\u201c\\u000d\\u2025\\u2007\\u201c\\u002d\\u20a0",
-     "\\u2473\\u0e9d\\u0020\\u0085\\u000a\\ufe3c\\u201c\\u000d\\u2025",
      "\\U0001d16e\\ufffc\\u2025\\u0021\\u002d",
      "\\ufffc\\u301b\\u0fa5\\U000e0103\\u2060\\u208e\\u17d5\\u034f\\u1009\\u003a\\u180e\\u2009\\u3111",
-     "\\u2014\\u0020\\u000a\\u17c5\\u24fc",
      "\\ufffc\\u0020\\u2116\\uff6c\\u200b\\u0ac3\\U0001028f",
      "\\uaeb0\\u0344\\u0085\\ufffc\\u073b\\u2010",
      "\\ufeff\\u0589\\u0085\\u0eb8\\u30fd\\u002f\\u003a\\u2014\\ufe43",
      "\\u09cc\\u256a\\u276d\\u002d\\u3085\\u000d\\u0e05\\u2028\\u0fbb",
      "\\u2034\\u00bb\\u0ae6\\u300c\\u0020\\u31f8\\ufffc",
      "\\u2116\\u0ed2\\uff64\\u02cd\\u2001\\u2060",
-         "\\u809d\\u2e02\\u0f0a\\uc48f\\u2540\\u000d\\u0cef\\u003a\\u0e4d"
-         "\\U000e0172\\U000e005c\\u17cf\\U00010ca6\\ufeff\\uf621\\u06f3\\uffe5"
-         "\\u0ea2\\ufeff\\udcea\\u3085\\ua874\\u000a\\u0020\\u000b\\u200b",
      "\\ufe10\\u2060\\u1a5a\\u2060\\u17e4\\ufffc\\ubbe1\\ufe15\\u0020\\u00a0",
          "\\u2060\\u2213\\u200b\\u2019\\uc2dc\\uff6a\\u1736\\u0085\\udb07",
     };
@@ -4212,9 +4227,15 @@ void RBBITest::RunMonkey(BreakIterator *bi, RBBIMonkeyKind &mk, const char *name
             int32_t   charIdx = m_rand() % classSet->size();
             UChar32   c = classSet->charAt(charIdx);
             if (c < 0) {   // TODO:  deal with sets containing strings.
-                errln("c < 0");
+                errln("%s:%d c < 0", __FILE__, __LINE__);
                 break;
             }
+            // Do not assemble a supplementary character from a randomly generated separate surrogates.
+            //   (It could be a dictionary character)
+            if (U16_IS_TRAIL(c) && testText.length() > 0 && U16_IS_LEAD(testText.charAt(testText.length()-1))) {
+                continue;
+            }
+
             testText.append(c);
         }
 
