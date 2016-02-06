@@ -513,6 +513,18 @@ What is the proper use of the abbreviation pp.? •Yes, I am definatelly 12" tal
 <data>•  •\uF8FF\u2028<100>\uF8FF•</data>
 <data>•   \u200B\u2028<100>\u200B•</data>
 
+# Regional Indicator sequences. They group in pairs. The reverse rules are tricky.
+#    Sequences are long enough that the non-exaustive monkey test won't reliably pick up problems.
+
+<data>•\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•</data>
+<data>•\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•\U0001F1E6•</data>
+
+<data>•\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6\u00a0\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•</data>
+<data>•\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6\u00a0\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•\U0001F1E6•</data>
+<data>•\U0001F1E6\U0001F1E6•\U0001F1E6\u00a0\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•</data>
+<data>•\U0001F1E6\U0001F1E6•\U0001F1E6\u00a0\U0001F1E6\U0001F1E6•\U0001F1E6\U0001F1E6•\U0001F1E6•</data>
+
+
 # User Guide example
 
 <data>•Parlez-•vous •français ?•</data>
