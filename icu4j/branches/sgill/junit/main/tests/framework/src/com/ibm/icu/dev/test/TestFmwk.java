@@ -518,10 +518,15 @@ public class TestFmwk extends AbstractTestLog {
 
     @BeforeClass
     public static void testInitialize() {
+        // TODO: check that all methods in subclass of pattern [Tt]est.* | .*[Ttest] have annotation of @Test
+        
         if (paramsReference.get() != null) {
             return;
         }
         synchronized (paramsReference) {
+            if (paramsReference.get() != null) {
+                return;
+            }
             TestParams params = TestParams.create(new String[0], new PrintWriter(System.out));
             paramsReference.set(params);
         }

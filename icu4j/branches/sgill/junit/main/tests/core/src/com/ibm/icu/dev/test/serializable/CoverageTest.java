@@ -103,9 +103,9 @@ public class CoverageTest extends CompatibilityTest implements URLHandler.URLVis
             modifiers = classModifiers;
         }
         
-        public boolean validate()
-        {
-            return super.validate() || Modifier.isAbstract(modifiers);
+//        public boolean validate()
+//        {
+//            return super.validate() || Modifier.isAbstract(modifiers);
         }
         
         public void execute() throws Exception

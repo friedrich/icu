@@ -102,7 +102,7 @@ public abstract class AbstractTestLog implements TestLog {
      * @param incCount if true, increments the warning or error count
      * @param newln if true, forces a newline after the message
      */
-    public abstract void msg(String message, int level, boolean incCount, boolean newln);
+    //public abstract void msg(String message, int level, boolean incCount, boolean newln);
 
     /**
      * Not sure if this class is useful.  This lets you log without first testing
