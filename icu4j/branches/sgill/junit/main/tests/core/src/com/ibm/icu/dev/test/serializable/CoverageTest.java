@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.dev.test.serializable.SerializableTest.Handler;
+import com.ibm.icu.dev.test.serializable.SerializableTestUtilities.Handler;
 import com.ibm.icu.impl.URLHandler;
 
 import junitparams.JUnitParamsRunner;
@@ -29,7 +29,7 @@ import junitparams.Parameters;
  *
  */
 @RunWith(JUnitParamsRunner.class)
-public class CoverageTest3 extends TestFmwk {
+public class CoverageTest extends TestFmwk {
 
     @Test
     @Parameters(method="generateClassList")
@@ -37,7 +37,7 @@ public class CoverageTest3 extends TestFmwk {
         Class c = Class.forName(className);
         int m = c.getModifiers();
 
-        Handler classHandler = SerializableTest.getHandler(className);
+        Handler classHandler = SerializableTestUtilities.getHandler(className);
         if (classHandler == null) {
             if (!Modifier.isAbstract(m)) {
                 //errln("Missing test handler. Update the list of tests in SerializableTest.java to include a test case for " + className);
@@ -45,8 +45,8 @@ public class CoverageTest3 extends TestFmwk {
             return;
         }
         Object[] testObjects = classHandler.getTestObjects();
-        byte[] serializedBytes = SerializableTest.getSerializedBytes(testObjects);
-        Object[] serializedObjects = SerializableTest.getSerializedObjects(serializedBytes);
+        byte[] serializedBytes = SerializableTestUtilities.getSerializedBytes(testObjects);
+        Object[] serializedObjects = SerializableTestUtilities.getSerializedObjects(serializedBytes);
         for (int i = 0; i < testObjects.length; i++) {
             if (!classHandler.hasSameBehavior(serializedObjects[i], testObjects[i])) {
                 errln("Input object " + i + " failed behavior test.");
@@ -55,7 +55,7 @@ public class CoverageTest3 extends TestFmwk {
     }
     
     List<String> generateClassList() throws IOException {
-        return SerializableTest.getSerializationClassList(this);
+        return SerializableTestUtilities.getSerializationClassList(this);
     }
 
 }

@@ -58,8 +58,7 @@ import com.ibm.icu.util.VTimeZone;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class SerializableTest //extends TestFmwk.TestGroup
-{
+public class SerializableTestUtilities {
     private static Class serializable;
     static {
         try {
@@ -246,9 +245,7 @@ public class SerializableTest //extends TestFmwk.TestGroup
                 new DateTimeRule(Calendar.MARCH, 8, Calendar.SUNDAY, true, 2*HOUR, DateTimeRule.WALL_TIME),
                 2007, AnnualTimeZoneRule.MAX_YEAR)
     };
-    
 
-    
     private static class RuleBasedTimeZoneHandler extends TimeZoneHandler
     {
         public Object[] getTestObjects()
@@ -429,7 +426,6 @@ public class SerializableTest //extends TestFmwk.TestGroup
             return a.equals(b);
         }
     }
-
 
     private static class CurrencyHandler implements Handler
     {
@@ -801,11 +797,8 @@ public class SerializableTest //extends TestFmwk.TestGroup
         map.put("com.ibm.icu.util.ICUCloneNotSupportedException", new ICUCloneNotSupportedExceptionHandler());
     }
     
-    /**
-     * @param serializedBytes
-     * @return
-     * @throws IOException 
-     * @throws ClassNotFoundException 
+    /*
+     * Serialization Helpers
      */
     static Object[] getSerializedObjects(byte[] serializedBytes) throws ClassNotFoundException, IOException {
         ByteArrayInputStream bis = new ByteArrayInputStream(serializedBytes);
@@ -816,11 +809,6 @@ public class SerializableTest //extends TestFmwk.TestGroup
         return inputObjects;
     }
 
-    /**
-     * @param testObjects
-     * @return
-     * @throws IOException 
-     */
     static byte[] getSerializedBytes(Object[] objectsOut) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -831,12 +819,6 @@ public class SerializableTest //extends TestFmwk.TestGroup
         return serializedBytes;
     }
 
-    /**
-     * @param testFile
-     * @return
-     * @throws IOException 
-     * @throws ClassNotFoundException 
-     */
     static Object[] getSerializedObjects(File testFile) throws IOException, ClassNotFoundException {
         FileInputStream fis = new FileInputStream(testFile);
         ObjectInputStream ois = new ObjectInputStream(fis);
@@ -911,11 +893,6 @@ public class SerializableTest //extends TestFmwk.TestGroup
         } 
     }
 
-    /**
-     * @param oof
-     * @param testObjects
-     * @throws IOException 
-     */
     public static void serializeObjects(File oof, Object[] objectsOut) throws IOException {
         FileOutputStream fos = new FileOutputStream(oof);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -924,4 +901,3 @@ public class SerializableTest //extends TestFmwk.TestGroup
         oos.close();        
     }
 }
-//eof

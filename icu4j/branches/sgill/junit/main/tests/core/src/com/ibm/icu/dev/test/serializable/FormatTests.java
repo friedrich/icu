@@ -1012,7 +1012,7 @@ public class FormatTests
         setCharSymbols(dfs, symbols[5].toCharArray());
     }
     
-    public static class RelativeDateFormatHandler implements SerializableTest.Handler
+    public static class RelativeDateFormatHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -1033,7 +1033,7 @@ public class FormatTests
         }
     }
 
-    public static class BasicDurationFormatHandler implements SerializableTest.Handler
+    public static class BasicDurationFormatHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -1057,7 +1057,7 @@ public class FormatTests
         }
     }
 
-    public static class NumberFormatHandler implements SerializableTest.Handler
+    public static class NumberFormatHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -1102,7 +1102,7 @@ public class FormatTests
     {
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             DecimalFormat formats[] = new DecimalFormat[locales.length];
             
             for (int i = 0; i < locales.length; i += 1) {
@@ -1646,7 +1646,7 @@ public class FormatTests
         
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             RuleBasedNumberFormat formats[] = new RuleBasedNumberFormat[types.length * locales.length];
             int i = 0;
             
@@ -1666,11 +1666,11 @@ public class FormatTests
         }
     }
     
-    public static class DecimalFormatSymbolsHandler implements SerializableTest.Handler
+    public static class DecimalFormatSymbolsHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             DecimalFormatSymbols dfs[] = new DecimalFormatSymbols[locales.length];
             
             for (int i = 0; i < locales.length; i += 1) {
@@ -1694,11 +1694,11 @@ public class FormatTests
             char chars_a[] = getCharSymbols(dfs_a);
             char chars_b[] = getCharSymbols(dfs_b);
 
-            return SerializableTest.compareStrings(strings_a, strings_b) && SerializableTest.compareChars(chars_a, chars_b);
+            return SerializableTestUtilities.compareStrings(strings_a, strings_b) && SerializableTestUtilities.compareChars(chars_a, chars_b);
         }
     }
     
-    public static class CurrencyPluralInfoHandler implements SerializableTest.Handler
+    public static class CurrencyPluralInfoHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -1726,7 +1726,7 @@ public class FormatTests
         }
     }
     
-    public static class MessageFormatHandler implements SerializableTest.Handler
+    public static class MessageFormatHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -1745,7 +1745,7 @@ public class FormatTests
         }
     }
 
-    public static class MessageFormatFieldHandler implements SerializableTest.Handler
+    public static class MessageFormatFieldHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -1758,7 +1758,7 @@ public class FormatTests
         }
     }
 
-    public static class DateFormatHandler implements SerializableTest.Handler
+    public static class DateFormatHandler implements SerializableTestUtilities.Handler
     {
         static HashMap cannedPatterns = new HashMap();
         static Date fixedDate;
@@ -1795,7 +1795,7 @@ public class FormatTests
         
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             DateFormat formats[] = new DateFormat[locales.length];
             
             for (int i = 0; i < locales.length; i += 1) {
@@ -1845,7 +1845,7 @@ public class FormatTests
         
     }
 
-    public static class DateFormatFieldHandler implements SerializableTest.Handler
+    public static class DateFormatFieldHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects() {
             return new Object[] {
@@ -1881,12 +1881,12 @@ public class FormatTests
         }
     }
 
-    public static class DateFormatSymbolsHandler implements SerializableTest.Handler
+    public static class DateFormatSymbolsHandler implements SerializableTestUtilities.Handler
     {
         
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             DateFormatSymbols dfs[] = new DateFormatSymbols[locales.length];
             
             for (int i = 0; i < locales.length; i += 1) {
@@ -1905,7 +1905,7 @@ public class FormatTests
             String months_a[] = dfs_a.getMonths();
             String months_b[] = dfs_b.getMonths();
             
-            return SerializableTest.compareStrings(months_a, months_b);
+            return SerializableTestUtilities.compareStrings(months_a, months_b);
         }
     }
     
@@ -1920,7 +1920,7 @@ public class FormatTests
         
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             SimpleDateFormat dateFormats[] = new SimpleDateFormat[patterns.length * locales.length];
             int i = 0;
             
@@ -1934,7 +1934,7 @@ public class FormatTests
         }
     }
 
-    public static class DateIntervalFormatHandler implements SerializableTest.Handler
+    public static class DateIntervalFormatHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -1957,7 +1957,7 @@ public class FormatTests
     }
 
 
-    public static class DateIntervalInfoHandler implements SerializableTest.Handler
+    public static class DateIntervalInfoHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -1976,7 +1976,7 @@ public class FormatTests
     }
 
 
-    public static class PatternInfoHandler implements SerializableTest.Handler
+    public static class PatternInfoHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -2005,7 +2005,7 @@ public class FormatTests
         
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             ChineseDateFormat dateFormats[] = new ChineseDateFormat[patterns.length * locales.length];
             int i = 0;
             
@@ -2021,7 +2021,7 @@ public class FormatTests
         }
     }
 
-    public static class ChineseDateFormatFieldHandler implements SerializableTest.Handler
+    public static class ChineseDateFormatFieldHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects() {
             return new Object[] {
@@ -2038,7 +2038,7 @@ public class FormatTests
     {
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             ChineseDateFormatSymbols cdfs[] = new ChineseDateFormatSymbols[locales.length];
             
             for (int i = 0; i < locales.length; i += 1) {
@@ -2075,7 +2075,7 @@ public class FormatTests
         }
     }
 
-    public static class NumberFormatFieldHandler implements SerializableTest.Handler
+    public static class NumberFormatFieldHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
@@ -2098,11 +2098,11 @@ public class FormatTests
         }
     }
 
-    public static class DateNumberFormatHandler implements SerializableTest.Handler
+    public static class DateNumberFormatHandler implements SerializableTestUtilities.Handler
     {
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             DateNumberFormat[] dnfmts = new DateNumberFormat[locales.length];
             for (int i = 0; i < locales.length; i++) {
                 ULocale uloc = ULocale.forLocale(locales[i]);
@@ -2116,7 +2116,7 @@ public class FormatTests
         }
     }
 
-    public static class SelectFormatHandler implements SerializableTest.Handler {
+    public static class SelectFormatHandler implements SerializableTestUtilities.Handler {
 
         public Object[] getTestObjects() {
             SelectFormat[] selfmts = {new SelectFormat("keyword{phrase} other{otherPhrase}")};
@@ -2133,7 +2133,7 @@ public class FormatTests
         }
     }
 
-    public static class PluralFormatHandler implements SerializableTest.Handler {
+    public static class PluralFormatHandler implements SerializableTestUtilities.Handler {
         public Object[] getTestObjects() {
             Locale[] locales = { Locale.US }; // main test is in plural rules handler
             PluralFormat[] plfmts = new PluralFormat[locales.length];
@@ -2163,7 +2163,7 @@ public class FormatTests
         }
     }
 
-    public static class PluralRulesHandler implements SerializableTest.Handler {
+    public static class PluralRulesHandler implements SerializableTestUtilities.Handler {
         // canned rules as of 4.2
         final String[] cannedRules = {
                 "", // ja
@@ -2195,7 +2195,7 @@ public class FormatTests
         }
     }
     
-    public static class PluralRulesSerialProxyHandler implements SerializableTest.Handler {
+    public static class PluralRulesSerialProxyHandler implements SerializableTestUtilities.Handler {
         // Tested through PluralRules, so just a stub here to keep CoverageTest happy
         final String[] cannedRules = {};
 
@@ -2209,7 +2209,7 @@ public class FormatTests
 
 
 
-    public static class TimeUnitFormatHandler implements SerializableTest.Handler {
+    public static class TimeUnitFormatHandler implements SerializableTestUtilities.Handler {
         // TODO - more test coverage!
         public Object[] getTestObjects() {
             return new Object[] { new TimeUnitFormat().setLocale(ULocale.ENGLISH) };
@@ -2226,7 +2226,7 @@ public class FormatTests
         }
     }
 
-    public static class TimeZoneNamesHandler implements SerializableTest.Handler {
+    public static class TimeZoneNamesHandler implements SerializableTestUtilities.Handler {
         public Object[] getTestObjects() {
             return new Object[] {
                     TimeZoneNames.getInstance(ULocale.ENGLISH),
@@ -2260,7 +2260,7 @@ public class FormatTests
         }
     }
 
-    public static class TimeZoneGenericNamesHandler implements SerializableTest.Handler {
+    public static class TimeZoneGenericNamesHandler implements SerializableTestUtilities.Handler {
         public Object[] getTestObjects() {
             return new Object[] {
                     TimeZoneGenericNames.getInstance(ULocale.ENGLISH),
@@ -2299,7 +2299,7 @@ public class FormatTests
         }
     }
 
-    public static class TZDBTimeZoneNamesHandler implements SerializableTest.Handler {
+    public static class TZDBTimeZoneNamesHandler implements SerializableTestUtilities.Handler {
         public Object[] getTestObjects() {
             return new Object[] {
                     TimeZoneNames.getTZDBInstance(ULocale.ENGLISH),
@@ -2343,7 +2343,7 @@ public class FormatTests
         }
     }
 
-    public static class TimeZoneFormatHandler implements SerializableTest.Handler {
+    public static class TimeZoneFormatHandler implements SerializableTestUtilities.Handler {
         static final String CUSTOM_GMT_PATTERN = "Offset {0} from UTC";
 
         public Object[] getTestObjects() {

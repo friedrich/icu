@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import com.ibm.icu.dev.test.serializable.SerializableTest.Handler;
+import com.ibm.icu.dev.test.serializable.SerializableTestUtilities.Handler;
 import com.ibm.icu.util.VersionInfo;
 
 /**
@@ -76,16 +76,16 @@ public class SerializableWriter
             outDir.mkdirs();
         }
 
-        List<String> classList = SerializableTest.getSerializationClassList(this);
+        List<String> classList = SerializableTestUtilities.getSerializationClassList(this);
         for (String className : classList) {
-            Handler classHandler = SerializableTest.getHandler(className);
+            Handler classHandler = SerializableTestUtilities.getHandler(className);
             if (classHandler == null) {
                 System.out.println("No Handler - Skipping Class: " + className);
                 continue;
             }
             Object[] testObjects = classHandler.getTestObjects();
             File oof = new File(this.path, className + ".dat");
-            SerializableTest.serializeObjects(oof, testObjects);
+            SerializableTestUtilities.serializeObjects(oof, testObjects);
         }
     }
 }

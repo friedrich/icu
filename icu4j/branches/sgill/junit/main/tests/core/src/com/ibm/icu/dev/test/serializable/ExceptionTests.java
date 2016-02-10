@@ -26,7 +26,7 @@ import com.ibm.icu.util.UResourceTypeMismatchException;
  */
 public class ExceptionTests
 {
-    static abstract class ExceptionHandler implements SerializableTest.Handler
+    static abstract class ExceptionHandler implements SerializableTestUtilities.Handler
     {
         abstract public Object[] getTestObjects();
         
@@ -43,7 +43,7 @@ public class ExceptionTests
     {
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             ArabicShapingException exceptions[] = new ArabicShapingException[locales.length];
             
             for (int i = 0; i < locales.length; i += 1) {
@@ -58,7 +58,7 @@ public class ExceptionTests
     {
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             String rules = "This is a very odd little set of rules, just for testing, you know...";
             StringPrepParseException exceptions[] = new StringPrepParseException[locales.length];
             
@@ -74,7 +74,7 @@ public class ExceptionTests
     {
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             UResourceTypeMismatchException exceptions[] = new UResourceTypeMismatchException[locales.length];
             
             for (int i = 0; i < locales.length; i += 1) {
@@ -89,7 +89,7 @@ public class ExceptionTests
     {
         public Object[] getTestObjects()
         {
-            Locale locales[] = SerializableTest.getLocales();
+            Locale locales[] = SerializableTestUtilities.getLocales();
             InvalidFormatException exceptions[] = new InvalidFormatException[locales.length];
             
             for (int i = 0; i < locales.length; i += 1) {
