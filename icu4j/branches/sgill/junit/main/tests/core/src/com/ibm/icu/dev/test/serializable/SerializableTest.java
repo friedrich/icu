@@ -8,16 +8,29 @@
 
 package com.ibm.icu.dev.test.serializable;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
-import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.format.MeasureUnitTest;
 import com.ibm.icu.dev.test.format.PluralRulesTest;
 import com.ibm.icu.impl.JavaTimeZone;
 import com.ibm.icu.impl.OlsonTimeZone;
 import com.ibm.icu.impl.TimeZoneAdapter;
+import com.ibm.icu.impl.URLHandler;
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.math.BigDecimal;
 import com.ibm.icu.math.MathContext;
@@ -47,6 +60,16 @@ import com.ibm.icu.util.VTimeZone;
  */
 public class SerializableTest //extends TestFmwk.TestGroup
 {
+    private static Class serializable;
+    static {
+        try {
+            serializable = Class.forName("java.io.Serializable");
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
     public interface Handler
     {
         public Object[] getTestObjects();
@@ -778,23 +801,127 @@ public class SerializableTest //extends TestFmwk.TestGroup
         map.put("com.ibm.icu.util.ICUCloneNotSupportedException", new ICUCloneNotSupportedExceptionHandler());
     }
     
-//    public SerializableTest()
-//    {
-//        super(
-//            new String[] {
-//                "com.ibm.icu.dev.test.serializable.CoverageTest",
-//                "com.ibm.icu.dev.test.serializable.CompatibilityTest"},
-//            "All Serializable Tests"
-//        );
-//    }
-//
-//    public static final String CLASS_TARGET_NAME  = "Serializable";
-//
-//    public static void main(String[] args)
-//    {
-//        SerializableTest test = new SerializableTest();
-//        
-//        test.run(args);
-//    }
+    /**
+     * @param serializedBytes
+     * @return
+     * @throws IOException 
+     * @throws ClassNotFoundException 
+     */
+    static Object[] getSerializedObjects(byte[] serializedBytes) throws ClassNotFoundException, IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(serializedBytes);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        Object inputObjects[] = (Object[]) ois.readObject();
+
+        ois.close();
+        return inputObjects;
+    }
+
+    /**
+     * @param testObjects
+     * @return
+     * @throws IOException 
+     */
+    static byte[] getSerializedBytes(Object[] objectsOut) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(objectsOut);
+
+        byte[] serializedBytes = bos.toByteArray();
+        oos.close();
+        return serializedBytes;
+    }
+
+    /**
+     * @param testFile
+     * @return
+     * @throws IOException 
+     * @throws ClassNotFoundException 
+     */
+    static Object[] getSerializedObjects(File testFile) throws IOException, ClassNotFoundException {
+        FileInputStream fis = new FileInputStream(testFile);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        Object[] objects = (Object[]) ois.readObject();
+        fis.close();
+        return objects;
+    }
+
+    static List<String> getSerializationClassList(Object caller) throws IOException {
+        List<String> classList = new ArrayList();
+        Enumeration<URL> urlEnum = caller.getClass().getClassLoader().getResources("com/ibm/icu");
+        while (urlEnum.hasMoreElements()) {
+            URL url = urlEnum.nextElement();
+            URLHandler handler  = URLHandler.get(url);
+            if (handler == null) {
+                System.out.println("Unsupported URL: " + url);
+                continue;
+            }
+            CoverageClassVisitor visitor = new CoverageClassVisitor(classList);
+            handler.guide(visitor, true, false);
+        }
+        // TODO(sgill): add randomization support on the list based on the params object
+
+        return classList;
+    }
+
+    private static class CoverageClassVisitor implements URLHandler.URLVisitor {
+        private List<String> classNames;
+
+        public CoverageClassVisitor(List<String> classNamesList) {
+            this.classNames = classNamesList;
+        }
+        
+        /* (non-Javadoc)
+         * @see com.ibm.icu.impl.URLHandler.URLVisitor#visit(java.lang.String)
+         */
+        @Override
+        public void visit(String classPath) {
+            int ix = classPath.lastIndexOf(".class");
+            if (ix < 0) {
+                return;
+            }
+            String className = "com.ibm.icu" + classPath.substring(0, ix).replace('/', '.');
+
+            // Skip things in com.ibm.icu.dev; they're not relevant.
+            if (className.startsWith("com.ibm.icu.dev.")) {
+                return;
+            }
+            Class c;
+            try {
+                c = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                return;
+            }
+            int m = c.getModifiers();
+
+            if (className.equals("com.ibm.icu.text.PluralRules$FixedDecimal")) {
+                // Known Issue: "10268", "Serializable interface is not implemented in PluralRules$FixedDecimal"
+                return;
+            }
+            
+            if (c.isEnum() || !serializable.isAssignableFrom(c)) {
+                //System.out.println("@@@ Skipping: " + className);
+                return;
+            }
+            if (!Modifier.isPublic(m) || Modifier.isInterface(m)) {
+                //System.out.println("@@@ Skipping: " + className);
+                return;
+            }
+
+            this.classNames.add(className);  
+        } 
+    }
+
+    /**
+     * @param oof
+     * @param testObjects
+     * @throws IOException 
+     */
+    public static void serializeObjects(File oof, Object[] objectsOut) throws IOException {
+        FileOutputStream fos = new FileOutputStream(oof);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(objectsOut);
+
+        oos.close();        
+    }
 }
 //eof
