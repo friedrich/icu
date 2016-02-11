@@ -4,7 +4,7 @@
 #  file:  line.txt
 #
 #         Line Breaking Rules
-#         Implement default line breaking as defined by 
+#         Implement default line breaking as defined by
 #         Unicode Standard Annex #14 Revision 34 for Unicode 8.0
 #         http://www.unicode.org/reports/tr14/
 #
@@ -241,8 +241,8 @@ $LB8Breaks    = [$LB4Breaks $ZW];
 $LB8NonBreaks = [[$LB4NonBreaks] - [$ZW]];
 
 
-# LB 9     Combining marks.      X   $CM needs to behave like X, where X is not $SP, $BK $CR $LF $NL 
-#                                $CM not covered by the above needs to behave like $AL   
+# LB 9     Combining marks.      X   $CM needs to behave like X, where X is not $SP, $BK $CR $LF $NL
+#                                $CM not covered by the above needs to behave like $AL
 #                                See definition of $CAN_CM.
 
 $CAN_CM $CM+;                   #  Stick together any combining sequences that don't match other rules.
@@ -264,7 +264,7 @@ $WJcm $CAN_CM $CM*;
 #
 $GLcm $CAN_CM $CM*;
 $GLcm $CANT_CM;
- 
+
 #
 # LB 12a  Do not break before NBSP and related characters ...
 #            [^SP BA HY] x GL
@@ -342,14 +342,14 @@ $LB20NonBreaks = [$LB18NonBreaks - $CB];
 # LB 21        x   (BA | HY | NS)
 #           BB x
 #
-$LB20NonBreaks $CM* ($BAcm | $HYcm | $NScm); 
+$LB20NonBreaks $CM* ($BAcm | $HYcm | $NScm);
 
 $BBcm [^$CB];                                  #  $BB  x
 $BBcm $LB20NonBreaks $CM*;
 
 # LB 21a Don't break after Hebrew + Hyphen
 #   HL (HY | BA) x
-#  
+#
 $HLcm ($HYcm | $BAcm) [^$CB]?;
 
 # LB 21b (forward) Don't break between SY and HL
@@ -407,7 +407,7 @@ $IScm ($ALcm | $HLcm);
 
 # LB 30
 ($ALcm | $HLcm | $NUcm) $OPcm;
-$CM+ $OPcm;         # The $CM+ is from rule 10, an unattached CM is treated as AL.          
+$CM+ $OPcm;         # The $CM+ is from rule 10, an unattached CM is treated as AL.
 $CPcm ($ALcm | $HLcm | $NUcm);
 
 # LB 30a  Do not break between regional indicators. Break after pairs of them.
@@ -465,14 +465,14 @@ $AL_FOLLOW $CM+ / (
           [$BK $CR $LF $NL $ZW {eof}] |
           $SP+ $CM+ $SP |
           $SP+ $CM* ([^$OP $CM $SP] | [$AL {eof}]));   # if LB 14 will match, need to surpress this break.
-                                               #  LB14 says    OP SP* x .        
+                                               #  LB14 says    OP SP* x .
                                                #    becomes    OP SP* x AL
                                                #    becomes    OP SP* x CM+ AL_FOLLOW
                                                #
                                                # Further note:  the $AL in [$AL {eof}] is only to work around
                                                #                a rule compiler bug which complains about
                                                #                empty sets otherwise.
-          
+
 #
 #  Sequences of the form  (shown forwards)
 #      [CANT_CM]  <break> [CM]  <break>  [PR]
@@ -484,7 +484,7 @@ $AL_FOLLOW $CM+ / (
 
 
 
-# LB 4, 5, 5
+# LB 4, 5, 6
 
 $LB4Breaks [$LB4NonBreaks-$CM];
 $LB4Breaks $CM+ $CAN_CM;
@@ -545,14 +545,14 @@ $SY [$LB8NonBreaks-$CM];
 #     OP SP+  ($CM+ behaving as $AL) (CL | CP | EX | IS | IY)
 #   This really wants to chain at the $CM+ (which is acting as an $AL)
 #   except for $CM chaining being disabled.
-[$CL $CP $EX $IS $SY] $CM+ $SP+ $CM* $OP;  
+[$CL $CP $EX $IS $SY] $CM+ $SP+ $CM* $OP;
 
 # LB 14    OP SP* x
 #
 $CM* $CAN_CM    $SP* $CM* $OP;
      $CANT_CM   $SP* $CM* $OP;
 $AL_FOLLOW? $CM+  $SP $SP* $CM* $OP;     #  by LB 10, behaves like $AL_FOLLOW? $AL $SP* $CM* $OP
-     
+
      $AL_FOLLOW_NOCM $CM+ $SP+ $CM* $OP;
 $CM* $AL_FOLLOW_CM   $CM+ $SP+ $CM* $OP;
 $SY $CM $SP+ $OP;   # TODO:  Experiment.  Remove.
@@ -581,7 +581,7 @@ $CM* $QU      $LB18NonBreaks;
 
 $CM* $CAN_CM  $CM* $QU;                               #   QU x .
      $CANT_CM $CM* $QU;
-     
+
 #
 #  LB 20  Break before and after CB.
 #         nothing needed here.
@@ -591,7 +591,7 @@ $CM* $CAN_CM  $CM* $QU;                               #   QU x .
 $CM* ($BA | $HY | $NS) $CM* [$LB20NonBreaks-$CM];     #  . x (BA | HY | NS)
 
 $CM* [$LB20NonBreaks-$CM] $CM* $BB;                   #  BB x .
-[^$CB] $CM* $BB;                                      # 
+[^$CB] $CM* $BB;                                      #
 
 # LB21a
 [^$CB] $CM* ($HY | $BA) $CM* $HL;
@@ -647,7 +647,7 @@ $CM* ($ALPlus | $HL | $NU) $CM* $CP;
 #    the second with an even number. Stripping away the cruft they look like
 #         ^RI RI / (RI RI)+ ^RI;
 #         ^RI RI RI / (RI RI)+ ^RI;
-#    
+#
 [{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL] $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
 [{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL] $CM* $RI $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
 
