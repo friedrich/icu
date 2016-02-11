@@ -1,7 +1,7 @@
 /*
  *******************************************************************************
- * Copyright (C) 2008-2015, International Business Machines Corporation and    *
- * others. All Rights Reserved.                                                *
+ * Copyright (C) 2008-2016, International Business Machines Corporation and
+ * others. All Rights Reserved.
  *******************************************************************************
  */
 
@@ -30,6 +30,7 @@ import com.ibm.icu.impl.UResource.Value;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.Freezable;
 import com.ibm.icu.util.ICUCloneNotSupportedException;
+import com.ibm.icu.util.ICUException;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
 
@@ -407,200 +408,165 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
     }
 
 
-    
+
     /**
      * Sink for enumerating all of the date interval skeletons.
      * Contains inner sink classes, each one corresponding to a type of resource table.
      * The outer class finds the dateInterval table or an alias.
      */
     private static final class DateIntervalSink extends UResource.TableSink {
-        
+
         /**
          * Sink to handle each skeleton table. 
          */
-        class DateIntervalSkeletonSink extends UResource.TableSink {
-            
-            /**
-             * Sink to store the date interval pattern for each skeleton pattern character.
-             */
-            class DateIntervalPatternSink extends UResource.TableSink {
-                
-                // Stores the already processed (skeleton, patternLetter) pairs.
-                HashSet<String> skeletonPatternLetterPairs = new HashSet<String>();
-                
-                
-                //Instance methods:
-                
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public void put(Key key, Value value) {
-                    //TODO(fabalbon): check for nulls in key and value??
-                    int calendarField = patternLetterToCalendarField(key.toString());
-                    
-                    //If the calendar field has a valid value
-                    if (calendarField != -1) {
-                        //TODO(fabalbon): What to do with the debug skeleton? (refer to the original method) 
-                        
-                        //Get the largest different calendar unit and the pattern
-                        String lrgDiffCalUnit = CALENDAR_FIELD_TO_PATTERN_LETTER[calendarField];
-                        String intervalPattern = value.toString();
-                        
-                        //Check if the pattern has already been stored on the data structure.
-                        String skeletonPatternLetterPair = currentSkeleton + "\u0001" + lrgDiffCalUnit;
-                        if (!skeletonPatternLetterPairs.contains(skeletonPatternLetterPair)) {
-                            //Store the pattern
-                            skeletonPatternLetterPairs.add(skeletonPatternLetterPair);
-                            dateIntervalInfo.setIntervalPatternInternally(currentSkeleton, lrgDiffCalUnit, intervalPattern);
-                        }
-                    }
-                }
-                
-                /**
-                 * Converts the pattern letter to a calendar field.
-                 * 
-                 * @param patternLetter Pattern letter to convert
-                 * @return Calendar Field for the Pattern Letter (-1 when pattern is not recognized)
-                 */
-                private int patternLetterToCalendarField(String patternLetter) {
-                    //TODO(fabalbon): This can be optimized. The data structure could be just a string.
-                    //TODO(fabalbon): Simplify. Just check for single-char key, known pattern letters, and change H to h.
-                    int calendarField = -1; // initialize with an invalid value.
-                    
-                    if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.YEAR])) {
-                        calendarField = Calendar.YEAR;    
-                    } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MONTH])) {
-                        calendarField = Calendar.MONTH;
-                    } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE])) {
-                        calendarField = Calendar.DATE;
-                    } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.AM_PM]) ) {
-                        calendarField = Calendar.AM_PM;    
-                    } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR]) ) {
-                        calendarField = Calendar.HOUR;
-                        patternLetter = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
-                    } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR_OF_DAY]) ) {
-                        // HOUR_OF_DAY is 'H' for 24 hour clock; HOUR is 'h' for 12 hour clock. We use HOUR
-                        // here instead of HOUR_OF_DAY because setIntervalPatternInternally understand HOUR.
-                        calendarField = Calendar.HOUR;
-                        patternLetter = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
-                    } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MINUTE]) ) {
-                        calendarField = Calendar.MINUTE;    
-                    } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.SECOND]) ) {
-                        calendarField = Calendar.SECOND;    
-                    }
-                    
-                    return calendarField;
-                }
-                
-            }
-            DateIntervalPatternSink dateIntervalPatternSink = new DateIntervalPatternSink();
-            
-            // Current skeleton table being enumerated:
-            String currentSkeleton;    
-            
-            
-            // Instance Methods:
-    
-            /**
-             * {@inheritDoc}
-             */
+        class SkeletonSink extends UResource.TableSink {
             @Override
-            public TableSink getOrCreateTableSink(Key key, int initialSize) {                
-                //TODO(fabalbon): should I check if the skeleton is valid??
+            public TableSink getOrCreateTableSink(Key key, int initialSize) {
                 currentSkeleton = key.toString();
                 return dateIntervalPatternSink;
             }
         }
-        DateIntervalSkeletonSink dateIntervalSkeletonSink = new DateIntervalSkeletonSink();
-        
-        
+        SkeletonSink dateIntervalSkeletonSink = new SkeletonSink();
+
+        /**
+         * Sink to store the date interval pattern for each skeleton pattern character.
+         */
+        class PatternSink extends UResource.TableSink {
+
+            // Stores the already processed (skeleton, patternLetter) pairs.
+            Set<String> skeletonPatternLetterPairs = new HashSet<String>();
+
+            @Override
+            public void put(Key key, Value value) {
+                int calendarField = patternLetterToCalendarField(key.toString());
+                
+                // If the calendar field has a valid value
+                if (calendarField != -1) {
+                    // Get the largest different calendar unit and the pattern
+                    String lrgDiffCalUnit = CALENDAR_FIELD_TO_PATTERN_LETTER[calendarField];
+                    
+                    // Check if the pattern has already been stored on the data structure.
+                    String skeletonPatternLetterPair = currentSkeleton + "\u0001" + lrgDiffCalUnit;
+                    if (!skeletonPatternLetterPairs.contains(skeletonPatternLetterPair)) {
+                        // Store the pattern
+                        skeletonPatternLetterPairs.add(skeletonPatternLetterPair);
+                        dateIntervalInfo.setIntervalPatternInternally(currentSkeleton, lrgDiffCalUnit,
+                            value.toString());
+                    }
+                }
+            }
+
+            /**
+             * Converts the pattern letter to a calendar field.
+             * 
+             * @param patternLetter Pattern letter to convert
+             * @return Calendar Field for the Pattern Letter (-1 when pattern is not recognized)
+             */
+            private int patternLetterToCalendarField(String patternLetter) {
+                //TODO(fabalbon): This can be optimized. The data structure could be just a string.
+                //TODO(fabalbon): Simplify. Just check for single-char key, known pattern letters, and change H to h.
+                int calendarField = -1; // initialize with an invalid value.
+                
+                if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.YEAR])) {
+                    calendarField = Calendar.YEAR;    
+                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MONTH])) {
+                    calendarField = Calendar.MONTH;
+                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE])) {
+                    calendarField = Calendar.DATE;
+                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.AM_PM]) ) {
+                    calendarField = Calendar.AM_PM;    
+                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR]) ) {
+                    calendarField = Calendar.HOUR;
+                    patternLetter = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
+                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR_OF_DAY]) ) {
+                    // HOUR_OF_DAY is 'H' for 24 hour clock; HOUR is 'h' for 12 hour clock. We use HOUR
+                    // here instead of HOUR_OF_DAY because setIntervalPatternInternally understand HOUR.
+                    calendarField = Calendar.HOUR;
+                    patternLetter = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
+                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MINUTE]) ) {
+                    calendarField = Calendar.MINUTE;    
+                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.SECOND]) ) {
+                    calendarField = Calendar.SECOND;    
+                }
+                
+                return calendarField;
+            }
+            
+        }
+        PatternSink dateIntervalPatternSink = new PatternSink();
+
+
         // Output data
         DateIntervalInfo dateIntervalInfo;
         
-        //Alias handling
-        String nextCalendarType;
+        // Alias handling
+        public String nextCalendarType;
         
-        
+        // Current skeleton table being enumerated:
+        String currentSkeleton;
+
+
         // Constructor
         public DateIntervalSink(DateIntervalInfo dateIntervalInfo) {
             this.dateIntervalInfo = dateIntervalInfo;
         }    
-        
-        // Instance methods
-        
-        /**
-         * {@inheritDoc}
-         */
+
         @Override
         public void put(Key key, Value value) {
-            //Check if it's an alias of intervalFormats
-            if (key.toString().compareTo(DateIntervalInfo.INTERVAL_FORMATS_KEY) != 0 
+            // Check if it's an alias of intervalFormats
+            if (!key.contentEquals(INTERVAL_FORMATS_KEY) 
                     || value.getType() != ICUResourceBundle.ALIAS) { 
                 return; 
             }
             
-            //Check if the alias points somewhere
-            String aliasPath = value.getAliasString(); 
-            if (aliasPath == null) { return; }
-            
-            //Get the calendar type from the alias path.
-            String calendarType = getCalendarTypeFromPath(aliasPath);
+            // Get the calendar type from the alias path.
+            String calendarType = getCalendarTypeFromPath(value.getAliasString());
             if (calendarType != null) {
                 nextCalendarType = calendarType;
             }
         }
-        
-        /**
-         * {@inheritDoc}
-         */
+
         @Override
         public TableSink getOrCreateTableSink(Key key, int initialSize) {
-            //Check if it's the intervalFormats table
-            if (key.toString().compareTo(DateIntervalInfo.INTERVAL_FORMATS_KEY) == 0) {
+            // Check if it's the intervalFormats table
+            if (key.contentEquals(INTERVAL_FORMATS_KEY)) {
                 return dateIntervalSkeletonSink;
             }
             return null;
         }
         
         /**
-         * Returns the next calendar type (if there was an alias pointing to it)
+         * Returns and resets the next calendar type.
          * @return Next calendar type
          */
-        public String getNextCalendarType() {
-            return nextCalendarType;
-        }
-        
-        /**
-         * Resets the next calendar type.
-         */
-        public void resetNextCalendarType() {
+        public String getAndResetNextCalendarType() {
+            String tmpCalendarType = nextCalendarType;
             nextCalendarType = null;
+            return tmpCalendarType;
         }
         
+        // Alias' path prefix and sufix.
+        private static final String DATE_INTERVAL_PATH_PREFIX = 
+            "/LOCALE/" + CALENDAR_KEY + "/";
+        private static final String DATE_INTERVAL_PATH_SUFIX = 
+            "/" + INTERVAL_FORMATS_KEY;
+
         /**
          * Extracts the calendar type from the path
          * @param path
          * @return Calendar Type
          */
         private String getCalendarTypeFromPath(String path) {
-            //TODO(fabalbon): Isn't there an existing method I could use for this?
-            
-            String calendarPathElement = DateIntervalInfo.CALENDAR_KEY + "/";
-            String intervalFormatsPathElement = "/" + DateIntervalInfo.INTERVAL_FORMATS_KEY;
-            int indexOfCalendar = path.indexOf(calendarPathElement);
-            int indexOfIntervalFormat = path.indexOf(intervalFormatsPathElement);
-            
-            //Check if the path has the correct format
-            if (indexOfCalendar >= 0 && indexOfIntervalFormat >= 0 && indexOfCalendar < indexOfIntervalFormat) {
-                return path.substring(indexOfCalendar + calendarPathElement.length(), indexOfIntervalFormat);
+            if (path.startsWith(DATE_INTERVAL_PATH_PREFIX) && 
+                path.endsWith(DATE_INTERVAL_PATH_SUFIX)) {
+                return path.substring(DATE_INTERVAL_PATH_PREFIX.length(), 
+                    path.length() - DATE_INTERVAL_PATH_SUFIX.length());
             }
             return null;
         }
-        
     }
-    
-    
+
+
     /*
      * Initialize DateIntervalInfo from calendar data
      * @param calData  calendar data
@@ -612,40 +578,46 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
         // resource files
         fFallbackIntervalPattern = "{0} \u2013 {1}";
 
-        try {    
+        try {
             // Get the correct calendar type
             String calendarTypeToUse = locale.getKeywordValue("calendar");
             if ( calendarTypeToUse == null ) {
-                String[] preferredCalendarTypes = Calendar.getKeywordValuesForLocale("calendar", locale, true);
+                String[] preferredCalendarTypes = 
+                        Calendar.getKeywordValuesForLocale("calendar", locale, true);
                 calendarTypeToUse = preferredCalendarTypes[0]; // the most preferred calendar
             }
             if ( calendarTypeToUse == null ) {
                 calendarTypeToUse = "gregorian"; // fallback
             }
-            
-            //Instance the sink to process the data and the resource bundle
+
+            // Instantiate the sink to process the data and the resource bundle
             DateIntervalSink sink = new DateIntervalSink(this);
-            ICUResourceBundle resource = (ICUResourceBundle)UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, locale);
-            
-            //Get the fallback pattern
-            String fallbackPattern = resource.getStringWithFallback(CALENDAR_KEY + "/" + calendarTypeToUse 
+            ICUResourceBundle resource = 
+                    (ICUResourceBundle)UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, locale);
+
+            // Get the fallback pattern
+            String fallbackPattern = resource.getStringWithFallback(CALENDAR_KEY + "/" + calendarTypeToUse
                     + "/" + INTERVAL_FORMATS_KEY + "/" + FALLBACK_STRING);
             setFallbackIntervalPattern(fallbackPattern);
+
+            // Already loaded calendar types
+            Set<String> loadedCalendarTypes = new HashSet<String>();
             
-            //Already loaded calendar types
-            HashSet<String> loadedCalendarTypes = new HashSet<String>();
-            
-            while (calendarTypeToUse != null && !loadedCalendarTypes.contains(calendarTypeToUse)) {
-                //Register the calendar type to avoid loops
+            while (calendarTypeToUse != null) {
+                // Throw a exception when a loop is detected
+                if (loadedCalendarTypes.contains(calendarTypeToUse)) {
+                    throw new ICUException("Loop in calendar type fallback: " + calendarTypeToUse);
+                }
+
+                // Register the calendar type to avoid loops
                 loadedCalendarTypes.add(calendarTypeToUse);
-                
-                //Get all resources for this calendar type
-                String pathToIntervalFormats = CALENDAR_KEY + "/" + calendarTypeToUse;      
+
+                // Get all resources for this calendar type
+                String pathToIntervalFormats = CALENDAR_KEY + "/" + calendarTypeToUse;
                 resource.getAllTableItemsWithFallback(pathToIntervalFormats, sink);
-                
-                //Get next calendar type to load if there was an alias pointing at it
-                calendarTypeToUse = sink.getNextCalendarType();                
-                sink.resetNextCalendarType();
+
+                // Get next calendar type to load if there was an alias pointing at it
+                calendarTypeToUse = sink.getAndResetNextCalendarType();
             } 
         }
         catch ( MissingResourceException e) {
