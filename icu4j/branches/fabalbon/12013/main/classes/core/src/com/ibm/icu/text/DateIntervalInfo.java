@@ -443,14 +443,8 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
                     // Get the largest different calendar unit
                     String lrgDiffCalUnit = patternLetter.toString();
 
-                    // Check if the pattern has already been stored on the data structure.
-                    Map<String, PatternInfo> patternsOfOneSkeleton = 
-                            dateIntervalInfo.fIntervalPatterns.get(currentSkeleton);
-                    if (patternsOfOneSkeleton == null || !patternsOfOneSkeleton.containsKey(lrgDiffCalUnit)) {
-                        // Store the pattern
-                        dateIntervalInfo.setIntervalPatternInternally(currentSkeleton, lrgDiffCalUnit,
-                            value.toString());
-                    }
+                    // Set the interval pattern
+                    setIntervalPatternIfAbsent(currentSkeleton, lrgDiffCalUnit, value);
                 }
             }
 
@@ -472,6 +466,25 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
 
                 return patternLetter;
             }
+
+            /**
+             * Stores the interval pattern in the internal data structure if it's not present.
+             * @param skeleton
+             * @param lrgDiffCalUnit
+             * @param intervalPattern
+             */
+            private void setIntervalPatternIfAbsent(String skeleton, String lrgDiffCalUnit, 
+                                                    Value intervalPattern) {
+                // Check if the pattern has already been stored on the data structure.
+                Map<String, PatternInfo> patternsOfOneSkeleton = 
+                        dateIntervalInfo.fIntervalPatterns.get(currentSkeleton);
+                if (patternsOfOneSkeleton == null || !patternsOfOneSkeleton.containsKey(lrgDiffCalUnit)) {
+                    // Store the pattern
+                    dateIntervalInfo.setIntervalPatternInternally(currentSkeleton, lrgDiffCalUnit,
+                            intervalPattern.toString());
+                }
+            }
+
         }
         PatternSink patternSink = new PatternSink();
 
