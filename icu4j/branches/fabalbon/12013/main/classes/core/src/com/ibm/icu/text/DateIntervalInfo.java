@@ -423,33 +423,31 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
             @Override
             public TableSink getOrCreateTableSink(Key key, int initialSize) {
                 currentSkeleton = key.toString();
-                return dateIntervalPatternSink;
+                return patternSink;
             }
         }
-        SkeletonSink dateIntervalSkeletonSink = new SkeletonSink();
+        SkeletonSink skeletonSink = new SkeletonSink();
 
         /**
          * Sink to store the date interval pattern for each skeleton pattern character.
          */
         class PatternSink extends UResource.TableSink {
-
-            // Stores the already processed (skeleton, patternLetter) pairs.
-            Set<String> skeletonPatternLetterPairs = new HashSet<String>();
-
+            
             @Override
             public void put(Key key, Value value) {
-                int calendarField = patternLetterToCalendarField(key.toString());
-                
+                // Process the key
+                CharSequence patternLetter = validateAndProcessPatternLetter(key);
+
                 // If the calendar field has a valid value
-                if (calendarField != -1) {
-                    // Get the largest different calendar unit and the pattern
-                    String lrgDiffCalUnit = CALENDAR_FIELD_TO_PATTERN_LETTER[calendarField];
-                    
+                if (patternLetter != null) {
+                    // Get the largest different calendar unit
+                    String lrgDiffCalUnit = patternLetter.toString();
+
                     // Check if the pattern has already been stored on the data structure.
-                    String skeletonPatternLetterPair = currentSkeleton + "\u0001" + lrgDiffCalUnit;
-                    if (!skeletonPatternLetterPairs.contains(skeletonPatternLetterPair)) {
+                    Map<String, PatternInfo> patternsOfOneSkeleton = 
+                            dateIntervalInfo.fIntervalPatterns.get(currentSkeleton);
+                    if (patternsOfOneSkeleton == null || !patternsOfOneSkeleton.containsKey(lrgDiffCalUnit)) {
                         // Store the pattern
-                        skeletonPatternLetterPairs.add(skeletonPatternLetterPair);
                         dateIntervalInfo.setIntervalPatternInternally(currentSkeleton, lrgDiffCalUnit,
                             value.toString());
                     }
@@ -457,53 +455,49 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
             }
 
             /**
-             * Converts the pattern letter to a calendar field.
-             * 
-             * @param patternLetter Pattern letter to convert
-             * @return Calendar Field for the Pattern Letter (-1 when pattern is not recognized)
+             * Processes the pattern letter
+             * @param patternLetter
+             * @return Pattern letter
              */
-            private int patternLetterToCalendarField(String patternLetter) {
-                //TODO(fabalbon): This can be optimized. The data structure could be just a string.
-                //TODO(fabalbon): Simplify. Just check for single-char key, known pattern letters, and change H to h.
-                int calendarField = -1; // initialize with an invalid value.
-                
-                if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.YEAR])) {
-                    calendarField = Calendar.YEAR;    
-                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MONTH])) {
-                    calendarField = Calendar.MONTH;
-                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE])) {
-                    calendarField = Calendar.DATE;
-                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.AM_PM]) ) {
-                    calendarField = Calendar.AM_PM;    
-                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR]) ) {
-                    calendarField = Calendar.HOUR;
-                    patternLetter = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
-                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR_OF_DAY]) ) {
-                    // HOUR_OF_DAY is 'H' for 24 hour clock; HOUR is 'h' for 12 hour clock. We use HOUR
-                    // here instead of HOUR_OF_DAY because setIntervalPatternInternally understand HOUR.
-                    calendarField = Calendar.HOUR;
-                    patternLetter = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
-                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MINUTE]) ) {
-                    calendarField = Calendar.MINUTE;    
-                } else if ( patternLetter.equals(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.SECOND]) ) {
-                    calendarField = Calendar.SECOND;    
+            private CharSequence validateAndProcessPatternLetter(CharSequence patternLetter) {
+                // Check if the pattern letter is accepted
+                if (patternLetter.length() != 1 || !ACCEPTED_PATTERN_LETTERS.contains(patternLetter.charAt(0))) { 
+                    return null; 
                 }
-                
-                return calendarField;
+
+                // Replace 'h' for 'H'
+                if (patternLetter.charAt(0) == CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR_OF_DAY].charAt(0)) {
+                    patternLetter = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
+                }
+
+                return patternLetter;
             }
-            
         }
-        PatternSink dateIntervalPatternSink = new PatternSink();
+        PatternSink patternSink = new PatternSink();
 
 
         // Output data
         DateIntervalInfo dateIntervalInfo;
         
         // Alias handling
-        public String nextCalendarType;
+        String nextCalendarType;
         
         // Current skeleton table being enumerated:
         String currentSkeleton;
+
+        // Accepted pattern letters
+        private static final Set<Character> ACCEPTED_PATTERN_LETTERS = new HashSet<Character>();
+
+        static {
+            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.YEAR].charAt(0));
+            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MONTH].charAt(0));
+            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE].charAt(0));
+            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.AM_PM].charAt(0));
+            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR].charAt(0));
+            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR_OF_DAY].charAt(0));
+            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MINUTE].charAt(0));
+            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.SECOND].charAt(0));
+        }
 
 
         // Constructor
@@ -514,23 +508,20 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
         @Override
         public void put(Key key, Value value) {
             // Check if it's an alias of intervalFormats
-            if (!key.contentEquals(INTERVAL_FORMATS_KEY) 
-                    || value.getType() != ICUResourceBundle.ALIAS) { 
+            if (value.getType() != ICUResourceBundle.ALIAS
+                    || !key.contentEquals(INTERVAL_FORMATS_KEY)) { 
                 return; 
             }
             
             // Get the calendar type from the alias path.
-            String calendarType = getCalendarTypeFromPath(value.getAliasString());
-            if (calendarType != null) {
-                nextCalendarType = calendarType;
-            }
+            nextCalendarType = getCalendarTypeFromPath(value.getAliasString());
         }
 
         @Override
         public TableSink getOrCreateTableSink(Key key, int initialSize) {
             // Check if it's the intervalFormats table
             if (key.contentEquals(INTERVAL_FORMATS_KEY)) {
-                return dateIntervalSkeletonSink;
+                return skeletonSink;
             }
             return null;
         }
@@ -558,11 +549,11 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
          */
         private String getCalendarTypeFromPath(String path) {
             if (path.startsWith(DATE_INTERVAL_PATH_PREFIX) && 
-                path.endsWith(DATE_INTERVAL_PATH_SUFIX)) {
+                    path.endsWith(DATE_INTERVAL_PATH_SUFIX)) {
                 return path.substring(DATE_INTERVAL_PATH_PREFIX.length(), 
                     path.length() - DATE_INTERVAL_PATH_SUFIX.length());
             }
-            return null;
+            throw new ICUException("Malformed 'intervalFormat' alias path: " + path);
         }
     }
 
@@ -604,7 +595,7 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
             Set<String> loadedCalendarTypes = new HashSet<String>();
             
             while (calendarTypeToUse != null) {
-                // Throw a exception when a loop is detected
+                // Throw an exception when a loop is detected
                 if (loadedCalendarTypes.contains(calendarTypeToUse)) {
                     throw new ICUException("Loop in calendar type fallback: " + calendarTypeToUse);
                 }
