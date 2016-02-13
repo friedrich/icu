@@ -60,6 +60,7 @@ start:
     '$'                    scan-var-name         ^assign-or-rule    doExprStart
     '!'                  n rev-option                             
     ';'                  n start                                                  # ignore empty rules.
+    '^'                    start-after-caret                        doNoChainExprStart
     eof                    exit              
     default                term                  ^break-rule-end    doExprStart
     
@@ -71,7 +72,21 @@ break-rule-end:
     white_space          n break-rule-end
     default                errorDeath                               doRuleError
      
-
+#
+# start of a rule, after having seen a '^' (inhibits rule chain in).
+#     Similar to the main 'start' state in most respects, except
+#          - empty rule is an error.
+#          - A second '^' is an error.
+#
+start-after-caret:
+    escaped                term                  ^break-rule-end    doExprCatOperator
+    white_space          n start-after-caret
+    '$'                    scan-var-name         ^assign-or-rule    doExprCatOperator
+    ';'                    errorDeath                               doRuleError    # ^ ;
+    '^'                    errorDeath                               doRuleError    # ^ ^
+    eof                    exit              
+    default                term                  ^break-rule-end    doExprCatOperator
+ 
 #
 #   !               We've just scanned a '!', indicating either a !!key word flag or a
 #                   !Reverse rule.

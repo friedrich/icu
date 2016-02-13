@@ -280,6 +280,7 @@ void RBBINode::printNode() {
                 "leafChar",
                 "lookAhead",
                 "tag",
+                "noChainIn",
                 "endMark",
                 "opStart",
                 "opCat",

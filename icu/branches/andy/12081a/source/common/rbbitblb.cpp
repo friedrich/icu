@@ -208,7 +208,7 @@ void RBBITableBuilder::calcNullable(RBBINode *n) {
         return;
     }
 
-    if (n->fType == RBBINode::lookAhead || n->fType == RBBINode::tag) {
+    if (n->fType == RBBINode::lookAhead || n->fType == RBBINode::tag || n->fType == RBBINode::noChainIn) {
         // Lookahead marker node.  It's a leaf, so no recursion on children.
         // It's nullable because it does not match any literal text from the input stream.
         n->fNullable = TRUE;
@@ -251,7 +251,8 @@ void RBBITableBuilder::calcFirstPos(RBBINode *n) {
     if (n->fType == RBBINode::leafChar  ||
         n->fType == RBBINode::endMark   ||
         n->fType == RBBINode::lookAhead ||
-        n->fType == RBBINode::tag) {
+        n->fType == RBBINode::tag       ||
+        n->fType == RBBINode::noChainIn) {
         // These are non-empty leaf node types.
         // Note: In order to maintain the sort invariant on the set,
         // this function should only be called on a node whose set is
@@ -297,7 +298,8 @@ void RBBITableBuilder::calcLastPos(RBBINode *n) {
     if (n->fType == RBBINode::leafChar  ||
         n->fType == RBBINode::endMark   ||
         n->fType == RBBINode::lookAhead ||
-        n->fType == RBBINode::tag) {
+        n->fType == RBBINode::tag       ||
+        n->fType == RBBINode::noChainIn) {
         // These are non-empty leaf node types.
         // Note: In order to maintain the sort invariant on the set,
         // this function should only be called on a node whose set is

@@ -31,6 +31,7 @@ class RBBINode : public UMemory {
             leafChar,
             lookAhead,
             tag,
+            noChainIn,
             endMark,
             opStart,
             opCat,

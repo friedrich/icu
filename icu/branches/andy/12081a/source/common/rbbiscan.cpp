@@ -205,6 +205,21 @@ UBool RBBIRuleScanner::doParseActions(int32_t action)
         break;
 
 
+    case doNoChainExprStart:
+        // Scanned a '^' while on the rule start state. Start a new rule.
+        pushNewNode(RBBINode::opStart);
+        fRuleNum++;
+
+        n = pushNewNode(RBBINode::noChainIn);
+        if (U_FAILURE(*fRB->fStatus)) {
+            break;
+        }
+        n->fFirstPos = fScanIndex;
+        n->fLastPos  = fNextIndex;
+        fRB->fRules.extractBetween(n->fFirstPos, n->fLastPos, n->fText);
+        break;
+
+
     case doExprOrOperator:
         {
             fixOpStack(RBBINode::precOpCat);
