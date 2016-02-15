@@ -3800,9 +3800,9 @@ Calendar::setWeekData(const Locale& desiredLocale, const char *type, UErrorCode&
         return;
     }
 
-     char region[ULOC_COUNTRY_CAPACITY];
-     (void)ulocimp_getRegionForSupplementalData(desiredLocale.getName(), TRUE, region, sizeof(region), &status);
-     
+    char region[ULOC_COUNTRY_CAPACITY];
+    (void)ulocimp_getRegionForSupplementalData(desiredLocale.getName(), TRUE, region, sizeof(region), &status);
+
     // Read week data values from supplementalData week data
     UResourceBundle *rb = ures_openDirect(NULL, "supplementalData", &status);
     ures_getByKey(rb, "weekData", rb, &status);
