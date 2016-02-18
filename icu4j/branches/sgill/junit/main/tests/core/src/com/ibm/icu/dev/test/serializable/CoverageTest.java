@@ -8,9 +8,6 @@ package com.ibm.icu.dev.test.serializable;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.junit.Test;
@@ -18,7 +15,6 @@ import org.junit.runner.RunWith;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.serializable.SerializableTestUtilities.Handler;
-import com.ibm.icu.impl.URLHandler;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;

@@ -13,6 +13,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/stuartg/Documents/code/icu/junit/external/junit/hamcrest-core-1.3.jar"/>
-	<classpathentry kind="lib" path="/Users/stuartg/Documents/code/icu/junit/external/junitparams/JUnitParams-1.0.2.jar"/>
+	<classpathentry kind="lib" path="/Users/stuartg/Documents/code/icu/junit/external/junitparams/JUnitParams-1.0.2.jar" sourcepath="/Users/stuartg/Documents/code/JUnitParams-master/src"/>
 	<classpathentry kind="output" path="out/bin"/>
 </classpath>

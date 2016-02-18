@@ -34,7 +34,7 @@ public interface TestDataModule {
     /**
      * @return Iterator<TestData>
      */
-    public Iterator getTestDataIterator();
+    public Iterator<TestData> getTestDataIterator();
 
     public static class Factory{
 

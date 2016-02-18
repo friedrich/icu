@@ -6,8 +6,6 @@
  */
 package com.ibm.icu.dev.test;
 
-import java.lang.reflect.Method;
-import java.util.Iterator;
 import java.util.MissingResourceException;
 
 import com.ibm.icu.dev.test.TestDataModule.DataMap;
@@ -30,7 +28,7 @@ import com.ibm.icu.dev.test.TestDataModule.TestData;
  * 
  * See CollationTest for an example.
  */
-public abstract class ModuleTest extends TestFmwk {
+public class ModuleTest {
     private TestDataModule m;
 
     protected TestData t = null;
@@ -39,38 +37,38 @@ public abstract class ModuleTest extends TestFmwk {
 
     private String baseName = null;
 
-    abstract protected void processModules();
+    //abstract protected void processModules();
 
     protected ModuleTest(String baseName, String locName) {
         localeName = locName;
         this.baseName = baseName;
     }
 
-    protected Target getTargets(String targetName) {
-        if (params.doMethods()) {
-            Target target = null;
-            if (!validate()) {
-                return null;
-            }
-            Iterator testData = m.getTestDataIterator();
-            if (testData != null) {
-                try {
-                    Method method = getClass()
-                            .getMethod("processModules", (Class[])null);
-                    while (testData.hasNext()) {
-                        target = new MethodTarget(((TestData) testData.next())
-                                .getName(), method).setNext(target);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new IllegalStateException(e.getMessage());
-                }
-            }
-            return target;
-        } else {
-            return null;
-        }
-    }
+//    protected Target getTargets(String targetName) {
+//        if (params.doMethods()) {
+//            Target target = null;
+//            if (!validate()) {
+//                return null;
+//            }
+//            Iterator testData = m.getTestDataIterator();
+//            if (testData != null) {
+//                try {
+//                    Method method = getClass()
+//                            .getMethod("processModules", (Class[])null);
+//                    while (testData.hasNext()) {
+//                        target = new MethodTarget(((TestData) testData.next())
+//                                .getName(), method).setNext(target);
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    throw new IllegalStateException(e.getMessage());
+//                }
+//            }
+//            return target;
+//        } else {
+//            return null;
+//        }
+//    }
 
     /**
      * 
@@ -90,6 +88,11 @@ public abstract class ModuleTest extends TestFmwk {
         }
         return m != null;
     }
+
+    public static TestDataModule loadTestData(String baseName, String testName) throws DataModuleFormatError {
+        return Factory.get(baseName, testName);
+    }
+
 
     /**
      * TestFmwk calls this before trying to invoke a test method. The method is
@@ -128,6 +131,10 @@ public abstract class ModuleTest extends TestFmwk {
         return null;
     }
 
+    static public TestData openTestData(TestDataModule module, String name) throws DataModuleFormatError {
+        return module.getTestData(name);
+    }
+
     /**
      * Open the test data in the module with the given name, and return true if
      * success. The current test is reset.
@@ -159,11 +166,11 @@ public abstract class ModuleTest extends TestFmwk {
         return t == null ? null : t.getInfo();
     }
 
-    public void msg(String message, int level, boolean incCount, boolean newln) {
-        if (level == ERR && t != null) {
-           //t.stopIteration();
-        }
-        super.msg(message, level, incCount, newln);
-    }
-
+//    public void msg(String message, int level, boolean incCount, boolean newln) {
+//        if (level == ERR && t != null) {
+//           //t.stopIteration();
+//        }
+//        super.msg(message, level, incCount, newln);
+//    }
+//
 }

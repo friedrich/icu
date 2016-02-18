@@ -100,7 +100,7 @@ class ResourceModule implements TestDataModule {
         return new UResourceTestData(defaultHeader, testData.get(testName));
     }
 
-    public Iterator getTestDataIterator() {
+    public Iterator<TestData> getTestDataIterator() {
         return new IteratorAdapter(testData){
             protected Object prepareNext(UResourceBundle nextRes) throws DataModuleFormatError {
                 return new UResourceTestData(defaultHeader, nextRes);

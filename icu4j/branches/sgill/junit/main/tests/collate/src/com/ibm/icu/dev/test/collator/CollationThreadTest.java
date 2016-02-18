@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.Collator;
 

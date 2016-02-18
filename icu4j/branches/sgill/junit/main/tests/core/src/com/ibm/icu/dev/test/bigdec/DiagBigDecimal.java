@@ -11,8 +11,6 @@ package com.ibm.icu.dev.test.bigdec;
 
 import java.math.BigInteger;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
 import com.ibm.icu.dev.test.TestUtil.JavaVendor;
