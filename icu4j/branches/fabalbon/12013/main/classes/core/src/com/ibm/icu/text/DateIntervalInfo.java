@@ -282,17 +282,7 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
 
     // Following is package protected since 
     // it is shared with DateIntervalFormat.
-    static final String[] CALENDAR_FIELD_TO_PATTERN_LETTER = 
-    {
-        "G", "y", "M",
-        "w", "W", "d", 
-        "D", "E", "F",
-        "a", "h", "H",
-        "m", "s", "S",  // MINUTE, SECOND, MILLISECOND
-        "z", " ", "Y",  // ZONE_OFFSET, DST_OFFSET, YEAR_WOY
-        "e", "u", "g",  // DOW_LOCAL, EXTENDED_YEAR, JULIAN_DAY
-        "A", " ", " ",  // MILLISECONDS_IN_DAY, IS_LEAP_MONTH.
-    };
+    private static final String CALENDAR_FIELD_TO_PATTERN_LETTER = "GyMwWdDEFahHmsSz YeugA  ";
 
 
     private static final long serialVersionUID = 1;
@@ -408,6 +398,18 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
     }
 
 
+    /**
+     * Converts a calendar field to a pattern letter.
+     * @param calendarField
+     * @return Pattern letter
+     * @throws IndexOutOfBoundsException
+     */
+    public static String calendarFieldToPatternLetter(int calendarField) 
+            throws IndexOutOfBoundsException {
+        return CALENDAR_FIELD_TO_PATTERN_LETTER.substring(calendarField, calendarField + 1);
+    }
+
+
 
     /**
      * Sink for enumerating all of the date interval skeletons.
@@ -415,6 +417,20 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
      * The outer class finds the dateInterval table or an alias.
      */
     private static final class DateIntervalSink extends UResource.TableSink {
+
+        /**
+         * Accepted pattern letters:
+         * Calendar.YEAR
+         * Calendar.MONTH
+         * Calendar.DATE
+         * Calendar.AM_PM
+         * Calendar.HOUR
+         * Calendar.HOUR_OF_DAY
+         * Calendar.MINUTE
+         * Calendar.SECOND
+         */
+        private static final String ACCEPTED_PATTERN_LETTERS = "yMdahHms";
+
 
         /**
          * Sink to handle each skeleton table. 
@@ -454,14 +470,18 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
              * @return Pattern letter
              */
             private CharSequence validateAndProcessPatternLetter(CharSequence patternLetter) {
-                // Check if the pattern letter is accepted
-                if (patternLetter.length() != 1 || !ACCEPTED_PATTERN_LETTERS.contains(patternLetter.charAt(0))) { 
-                    return null; 
+                // Check that patternLetter is just one letter
+                if (patternLetter.length() != 1) { return null; }
+                
+                // Check that the pattern letter is accepted
+                char letter = patternLetter.charAt(0);
+                if (ACCEPTED_PATTERN_LETTERS.indexOf(letter) < 0) {
+                    return null;
                 }
 
                 // Replace 'h' for 'H'
-                if (patternLetter.charAt(0) == CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR_OF_DAY].charAt(0)) {
-                    patternLetter = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
+                if (letter == CALENDAR_FIELD_TO_PATTERN_LETTER.charAt(Calendar.HOUR_OF_DAY)) {
+                    patternLetter = calendarFieldToPatternLetter(Calendar.HOUR);
                 }
 
                 return patternLetter;
@@ -495,22 +515,8 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
         // Alias handling
         String nextCalendarType;
         
-        // Current skeleton table being enumerated:
+        // Current skeleton table being enumerated
         String currentSkeleton;
-
-        // Accepted pattern letters
-        private static final Set<Character> ACCEPTED_PATTERN_LETTERS = new HashSet<Character>();
-
-        static {
-            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.YEAR].charAt(0));
-            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MONTH].charAt(0));
-            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE].charAt(0));
-            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.AM_PM].charAt(0));
-            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR].charAt(0));
-            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR_OF_DAY].charAt(0));
-            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MINUTE].charAt(0));
-            ACCEPTED_PATTERN_LETTERS.add(CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.SECOND].charAt(0));
-        }
 
 
         // Constructor
@@ -747,19 +753,19 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
             fIntervalPatternsReadOnly = false;
         }
         PatternInfo ptnInfo = setIntervalPatternInternally(skeleton,
-                          CALENDAR_FIELD_TO_PATTERN_LETTER[lrgDiffCalUnit], 
+                          calendarFieldToPatternLetter(lrgDiffCalUnit), 
                           intervalPattern);
         if ( lrgDiffCalUnit == Calendar.HOUR_OF_DAY ) {
             setIntervalPattern(skeleton, 
-                               CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.AM_PM],
+                               calendarFieldToPatternLetter(Calendar.AM_PM),
                                ptnInfo);
             setIntervalPattern(skeleton, 
-                               CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR],
+                               calendarFieldToPatternLetter(Calendar.HOUR),
                                ptnInfo);
         } else if ( lrgDiffCalUnit == Calendar.DAY_OF_MONTH ||
                     lrgDiffCalUnit == Calendar.DAY_OF_WEEK ) {
             setIntervalPattern(skeleton, 
-                               CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE],
+                               calendarFieldToPatternLetter(Calendar.DATE),
                                ptnInfo);
         }
     }
@@ -865,7 +871,7 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
         Map<String, PatternInfo> patternsOfOneSkeleton = fIntervalPatterns.get(skeleton);
         if ( patternsOfOneSkeleton != null ) {
             PatternInfo intervalPattern = patternsOfOneSkeleton.
-                get(CALENDAR_FIELD_TO_PATTERN_LETTER[field]);
+                get(calendarFieldToPatternLetter(field));
             if ( intervalPattern != null ) {
                 return intervalPattern;
             }

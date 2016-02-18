@@ -675,7 +675,7 @@ public class DateIntervalFormat extends UFormat {
             return null;
         }
         PatternInfo intervalPattern = fIntervalPatterns.get(
-                DateIntervalInfo.CALENDAR_FIELD_TO_PATTERN_LETTER[field]);
+                DateIntervalInfo.calendarFieldToPatternLetter(field));
         part2.value = intervalPattern.getSecondPart();
         return intervalPattern.getFirstPart();
     }
@@ -743,7 +743,7 @@ public class DateIntervalFormat extends UFormat {
         
         // get interval pattern
         PatternInfo intervalPattern = fIntervalPatterns.get(
-              DateIntervalInfo.CALENDAR_FIELD_TO_PATTERN_LETTER[field]);
+              DateIntervalInfo.calendarFieldToPatternLetter(field));
 
         if ( intervalPattern == null ) {
             if ( fDateFormat.isFieldUnitIgnored(field) ) {
@@ -1166,13 +1166,13 @@ public class DateIntervalFormat extends UFormat {
                     PatternInfo ptn = new PatternInfo(null, pattern,
                                                      fInfo.getDefaultOrder());
                     intervalPatterns.put(DateIntervalInfo.
-                        CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE], ptn);
+                        calendarFieldToPatternLetter(Calendar.DATE), ptn);
                     // share interval pattern
                     intervalPatterns.put(DateIntervalInfo.
-                        CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MONTH], ptn);
+                        calendarFieldToPatternLetter(Calendar.MONTH), ptn);
                     // share interval pattern
                     intervalPatterns.put(DateIntervalInfo.
-                        CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.YEAR], ptn);
+                        calendarFieldToPatternLetter(Calendar.YEAR), ptn);
                 } else {
                     //genFallbackForNotFound(Calendar.DATE, skeleton);
                     //genFallbackForNotFound(Calendar.MONTH, skeleton);
@@ -1210,11 +1210,11 @@ public class DateIntervalFormat extends UFormat {
             PatternInfo ptn = new PatternInfo(
                                     null, pattern, fInfo.getDefaultOrder());
             intervalPatterns.put(DateIntervalInfo.
-                CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE], ptn);
+                calendarFieldToPatternLetter(Calendar.DATE), ptn);
             intervalPatterns.put(DateIntervalInfo.
-                CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MONTH], ptn);
+                calendarFieldToPatternLetter(Calendar.MONTH), ptn);
             intervalPatterns.put(DateIntervalInfo.
-                CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.YEAR], ptn);
+                calendarFieldToPatternLetter(Calendar.YEAR), ptn);
         } else {
             /* if both present,
              * 1) when the year, month, or day differs, 
@@ -1230,19 +1230,19 @@ public class DateIntervalFormat extends UFormat {
             if ( !fieldExistsInSkeleton(Calendar.DATE, dateSkeleton) ) {
                 // prefix skeleton with 'd'
                 skeleton = DateIntervalInfo.
-                    CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE] + skeleton;
+                    calendarFieldToPatternLetter(Calendar.DATE) + skeleton;
                 genFallbackPattern(Calendar.DATE, skeleton, intervalPatterns, dtpng);
             }
             if ( !fieldExistsInSkeleton(Calendar.MONTH, dateSkeleton) ) {
                 // then prefix skeleton with 'M'
                 skeleton = DateIntervalInfo.
-                    CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.MONTH] + skeleton;
+                    calendarFieldToPatternLetter(Calendar.MONTH) + skeleton;
                 genFallbackPattern(Calendar.MONTH, skeleton, intervalPatterns, dtpng);
             }
             if ( !fieldExistsInSkeleton(Calendar.YEAR, dateSkeleton) ) {
                 // then prefix skeleton with 'y'
                 skeleton = DateIntervalInfo.
-                    CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.YEAR] + skeleton;
+                    calendarFieldToPatternLetter(Calendar.YEAR) + skeleton;
                 genFallbackPattern(Calendar.YEAR, skeleton, intervalPatterns, dtpng);
             }
             
@@ -1282,7 +1282,7 @@ public class DateIntervalFormat extends UFormat {
         PatternInfo ptn = new PatternInfo(
                                     null, pattern, fInfo.getDefaultOrder());
         intervalPatterns.put( 
-            DateIntervalInfo.CALENDAR_FIELD_TO_PATTERN_LETTER[field], ptn);
+            DateIntervalInfo.calendarFieldToPatternLetter(field), ptn);
     }
 
 
@@ -1600,7 +1600,7 @@ public class DateIntervalFormat extends UFormat {
                                                      null, 
                                                      fInfo.getDefaultOrder());
                 intervalPatterns.put(DateIntervalInfo.
-                    CALENDAR_FIELD_TO_PATTERN_LETTER[field], ptnInfo);
+                    calendarFieldToPatternLetter(field), ptnInfo);
                 return null;
             }
 
@@ -1614,7 +1614,7 @@ public class DateIntervalFormat extends UFormat {
                  if ( pattern != null ) {
                       // share
                       intervalPatterns.put(DateIntervalInfo.
-                          CALENDAR_FIELD_TO_PATTERN_LETTER[field], 
+                          calendarFieldToPatternLetter(field), 
                           pattern);
                  }
                  return null;
@@ -1626,7 +1626,7 @@ public class DateIntervalFormat extends UFormat {
             // if found, adjust field width in interval pattern from
             // "MMM" to "MMMM".
             String fieldLetter = 
-                DateIntervalInfo.CALENDAR_FIELD_TO_PATTERN_LETTER[field];
+                DateIntervalInfo.calendarFieldToPatternLetter(field);
             bestSkeleton = fieldLetter + bestSkeleton;
             skeleton = fieldLetter + skeleton;
             // for example, looking for patterns when 'y' differ for
@@ -1660,7 +1660,7 @@ public class DateIntervalFormat extends UFormat {
                 // pattern = (PatternInfo)pattern.clone();
             }
             intervalPatterns.put(
-              DateIntervalInfo.CALENDAR_FIELD_TO_PATTERN_LETTER[field], pattern);
+              DateIntervalInfo.calendarFieldToPatternLetter(field), pattern);
         }
         return retValue;
     }
@@ -1810,7 +1810,7 @@ public class DateIntervalFormat extends UFormat {
     {
 
         PatternInfo  timeItvPtnInfo = 
-            intervalPatterns.get(DateIntervalInfo.CALENDAR_FIELD_TO_PATTERN_LETTER[field]);
+            intervalPatterns.get(DateIntervalInfo.calendarFieldToPatternLetter(field));
         if ( timeItvPtnInfo != null ) {
             String timeIntervalPattern = timeItvPtnInfo.getFirstPart() + 
                                          timeItvPtnInfo.getSecondPart();
@@ -1819,7 +1819,7 @@ public class DateIntervalFormat extends UFormat {
             timeItvPtnInfo = DateIntervalInfo.genPatternInfo(pattern,
                                 timeItvPtnInfo.firstDateInPtnIsLaterDate());
             intervalPatterns.put(
-              DateIntervalInfo.CALENDAR_FIELD_TO_PATTERN_LETTER[field], timeItvPtnInfo);
+              DateIntervalInfo.calendarFieldToPatternLetter(field), timeItvPtnInfo);
         } 
         // else: fall back
         // it should not happen if the interval format defined is valid
@@ -1834,7 +1834,7 @@ public class DateIntervalFormat extends UFormat {
      */
     private static boolean fieldExistsInSkeleton(int field, String skeleton)
     {
-        String fieldChar = DateIntervalInfo.CALENDAR_FIELD_TO_PATTERN_LETTER[field];
+        String fieldChar = DateIntervalInfo.calendarFieldToPatternLetter(field);
         return ( (skeleton.indexOf(fieldChar) == -1) ? false : true ) ;
     }
 
