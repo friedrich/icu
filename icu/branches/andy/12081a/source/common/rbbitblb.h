@@ -58,6 +58,8 @@ private:
     void     flagTaggedStates();
     void     mergeRuleStatusVals();
 
+    void     addRuleRootNodes(UVector *dest, RBBINode *node);
+
     // Set functions for UVector.
     //   TODO:  make a USet subclass of UVector
 

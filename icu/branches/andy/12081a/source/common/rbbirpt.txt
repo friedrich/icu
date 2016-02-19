@@ -57,10 +57,10 @@
 start:
     escaped                term                  ^break-rule-end    doExprStart                       
     white_space          n start                     
+    '^'                  n start-after-caret                        doNoChain
     '$'                    scan-var-name         ^assign-or-rule    doExprStart
     '!'                  n rev-option                             
     ';'                  n start                                                  # ignore empty rules.
-    '^'                    start-after-caret                        doNoChainExprStart
     eof                    exit              
     default                term                  ^break-rule-end    doExprStart
     
@@ -79,13 +79,13 @@ break-rule-end:
 #          - A second '^' is an error.
 #
 start-after-caret:
-    escaped                term                  ^break-rule-end    doExprCatOperator
+    escaped                term                  ^break-rule-end    doExprStart
     white_space          n start-after-caret
-    '$'                    scan-var-name         ^assign-or-rule    doExprCatOperator
+    '^'                    errorDeath                               doRuleError    # two '^'s
+    '$'                    scan-var-name         ^term-var-ref      doExprStart
     ';'                    errorDeath                               doRuleError    # ^ ;
-    '^'                    errorDeath                               doRuleError    # ^ ^
-    eof                    exit              
-    default                term                  ^break-rule-end    doExprCatOperator
+    eof                    errorDeath                               doRuleError
+    default                term                  ^break-rule-end    doExprStart
  
 #
 #   !               We've just scanned a '!', indicating either a !!key word flag or a
