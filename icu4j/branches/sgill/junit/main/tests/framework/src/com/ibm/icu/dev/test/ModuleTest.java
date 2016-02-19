@@ -6,8 +6,12 @@
  */
 package com.ibm.icu.dev.test;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.MissingResourceException;
 
+import com.ibm.icu.dev.test.ModuleTest.TestDataPair;
 import com.ibm.icu.dev.test.TestDataModule.DataMap;
 import com.ibm.icu.dev.test.TestDataModule.DataModuleFormatError;
 import com.ibm.icu.dev.test.TestDataModule.Factory;
@@ -77,17 +81,6 @@ public class ModuleTest {
      * opened. Subclasses can override this if there are different or additional
      * data required.
      */
-    protected boolean validate() {
-        try {
-            m = Factory.get(baseName, localeName);
-        } catch (DataModuleFormatError e) {
-            e.printStackTrace();
-            m = null;
-        } catch(MissingResourceException e){
-            warnln("Could not load data: "+e.getMessage());
-        }
-        return m != null;
-    }
 
     public static TestDataModule loadTestData(String baseName, String testName) throws DataModuleFormatError {
         return Factory.get(baseName, testName);
@@ -131,9 +124,35 @@ public class ModuleTest {
         return null;
     }
 
-    static public TestData openTestData(TestDataModule module, String name) throws DataModuleFormatError {
+    static TestData openTestData(TestDataModule module, String name) throws DataModuleFormatError {
         return module.getTestData(name);
     }
+
+    public static class TestDataPair {
+        public TestData td;
+        public DataMap dm;
+
+        public TestDataPair(TestData td, DataMap dm) {
+            this.td = td;
+            this.dm = dm;
+        }
+    }
+
+    public static List<TestDataPair> getTestData(String moduleLocation, String moduleName) throws Exception {
+        List<TestDataPair> list = new ArrayList<TestDataPair>();
+
+        TestDataModule m = ModuleTest.loadTestData(moduleLocation, moduleName);
+        Iterator<TestData> tIter = m.getTestDataIterator();
+        while (tIter.hasNext()) {
+            TestData t = tIter.next();
+            for (Iterator siter = t.getSettingsIterator(); siter.hasNext();) {
+                DataMap settings = (DataMap) siter.next();
+                list.add(new TestDataPair(t, settings));
+            }
+        }
+        return list;
+    }
+
 
     /**
      * Open the test data in the module with the given name, and return true if

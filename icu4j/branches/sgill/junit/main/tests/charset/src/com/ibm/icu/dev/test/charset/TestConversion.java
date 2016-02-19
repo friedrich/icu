@@ -15,6 +15,10 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.util.Iterator;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.icu.charset.CharsetCallback;
 import com.ibm.icu.charset.CharsetDecoderICU;
@@ -22,15 +26,22 @@ import com.ibm.icu.charset.CharsetEncoderICU;
 import com.ibm.icu.charset.CharsetICU;
 import com.ibm.icu.charset.CharsetProviderICU;
 import com.ibm.icu.dev.test.ModuleTest;
+import com.ibm.icu.dev.test.ModuleTest.TestDataPair;
 import com.ibm.icu.dev.test.TestDataModule.DataMap;
+import com.ibm.icu.dev.test.TestDataModule.TestData;
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.text.UnicodeSet;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 
 /**
  * This maps to convtest.c which tests the test file for data-driven conversion tests. 
  * 
  */
-public class TestConversion extends ModuleTest {
+@RunWith(JUnitParamsRunner.class)
+public class TestConversion extends TestFmwk {
     /**
      * This maps to the C struct of conversion case in convtest.h that stores the
      * data for a conversion test
@@ -75,40 +86,50 @@ public class TestConversion extends ModuleTest {
     // public methods --------------------------------------------------------
 
     public TestConversion() {
-        super("com/ibm/icu/dev/data/testdata/", "conversion");
+        //super("com/ibm/icu/dev/data/testdata/", "conversion");
+    }
+
+    @SuppressWarnings("unused")
+    private List<TestDataPair> getTestData() throws Exception { 
+        return ModuleTest.getTestData("com/ibm/icu/dev/data/testdata/", "conversion");
     }
 
     /*
      * This method maps to the convtest.cpp runIndexedTest() method to run each
      * type of conversion.
      */
-    public void processModules() {
-        try {
-            int testFromUnicode = 0;
-            int testToUnicode = 0;
-            String testName = t.getName().toString();
+    @Test
+    @Parameters(method="getTestData")
+    public void conversionTest(TestDataPair pair) {
+        TestData td = pair.td;
+        DataMap settings = pair.dm;
 
-            // Iterate through and get each of the test case to process
-            for (Iterator iter = t.getDataIterator(); iter.hasNext();) {
-                DataMap testcase = (DataMap) iter.next();
+        int testFromUnicode = 0;
+        int testToUnicode = 0;
+        String testName = td.getName().toString();
 
-                if (testName.equalsIgnoreCase("toUnicode")) {
-                    TestToUnicode(testcase, testToUnicode);
-                    testToUnicode++;
+        // Iterate through and get each of the test case to process
+        for (Iterator iter = td.getDataIterator(); iter.hasNext();) {
+            DataMap testcase = (DataMap) iter.next();
 
-                } else if (testName.equalsIgnoreCase("fromUnicode")) {
-                    TestFromUnicode(testcase, testFromUnicode);
-                    testFromUnicode++;
-                } else if (testName.equalsIgnoreCase("getUnicodeSet")) {
-                    TestGetUnicodeSet(testcase);
-                } else {
-                    warnln("Could not load the test cases for conversion");
-                    continue;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (testName.equalsIgnoreCase("toUnicode")) {
+            TestToUnicode(testcase, testToUnicode);
+            testToUnicode++;
+
+        } else if (testName.equalsIgnoreCase("fromUnicode")) {
+            TestFromUnicode(testcase, testFromUnicode);
+            testFromUnicode++;
+        } else if (testName.equalsIgnoreCase("getUnicodeSet")) {
+            TestGetUnicodeSet(testcase);
+        } else {
+            warnln("Could not load the test cases for conversion");
+            //                    continue;
         }
+        }
+        //            }
+        //        } catch (Exception e) {
+        //            e.printStackTrace();
+        //        }
 
     }
 

@@ -6,7 +6,6 @@
  */
 package com.ibm.icu.dev.test.calendar;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.ibm.icu.dev.test.ModuleTest;
+import com.ibm.icu.dev.test.ModuleTest.TestDataPair;
 import com.ibm.icu.dev.test.TestDataModule;
 import com.ibm.icu.dev.test.TestDataModule.DataMap;
 import com.ibm.icu.dev.test.TestDataModule.TestData;
@@ -43,37 +43,17 @@ public class DataDrivenCalendarTest extends TestFmwk {
         //super("com/ibm/icu/dev/data/testdata/", "calendar");
     }
 
-    class Pair {
-        TestData td;
-        DataMap dm;
-
-        Pair(TestData td, DataMap dm) {
-            this.td = td;
-            this.dm = dm;
-        }
-    }
-
     @SuppressWarnings("unused")
-    private List<Pair> getCalendarTestsIterator() throws Exception {
-        List<Pair> list = new ArrayList<Pair>();
-
-        TestDataModule m = ModuleTest.loadTestData("com/ibm/icu/dev/data/testdata/", "calendar");
-        TestData t = ModuleTest.openTestData(m, "TestCalendarConversion");
-
-        for (Iterator siter = t.getSettingsIterator(); siter.hasNext();) {
-            DataMap settings = (DataMap) siter.next();
-            list.add(new Pair(t, settings));
-        }
-
-        return list;
+    private List<TestDataPair> getTestData() throws Exception { 
+        return ModuleTest.getTestData("com/ibm/icu/dev/data/testdata/", "calendar");
     }
 
     /* (non-Javadoc)
      * @see com.ibm.icu.dev.test.ModuleTest#processModules()
      */
     @Test
-    @Parameters(method="getCalendarTestsIterator")
-    public void calendarTest(Pair pair) {
+    @Parameters(method="getTestData")
+    public void calendarTest(TestDataPair pair) {
         TestData td = pair.td;
         DataMap settings = pair.dm;
 

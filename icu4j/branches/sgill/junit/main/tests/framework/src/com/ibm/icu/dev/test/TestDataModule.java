@@ -43,7 +43,7 @@ public interface TestDataModule {
         }
     }
 
-    public static class DataModuleFormatError extends Exception{
+    public static class DataModuleFormatError extends Exception {
         /**
          * For serialization
          */
