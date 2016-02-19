@@ -20,7 +20,7 @@
 #
 
 !!chain;
-!!LBCMNoChain;
+#!!LBCMNoChain;
 
 
 !!lookAheadHardBreak;
@@ -215,7 +215,7 @@ $AL_FOLLOW      = [$AL_FOLLOW_NOCM $AL_FOLLOW_CM];
 #  Rule LB 4, 5    Mandatory (Hard) breaks.
 #
 $LB4Breaks    = [$BK $CR $LF $NL];
-$LB4NonBreaks = [^$BK $CR $LF $NL];
+$LB4NonBreaks = [^$BK $CR $LF $NL $CM];
 $CR $LF {100};
 
 #
@@ -223,7 +223,7 @@ $CR $LF {100};
 #
 $LB4NonBreaks?  $LB4Breaks {100};    # LB 5  do not break before hard breaks.
 $CAN_CM $CM*    $LB4Breaks {100};
-$CM+            $LB4Breaks {100};
+^$CM+           $LB4Breaks {100};
 
 # LB 7         x SP
 #              x ZW
@@ -270,7 +270,7 @@ $GLcm $CANT_CM;
 #            [^SP BA HY] x GL
 #
 [[$LB8NonBreaks] - [$SP $BA $HY]] $CM* $GLcm;
-^$CM+ GLcm;
+^$CM+ $GLcm;
 
 
 
@@ -343,6 +343,7 @@ $LB20NonBreaks = [$LB18NonBreaks - $CB];
 #           BB x
 #
 $LB20NonBreaks $CM* ($BAcm | $HYcm | $NScm);
+^$CM+ ($BAcm | $HYcm | $NScm);
 
 $BBcm [^$CB];                                  #  $BB  x
 $BBcm $LB20NonBreaks $CM*;
@@ -632,15 +633,15 @@ $PO $CM* ($H3 | $H2 | $JT | $JV | $JL);
  ($H3 | $H2 | $JT | $JV | $JL) $CM* $PR;
 
 # LB 28
-$CM* ($ALPlus | $HL) $CM* ($ALPlus | $HL);
+($ALPlus | $HL) $CM* ($ALPlus | $HL);
 
 
 # LB 29
-$CM* ($ALPlus | $HL) $CM* $IS;
+($ALPlus | $HL) $CM* $IS;
 
 # LB 30
-$CM* $OP $CM* ($ALPlus | $HL | $NU);
-$CM* ($ALPlus | $HL | $NU) $CM* $CP;
+$OP $CM* ($ALPlus | $HL | $NU);
+($ALPlus | $HL | $NU) $CM* $CP;
 
 # LB 30a
 #    Pairs of Regional Indicators.
