@@ -19,6 +19,7 @@
 #     This file is processed by a perl script "rbbicst.pl" to produce initialized C arrays
 #     that are then built with the rule parser.
 #
+#    perl rbbicst.pl    < rbbirpt.txt > rbbirpt.h
 
 #
 # Here is the syntax of the state definitions in this file:
@@ -57,7 +58,7 @@
 start:
     escaped                term                  ^break-rule-end    doExprStart                       
     white_space          n start                     
-    '^'                  n start-after-caret                        doNoChain
+    '^'                  n start-after-caret     ^break-rule-end    doNoChain
     '$'                    scan-var-name         ^assign-or-rule    doExprStart
     '!'                  n rev-option                             
     ';'                  n start                                                  # ignore empty rules.
@@ -79,13 +80,13 @@ break-rule-end:
 #          - A second '^' is an error.
 #
 start-after-caret:
-    escaped                term                  ^break-rule-end    doExprStart
+    escaped                term                                     doExprStart
     white_space          n start-after-caret
     '^'                    errorDeath                               doRuleError    # two '^'s
     '$'                    scan-var-name         ^term-var-ref      doExprStart
     ';'                    errorDeath                               doRuleError    # ^ ;
     eof                    errorDeath                               doRuleError
-    default                term                  ^break-rule-end    doExprStart
+    default                term                                     doExprStart
  
 #
 #   !               We've just scanned a '!', indicating either a !!key word flag or a

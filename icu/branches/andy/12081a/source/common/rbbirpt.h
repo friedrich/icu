@@ -78,7 +78,7 @@ static const struct RBBIRuleTableEl gRuleParseStateTable[] = {
     {doNOP, 0, 0, 0, TRUE}
     , {doExprStart, 254, 29, 9, FALSE}     //  1      start
     , {doNOP, 132, 1,0,  TRUE}     //  2 
-    , {doNoChain, 94 /* ^ */, 12,0,  TRUE}     //  3 
+    , {doNoChain, 94 /* ^ */, 12, 9, TRUE}     //  3 
     , {doExprStart, 36 /* $ */, 88, 98, FALSE}     //  4 
     , {doNOP, 33 /* ! */, 19,0,  TRUE}     //  5 
     , {doNOP, 59 /* ; */, 1,0,  TRUE}     //  6 
@@ -87,13 +87,13 @@ static const struct RBBIRuleTableEl gRuleParseStateTable[] = {
     , {doEndOfRule, 59 /* ; */, 1,0,  TRUE}     //  9      break-rule-end
     , {doNOP, 132, 9,0,  TRUE}     //  10 
     , {doRuleError, 255, 103,0,  FALSE}     //  11 
-    , {doExprStart, 254, 29, 9, FALSE}     //  12      start-after-caret
+    , {doExprStart, 254, 29,0,  FALSE}     //  12      start-after-caret
     , {doNOP, 132, 12,0,  TRUE}     //  13 
     , {doRuleError, 94 /* ^ */, 103,0,  FALSE}     //  14 
     , {doExprStart, 36 /* $ */, 88, 37, FALSE}     //  15 
     , {doRuleError, 59 /* ; */, 103,0,  FALSE}     //  16 
     , {doRuleError, 252, 103,0,  FALSE}     //  17 
-    , {doExprStart, 255, 29, 9, FALSE}     //  18 
+    , {doExprStart, 255, 29,0,  FALSE}     //  18 
     , {doNOP, 33 /* ! */, 21,0,  TRUE}     //  19      rev-option
     , {doReverseDir, 255, 28, 9, FALSE}     //  20 
     , {doOptionStart, 130, 23,0,  TRUE}     //  21      option-scan1

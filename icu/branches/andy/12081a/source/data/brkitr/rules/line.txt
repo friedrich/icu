@@ -229,7 +229,7 @@ $CM+            $LB4Breaks {100};
 #              x ZW
 $LB4NonBreaks [$SP $ZW];
 $CAN_CM $CM*  [$SP $ZW];
-$CM+          [$SP $ZW];
+^$CM+         [$SP $ZW];
 
 #
 # LB 8         Break after zero width space
@@ -246,14 +246,14 @@ $LB8NonBreaks = [[$LB4NonBreaks] - [$ZW]];
 #                                See definition of $CAN_CM.
 
 $CAN_CM $CM+;                   #  Stick together any combining sequences that don't match other rules.
-$CM+;
+^$CM+;
 
 #
 # LB 11  Do not break before or after WORD JOINER & related characters.
 #
 $CAN_CM $CM*  $WJcm;
 $LB8NonBreaks $WJcm;
-$CM+          $WJcm;
+^$CM+         $WJcm;
 
 $WJcm $CANT_CM;
 $WJcm $CAN_CM $CM*;
@@ -270,7 +270,7 @@ $GLcm $CANT_CM;
 #            [^SP BA HY] x GL
 #
 [[$LB8NonBreaks] - [$SP $BA $HY]] $CM* $GLcm;
-$CM+ GLcm;
+^$CM+ GLcm;
 
 
 
@@ -279,23 +279,23 @@ $CM+ GLcm;
 #
 $LB8NonBreaks $CL;
 $CAN_CM $CM*  $CL;
-$CM+          $CL;              # by rule 10, stand-alone CM behaves as AL
+^$CM+         $CL;              # by rule 10, stand-alone CM behaves as AL
 
 $LB8NonBreaks $CP;
 $CAN_CM $CM*  $CP;
-$CM+          $CP;              # by rule 10, stand-alone CM behaves as AL
+^$CM+         $CP;              # by rule 10, stand-alone CM behaves as AL
 
 $LB8NonBreaks $EX;
 $CAN_CM $CM*  $EX;
-$CM+          $EX;              # by rule 10, stand-alone CM behaves as AL
+^$CM+         $EX;              # by rule 10, stand-alone CM behaves as AL
 
 $LB8NonBreaks $IS;
 $CAN_CM $CM*  $IS;
-$CM+          $IS;              # by rule 10, stand-alone CM behaves as AL
+^$CM+         $IS;              # by rule 10, stand-alone CM behaves as AL
 
 $LB8NonBreaks $SY;
 $CAN_CM $CM*  $SY;
-$CM+          $SY;              # by rule 10, stand-alone CM behaves as AL
+^$CM+         $SY;              # by rule 10, stand-alone CM behaves as AL
 
 
 #
@@ -325,7 +325,7 @@ $LB18Breaks    = [$LB8Breaks $SP];
 # LB 19
 #         x QU
 $LB18NonBreaks $CM* $QUcm;
-$CM+                $QUcm;
+^$CM+               $QUcm;
 
 #         QU  x
 $QUcm .?;
@@ -358,7 +358,7 @@ $SYcm $HLcm;
 
 # LB 22
 ($ALcm | $HLcm) $INcm;
-$CM+     $INcm;     #  by rule 10, any otherwise unattached CM behaves as AL
+^$CM+    $INcm;     #  by rule 10, any otherwise unattached CM behaves as AL
 $EXcm    $INcm;
 $IDcm    $INcm;
 $INcm    $INcm;
@@ -369,7 +369,7 @@ $NUcm    $INcm;
 $IDcm  $POcm;
 $ALcm  $NUcm;       # includes $LB19
 $HLcm  $NUcm;
-$CM+   $NUcm;       # Rule 10, any otherwise unattached CM behaves as AL
+^$CM+  $NUcm;       # Rule 10, any otherwise unattached CM behaves as AL
 $NUcm  $ALcm;
 $NUcm  $HLcm;
 
@@ -400,14 +400,14 @@ $PRcm ($JLcm | $JVcm | $JTcm | $H2cm | $H3cm);
 # LB 28   Do not break between alphabetics
 #
 ($ALcm | $HLcm) ($ALcm | $HLcm);
-$CM+ ($ALcm | $HLcm);      # The $CM+ is from rule 10, an unattached CM is treated as AL
+^$CM+ ($ALcm | $HLcm);      # The $CM+ is from rule 10, an unattached CM is treated as AL
 
 # LB 29
 $IScm ($ALcm | $HLcm);
 
 # LB 30
 ($ALcm | $HLcm | $NUcm) $OPcm;
-$CM+ $OPcm;         # The $CM+ is from rule 10, an unattached CM is treated as AL.
+^$CM+ $OPcm;         # The $CM+ is from rule 10, an unattached CM is treated as AL.
 $CPcm ($ALcm | $HLcm | $NUcm);
 
 # LB 30a  Do not break between regional indicators. Break after pairs of them.
@@ -424,36 +424,36 @@ $EB $CM* $EM;
 
 !!reverse;
 
-$CM+ $ALPlus;
-$CM+ $BA;
-$CM+ $BB;
-$CM+ $B2;
-$CM+ $CL;
-$CM+ $CP;
-$CM+ $EB;
-$CM+ $EM;
-$CM+ $EX;
-$CM+ $GL;
-$CM+ $HL;
-$CM+ $HY;
-$CM+ $H2;
-$CM+ $H3;
-$CM+ $ID;
-$CM+ $IN;
-$CM+ $IS;
-$CM+ $JL;
-$CM+ $JV;
-$CM+ $JT;
-$CM+ $NS;
-$CM+ $NU;
-$CM+ $OP;
-$CM+ $PO;
-$CM+ $PR;
-$CM+ $QU;
-$CM+ $RI;
-$CM+ $SY;
-$CM+ $WJ;
-$CM+;
+^$CM+ $ALPlus;
+^$CM+ $BA;
+^$CM+ $BB;
+^$CM+ $B2;
+^$CM+ $CL;
+^$CM+ $CP;
+^$CM+ $EB;
+^$CM+ $EM;
+^$CM+ $EX;
+^$CM+ $GL;
+^$CM+ $HL;
+^$CM+ $HY;
+^$CM+ $H2;
+^$CM+ $H3;
+^$CM+ $ID;
+^$CM+ $IN;
+^$CM+ $IS;
+^$CM+ $JL;
+^$CM+ $JV;
+^$CM+ $JT;
+^$CM+ $NS;
+^$CM+ $NU;
+^$CM+ $OP;
+^$CM+ $PO;
+^$CM+ $PR;
+^$CM+ $QU;
+^$CM+ $RI;
+^$CM+ $SY;
+^$CM+ $WJ;
+^$CM+;
 
 
 #
@@ -505,26 +505,27 @@ $LF $CR;
 #    X   $CM needs to behave like X, where X is not $SP or controls.
 #    $CM not covered by the above needs to behave like $AL
 # Stick together any combining sequences that don't match other rules.
-$CM+ $CAN_CM;
+^$CM+ $CAN_CM;
 
 
 # LB 11
-$CM* $WJ $CM* $CAN_CM;
-$CM* $WJ      [$LB8NonBreaks-$CM];
+#TODO dump the initial $CM*. Redundant with rules at top.
+$WJ $CM* $CAN_CM;
+$WJ      [$LB8NonBreaks-$CM];
 
      $CANT_CM $CM* $WJ;
-$CM* $CAN_CM  $CM* $WJ;
+$CAN_CM  $CM* $WJ;
 
 # LB 12a
 #      [^SP BA HY] x GL
 #
-$CM* $GL $CM* [$LB8NonBreaks-[$CM $SP $BA $HY]];
+$GL $CM* [$LB8NonBreaks-[$CM $SP $BA $HY]];
 
 # LB 12
 #     GL  x
 #
 $CANT_CM $CM* $GL;
-$CM* $CAN_CM $CM* $GL;
+$CAN_CM $CM* $GL;
 
 
 # LB 13
@@ -549,24 +550,24 @@ $SY [$LB8NonBreaks-$CM];
 
 # LB 14    OP SP* x
 #
-$CM* $CAN_CM    $SP* $CM* $OP;
+$CAN_CM    $SP* $CM* $OP;
      $CANT_CM   $SP* $CM* $OP;
 $AL_FOLLOW? $CM+  $SP $SP* $CM* $OP;     #  by LB 10, behaves like $AL_FOLLOW? $AL $SP* $CM* $OP
 
      $AL_FOLLOW_NOCM $CM+ $SP+ $CM* $OP;
-$CM* $AL_FOLLOW_CM   $CM+ $SP+ $CM* $OP;
+$AL_FOLLOW_CM   $CM+ $SP+ $CM* $OP;
 $SY $CM $SP+ $OP;   # TODO:  Experiment.  Remove.
 
 
 
 # LB 15
-$CM* $OP $SP* $CM* $QU;
+$OP $SP* $CM* $QU;
 
 # LB 16
-$CM* $NS $SP* $CM* ($CL | $CP);
+$NS $SP* $CM* ($CL | $CP);
 
 # LB 17
-$CM* $B2 $SP* $CM* $B2;
+$B2 $SP* $CM* $B2;
 
 # LB 18  break after spaces
 #        Nothing explicit needed here.
@@ -575,11 +576,11 @@ $CM* $B2 $SP* $CM* $B2;
 #
 # LB 19
 #
-$CM* $QU $CM* $CAN_CM;                                #   . x QU
-$CM* $QU      $LB18NonBreaks;
+$QU $CM* $CAN_CM;                                #   . x QU
+$QU      $LB18NonBreaks;
 
 
-$CM* $CAN_CM  $CM* $QU;                               #   QU x .
+$CAN_CM  $CM* $QU;                               #   QU x .
      $CANT_CM $CM* $QU;
 
 #
@@ -588,47 +589,47 @@ $CM* $CAN_CM  $CM* $QU;                               #   QU x .
 #
 
 # LB 21
-$CM* ($BA | $HY | $NS) $CM* [$LB20NonBreaks-$CM];     #  . x (BA | HY | NS)
+($BA | $HY | $NS) $CM* [$LB20NonBreaks-$CM];     #  . x (BA | HY | NS)
 
-$CM* [$LB20NonBreaks-$CM] $CM* $BB;                   #  BB x .
+[$LB20NonBreaks-$CM] $CM* $BB;                   #  BB x .
 [^$CB] $CM* $BB;                                      #
 
 # LB21a
 [^$CB] $CM* ($HY | $BA) $CM* $HL;
 
 # LB21b (reverse)
-$CM* $HL $CM* $SY;
+$HL $CM* $SY;
 
 # LB 22
-$CM* $IN $CM* ($ALPlus | $HL);
-$CM* $IN $CM* $EX;
-$CM* $IN $CM* ($ID | $EB | $EM);
-$CM* $IN $CM* $IN;
-$CM* $IN $CM* $NU;
+$IN $CM* ($ALPlus | $HL);
+$IN $CM* $EX;
+$IN $CM* ($ID | $EB | $EM);
+$IN $CM* $IN;
+$IN $CM* $NU;
 
 # LB 23
-$CM* $PO $CM* ($ID | $EB | $EM);
-$CM* $NU $CM* ($ALPlus | $HL);
-$CM* ($ALPlus | $HL) $CM* $NU;
+$PO $CM* ($ID | $EB | $EM);
+$NU $CM* ($ALPlus | $HL);
+($ALPlus | $HL) $CM* $NU;
 
 # LB 24
-$CM* ($ID | $EB | $EM) $CM* $PR;
-$CM* ($ALPlus | $HL) $CM* $PR;
-$CM* ($ALPlus | $HL) $CM* $PO;
+($ID | $EB | $EM) $CM* $PR;
+($ALPlus | $HL) $CM* $PR;
+($ALPlus | $HL) $CM* $PO;
 
 
 # LB 25
 ($CM* ($PR | $PO))? ($CM* ($CL | $CP))? ($CM* ($NU | $IS | $SY))* $CM* $NU ($CM* ($OP | $HY))? ($CM* ($PR | $PO))?;
 
 # LB 26
-$CM* ($H3 | $H2 | $JV | $JL) $CM* $JL;
-$CM* ($JT | $JV) $CM* ($H2 | $JV);
-$CM* $JT $CM* ($H3 | $JT);
+($H3 | $H2 | $JV | $JL) $CM* $JL;
+($JT | $JV) $CM* ($H2 | $JV);
+$JT $CM* ($H3 | $JT);
 
 # LB 27
-$CM* $IN $CM* ($H3 | $H2 | $JT | $JV | $JL);
-$CM* $PO $CM* ($H3 | $H2 | $JT | $JV | $JL);
-$CM* ($H3 | $H2 | $JT | $JV | $JL) $CM* $PR;
+$IN $CM* ($H3 | $H2 | $JT | $JV | $JL);
+$PO $CM* ($H3 | $H2 | $JT | $JV | $JL);
+ ($H3 | $H2 | $JT | $JV | $JL) $CM* $PR;
 
 # LB 28
 $CM* ($ALPlus | $HL) $CM* ($ALPlus | $HL);
@@ -669,8 +670,8 @@ $EM $CM* $EB;
 !!safe_reverse;
 
 # LB 9
-$CM+ [^$CM $BK $CR $LF $NL $ZW $SP];
-$CM+ $SP / .;
+^$CM+ [^$CM $BK $CR $LF $NL $ZW $SP];
+^$CM+ $SP / .;
 
 # LB 14
 $SP+ $CM* $OP;
@@ -710,6 +711,6 @@ $dictionary $dictionary;
 #  turn off rule chaining.  We don't want to move more
 #  than necessary.
 #
-[$CM $OP $QU $CL $CP $B2 $PR $HY $BA $SP $dictionary]+ [^$CM $OP $QU $CL $CP $B2 $PR $HY $BA $dictionary];
+^[$CM $OP $QU $CL $CP $B2 $PR $HY $BA $SP $dictionary]+ [^$CM $OP $QU $CL $CP $B2 $PR $HY $BA $dictionary];
 $dictionary $dictionary;
 
