@@ -2967,6 +2967,7 @@ private:
     UnicodeSet  *fXX;
     UnicodeSet  *fEB;
     UnicodeSet  *fEM;
+    UnicodeSet  *fZJ;
 
     BreakIterator        *fCharBI;
     const UnicodeString  *fText;
@@ -3035,6 +3036,7 @@ RBBILineMonkey::RBBILineMonkey() :
                 "\\U0001F485-\\U0001F487\\U0001F4AA\\U0001F575\\U0001F590\\U0001F595-\\U0001F596\\U0001F645-\\U0001F647"
                 "\\U0001F64B-\\U0001F64F\\U0001F6A3\\U0001F6B4-\\U0001F6B6\\U0001F6C0\\U0001F918]"), status);
     fEM    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\U0001F3FB-\\U0001F3FF]"), status);
+    fZJ    = new UnicodeSet((UChar32)0x200D, (UChar32)0x200D);
 
     if (U_FAILURE(status)) {
         deferredStatus = status;
@@ -3092,6 +3094,7 @@ RBBILineMonkey::RBBILineMonkey() :
     fSets->addElement(fSG, status);
     fSets->addElement(fEB, status);
     fSets->addElement(fEM, status);
+    fSets->addElement(fZJ, status);
 
     const char *rules =
             "((\\p{Line_Break=PR}|\\p{Line_Break=PO})\\p{Line_Break=CM}*)?"
@@ -3276,6 +3279,18 @@ int32_t RBBILineMonkey::next(int32_t startPos) {
         // LB 8  Break after zero width space
         if (fZW->contains(prevChar)) {
             break;
+        }
+
+        // LB 8a ZJ x ID
+        //       The monkey test's way of ignoring combining characters doesn't work
+        //       for this rule. ZJ is also a CM. Need to get the actual character
+        //       preceding "thisChar", not ignoring combining marks, possibly ZJ.
+        {
+            int32_t prevIdx = fText->moveIndex32(pos, -1);
+            UChar32 prevC = fText->char32At(prevIdx);
+            if (fZJ->contains(prevC) && fID->contains(thisChar)) {
+                continue;
+            }
         }
 
         // LB 9, 10  Already done, at top of loop.
@@ -3616,6 +3631,7 @@ RBBILineMonkey::~RBBILineMonkey() {
     delete fSG;
     delete fEB;
     delete fEM;
+    delete fZJ;
 
     delete fCharBI;
     delete fNumberMatcher;

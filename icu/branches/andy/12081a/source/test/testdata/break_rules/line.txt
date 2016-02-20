@@ -47,6 +47,7 @@ SY = [:LineBreak =  Break_Symbols:];
 WJ = [:LineBreak =  Word_Joiner:];
 XX = [:LineBreak =  Unknown:];
 ZW = [:LineBreak =  ZWSpace:];
+ZJ = [\u200D];
 
 # TODO: adjustment to sets needed only until Unicode properties are updated for Emoji.
 ID   = [ID - EB];
@@ -83,6 +84,11 @@ LB7.2:      [ZW SP] [SP ZW];
 #    UAX 14: ZW SP* ÷;
 LB8:        ZW ÷;
 
+# LB8a, from Emoji proposal L2/16-011R3
+#      ZWJ x ID
+LB8a:       ZJ ID;
+
+
 # LB9:  X CM -> X
 # LB10: Unattached CM -> AL
 
@@ -114,8 +120,13 @@ LB18:        SP ÷;
 LB19:        . CM* QU;
 LB19.1:      QU CM* [^CM];
 
+# LB 20   Break before and after CB.
+#         Interaction with LB8a:  ZJ x ID is tricky because CM includes ZJ.
+#                                 ZJ acts like a CM to the left, combining with CB.
+#                                 ZJ acts independently to the right, no break from ID by LB8a.
 LB20:        . CM* ÷ CB;
-LB20.1:      CB CM* ÷;
+LB20.1a:     CB CM* ZJ ID;
+LB20.1b:      CB CM* ÷;
 
 # Note: Rule 21a must come before 21 to prevent 21.1 from matching HL BA, then
 #       not picking up the continuing match after the BA from 21a.
@@ -163,11 +174,13 @@ LB30.2:      CP CM* (AL | HL | NU);
 
 # LB31  keep pairs of RI together.
 LB30a.1:     RI CM* RI CM* [BK CR LF NL SP ZW WJ GL CL CP EX IS SY QU BA HY NS];
-LB30a.2:     RI CM* RI CM* ÷;
+LB30a.2:     RI CM* RI CM* ZJ ID;
+LB30a.3:     RI CM* RI CM* ÷;
 
 # LB30b Do not break between Emoji Base and Emoji Modifier
 LB30b:       EB CM* EM;
 
 # LB31 Break Everywhere Else.
 #      Include combining marks
-LB31:        . CM* ÷;
+LB31.1:        . CM* ZJ ID;
+LB31.2:        . CM* ÷;

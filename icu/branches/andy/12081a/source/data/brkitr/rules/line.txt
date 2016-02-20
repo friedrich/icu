@@ -73,7 +73,7 @@ $B2 = [:LineBreak =  Break_Both:];
 $CB = [:LineBreak =  Contingent_Break:];
 $CJ = [:LineBreak =  Conditional_Japanese_Starter:];
 $CL = [:LineBreak =  Close_Punctuation:];
-$CM = [:LineBreak =  Combining_Mark:];
+$CM = [[:LineBreak =  Combining_Mark:] \u200d];
 $CP = [:LineBreak =  Close_Parenthesis:];
 $CR = [:LineBreak =  Carriage_Return:];
 $EX = [:LineBreak =  Exclamation:];
@@ -104,6 +104,7 @@ $SY = [:LineBreak =  Break_Symbols:];
 $WJ = [:LineBreak =  Word_Joiner:];
 $XX = [:LineBreak =  Unknown:];
 $ZW = [:LineBreak =  ZWSpace:];
+$ZJ = [\u200d];
 
 #   Dictionary character set, for triggering language-based break engines. Currently
 #   limited to LineBreak=Complex_Context. Note that this set only works in Unicode
@@ -240,6 +241,9 @@ $CAN_CM $CM*  [$SP $ZW];
 $LB8Breaks    = [$LB4Breaks $ZW];
 $LB8NonBreaks = [[$LB4NonBreaks] - [$ZW]];
 
+# LB 8a        ZWJ x ID    Unicode Emoji proposal L2/16-011R3
+#
+$ZJ $ID;
 
 # LB 9     Combining marks.      X   $CM needs to behave like X, where X is not $SP, $BK $CR $LF $NL
 #                                $CM not covered by the above needs to behave like $AL
@@ -412,8 +416,13 @@ $IScm ($ALcm | $HLcm);
 $CPcm ($ALcm | $HLcm | $NUcm);
 
 # LB 30a  Do not break between regional indicators. Break after pairs of them.
-$RIcm $RIcm / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM] {eof}];
+#         Tricky interaction with LB8a: ZJ x ID
+$RIcm $RI                / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM] {eof}];
+$RIcm $RI $CM*  $ZJ      / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM $ID] {eof}];
+$RIcm $RI $CM* [$CM-$ZJ] / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM] {eof}];
+
 $RIcm $RIcm [$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS {eof}];
+$RIcm $RIcm $ZJ $ID;
 
 # LB 30b Do not break between an Emoji Base and an Emoji Modifier
 $EB $CM* $EM;
@@ -501,6 +510,12 @@ $LF $CR;
 #     TODO: to implement this, we need more than one look-ahead hard break in play at a time.
 #           Requires an engine enhancement.
 #   / $SP* $ZW
+
+# LB 8a        ZWJ x ID    Unicode Emoji proposal L2/16-011R3
+#                          The ZJ will look like a CM to whatever precedes it.
+#
+$ID $ZJ $CM* $CAN_CM?;
+
 
 # LB 9,10  Combining marks.
 #    X   $CM needs to behave like X, where X is not $SP or controls.
