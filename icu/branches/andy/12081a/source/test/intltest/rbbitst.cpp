@@ -2029,8 +2029,6 @@ private:
     UnicodeSet  *fLVTSet;
     UnicodeSet  *fHangulSet;
     UnicodeSet  *fAnySet;
-    UnicodeSet  *fEmojiSet;
-    UnicodeSet  *fEmojiPresentationSet;
     UnicodeSet  *fEmojiModifierSet;
     UnicodeSet  *fEmojiModifierBaseSet;
 
@@ -2044,8 +2042,8 @@ RBBICharMonkey::RBBICharMonkey() {
     fText = NULL;
 
     fCRLFSet    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\r\\n]"), status);
-    fControlSet = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Grapheme_Cluster_Break = Control}]"), status);
-    fExtendSet  = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Grapheme_Cluster_Break = Extend}]"), status);
+    fControlSet = new UnicodeSet(UNICODE_STRING_SIMPLE("[[\\p{Grapheme_Cluster_Break = Control}]-[:Block=Tags:]]"), status);
+    fExtendSet  = new UnicodeSet(UNICODE_STRING_SIMPLE("[[\\p{Grapheme_Cluster_Break = Extend}][:Block=Tags:]]"), status);
     fRegionalIndicatorSet = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Grapheme_Cluster_Break = Regional_Indicator}]"), status);
     fPrependSet = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Grapheme_Cluster_Break = Prepend}]"), status);
     fSpacingSet = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Grapheme_Cluster_Break = SpacingMark}]"), status);
@@ -2062,16 +2060,16 @@ RBBICharMonkey::RBBICharMonkey() {
     fHangulSet->addAll(*fLVTSet);
     fAnySet     = new UnicodeSet(0, 0x10ffff);
 
-    fEmojiSet   = new UnicodeSet(UNICODE_STRING_SIMPLE(
-            "[\\u0023\\u002A\\u0030-\\u0039\\u00A9\\u00AE\\u203C\\u2049\\u2122\\u2139\\u2194-\\u2199\\u21A9-\\u21AA\\u231A-\\u231B\\u2328\\u23CF\\u23E9-\\u23F3\\u23F8-\\u23FA\\u24C2\\u25AA-\\u25AB\\u25B6\\u25C0\\u25FB-\\u25FE\\u2600-\\u2604\\u260E\\u2611\\u2614-\\u2615\\u2618\\u261D\\u2620\\u2622-\\u2623\\u2626\\u262A\\u262E-\\u262F\\u2638-\\u263A\\u2648-\\u2653\\u2660\\u2663\\u2665-\\u2666\\u2668\\u267B\\u267F\\u2692-\\u2694\\u2696-\\u2697\\u2699\\u269B-\\u269C\\u26A0-\\u26A1\\u26AA-\\u26AB\\u26B0-\\u26B1\\u26BD-\\u26BE\\u26C4-\\u26C5\\u26C8\\u26CE-\\u26CF\\u26D1\\u26D3-\\u26D4\\u26E9-\\u26EA\\u26F0-\\u26F5\\u26F7-\\u26FA\\u26FD\\u2702\\u2705\\u2708-\\u270D\\u270F\\u2712\\u2714\\u2716\\u271D\\u2721\\u2728\\u2733-\\u2734\\u2744\\u2747\\u274C\\u274E\\u2753-\\u2755\\u2757\\u2763-\\u2764\\u2795-\\u2797\\u27A1\\u27B0\\u27BF\\u2934-\\u2935\\u2B05-\\u2B07\\u2B1B-\\u2B1C\\u2B50\\u2B55\\u3030\\u303D\\u3297\\u3299\\U0001F004\\U0001F0CF\\U0001F170-\\U0001F171\\U0001F17E-\\U0001F17F\\U0001F18E\\U0001F191-\\U0001F19A\\U0001F1E6-\\U0001F1FF\\U0001F201-\\U0001F202\\U0001F21A\\U0001F22F\\U0001F232-\\U0001F23A\\U0001F250-\\U0001F251\\U0001F300-\\U0001F321\\U0001F324-\\U0001F393\\U0001F396-\\U0001F397\\U0001F399-\\U0001F39B\\U0001F39E-\\U0001F3F0\\U0001F3F3-\\U0001F3F5\\U0001F3F7-\\U0001F4FD\\U0001F4FF-\\U0001F53D\\U0001F549-\\U0001F54E\\U0001F550-\\U0001F567\\U0001F56F-\\U0001F570\\U0001F573-\\U0001F579\\U0001F587\\U0001F58A-\\U0001F58D\\U0001F590\\U0001F595-\\U0001F596\\U0001F5A5\\U0001F5A8\\U0001F5B1-\\U0001F5B2\\U0001F5BC\\U0001F5C2-\\U0001F5C4\\U0001F5D1-\\U0001F5D3\\U0001F5DC-\\U0001F5DE\\U0001F5E1\\U0001F5E3\\U0001F5E8\\U0001F5EF\\U0001F5F3\\U0001F5FA-\\U0001F64F\\U0001F680-\\U0001F6C5\\U0001F6CB-\\U0001F6D0\\U0001F6E0-\\U0001F6E5\\U0001F6E9\\U0001F6EB-\\U0001F6EC\\U0001F6F0\\U0001F6F3\\U0001F910-\\U0001F918\\U0001F980-\\U0001F984\\U0001F9C0]"), status);
 
-    fEmojiPresentationSet = new UnicodeSet(UNICODE_STRING_SIMPLE(
-            "[\\u231A-\\u231B\\u23E9-\\u23EC\\u23F0\\u23F3\\u25FD-\\u25FE\\u2614-\\u2615\\u2648-\\u2653\\u267F\\u2693\\u26A1\\u26AA-\\u26AB\\u26BD-\\u26BE\\u26C4-\\u26C5\\u26CE\\u26D4\\u26EA\\u26F2-\\u26F3\\u26F5\\u26FA\\u26FD\\u2705\\u270A-\\u270B\\u2728\\u274C\\u274E\\u2753-\\u2755\\u2757\\u2795-\\u2797\\u27B0\\u27BF\\u2B1B-\\u2B1C\\u2B50\\u2B55\\U0001F004\\U0001F0CF\\U0001F18E\\U0001F191-\\U0001F19A\\U0001F1E6-\\U0001F1FF\\U0001F201\\U0001F21A\\U0001F22F\\U0001F232-\\U0001F236\\U0001F238-\\U0001F23A\\U0001F250-\\U0001F251\\U0001F300-\\U0001F320\\U0001F32D-\\U0001F335\\U0001F337-\\U0001F37C\\U0001F37E-\\U0001F393\\U0001F3A0-\\U0001F3CA\\U0001F3CF-\\U0001F3D3\\U0001F3E0-\\U0001F3F0\\U0001F3F4\\U0001F3F8-\\U0001F43E\\U0001F440\\U0001F442-\\U0001F4FC\\U0001F4FF-\\U0001F53D\\U0001F54B-\\U0001F54E\\U0001F550-\\U0001F567\\U0001F595-\\U0001F596\\U0001F5FB-\\U0001F64F\\U0001F680-\\U0001F6C5\\U0001F6CC\\U0001F6D0\\U0001F6EB-\\U0001F6EC\\U0001F910-\\U0001F918\\U0001F980-\\U0001F984\\U0001F9C0]"), status);
 
     fEmojiModifierSet = new UnicodeSet(0x0001F3FB, 0x0001F3FF);
 
     fEmojiModifierBaseSet = new UnicodeSet(UNICODE_STRING_SIMPLE(
-            "[\\u261D\\u26F9\\u270A-\\u270D\\U0001F385\\U0001F3C3-\\U0001F3C4\\U0001F3CA-\\U0001F3CB\\U0001F442-\\U0001F443\\U0001F446-\\U0001F450\\U0001F466-\\U0001F469\\U0001F46E\\U0001F470-\\U0001F478\\U0001F47C\\U0001F481-\\U0001F483\\U0001F485-\\U0001F487\\U0001F4AA\\U0001F575\\U0001F590\\U0001F595-\\U0001F596\\U0001F645-\\U0001F647\\U0001F64B-\\U0001F64F\\U0001F6A3\\U0001F6B4-\\U0001F6B6\\U0001F6C0\\U0001F918]"), status);
+                "[\\u261D\\u26F9\\u270A-\\u270D\\U0001F385\\U0001F3C3-\\U0001F3C4\\U0001F3CA-\\U0001F3CB\\U0001F442-\\U0001F443"
+                "\\U0001F446-\\U0001F450\\U0001F466-\\U0001F469\\U0001F46E\\U0001F470-\\U0001F478\\U0001F47C\\U0001F481-\\U0001F483"
+                "\\U0001F485-\\U0001F487\\U0001F4AA\\U0001F575\\U0001F590\\U0001F595-\\U0001F596\\U0001F645-\\U0001F647"
+                "\\U0001F64B-\\U0001F64F\\U0001F6A3\\U0001F6B4-\\U0001F6B6\\U0001F6C0\\U0001F918]"), status);
+
 
     fSets       = new UVector(status);
     fSets->addElement(fCRLFSet,    status);
@@ -2084,8 +2082,6 @@ RBBICharMonkey::RBBICharMonkey() {
     fSets->addElement(fSpacingSet, status);
     fSets->addElement(fHangulSet,  status);
     fSets->addElement(fAnySet,     status);
-    fSets->addElement(fEmojiSet,   status);
-    fSets->addElement(fEmojiPresentationSet, status);
     fSets->addElement(fEmojiModifierSet, status);
     fSets->addElement(fEmojiModifierBaseSet, status);
     if (U_FAILURE(status)) {
@@ -2189,8 +2185,12 @@ int32_t RBBICharMonkey::next(int32_t prevPos) {
         }
 
         // Rule (GB8a)    Regional_Indicator x Regional_Indicator
-        if (fRegionalIndicatorSet->contains(c0) && fRegionalIndicatorSet->contains(c1) &&
-                fRegionalIndicatorSet->contains(c2)) {
+        //                Note: The first if condition is a little tricky. We only need to force
+        //                      a break if there are three or more contiguous RIs. If there are
+        //                      only two, a break following will occur via other rules, and will include
+        //                      any trailing extend characters, which is needed behavior.
+        if (fRegionalIndicatorSet->contains(c0) && fRegionalIndicatorSet->contains(c1) 
+                && fRegionalIndicatorSet->contains(c2)) {
             break;
         }
         if (fRegionalIndicatorSet->contains(c1) && fRegionalIndicatorSet->contains(c2)) {
@@ -2247,8 +2247,6 @@ RBBICharMonkey::~RBBICharMonkey() {
     delete fLVTSet;
     delete fHangulSet;
     delete fAnySet;
-    delete fEmojiSet;
-    delete fEmojiPresentationSet;
     delete fEmojiModifierSet;
     delete fEmojiModifierBaseSet;
 }
@@ -2289,6 +2287,10 @@ private:
     UnicodeSet  *fExtendSet;
     UnicodeSet  *fExtendNumLetSet;
     UnicodeSet  *fDictionaryCjkSet;
+    UnicodeSet  *fEBaseSet;
+    UnicodeSet  *fEModifierSet;
+    UnicodeSet  *fZWSSet;
+    UnicodeSet  *fGAZSet;
 
     const UnicodeString  *fText;
 };
@@ -2331,6 +2333,18 @@ RBBIWordMonkey::RBBIWordMonkey()
     fExtendNumLetSet  = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Word_Break = ExtendNumLet}]"), status);
     fExtendSet        = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Word_Break = Extend}]"),       status);
 
+    fEBaseSet         = new UnicodeSet(UNICODE_STRING_SIMPLE(
+                "[\\u261D\\u26F9\\u270A-\\u270D\\U0001F385\\U0001F3C3-\\U0001F3C4\\U0001F3CA-\\U0001F3CB\\U0001F442-\\U0001F443"
+                "\\U0001F446-\\U0001F450\\U0001F466-\\U0001F469\\U0001F46E\\U0001F470-\\U0001F478\\U0001F47C\\U0001F481-\\U0001F483"
+                "\\U0001F485-\\U0001F487\\U0001F4AA\\U0001F575\\U0001F590\\U0001F595-\\U0001F596\\U0001F645-\\U0001F647"
+                "\\U0001F64B-\\U0001F64F\\U0001F6A3\\U0001F6B4-\\U0001F6B6\\U0001F6C0\\U0001F918]"), status);
+
+    fEModifierSet    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\U0001F3FB-\\U0001F3FF]"), status);
+    fZWSSet          = new UnicodeSet((UChar32)0x200D, (UChar32)0x200D);;
+    fGAZSet          = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\U0001F466-\\U0001F469\\U0001F48B\\U0001F5E8\\u2764]"), status);
+    fExtendSet->removeAll(*fZWSSet);
+
+
     fOtherSet        = new UnicodeSet();
     if(U_FAILURE(status)) {
       deferredStatus = status;
@@ -2353,6 +2367,11 @@ RBBIWordMonkey::RBBIWordMonkey()
     fOtherSet->removeAll(*fFormatSet);
     fOtherSet->removeAll(*fExtendSet);
     fOtherSet->removeAll(*fRegionalIndicatorSet);
+    fOtherSet->removeAll(*fEBaseSet);
+    fOtherSet->removeAll(*fEModifierSet);
+    fOtherSet->removeAll(*fZWSSet);
+    fOtherSet->removeAll(*fGAZSet);
+    
     // Inhibit dictionary characters from being tested at all.
     fOtherSet->removeAll(*fDictionaryCjkSet);
     fOtherSet->removeAll(UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{LineBreak = Complex_Context}]"), status));
@@ -2374,6 +2393,11 @@ RBBIWordMonkey::RBBIWordMonkey()
     fSets->addElement(fExtendSet,            status);
     fSets->addElement(fOtherSet,             status);
     fSets->addElement(fExtendNumLetSet,      status);
+
+    fSets->addElement(fEBaseSet,             status);
+    fSets->addElement(fEModifierSet,         status);
+    fSets->addElement(fZWSSet,               status);
+    fSets->addElement(fGAZSet,               status);
 
     if (U_FAILURE(status)) {
         deferredStatus = status;
@@ -2423,7 +2447,7 @@ int32_t RBBIWordMonkey::next(int32_t prevPos) {
                break;
             };
         }
-        while (fFormatSet->contains(c3) || fExtendSet->contains(c3));
+        while (fFormatSet->contains(c3) || fExtendSet->contains(c3) || fZWSSet->contains(c3));
 
 
         if (p1 == p2) {
@@ -2451,6 +2475,15 @@ int32_t RBBIWordMonkey::next(int32_t prevPos) {
         if (fCRSet->contains(c2) || fLFSet->contains(c2) || fNewlineSet->contains(c2)) {
             break;
         };
+
+        // Rule (3c)    ZWJ x GAZ (Glue after ZWJ).
+        //              Not ignoring extend chars, so peek into input text to
+        //              get the potential ZWJ, the character immediately preceding c2.
+        //              Sloppy UChar32 indexing: p2-1 may reference trail half
+        //              but char32At will get the full code point.
+        if (fZWSSet->contains(fText->char32At(p2-1)) && fGAZSet->contains(c2)) {
+            continue;
+        }
 
         // Rule (5).   (ALetter | Hebrew_Letter) x (ALetter | Hebrew_Letter)
         if ((fALetterSet->contains(c1) || fHebrew_LetterSet->contains(c1)) &&
@@ -2541,7 +2574,15 @@ int32_t RBBIWordMonkey::next(int32_t prevPos) {
         }
 
         // Rule 13c
+        if (fRegionalIndicatorSet->contains(c0) && fRegionalIndicatorSet->contains(c1)) {
+            break;
+        }
         if (fRegionalIndicatorSet->contains(c1) && fRegionalIndicatorSet->contains(c2)) {
+            continue;
+        }
+
+        // Rule 13d
+        if ((fEBaseSet->contains(c1)  || fGAZSet->contains(c1)) && fEModifierSet->contains(c2)) {
             continue;
         }
 
@@ -2579,6 +2620,10 @@ RBBIWordMonkey::~RBBIWordMonkey() {
     delete fRegionalIndicatorSet;
     delete fDictionaryCjkSet;
     delete fOtherSet;
+    delete fEBaseSet;
+    delete fEModifierSet;
+    delete fZWSSet;
+    delete fGAZSet;
 }
 
 

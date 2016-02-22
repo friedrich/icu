@@ -86,7 +86,7 @@ LB8:        ZW ÷;
 
 # LB8a, from Emoji proposal L2/16-011R3
 #      ZWJ x ID
-LB8a:       ZJ ID;
+LB8a:       ZJ (ID | EB | EM);
 
 
 # LB9:  X CM -> X
@@ -125,7 +125,7 @@ LB19.1:      QU CM* [^CM];
 #                                 ZJ acts like a CM to the left, combining with CB.
 #                                 ZJ acts independently to the right, no break from ID by LB8a.
 LB20:        . CM* ÷ CB;
-LB20.1a:     CB CM* ZJ ID;
+LB20.1a:     CB CM* ZJ (ID | EB | EM);
 LB20.1b:      CB CM* ÷;
 
 # Note: Rule 21a must come before 21 to prevent 21.1 from matching HL BA, then
@@ -174,7 +174,7 @@ LB30.2:      CP CM* (AL | HL | NU);
 
 # LB31  keep pairs of RI together.
 LB30a.1:     RI CM* RI CM* [BK CR LF NL SP ZW WJ GL CL CP EX IS SY QU BA HY NS];
-LB30a.2:     RI CM* RI CM* ZJ ID;
+LB30a.2:     RI CM* RI CM* ZJ (ID | EB | EM);
 LB30a.3:     RI CM* RI CM* ÷;
 
 # LB30b Do not break between Emoji Base and Emoji Modifier
@@ -182,5 +182,5 @@ LB30b:       EB CM* EM;
 
 # LB31 Break Everywhere Else.
 #      Include combining marks
-LB31.1:        . CM* ZJ ID;
+LB31.1:        . CM* ZJ (ID | EB | EM);
 LB31.2:        . CM* ÷;

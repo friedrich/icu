@@ -137,7 +137,6 @@ $HLcm = $HL $CM*;
 $HYcm = $HY $CM*;
 $H2cm = $H2 $CM*;
 $H3cm = $H3 $CM*;
-$IDcm = ($ID | $EB | $EM) $CM*;
 $INcm = $IN $CM*;
 $IScm = $IS $CM*;
 $JLcm = $JL $CM*;
@@ -243,7 +242,7 @@ $LB8NonBreaks = [[$LB4NonBreaks] - [$ZW]];
 
 # LB 8a        ZWJ x ID    Unicode Emoji proposal L2/16-011R3
 #
-$ZJ $ID;
+$ZJ ($ID | $EB | $EM);
 
 # LB 9     Combining marks.      X   $CM needs to behave like X, where X is not $SP, $BK $CR $LF $NL
 #                                $CM not covered by the above needs to behave like $AL
@@ -333,8 +332,6 @@ $LB18NonBreaks $CM* $QUcm;
 
 #         QU  x
 $QUcm .?;
-$QUcm $LB18NonBreaks $CM*;    # Don't let a combining mark go onto $CR, $BK, etc.
-                              #  TODO:  I don't think this rule is needed.
 
 
 # LB 20
@@ -365,13 +362,13 @@ $SYcm $HLcm;
 ($ALcm | $HLcm) $INcm;
 ^$CM+    $INcm;     #  by rule 10, any otherwise unattached CM behaves as AL
 $EXcm    $INcm;
-$IDcm    $INcm;
+($ID | $EB | $EM) $CM*  $INcm;
 $INcm    $INcm;
 $NUcm    $INcm;
 
 
 # $LB 23
-$IDcm  $POcm;
+($ID | $EB | $EM) $CM*  $POcm;
 $ALcm  $NUcm;       # includes $LB19
 $HLcm  $NUcm;
 ^$CM+  $NUcm;       # Rule 10, any otherwise unattached CM behaves as AL
@@ -381,7 +378,7 @@ $NUcm  $HLcm;
 #
 # LB 24
 #
-$PRcm $IDcm;
+$PRcm ($ID | $EB | $EM);
 $PRcm ($ALcm | $HLcm);
 $POcm ($ALcm | $HLcm);
 
@@ -418,11 +415,11 @@ $CPcm ($ALcm | $HLcm | $NUcm);
 # LB 30a  Do not break between regional indicators. Break after pairs of them.
 #         Tricky interaction with LB8a: ZJ x ID
 $RIcm $RI                / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM] {eof}];
-$RIcm $RI $CM*  $ZJ      / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM $ID] {eof}];
+$RIcm $RI $CM*  $ZJ      / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM $ID $EB $EM] {eof}];
 $RIcm $RI $CM* [$CM-$ZJ] / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM] {eof}];
 
 $RIcm $RIcm [$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS {eof}];
-$RIcm $RIcm $ZJ $ID;
+$RIcm $RIcm $ZJ ($ID | $EB | $EM);
 
 # LB 30b Do not break between an Emoji Base and an Emoji Modifier
 $EB $CM* $EM;
@@ -514,7 +511,7 @@ $LF $CR;
 # LB 8a        ZWJ x ID    Unicode Emoji proposal L2/16-011R3
 #                          The ZJ will look like a CM to whatever precedes it.
 #
-$ID $ZJ $CM* $CAN_CM?;
+($ID | $EB | $EM) $ZJ $CM* $CAN_CM?;
 
 
 # LB 9,10  Combining marks.
@@ -525,7 +522,7 @@ $ID $ZJ $CM* $CAN_CM?;
 
 
 # LB 11
-#TODO dump the initial $CM*. Redundant with rules at top.
+#
 $WJ $CM* $CAN_CM;
 $WJ      [$LB8NonBreaks-$CM];
 
@@ -572,8 +569,6 @@ $AL_FOLLOW? $CM+  $SP $SP* $CM* $OP;     #  by LB 10, behaves like $AL_FOLLOW? $
 
      $AL_FOLLOW_NOCM $CM+ $SP+ $CM* $OP;
 $AL_FOLLOW_CM   $CM+ $SP+ $CM* $OP;
-$SY $CM $SP+ $OP;   # TODO:  Experiment.  Remove.
-
 
 
 # LB 15
@@ -662,11 +657,11 @@ $OP $CM* ($ALPlus | $HL | $NU);
 #    Pairs of Regional Indicators.
 #    The following two rules are nearly identical. The first matches only sequences with an odd number of adjacent RIs,
 #    the second with an even number. Stripping away the cruft they look like
-#         ^RI RI / (RI RI)+ ^RI;
-#         ^RI RI RI / (RI RI)+ ^RI;
+#         [^RI] RI / (RI RI)+ ^RI;
+#         [^RI] RI RI / (RI RI)+ ^RI;
 #
-[{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL] $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
-[{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL] $CM* $RI $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
+[{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL $ZJ] $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
+[{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL $ZJ] $CM* $RI $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
 
 # In general, adjacent RIs stay together. The hard-break rules, above, overide this, forcing in the boundaries between pairs.
 $RI $CM* $RI;
@@ -674,8 +669,6 @@ $RI $CM* $RI;
 #    WJ, GL, QU, etc. are classes with rules like "WJ x "   which includes "WJ x RI".
 $RI $CM* ([$WJ $GL $QU $BB] |  (($HY | $BA)$CM* $HL));
 
-# LB 14    TODO this looks redundant with the CAN_CM part at LB 14 itself. Delete it and test.
-$RI $SP* $CM* $OP;
 
 # LB 30b Do not break between an Emoji Base and an Emoji Modifier
 $EM $CM* $EB;
@@ -727,6 +720,6 @@ $dictionary $dictionary;
 #  turn off rule chaining.  We don't want to move more
 #  than necessary.
 #
-^[$CM $OP $QU $CL $CP $B2 $PR $HY $BA $SP $dictionary]+ [^$CM $OP $QU $CL $CP $B2 $PR $HY $BA $dictionary];
+^[$CM $OP $QU $CL $CP $B2 $PR $HY $BA $SP $RI $ZJ $dictionary]+ [^$CM $OP $QU $CL $CP $B2 $PR $HY $BA $RI $ZJ $dictionary];
 $dictionary $dictionary;
 
