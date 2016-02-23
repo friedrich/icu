@@ -1,12 +1,15 @@
-# Copyright (c) 2002-2015  International Business Machines Corporation and
+# Copyright (c) 2002-2016  International Business Machines Corporation and
 # others. All Rights Reserved.
 #
 #  file:  line.txt
 #
 #         Line Breaking Rules
 #         Implement default line breaking as defined by
-#         Unicode Standard Annex #14 Revision 34 for Unicode 8.0
+#         Unicode Standard Annex #14 Revision 35 for Unicode 8.0
 #         http://www.unicode.org/reports/tr14/
+#
+#         Includes the Emoji breaking proposals from Unicode L2/16-011R3.
+#         http://www.unicode.org/L2/L2016/16011r3-break-prop-emoji.pdf
 #
 #         TODO:  Rule LB 8 remains as it was in Unicode 5.2
 #         This is only because of a limitation of ICU break engine implementation,
@@ -20,8 +23,6 @@
 #
 
 !!chain;
-#!!LBCMNoChain;
-
 
 !!lookAheadHardBreak;
 #
@@ -65,7 +66,7 @@ $EB = [\u261D\u26F9\u270A-\u270D\U0001F385\U0001F3C3-\U0001F3C4\U0001F3CA-\U0001
 $EM = [\U0001F3FB-\U0001F3FF];
 
 $AI = [:LineBreak =  Ambiguous:];
-$AL = [[:LineBreak =  Alphabetic:] - $EM];
+$AL = [[:LineBreak =  Alphabetic:] - [$EM\u2764]];
 $BA = [:LineBreak =  Break_After:];
 $BB = [:LineBreak =  Break_Before:];
 $BK = [:LineBreak =  Mandatory_Break:];
@@ -82,7 +83,7 @@ $HL = [:LineBreak =  Hebrew_Letter:];
 $HY = [:LineBreak =  Hyphen:];
 $H2 = [:LineBreak =  H2:];
 $H3 = [:LineBreak =  H3:];
-$ID = [[:LineBreak =  Ideographic:] - $EB];
+$ID = [[:LineBreak =  Ideographic:][\u2764] - $EB];
 $IN = [:LineBreak =  Inseperable:];
 $IS = [:LineBreak =  Infix_Numeric:];
 $JL = [:LineBreak =  JL:];
@@ -104,7 +105,7 @@ $SY = [:LineBreak =  Break_Symbols:];
 $WJ = [:LineBreak =  Word_Joiner:];
 $XX = [:LineBreak =  Unknown:];
 $ZW = [:LineBreak =  ZWSpace:];
-$ZJ = [\u200d];
+$ZWJ = [\u200d];
 
 #   Dictionary character set, for triggering language-based break engines. Currently
 #   limited to LineBreak=Complex_Context. Note that this set only works in Unicode
@@ -240,9 +241,9 @@ $CAN_CM $CM*  [$SP $ZW];
 $LB8Breaks    = [$LB4Breaks $ZW];
 $LB8NonBreaks = [[$LB4NonBreaks] - [$ZW]];
 
-# LB 8a        ZWJ x ID    Unicode Emoji proposal L2/16-011R3
+# LB 8a        ZWJ x ID    Emoji proposal.
 #
-$ZJ ($ID | $EB | $EM);
+$ZWJ ($ID | $EB | $EM);
 
 # LB 9     Combining marks.      X   $CM needs to behave like X, where X is not $SP, $BK $CR $LF $NL
 #                                $CM not covered by the above needs to behave like $AL
@@ -413,13 +414,13 @@ $IScm ($ALcm | $HLcm);
 $CPcm ($ALcm | $HLcm | $NUcm);
 
 # LB 30a  Do not break between regional indicators. Break after pairs of them.
-#         Tricky interaction with LB8a: ZJ x ID
+#         Tricky interaction with LB8a: ZWJ x ID
 $RIcm $RI                / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM] {eof}];
-$RIcm $RI $CM*  $ZJ      / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM $ID $EB $EM] {eof}];
-$RIcm $RI $CM* [$CM-$ZJ] / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM] {eof}];
+$RIcm $RI $CM*  $ZWJ     / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM $ID $EB $EM] {eof}];
+$RIcm $RI $CM* [$CM-$ZWJ] / [[^$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS $CM] {eof}];
 
 $RIcm $RIcm [$BK $CR $LF $NL $SP $ZW $WJ $CL $CP $EX $IS $SY $GL $QU $BA $HY $NS {eof}];
-$RIcm $RIcm $ZJ ($ID | $EB | $EM);
+$RIcm $RIcm $ZWJ ($ID | $EB | $EM);
 
 # LB 30b Do not break between an Emoji Base and an Emoji Modifier
 $EB $CM* $EM;
@@ -509,9 +510,9 @@ $LF $CR;
 #   / $SP* $ZW
 
 # LB 8a        ZWJ x ID    Unicode Emoji proposal L2/16-011R3
-#                          The ZJ will look like a CM to whatever precedes it.
+#                          The ZWJ will look like a CM to whatever precedes it.
 #
-($ID | $EB | $EM) $ZJ $CM* $CAN_CM?;
+($ID | $EB | $EM) $ZWJ $CM* $CAN_CM?;
 
 
 # LB 9,10  Combining marks.
@@ -660,8 +661,8 @@ $OP $CM* ($ALPlus | $HL | $NU);
 #         [^RI] RI / (RI RI)+ ^RI;
 #         [^RI] RI RI / (RI RI)+ ^RI;
 #
-[{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL $ZJ] $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
-[{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL $ZJ] $CM* $RI $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
+[{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL $ZWJ] $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
+[{bof} $NS $HY $BA $QU $CL $CP $EX $IS $SY $WJ $GL $ZW $SP $BK $CR $LF $NL $ZWJ] $CM* $RI $CM* $RI / ($CM* $RI $CM* $RI)+ $CM* [{eof}[^$RI $CM]];
 
 # In general, adjacent RIs stay together. The hard-break rules, above, overide this, forcing in the boundaries between pairs.
 $RI $CM* $RI;
@@ -720,6 +721,6 @@ $dictionary $dictionary;
 #  turn off rule chaining.  We don't want to move more
 #  than necessary.
 #
-^[$CM $OP $QU $CL $CP $B2 $PR $HY $BA $SP $RI $ZJ $dictionary]+ [^$CM $OP $QU $CL $CP $B2 $PR $HY $BA $RI $ZJ $dictionary];
+^[$CM $OP $QU $CL $CP $B2 $PR $HY $BA $SP $RI $ZWJ $dictionary]+ [^$CM $OP $QU $CL $CP $B2 $PR $HY $BA $RI $ZWJ $dictionary];
 $dictionary $dictionary;
 

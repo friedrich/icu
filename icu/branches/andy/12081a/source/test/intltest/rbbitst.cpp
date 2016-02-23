@@ -2030,7 +2030,9 @@ private:
     UnicodeSet  *fHangulSet;
     UnicodeSet  *fAnySet;
     UnicodeSet  *fEmojiModifierSet;
-    UnicodeSet  *fEmojiModifierBaseSet;
+    UnicodeSet  *fEmojiBaseSet;
+    UnicodeSet  *fZWJSet;
+    UnicodeSet  *fGAZSet;
 
     const UnicodeString *fText;
 };
@@ -2062,14 +2064,15 @@ RBBICharMonkey::RBBICharMonkey() {
 
 
 
-    fEmojiModifierSet = new UnicodeSet(0x0001F3FB, 0x0001F3FF);
-
-    fEmojiModifierBaseSet = new UnicodeSet(UNICODE_STRING_SIMPLE(
+    fEmojiBaseSet = new UnicodeSet(UNICODE_STRING_SIMPLE(
                 "[\\u261D\\u26F9\\u270A-\\u270D\\U0001F385\\U0001F3C3-\\U0001F3C4\\U0001F3CA-\\U0001F3CB\\U0001F442-\\U0001F443"
                 "\\U0001F446-\\U0001F450\\U0001F466-\\U0001F469\\U0001F46E\\U0001F470-\\U0001F478\\U0001F47C\\U0001F481-\\U0001F483"
                 "\\U0001F485-\\U0001F487\\U0001F4AA\\U0001F575\\U0001F590\\U0001F595-\\U0001F596\\U0001F645-\\U0001F647"
                 "\\U0001F64B-\\U0001F64F\\U0001F6A3\\U0001F6B4-\\U0001F6B6\\U0001F6C0\\U0001F918]"), status);
 
+    fEmojiModifierSet = new UnicodeSet(0x0001F3FB, 0x0001F3FF);
+    fZWJSet           = new UnicodeSet(0x200D, 0x200D);
+    fGAZSet           = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\U0001F466-\\U0001F469\\U0001F48B\\U0001F5E8\\u2764]"), status);
 
     fSets       = new UVector(status);
     fSets->addElement(fCRLFSet,    status);
@@ -2082,8 +2085,10 @@ RBBICharMonkey::RBBICharMonkey() {
     fSets->addElement(fSpacingSet, status);
     fSets->addElement(fHangulSet,  status);
     fSets->addElement(fAnySet,     status);
+    fSets->addElement(fEmojiBaseSet, status);
     fSets->addElement(fEmojiModifierSet, status);
-    fSets->addElement(fEmojiModifierBaseSet, status);
+    fSets->addElement(fZWJSet,     status);
+    fSets->addElement(fGAZSet,     status);
     if (U_FAILURE(status)) {
         deferredStatus = status;
     }
@@ -2198,7 +2203,7 @@ int32_t RBBICharMonkey::next(int32_t prevPos) {
         }
 
         // Rule (GB9)    x Extend
-        if (fExtendSet->contains(c2))  {
+        if (fExtendSet->contains(c2) || fZWJSet->contains(c2))  {
             continue;
         }
 
@@ -2213,7 +2218,12 @@ int32_t RBBICharMonkey::next(int32_t prevPos) {
         }
 
         // Rule (GB9c)   Emoji_Base x Emoji_Modifier
-        if (fEmojiModifierBaseSet->contains(c1) && fEmojiModifierSet->contains(c2)) {
+        if ((fEmojiBaseSet->contains(c1) || fGAZSet->contains(c1)) && fEmojiModifierSet->contains(c2)) {
+            continue;
+        }
+
+        // Rule (GB9d)   ZWJ x Glue_After_Zwj
+        if (fZWJSet->contains(c1) && fGAZSet->contains(c2)) {
             continue;
         }
 
@@ -2247,8 +2257,10 @@ RBBICharMonkey::~RBBICharMonkey() {
     delete fLVTSet;
     delete fHangulSet;
     delete fAnySet;
+    delete fEmojiBaseSet;
     delete fEmojiModifierSet;
-    delete fEmojiModifierBaseSet;
+    delete fZWJSet;
+    delete fGAZSet;
 }
 
 //------------------------------------------------------------------------------------------
@@ -3095,9 +3107,12 @@ RBBILineMonkey::RBBILineMonkey() :
     fNS->addAll(*fCJ);     // Default behavior for CJ is identical to NS.
 
     fID->addAll(*fEB);     // Emoji Base and Emoji Modifier behave as ID.
-    fID->addAll(*fEM);     //    TODO: move into the individual rules instead?
-    fAL->removeAll(*fEM);  // TODO: remove this line once updated properties are in.
-                           //       Old property data has Emoji Modifiers as alphabetic.
+    fID->addAll(*fEM);
+    fAL->removeAll(*fEM);
+
+
+    fAL->remove((UChar32)0x2764);   // Emoji Proposal: move u2764 from Al to Id
+    fID->add((UChar32)0x2764);
 
     fSets->addElement(fBK, status);
     fSets->addElement(fCR, status);
