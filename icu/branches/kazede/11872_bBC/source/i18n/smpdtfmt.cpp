@@ -1447,7 +1447,7 @@ SimpleDateFormat::subFormat(UnicodeString &appendTo,
         return;
     }
     UnicodeString hebr("hebr", 4, US_INV);
-    
+
     switch (patternCharIndex) {
 
     // for any "G" symbol, write out the appropriate era string
@@ -1978,7 +1978,7 @@ void SimpleDateFormat::adoptNumberFormat(NumberFormat *formatToAdopt) {
     fixNumberFormatForDates(*formatToAdopt);
     delete fNumberFormat;
     fNumberFormat = formatToAdopt;
-    
+
     // We successfully set the default number format. Now delete the overrides
     // (can't fail).
     if (fSharedNumberFormatters) {
@@ -2093,6 +2093,17 @@ SimpleDateFormat::isAfterNonNumericField(const UnicodeString &pattern, int32_t p
     return !DateFormatSymbols::isNumericField(f, patternOffset - i);
 }
 
+// Helper function to calculate, for example, how far away 9pm is to 2am.
+// Used in parsing to help interpret day periods.
+int32_t calculateHourDistance(int32_t a, int32_t b) {
+    int32_t rawDiff = a - b;
+    int32_t absoluteDiff = rawDiff >= 0 ? rawDiff : -rawDiff;
+    int32_t actualDiff = absoluteDiff < 12 ? absoluteDiff : (24 - absoluteDiff);
+
+    assert(0 <= actualDiff && actualDiff <= 12);
+    return actualDiff;
+}
+
 void
 SimpleDateFormat::parse(const UnicodeString& text, Calendar& cal, ParsePosition& parsePos) const
 {
@@ -2104,6 +2115,9 @@ SimpleDateFormat::parse(const UnicodeString& text, Calendar& cal, ParsePosition&
     }
     int32_t start = pos;
 
+    // Hold the day period until everything else is parsed, because we need
+    // the hour to interpret time correctly.
+    int32_t dayPeriodInt = -1;
 
     UBool ambiguousYear[] = { FALSE };
     int32_t saveHebrewMonth = -1;
@@ -2142,7 +2156,7 @@ SimpleDateFormat::parse(const UnicodeString& text, Calendar& cal, ParsePosition&
             goto ExitParse;
         }
     }
-    
+
     if (fSymbols->fLeapMonthPatterns != NULL && fSymbols->fLeapMonthPatternsCount >= DateFormatSymbols::kMonthPatternsCount) {
         numericLeapMonthFormatter = new MessageFormat(fSymbols->fLeapMonthPatterns[DateFormatSymbols::kLeapMonthPatternNumeric], fLocale, status);
         if (numericLeapMonthFormatter == NULL) {
@@ -2218,7 +2232,7 @@ SimpleDateFormat::parse(const UnicodeString& text, Calendar& cal, ParsePosition&
             // fields.
             else if (ch != 0x6C) { // pattern char 'l' (SMALL LETTER L) just gets ignored
                 int32_t s = subParse(text, pos, ch, count,
-                               FALSE, TRUE, ambiguousYear, saveHebrewMonth, *workCal, i, numericLeapMonthFormatter, &tzTimeType, mutableNFs);
+                               FALSE, TRUE, ambiguousYear, saveHebrewMonth, *workCal, i, numericLeapMonthFormatter, &tzTimeType, mutableNFs, &dayPeriodInt);
 
                 if (s == -pos-1) {
                     // era not present, in special cases allow this to continue
@@ -2254,7 +2268,7 @@ SimpleDateFormat::parse(const UnicodeString& text, Calendar& cal, ParsePosition&
         else {
 
             abutPat = -1; // End of any abutting fields
-            
+
             if (! matchLiterals(fPattern, i, text, pos, getBooleanAttribute(UDAT_PARSE_ALLOW_WHITESPACE, status), getBooleanAttribute(UDAT_PARSE_PARTIAL_LITERAL_MATCH, status), isLenient())) {
                 status = U_PARSE_ERROR;
                 goto ExitParse;
@@ -2267,6 +2281,76 @@ SimpleDateFormat::parse(const UnicodeString& text, Calendar& cal, ParsePosition&
         // only do if the last field is not numeric
         if (isAfterNonNumericField(fPattern, fPattern.length())) {
             pos++; // skip the extra "."
+        }
+    }
+
+    // If dayPeriod is set, use it in conjunction with hour-of-day to determine am/pm.
+    if (dayPeriodInt >= 0) {
+        DayPeriodRules::DayPeriod dayPeriod = (DayPeriodRules::DayPeriod)dayPeriodInt;
+        const DayPeriodRules *ruleSet = DayPeriodRules::getInstance(this->getSmpFmtLocale(), status);
+
+        if (!cal.isSet(UCAL_HOUR) && !cal.isSet(UCAL_HOUR_OF_DAY)) {
+            // If hour is not set, set time to the midpoint of current day period, overwriting
+            // minutes if it's set.
+            double midPoint = ruleSet->getMidPointForDayPeriod(dayPeriod, status);
+
+            // If we can't get midPoint we do nothing.
+            if (U_SUCCESS(status)) {
+                // Truncate midPoint toward zero to get the hour.
+                // Any leftover means it was a half-hour.
+                int32_t midPointHour = (int32_t) midPoint;
+                int32_t midPointMinute = (midPoint - midPointHour) > 0 ? 30 : 0;
+
+                // No need to set am/pm because hour-of-day is set last therefore takes precedence.
+                cal.set(UCAL_HOUR_OF_DAY, midPointHour);
+                cal.set(UCAL_MINUTE, midPointMinute);
+            }
+        } else {
+            int hourOfDay;
+
+            if (cal.isSet(UCAL_HOUR_OF_DAY)) {  // Hour is parsed in 24-hour format.
+                hourOfDay = cal.get(UCAL_HOUR_OF_DAY, status);
+            } else {  // Hour is parsed in 12-hour format.
+                hourOfDay = cal.get(UCAL_HOUR, status);
+                // cal.get() turns 12 to 0 for 12-hour time; change 0 to 12
+                // so 0 unambiguously means a 24-hour time from above.
+                if (hourOfDay == 0) { hourOfDay = 12; }
+            }
+            assert(0 <= hourOfDay && hourOfDay <= 23);
+
+
+            // If hour-of-day is 0 or 13 thru 23 then input time in unambiguously in 24-hour format.
+            if (hourOfDay == 0 || (13 <= hourOfDay && hourOfDay <= 23)) {
+                // Make hour-of-day take precedence over (hour + am/pm) by setting it again.
+                cal.set(UCAL_HOUR_OF_DAY, hourOfDay);
+            } else {
+                // We have a 12-hour time and need to choose between am and pm.
+                // Behave as if dayPeriod spanned 6 hours each way from its center point.
+                // This will parse correctly for consistent time + period (e.g. 10 at night) as
+                // well as provide a reasonable recovery for inconsistent time + period (e.g.
+                // 9 in the afternoon).
+
+                // Assume current time is in the AM.
+                // - Change 12 back to 0 for easier handling of 12am.
+                // - Append minutes as fractional hours because e.g. 8:15 and 8:45 could be parsed
+                // into different half-days if center of dayPeriod is at 14:30.
+                // - cal.get(MINUTE) will return 0 if MINUTE is unset, which works.
+                if (hourOfDay == 12) { hourOfDay = 0; }
+                double currentHour = hourOfDay + (cal.get(UCAL_MINUTE, status)) / 60.0;
+                double midPointHour = ruleSet->getMidPointForDayPeriod(dayPeriod, status);
+
+                if (U_SUCCESS(status)) {
+                    double hoursAheadMidPoint = currentHour - midPointHour;
+
+                    // Assume current time is in the AM.
+                    if (-6 <= hoursAheadMidPoint && hoursAheadMidPoint < 6) {
+                        // Assumption holds; set time as such.
+                        cal.set(UCAL_AM_PM, 0);
+                    } else {
+                        cal.set(UCAL_AM_PM, 1);
+                    }
+                }
+            }
         }
     }
 
@@ -2494,6 +2578,29 @@ int32_t SimpleDateFormat::matchQuarterString(const UnicodeString& text,
     return -start;
 }
 
+int32_t SimpleDateFormat::matchDayPeriodStrings(const UnicodeString& text, int32_t start,
+                              const UnicodeString* data, int32_t dataCount,
+                              int32_t &dayPeriod) const
+{
+
+    int32_t bestMatchLength = 0, bestMatch = -1;
+
+    for (int32_t i = 0; i < dataCount; ++i) {
+        int32_t matchLength = 0;
+        if ((matchLength = matchStringWithOptionalDot(text, start, data[i])) > bestMatchLength) {
+            bestMatchLength = matchLength;
+            bestMatch = i;
+        }
+    }
+
+    if (bestMatch >= 0) {
+        dayPeriod = bestMatch;
+        return start + bestMatchLength;
+    }
+
+    return -start;
+}
+
 //----------------------------------------------------------------------
 UBool SimpleDateFormat::matchLiterals(const UnicodeString &pattern,
                                       int32_t &patternOffset,
@@ -2504,17 +2611,17 @@ UBool SimpleDateFormat::matchLiterals(const UnicodeString &pattern,
                                       UBool oldLeniency)
 {
     UBool inQuote = FALSE;
-    UnicodeString literal;    
+    UnicodeString literal;
     int32_t i = patternOffset;
 
     // scan pattern looking for contiguous literal characters
     for ( ; i < pattern.length(); i += 1) {
         UChar ch = pattern.charAt(i);
-        
+
         if (!inQuote && isSyntaxChar(ch)) {
             break;
         }
-        
+
         if (ch == QUOTE) {
             // Match a quote literal ('') inside OR outside of quotes
             if ((i + 1) < pattern.length() && pattern.charAt(i + 1) == QUOTE) {
@@ -2524,47 +2631,47 @@ UBool SimpleDateFormat::matchLiterals(const UnicodeString &pattern,
                 continue;
             }
         }
-        
+
         literal += ch;
     }
-    
+
     // at this point, literal contains the literal text
     // and i is the index of the next non-literal pattern character.
     int32_t p;
     int32_t t = textOffset;
-    
+
     if (whitespaceLenient) {
         // trim leading, trailing whitespace from
         // the literal text
         literal.trim();
-        
+
         // ignore any leading whitespace in the text
         while (t < text.length() && u_isWhitespace(text.charAt(t))) {
             t += 1;
         }
     }
-        
+
     for (p = 0; p < literal.length() && t < text.length();) {
         UBool needWhitespace = FALSE;
-        
+
         while (p < literal.length() && PatternProps::isWhiteSpace(literal.charAt(p))) {
             needWhitespace = TRUE;
             p += 1;
         }
-        
+
         if (needWhitespace) {
             int32_t tStart = t;
-            
+
             while (t < text.length()) {
                 UChar tch = text.charAt(t);
-                
+
                 if (!u_isUWhiteSpace(tch) && !PatternProps::isWhiteSpace(tch)) {
                     break;
                 }
-                
+
                 t += 1;
             }
-            
+
             // TODO: should we require internal spaces
             // in lenient mode? (There won't be any
             // leading or trailing spaces)
@@ -2573,7 +2680,7 @@ UBool SimpleDateFormat::matchLiterals(const UnicodeString &pattern,
                 // an error in strict mode
                 return FALSE;
             }
-            
+
             // In strict mode, this run of whitespace
             // may have been at the end.
             if (p >= literal.length()) {
@@ -2591,26 +2698,26 @@ UBool SimpleDateFormat::matchLiterals(const UnicodeString &pattern,
                     ++t;
                     continue;  // Do not update p.
                 }
-                // if it is actual whitespace and we're whitespace lenient it's OK                
-                
+                // if it is actual whitespace and we're whitespace lenient it's OK
+
                 UChar wsc = text.charAt(t);
                 if(PatternProps::isWhiteSpace(wsc)) {
                     // Lenient mode and it's just whitespace we skip it
                     ++t;
                     continue;  // Do not update p.
                 }
-            } 
+            }
             // hack around oldleniency being a bit of a catch-all bucket and we're just adding support specifically for paritial matches
-            if(partialMatchLenient && oldLeniency) {                             
+            if(partialMatchLenient && oldLeniency) {
                 break;
             }
-            
+
             return FALSE;
         }
         ++p;
         ++t;
     }
-    
+
     // At this point if we're in strict mode we have a complete match.
     // If we're in lenient mode we may have a partial match, or no
     // match at all.
@@ -2622,20 +2729,20 @@ UBool SimpleDateFormat::matchLiterals(const UnicodeString &pattern,
         if (patternCharIndex != UDAT_FIELD_COUNT) {
             ignorables = SimpleDateFormatStaticSets::getIgnorables(patternCharIndex);
         }
-        
+
         for (t = textOffset; t < text.length(); t += 1) {
             UChar ch = text.charAt(t);
-            
+
             if (ignorables == NULL || !ignorables->contains(ch)) {
                 break;
             }
         }
     }
-    
+
     // if we get here, we've got a complete match.
     patternOffset = i - 1;
     textOffset = t;
-    
+
     return TRUE;
 }
 
@@ -2744,7 +2851,8 @@ SimpleDateFormat::set2DigitYearStart(UDate d, UErrorCode& status)
  */
 int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UChar ch, int32_t count,
                            UBool obeyCount, UBool allowNegative, UBool ambiguousYear[], int32_t& saveHebrewMonth, Calendar& cal,
-                           int32_t patLoc, MessageFormat * numericLeapMonthFormatter, UTimeZoneFormatTimeType *tzTimeType, SimpleDateFormatMutableNFs &mutableNFs) const
+                           int32_t patLoc, MessageFormat * numericLeapMonthFormatter, UTimeZoneFormatTimeType *tzTimeType, SimpleDateFormatMutableNFs &mutableNFs,
+                           int32_t *dayPeriod) const
 {
     Formattable number;
     int32_t value = 0;
@@ -2851,7 +2959,7 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
         if (txtLoc > parseStart) {
             value = number.getLong();
             gotNumber = TRUE;
-            
+
             // suffix processing
             if (value < 0 ) {
                 txtLoc = checkIntSuffix(text, txtLoc, patLoc+1, TRUE);
@@ -2874,7 +2982,7 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
             pos.setIndex(txtLoc);
         }
     }
-    
+
     // Make sure that we got a number if
     // we want one, and didn't get one
     // if we don't want one.
@@ -2887,9 +2995,9 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
             if (value < 0 || value > 24) {
                 return -start;
             }
-            
+
             // fall through to gotNumber check
-            
+
         case UDAT_YEAR_FIELD:
         case UDAT_YEAR_WOY_FIELD:
         case UDAT_FRACTIONAL_SECOND_FIELD:
@@ -2897,9 +3005,9 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
             if (! gotNumber) {
                 return -start;
             }
-            
+
             break;
-            
+
         default:
             // we check the rest of the fields below.
             break;
@@ -3078,9 +3186,9 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
         // [We computed 'value' above.]
         if (value == cal.getMaximum(UCAL_HOUR_OF_DAY) + 1)
             value = 0;
-            
+
         // fall through to set field
-            
+
     case UDAT_HOUR_OF_DAY0_FIELD:
         cal.set(UCAL_HOUR_OF_DAY, value);
         return pos.getIndex();
@@ -3203,9 +3311,9 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
         // [We computed 'value' above.]
         if (value == cal.getLeastMaximum(UCAL_HOUR)+1)
             value = 0;
-            
+
         // fall through to set field
-            
+
     case UDAT_HOUR0_FIELD:
         cal.set(UCAL_HOUR, value);
         return pos.getIndex();
@@ -3417,6 +3525,71 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
 
             return matchString(text, start, UCAL_FIELD_COUNT /* => nothing to set */, data, count, NULL, cal);
         }
+
+    case UDAT_AM_PM_MIDNIGHT_NOON_FIELD:
+    {
+        U_ASSERT(dayPeriod != NULL);
+        int32_t ampmStart = subParse(text, start, 0x61, count,
+                           obeyCount, allowNegative, ambiguousYear, saveHebrewMonth, cal,
+                           patLoc, numericLeapMonthFormatter, tzTimeType, mutableNFs);
+
+        if (ampmStart > 0) {
+            return ampmStart;
+        } else {
+            int32_t newStart = 0;
+
+            // Only match the first two strings from the day period strings array.
+            if (getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status) || count == 3) {
+                if ((newStart = matchDayPeriodStrings(text, start, fSymbols->fAbbreviatedDayPeriods,
+                                                        2, *dayPeriod)) > 0) {
+                    return newStart;
+                }
+            }
+            if (getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status) || count == 5) {
+                if ((newStart = matchDayPeriodStrings(text, start, fSymbols->fNarrowDayPeriods,
+                                                        2, *dayPeriod)) > 0) {
+                    return newStart;
+                }
+            }
+            // count == 4, but allow other counts
+            if (getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status)) {
+                if ((newStart = matchDayPeriodStrings(text, start, fSymbols->fWideDayPeriods,
+                                                        2, *dayPeriod)) > 0) {
+                    return newStart;
+                }
+            }
+
+            return -start;
+        }
+    }
+
+    case UDAT_FLEXIBLE_DAY_PERIOD_FIELD:
+    {
+        U_ASSERT(dayPeriod != NULL);
+        int32_t newStart = 0;
+
+        if (getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status) || count == 3) {
+            if ((newStart = matchDayPeriodStrings(text, start, fSymbols->fAbbreviatedDayPeriods,
+                                fSymbols->fAbbreviatedDayPeriodsCount, *dayPeriod)) > 0) {
+                return newStart;
+            }
+        }
+        if (getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status) || count == 5) {
+            if ((newStart = matchDayPeriodStrings(text, start, fSymbols->fNarrowDayPeriods,
+                                fSymbols->fNarrowDayPeriodsCount, *dayPeriod)) > 0) {
+                return newStart;
+            }
+        }
+        // count == 4, but allow other counts
+        if (getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status)) {
+            if ((newStart = matchDayPeriodStrings(text, start, fSymbols->fWideDayPeriods,
+                                fSymbols->fWideDayPeriodsCount, *dayPeriod)) > 0) {
+                return newStart;
+            }
+        }
+
+        return -start;
+    }
 
     default:
         // Handle "generic" fields

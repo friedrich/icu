@@ -64,11 +64,11 @@ public:
      * returning an appropriate error.
      */
     virtual void TestPartialParse994(void);
- 
+
 public: // package
     // internal test subroutine, used by TestPartialParse994
     virtual void tryPat994(SimpleDateFormat* format, const char* pat, const char* str, UDate expected);
- 
+
 public:
     /**
      * Verify the behavior of patterns in which digits for different fields run together
@@ -80,11 +80,11 @@ public:
      * without intervening separators.
      */
     virtual void TestRunTogetherPattern917(void);
- 
+
 public: // package
     // internal test subroutine, used by TestRunTogetherPattern917
     virtual void testIt917(SimpleDateFormat* fmt, UnicodeString& str, UDate expected);
- 
+
 public:
     /**
      * Verify the handling of Czech June and July, which have the unique attribute that
@@ -99,11 +99,11 @@ public:
      * Test the day of year pattern.
      */
     virtual void TestDayOfYearPattern195(void);
- 
+
 public: // package
     // interl test subroutine, used by TestDayOfYearPattern195
     virtual void tryPattern(SimpleDateFormat& sdf, UDate d, const char* pattern, UDate expected);
- 
+
 public:
     /**
      * Test the handling of single quotes in patterns.
@@ -113,7 +113,7 @@ public:
      * Verify the correct behavior when handling invalid input strings.
      */
     virtual void TestBadInput135(void);
- 
+
 public:
     /**
      * Verify the correct behavior when parsing an array of inputs against an
@@ -125,11 +125,11 @@ public:
      * Test the parsing of two-digit years.
      */
     virtual void TestTwoDigitYear(void);
- 
+
 public: // package
     // internal test subroutine, used by TestTwoDigitYear
     virtual void parse2DigitYear(DateFormat& fmt, const char* str, UDate expected);
- 
+
 public:
     /**
      * Test the formatting of time zones.
@@ -209,11 +209,11 @@ public:
     void TestStandAloneMonths(void);
 
     void TestQuarters(void);
-    
+
     void TestZTimeZoneParsing(void);
 
     void TestRelativeClone(void);
-    
+
     void TestHostClone(void);
 
     void TestHebrewClone(void);
@@ -256,6 +256,7 @@ public:
     void TestFlexibleDayPeriod();
     void TestDayPeriodWithLocales();
     void TestMinuteSecondFieldsInOddPlaces();
+    void TestDayPeriodParsing();
 
 private:
     UBool showParse(DateFormat &format, const UnicodeString &formattedString);

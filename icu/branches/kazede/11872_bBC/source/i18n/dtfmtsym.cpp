@@ -418,7 +418,7 @@ DateFormatSymbols::copyData(const DateFormatSymbols& other) {
         fShortZodiacNames = NULL;
         fShortZodiacNamesCount = 0;
     }
- 
+
     if (other.fZoneStrings != NULL) {
         fZoneStringsColCount = other.fZoneStringsColCount;
         fZoneStringsRowCount = other.fZoneStringsRowCount;
@@ -435,7 +435,7 @@ DateFormatSymbols::copyData(const DateFormatSymbols& other) {
 
     // fastCopyFrom() - see assignArray comments
     fLocalPatternChars.fastCopyFrom(other.fLocalPatternChars);
-    
+
     uprv_memcpy(fCapitalization, other.fCapitalization, sizeof(fCapitalization));
 }
 
@@ -1001,7 +1001,7 @@ DateFormatSymbols::setMonths(const UnicodeString* monthsArray, int32_t count, Dt
             fNarrowMonths = newUnicodeStringArray(count);
             uprv_arrayCopy( monthsArray,fNarrowMonths,count);
             fNarrowMonthsCount = count;
-            break; 
+            break;
         default :
             break;
         }
@@ -1028,7 +1028,7 @@ DateFormatSymbols::setMonths(const UnicodeString* monthsArray, int32_t count, Dt
             fStandaloneNarrowMonths = newUnicodeStringArray(count);
             uprv_arrayCopy( monthsArray,fStandaloneNarrowMonths,count);
             fStandaloneNarrowMonthsCount = count;
-            break; 
+            break;
         default :
             break;
         }
@@ -1102,7 +1102,7 @@ DateFormatSymbols::setWeekdays(const UnicodeString* weekdaysArray, int32_t count
             fNarrowWeekdays = newUnicodeStringArray(count);
             uprv_arrayCopy(weekdaysArray, fNarrowWeekdays, count);
             fNarrowWeekdaysCount = count;
-            break; 
+            break;
         case DT_WIDTH_COUNT :
             break;
         }
@@ -1136,7 +1136,7 @@ DateFormatSymbols::setWeekdays(const UnicodeString* weekdaysArray, int32_t count
             fStandaloneNarrowWeekdays = newUnicodeStringArray(count);
             uprv_arrayCopy(weekdaysArray, fStandaloneNarrowWeekdays, count);
             fStandaloneNarrowWeekdaysCount = count;
-            break; 
+            break;
         case DT_WIDTH_COUNT :
             break;
         }
@@ -1178,7 +1178,7 @@ DateFormatSymbols::setQuarters(const UnicodeString* quartersArray, int32_t count
             uprv_arrayCopy( quartersArray,fNarrowQuarters,count);
             fNarrowQuartersCount = count;
         */
-            break; 
+            break;
         default :
             break;
         }
@@ -1207,7 +1207,7 @@ DateFormatSymbols::setQuarters(const UnicodeString* quartersArray, int32_t count
             uprv_arrayCopy( quartersArray,fStandaloneNarrowQuarters,count);
             fStandaloneNarrowQuartersCount = count;
         */
-            break; 
+            break;
         default :
             break;
         }
@@ -1509,8 +1509,9 @@ static const ContextUsageTypeNameToEnumValue contextUsageTypeMap[] = {
     { NULL, (DateFormatSymbols::ECapitalizationContextUsageType)0 },
 };
 
-// TODO: take a look at the way plural rules does this to avoid the constants
-// and a repeated list in smpdtfmt.cpp.
+// Resource keys to look up localized strings for day periods.
+// The first one must be midnight and the second must be noon, so that their indices coincide
+// with the am/pm field. Formatting and parsing code for day periods relies on this coincidence.
 static const char *dayPeriodKeys[] = {"midnight", "noon",
                          "morning1", "afternoon1", "evening1", "night1",
                          "morning2", "afternoon2", "evening2", "night2"};

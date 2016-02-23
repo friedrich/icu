@@ -36,7 +36,7 @@ public:
         DAYPERIOD_AFTERNOON1,
         DAYPERIOD_EVENING1,
         DAYPERIOD_NIGHT1,
-        DAYPERIDO_MORNING2,
+        DAYPERIOD_MORNING2,
         DAYPERIOD_AFTERNOON2,
         DAYPERIOD_EVENING2,
         DAYPERIOD_NIGHT2
@@ -47,6 +47,9 @@ public:
     UBool hasMidnight() const { return fHasMidnight; }
     UBool hasNoon() const { return fHasNoon; }
     DayPeriod getDayPeriodForHour(int32_t hour) const { return fDayPeriodForHour[hour]; }
+
+    // Returns the center of dayPeriod. Half hours are indicated with a .5 .
+    double getMidPointForDayPeriod(DayPeriod dayPeriod, UErrorCode &errorCode) const;
 
 private:
     DayPeriodRules();
@@ -62,6 +65,15 @@ private:
     // Returns TRUE if for all i, DayPeriodForHour[i] has a type other than UNKNOWN.
     // Values of HasNoon and HasMidnight do not affect the return value.
     UBool allHoursAreSet();
+
+    // Returns the hour that starts dayPeriod. Returns 0 for MIDNIGHT and 12 for NOON.
+    int32_t getStartHourForDayPeriod(DayPeriod dayPeriod, UErrorCode &errorCode) const;
+
+    // Returns the hour that ends dayPeriod, i.e. that starts the next period.
+    // E.g. if fDayPeriodForHour[13] thru [16] are AFTERNOON1, then this function returns 17 if
+    // queried with AFTERNOON1.
+    // Returns 0 for MIDNIGHT and 12 for NOON.
+    int32_t getEndHourForDayPeriod(DayPeriod dayPeriod, UErrorCode &errorCode) const;
 
     UBool fHasMidnight;
     UBool fHasNoon;

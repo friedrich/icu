@@ -35,7 +35,7 @@ struct DayPeriodRulesData {
 enum CutoffType {
     CUTOFF_TYPE_UNKNOWN = -1,
     CUTOFF_TYPE_BEFORE,
-    CUTOFF_TYPE_AFTER,  // TODO: AFTER is deprecated in the new data.
+    CUTOFF_TYPE_AFTER,  // TODO: AFTER is deprecated in CLDR 29. Remove.
     CUTOFF_TYPE_FROM,
     CUTOFF_TYPE_AT,
 };
@@ -398,6 +398,10 @@ const DayPeriodRules *DayPeriodRules::getInstance(const Locale &locale, UErrorCo
         if (ruleSetNum == 0) {
             // name and parentName can't be the same pointer, so fill in parent then copy to child.
             uloc_getParent(name, parentName, ULOC_FULLNAME_CAPACITY, &errorCode);
+            if (*parentName == '\0') {
+                // Saves a lookup in the hash table.
+                break;
+            }
             uprv_strcpy(name, parentName);
         } else {
             break;
@@ -419,6 +423,84 @@ DayPeriodRules::DayPeriodRules() : fHasMidnight(FALSE), fHasNoon(FALSE) {
     }
 }
 
+double DayPeriodRules::getMidPointForDayPeriod(
+        DayPeriodRules::DayPeriod dayPeriod, UErrorCode &errorCode) const {
+    if (U_FAILURE(errorCode)) { return -1; }
+
+    int32_t startHour = getStartHourForDayPeriod(dayPeriod, errorCode);
+    int32_t endHour = getEndHourForDayPeriod(dayPeriod, errorCode);
+    // Can't obtain startHour or endHour; bail out.
+    if (U_FAILURE(errorCode)) { return -1; }
+
+    double midPoint = (startHour + endHour) / 2.0;
+
+    if (startHour > endHour) {
+        // dayPeriod wraps around midnight. Shift midPoint by 12 hours, in the direction that
+        // lands it in [0, 24).
+        midPoint += 12;
+        if (midPoint >= 24) {
+            midPoint -= 24;
+        }
+    }
+
+    return midPoint;
+}
+
+int32_t DayPeriodRules::getStartHourForDayPeriod(
+        DayPeriodRules::DayPeriod dayPeriod, UErrorCode &errorCode) const {
+    if (U_FAILURE(errorCode)) { return -1; }
+
+    if (dayPeriod == DAYPERIOD_MIDNIGHT) { return 0; }
+    if (dayPeriod == DAYPERIOD_NOON) { return 12; }
+
+    if (fDayPeriodForHour[0] == dayPeriod && fDayPeriodForHour[23] == dayPeriod) {
+        // dayPeriod wraps around midnight. Start hour is later than end hour.
+        for (int32_t i = 22; i >= 1; --i) {
+            if (fDayPeriodForHour[i] != dayPeriod) {
+                return (i + 1);
+            }
+        }
+    } else {
+        for (int32_t i = 0; i <= 23; ++i) {
+            if (fDayPeriodForHour[i] == dayPeriod) {
+                return i;
+            }
+        }
+    }
+
+    // dayPeriod doesn't exist in rule set; set error and exit.
+    errorCode = U_ILLEGAL_ARGUMENT_ERROR;
+    return -1;
+}
+
+int32_t DayPeriodRules::getEndHourForDayPeriod(
+        DayPeriodRules::DayPeriod dayPeriod, UErrorCode &errorCode) const {
+    if (U_FAILURE(errorCode)) { return -1; }
+
+    if (dayPeriod == DAYPERIOD_MIDNIGHT) { return 0; }
+    if (dayPeriod == DAYPERIOD_NOON) { return 12; }
+
+    if (fDayPeriodForHour[0] == dayPeriod && fDayPeriodForHour[23] == dayPeriod) {
+        // dayPeriod wraps around midnight. End hour is before start hour.
+        for (int32_t i = 1; i <= 22; ++i) {
+            if (fDayPeriodForHour[i] != dayPeriod) {
+                // i o'clock is when a new period starts, therefore when the old period ends.
+                return i;
+            }
+        }
+    } else {
+        for (int32_t i = 23; i >= 0; --i) {
+            if (fDayPeriodForHour[i] == dayPeriod) {
+                return (i + 1);
+            }
+        }
+    }
+
+    // dayPeriod doesn't exist in rule set; set error and exit.
+    errorCode = U_ILLEGAL_ARGUMENT_ERROR;
+    return -1;
+}
+
 DayPeriodRules::DayPeriod DayPeriodRules::getDayPeriodFromString(const char *type_str) {
     if (uprv_strcmp(type_str, "midnight") == 0) {
         return DAYPERIOD_MIDNIGHT;
@@ -433,7 +515,7 @@ DayPeriodRules::DayPeriod DayPeriodRules::getDayPeriodFromString(const char *typ
     } else if (uprv_strcmp(type_str, "night1") == 0) {
         return DAYPERIOD_NIGHT1;
     } else if (uprv_strcmp(type_str, "morning2") == 0) {
-        return DAYPERIDO_MORNING2;
+        return DAYPERIOD_MORNING2;
     } else if (uprv_strcmp(type_str, "afternoon2") == 0) {
         return DAYPERIOD_AFTERNOON2;
     } else if (uprv_strcmp(type_str, "evening2") == 0) {
