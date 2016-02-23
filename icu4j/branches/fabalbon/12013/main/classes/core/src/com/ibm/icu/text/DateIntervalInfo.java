@@ -282,7 +282,17 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
 
     // Following is package protected since 
     // it is shared with DateIntervalFormat.
-    private static final String CALENDAR_FIELD_TO_PATTERN_LETTER = "GyMwWdDEFahHmsSz YeugA  ";
+    static final String[] CALENDAR_FIELD_TO_PATTERN_LETTER = 
+    {
+        "G", "y", "M",
+        "w", "W", "d", 
+        "D", "E", "F",
+        "a", "h", "H",
+        "m", "s", "S",  // MINUTE, SECOND, MILLISECOND
+        "z", " ", "Y",  // ZONE_OFFSET, DST_OFFSET, YEAR_WOY
+        "e", "u", "g",  // DOW_LOCAL, EXTENDED_YEAR, JULIAN_DAY
+        "A", " ", " ",  // MILLISECONDS_IN_DAY, IS_LEAP_MONTH.
+    };
 
 
     private static final long serialVersionUID = 1;
@@ -398,18 +408,6 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
     }
 
 
-    /**
-     * Converts a calendar field to a pattern letter.
-     * @param calendarField
-     * @return Pattern letter
-     * @throws IndexOutOfBoundsException
-     */
-    public static String calendarFieldToPatternLetter(int calendarField) 
-            throws IndexOutOfBoundsException {
-        return CALENDAR_FIELD_TO_PATTERN_LETTER.substring(calendarField, calendarField + 1);
-    }
-
-
 
     /**
      * Sink for enumerating all of the date interval skeletons.
@@ -460,7 +458,7 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
                     String lrgDiffCalUnit = patternLetter.toString();
 
                     // Set the interval pattern
-                    setIntervalPatternIfAbsent(currentSkeleton, lrgDiffCalUnit, value);
+                    setIntervalPatternIfAbsent(lrgDiffCalUnit, value);
                 }
             }
 
@@ -480,20 +478,20 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
                 }
 
                 // Replace 'h' for 'H'
-                if (letter == CALENDAR_FIELD_TO_PATTERN_LETTER.charAt(Calendar.HOUR_OF_DAY)) {
-                    patternLetter = calendarFieldToPatternLetter(Calendar.HOUR);
+                if (letter == CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR_OF_DAY].charAt(0)) {
+                    patternLetter = CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR];
                 }
 
                 return patternLetter;
             }
 
             /**
-             * Stores the interval pattern in the internal data structure if it's not present.
-             * @param skeleton
+             * Stores the interval pattern for the current skeleton in the internal data structure
+             * if it's not present.
              * @param lrgDiffCalUnit
              * @param intervalPattern
              */
-            private void setIntervalPatternIfAbsent(String skeleton, String lrgDiffCalUnit, 
+            private void setIntervalPatternIfAbsent(String lrgDiffCalUnit, 
                                                     Value intervalPattern) {
                 // Check if the pattern has already been stored on the data structure.
                 Map<String, PatternInfo> patternsOfOneSkeleton = 
@@ -753,19 +751,19 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
             fIntervalPatternsReadOnly = false;
         }
         PatternInfo ptnInfo = setIntervalPatternInternally(skeleton,
-                          calendarFieldToPatternLetter(lrgDiffCalUnit), 
+                          CALENDAR_FIELD_TO_PATTERN_LETTER[lrgDiffCalUnit], 
                           intervalPattern);
         if ( lrgDiffCalUnit == Calendar.HOUR_OF_DAY ) {
             setIntervalPattern(skeleton, 
-                               calendarFieldToPatternLetter(Calendar.AM_PM),
+                               CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.AM_PM],
                                ptnInfo);
             setIntervalPattern(skeleton, 
-                               calendarFieldToPatternLetter(Calendar.HOUR),
+                               CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.HOUR],
                                ptnInfo);
         } else if ( lrgDiffCalUnit == Calendar.DAY_OF_MONTH ||
                     lrgDiffCalUnit == Calendar.DAY_OF_WEEK ) {
             setIntervalPattern(skeleton, 
-                               calendarFieldToPatternLetter(Calendar.DATE),
+                               CALENDAR_FIELD_TO_PATTERN_LETTER[Calendar.DATE],
                                ptnInfo);
         }
     }
@@ -871,7 +869,7 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
         Map<String, PatternInfo> patternsOfOneSkeleton = fIntervalPatterns.get(skeleton);
         if ( patternsOfOneSkeleton != null ) {
             PatternInfo intervalPattern = patternsOfOneSkeleton.
-                get(calendarFieldToPatternLetter(field));
+                get(CALENDAR_FIELD_TO_PATTERN_LETTER[field]);
             if ( intervalPattern != null ) {
                 return intervalPattern;
             }
