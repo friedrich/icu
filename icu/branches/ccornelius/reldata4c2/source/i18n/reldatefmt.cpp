@@ -70,7 +70,7 @@ public:
     // e.g., Next Tuesday; Yesterday; etc. For third index, 0
     // means past, e.g., 5 days ago; 1 means future, e.g., in 5 days.
     SimpleFormatter *relativeUnitsFormatters[UDAT_STYLE_COUNT]
-      [UDAT_RELATIVE_UNIT_COUNT][2][StandardPlural::COUNT];
+        [UDAT_RELATIVE_UNIT_COUNT][2][StandardPlural::COUNT];
 
     const UnicodeString& getAbsoluteUnitString(int32_t fStyle,
                                                UDateAbsoluteUnit unit,
@@ -299,11 +299,11 @@ struct RelDateTimeFmtDataSink : public ResourceTableSink {
      *
      * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, etc.
      */
-   struct RelDateTimeDetailSink : public ResourceTableSink {
-       RelDateTimeDetailSink(RelDateTimeFmtDataSink &sink) : outer(sink) {}
-       ~RelDateTimeDetailSink();
+    struct RelDateTimeDetailSink : public ResourceTableSink {
+        RelDateTimeDetailSink(RelDateTimeFmtDataSink &sink) : outer(sink) {}
+        ~RelDateTimeDetailSink();
 
-       virtual void put(const char *key, const ResourceValue &value,
+        virtual void put(const char *key, const ResourceValue &value,
                         UErrorCode &errorCode) {
             if (U_FAILURE(errorCode)) { return; }
 
@@ -318,12 +318,12 @@ struct RelDateTimeFmtDataSink : public ResourceTableSink {
              * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, etc.
              */
             int32_t pluralIndex = StandardPlural::indexOrNegativeFromString(key);
-            if (pluralIndex >= 0 && pluralIndex < StandardPlural::COUNT) {
+            if (pluralIndex >= 0) {
                 SimpleFormatter **patterns =
                     outer.outputData.relativeUnitsFormatters[outer.style][outer.relUnitIndex]
                         [outer.pastFutureIndex];
                 // Only set if not already established.
-                if (patterns != NULL && patterns[pluralIndex] == NULL) {
+                if (patterns[pluralIndex] == NULL) {
                     patterns[pluralIndex] = new SimpleFormatter(
                         value.getUnicodeString(errorCode), 0, 1, errorCode);
                     if (patterns[pluralIndex] == NULL) {
@@ -333,7 +333,7 @@ struct RelDateTimeFmtDataSink : public ResourceTableSink {
             }
         }
 
-    RelDateTimeFmtDataSink &outer;
+        RelDateTimeFmtDataSink &outer;
     } relDateTimeDetailSink;
 
     /*
@@ -376,8 +376,14 @@ struct RelDateTimeFmtDataSink : public ResourceTableSink {
 
         virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
             if (U_FAILURE(errorCode)) { return; }
+            int32_t direction = keyToDirection(key);
+            if (direction < 0) {
+                return;
+            }
+
             int32_t relUnitIndex = relUnitFromGeneric(outer.genericUnit);
-            if (relUnitIndex == UDAT_RELATIVE_SECONDS && uprv_strcmp(key, "0") == 0 &&
+            if (relUnitIndex == UDAT_RELATIVE_SECONDS &&
+                    direction == UDAT_DIRECTION_THIS &&
                     outer.outputData.absoluteUnits[outer.style][UDAT_ABSOLUTE_NOW]
                         [UDAT_DIRECTION_PLAIN].isEmpty()) {
                 // Handle "NOW"
@@ -385,10 +391,6 @@ struct RelDateTimeFmtDataSink : public ResourceTableSink {
                     [UDAT_DIRECTION_PLAIN].fastCopyFrom(value.getUnicodeString(errorCode));
             }
 
-            int32_t direction = keyToDirection(key);
-            if (direction < 0) {
-                return;
-            }
             int32_t absUnitIndex = absUnitFromGeneric(outer.genericUnit);
             if (absUnitIndex < 0) {
                 return;
@@ -433,7 +435,7 @@ struct RelDateTimeFmtDataSink : public ResourceTableSink {
 
             // Store displayname if not set.
             if (outer.outputData.absoluteUnits[outer.style]
-                [absUnit][UDAT_DIRECTION_PLAIN].isEmpty()) {
+                    [absUnit][UDAT_DIRECTION_PLAIN].isEmpty()) {
                 outer.outputData.absoluteUnits[outer.style]
                     [absUnit][UDAT_DIRECTION_PLAIN].fastCopyFrom(displayName);
                 return;
@@ -580,7 +582,8 @@ struct RelDateTimeFmtDataSink : public ResourceTableSink {
             const UnicodeString valueStr = value.getAliasUnicodeString(errorCode);
             if (U_SUCCESS(errorCode)) {
                 UDateRelativeDateTimeFormatterStyle sourceStyle= styleFromString(key);
-                UDateRelativeDateTimeFormatterStyle targetStyle = styleFromAliasUnicodeString(valueStr);
+                UDateRelativeDateTimeFormatterStyle targetStyle =
+                    styleFromAliasUnicodeString(valueStr);
 
                 if (sourceStyle == targetStyle) {
                     errorCode = U_INVALID_FORMAT_ERROR;
@@ -603,14 +606,14 @@ struct RelDateTimeFmtDataSink : public ResourceTableSink {
       style= styleFromString(key);
       int32_t unitSize = uprv_strlen(key) - styleSuffixLength(style);
       genericUnit = unitOrNegativeFromString(key, unitSize);
-      if (style >= 0 && style < UDAT_STYLE_COUNT && genericUnit == INVALID_UNIT) {
+      if (style >= 0 && genericUnit == INVALID_UNIT) {
           return NULL;
       }
       return &unitSink;
     }
 };
 
-// Virtual descructors must be defined out of line.
+// Virtual destructors must be defined out of line.
 RelDateTimeFmtDataSink::RelDateTimeDetailSink::~RelDateTimeDetailSink() {};
 RelDateTimeFmtDataSink::RelativeTimeSink::~RelativeTimeSink() {};
 RelDateTimeFmtDataSink::RelativeSink::~RelativeSink() {};
@@ -619,31 +622,29 @@ RelDateTimeFmtDataSink::~RelDateTimeFmtDataSink() {};
 
 } // namespace
 
-// Get days of weeks from the DateFormatSymbols class.
 DateFormatSymbols::DtWidthType styleToDateFormatSymbolWidth[UDAT_STYLE_COUNT] = {
   DateFormatSymbols::WIDE, DateFormatSymbols::SHORT, DateFormatSymbols::NARROW
 };
 
+// Get days of weeks from the DateFormatSymbols class.
 static void loadWeekdayNames(UnicodeString absoluteUnits[UDAT_STYLE_COUNT]
-                      [UDAT_ABSOLUTE_UNIT_COUNT][UDAT_DIRECTION_COUNT],
-                      UErrorCode& status) {
-    DateFormatSymbols* dfSym = new DateFormatSymbols(status);
+                                 [UDAT_ABSOLUTE_UNIT_COUNT][UDAT_DIRECTION_COUNT],
+                             const char* localeId,
+                             UErrorCode& status) {
+    Locale locale(localeId);
+    DateFormatSymbols dfSym(locale, status);
     for (int32_t style = 0; style < UDAT_STYLE_COUNT; ++style) {
         DateFormatSymbols::DtWidthType dtfmtWidth = styleToDateFormatSymbolWidth[style];
         int32_t count;
         const UnicodeString* weekdayNames =
-            dfSym->getWeekdays(count,
-                               DateFormatSymbols::DtContextType::STANDALONE,
-                               dtfmtWidth);
+            dfSym.getWeekdays(count, DateFormatSymbols::DtContextType::STANDALONE, dtfmtWidth);
         for (int32_t dayIndex = UDAT_ABSOLUTE_SUNDAY;
-             dayIndex <= UDAT_ABSOLUTE_SATURDAY; ++ dayIndex) {
-            //
-          int32_t dateSymbolIndex = (dayIndex - UDAT_ABSOLUTE_SUNDAY) + UCAL_SUNDAY;
-          absoluteUnits[style][dayIndex][UDAT_DIRECTION_PLAIN].fastCopyFrom(
-              weekdayNames[dateSymbolIndex]);
+                dayIndex <= UDAT_ABSOLUTE_SATURDAY; ++ dayIndex) {
+            int32_t dateSymbolIndex = (dayIndex - UDAT_ABSOLUTE_SUNDAY) + UCAL_SUNDAY;
+            absoluteUnits[style][dayIndex][UDAT_DIRECTION_PLAIN].fastCopyFrom(
+                weekdayNames[dateSymbolIndex]);
         }
     }
-    delete dfSym;
 }
 
 static UBool loadUnitData(
@@ -655,7 +656,7 @@ static UBool loadUnitData(
     ures_getAllTableItemsWithFallback(resource, "fields", sink, status);
 
     // Get the weekday names from DateFormatSymbols.
-    loadWeekdayNames(cacheData.absoluteUnits, status);
+    loadWeekdayNames(cacheData.absoluteUnits, localeId, status);
     return U_SUCCESS(status);
 }
 
@@ -683,7 +684,7 @@ static UBool getDateTimePattern(
     }
     int32_t size = ures_getSize(topLevel.getAlias());
     if (size <= 8) {
-        // Oops, size is to small to access the index that we want, fallback
+        // Oops, size is too small to access the index that we want, fallback
         // to a hard-coded value.
         result = UNICODE_STRING_SIMPLE("{1} {0}");
         return TRUE;
@@ -875,8 +876,7 @@ UnicodeString& RelativeDateTimeFormatter::format(
         status = U_INVALID_FORMAT_ERROR;
         return appendTo;
     }
-    UnicodeString emptyString("");
-    result = formatter->format(formattedNumber, emptyString, status);
+    result = formatter->format(formattedNumber, result, status);
     adjustForContext(result);
     return appendTo.append(result);
 }
@@ -975,7 +975,8 @@ UnicodeString& RelativeDateTimeFormatter::format(
         default: break;
     }
     if (direction != UDAT_DIRECTION_COUNT && absunit != UDAT_ABSOLUTE_UNIT_COUNT) {
-        UnicodeString unitFormatString = fCache->getAbsoluteUnitString(fStyle, absunit, direction);
+        const UnicodeString &unitFormatString =
+            fCache->getAbsoluteUnitString(fStyle, absunit, direction);
         if (!unitFormatString.isEmpty()) {
             if (fOptBreakIterator != NULL) {
                 UnicodeString result(unitFormatString);
