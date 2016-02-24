@@ -606,7 +606,7 @@ struct RelDateTimeFmtDataSink : public ResourceTableSink {
       style= styleFromString(key);
       int32_t unitSize = uprv_strlen(key) - styleSuffixLength(style);
       genericUnit = unitOrNegativeFromString(key, unitSize);
-      if (style >= 0 || genericUnit == INVALID_UNIT) {
+      if (style < 0 || genericUnit == INVALID_UNIT) {
           return NULL;
       }
       return &unitSink;
