@@ -876,7 +876,7 @@ UnicodeString& RelativeDateTimeFormatter::format(
         status = U_INVALID_FORMAT_ERROR;
         return appendTo;
     }
-    result = formatter->format(formattedNumber, result, status);
+    formatter->format(formattedNumber, result, status);
     adjustForContext(result);
     return appendTo.append(result);
 }
