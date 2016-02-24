@@ -4,7 +4,7 @@
 #
 # file:  word_POSIX.txt
 #
-# ICU Word Break Rules
+# ICU Word Break Rules, POSIX locale.
 #      See Unicode Standard Annex #29.
 #      These rules are based on UAX #29 Revision 27 for Unicode Version 8.0
 #      with additions from L2/16-011R3 for Emoji sequences.
