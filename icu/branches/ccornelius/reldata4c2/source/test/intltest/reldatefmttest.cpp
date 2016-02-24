@@ -1,7 +1,7 @@
 /*
 *******************************************************************************
-* Copyright (C) 2013-2016, International Business Machines Corporation and    *
-* others. All Rights Reserved.                                                *
+* Copyright (C) 2013-2016, International Business Machines Corporation and
+* others. All Rights Reserved.
 *******************************************************************************
 *
 * File RELDATEFMTTEST.CPP
