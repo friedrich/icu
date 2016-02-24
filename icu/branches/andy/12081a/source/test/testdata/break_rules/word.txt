@@ -28,7 +28,7 @@ ExtendNumLet       = [\p{Word_Break = ExtendNumLet}];
 Han            = [:Han:];
 Hiragana       = [:Hiragana:];
 
-Control        = [\p{Grapheme_Cluster_Break = Control}]; 
+Control        = [\p{Grapheme_Cluster_Break = Control}];
 HangulSyllable = [\uac00-\ud7a3];
 ComplexContext = [:LineBreak = Complex_Context:];
 KanaKanji      = [Han Hiragana Katakana];
