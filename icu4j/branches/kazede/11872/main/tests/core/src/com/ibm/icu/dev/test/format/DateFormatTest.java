@@ -64,228 +64,7 @@ public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         new DateFormatTest().run(args);
     }
 
-    public void TestAmPmMidnightNoon() {
-        // Some times on 2015-11-13.
-        long k000000 = 1447372800000L;
-        long k000030 = 1447372830000L;
-        long k003000 = 1447374600000L;
-        long k060000 = 1447394400000L;
-        long k120000 = 1447416000000L;
-        long k180000 = 1447437600000L;
 
-        // Short.
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss bbb");
-        sdf.setTimeZone(TimeZone.GMT_ZONE);
-
-        assertEquals("hh:mm:ss bbbb | 00:00:00", "12:00:00 midnight", sdf.format(k000000));
-        assertEquals("hh:mm:ss bbbb | 00:00:30", "12:00:30 AM", sdf.format(k000030));
-        assertEquals("hh:mm:ss bbbb | 00:30:00", "12:30:00 AM", sdf.format(k003000));
-        assertEquals("hh:mm:ss bbbb | 06:00:00", "06:00:00 AM", sdf.format(k060000));
-        assertEquals("hh:mm:ss bbbb | 12:00:00", "12:00:00 noon", sdf.format(k120000));
-        assertEquals("hh:mm:ss bbbb | 18:00:00", "06:00:00 PM", sdf.format(k180000));
-
-        sdf.applyPattern("hh:mm bbb");
-
-        assertEquals("hh:mm bbb | 00:00:00", "12:00 midnight", sdf.format(k000000));
-        assertEquals("hh:mm bbb | 00:00:30", "12:00 midnight", sdf.format(k000030));
-        assertEquals("hh:mm bbb | 00:30:00", "12:30 AM", sdf.format(k003000));
-
-        sdf.applyPattern("hh bbb");
-
-        assertEquals("hh bbb | 00:00:00", "12 midnight", sdf.format(k000000));
-        assertEquals("hh bbb | 00:00:30", "12 midnight", sdf.format(k000030));
-        assertEquals("hh bbb | 00:30:00", "12 midnight", sdf.format(k003000));
-
-        // Wide.
-        sdf.applyPattern("hh:mm:ss bbbb");
-
-        assertEquals("hh:mm:ss bbbb | 00:00:00", "12:00:00 midnight", sdf.format(k000000));
-        assertEquals("hh:mm:ss bbbb | 00:00:30", "12:00:30 AM", sdf.format(k000030));
-        assertEquals("hh:mm:ss bbbb | 00:30:00", "12:30:00 AM", sdf.format(k003000));
-        assertEquals("hh:mm:ss bbbb | 06:00:00", "06:00:00 AM", sdf.format(k060000));
-        assertEquals("hh:mm:ss bbbb | 12:00:00", "12:00:00 noon", sdf.format(k120000));
-        assertEquals("hh:mm:ss bbbb | 18:00:00", "06:00:00 PM", sdf.format(k180000));
-
-        sdf.applyPattern("hh:mm bbbb");
-
-        assertEquals("hh:mm bbbb | 00:00:00", "12:00 midnight", sdf.format(k000000));
-        assertEquals("hh:mm bbbb | 00:00:30", "12:00 midnight", sdf.format(k000030));
-        assertEquals("hh:mm bbbb | 00:30:00", "12:30 AM", sdf.format(k003000));
-
-        sdf.applyPattern("hh bbbb");
-        assertEquals("hh bbbb | 00:00:00", "12 midnight", sdf.format(k000000));
-        assertEquals("hh bbbb | 00:00:30", "12 midnight", sdf.format(k000030));
-        assertEquals("hh bbbb | 00:30:00", "12 midnight", sdf.format(k003000));
-
-        // Narrow.
-        sdf.applyPattern("hh:mm:ss bbbbb");
-
-        assertEquals("hh:mm:ss bbbbb | 00:00:00", "12:00:00 mi", sdf.format(k000000));
-        assertEquals("hh:mm:ss bbbbb | 00:00:30", "12:00:30 a", sdf.format(k000030));
-        assertEquals("hh:mm:ss bbbbb | 00:30:00", "12:30:00 a", sdf.format(k003000));
-        assertEquals("hh:mm:ss bbbbb | 06:00:00", "06:00:00 a", sdf.format(k060000));
-        assertEquals("hh:mm:ss bbbbb | 12:00:00", "12:00:00 n", sdf.format(k120000));
-        assertEquals("hh:mm:ss bbbbb | 18:00:00", "06:00:00 p", sdf.format(k180000));
-
-        sdf.applyPattern("hh:mm bbbbb");
-
-        assertEquals("hh:mm bbbbb | 00:00:00", "12:00 mi", sdf.format(k000000));
-        assertEquals("hh:mm bbbbb | 00:00:30", "12:00 mi", sdf.format(k000030));
-        assertEquals("hh:mm bbbbb | 00:30:00", "12:30 a", sdf.format(k003000));
-
-        sdf.applyPattern("hh bbbbb");
-
-        assertEquals("hh bbbbb | 00:00:00", "12 mi", sdf.format(k000000));
-        assertEquals("hh bbbbb | 00:00:30", "12 mi", sdf.format(k000030));
-        assertEquals("hh bbbbb | 00:30:00", "12 mi", sdf.format(k003000));
-    }
-
-    public void TestFlexibleDayPeriod() {
-        // Some times on 2015-11-13.
-        long k000000 = 1447372800000L;
-        long k000030 = 1447372830000L;
-        long k003000 = 1447374600000L;
-        long k060000 = 1447394400000L;
-        long k120000 = 1447416000000L;
-        long k180000 = 1447437600000L;
-
-        // Short.
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss BBB");
-        sdf.setTimeZone(TimeZone.GMT_ZONE);
-
-        assertEquals("hh:mm:ss BBB | 00:00:00", "12:00:00 midnight", sdf.format(k000000));
-        assertEquals("hh:mm:ss BBB | 00:00:30", "12:00:30 at night", sdf.format(k000030));
-        assertEquals("hh:mm:ss BBB | 00:30:00", "12:30:00 at night", sdf.format(k003000));
-        assertEquals("hh:mm:ss BBB | 06:00:00", "06:00:00 in the morning", sdf.format(k060000));
-        assertEquals("hh:mm:ss BBB | 12:00:00", "12:00:00 noon", sdf.format(k120000));
-        assertEquals("hh:mm:ss BBB | 18:00:00", "06:00:00 in the evening", sdf.format(k180000));
-
-        sdf.applyPattern("hh:mm BBB");
-
-        assertEquals("hh:mm BBB | 00:00:00", "12:00 midnight", sdf.format(k000000));
-        assertEquals("hh:mm BBB | 00:00:30", "12:00 midnight", sdf.format(k000030));
-        assertEquals("hh:mm BBB | 00:30:00", "12:30 at night", sdf.format(k003000));
-
-        sdf.applyPattern("hh BBB");
-
-        assertEquals("hh BBB | 00:00:00", "12 midnight", sdf.format(k000000));
-        assertEquals("hh BBB | 00:00:30", "12 midnight", sdf.format(k000030));
-        assertEquals("hh BBB | 00:30:00", "12 midnight", sdf.format(k003000));
-
-        // Wide
-        sdf.applyPattern("hh:mm:ss BBBB");
-
-        assertEquals("hh:mm:ss BBBB | 00:00:00", "12:00:00 midnight", sdf.format(k000000));
-        assertEquals("hh:mm:ss BBBB | 00:00:30", "12:00:30 at night", sdf.format(k000030));
-        assertEquals("hh:mm:ss BBBB | 00:30:00", "12:30:00 at night", sdf.format(k003000));
-        assertEquals("hh:mm:ss BBBB | 06:00:00", "06:00:00 in the morning", sdf.format(k060000));
-        assertEquals("hh:mm:ss BBBB | 12:00:00", "12:00:00 noon", sdf.format(k120000));
-        assertEquals("hh:mm:ss BBBB | 18:00:00", "06:00:00 in the evening", sdf.format(k180000));
-
-        sdf.applyPattern("hh:mm BBBB");
-
-        assertEquals("hh:mm BBBB | 00:00:00", "12:00 midnight", sdf.format(k000000));
-        assertEquals("hh:mm BBBB | 00:00:30", "12:00 midnight", sdf.format(k000030));
-        assertEquals("hh:mm BBBB | 00:30:00", "12:30 at night", sdf.format(k003000));
-
-        sdf.applyPattern("hh BBBB");
-
-        assertEquals("hh BBBB | 00:00:00", "12 midnight", sdf.format(k000000));
-        assertEquals("hh BBBB | 00:00:30", "12 midnight", sdf.format(k000030));
-        assertEquals("hh BBBB | 00:30:00", "12 midnight", sdf.format(k003000));
-
-        // Narrow
-        sdf.applyPattern("hh:mm:ss BBBBB");
-
-        assertEquals("hh:mm:ss BBBBB | 00:00:00", "12:00:00 mi", sdf.format(k000000));
-        assertEquals("hh:mm:ss BBBBB | 00:00:30", "12:00:30 at night", sdf.format(k000030));
-        assertEquals("hh:mm:ss BBBBB | 00:30:00", "12:30:00 at night", sdf.format(k003000));
-        assertEquals("hh:mm:ss BBBBB | 06:00:00", "06:00:00 in the morning", sdf.format(k060000));
-        assertEquals("hh:mm:ss BBBBB | 12:00:00", "12:00:00 n", sdf.format(k120000));
-        assertEquals("hh:mm:ss BBBBB | 18:00:00", "06:00:00 in the evening", sdf.format(k180000));
-
-        sdf.applyPattern("hh:mm BBBBB");
-
-        assertEquals("hh:mm BBBBB | 00:00:00", "12:00 mi", sdf.format(k000000));
-        assertEquals("hh:mm BBBBB | 00:00:30", "12:00 mi", sdf.format(k000030));
-        assertEquals("hh:mm BBBBB | 00:30:00", "12:30 at night", sdf.format(k003000));
-
-        sdf.applyPattern("hh BBBBB");
-
-        assertEquals("hh BBBBB | 00:00:00", "12 mi", sdf.format(k000000));
-        assertEquals("hh BBBBB | 00:00:30", "12 mi", sdf.format(k000030));
-        assertEquals("hh BBBBB | 00:30:00", "12 mi", sdf.format(k003000));
-    }
-
-    public void TestDayPeriodWithLocales() {
-        // Some times on 2015-11-13 (UTC+0).
-        long k000000 = 1447372800000L;
-        long k010000 = 1447376400000L;
-        long k120000 = 1447416000000L;
-        long k220000 = 1447452000000L;
-
-        // Locale de has a word for midnight, but not noon.
-        SimpleDateFormat sdf = new SimpleDateFormat("", ULocale.GERMANY);
-        sdf.setTimeZone(TimeZone.GMT_ZONE);
-
-        sdf.applyPattern("hh:mm:ss bbbb");
-
-        assertEquals("hh:mm:ss bbbb | 00:00:00 | de", "12:00:00 Mitternacht", sdf.format(k000000));
-        assertEquals("hh:mm:ss bbbb | 12:00:00 | de", "12:00:00 nachm.", sdf.format(k120000));
-
-        // Locale ee has a rule that wraps around midnight (21h - 4h).
-        sdf = new SimpleDateFormat("", new ULocale("ee"));
-        sdf.setTimeZone(TimeZone.GMT_ZONE);
-
-        sdf.applyPattern("hh:mm:ss BBBB");
-
-        assertEquals("hh:mm:ss BBBB | 22:00:00 | ee", "10:00:00 zã", sdf.format(k220000));
-        assertEquals("hh:mm:ss BBBB | 00:00:00 | ee", "12:00:00 zã", sdf.format(k000000));
-        assertEquals("hh:mm:ss BBBB | 01:00:00 | ee", "01:00:00 zã", sdf.format(k010000));
-
-        // Locale root has rules for AM/PM only.
-        sdf = new SimpleDateFormat("", new ULocale("root"));
-        sdf.setTimeZone(TimeZone.GMT_ZONE);
-
-        sdf.applyPattern("hh:mm:ss BBBB");
-
-        assertEquals("hh:mm:ss BBBB | 00:00:00 | root", "12:00:00 AM", sdf.format(k000000));
-        assertEquals("hh:mm:ss BBBB | 12:00:00 | root", "12:00:00 PM", sdf.format(k120000));
-
-        // Empty string should behave exactly as root.
-        sdf = new SimpleDateFormat("", new ULocale(""));
-        sdf.setTimeZone(TimeZone.GMT_ZONE);
-
-        sdf.applyPattern("hh:mm:ss BBBB");
-
-        assertEquals("hh:mm:ss BBBB | 00:00:00 | \"\" (root)", "12:00:00 AM", sdf.format(k000000));
-        assertEquals("hh:mm:ss BBBB | 12:00:00 | \"\" (root)", "12:00:00 PM", sdf.format(k120000));
-
-        // Locale en_US should fall back to en.
-        sdf = new SimpleDateFormat("", new ULocale("en_US"));
-        sdf.setTimeZone(TimeZone.GMT_ZONE);
-
-        sdf.applyPattern("hh:mm:ss BBBB");
-
-        assertEquals("hh:mm:ss BBBB | 00:00:00 | en_US", "12:00:00 midnight", sdf.format(k000000));
-        assertEquals("hh:mm:ss BBBB | 01:00:00 | en_US", "01:00:00 at night", sdf.format(k010000));
-        assertEquals("hh:mm:ss BBBB | 12:00:00 | en_US", "12:00:00 noon", sdf.format(k120000));
-
-        // Locale es_CO should not fall back to es and should have a
-        // different string for 1 in the morning.
-        // (es_CO: "de la mañana" vs. es: "de la madrugada")
-        sdf = new SimpleDateFormat("", new ULocale("es_CO"));
-        sdf.setTimeZone(TimeZone.GMT_ZONE);
-
-        sdf.applyPattern("hh:mm:ss BBBB");
-        assertEquals("hh:mm:ss BBBB | 01:00:00 | es_CO", "01:00:00 de la mañana", sdf.format(k010000));
-
-        sdf = new SimpleDateFormat("", new ULocale("es"));
-        sdf.setTimeZone(TimeZone.GMT_ZONE);
-
-        sdf.applyPattern("hh:mm:ss BBBB");
-        assertEquals("hh:mm:ss BBBB | 01:00:00 | es", "01:00:00 de la madrugada", sdf.format(k010000));
-    }
 
     /**
      * Verify that patterns have the correct values and could produce the
@@ -5035,5 +4814,407 @@ public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         assertTrue("ALLOW_WHITESPACE after setLenient(TRUE)", fmt.getBooleanAttribute(BooleanAttribute.PARSE_ALLOW_WHITESPACE));
         assertTrue("ALLOW_NUMERIC after setLenient(TRUE)", fmt.getBooleanAttribute(BooleanAttribute.PARSE_ALLOW_NUMERIC));
 
+    }
+
+    public void TestAmPmMidnightNoon() {
+        // Some times on 2015-11-13.
+        long k000000 = 1447372800000L;
+        long k000030 = 1447372830000L;
+        long k003000 = 1447374600000L;
+        long k060000 = 1447394400000L;
+        long k120000 = 1447416000000L;
+        long k180000 = 1447437600000L;
+
+        // Short.
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss bbb");
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        assertEquals("hh:mm:ss bbbb | 00:00:00", "12:00:00 midnight", sdf.format(k000000));
+        assertEquals("hh:mm:ss bbbb | 00:00:30", "12:00:30 AM", sdf.format(k000030));
+        assertEquals("hh:mm:ss bbbb | 00:30:00", "12:30:00 AM", sdf.format(k003000));
+        assertEquals("hh:mm:ss bbbb | 06:00:00", "06:00:00 AM", sdf.format(k060000));
+        assertEquals("hh:mm:ss bbbb | 12:00:00", "12:00:00 noon", sdf.format(k120000));
+        assertEquals("hh:mm:ss bbbb | 18:00:00", "06:00:00 PM", sdf.format(k180000));
+
+        sdf.applyPattern("hh:mm bbb");
+
+        assertEquals("hh:mm bbb | 00:00:00", "12:00 midnight", sdf.format(k000000));
+        assertEquals("hh:mm bbb | 00:00:30", "12:00 midnight", sdf.format(k000030));
+        assertEquals("hh:mm bbb | 00:30:00", "12:30 AM", sdf.format(k003000));
+
+        sdf.applyPattern("hh bbb");
+
+        assertEquals("hh bbb | 00:00:00", "12 midnight", sdf.format(k000000));
+        assertEquals("hh bbb | 00:00:30", "12 midnight", sdf.format(k000030));
+        assertEquals("hh bbb | 00:30:00", "12 midnight", sdf.format(k003000));
+
+        // Wide.
+        sdf.applyPattern("hh:mm:ss bbbb");
+
+        assertEquals("hh:mm:ss bbbb | 00:00:00", "12:00:00 midnight", sdf.format(k000000));
+        assertEquals("hh:mm:ss bbbb | 00:00:30", "12:00:30 AM", sdf.format(k000030));
+        assertEquals("hh:mm:ss bbbb | 00:30:00", "12:30:00 AM", sdf.format(k003000));
+        assertEquals("hh:mm:ss bbbb | 06:00:00", "06:00:00 AM", sdf.format(k060000));
+        assertEquals("hh:mm:ss bbbb | 12:00:00", "12:00:00 noon", sdf.format(k120000));
+        assertEquals("hh:mm:ss bbbb | 18:00:00", "06:00:00 PM", sdf.format(k180000));
+
+        sdf.applyPattern("hh:mm bbbb");
+
+        assertEquals("hh:mm bbbb | 00:00:00", "12:00 midnight", sdf.format(k000000));
+        assertEquals("hh:mm bbbb | 00:00:30", "12:00 midnight", sdf.format(k000030));
+        assertEquals("hh:mm bbbb | 00:30:00", "12:30 AM", sdf.format(k003000));
+
+        sdf.applyPattern("hh bbbb");
+        assertEquals("hh bbbb | 00:00:00", "12 midnight", sdf.format(k000000));
+        assertEquals("hh bbbb | 00:00:30", "12 midnight", sdf.format(k000030));
+        assertEquals("hh bbbb | 00:30:00", "12 midnight", sdf.format(k003000));
+
+        // Narrow.
+        sdf.applyPattern("hh:mm:ss bbbbb");
+
+        assertEquals("hh:mm:ss bbbbb | 00:00:00", "12:00:00 mi", sdf.format(k000000));
+        assertEquals("hh:mm:ss bbbbb | 00:00:30", "12:00:30 a", sdf.format(k000030));
+        assertEquals("hh:mm:ss bbbbb | 00:30:00", "12:30:00 a", sdf.format(k003000));
+        assertEquals("hh:mm:ss bbbbb | 06:00:00", "06:00:00 a", sdf.format(k060000));
+        assertEquals("hh:mm:ss bbbbb | 12:00:00", "12:00:00 n", sdf.format(k120000));
+        assertEquals("hh:mm:ss bbbbb | 18:00:00", "06:00:00 p", sdf.format(k180000));
+
+        sdf.applyPattern("hh:mm bbbbb");
+
+        assertEquals("hh:mm bbbbb | 00:00:00", "12:00 mi", sdf.format(k000000));
+        assertEquals("hh:mm bbbbb | 00:00:30", "12:00 mi", sdf.format(k000030));
+        assertEquals("hh:mm bbbbb | 00:30:00", "12:30 a", sdf.format(k003000));
+
+        sdf.applyPattern("hh bbbbb");
+
+        assertEquals("hh bbbbb | 00:00:00", "12 mi", sdf.format(k000000));
+        assertEquals("hh bbbbb | 00:00:30", "12 mi", sdf.format(k000030));
+        assertEquals("hh bbbbb | 00:30:00", "12 mi", sdf.format(k003000));
+    }
+
+    public void TestFlexibleDayPeriod() {
+        // Some times on 2015-11-13.
+        long k000000 = 1447372800000L;
+        long k000030 = 1447372830000L;
+        long k003000 = 1447374600000L;
+        long k060000 = 1447394400000L;
+        long k120000 = 1447416000000L;
+        long k180000 = 1447437600000L;
+
+        // Short.
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss BBB");
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        assertEquals("hh:mm:ss BBB | 00:00:00", "12:00:00 midnight", sdf.format(k000000));
+        assertEquals("hh:mm:ss BBB | 00:00:30", "12:00:30 at night", sdf.format(k000030));
+        assertEquals("hh:mm:ss BBB | 00:30:00", "12:30:00 at night", sdf.format(k003000));
+        assertEquals("hh:mm:ss BBB | 06:00:00", "06:00:00 in the morning", sdf.format(k060000));
+        assertEquals("hh:mm:ss BBB | 12:00:00", "12:00:00 noon", sdf.format(k120000));
+        assertEquals("hh:mm:ss BBB | 18:00:00", "06:00:00 in the evening", sdf.format(k180000));
+
+        sdf.applyPattern("hh:mm BBB");
+
+        assertEquals("hh:mm BBB | 00:00:00", "12:00 midnight", sdf.format(k000000));
+        assertEquals("hh:mm BBB | 00:00:30", "12:00 midnight", sdf.format(k000030));
+        assertEquals("hh:mm BBB | 00:30:00", "12:30 at night", sdf.format(k003000));
+
+        sdf.applyPattern("hh BBB");
+
+        assertEquals("hh BBB | 00:00:00", "12 midnight", sdf.format(k000000));
+        assertEquals("hh BBB | 00:00:30", "12 midnight", sdf.format(k000030));
+        assertEquals("hh BBB | 00:30:00", "12 midnight", sdf.format(k003000));
+
+        // Wide
+        sdf.applyPattern("hh:mm:ss BBBB");
+
+        assertEquals("hh:mm:ss BBBB | 00:00:00", "12:00:00 midnight", sdf.format(k000000));
+        assertEquals("hh:mm:ss BBBB | 00:00:30", "12:00:30 at night", sdf.format(k000030));
+        assertEquals("hh:mm:ss BBBB | 00:30:00", "12:30:00 at night", sdf.format(k003000));
+        assertEquals("hh:mm:ss BBBB | 06:00:00", "06:00:00 in the morning", sdf.format(k060000));
+        assertEquals("hh:mm:ss BBBB | 12:00:00", "12:00:00 noon", sdf.format(k120000));
+        assertEquals("hh:mm:ss BBBB | 18:00:00", "06:00:00 in the evening", sdf.format(k180000));
+
+        sdf.applyPattern("hh:mm BBBB");
+
+        assertEquals("hh:mm BBBB | 00:00:00", "12:00 midnight", sdf.format(k000000));
+        assertEquals("hh:mm BBBB | 00:00:30", "12:00 midnight", sdf.format(k000030));
+        assertEquals("hh:mm BBBB | 00:30:00", "12:30 at night", sdf.format(k003000));
+
+        sdf.applyPattern("hh BBBB");
+
+        assertEquals("hh BBBB | 00:00:00", "12 midnight", sdf.format(k000000));
+        assertEquals("hh BBBB | 00:00:30", "12 midnight", sdf.format(k000030));
+        assertEquals("hh BBBB | 00:30:00", "12 midnight", sdf.format(k003000));
+
+        // Narrow
+        sdf.applyPattern("hh:mm:ss BBBBB");
+
+        assertEquals("hh:mm:ss BBBBB | 00:00:00", "12:00:00 mi", sdf.format(k000000));
+        assertEquals("hh:mm:ss BBBBB | 00:00:30", "12:00:30 at night", sdf.format(k000030));
+        assertEquals("hh:mm:ss BBBBB | 00:30:00", "12:30:00 at night", sdf.format(k003000));
+        assertEquals("hh:mm:ss BBBBB | 06:00:00", "06:00:00 in the morning", sdf.format(k060000));
+        assertEquals("hh:mm:ss BBBBB | 12:00:00", "12:00:00 n", sdf.format(k120000));
+        assertEquals("hh:mm:ss BBBBB | 18:00:00", "06:00:00 in the evening", sdf.format(k180000));
+
+        sdf.applyPattern("hh:mm BBBBB");
+
+        assertEquals("hh:mm BBBBB | 00:00:00", "12:00 mi", sdf.format(k000000));
+        assertEquals("hh:mm BBBBB | 00:00:30", "12:00 mi", sdf.format(k000030));
+        assertEquals("hh:mm BBBBB | 00:30:00", "12:30 at night", sdf.format(k003000));
+
+        sdf.applyPattern("hh BBBBB");
+
+        assertEquals("hh BBBBB | 00:00:00", "12 mi", sdf.format(k000000));
+        assertEquals("hh BBBBB | 00:00:30", "12 mi", sdf.format(k000030));
+        assertEquals("hh BBBBB | 00:30:00", "12 mi", sdf.format(k003000));
+    }
+
+    public void TestDayPeriodWithLocales() {
+        // Some times on 2015-11-13 (UTC+0).
+        long k000000 = 1447372800000L;
+        long k010000 = 1447376400000L;
+        long k120000 = 1447416000000L;
+        long k220000 = 1447452000000L;
+
+        // Locale de has a word for midnight, but not noon.
+        SimpleDateFormat sdf = new SimpleDateFormat("", ULocale.GERMANY);
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        sdf.applyPattern("hh:mm:ss bbbb");
+
+        assertEquals("hh:mm:ss bbbb | 00:00:00 | de", "12:00:00 Mitternacht", sdf.format(k000000));
+        assertEquals("hh:mm:ss bbbb | 12:00:00 | de", "12:00:00 nachm.", sdf.format(k120000));
+
+        // Locale ee has a rule that wraps around midnight (21h - 4h).
+        sdf = new SimpleDateFormat("", new ULocale("ee"));
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        sdf.applyPattern("hh:mm:ss BBBB");
+
+        assertEquals("hh:mm:ss BBBB | 22:00:00 | ee", "10:00:00 zã", sdf.format(k220000));
+        assertEquals("hh:mm:ss BBBB | 00:00:00 | ee", "12:00:00 zã", sdf.format(k000000));
+        assertEquals("hh:mm:ss BBBB | 01:00:00 | ee", "01:00:00 zã", sdf.format(k010000));
+
+        // Locale root has rules for AM/PM only.
+        sdf = new SimpleDateFormat("", new ULocale("root"));
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        sdf.applyPattern("hh:mm:ss BBBB");
+
+        assertEquals("hh:mm:ss BBBB | 00:00:00 | root", "12:00:00 AM", sdf.format(k000000));
+        assertEquals("hh:mm:ss BBBB | 12:00:00 | root", "12:00:00 PM", sdf.format(k120000));
+
+        // Empty string should behave exactly as root.
+        sdf = new SimpleDateFormat("", new ULocale(""));
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        sdf.applyPattern("hh:mm:ss BBBB");
+
+        assertEquals("hh:mm:ss BBBB | 00:00:00 | \"\" (root)", "12:00:00 AM", sdf.format(k000000));
+        assertEquals("hh:mm:ss BBBB | 12:00:00 | \"\" (root)", "12:00:00 PM", sdf.format(k120000));
+
+        // Locale en_US should fall back to en.
+        sdf = new SimpleDateFormat("", new ULocale("en_US"));
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        sdf.applyPattern("hh:mm:ss BBBB");
+
+        assertEquals("hh:mm:ss BBBB | 00:00:00 | en_US", "12:00:00 midnight", sdf.format(k000000));
+        assertEquals("hh:mm:ss BBBB | 01:00:00 | en_US", "01:00:00 at night", sdf.format(k010000));
+        assertEquals("hh:mm:ss BBBB | 12:00:00 | en_US", "12:00:00 noon", sdf.format(k120000));
+
+        // Locale es_CO should not fall back to es and should have a
+        // different string for 1 in the morning.
+        // (es_CO: "de la mañana" vs. es: "de la madrugada")
+        sdf = new SimpleDateFormat("", new ULocale("es_CO"));
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        sdf.applyPattern("hh:mm:ss BBBB");
+        assertEquals("hh:mm:ss BBBB | 01:00:00 | es_CO", "01:00:00 de la mañana", sdf.format(k010000));
+
+        sdf = new SimpleDateFormat("", new ULocale("es"));
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        sdf.applyPattern("hh:mm:ss BBBB");
+        assertEquals("hh:mm:ss BBBB | 01:00:00 | es", "01:00:00 de la madrugada", sdf.format(k010000));
+    }
+
+    public void TestMinuteSecondFieldsInOddPlaces() {
+        // Some times on 2015-11-13 (UTC+0).
+        long k000000 = 1447372800000L;
+        long k000030 = 1447372830000L;
+        long k003000 = 1447374600000L;
+        long k060030 = 1447394430000L;
+        long k063000 = 1447396200000L;
+
+        // Apply pattern through constructor to make sure parsePattern() is called during initialization.
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm 'ss' bbbb");
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        // Seconds field is not present.
+        assertEquals("hh:mm 'ss' bbbb | 00:00:30", "12:00 ss midnight", sdf.format(k000030));
+        assertEquals("hh:mm 'ss' bbbb | 06:00:30", "06:00 ss AM", sdf.format(k060030));
+
+        sdf.applyPattern("hh:mm 'ss' BBBB");
+
+        assertEquals("hh:mm 'ss' BBBB | 00:00:30", "12:00 ss midnight", sdf.format(k000030));
+        assertEquals("hh:mm 'ss' BBBB | 06:00:30", "06:00 ss in the morning", sdf.format(k060030));
+
+        // Minutes field is not present.
+        sdf.applyPattern("hh 'mm ss' bbbb");
+
+        assertEquals("hh 'mm ss' bbbb | 00:30:00", "12 mm ss midnight", sdf.format(k003000));
+        assertEquals("hh 'mm ss' bbbb | 06:30:00", "06 mm ss AM", sdf.format(k063000));
+
+        sdf.applyPattern("hh 'mm ss' BBBB");
+
+        assertEquals("hh 'mm ss' BBBB | 00:30:00", "12 mm ss midnight", sdf.format(k003000));
+        assertEquals("hh 'mm ss' BBBB | 06:30:00", "06 mm ss in the morning", sdf.format(k063000));
+
+        // Minutes and seconds fields appear after day periods.
+        sdf.applyPattern("bbbb hh:mm:ss");
+
+        assertEquals("bbbb hh:mm:ss | 00:00:00", "midnight 12:00:00", sdf.format(k000000));
+        assertEquals("bbbb hh:mm:ss | 00:00:30", "AM 12:00:30", sdf.format(k000030));
+        assertEquals("bbbb hh:mm:ss | 00:30:00", "AM 12:30:00", sdf.format(k003000));
+
+        sdf.applyPattern("BBBB hh:mm:ss");
+
+        assertEquals("BBBB hh:mm:ss | 00:00:00", "midnight 12:00:00", sdf.format(k000000));
+        assertEquals("BBBB hh:mm:ss | 00:00:30", "at night 12:00:30", sdf.format(k000030));
+        assertEquals("BBBB hh:mm:ss | 00:30:00", "at night 12:30:00", sdf.format(k003000));
+
+        // Confirm applyPattern() reparses the pattern string.
+        sdf.applyPattern("BBBB hh");
+        assertEquals("BBBB hh | 00:00:30", "midnight 12", sdf.format(k000030));
+
+        sdf.applyPattern("BBBB hh:mm:'ss'");
+        assertEquals("BBBB hh:mm:'ss' | 00:00:30", "midnight 12:00:ss", sdf.format(k000030));
+
+        sdf.applyPattern("BBBB hh:mm:ss");
+        assertEquals("BBBB hh:mm:ss | 00:00:30", "at night 12:00:30", sdf.format(k000030));
+    }
+
+    public void TestDayPeriodParsing() throws ParseException {
+        // Some times on 2015-11-13 (UTC+0).
+        Date k000000 = new Date(1447372800000L);
+        Date k003700 = new Date(1447375020000L);
+        Date k010000 = new Date(1447376400000L);
+        Date k013000 = new Date(1447378200000L);
+        Date k030000 = new Date(1447383600000L);
+        Date k090000 = new Date(1447405200000L);
+        Date k120000 = new Date(1447416000000L);
+        Date k130000 = new Date(1447419600000L);
+        Date k133700 = new Date(1447421820000L);
+        Date k150000 = new Date(1447426800000L);
+        Date k190000 = new Date(1447441200000L);
+        Date k193000 = new Date(1447443000000L);
+        Date k200000 = new Date(1447444800000L);
+        Date k210000 = new Date(1447448400000L);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("");
+        sdf.setTimeZone(TimeZone.GMT_ZONE);
+
+        // 'B' -- flexible day periods
+        // A day period on its own parses to the center of that period.
+        sdf.applyPattern("yyyy-MM-dd B");
+        assertEquals("yyyy-MM-dd B | 2015-11-13 midnight", k000000, sdf.parse("2015-11-13 midnight"));
+        assertEquals("yyyy-MM-dd B | 2015-11-13 noon", k120000, sdf.parse("2015-11-13 noon"));
+        assertEquals("yyyy-MM-dd B | 2015-11-13 in the afternoon", k150000, sdf.parse("2015-11-13 in the afternoon"));
+        assertEquals("yyyy-MM-dd B | 2015-11-13 in the evening", k193000, sdf.parse("2015-11-13 in the evening"));
+        assertEquals("yyyy-MM-dd B | 2015-11-13 at night", k013000, sdf.parse("2015-11-13 at night"));
+
+        // If time and day period are consistent with each other then time is parsed accordingly.
+        sdf.applyPattern("yyyy-MM-dd hh:mm B");
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 12:00 midnight", k000000, sdf.parse("2015-11-13 12:00 midnight"));
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 12:00 noon", k120000, sdf.parse("2015-11-13 12:00 noon"));
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 01:00 at night", k010000, sdf.parse("2015-11-13 01:00 at night"));
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 01:00 in the afternoon", k130000, sdf.parse("2015-11-13 01:00 in the afternoon"));
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 09:00 in the morning", k090000, sdf.parse("2015-11-13 09:00 in the morning"));
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 09:00 at night", k210000, sdf.parse("2015-11-13 09:00 at night"));
+
+        // If the hour is 13 thru 23 then day period has no effect on time (since time is assumed
+        // to be in 24-hour format).
+        // TODO: failing!
+        sdf.applyPattern("yyyy-MM-dd HH:mm B");
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 13:37 midnight", k133700, sdf.parse("2015-11-13 13:37 midnight"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 13:37 noon", k133700, sdf.parse("2015-11-13 13:37 noon"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 13:37 at night", k133700, sdf.parse("2015-11-13 13:37 at night"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 13:37 in the afternoon", k133700, sdf.parse("2015-11-13 13:37 in the afternoon"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 13:37 in the morning", k133700, sdf.parse("2015-11-13 13:37 in the morning"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 13:37 at night", k133700, sdf.parse("2015-11-13 13:37 at night"));
+
+        // Hour 0 is synonymous with hour 12 when parsed with 'h'.
+        // This unfortunately means we have to tolerate "0 noon" as it's synonymous with "12 noon".
+        sdf.applyPattern("yyyy-MM-dd hh:mm B");
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 00:00 midnight", k000000, sdf.parse("2015-11-13 00:00 midnight"));
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 00:00 noon", k120000, sdf.parse("2015-11-13 00:00 noon"));
+
+        // But when parsed with 'H', 0 indicates a 24-hour time, therefore we disregard the day period.
+        sdf.applyPattern("yyyy-MM-dd HH:mm B");
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 00:37 midnight", k003700, sdf.parse("2015-11-13 00:37 midnight"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 00:37 noon", k003700, sdf.parse("2015-11-13 00:37 noon"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 00:37 at night", k003700, sdf.parse("2015-11-13 00:37 at night"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 00:37 in the afternoon", k003700, sdf.parse("2015-11-13 00:37 in the afternoon"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 00:37 in the morning", k003700, sdf.parse("2015-11-13 00:37 in the morning"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 00:37 at night", k003700, sdf.parse("2015-11-13 00:37 at night"));
+
+        // Even when parsed with 'H', hours 1 thru 12 are considered 12-hour time and takes
+        // day period into account in parsing.
+        sdf.applyPattern("yyyy-MM-dd HH:mm B");
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 12:00 midnight", k000000, sdf.parse("2015-11-13 12:00 midnight"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 12:00 noon", k120000, sdf.parse("2015-11-13 12:00 noon"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 01:00 at night", k010000, sdf.parse("2015-11-13 01:00 at night"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 01:00 in the afternoon", k130000, sdf.parse("2015-11-13 01:00 in the afternoon"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 09:00 in the morning", k090000, sdf.parse("2015-11-13 09:00 in the morning"));
+        assertEquals("yyyy-MM-dd HH:mm B | 2015-11-13 09:00 at night", k210000, sdf.parse("2015-11-13 09:00 at night"));
+
+        // If a 12-hour time and the day period don't agree with each other, time is parsed as close
+        // to the given day period as possible.
+        sdf.applyPattern("yyyy-MM-dd hh:mm B");
+
+        // AFTERNOON1 is [12, 18), but "7 in the afternoon" parses to 19:00.
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 07:00 in the afternoon", k190000, sdf.parse("2015-11-13 07:00 in the afternoon"));
+        // NIGHT1 is [21, 6), but "8 at night" parses to 20:00.
+        assertEquals("yyyy-MM-dd hh:mm B | 2015-11-13 08:00 at night", k200000, sdf.parse("2015-11-13 08:00 at night"));
+
+        // 'b' -- fixed day periods (AM, PM, midnight, noon)
+        // On their own, "midnight" parses to 00:00 and "noon" parses to 12:00.
+        // AM and PM are handled by the 'a' parser (which doesn't handle this case well).
+        sdf.applyPattern("yyyy-MM-dd b");
+        assertEquals("yyyy-MM-dd b | 2015-11-13 midnight", k000000, sdf.parse("2015-11-13 midnight"));
+        assertEquals("yyyy-MM-dd b | 2015-11-13 noon", k120000, sdf.parse("2015-11-13 noon"));
+
+        // For 12-hour times, AM and PM should be parsed as if with pattern character 'a'.
+        sdf.applyPattern("yyyy-MM-dd hh:mm b");
+        assertEquals("yyyy-MM-dd hh:mm b | 2015-11-13 01:00 AM", k010000, sdf.parse("2015-11-13 01:00 AM"));
+        assertEquals("yyyy-MM-dd hh:mm b | 2015-11-13 01:00 PM", k130000, sdf.parse("2015-11-13 01:00 PM"));
+
+        // 12 midnight parses to 00:00, and 12 noon parses to 12:00.
+        assertEquals("yyyy-MM-dd hh:mm b | 2015-11-13 12:00 midnight", k000000, sdf.parse("2015-11-13 12:00 midnight"));
+        assertEquals("yyyy-MM-dd hh:mm b | 2015-11-13 12:00 noon", k120000, sdf.parse("2015-11-13 12:00 noon"));
+
+        // Hours 13-23 indicate 24-hour time so we disregard "midnight" or "noon".
+        // Again, AM and PM are handled by the 'a' parser which doesn't handle this case well.
+        sdf.applyPattern("yyyy-MM-dd HH:mm b");
+        assertEquals("yyyy-MM-dd HH:mm b | 2015-11-13 13:37 midnight", k133700, sdf.parse("2015-11-13 13:37 midnight"));
+        assertEquals("yyyy-MM-dd HH:mm b | 2015-11-13 13:37 noon", k133700, sdf.parse("2015-11-13 13:37 noon"));
+
+        // Hour 0 is synonymous with hour 12 when parsed with 'h'.
+        // Again, this means we have to tolerate "0 noon" as it's synonymous with "12 noon".
+        sdf.applyPattern("yyyy-MM-dd hh:mm b");
+        assertEquals("yyyy-MM-dd hh:mm b | 2015-11-13 00:00 midnight", k000000, sdf.parse("2015-11-13 00:00 midnight"));
+        assertEquals("yyyy-MM-dd hh:mm b | 2015-11-13 00:00 noon", k120000, sdf.parse("2015-11-13 00:00 noon"));
+
+        // With 'H' though 0 indicates a 24-hour time, therefore we disregard the day period.
+        sdf.applyPattern("yyyy-MM-dd HH:mm b");
+        assertEquals("yyyy-MM-dd HH:mm b | 2015-11-13 00:37 midnight", k003700, sdf.parse("2015-11-13 00:37 midnight"));
+        assertEquals("yyyy-MM-dd HH:mm b | 2015-11-13 00:37 noon", k003700, sdf.parse("2015-11-13 00:37 noon"));
+
+        // If "midnight" or "noon" is parsed with a 12-hour time other than 12:00, choose
+        // the version that's closer to the period given.
+        sdf.applyPattern("yyyy-MM-dd hh:mm b");
+        assertEquals("yyyy-MM-dd hh:mm b | 2015-11-13 03:00 midnight", k030000, sdf.parse("2015-11-13 03:00 midnight"));
+        assertEquals("yyyy-MM-dd hh:mm b | 2015-11-13 03:00 noon", k150000, sdf.parse("2015-11-13 03:00 noon"));
     }
 }

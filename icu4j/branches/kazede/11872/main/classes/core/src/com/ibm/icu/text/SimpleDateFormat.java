@@ -2316,6 +2316,11 @@ public class SimpleDateFormat extends DateFormat {
         }
         int start = pos;
 
+        // Hold the day period until everything else is parsed, because we need
+        // the hour to interpret time correctly.
+        // Using an one-element array for output parameter.
+        Output<DayPeriodRules.DayPeriod> dayPeriod = new Output<DayPeriodRules.DayPeriod>(null);
+
         Output<TimeType> tzTimeType = new Output<TimeType>(TimeType.UNKNOWN);
         boolean[] ambiguousYear = { false };
 
@@ -2393,7 +2398,7 @@ public class SimpleDateFormat extends DateFormat {
 
                     int s = pos;
                     pos = subParse(text, pos, field.type, field.length,
-                            false, true, ambiguousYear, cal, numericLeapMonthFormatter, tzTimeType);
+                            false, true, ambiguousYear, cal, numericLeapMonthFormatter, tzTimeType, dayPeriod);
 
                     if (pos < 0) {
                         if (pos == ISOSpecialEra) {
@@ -2421,7 +2426,7 @@ public class SimpleDateFormat extends DateFormat {
                                 int plen = patl.length();
                                 int idx=0;
 
-                                // White space characters found in patten.
+                                // White space characters found in pattern.
                                 // Skip contiguous white spaces.
                                 while (idx < plen) {
 
@@ -2475,6 +2480,70 @@ public class SimpleDateFormat extends DateFormat {
                 Object lastItem = items[items.length - 1];
                 if (lastItem instanceof PatternItem && !((PatternItem)lastItem).isNumeric) {
                     pos++; // skip the extra "."
+                }
+            }
+        }
+
+        // If dayPeriod is set, use it in conjunction with hour-of-day to determine am/pm.
+        if (dayPeriod.value != null) {
+            DayPeriodRules ruleSet = DayPeriodRules.getInstance(getLocale());
+
+            if (!cal.isSet(Calendar.HOUR) && !cal.isSet(Calendar.HOUR_OF_DAY)) {
+                // If hour is not set, set time to the midpoint of current day period, overwriting
+                // minutes if it's set.
+                double midPoint = ruleSet.getMidPointForDayPeriod(dayPeriod.value);
+
+                // Truncate midPoint toward zero to get the hour.
+                // Any leftover means it was a half-hour.
+                int midPointHour = (int) midPoint;
+                int midPointMinute = (midPoint - midPointHour) > 0 ? 30 : 0;
+
+                // No need to set am/pm because hour-of-day is set last therefore takes precedence.
+                cal.set(Calendar.HOUR_OF_DAY, midPointHour);
+                cal.set(Calendar.MINUTE, midPointMinute);
+            } else {
+                int hourOfDay;
+
+                if (cal.isSet(Calendar.HOUR_OF_DAY)) {  // Hour is parsed in 24-hour format.
+                    hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+                } else {  // Hour is parsed in 12-hour format.
+                    hourOfDay = cal.get(Calendar.HOUR);
+                    // cal.get() turns 12 to 0 for 12-hour time; change 0 to 12
+                    // so 0 unambiguously means a 24-hour time from above.
+                    if (hourOfDay == 0) { hourOfDay = 12; }
+                }
+                assert(0 <= hourOfDay && hourOfDay <= 23);
+
+
+                // If hour-of-day is 0 or 13 thru 23 then input time in unambiguously in 24-hour format.
+                if (hourOfDay == 0 || (13 <= hourOfDay && hourOfDay <= 23)) {
+                    // Make hour-of-day take precedence over (hour + am/pm) by setting it again.
+                    cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                } else {
+                    // We have a 12-hour time and need to choose between am and pm.
+                    // Behave as if dayPeriod spanned 6 hours each way from its center point.
+                    // This will parse correctly for consistent time + period (e.g. 10 at night) as
+                    // well as provide a reasonable recovery for inconsistent time + period (e.g.
+                    // 9 in the afternoon).
+
+                    // Assume current time is in the AM.
+                    // - Change 12 back to 0 for easier handling of 12am.
+                    // - Append minutes as fractional hours because e.g. 8:15 and 8:45 could be parsed
+                    // into different half-days if center of dayPeriod is at 14:30.
+                    // - cal.get(MINUTE) will return 0 if MINUTE is unset, which works.
+                    if (hourOfDay == 12) { hourOfDay = 0; }
+                    double currentHour = hourOfDay + cal.get(Calendar.MINUTE) / 60.0;
+                    double midPointHour = ruleSet.getMidPointForDayPeriod(dayPeriod.value);
+
+                    double hoursAheadMidPoint = currentHour - midPointHour;
+
+                    // Assume current time is in the AM.
+                    if (-6 <= hoursAheadMidPoint && hoursAheadMidPoint < 6) {
+                        // Assumption holds; set time as such.
+                        cal.set(Calendar.AM_PM, 0);
+                    } else {
+                        cal.set(Calendar.AM_PM, 1);
+                    }
                 }
             }
         }
@@ -2900,6 +2969,34 @@ public class SimpleDateFormat extends DateFormat {
     }
 
     /**
+     * Similar to matchQuarterString but customized for day periods.
+     */
+    protected int matchDayPeriodString(String text, int start, String[] data, int dataLength,
+            Output<DayPeriodRules.DayPeriod> dayPeriod)
+    {
+        int bestMatchLength = 0, bestMatch = -1;
+        int matchLength = 0;
+        for (int i = 0; i < dataLength; ++i) {
+            // Only try matching if the string exists.
+            if (data[i] != null) {
+                int length = data[i].length();
+                if (length > bestMatchLength &&
+                        (matchLength = regionMatchesWithOptionalDot(text, start, data[i], length)) >= 0) {
+                    bestMatch = i;
+                    bestMatchLength = matchLength;
+                }
+            }
+        }
+
+        if (bestMatch >= 0) {
+            dayPeriod.value = DayPeriodRules.DayPeriod.VALUES[bestMatch];
+            return start + bestMatchLength;
+        }
+
+        return -start;
+    }
+
+    /**
      * Protected method that converts one field of the input string into a
      * numeric field value in <code>cal</code>.  Returns -start (for
      * ParsePosition) if failed.  Subclasses may override this method to
@@ -2924,6 +3021,16 @@ public class SimpleDateFormat extends DateFormat {
                            boolean[] ambiguousYear, Calendar cal)
     {
         return subParse(text, start, ch, count, obeyCount, allowNegative, ambiguousYear, cal, null, null);
+    }
+
+    /**
+     * Overloading to provide default argument (null) for day period.
+     */
+    private int subParse(String text, int start, char ch, int count,
+            boolean obeyCount, boolean allowNegative,
+            boolean[] ambiguousYear, Calendar cal,
+            MessageFormat numericLeapMonthFormatter, Output<TimeType> tzTimeType) {
+        return subParse(text, start, ch, count, obeyCount, allowNegative, ambiguousYear, cal, null, null, null);
     }
 
     /**
@@ -2955,7 +3062,8 @@ public class SimpleDateFormat extends DateFormat {
     private int subParse(String text, int start, char ch, int count,
                            boolean obeyCount, boolean allowNegative,
                            boolean[] ambiguousYear, Calendar cal,
-                           MessageFormat numericLeapMonthFormatter, Output<TimeType> tzTimeType)
+                           MessageFormat numericLeapMonthFormatter, Output<TimeType> tzTimeType,
+                           Output<DayPeriodRules.DayPeriod> dayPeriod)
     {
         Number number = null;
         NumberFormat currentNumberFormat = null;
@@ -3455,7 +3563,7 @@ public class SimpleDateFormat extends DateFormat {
                     return newStart;
                 }
 
-            case 35: // TIME SEPARATOR (no pattern character currently defined, we should
+            case 37: // TIME SEPARATOR (no pattern character currently defined, we should
                      // not get here but leave support in for future definition.
             {
                 // Try matching a time separator.
@@ -3474,6 +3582,66 @@ public class SimpleDateFormat extends DateFormat {
                 }
 
                 return matchString(text, start, -1 /* => nothing to set */, data.toArray(new String[0]), cal);
+            }
+
+            case 35: // 'b' -- fixed day period (am/pm/midnight/noon)
+            {
+                int ampmStart = subParse(text, start, 'a', count, obeyCount, allowNegative, ambiguousYear, cal,
+                        numericLeapMonthFormatter, tzTimeType, dayPeriod);
+
+                if (ampmStart > 0) {
+                    return ampmStart;
+                } else {
+                    int newStart = 0;
+                    if(getBooleanAttribute(DateFormat.BooleanAttribute.PARSE_MULTIPLE_PATTERNS_FOR_MATCH) || count == 3) {
+                        if ((newStart = matchDayPeriodString(
+                                text, start, formatData.abbreviatedDayPeriods, 2, dayPeriod)) > 0) {
+                            return newStart;
+                        }
+                    }
+                    if(getBooleanAttribute(DateFormat.BooleanAttribute.PARSE_MULTIPLE_PATTERNS_FOR_MATCH) || count == 4) {
+                        if ((newStart = matchDayPeriodString(
+                                text, start, formatData.wideDayPeriods, 2, dayPeriod)) > 0) {
+                            return newStart;
+                        }
+                    }
+                    if(getBooleanAttribute(DateFormat.BooleanAttribute.PARSE_MULTIPLE_PATTERNS_FOR_MATCH) || count == 4) {
+                        if ((newStart = matchDayPeriodString(
+                                text, start, formatData.narrowDayPeriods, 2, dayPeriod)) > 0) {
+                            return newStart;
+                        }
+                    }
+
+                    return newStart;
+                }
+            }
+
+            case 36: // 'B' -- flexible day period
+            {
+                int newStart = 0;
+                if(getBooleanAttribute(DateFormat.BooleanAttribute.PARSE_MULTIPLE_PATTERNS_FOR_MATCH) || count == 3) {
+                    if ((newStart = matchDayPeriodString(
+                            text, start, formatData.abbreviatedDayPeriods,
+                            formatData.abbreviatedDayPeriods.length, dayPeriod)) > 0) {
+                        return newStart;
+                    }
+                }
+                if(getBooleanAttribute(DateFormat.BooleanAttribute.PARSE_MULTIPLE_PATTERNS_FOR_MATCH) || count == 4) {
+                    if ((newStart = matchDayPeriodString(
+                            text, start, formatData.wideDayPeriods,
+                            formatData.wideDayPeriods.length, dayPeriod)) > 0) {
+                        return newStart;
+                    }
+                }
+                if(getBooleanAttribute(DateFormat.BooleanAttribute.PARSE_MULTIPLE_PATTERNS_FOR_MATCH) || count == 4) {
+                    if ((newStart = matchDayPeriodString(
+                            text, start, formatData.narrowDayPeriods,
+                            formatData.narrowDayPeriods.length, dayPeriod)) > 0) {
+                        return newStart;
+                    }
+                }
+
+                return newStart;
             }
 
             default:

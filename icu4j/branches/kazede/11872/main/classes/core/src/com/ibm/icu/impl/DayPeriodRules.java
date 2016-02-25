@@ -25,6 +25,8 @@ public final class DayPeriodRules {
         EVENING2,
         NIGHT2;
 
+        public static DayPeriod[] VALUES = DayPeriod.values();
+
         private static DayPeriod fromStringOrNull(CharSequence str) {
             if ("midnight".contentEquals(str)) { return MIDNIGHT; }
             if ("noon".contentEquals(str)) { return NOON; }
@@ -289,6 +291,24 @@ public final class DayPeriodRules {
         return DATA.rules[ruleSetNum];
     }
 
+    public double getMidPointForDayPeriod(DayPeriod dayPeriod) {
+        int startHour = getStartHourForDayPeriod(dayPeriod);
+        int endHour = getEndHourForDayPeriod(dayPeriod);
+
+        double midPoint = (startHour + endHour) / 2.0;
+
+        if (startHour > endHour) {
+            // dayPeriod wraps around midnight. Shift midPoint by 12 hours, in the direction that
+            // lands it in [0, 24).
+            midPoint += 12;
+            if (midPoint >= 24) {
+                midPoint -= 24;
+            }
+        }
+
+        return midPoint;
+    }
+
     private static DayPeriodRulesData loadData() {
         DayPeriodRulesData data = new DayPeriodRulesData();
         ICUResourceBundle rb = (ICUResourceBundle)ICUResourceBundle.getBundleInstance(
@@ -305,6 +325,53 @@ public final class DayPeriodRules {
         rb.getAllTableItemsWithFallback("", sink);
 
         return data;
+    }
+
+    private int getStartHourForDayPeriod(DayPeriod dayPeriod) throws IllegalArgumentException {
+        if (dayPeriod == DayPeriod.MIDNIGHT) { return 0; }
+        if (dayPeriod == DayPeriod.NOON) { return 12; }
+
+        if (dayPeriodForHour[0] == dayPeriod && dayPeriodForHour[23] == dayPeriod) {
+            // dayPeriod wraps around midnight. Start hour is later than end hour.
+            for (int i = 22; i >= 1; --i) {
+                if (dayPeriodForHour[i] != dayPeriod) {
+                    return (i + 1);
+                }
+            }
+        } else {
+            for (int i = 0; i <= 23; ++i) {
+                if (dayPeriodForHour[i] == dayPeriod) {
+                    return i;
+                }
+            }
+        }
+
+        // dayPeriod doesn't exist in rule set; throw exception.
+        throw new IllegalArgumentException();
+    }
+
+    private int getEndHourForDayPeriod(DayPeriod dayPeriod) {
+        if (dayPeriod == DayPeriod.MIDNIGHT) { return 0; }
+        if (dayPeriod == DayPeriod.NOON) { return 12; }
+
+        if (dayPeriodForHour[0] == dayPeriod && dayPeriodForHour[23] == dayPeriod) {
+            // dayPeriod wraps around midnight. End hour is before start hour.
+            for (int i = 1; i <= 22; ++i) {
+                if (dayPeriodForHour[i] != dayPeriod) {
+                    // i o'clock is when a new period starts, therefore when the old period ends.
+                    return i;
+                }
+            }
+        } else {
+            for (int i = 23; i >= 0; --i) {
+                if (dayPeriodForHour[i] == dayPeriod) {
+                    return (i + 1);
+                }
+            }
+        }
+
+        // dayPeriod doesn't exist in rule set; throw exception.
+        throw new IllegalArgumentException();
     }
 
     // Getters.
