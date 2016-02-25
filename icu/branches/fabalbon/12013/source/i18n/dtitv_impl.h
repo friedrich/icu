@@ -30,6 +30,7 @@
 #define RIGHT_CURLY_BRACKET ((UChar)0x007D)
 #define SPACE             ((UChar)0x0020)
 #define EN_DASH           ((UChar)0x2013)
+#define SOLIDUS           ((UChar)0x002F)
 
 #define DIGIT_ZERO        ((UChar)0x0030)
 #define DIGIT_ONE         ((UChar)0x0031)

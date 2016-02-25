@@ -340,6 +340,12 @@ private:
     friend class DateIntervalFormat;
 
     /**
+     * The internal DateIntervalSink needs to access 
+     * setIntervalPatternInternally() and enum IntervalPatternIndex.
+     */
+    friend struct DateIntervalSink;
+
+    /**
      * Following is for saving the interval patterns.
      * We only support interval patterns on
      * ERA, YEAR, MONTH, DAY, AM_PM, HOUR, and MINUTE

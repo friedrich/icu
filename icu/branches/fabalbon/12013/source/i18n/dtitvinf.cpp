@@ -212,163 +212,293 @@ DateIntervalInfo::getFallbackIntervalPattern(UnicodeString& result) const {
 
 #define ULOC_LOCALE_IDENTIFIER_CAPACITY (ULOC_FULLNAME_CAPACITY + 1 + ULOC_KEYWORD_AND_VALUES_CAPACITY)
 
-void 
-DateIntervalInfo::initializeData(const Locale& locale, UErrorCode& err)
-{
-  fIntervalPatterns = initHash(err);
-  if ( U_FAILURE(err) ) {
-      return;
-  }
-  const char *locName = locale.getName();
-  char parentLocale[ULOC_FULLNAME_CAPACITY];
-  uprv_strcpy(parentLocale, locName);
-  UErrorCode status = U_ZERO_ERROR;
-  Hashtable skeletonKeyPairs(FALSE, status);
-  if ( U_FAILURE(status) ) {
-      return;
-  }
 
-  // determine calendar type
-  const char * calendarTypeToUse = gGregorianTag; // initial default
-  char         calendarType[ULOC_KEYWORDS_CAPACITY]; // to be filled in with the type to use, if all goes well
-  char         localeWithCalendarKey[ULOC_LOCALE_IDENTIFIER_CAPACITY];
-  // obtain a locale that always has the calendar key value that should be used
-  (void)ures_getFunctionalEquivalent(localeWithCalendarKey, ULOC_LOCALE_IDENTIFIER_CAPACITY, NULL,
-                                     "calendar", "calendar", locName, NULL, FALSE, &status);
-  localeWithCalendarKey[ULOC_LOCALE_IDENTIFIER_CAPACITY-1] = 0; // ensure null termination
-  // now get the calendar key value from that locale
-  int32_t calendarTypeLen = uloc_getKeywordValue(localeWithCalendarKey, "calendar", calendarType, ULOC_KEYWORDS_CAPACITY, &status);
-  if (U_SUCCESS(status) && calendarTypeLen < ULOC_KEYWORDS_CAPACITY) {
-    calendarTypeToUse = calendarType;
-  }
-  status = U_ZERO_ERROR;
-  
-  do {
-    UResourceBundle *rb, *calBundle, *calTypeBundle, *itvDtPtnResource;
-    rb = ures_open(NULL, parentLocale, &status);
-    if ( U_FAILURE(status) ) {
-        break;
+static const int pathPrefixLength = 17;
+static const UChar pathPrefix[] = {SOLIDUS, CAP_L, CAP_O, CAP_C, CAP_A, CAP_L, CAP_E, SOLIDUS,
+                                    LOW_C, LOW_A, LOW_L, LOW_E, LOW_N, LOW_D, LOW_A, LOW_R, SOLIDUS};
+static const int pathSufixLength = 16;
+static const UChar pathSufix[] = {SOLIDUS, LOW_I, LOW_N, LOW_T, LOW_E, LOW_R, LOW_V, LOW_A,
+                                    LOW_L, CAP_F, LOW_O, LOW_R, LOW_M, LOW_A, LOW_T, LOW_S};
+
+/**
+ * Sink for enumerating all of the date interval skeletons.
+ * Contains inner sink classes, each one corresponding to a type of resource table.
+ * The outer class finds the dateInterval table or an alias.
+ */
+struct DateIntervalSink : public ResourceTableSink {
+
+    /**
+     * Sink to handle each skeleton table.
+     */
+    struct SkeletonSink : public ResourceTableSink {
+        SkeletonSink(DateIntervalSink &sink) : outer(sink) {}
+        ~SkeletonSink();
+
+        virtual ResourceTableSink *getOrCreateTableSink(
+                const char *key, int32_t, UErrorCode &errorCode) {
+            if (U_SUCCESS(errorCode)) {
+                outer.currentSkeleton = key;
+                return &outer.patternSink;
+            }
+            return NULL;
+        }
+
+        DateIntervalSink &outer;
+    } skeletonSink;
+
+    /**
+     * Sink to store the date interval pattern for each skeleton pattern character.
+     */
+    struct PatternSink : public ResourceTableSink {
+        PatternSink(DateIntervalSink &sink) : outer(sink) {}
+        ~PatternSink();
+
+        virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
+            // Process the key
+            UCalendarDateFields calendarField = validateAndProcessPatternLetter(key);
+
+            // If the calendar field has a valid value
+            if (calendarField < UCAL_FIELD_COUNT) {
+                // Set the interval pattern
+                setIntervalPatternIfAbsent(calendarField, value, errorCode);
+            } else {
+                errorCode = U_INVALID_FORMAT_ERROR;
+            }
+        }
+
+        UCalendarDateFields validateAndProcessPatternLetter(const char *patternLetter) {
+            // TODO(fabalbon): Check that patternLetter is just one letter?
+
+            // Check that the pattern letter is accepted
+            UCalendarDateFields calendarField = UCAL_FIELD_COUNT;
+            if ( !uprv_strcmp(patternLetter, "y") ) {
+                calendarField = UCAL_YEAR;
+            } else if ( !uprv_strcmp(patternLetter, "M") ) {
+                calendarField = UCAL_MONTH;
+            } else if ( !uprv_strcmp(patternLetter, "d") ) {
+                calendarField = UCAL_DATE;
+            } else if ( !uprv_strcmp(patternLetter, "a") ) {
+                calendarField = UCAL_AM_PM;
+            } else if ( !uprv_strcmp(patternLetter, "h") || !uprv_strcmp(patternLetter, "H") ) {
+                calendarField = UCAL_HOUR;
+            } else if ( !uprv_strcmp(patternLetter, "m") ) {
+                calendarField = UCAL_MINUTE; // TODO(fabalbon): Why icu4c doesn't accept the calendar field "s" but icu4j does?
+            }
+            return calendarField;
+        }
+
+        /**
+         * Stores the interval pattern for the current skeleton in the internal data structure
+         * if it's not present.
+         */
+        void setIntervalPatternIfAbsent(UCalendarDateFields lrgDiffCalUnit,
+                                        const ResourceValue &value, UErrorCode &errorCode) {
+            // Check if the pattern has already been stored on the data structure
+            DateIntervalInfo::IntervalPatternIndex index =
+                    outer.dateIntervalInfo.calendarFieldToIntervalIndex(lrgDiffCalUnit, errorCode);
+            if (U_FAILURE(errorCode)) { return; }
+
+            UnicodeString skeleton(outer.currentSkeleton);
+            UnicodeString* patternsOfOneSkeleton =
+                    (UnicodeString*)(outer.dateIntervalInfo.fIntervalPatterns->get(skeleton));
+
+            if (patternsOfOneSkeleton == NULL || patternsOfOneSkeleton[(int)index].isEmpty()) {
+                UnicodeString pattern = value.getUnicodeString(errorCode);
+                if (U_FAILURE(errorCode)) { return; }
+                outer.dateIntervalInfo.setIntervalPatternInternally(skeleton, lrgDiffCalUnit,
+                                                                    pattern, errorCode);
+            }
+        }
+
+        DateIntervalSink &outer;
+    } patternSink;
+
+
+    DateIntervalSink(DateIntervalInfo &diInfo)
+            : skeletonSink(*this), patternSink(*this), dateIntervalInfo(diInfo),
+              currentSkeleton(NULL)
+    {
+        nextCalendarType.setToBogus();
     }
-    calBundle = ures_getByKey(rb, gCalendarTag, NULL, &status); 
-    calTypeBundle = ures_getByKey(calBundle, calendarTypeToUse, NULL, &status);
-    itvDtPtnResource = ures_getByKeyWithFallback(calTypeBundle, 
-                         gIntervalDateTimePatternTag, NULL, &status);
+    ~DateIntervalSink();
 
-    if ( U_SUCCESS(status) ) {
-        // look for fallback first, since it establishes the default order
+    virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
+        // Check if it's an alias of intervalFormats
+        if (U_FAILURE(errorCode) || value.getType() != URES_ALIAS
+            || uprv_strcmp(key, gIntervalDateTimePatternTag) != 0) {
+            return;
+        }
+
+        // Get the calendar type for the alias path.
+        const UnicodeString aliasPath = value.getAliasUnicodeString(errorCode);
+        if (U_FAILURE(errorCode)) { return; }
+
+        nextCalendarType.remove();
+        getCalendarTypeFromPath(aliasPath, nextCalendarType, errorCode);
+
+        if (U_FAILURE(errorCode)) {
+            resetNextCalendarType();
+        }
+    }
+
+    virtual ResourceTableSink *getOrCreateTableSink(
+            const char *key, int32_t, UErrorCode &errorCode) {
+        // Check if it's the intervalFormat table
+        if (U_SUCCESS(errorCode) && uprv_strcmp(key, gIntervalDateTimePatternTag) == 0) {
+            return &skeletonSink;
+        }
+        return NULL;
+    }
+
+    /**
+     * Extracts the calendar type from the path.
+     */
+    static void getCalendarTypeFromPath(const UnicodeString &path, UnicodeString &calendarType,
+                                        UErrorCode &errorCode) {
+        if (U_FAILURE(errorCode)) { return; }
+
+        if (!path.startsWith(pathPrefix, pathPrefixLength) || !path.endsWith(pathSufix, pathSufixLength)) {
+            errorCode = U_ILLEGAL_ARGUMENT_ERROR;
+            return;
+        }
+
+        path.extractBetween(pathPrefixLength, path.length() - pathSufixLength, calendarType);
+    }
+
+    const UnicodeString &getNextCalendarType() {
+        return nextCalendarType;
+    }
+
+    void resetNextCalendarType() {
+        nextCalendarType.remove();
+        nextCalendarType.setToBogus();
+    }
+
+
+    // Output data
+    DateIntervalInfo &dateIntervalInfo;
+
+    // Next calendar type
+    UnicodeString nextCalendarType;
+
+    // Current skeleton table being enumerated
+    const char *currentSkeleton;
+};
+
+// Virtual destructors must be defined out of line.
+DateIntervalSink::SkeletonSink::~SkeletonSink() {}
+DateIntervalSink::PatternSink::~PatternSink() {}
+DateIntervalSink::~DateIntervalSink() {}
+
+
+
+void 
+DateIntervalInfo::initializeData(const Locale& locale, UErrorCode& status)
+{
+    fIntervalPatterns = initHash(status);
+    if ( U_FAILURE(status) ) {
+      return;
+    }
+    const char *locName = locale.getName();
+
+    // Get the correct calendar type
+    const char * calendarTypeToUse = gGregorianTag; // initial default
+    char         calendarType[ULOC_KEYWORDS_CAPACITY]; // to be filled in with the type to use, if all goes well
+    char         localeWithCalendarKey[ULOC_LOCALE_IDENTIFIER_CAPACITY];
+    // obtain a locale that always has the calendar key value that should be used
+    (void)ures_getFunctionalEquivalent(localeWithCalendarKey, ULOC_LOCALE_IDENTIFIER_CAPACITY, NULL,
+                                     "calendar", "calendar", locName, NULL, FALSE, &status);
+    localeWithCalendarKey[ULOC_LOCALE_IDENTIFIER_CAPACITY-1] = 0; // ensure null termination
+    // now get the calendar key value from that locale
+    int32_t calendarTypeLen = uloc_getKeywordValue(localeWithCalendarKey, "calendar", calendarType,
+                                                   ULOC_KEYWORDS_CAPACITY, &status);
+    if (U_SUCCESS(status) && calendarTypeLen < ULOC_KEYWORDS_CAPACITY) {
+        calendarTypeToUse = calendarType;
+    }
+    status = U_ZERO_ERROR;
+
+    UnicodeString calendarTypeToUseUString(calendarTypeToUse);
+
+    // Instantiate the resource bundles
+    UResourceBundle *rb, *calBundle;
+    rb = ures_open(NULL, locName, &status);
+    if ( U_FAILURE(status) ) {
+        return;
+    }
+    calBundle = ures_getByKey(rb, gCalendarTag, NULL, &status);
+
+
+    if (U_SUCCESS(status)) {
+        UResourceBundle *calTypeBundle, *itvDtPtnResource;
+
+        // Get the fallback pattern
         const UChar* resStr;
         int32_t resStrLen = 0;
-        resStr = ures_getStringByKeyWithFallback(itvDtPtnResource, 
-                                             gFallbackPatternTag, 
-                                             &resStrLen, &status);
+        calTypeBundle = ures_getByKey(calBundle, calendarTypeToUse, NULL, &status);
+        itvDtPtnResource = ures_getByKeyWithFallback(calTypeBundle,
+                                                     gIntervalDateTimePatternTag, NULL, &status);
+        resStr = ures_getStringByKeyWithFallback(itvDtPtnResource, gFallbackPatternTag,
+                                                 &resStrLen, &status);
         if ( U_SUCCESS(status) ) {
             UnicodeString pattern = UnicodeString(TRUE, resStr, resStrLen);
             setFallbackIntervalPattern(pattern, status);
         }
+        ures_close(itvDtPtnResource);
+        ures_close(calTypeBundle);
 
-        int32_t size = ures_getSize(itvDtPtnResource);
-        int32_t index;
-        for ( index = 0; index < size; ++index ) {
-            LocalUResourceBundlePointer oneRes(ures_getByIndex(itvDtPtnResource, index, 
-                                                     NULL, &status));
-            if ( U_SUCCESS(status) ) {
-                const char* skeleton = ures_getKey(oneRes.getAlias());
-                if (skeleton == NULL) {
-                    continue;
-                }
-                UnicodeString skeletonUniStr(skeleton, -1, US_INV);
-                if ( uprv_strcmp(skeleton, gFallbackPatternTag) == 0 ) {
-                    continue;  // fallback
-                }
 
-                LocalUResourceBundlePointer intervalPatterns(ures_getByKey(
-                                     itvDtPtnResource, skeleton, NULL, &status));
+        // Instantiate the sink
+        DateIntervalSink sink(*this);
 
-                if ( U_FAILURE(status) ) {
+        // Already loaded calendar types
+        Hashtable loadedCalendarTypes(FALSE, status);
+
+        if (U_SUCCESS(status)) {
+            while (!calendarTypeToUseUString.isBogus()) {
+                // Set an error when a loop is detected
+                if (loadedCalendarTypes.geti(calendarTypeToUseUString) == 1) {
+                    status = U_ILLEGAL_ARGUMENT_ERROR;//TODO(fabalbon): Which error should I use here?
                     break;
                 }
-                if ( intervalPatterns == NULL ) {
-                    continue;
+
+                // Register the calendar type to avoid loops
+                loadedCalendarTypes.puti(calendarTypeToUseUString, 1, status);
+                if (U_FAILURE(status)) {
+                    break;
                 }
 
-                const char* key;
-                int32_t ptnNum = ures_getSize(intervalPatterns.getAlias());
-                int32_t ptnIndex;
-                for ( ptnIndex = 0; ptnIndex < ptnNum; ++ptnIndex ) {
-                    UnicodeString pattern =
-                        ures_getNextUnicodeString(intervalPatterns.getAlias(), &key, &status);
-                    if ( U_FAILURE(status) ) {
-                        break;
-                    }
-                    UnicodeString keyUniStr(key, -1, US_INV);
-                    UnicodeString skeletonKeyPair(skeletonUniStr + keyUniStr);
-                    if ( skeletonKeyPairs.geti(skeletonKeyPair) == 1 ) {
-                        continue;
-                    }
-                    skeletonKeyPairs.puti(skeletonKeyPair, 1, status);
-        
-                    UCalendarDateFields calendarField = UCAL_FIELD_COUNT;
-                    if ( !uprv_strcmp(key, "y") ) {
-                        calendarField = UCAL_YEAR;
-                    } else if ( !uprv_strcmp(key, "M") ) {
-                        calendarField = UCAL_MONTH;
-                    } else if ( !uprv_strcmp(key, "d") ) {
-                        calendarField = UCAL_DATE;
-                    } else if ( !uprv_strcmp(key, "a") ) {
-                        calendarField = UCAL_AM_PM;
-                    } else if ( !uprv_strcmp(key, "h") || !uprv_strcmp(key, "H") ) {
-                        calendarField = UCAL_HOUR;
-                    } else if ( !uprv_strcmp(key, "m") ) {
-                        calendarField = UCAL_MINUTE;
-                    }
-                    if ( calendarField != UCAL_FIELD_COUNT ) {
-                        setIntervalPatternInternally(skeletonUniStr, calendarField, pattern,status);
-                    }
+                // Get all resources for this calendar type
+                char calType[ULOC_KEYWORDS_CAPACITY];
+                calendarTypeToUseUString.extract(0, calendarTypeToUseUString.length(), calType, ULOC_KEYWORDS_CAPACITY);
+                calTypeBundle = ures_getByKey(calBundle, calType, NULL, &status);
+                ures_getAllTableItemsWithFallback(calTypeBundle, "", sink, status);
+
+                // Get next calendar type to load if there was an alias pointing at it
+                const UnicodeString &nextCalendarTypeToUseUString = sink.getNextCalendarType();
+                if (!nextCalendarTypeToUseUString.isBogus()) {
+                    calendarTypeToUseUString = nextCalendarTypeToUseUString;
+                } else {
+                    calendarTypeToUseUString.setToBogus();
                 }
+                sink.resetNextCalendarType();
+
+                // Close the calendar type bundle
+                ures_close(calTypeBundle);
             }
         }
     }
-    ures_close(itvDtPtnResource);
-    ures_close(calTypeBundle);
+
+    // Close the opened resource bundles
     ures_close(calBundle);
-
-    status = U_ZERO_ERROR;
-    // Find the name of the appropriate parent locale (from %%Parent if present, else
-    // uloc_getParent on the actual locale name)
-    // (It would be nice to have a ures function that did this...)
-    int32_t locNameLen;
-    const UChar * parentUName = ures_getStringByKey(rb, "%%Parent", &locNameLen, &status);
-    if (U_SUCCESS(status) && status != U_USING_FALLBACK_WARNING && locNameLen < ULOC_FULLNAME_CAPACITY) {
-        u_UCharsToChars(parentUName, parentLocale, locNameLen + 1);
-    } else {
-        status = U_ZERO_ERROR;
-        // Get the actual name of the current locale being used
-        const char *curLocaleName=ures_getLocaleByType(rb, ULOC_ACTUAL_LOCALE, &status);
-        if ( U_FAILURE(status) ) {
-            curLocaleName = parentLocale;
-            status = U_ZERO_ERROR;
-        }
-        uloc_getParent(curLocaleName, parentLocale, ULOC_FULLNAME_CAPACITY, &status);
-        if (U_FAILURE(err) || err == U_STRING_NOT_TERMINATED_WARNING) {
-            parentLocale[0] = 0; // just fallback to root, will cause us to stop
-            status = U_ZERO_ERROR;
-        }
-    }
-    // Now we can close the current locale bundle
     ures_close(rb);
-    // If the new current locale is root, then stop
-    // (unlike for DateTimePatternGenerator, DateIntervalFormat does not go all the way up
-    // to root to find additional data for non-root locales)
-  } while ( parentLocale[0] != 0 && uprv_strcmp(parentLocale,"root")!=0 );
 }
-
-
 
 void
 DateIntervalInfo::setIntervalPatternInternally(const UnicodeString& skeleton,
                                       UCalendarDateFields lrgDiffCalUnit,
                                       const UnicodeString& intervalPattern,
                                       UErrorCode& status) {
+
     IntervalPatternIndex index = calendarFieldToIntervalIndex(lrgDiffCalUnit,status);
     if ( U_FAILURE(status) ) {
         return;
