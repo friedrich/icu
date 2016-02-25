@@ -2093,17 +2093,6 @@ SimpleDateFormat::isAfterNonNumericField(const UnicodeString &pattern, int32_t p
     return !DateFormatSymbols::isNumericField(f, patternOffset - i);
 }
 
-// Helper function to calculate, for example, how far away 9pm is to 2am.
-// Used in parsing to help interpret day periods.
-int32_t calculateHourDistance(int32_t a, int32_t b) {
-    int32_t rawDiff = a - b;
-    int32_t absoluteDiff = rawDiff >= 0 ? rawDiff : -rawDiff;
-    int32_t actualDiff = absoluteDiff < 12 ? absoluteDiff : (24 - absoluteDiff);
-
-    assert(0 <= actualDiff && actualDiff <= 12);
-    return actualDiff;
-}
-
 void
 SimpleDateFormat::parse(const UnicodeString& text, Calendar& cal, ParsePosition& parsePos) const
 {
@@ -3580,8 +3569,7 @@ int32_t SimpleDateFormat::subParse(const UnicodeString& text, int32_t& start, UC
                 return newStart;
             }
         }
-        // count == 4, but allow other counts
-        if (getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status)) {
+        if (getBooleanAttribute(UDAT_PARSE_MULTIPLE_PATTERNS_FOR_MATCH, status) || count == 4) {
             if ((newStart = matchDayPeriodStrings(text, start, fSymbols->fWideDayPeriods,
                                 fSymbols->fWideDayPeriodsCount, *dayPeriod)) > 0) {
                 return newStart;
