@@ -2064,7 +2064,7 @@ RBBICharMonkey::RBBICharMonkey() {
 
 
 
-    fEmojiBaseSet = new UnicodeSet(UNICODE_STRING_SIMPLE(
+    fEmojiBaseSet = new UnicodeSet(UnicodeString(
                 "[\\u261D\\u26F9\\u270A-\\u270D\\U0001F385\\U0001F3C3-\\U0001F3C4\\U0001F3CA-\\U0001F3CB\\U0001F442-\\U0001F443"
                 "\\U0001F446-\\U0001F450\\U0001F466-\\U0001F469\\U0001F46E\\U0001F470-\\U0001F478\\U0001F47C\\U0001F481-\\U0001F483"
                 "\\U0001F485-\\U0001F487\\U0001F4AA\\U0001F575\\U0001F590\\U0001F595-\\U0001F596\\U0001F645-\\U0001F647"
@@ -2345,7 +2345,7 @@ RBBIWordMonkey::RBBIWordMonkey()
     fExtendNumLetSet  = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Word_Break = ExtendNumLet}]"), status);
     fExtendSet        = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Word_Break = Extend}]"),       status);
 
-    fEBaseSet         = new UnicodeSet(UNICODE_STRING_SIMPLE(
+    fEBaseSet         = new UnicodeSet(UnicodeString(
                 "[\\u261D\\u26F9\\u270A-\\u270D\\U0001F385\\U0001F3C3-\\U0001F3C4\\U0001F3CA-\\U0001F3CB\\U0001F442-\\U0001F443"
                 "\\U0001F446-\\U0001F450\\U0001F466-\\U0001F469\\U0001F46E\\U0001F470-\\U0001F478\\U0001F47C\\U0001F481-\\U0001F483"
                 "\\U0001F485-\\U0001F487\\U0001F4AA\\U0001F575\\U0001F590\\U0001F595-\\U0001F596\\U0001F645-\\U0001F647"
@@ -3087,7 +3087,7 @@ RBBILineMonkey::RBBILineMonkey() :
     fRI    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=RI}]"), status);
     fSG    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\ud800-\\udfff]"), status);
     fXX    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=XX}]"), status);
-    fEB    = new UnicodeSet(UNICODE_STRING_SIMPLE(
+    fEB    = new UnicodeSet(UnicodeString(
                 "[\\u261D\\u26F9\\u270A-\\u270D\\U0001F385\\U0001F3C3-\\U0001F3C4\\U0001F3CA-\\U0001F3CB\\U0001F442-\\U0001F443"
                 "\\U0001F446-\\U0001F450\\U0001F466-\\U0001F469\\U0001F46E\\U0001F470-\\U0001F478\\U0001F47C\\U0001F481-\\U0001F483"
                 "\\U0001F485-\\U0001F487\\U0001F4AA\\U0001F575\\U0001F590\\U0001F595-\\U0001F596\\U0001F645-\\U0001F647"

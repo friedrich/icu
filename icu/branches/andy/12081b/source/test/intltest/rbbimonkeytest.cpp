@@ -77,7 +77,7 @@ BreakRules::BreakRules(RBBIMonkeyImpl *monkeyImpl, UErrorCode &status)  :
                 "(^|(?<=;))"                    // Start either at start of line, or just after a ';' (look-behind for ';')
                 "[ \\t]*+"                      //   Match white space.
                 "(#.*)?+"                       //   Optional # plus whatever follows
-                "\\n$"                          //   new-line at end of line.
+                "\\R$"                          //   new-line at end of line.
             ), 0, status));
 
     // Match (initial parse) of a character class defintion line.
