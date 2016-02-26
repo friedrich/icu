@@ -314,6 +314,11 @@ public class CompactDecimalFormatTest extends TestFmwk {
         checkLocale(ULocale.ENGLISH, CompactStyle.SHORT, EnglishTestData);
     }
 
+// JCE: 2016-02-26: This test commented out because CompactDecimalFormat cannot properly format
+// negative quantities until we implement support for positive/negative subpatterns within CDF.
+// So, in the meantime, we are making any format of a negative throw an UnsupportedOperationException
+// as the original JavaDoc states.
+//
 //    public void TestArabicLongStyle() {
 //        NumberFormat cdf =
 //                CompactDecimalFormat.getInstance(
@@ -337,6 +342,11 @@ public class CompactDecimalFormatTest extends TestFmwk {
         checkLocale(ULocale.forLanguageTag("sr"), CompactStyle.LONG, SerbianTestDataLong);
     }
 
+// JCE: 2016-02-26: This test commented out because CompactDecimalFormat cannot properly format
+// negative quantities until we implement support for positive/negative subpatterns within CDF.
+// So, in the meantime, we are making any format of a negative throw an UnsupportedOperationException
+// as the original JavaDoc states.
+//
 //    public void TestSerbianLongNegative() {
 //        checkLocale(ULocale.forLanguageTag("sr"), CompactStyle.LONG, SerbianTestDataLongNegative);
 //    }
@@ -348,7 +358,11 @@ public class CompactDecimalFormatTest extends TestFmwk {
     public void TestSwahiliShort() {
         checkLocale(ULocale.forLanguageTag("sw"), CompactStyle.SHORT, SwahiliTestData);
     }
-
+// JCE: 2016-02-26: This test commented out because CompactDecimalFormat cannot properly format
+// negative quantities until we implement support for positive/negative subpatterns within CDF.
+// So, in the meantime, we are making any format of a negative throw an UnsupportedOperationException
+// as the original JavaDoc states.
+//
 //    public void TestSwahiliShortNegative() {
 //        checkLocale(ULocale.forLanguageTag("sw"), CompactStyle.SHORT, SwahiliTestDataNegative);
 //    }
