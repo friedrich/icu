@@ -26,6 +26,7 @@
 #include "unicode/uloc.h"
 #include "unicode/ures.h"
 #include "dtitv_impl.h"
+#include "uhash.h"
 #include "hash.h"
 #include "gregoimp.h"
 #include "uresimp.h"
@@ -56,9 +57,7 @@ static const UChar gSecondPattern[] = {LEFT_CURLY_BRACKET, DIGIT_ONE, RIGHT_CURL
 // default fall-back
 static const UChar gDefaultFallbackPattern[] = {LEFT_CURLY_BRACKET, DIGIT_ZERO, RIGHT_CURLY_BRACKET, SPACE, EN_DASH, SPACE, LEFT_CURLY_BRACKET, DIGIT_ONE, RIGHT_CURLY_BRACKET, 0};
 
-
-
-DateIntervalInfo::DateIntervalInfo(UErrorCode& status) 
+DateIntervalInfo::DateIntervalInfo(UErrorCode& status)
 :   fFallbackIntervalPattern(gDefaultFallbackPattern),
     fFirstDateInPtnIsLaterDate(false),
     fIntervalPatterns(NULL)
@@ -213,17 +212,17 @@ DateIntervalInfo::getFallbackIntervalPattern(UnicodeString& result) const {
 #define ULOC_LOCALE_IDENTIFIER_CAPACITY (ULOC_FULLNAME_CAPACITY + 1 + ULOC_KEYWORD_AND_VALUES_CAPACITY)
 
 
-static const int pathPrefixLength = 17;
-static const UChar pathPrefix[] = {SOLIDUS, CAP_L, CAP_O, CAP_C, CAP_A, CAP_L, CAP_E, SOLIDUS,
+static const int32_t PATH_PREFIX_LENGTH = 17;
+static const UChar PATH_PREFIX[] = {SOLIDUS, CAP_L, CAP_O, CAP_C, CAP_A, CAP_L, CAP_E, SOLIDUS,
                                     LOW_C, LOW_A, LOW_L, LOW_E, LOW_N, LOW_D, LOW_A, LOW_R, SOLIDUS};
-static const int pathSufixLength = 16;
-static const UChar pathSufix[] = {SOLIDUS, LOW_I, LOW_N, LOW_T, LOW_E, LOW_R, LOW_V, LOW_A,
+static const int32_t PATH_SUFFIX_LENGTH = 16;
+static const UChar PATH_SUFFIX[] = {SOLIDUS, LOW_I, LOW_N, LOW_T, LOW_E, LOW_R, LOW_V, LOW_A,
                                     LOW_L, CAP_F, LOW_O, LOW_R, LOW_M, LOW_A, LOW_T, LOW_S};
 
 /**
  * Sink for enumerating all of the date interval skeletons.
- * Contains inner sink classes, each one corresponding to a type of resource table.
- * The outer class finds the dateInterval table or an alias.
+ * Contains inner sink structs, each one corresponding to a type of resource table.
+ * The outer struct finds the dateInterval table or an alias.
  */
 struct DateIntervalSink : public ResourceTableSink {
 
@@ -232,7 +231,7 @@ struct DateIntervalSink : public ResourceTableSink {
      */
     struct SkeletonSink : public ResourceTableSink {
         SkeletonSink(DateIntervalSink &sink) : outer(sink) {}
-        ~SkeletonSink();
+        virtual ~SkeletonSink();
 
         virtual ResourceTableSink *getOrCreateTableSink(
                 const char *key, int32_t, UErrorCode &errorCode) {
@@ -251,9 +250,11 @@ struct DateIntervalSink : public ResourceTableSink {
      */
     struct PatternSink : public ResourceTableSink {
         PatternSink(DateIntervalSink &sink) : outer(sink) {}
-        ~PatternSink();
+        virtual ~PatternSink();
 
         virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
+            if (U_FAILURE(errorCode)) { return; }
+
             // Process the key
             UCalendarDateFields calendarField = validateAndProcessPatternLetter(key);
 
@@ -267,24 +268,25 @@ struct DateIntervalSink : public ResourceTableSink {
         }
 
         UCalendarDateFields validateAndProcessPatternLetter(const char *patternLetter) {
-            // TODO(fabalbon): Check that patternLetter is just one letter?
-
-            // Check that the pattern letter is accepted
-            UCalendarDateFields calendarField = UCAL_FIELD_COUNT;
-            if ( !uprv_strcmp(patternLetter, "y") ) {
-                calendarField = UCAL_YEAR;
-            } else if ( !uprv_strcmp(patternLetter, "M") ) {
-                calendarField = UCAL_MONTH;
-            } else if ( !uprv_strcmp(patternLetter, "d") ) {
-                calendarField = UCAL_DATE;
-            } else if ( !uprv_strcmp(patternLetter, "a") ) {
-                calendarField = UCAL_AM_PM;
-            } else if ( !uprv_strcmp(patternLetter, "h") || !uprv_strcmp(patternLetter, "H") ) {
-                calendarField = UCAL_HOUR;
-            } else if ( !uprv_strcmp(patternLetter, "m") ) {
-                calendarField = UCAL_MINUTE; // TODO(fabalbon): Why icu4c doesn't accept the calendar field "s" but icu4j does?
+            // Check that patternLetter is just one letter
+            char c0;
+            if ((c0 = patternLetter[0]) > 0 && patternLetter[1] == 0) {
+                // Check that the pattern letter is accepted
+                if ( c0 == 'y' ) {
+                    return UCAL_YEAR;
+                } else if ( c0 == 'M' ) {
+                    return UCAL_MONTH;
+                } else if ( c0 == 'd' ) {
+                    return UCAL_DATE;
+                } else if ( c0 == 'a' ) {
+                    return UCAL_AM_PM;
+                } else if ( c0 == 'h' || c0 == 'H' ) {
+                    return UCAL_HOUR;
+                } else if ( c0 == 'm' ) {
+                    return UCAL_MINUTE; // TODO(fabalbon): Why icu4c doesn't accept the calendar field "s" but icu4j does?
+                }
             }
-            return calendarField;
+            return UCAL_FIELD_COUNT;
         }
 
         /**
@@ -298,13 +300,12 @@ struct DateIntervalSink : public ResourceTableSink {
                     outer.dateIntervalInfo.calendarFieldToIntervalIndex(lrgDiffCalUnit, errorCode);
             if (U_FAILURE(errorCode)) { return; }
 
-            UnicodeString skeleton(outer.currentSkeleton);
+            UnicodeString skeleton(outer.currentSkeleton, -1, US_INV);
             UnicodeString* patternsOfOneSkeleton =
                     (UnicodeString*)(outer.dateIntervalInfo.fIntervalPatterns->get(skeleton));
 
-            if (patternsOfOneSkeleton == NULL || patternsOfOneSkeleton[(int)index].isEmpty()) {
+            if (patternsOfOneSkeleton == NULL || patternsOfOneSkeleton[index].isEmpty()) {
                 UnicodeString pattern = value.getUnicodeString(errorCode);
-                if (U_FAILURE(errorCode)) { return; }
                 outer.dateIntervalInfo.setIntervalPatternInternally(skeleton, lrgDiffCalUnit,
                                                                     pattern, errorCode);
             }
@@ -314,13 +315,12 @@ struct DateIntervalSink : public ResourceTableSink {
     } patternSink;
 
 
-    DateIntervalSink(DateIntervalInfo &diInfo)
+    DateIntervalSink(DateIntervalInfo &diInfo, const char *currentCalendarType)
             : skeletonSink(*this), patternSink(*this), dateIntervalInfo(diInfo),
-              currentSkeleton(NULL)
-    {
-        nextCalendarType.setToBogus();
+              currentSkeleton(NULL) {
+                  nextCalendarType = UnicodeString(currentCalendarType, -1, US_INV);
     }
-    ~DateIntervalSink();
+    virtual ~DateIntervalSink();
 
     virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
         // Check if it's an alias of intervalFormats
@@ -330,7 +330,7 @@ struct DateIntervalSink : public ResourceTableSink {
         }
 
         // Get the calendar type for the alias path.
-        const UnicodeString aliasPath = value.getAliasUnicodeString(errorCode);
+        const UnicodeString &aliasPath = value.getAliasUnicodeString(errorCode);
         if (U_FAILURE(errorCode)) { return; }
 
         nextCalendarType.remove();
@@ -357,12 +357,12 @@ struct DateIntervalSink : public ResourceTableSink {
                                         UErrorCode &errorCode) {
         if (U_FAILURE(errorCode)) { return; }
 
-        if (!path.startsWith(pathPrefix, pathPrefixLength) || !path.endsWith(pathSufix, pathSufixLength)) {
-            errorCode = U_ILLEGAL_ARGUMENT_ERROR;
+        if (!path.startsWith(PATH_PREFIX, PATH_PREFIX_LENGTH) || !path.endsWith(PATH_SUFFIX, PATH_SUFFIX_LENGTH)) {
+            errorCode = U_INVALID_FORMAT_ERROR;
             return;
         }
 
-        path.extractBetween(pathPrefixLength, path.length() - pathSufixLength, calendarType);
+        path.extractBetween(PATH_PREFIX_LENGTH, path.length() - PATH_SUFFIX_LENGTH, calendarType);
     }
 
     const UnicodeString &getNextCalendarType() {
@@ -370,7 +370,6 @@ struct DateIntervalSink : public ResourceTableSink {
     }
 
     void resetNextCalendarType() {
-        nextCalendarType.remove();
         nextCalendarType.setToBogus();
     }
 
@@ -417,8 +416,6 @@ DateIntervalInfo::initializeData(const Locale& locale, UErrorCode& status)
     }
     status = U_ZERO_ERROR;
 
-    UnicodeString calendarTypeToUseUString(calendarTypeToUse);
-
     // Instantiate the resource bundles
     UResourceBundle *rb, *calBundle;
     rb = ures_open(NULL, locName, &status);
@@ -448,44 +445,48 @@ DateIntervalInfo::initializeData(const Locale& locale, UErrorCode& status)
 
 
         // Instantiate the sink
-        DateIntervalSink sink(*this);
+        DateIntervalSink sink(*this, calendarTypeToUse);
+        const UnicodeString &calendarTypeToUseUString = sink.getNextCalendarType();
 
         // Already loaded calendar types
-        Hashtable loadedCalendarTypes(FALSE, status);
+        UHashtable loadedCalendarTypes;
+        uhash_init(&loadedCalendarTypes, uhash_hashChars, uhash_compareChars, NULL, &status);
 
         if (U_SUCCESS(status)) {
+            //Setup hash
+            uhash_setKeyDeleter(&loadedCalendarTypes, free);
+
             while (!calendarTypeToUseUString.isBogus()) {
+                // Get the calendar string
+                char *calType = (char*)malloc(sizeof(char) * ULOC_KEYWORDS_CAPACITY);
+                calendarTypeToUseUString.extract(0, calendarTypeToUseUString.length(), calType, ULOC_KEYWORDS_CAPACITY);
+
                 // Set an error when a loop is detected
-                if (loadedCalendarTypes.geti(calendarTypeToUseUString) == 1) {
-                    status = U_ILLEGAL_ARGUMENT_ERROR;//TODO(fabalbon): Which error should I use here?
+                if (uhash_geti(&loadedCalendarTypes, calType) == 1) {
+                    status = U_INVALID_FORMAT_ERROR;
+                    free((void*)calType);
                     break;
                 }
 
                 // Register the calendar type to avoid loops
-                loadedCalendarTypes.puti(calendarTypeToUseUString, 1, status);
+                uhash_puti(&loadedCalendarTypes, calType, 1, &status);
                 if (U_FAILURE(status)) {
+                    free((void*)calType);
                     break;
                 }
 
                 // Get all resources for this calendar type
-                char calType[ULOC_KEYWORDS_CAPACITY];
-                calendarTypeToUseUString.extract(0, calendarTypeToUseUString.length(), calType, ULOC_KEYWORDS_CAPACITY);
                 calTypeBundle = ures_getByKey(calBundle, calType, NULL, &status);
                 ures_getAllTableItemsWithFallback(calTypeBundle, "", sink, status);
 
-                // Get next calendar type to load if there was an alias pointing at it
-                const UnicodeString &nextCalendarTypeToUseUString = sink.getNextCalendarType();
-                if (!nextCalendarTypeToUseUString.isBogus()) {
-                    calendarTypeToUseUString = nextCalendarTypeToUseUString;
-                } else {
-                    calendarTypeToUseUString.setToBogus();
-                }
+                // Reset the next calendar type to load.
                 sink.resetNextCalendarType();
 
                 // Close the calendar type bundle
                 ures_close(calTypeBundle);
             }
         }
+        uhash_close(&loadedCalendarTypes);
     }
 
     // Close the opened resource bundles
@@ -498,7 +499,6 @@ DateIntervalInfo::setIntervalPatternInternally(const UnicodeString& skeleton,
                                       UCalendarDateFields lrgDiffCalUnit,
                                       const UnicodeString& intervalPattern,
                                       UErrorCode& status) {
-
     IntervalPatternIndex index = calendarFieldToIntervalIndex(lrgDiffCalUnit,status);
     if ( U_FAILURE(status) ) {
         return;

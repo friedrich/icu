@@ -1,6 +1,6 @@
 /*
  *******************************************************************************
- * Copyright (C) 2008-2015, International Business Machines Corporation and
+ * Copyright (C) 2008-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  *
@@ -339,10 +339,6 @@ private:
      */
     friend class DateIntervalFormat;
 
-    /**
-     * The internal DateIntervalSink needs to access 
-     * setIntervalPatternInternally() and enum IntervalPatternIndex.
-     */
     friend struct DateIntervalSink;
 
     /**
@@ -396,7 +392,7 @@ private:
     void setIntervalPatternInternally(const UnicodeString& skeleton,
                                       UCalendarDateFields lrgDiffCalUnit,
                                       const UnicodeString& intervalPattern,
-                                      UErrorCode& status); 
+                                      UErrorCode& status);
 
 
     /**given an input skeleton, get the best match skeleton 
