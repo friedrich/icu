@@ -9,9 +9,7 @@ package com.ibm.icu.dev.test;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.MissingResourceException;
 
-import com.ibm.icu.dev.test.ModuleTest.TestDataPair;
 import com.ibm.icu.dev.test.TestDataModule.DataMap;
 import com.ibm.icu.dev.test.TestDataModule.DataModuleFormatError;
 import com.ibm.icu.dev.test.TestDataModule.Factory;
@@ -33,46 +31,9 @@ import com.ibm.icu.dev.test.TestDataModule.TestData;
  * See CollationTest for an example.
  */
 public class ModuleTest {
-    private TestDataModule m;
-
-    protected TestData t = null;
-
-    private String localeName = null;
-
-    private String baseName = null;
-
-    //abstract protected void processModules();
-
-    protected ModuleTest(String baseName, String locName) {
-        localeName = locName;
-        this.baseName = baseName;
+    private ModuleTest() {
+        // prevent construction
     }
-
-//    protected Target getTargets(String targetName) {
-//        if (params.doMethods()) {
-//            Target target = null;
-//            if (!validate()) {
-//                return null;
-//            }
-//            Iterator testData = m.getTestDataIterator();
-//            if (testData != null) {
-//                try {
-//                    Method method = getClass()
-//                            .getMethod("processModules", (Class[])null);
-//                    while (testData.hasNext()) {
-//                        target = new MethodTarget(((TestData) testData.next())
-//                                .getName(), method).setNext(target);
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    throw new IllegalStateException(e.getMessage());
-//                }
-//            }
-//            return target;
-//        } else {
-//            return null;
-//        }
-//    }
 
     /**
      * 
@@ -84,44 +45,6 @@ public class ModuleTest {
 
     public static TestDataModule loadTestData(String baseName, String testName) throws DataModuleFormatError {
         return Factory.get(baseName, testName);
-    }
-
-
-    /**
-     * TestFmwk calls this before trying to invoke a test method. The method is
-     * valid if there is test data with the name of this method in the module.
-     * Subclasses can override this to allow for tests that do not require test
-     * data from the module, or if there are different or additional data
-     * required.
-     */
-    protected boolean validateMethod(String methodName) {
-        return openTestData(methodName);
-    }
-
-    /**
-     * Override of TestFmwk method to get the test suite description from the
-     * DESCRIPTION field of the module info.
-     */
-    protected String getDescription() {
-        DataMap info = moduleInfo();
-        if (info != null) {
-            // return info.getString(TestDataModule.DESCRIPTION);
-        }
-        return null;
-    }
-
-    /**
-     * Override of TestFmwk method to get the test method description from the
-     * DESCRIPTION field of the test info.
-     */
-    protected String getMethodDescription(String methodName) {
-        if (openTestData(methodName)) {
-            DataMap info = testInfo();
-            if (info != null) {
-                // return info.getString(TestDataModule.DESCRIPTION);
-            }
-        }
-        return null;
     }
 
     static TestData openTestData(TestDataModule module, String name) throws DataModuleFormatError {
@@ -152,44 +75,4 @@ public class ModuleTest {
         }
         return list;
     }
-
-
-    /**
-     * Open the test data in the module with the given name, and return true if
-     * success. The current test is reset.
-     * 
-     * @throws DataModuleFormatError
-     */
-    protected boolean openTestData(String name) {
-        try {
-            t = m == null ? null : m.getTestData(name);
-        } catch (DataModuleFormatError e) {
-            return false;
-        }
-        return t != null;
-    }
-
-    /**
-     * Get information on this module. Returns null if no module open or no info
-     * for the module.
-     */
-    private DataMap moduleInfo() {
-        return m == null ? null : m.getInfo();
-    }
-
-    /**
-     * Get information on this test. Returns null if no module open or no test
-     * open or not info for this test.
-     */
-    private DataMap testInfo() {
-        return t == null ? null : t.getInfo();
-    }
-
-//    public void msg(String message, int level, boolean incCount, boolean newln) {
-//        if (level == ERR && t != null) {
-//           //t.stopIteration();
-//        }
-//        super.msg(message, level, incCount, newln);
-//    }
-//
 }

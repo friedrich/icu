@@ -18,7 +18,7 @@ import com.ibm.icu.impl.Utility;
 /**
  * A collection of methods to run the data driven number format test suite.
  */
-public class DataDrivenNumberFormatTestSuite extends TestFmwk {
+public class DataDrivenNumberFormatTestSuite /*extends TestFmwk*/ {
     
     /**
      * Base class for code under test.
@@ -100,14 +100,14 @@ public class DataDrivenNumberFormatTestSuite extends TestFmwk {
       
     /**
      * Runs all the tests in the data driven test suite against codeUnderTest.
-     * @param params this.params from TestFmwk.
      * @param fileName The name of the test file. A relative file name under
      *   com/ibm/icu/dev/data such as "data.txt"
      * @param codeUnderTest the code under test
      */
+    
     static void runSuite(
-            TestParams params, String fileName, CodeUnderTest codeUnderTest) {
-        new DataDrivenNumberFormatTestSuite(params, codeUnderTest)
+            String fileName, CodeUnderTest codeUnderTest) {
+        new DataDrivenNumberFormatTestSuite(codeUnderTest)
                 .run(fileName, RunMode.SKIP_KNOWN_FAILURES);
     }
     
@@ -115,20 +115,18 @@ public class DataDrivenNumberFormatTestSuite extends TestFmwk {
      * Runs every format test in data driven test suite including those
      * that are known to fail.
      * 
-     * @param params this.params from TestFmwk
      * @param fileName The name of the test file. A relative file name under
      *   com/ibm/icu/dev/data such as "data.txt"
      * @param codeUnderTest the code under test
      */
     static void runFormatSuiteIncludingKnownFailures(
-            TestParams params, String fileName, CodeUnderTest codeUnderTest) {
-        new DataDrivenNumberFormatTestSuite(params, codeUnderTest)
+            String fileName, CodeUnderTest codeUnderTest) {
+        new DataDrivenNumberFormatTestSuite(codeUnderTest)
                 .run(fileName, RunMode.INCLUDE_KNOWN_FAILURES);
     }
     
     private DataDrivenNumberFormatTestSuite(
-            TestParams params, CodeUnderTest codeUnderTest) {
-        this.params = params;
+            CodeUnderTest codeUnderTest) {
         this.codeUnderTest = codeUnderTest;
     }
        
@@ -259,7 +257,7 @@ public class DataDrivenNumberFormatTestSuite extends TestFmwk {
     }
     
     private void showError(String message) {
-        errln(String.format("line %d: %s\n%s\n%s", fileLineNumber, Utility.escape(message), fileTestName,fileLine));
+        TestFmwk.errln(String.format("line %d: %s\n%s\n%s", fileLineNumber, Utility.escape(message), fileTestName,fileLine));
     }
    
     private List<String> splitBy(char delimiter) {

@@ -187,6 +187,4 @@ public abstract class TestBoilerplate extends TestFmwk {
         }
         return buffer.toString();
     }
-    
-
 }

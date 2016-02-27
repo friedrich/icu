@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.ibm.icu.dev.test.AbstractTestLog;
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
 import com.ibm.icu.impl.ICUConfig;
 import com.ibm.icu.impl.LocaleUtility;
@@ -42,7 +44,7 @@ import com.ibm.icu.util.Currency;
 import com.ibm.icu.util.CurrencyAmount;
 import com.ibm.icu.util.ULocale;
 
-public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
+public class NumberFormatTest extends TestFmwk {
     
     private static ULocale EN = new ULocale("en");
     
@@ -4308,7 +4310,7 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 result = parser.parse(value2Parse).doubleValue();
                 assertEquals("wrong parsed value", parseValue, result);
             } catch (ParseException e) {
-               this.errln("Parsing " + value2Parse + " should have succeeded with " + testPattern[i] + 
+               AbstractTestLog.errln("Parsing " + value2Parse + " should have succeeded with " + testPattern[i] + 
                             " and isDecimalPointMatchRequired set to: " + parser.isDecimalPatternMatchRequired());
             }
             
@@ -4316,7 +4318,7 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             try {
                 result = parser.parse(value2Parse).doubleValue();
                 if(hasDecimalPoint){
-                    this.errln("Parsing " + value2Parse + " should NOT have succeeded with " + testPattern[i] + 
+                    AbstractTestLog.errln("Parsing " + value2Parse + " should NOT have succeeded with " + testPattern[i] + 
                             " and isDecimalPointMatchRequired set to: " + parser.isDecimalPatternMatchRequired());
                 }
             } catch (ParseException e) {
@@ -4329,13 +4331,13 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     @Test
     public void TestDataDrivenICU() {
         DataDrivenNumberFormatTestSuite.runSuite(
-                this.params, "numberformattestspecification.txt", ICU);
+                "numberformattestspecification.txt", ICU);
     }
 
     @Test
     public void TestDataDrivenJDK() {
         DataDrivenNumberFormatTestSuite.runSuite(
-                this.params, "numberformattestspecification.txt", JDK);
+                "numberformattestspecification.txt", JDK);
     }
 
 

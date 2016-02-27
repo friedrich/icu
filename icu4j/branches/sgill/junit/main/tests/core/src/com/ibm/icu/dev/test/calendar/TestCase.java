@@ -9,7 +9,7 @@ package com.ibm.icu.dev.test.calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import com.ibm.icu.dev.test.TestLog;
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
 import com.ibm.icu.util.SimpleTimeZone;
@@ -187,7 +187,8 @@ public class TestCase {
      * 
      * @see #applyTime
      */
-    public boolean fieldsEqual(Calendar c, TestLog log) {
+    // TODO(sgill): blanked out TestLog
+    public boolean fieldsEqual(Calendar c, /*TestLog*/ Object log) {
         for (int i=0; i < c.getFieldCount(); i++) {
             if (isSet(i) && get(i) != c.get(i)) {
                 StringBuffer buf = new StringBuffer();
@@ -204,7 +205,8 @@ public class TestCase {
                         }
                     }
                 }
-                log.errln(buf.toString());
+                //log.errln(buf.toString());
+                TestFmwk.errln(buf.toString());
                 return false;
             }
         }

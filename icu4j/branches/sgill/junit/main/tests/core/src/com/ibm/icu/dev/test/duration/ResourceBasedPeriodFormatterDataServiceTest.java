@@ -19,14 +19,6 @@ import com.ibm.icu.impl.duration.impl.PeriodFormatterData;
 import com.ibm.icu.impl.duration.impl.ResourceBasedPeriodFormatterDataService;
 
 public class ResourceBasedPeriodFormatterDataServiceTest extends TestFmwk {
-
-  /**
-   * Invoke the tests.
-   */
-  public static void main(String[] args) {
-      new ResourceBasedPeriodFormatterDataServiceTest().run(args);
-  }
-
   @Test
   public void testAvailable() {
     ResourceBasedPeriodFormatterDataService service =

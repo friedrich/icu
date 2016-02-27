@@ -4066,7 +4066,7 @@ the ::BEGIN/::END stuff)
     //======================================================================
     // Support methods
     //======================================================================
-    void expect(String rules,
+    static void expect(String rules,
             String source,
             String expectedResult,
             Transliterator.Position pos) {
@@ -4074,11 +4074,11 @@ the ::BEGIN/::END stuff)
         expect(t, source, expectedResult, pos);
     }
 
-    void expect(String rules, String source, String expectedResult) {
+    static void expect(String rules, String source, String expectedResult) {
         expect(rules, source, expectedResult, null);
     }
 
-    void expect(Transliterator t, String source, String expectedResult,
+    static void expect(Transliterator t, String source, String expectedResult,
             Transliterator reverseTransliterator) {
         expect(t, source, expectedResult);
         if (reverseTransliterator != null) {
@@ -4086,11 +4086,11 @@ the ::BEGIN/::END stuff)
         }
     }
 
-    void expect(Transliterator t, String source, String expectedResult) {
+    static void expect(Transliterator t, String source, String expectedResult) {
         expect(t, source, expectedResult, (Transliterator.Position) null);
     }
 
-    void expect(Transliterator t, String source, String expectedResult,
+    static void expect(Transliterator t, String source, String expectedResult,
             Transliterator.Position pos) {
         if (pos == null) {
             String result = t.transliterate(source);
@@ -4162,14 +4162,14 @@ the ::BEGIN/::END stuff)
                 expectedResult);
     }
 
-    boolean expectAux(String tag, String source,
+    static boolean expectAux(String tag, String source,
             String result, String expectedResult) {
         return expectAux(tag, new String[] {source, result},
                 result.equals(expectedResult),
                 expectedResult);
     }
 
-    boolean expectAux(String tag, String source,
+    static boolean expectAux(String tag, String source,
             String result, boolean pass,
             String expectedResult) {
         return expectAux(tag, new String[] {source, result},
@@ -4177,7 +4177,7 @@ the ::BEGIN/::END stuff)
                 expectedResult);
     }
 
-    boolean expectAux(String tag, String source,
+    static boolean expectAux(String tag, String source,
             boolean pass,
             String expectedResult) {
         return expectAux(tag, new String[] {source},
@@ -4185,7 +4185,7 @@ the ::BEGIN/::END stuff)
                 expectedResult);
     }
 
-    boolean expectAux(String tag, String[] results, boolean pass,
+    static boolean expectAux(String tag, String[] results, boolean pass,
             String expectedResult) {
         msg((pass?"(":"FAIL: (")+tag+")", pass ? LOG : ERR, true, true);
 
@@ -4209,12 +4209,12 @@ the ::BEGIN/::END stuff)
         return pass;
     }
 
-    private void assertTransform(String message, String expected, StringTransform t, String source) {
+    static private void assertTransform(String message, String expected, StringTransform t, String source) {
         assertEquals(message + " " + source, expected, t.transform(source));
     }
 
 
-    private void assertTransform(String message, String expected, StringTransform t, StringTransform back, String source, String source2) {
+    static private void assertTransform(String message, String expected, StringTransform t, StringTransform back, String source, String source2) {
         assertEquals(message + " " +source, expected, t.transform(source));
         assertEquals(message + " " +source2, expected, t.transform(source2));
         assertEquals(message + " " + expected, source, back.transform(expected));

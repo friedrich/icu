@@ -6,26 +6,18 @@
  */
 package com.ibm.icu.dev.test;
 
-import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.MissingResourceException;
 import java.util.Random;
 import java.util.TreeMap;
@@ -127,387 +119,6 @@ public class TestFmwk extends AbstractTestLog {
         return new Random(getParams().seed);
     }
 
-    /**
-     * A test that has no test methods itself, but instead runs other tests.
-     *
-     * This overrides methods are getTargets and getSubtest from TestFmwk.
-     *
-     * If you want the default behavior, pass an array of class names and an
-     * optional description to the constructor. The named classes must extend
-     * TestFmwk. If a provided name doesn't include a ".", package name is
-     * prefixed to it (the package of the current test is used if none was
-     * provided in the constructor). The resulting full name is used to
-     * instantiate an instance of the class using the default constructor.
-     *
-     * Class names are resolved to classes when getTargets or getSubtest is
-     * called. This allows instances of TestGroup to be compiled and run without
-     * all the targets they would normally invoke being available.
-     */
-//    public static abstract class TestGroup extends TestFmwk {
-//        private String defaultPackage;
-//        private String[] names;
-//        private String description;
-//
-//        private Class[] tests; // deferred init
-//
-//        /**
-//         * Constructor that takes a default package name and a list of class
-//         * names. Adopts and modifies the classname list
-//         */
-//        protected TestGroup(String defaultPackage, String[] classnames,
-//                String description) {
-//            if (classnames == null) {
-//                throw new IllegalStateException("classnames must not be null");
-//            }
-//
-//            if (defaultPackage == null) {
-//                defaultPackage = getClass().getPackage().getName();
-//            }
-//            defaultPackage = defaultPackage + ".";
-//
-//            this.defaultPackage = defaultPackage;
-//            this.names = classnames;
-//            this.description = description;
-//        }
-//
-//        /**
-//         * Constructor that takes a list of class names and a description, and
-//         * uses the package for this class as the default package.
-//         */
-//        protected TestGroup(String[] classnames, String description) {
-//            this(null, classnames, description);
-//        }
-//
-//        /**
-//         * Constructor that takes a list of class names, and uses the package
-//         * for this class as the default package.
-//         */
-//        protected TestGroup(String[] classnames) {
-//            this(null, classnames, null);
-//        }
-//
-//        protected String getDescription() {
-//            return description;
-//        }
-//
-//        protected Target getTargets(String targetName) {
-//            Target target = null;
-//            if (targetName != null) {
-//                finishInit(); // hmmm, want to get subtest without initializing
-//                // all tests
-//
-//                try {
-//                    TestFmwk test = getSubtest(targetName);
-//                    if (test != null) {
-//                        target = test.new ClassTarget();
-//                    } else {
-//                        target = this.new Target(targetName);
-//                    }
-//                } catch (TestFmwkException e) {
-//                    target = this.new Target(targetName);
-//                }
-//            } else if (getParams().doRecurse()) {
-//                finishInit();
-//                boolean groupOnly = getParams().doRecurseGroupsOnly();
-//                for (int i = names.length; --i >= 0;) {
-//                    Target newTarget = null;
-//                    Class cls = tests[i];
-//                    if (cls == null) { // hack no warning for missing tests
-//                        if (getParams().warnings) {
-//                            continue;
-//                        }
-//                        newTarget = this.new Target(names[i]);
-//                    } else {
-//                        TestFmwk test = getSubtest(i, groupOnly);
-//                        if (test != null) {
-//                            newTarget = test.new ClassTarget();
-//                        } else {
-//                            if (groupOnly) {
-//                                newTarget = this.new EmptyTarget(names[i]);
-//                            } else {
-//                                newTarget = this.new Target(names[i]);
-//                            }
-//                        }
-//                    }
-//                    if (newTarget != null) {
-//                        newTarget.setNext(target);
-//                        target = newTarget;
-//                    }
-//                }
-//            }
-//
-//            return target;
-//        }
-//        protected TestFmwk getSubtest(String testName) throws TestFmwkException {
-//            finishInit();
-//
-//            for (int i = 0; i < names.length; ++i) {
-//                if (names[i].equalsIgnoreCase(testName)) { // allow
-//                    // case-insensitive
-//                    // matching
-//                    return getSubtest(i, false);
-//                }
-//            }
-//            throw new TestFmwkException(testName);
-//        }
-//
-//        private TestFmwk getSubtest(int i, boolean groupOnly) {
-//            Class cls = tests[i];
-//            if (cls != null) {
-//                if (groupOnly && !TestGroup.class.isAssignableFrom(cls)) {
-//                    return null;
-//                }
-//
-//                try {
-//                    TestFmwk subtest = (TestFmwk) cls.newInstance();
-//                    subtest.params = params;
-//                    return subtest;
-//                } catch (InstantiationException e) {
-//                    throw new IllegalStateException(e.getMessage());
-//                } catch (IllegalAccessException e) {
-//                    throw new IllegalStateException(e.getMessage());
-//                }
-//            }
-//            return null;
-//        }
-//
-//        private void finishInit() {
-//            if (tests == null) {
-//                tests = new Class[names.length];
-//
-//                for (int i = 0; i < names.length; ++i) {
-//                    String name = names[i];
-//                    if (name.indexOf('.') == -1) {
-//                        name = defaultPackage + name;
-//                    }
-//                    try {
-//                        Class cls = Class.forName(name);
-//                        if (!TestFmwk.class.isAssignableFrom(cls)) {
-//                            throw new IllegalStateException("class " + name
-//                                    + " does not extend TestFmwk");
-//                        }
-//
-//                        tests[i] = cls;
-//                        names[i] = getClassTargetName(cls);
-//                    } catch (ClassNotFoundException e) {
-//                        // leave tests[i] null and name as classname
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-    /**
-     * The default target is invalid.
-     */
-//    public class Target {
-//        private Target next;
-//        public final String name;
-//
-//        public Target(String name) {
-//            this.name = name;
-//        }
-//
-//        public Target setNext(Target next) {
-//            this.next = next;
-//            return this;
-//        }
-//
-//        public Target getNext() {
-//            return next;
-//        }
-//
-//        public Target append(Target targets) {
-//            Target t = this;
-//            while(t.next != null) {
-//                t = t.next;
-//            }
-//            t.next = targets;
-//            return this;
-//        }
-//
-//        public void run() throws Exception {
-//            int f = filter();
-//            if (f == -1) {
-//                ++params.invalidCount;
-//            } else {
-//                Locale.setDefault(defaultLocale);
-//                TimeZone.setDefault(defaultTimeZone);
-//
-//                if (!validate()) {
-//                    params.writeTestInvalid(name, params.nodata);
-//                } else {
-//                    params.push(name, getDescription(), f == 1);
-//                    execute();
-//                    params.pop();
-//                }
-//            }
-//        }
-//
-//        protected int filter() {
-//            return params.filter(name);
-//        }
-//
-//        protected boolean validate() {
-//            return false;
-//        }
-//
-//        protected String getDescription() {
-//            return null;
-//        }
-//
-//        protected void execute() throws Exception{
-//        }
-//    }
-
-//    public class EmptyTarget extends Target {
-//        public EmptyTarget(String name) {
-//            super(name);
-//        }
-//
-//        protected boolean validate() {
-//            return true;
-//        }
-//    }
-//
-//    public class MethodTarget extends Target {
-//        private Method testMethod;
-//
-//        public MethodTarget(String name, Method method) {
-//            super(name);
-//            testMethod = method;
-//        }
-//
-//        protected boolean validate() {
-//            return testMethod != null && validateMethod(name);
-//        }
-//
-//        protected String getDescription() {
-//            return getMethodDescription(name);
-//        }
-//
-//        protected void execute() throws Exception{
-//            if (params.inDocMode()) {
-//                // nothing to execute
-//            } else if (!params.stack.included) {
-//                ++params.invalidCount;
-//            } else {
-//                final Object[] NO_ARGS = new Object[0];
-//                try {
-//                    ++params.testCount;
-//                    init();
-//                    testMethod.invoke(TestFmwk.this, NO_ARGS);
-//                } catch (IllegalAccessException e) {
-//                    errln("Can't access test method " + testMethod.getName());
-//                } catch (Exception e) {
-//                    handleException(e);
-//                }
-//
-//            }
-//            // If non-exhaustive, check if the method target
-//            // takes excessive time.
-//            if (params.inclusion <= 5) {
-//                double deltaSec = (double)(System.currentTimeMillis() - params.stack.millis)/1000;
-//                if (deltaSec > params.maxTargetSec) {
-//                    if (params.timeLog == null) {
-//                        params.timeLog = new StringBuffer();
-//                    }
-//                    params.stack.appendPath(params.timeLog);
-//                    params.timeLog.append(" (" + deltaSec + "s" + ")\n");
-//                }
-//            }
-//        }
-//
-//        protected String getStackTrace(InvocationTargetException e) {
-//            ByteArrayOutputStream bs = new ByteArrayOutputStream();
-//            PrintStream ps = new PrintStream(bs);
-//            e.getTargetException().printStackTrace(ps);
-//            return bs.toString();
-//        }
-//    }
-//
-//    public class ClassTarget extends Target {
-//        String targetName;
-//
-//        public ClassTarget() {
-//            this(null);
-//        }
-//
-//        public ClassTarget(String targetName) {
-//            super(getClassTargetName(TestFmwk.this.getClass()));
-//            this.targetName = targetName;
-//        }
-//
-//        protected boolean validate() {
-//            return TestFmwk.this.validate();
-//        }
-//
-//        protected String getDescription() {
-//            return TestFmwk.this.getDescription();
-//        }
-//
-//        protected void execute() throws Exception {
-//            params.indentLevel++;
-//            Target target = randomize(getTargets(targetName));
-//            while (target != null) {
-//                target.run();
-//                target = target.next;
-//            }
-//            params.indentLevel--;
-//        }
-//
-//        private Target randomize(Target t) {
-//            if (t != null && t.getNext() != null) {
-//                ArrayList list = new ArrayList();
-//                while (t != null) {
-//                    list.add(t);
-//                    t = t.getNext();
-//                }
-//
-//                Target[] arr = (Target[]) list.toArray(new Target[list.size()]);
-//
-//                if (true) { // todo - add to params?
-//                    // different jvms return class methods in different orders,
-//                    // so we sort them (always, and then randomize them, so that
-//                    // forcing a seed will also work across jvms).
-//                    Arrays.sort(arr, new Comparator() {
-//                        public int compare(Object lhs, Object rhs) {
-//                            // sort in reverse order, later we link up in
-//                            // forward order
-//                            return ((Target) rhs).name
-//                                    .compareTo(((Target) lhs).name);
-//                        }
-//                    });
-//
-//                    // t is null to start, ends up as first element
-//                    // (arr[arr.length-1])
-//                    for (int i = 0; i < arr.length; ++i) {
-//                        t = arr[i].setNext(t); // relink in forward order
-//                    }
-//                }
-//
-//                if (params.random != null) {
-//                    t = null; // reset t to null
-//                    Random r = params.random;
-//                    for (int i = arr.length; --i >= 1;) {
-//                        int x = r.nextInt(i + 1);
-//                        t = arr[x].setNext(t);
-//                        arr[x] = arr[i];
-//                    }
-//
-//                    t = arr[0].setNext(t); // new first element
-//                }
-//            }
-//
-//            return t;
-//        }
-//    }
-
-    //------------------------------------------------------------------------
-    // Everything below here is boilerplate code that makes it possible
-    // to add a new test by simply adding a function to an existing class
-    //------------------------------------------------------------------------
-
     protected TestFmwk() {
     }
 
@@ -517,8 +128,8 @@ public class TestFmwk extends AbstractTestLog {
     protected static AtomicReference<TestParams> paramsReference = new AtomicReference<TestParams>();
 
     @BeforeClass
-    public static void testInitialize() {
-        // TODO: check that all methods in subclass of pattern [Tt]est.* | .*[Ttest] have annotation of @Test
+    public static void initialize() {
+        // TODO(sgill): check that all methods in subclass of pattern [Tt]est.* | .*[Ttest] have annotation of @Test
         
         if (paramsReference.get() != null) {
             return;
@@ -532,7 +143,7 @@ public class TestFmwk extends AbstractTestLog {
         }
     }
 
-    protected TestParams getParams() {
+    protected static TestParams getParams() {
         return paramsReference.get();
     }
     
@@ -823,50 +434,49 @@ public class TestFmwk extends AbstractTestLog {
         return null;
     }
 
-    public boolean isVerbose() {
+    public static boolean isVerbose() {
         return getParams().verbose;
     }
 
-    public boolean noData() {
+    public static boolean noData() {
         return getParams().nodata;
     }
 
-    public boolean isTiming() {
-        return getParams().timing < Long.MAX_VALUE;
-    }
-
-    public boolean isMemTracking() {
-        return getParams().memusage;
-    }
-
+//    public boolean isTiming() {
+//        return getParams().timing < Long.MAX_VALUE;
+//    }
+//
+//    public boolean isMemTracking() {
+//        return getParams().memusage;
+//    }
+//
     /**
      * 0 = fewest tests, 5 is normal build, 10 is most tests
      */
-    public int getInclusion() {
+    public static int getInclusion() {
         return getParams().inclusion;
     }
 
-    public boolean isModularBuild() {
+    public static boolean isModularBuild() {
         return getParams().warnings;
     }
 
-    public boolean isQuick() {
+    public static boolean isQuick() {
         return getParams().inclusion == 0;
     }
 
-    // TODO: can this be removed?
-    public int getIndentLevel() {
-        return getParams().indentLevel;
-    }
-    
-    public void incrementIndentLevel() {
-        getParams().indentLevel++;
-    }
-    
-    public void decrementIndentLevel() {
-        getParams().indentLevel--;
-    }
-    
+//    public int getIndentLevel() {
+//        return getParams().indentLevel;
+//    }
+//    
+//    public void incrementIndentLevel() {
+//        getParams().indentLevel++;
+//    }
+//    
+//    public void decrementIndentLevel() {
+//        getParams().indentLevel--;
+//    }
+//    
     static final String ICU_TRAC_URL = "http://bugs.icu-project.org/trac/ticket/";
     static final String CLDR_TRAC_URL = "http://unicode.org/cldr/trac/ticket/";
     static final String CLDR_TICKET_PREFIX = "cldrbug:";
@@ -1023,6 +633,7 @@ public class TestFmwk extends AbstractTestLog {
         pw.println(" If multiple targets are provided, each is executed in order.");
         pw.flush();
     }
+    
     public static String hex(char[] s){
         StringBuffer result = new StringBuffer();
         for (int i = 0; i < s.length; ++i) {
@@ -1031,6 +642,7 @@ public class TestFmwk extends AbstractTestLog {
         }
         return result.toString();
     }
+    
     public static String hex(byte[] s){
         StringBuffer result = new StringBuffer();
         for (int i = 0; i < s.length; ++i) {
@@ -1039,6 +651,7 @@ public class TestFmwk extends AbstractTestLog {
         }
         return result.toString();
     }
+    
     public static String hex(char ch) {
         StringBuffer result = new StringBuffer();
         String foo = Integer.toString(ch, 16).toUpperCase();
@@ -1898,28 +1511,28 @@ public class TestFmwk extends AbstractTestLog {
 
     // JUnit-like assertions.
 
-    protected boolean assertTrue(String message, boolean condition) {
+    protected static boolean assertTrue(String message, boolean condition) {
         return handleAssert(condition, message, "true", null);
     }
 
-    protected boolean assertFalse(String message, boolean condition) {
+    protected static boolean assertFalse(String message, boolean condition) {
         return handleAssert(!condition, message, "false", null);
     }
 
-    protected boolean assertEquals(String message, boolean expected,
+    protected static boolean assertEquals(String message, boolean expected,
             boolean actual) {
         return handleAssert(expected == actual, message, String
                 .valueOf(expected), String.valueOf(actual));
     }
 
-    protected boolean assertEquals(String message, long expected, long actual) {
+    protected static boolean assertEquals(String message, long expected, long actual) {
         return handleAssert(expected == actual, message, String
                 .valueOf(expected), String.valueOf(actual));
     }
 
     // do NaN and range calculations to precision of float, don't rely on
     // promotion to double
-    protected boolean assertEquals(String message, float expected,
+    protected static boolean assertEquals(String message, float expected,
             float actual, double error) {
         boolean result = Float.isInfinite(expected)
                 ? expected == actual
@@ -1929,7 +1542,7 @@ public class TestFmwk extends AbstractTestLog {
                 .valueOf(actual));
     }
 
-    protected boolean assertEquals(String message, double expected,
+    protected static boolean assertEquals(String message, double expected,
             double actual, double error) {
         boolean result = Double.isInfinite(expected)
                 ? expected == actual
@@ -1939,14 +1552,14 @@ public class TestFmwk extends AbstractTestLog {
                 .valueOf(actual));
     }
 
-    protected <T> boolean assertEquals(String message, T[] expected, T[] actual) {
+    protected static <T> boolean assertEquals(String message, T[] expected, T[] actual) {
         // Use toString on a List to get useful, readable messages
         String expectedString = expected == null ? "null" : Arrays.asList(expected).toString();
         String actualString = actual == null ? "null" : Arrays.asList(actual).toString();
         return assertEquals(message, expectedString, actualString);
     }
 
-    protected boolean assertEquals(String message, Object expected,
+    protected static boolean assertEquals(String message, Object expected,
             Object actual) {
         boolean result = expected == null ? actual == null : expected
                 .equals(actual);
@@ -1954,7 +1567,7 @@ public class TestFmwk extends AbstractTestLog {
                 stringFor(actual));
     }
 
-    protected boolean assertNotEquals(String message, Object expected,
+    protected static boolean assertNotEquals(String message, Object expected,
             Object actual) {
         boolean result = !(expected == null ? actual == null : expected
                 .equals(actual));
@@ -1967,26 +1580,26 @@ public class TestFmwk extends AbstractTestLog {
                 stringFor(actual), "==", false);
     }
 
-    protected boolean assertNotSame(String message, Object expected,
+    protected static boolean assertNotSame(String message, Object expected,
             Object actual) {
         return handleAssert(expected != actual, message, stringFor(expected),
                 stringFor(actual), "!=", true);
     }
 
-    protected boolean assertNull(String message, Object actual) {
+    protected static boolean assertNull(String message, Object actual) {
         return handleAssert(actual == null, message, null, stringFor(actual));
     }
 
-    protected boolean assertNotNull(String message, Object actual) {
+    protected static boolean assertNotNull(String message, Object actual) {
         return handleAssert(actual != null, message, null, stringFor(actual),
                 "!=", true);
     }
 
-    protected void fail() {
+    protected static void fail() {
         fail("");
     }
 
-    protected void fail(String message) {
+    protected static void fail(String message) {
         if (message == null) {
             message = "";            
         }
@@ -1996,12 +1609,12 @@ public class TestFmwk extends AbstractTestLog {
         errln(sourceLocation() + message);
     }
 
-    private boolean handleAssert(boolean result, String message,
+    private static boolean handleAssert(boolean result, String message,
             String expected, String actual) {
         return handleAssert(result, message, expected, actual, null, false);
     }
 
-    public boolean handleAssert(boolean result, String message,
+    public static boolean handleAssert(boolean result, String message,
             Object expected, Object actual, String relation, boolean flip) {
         if (!result || isVerbose()) {
             if (message == null) {
@@ -2026,7 +1639,7 @@ public class TestFmwk extends AbstractTestLog {
         return result;
     }
 
-    private final String stringFor(Object obj) {
+    private static final String stringFor(Object obj) {
         if (obj == null) {
             return "null";
         }
@@ -2070,5 +1683,21 @@ public class TestFmwk extends AbstractTestLog {
     //protected TestParams params = null;
 
     private final static String spaces = "                                          ";
+
+    // TODO (sgill): added to keep errors away
+    /* (non-Javadoc)
+     * @see com.ibm.icu.dev.test.TestLog#msg(java.lang.String, int, boolean, boolean)
+     */
+    //@Override
+    public static void msg(String message, int level, boolean incCount, boolean newln) {
+        while (level > 0) {
+            System.out.print(" ");
+            level--;
+        }
+        System.out.print(message);
+        if (newln) {
+            System.out.println();
+        }
+    }
 
 }

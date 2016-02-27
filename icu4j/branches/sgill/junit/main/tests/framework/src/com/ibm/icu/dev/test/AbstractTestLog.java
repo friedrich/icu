@@ -46,7 +46,7 @@ public abstract class AbstractTestLog implements TestLog {
     /**
      * Add a message.
      */
-    public final void log(String message) {
+    public static final void log(String message) {
         // Probably temporary - must decide what to do with these
         System.out.print(message);
         //msg(message, LOG, true, false);
@@ -55,7 +55,7 @@ public abstract class AbstractTestLog implements TestLog {
     /**
      * Add a message and newline.
      */
-    public final void logln(String message) {
+    public static final void logln(String message) {
         // Probably temporary - must decide what to do with these
         System.out.println(message);
         //msg(message, LOG, true, true);
@@ -64,7 +64,7 @@ public abstract class AbstractTestLog implements TestLog {
     /**
      * Report an error.
      */
-    public final void err(String message) {
+    public static final void err(String message) {
         Assert.fail(message);
         //msg(message, ERR, true, false);
     }
@@ -72,7 +72,7 @@ public abstract class AbstractTestLog implements TestLog {
     /**
      * Report an error and newline.
      */
-    public final void errln(String message) {
+    public static final void errln(String message) {
         Assert.fail(message);
         //msg(message, ERR, true, true);
     }
@@ -80,7 +80,7 @@ public abstract class AbstractTestLog implements TestLog {
     /**
      * Report a warning (generally missing tests or data).
      */
-    public final void warn(String message) {
+    public static final void warn(String message) {
         System.out.print(message);
         //msg(message, WARN, true, false);
     }
@@ -88,7 +88,7 @@ public abstract class AbstractTestLog implements TestLog {
     /**
      * Report a warning (generally missing tests or data) and newline.
      */
-    public final void warnln(String message) {
+    public static final void warnln(String message) {
         System.out.println(message);
         //msg(message, WARN, true, true);
     }

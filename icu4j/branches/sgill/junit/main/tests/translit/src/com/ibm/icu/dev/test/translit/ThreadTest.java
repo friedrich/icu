@@ -10,12 +10,13 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.Transliterator;
 
 // Test for ICU Ticket #7201.  With threading bugs in RuleBasedTransliterator, this
 //   test would reliably crash.
 
-public class ThreadTest extends TransliteratorTest {
+public class ThreadTest extends TestFmwk {
     private ArrayList<Worker> threads = new ArrayList<Worker>();
     private int iterationCount = 100000;
     

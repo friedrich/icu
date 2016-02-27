@@ -33,7 +33,6 @@ public class CompatibilityTest extends TestFmwk
 {
     @Test
     @Parameters(method="generateClassList")
-    //@Parameters({"/Users/stuartg/Documents/code/icu/junit/main/tests/core/out/bin/com/ibm/icu/dev/test/serializable/data/ICU_3.6/com.ibm.icu.text.DateFormat.dat"})
     public void testCompatibility(String testFileName) throws ClassNotFoundException, IOException {
         File testFile = new File(testFileName);
         Object[] oldObjects = SerializableTestUtilities.getSerializedObjects(testFile);

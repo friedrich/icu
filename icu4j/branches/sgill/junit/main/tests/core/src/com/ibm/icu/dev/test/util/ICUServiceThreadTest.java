@@ -193,7 +193,8 @@ public class ICUServiceThreadTest extends TestFmwk
         protected void iterate() {
             Factory f = new TestFactory(getCLV());
             service.registerFactory(f);
-            log.logln(f.toString());
+            //log.logln(f.toString());
+            TestFmwk.logln(f.toString());
         }
     }
 
@@ -216,7 +217,8 @@ public class ICUServiceThreadTest extends TestFmwk
                 int n = r.nextInt(s);
                 Factory f = (Factory)factories.remove(n);
                 boolean success = service.unregisterFactory(f);
-                log.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
+                //log.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
+                TestFmwk.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
             }
         }
     }
@@ -235,7 +237,8 @@ public class ICUServiceThreadTest extends TestFmwk
             if (n < factories.length) {
                 Factory f = factories[n++];
                 boolean success = service.unregisterFactory(f);
-                log.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
+                //log.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
+                TestFmwk.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
             }
         }
     }
@@ -253,7 +256,8 @@ public class ICUServiceThreadTest extends TestFmwk
             while (--n >= 0 && iter.hasNext()) {
                 String id = (String)iter.next();
                 Object result = service.get(id);
-                log.logln("iter: " + n + " id: " + id + " result: " + result);
+                //log.logln("iter: " + n + " id: " + id + " result: " + result);
+                TestFmwk.logln("iter: " + n + " id: " + id + " result: " + result);
             }
         }
     }
@@ -283,10 +287,14 @@ public class ICUServiceThreadTest extends TestFmwk
 
                 //log.logln(" iter: " + n +
                 String num = Integer.toString(n);
-                log.logln(" iter: " + num +
-                          " dname: " + dname +
-                          " id: " + id +
-                          " result: " + result);
+//                log.logln(" iter: " + num +
+//                        " dname: " + dname +
+//                        " id: " + id +
+//                        " result: " + result);
+                TestFmwk.logln(" iter: " + num +
+                        " dname: " + dname +
+                        " id: " + id +
+                        " result: " + result);
             }
         }
     }
@@ -304,7 +312,8 @@ public class ICUServiceThreadTest extends TestFmwk
             String id = getCLV();
             Object o = service.get(id, actualID);
             if (o != null) {
-                log.logln(" id: " + id + " actual: " + actualID[0] + " result: " + o);
+                //log.logln(" id: " + id + " actual: " + actualID[0] + " result: " + o);
+                TestFmwk.logln(" id: " + id + " actual: " + actualID[0] + " result: " + o);
             }
         }
     }
@@ -325,7 +334,8 @@ public class ICUServiceThreadTest extends TestFmwk
             }
             String id = list[n];
             Object o = service.get(id);
-            log.logln(" id: " + id + " result: " + o);
+            //log.logln(" id: " + id + " result: " + o);
+            TestFmwk.logln(" id: " + id + " result: " + o);
         }
     }
 
