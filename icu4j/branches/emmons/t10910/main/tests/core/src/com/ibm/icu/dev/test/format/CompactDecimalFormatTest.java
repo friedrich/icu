@@ -1,6 +1,6 @@
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, Google, International Business Machines Corporation and
+ * Copyright (C) 1996-2016, Google, International Business Machines Corporation and
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -92,25 +92,25 @@ public class CompactDecimalFormatTest extends TestFmwk {
             {1234567890123456f, "1.200 трилиона"},
     };
 
- //   Object[][] SerbianTestDataLongNegative = {
- //           {-1234, "-1,2 хиљаде"},
- //           {-12345, "-12 хиљада"},
- //           {-21789, "-22 хиљаде"},
- //           {-123456, "-120 хиљада"},
- //           {-999999, "-1 милион"},
- //           {-1234567, "-1,2 милиона"},
- //           {-12345678, "-12 милиона"},
- //           {-123456789, "-120 милиона"},
- //           {-1234567890, "-1,2 милијарде"},
- //           {-12345678901f, "-12 милијарди"},
- //           {-20890123456f, "-21 милијарда"},
- //           {-21890123456f, "-22 милијарде"},
- //           {-123456789012f, "-120 милијарди"},
- //           {-1234567890123f, "-1,2 трилиона"},
- //           {-12345678901234f, "-12 трилиона"},
- //           {-123456789012345f, "-120 трилиона"},
- //           {-1234567890123456f, "-1.200 трилиона"},
- //   };
+    Object[][] SerbianTestDataLongNegative = {
+            {-1234, "-1,2 хиљаде"},
+            {-12345, "-12 хиљада"},
+            {-21789, "-22 хиљаде"},
+            {-123456, "-120 хиљада"},
+            {-999999, "-1 милион"},
+            {-1234567, "-1,2 милиона"},
+            {-12345678, "-12 милиона"},
+            {-123456789, "-120 милиона"},
+            {-1234567890, "-1,2 милијарде"},
+            {-12345678901f, "-12 милијарди"},
+            {-20890123456f, "-21 милијарда"},
+            {-21890123456f, "-22 милијарде"},
+            {-123456789012f, "-120 милијарди"},
+            {-1234567890123f, "-1,2 трилиона"},
+            {-12345678901234f, "-12 трилиона"},
+            {-123456789012345f, "-120 трилиона"},
+            {-1234567890123456f, "-1.200 трилиона"},
+    };
 
     Object[][] JapaneseTestData = {
             {1234f, "1200"},
@@ -211,20 +211,20 @@ public class CompactDecimalFormatTest extends TestFmwk {
             {5184, "5,2 tis\u00edca"},
     };
 
-//    Object[][] SwahiliTestDataNegative = {
-//            {-1234f, "elfu\u00a0-1.2"},
-//            {-12345f, "elfu\u00a0-12"},
-//            {-123456f, "elfu\u00A0-120"},
-//            {-1234567f, "M-1.2"},
-//            {-12345678f, "M-12"},
-//            {-123456789f, "M-120"},
-//            {-1234567890f, "B-1.2"},
-//            {-12345678901f, "B-12"},
-//            {-123456789012f, "B-120"},
-//            {-1234567890123f, "T-1.2"},
-//            {-12345678901234f, "T-12"},
-//            {-12345678901234567890f, "T-12000000"},
-//    };
+    Object[][] SwahiliTestDataNegative = {
+            {-1234f, "elfu\u00a0-1.2"},
+            {-12345f, "elfu\u00a0-12"},
+            {-123456f, "elfu\u00A0-120"},
+            {-1234567f, "M-1.2"},
+            {-12345678f, "M-12"},
+            {-123456789f, "M-120"},
+            {-1234567890f, "B-1.2"},
+            {-12345678901f, "B-12"},
+            {-123456789012f, "B-120"},
+            {-1234567890123f, "T-1.2"},
+            {-12345678901234f, "T-12"},
+            {-12345678901234567890f, "T-12000000"},
+    };
 
     Object[][] TestACoreCompactFormatList = {
             {1000, "1K"},
@@ -314,17 +314,20 @@ public class CompactDecimalFormatTest extends TestFmwk {
         checkLocale(ULocale.ENGLISH, CompactStyle.SHORT, EnglishTestData);
     }
 
-// JCE: 2016-02-26: This test commented out because CompactDecimalFormat cannot properly format
+// JCE: 2016-02-26: This test is logKnownIssue because CompactDecimalFormat cannot properly format
 // negative quantities until we implement support for positive/negative subpatterns within CDF.
 // So, in the meantime, we are making any format of a negative throw an UnsupportedOperationException
 // as the original JavaDoc states.
 //
-//    public void TestArabicLongStyle() {
-//        NumberFormat cdf =
-//                CompactDecimalFormat.getInstance(
-//                        ULocale.forLanguageTag("ar"), CompactStyle.LONG);
-//        assertEquals("Arabic Long", "\u200F-\u0665\u066B\u0663 \u0623\u0644\u0641", cdf.format(-5300));
-//    }
+    public void TestArabicLongStyle() {
+        if (logKnownIssue("12181","No support for negative numbers in CDF")) {
+            return;
+        }
+        NumberFormat cdf =
+                CompactDecimalFormat.getInstance(
+                        ULocale.forLanguageTag("ar"), CompactStyle.LONG);
+        assertEquals("Arabic Long", "\u200F-\u0665\u066B\u0663 \u0623\u0644\u0641", cdf.format(-5300));
+    }
 
     public void TestCsShort() {
         checkLocale(ULocale.forLanguageTag("cs"), CompactStyle.SHORT, CsTestDataShort);
@@ -342,14 +345,17 @@ public class CompactDecimalFormatTest extends TestFmwk {
         checkLocale(ULocale.forLanguageTag("sr"), CompactStyle.LONG, SerbianTestDataLong);
     }
 
-// JCE: 2016-02-26: This test commented out because CompactDecimalFormat cannot properly format
+// JCE: 2016-02-26: This test is logKnownIssue because CompactDecimalFormat cannot properly format
 // negative quantities until we implement support for positive/negative subpatterns within CDF.
 // So, in the meantime, we are making any format of a negative throw an UnsupportedOperationException
 // as the original JavaDoc states.
 //
-//    public void TestSerbianLongNegative() {
-//        checkLocale(ULocale.forLanguageTag("sr"), CompactStyle.LONG, SerbianTestDataLongNegative);
-//    }
+    public void TestSerbianLongNegative() {
+        if (logKnownIssue("12181","No support for negative numbers in CDF")) {
+            return;
+        }
+        checkLocale(ULocale.forLanguageTag("sr"), CompactStyle.LONG, SerbianTestDataLongNegative);
+    }
 
     public void TestJapaneseShort() {
         checkLocale(ULocale.JAPANESE, CompactStyle.SHORT, JapaneseTestData);
@@ -358,14 +364,18 @@ public class CompactDecimalFormatTest extends TestFmwk {
     public void TestSwahiliShort() {
         checkLocale(ULocale.forLanguageTag("sw"), CompactStyle.SHORT, SwahiliTestData);
     }
-// JCE: 2016-02-26: This test commented out because CompactDecimalFormat cannot properly format
+// JCE: 2016-02-26: This test is logKnownIssue because CompactDecimalFormat cannot properly format
 // negative quantities until we implement support for positive/negative subpatterns within CDF.
 // So, in the meantime, we are making any format of a negative throw an UnsupportedOperationException
 // as the original JavaDoc states.
 //
-//    public void TestSwahiliShortNegative() {
-//        checkLocale(ULocale.forLanguageTag("sw"), CompactStyle.SHORT, SwahiliTestDataNegative);
-//    }
+    public void TestSwahiliShortNegative() {
+        if (logKnownIssue("12181","No support for negative numbers in CDF")) {
+            return;
+        }
+        checkLocale(ULocale.forLanguageTag("sw"), CompactStyle.SHORT, SwahiliTestDataNegative);
+    }
+
     public void TestEnglishCurrency() {
         checkLocale(ULocale.ENGLISH, CompactStyle.SHORT, EnglishCurrencyTestData);
     }
