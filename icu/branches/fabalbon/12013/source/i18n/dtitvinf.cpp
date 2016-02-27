@@ -14,7 +14,7 @@
 #if !UCONFIG_NO_FORMATTING
 
 //TODO: define it in compiler time
-//#define DTITVINF_DEBUG 1
+#define DTITVINF_DEBUG 1
 
 
 #ifdef DTITVINF_DEBUG 
@@ -26,7 +26,7 @@
 #include "unicode/uloc.h"
 #include "unicode/ures.h"
 #include "dtitv_impl.h"
-#include "uhash.h"
+#include "charstr.h"
 #include "hash.h"
 #include "gregoimp.h"
 #include "uresimp.h"
@@ -270,7 +270,7 @@ struct DateIntervalSink : public ResourceTableSink {
         UCalendarDateFields validateAndProcessPatternLetter(const char *patternLetter) {
             // Check that patternLetter is just one letter
             char c0;
-            if ((c0 = patternLetter[0]) > 0 && patternLetter[1] == 0) {
+            if ((c0 = patternLetter[0]) != 0 && patternLetter[1] == 0) {
                 // Check that the pattern letter is accepted
                 if ( c0 == 'y' ) {
                     return UCAL_YEAR;
@@ -283,8 +283,8 @@ struct DateIntervalSink : public ResourceTableSink {
                 } else if ( c0 == 'h' || c0 == 'H' ) {
                     return UCAL_HOUR;
                 } else if ( c0 == 'm' ) {
-                    return UCAL_MINUTE; // TODO(fabalbon): Why icu4c doesn't accept the calendar field "s" but icu4j does?
-                }
+                    return UCAL_MINUTE;
+                }// TODO(ticket:12190): Why icu4c doesn't accept the calendar field "s" but icu4j does?
             }
             return UCAL_FIELD_COUNT;
         }
@@ -317,15 +317,13 @@ struct DateIntervalSink : public ResourceTableSink {
 
     DateIntervalSink(DateIntervalInfo &diInfo, const char *currentCalendarType)
             : skeletonSink(*this), patternSink(*this), dateIntervalInfo(diInfo),
-              currentSkeleton(NULL) {
-                  nextCalendarType = UnicodeString(currentCalendarType, -1, US_INV);
-    }
+              nextCalendarType(currentCalendarType, -1, US_INV), currentSkeleton(NULL) { }
     virtual ~DateIntervalSink();
 
     virtual void put(const char *key, const ResourceValue &value, UErrorCode &errorCode) {
         // Check if it's an alias of intervalFormats
         if (U_FAILURE(errorCode) || value.getType() != URES_ALIAS
-            || uprv_strcmp(key, gIntervalDateTimePatternTag) != 0) {
+                || uprv_strcmp(key, gIntervalDateTimePatternTag) != 0) {
             return;
         }
 
@@ -422,7 +420,7 @@ DateIntervalInfo::initializeData(const Locale& locale, UErrorCode& status)
     if ( U_FAILURE(status) ) {
         return;
     }
-    calBundle = ures_getByKey(rb, gCalendarTag, NULL, &status);
+    calBundle = ures_getByKeyWithFallback(rb, gCalendarTag, NULL, &status);
 
 
     if (U_SUCCESS(status)) {
@@ -431,7 +429,7 @@ DateIntervalInfo::initializeData(const Locale& locale, UErrorCode& status)
         // Get the fallback pattern
         const UChar* resStr;
         int32_t resStrLen = 0;
-        calTypeBundle = ures_getByKey(calBundle, calendarTypeToUse, NULL, &status);
+        calTypeBundle = ures_getByKeyWithFallback(calBundle, calendarTypeToUse, NULL, &status);
         itvDtPtnResource = ures_getByKeyWithFallback(calTypeBundle,
                                                      gIntervalDateTimePatternTag, NULL, &status);
         resStr = ures_getStringByKeyWithFallback(itvDtPtnResource, gFallbackPatternTag,
@@ -449,44 +447,33 @@ DateIntervalInfo::initializeData(const Locale& locale, UErrorCode& status)
         const UnicodeString &calendarTypeToUseUString = sink.getNextCalendarType();
 
         // Already loaded calendar types
-        UHashtable loadedCalendarTypes;
-        uhash_init(&loadedCalendarTypes, uhash_hashChars, uhash_compareChars, NULL, &status);
+        Hashtable loadedCalendarTypes(FALSE, status);
 
         if (U_SUCCESS(status)) {
-            //Setup hash
-            uhash_setKeyDeleter(&loadedCalendarTypes, free);
-
             while (!calendarTypeToUseUString.isBogus()) {
-                // Get the calendar string
-                char *calType = (char*)malloc(sizeof(char) * ULOC_KEYWORDS_CAPACITY);
-                calendarTypeToUseUString.extract(0, calendarTypeToUseUString.length(), calType, ULOC_KEYWORDS_CAPACITY);
-
                 // Set an error when a loop is detected
-                if (uhash_geti(&loadedCalendarTypes, calType) == 1) {
+                if (loadedCalendarTypes.geti(calendarTypeToUseUString) == 1) {
                     status = U_INVALID_FORMAT_ERROR;
-                    free((void*)calType);
                     break;
                 }
 
                 // Register the calendar type to avoid loops
-                uhash_puti(&loadedCalendarTypes, calType, 1, &status);
-                if (U_FAILURE(status)) {
-                    free((void*)calType);
-                    break;
-                }
+                loadedCalendarTypes.puti(calendarTypeToUseUString, 1, status);
+                if (U_FAILURE(status)) { break; }
 
-                // Get all resources for this calendar type
-                calTypeBundle = ures_getByKey(calBundle, calType, NULL, &status);
-                ures_getAllTableItemsWithFallback(calTypeBundle, "", sink, status);
-
+                // Get the calendar string
+                CharString calTypeBuffer;
+                calTypeBuffer.appendInvariantChars(calendarTypeToUseUString, status);
+                if (U_FAILURE(status)) { break; }
+                const char *calType = calTypeBuffer.data();
+                
                 // Reset the next calendar type to load.
                 sink.resetNextCalendarType();
 
-                // Close the calendar type bundle
-                ures_close(calTypeBundle);
+                // Get all resources for this calendar type
+                ures_getAllTableItemsWithFallback(calBundle, calType, sink, status);
             }
         }
-        uhash_close(&loadedCalendarTypes);
     }
 
     // Close the opened resource bundles
