@@ -14,7 +14,7 @@
 #if !UCONFIG_NO_FORMATTING
 
 //TODO: define it in compiler time
-#define DTITVINF_DEBUG 1
+//#define DTITVINF_DEBUG 1
 
 
 #ifdef DTITVINF_DEBUG 
@@ -272,17 +272,17 @@ struct DateIntervalSink : public ResourceTableSink {
             char c0;
             if ((c0 = patternLetter[0]) != 0 && patternLetter[1] == 0) {
                 // Check that the pattern letter is accepted
-                if ( c0 == 'y' ) {
+                if (c0 == 'y') {
                     return UCAL_YEAR;
-                } else if ( c0 == 'M' ) {
+                } else if (c0 == 'M') {
                     return UCAL_MONTH;
-                } else if ( c0 == 'd' ) {
+                } else if (c0 == 'd') {
                     return UCAL_DATE;
-                } else if ( c0 == 'a' ) {
+                } else if (c0 == 'a') {
                     return UCAL_AM_PM;
-                } else if ( c0 == 'h' || c0 == 'H' ) {
+                } else if (c0 == 'h' || c0 == 'H') {
                     return UCAL_HOUR;
-                } else if ( c0 == 'm' ) {
+                } else if (c0 == 'm') {
                     return UCAL_MINUTE;
                 }// TODO(ticket:12190): Why icu4c doesn't accept the calendar field "s" but icu4j does?
             }
@@ -393,7 +393,7 @@ void
 DateIntervalInfo::initializeData(const Locale& locale, UErrorCode& status)
 {
     fIntervalPatterns = initHash(status);
-    if ( U_FAILURE(status) ) {
+    if (U_FAILURE(status)) {
       return;
     }
     const char *locName = locale.getName();
@@ -417,7 +417,7 @@ DateIntervalInfo::initializeData(const Locale& locale, UErrorCode& status)
     // Instantiate the resource bundles
     UResourceBundle *rb, *calBundle;
     rb = ures_open(NULL, locName, &status);
-    if ( U_FAILURE(status) ) {
+    if (U_FAILURE(status)) {
         return;
     }
     calBundle = ures_getByKeyWithFallback(rb, gCalendarTag, NULL, &status);
