@@ -21,6 +21,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Random;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.text.DateFormat;
@@ -41,17 +42,17 @@ public class IntlTestDateFormat extends com.ibm.icu.dev.test.TestFmwk {
     //private static final byte DATE = TIME + 1; //The variable is never used
     //private static final byte DATE_TIME = DATE + 1; //The variable is never used
 
-    private DateFormat fFormat = null;
-    private String fTestName = new String("getInstance");
-    private int fLimit = 3; // How many iterations it should take to reach convergence
+    private  DateFormat fFormat = null;
+    private static String fTestName = new String("getInstance");
+    private static int fLimit = 3; // How many iterations it should take to reach convergence
     private Random random; // initialized in randDouble
 
     public IntlTestDateFormat() {
         //Constructure
     }
     
-    // TODO: never used
-    protected void init() throws Exception{
+    @Before
+    public void init() throws Exception {
         fFormat = DateFormat.getInstance();
     }
     
@@ -61,8 +62,7 @@ public class IntlTestDateFormat extends com.ibm.icu.dev.test.TestFmwk {
     }
 
     // This test does round-trip testing (format -> parse -> format -> parse -> etc.) of DateFormat.
-    @Test
-    public void localeTest(final ULocale locale, final String localeName) {
+    private void localeTest(final ULocale locale, final String localeName) {
         int timeStyle, dateStyle;
 
         // For patterns including only time information and a timezone, it may take

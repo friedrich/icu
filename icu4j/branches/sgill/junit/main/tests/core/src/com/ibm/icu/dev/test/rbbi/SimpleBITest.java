@@ -8,8 +8,6 @@ package com.ibm.icu.dev.test.rbbi;
 
 import java.util.ListResourceBundle;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
@@ -46,6 +44,7 @@ import com.ibm.icu.text.RuleBasedBreakIterator;
 // that important, since we have a thai dictionary that we do test thoroughly.
 //
 
+// TODO(sgill): not running before JUnit so switched off
 public class SimpleBITest extends TestFmwk{
     public static final String testText =
 //        "The rain in Spain stays mainly on the plain.  The plains in Spain are mainly pained with rain.";
@@ -167,21 +166,21 @@ public class SimpleBITest extends TestFmwk{
         return iter;
     }
     
-    @Test
+    //@Test
     public void testWordBreak() throws Exception {
         BreakIterator wordBreak = createTestIterator(BreakIterator.KIND_WORD);
         int breaks = doTest(wordBreak);
         logln(String.valueOf(breaks));
     }
 
-    @Test
+    //@Test
     public void testLineBreak() throws Exception {
         BreakIterator lineBreak = createTestIterator(BreakIterator.KIND_LINE);
         int breaks = doTest(lineBreak);
         logln(String.valueOf(breaks));
     }
 
-    @Test
+    //@Test
     public void testSentenceBreak() throws Exception {
         BreakIterator sentenceBreak = createTestIterator(BreakIterator.KIND_SENTENCE);
         int breaks = doTest(sentenceBreak);

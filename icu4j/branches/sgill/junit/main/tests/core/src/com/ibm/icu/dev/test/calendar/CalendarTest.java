@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -72,8 +70,7 @@ public class CalendarTest extends TestFmwk {
      * makes sure that the time-to-fields and fields-to-time calculations work
      * correnctly for the values in each test case.
      */
-    @Test
-    public void doTestCases(TestCase[] cases, Calendar cal)
+    protected void doTestCases(TestCase[] cases, Calendar cal)
     {
         cal.setTimeZone(UTC);
         
@@ -223,8 +220,7 @@ public class CalendarTest extends TestFmwk {
      * @param testDuration if positive, the number of days to be tested.
      * If negative, the number of seconds to run the test.
      */
-    @Test
-    public void doLimitsTest(Calendar cal, int[] fieldsToTest,
+    protected void doLimitsTest(Calendar cal, int[] fieldsToTest,
                                 Date startDate, int testDuration) {
         GregorianCalendar greg = new GregorianCalendar();
         greg.setTime(startDate);
@@ -344,8 +340,7 @@ public class CalendarTest extends TestFmwk {
     /**
      * doLimitsTest with default test duration
      */
-    @Test
-    public void doLimitsTest(Calendar cal, int[] fieldsToTest, Date startDate) {
+    protected void doLimitsTest(Calendar cal, int[] fieldsToTest, Date startDate) {
         int testTime = getInclusion() <= 5 ? -3 : -120; // in seconds
         doLimitsTest(cal, fieldsToTest, startDate, testTime);
     }
@@ -356,8 +351,7 @@ public class CalendarTest extends TestFmwk {
      * @param cal The calendar instance to be tested.
      * @param leapMonth true if the calendar system has leap months
      */
-    @Test
-    public void doTheoreticalLimitsTest(Calendar cal, boolean leapMonth) {
+    protected void doTheoreticalLimitsTest(Calendar cal, boolean leapMonth) {
         int nDOW = cal.getMaximum(Calendar.DAY_OF_WEEK);
         int maxDOY = cal.getMaximum(Calendar.DAY_OF_YEAR);
         int lmaxDOW = cal.getLeastMaximum(Calendar.DAY_OF_YEAR);

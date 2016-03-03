@@ -14,6 +14,7 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -240,7 +241,9 @@ public class CollationEnglishTest extends TestFmwk{
     
     public CollationEnglishTest() {
     }
-    protected void init()throws Exception{
+    
+    @Before
+    public void init()throws Exception {
         myCollation = Collator.getInstance(Locale.ENGLISH);
     }
     

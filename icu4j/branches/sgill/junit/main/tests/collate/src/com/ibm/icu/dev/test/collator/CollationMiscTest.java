@@ -17,6 +17,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -1194,6 +1195,8 @@ public class CollationMiscTest extends TestFmwk {
         }
     }
 
+    // TODO(sgill): not running before
+    @Ignore
     @Test
     public void DontTestJ831() { // Latvian does not use upper first
         String[] data = {

@@ -9,6 +9,7 @@ package com.ibm.icu.dev.test.util;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -31,9 +32,12 @@ public class LocaleDataTest extends TestFmwk{
 
     public LocaleDataTest(){
     }
-    protected void init(){
+    
+    @Before
+    public void init() {
         availableLocales = ICUResourceBundle.getAvailableULocales();
     }
+    
     @Test
     public void TestPaperSize(){
         for(int i = 0; i < availableLocales.length; i++){

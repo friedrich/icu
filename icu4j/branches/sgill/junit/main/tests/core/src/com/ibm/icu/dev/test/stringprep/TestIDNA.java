@@ -8,6 +8,7 @@ package com.ibm.icu.dev.test.stringprep;
 
 import java.util.Random;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -459,8 +460,7 @@ public class TestIDNA extends TestFmwk {
 
     //  test and ascertain
     //  func(func(func(src))) == func(src)
-    @Test
-    public void doTestChainingToASCII(String source)throws Exception{
+    private void doTestChainingToASCII(String source) throws Exception {
         StringBuffer expected; 
         StringBuffer chained;
         
@@ -483,10 +483,10 @@ public class TestIDNA extends TestFmwk {
             errln("Chaining test failed for convertToASCII");
         }   
     }
+    
     //  test and ascertain
     //  func(func(func(src))) == func(src)
-    @Test
-    public void doTestChainingToUnicode(String source)throws Exception{
+    private void doTestChainingToUnicode(String source) throws Exception {
         StringBuffer expected; 
         StringBuffer chained;
         
@@ -622,6 +622,9 @@ public class TestIDNA extends TestFmwk {
         return fillIn;
        
     }
+    
+    // TODO(sgill): turned off because not running before
+    @Ignore
     @Test
     public void MonkeyTest() throws Exception{
          StringBuffer source = new StringBuffer();

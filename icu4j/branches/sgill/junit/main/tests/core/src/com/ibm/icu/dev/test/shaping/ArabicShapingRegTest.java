@@ -563,8 +563,7 @@ public class ArabicShapingRegTest extends TestFmwk {
         }
     }
 
-    @Test
-    public void reportTestFailure(int index, TestData test, ArabicShaping shaper, String result, Exception error) {
+    private void reportTestFailure(int index, TestData test, ArabicShaping shaper, String result, Exception error) {
         if (noData() && error != null && error instanceof MissingResourceException ) {
             warnln(error.getMessage());
         }

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -39,16 +40,15 @@ public class TrieMapTest extends TestFmwk {
     private Map<String, Integer> unicodeTestMap = new HashMap<String, Integer>();
     private boolean useSmallList = true;
 
-    private Timer t = new Timer();
-    private DecimalFormat nf = t.getNumberFormat();
-    private DecimalFormat pf = t.getPercentFormat();
+    private static Timer t = new Timer();
+    private static DecimalFormat nf = t.getNumberFormat();
+    private static DecimalFormat pf = t.getPercentFormat();
     {
         pf.setMaximumFractionDigits(0);
     }
 
-    @Override
-    protected void init() throws Exception {
-        super.init();
+    @Before
+    public void init() throws Exception {
         if (unicodeTestMap.size() == 0) {
             if (getInclusion() < 5) {
                 logln("\tShort version, timing for 1s:\t to get more accurate figures and test for reasonable times, use -e5 or more");

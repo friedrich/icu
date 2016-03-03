@@ -423,8 +423,7 @@ public class RBBIAPITest extends com.ibm.icu.dev.test.TestFmwk {
     //---------------------------------------------
     
     /* Internal subroutine used by TestIsBoundary() */ 
-    @Test
-    public void doBoundaryTest(BreakIterator bi, String text, int[] boundaries) {
+    private void doBoundaryTest(BreakIterator bi, String text, int[] boundaries) {
         logln("testIsBoundary():");
         int p = 0;
         boolean isB;
@@ -443,8 +442,7 @@ public class RBBIAPITest extends com.ibm.icu.dev.test.TestFmwk {
     }
     
     /*Internal subroutine used for comparision of expected and acquired results */
-    @Test
-    public void doTest(String testString, int start, int gotoffset, int expectedOffset, String expectedString) {
+    private void doTest(String testString, int start, int gotoffset, int expectedOffset, String expectedString) {
         String selected;
         String expected = expectedString;
         if (gotoffset != expectedOffset)

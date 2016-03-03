@@ -16,6 +16,7 @@ import java.text.ParsePosition;
 import java.util.Date;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.text.DateFormat;
@@ -28,10 +29,10 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
     
     private static final String TIME_STRING = "2000/11/17 08:01:00";
     private static final long UTC_LONG = 974476860000L;
-    private static SimpleDateFormat sdf_;
+    private SimpleDateFormat sdf_;
     
-    // TODO: never used - should be removed?
-    protected void init()throws Exception{
+    @Before
+    public void init()throws Exception {
         sdf_ = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");        
     }
     

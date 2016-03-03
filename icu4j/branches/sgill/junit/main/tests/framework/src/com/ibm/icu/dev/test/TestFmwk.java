@@ -23,6 +23,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import com.ibm.icu.util.TimeZone;
@@ -122,13 +123,10 @@ public class TestFmwk extends AbstractTestLog {
     protected TestFmwk() {
     }
 
-    protected void init() throws Exception{
-    }
-
     protected static AtomicReference<TestParams> paramsReference = new AtomicReference<TestParams>();
 
     @BeforeClass
-    public static void initialize() {
+    public static void testFrameworkInitialize() {
         // TODO(sgill): check that all methods in subclass of pattern [Tt]est.* | .*[Ttest] have annotation of @Test
         
         if (paramsReference.get() != null) {
@@ -143,6 +141,12 @@ public class TestFmwk extends AbstractTestLog {
         }
     }
 
+    @Before
+    public void testInitialize() {
+        Locale.setDefault(defaultLocale);
+        TimeZone.setDefault(defaultTimeZone);
+    }
+    
     protected static TestParams getParams() {
         return paramsReference.get();
     }
@@ -498,7 +502,8 @@ public class TestFmwk extends AbstractTestLog {
         }
 
         StringBuffer descBuf = new StringBuffer();
-        getParams().stack.appendPath(descBuf);
+        // TODO(sgill) : what to do about this?
+        //getParams().stack.appendPath(descBuf);
         if (comment != null && comment.length() > 0) {
             descBuf.append(" (" + comment + ")");
         }

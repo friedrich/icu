@@ -1977,7 +1977,7 @@ public class RBBITestMonkey extends TestFmwk {
         logln("Line Break Monkey Test");
         RBBILineMonkey  m = new RBBILineMonkey();
         BreakIterator   bi = BreakIterator.getLineInstance(Locale.US);
-        if (params == null) {
+        if (TestFmwk.getParams() == null) {
             loopCount = 50;
         }
         RunMonkey(bi, m, "line", seed, loopCount);
@@ -1996,7 +1996,7 @@ public class RBBITestMonkey extends TestFmwk {
         logln("Sentence Break Monkey Test");
         RBBISentenceMonkey  m = new RBBISentenceMonkey();
         BreakIterator   bi = BreakIterator.getSentenceInstance(Locale.US);
-        if (params == null) {
+        if (TestFmwk.getParams() == null) {
             loopCount = 30;
         }
         RunMonkey(bi, m, "sent", seed, loopCount);
@@ -2059,7 +2059,7 @@ public class RBBITestMonkey extends TestFmwk {
         BreakIterator   bi = BreakIterator.getLineInstance(Locale.US);
         String rules = bi.toString();
         BreakIterator rtbi = new RuleBasedBreakIterator(rules);
-        if (params == null) {
+        if (TestFmwk.getParams() == null) {
             loopCount = 50;
         }
         RunMonkey(rtbi, m, "line", seed, loopCount);
@@ -2080,7 +2080,7 @@ public class RBBITestMonkey extends TestFmwk {
         BreakIterator   bi = BreakIterator.getSentenceInstance(Locale.US);
         String rules = bi.toString();
         BreakIterator rtbi = new RuleBasedBreakIterator(rules);
-        if (params == null) {
+        if (TestFmwk.getParams() == null) {
             loopCount = 30;
         }
         RunMonkey(rtbi, m, "sent", seed, loopCount);

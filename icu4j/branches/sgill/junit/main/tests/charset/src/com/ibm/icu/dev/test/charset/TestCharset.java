@@ -207,15 +207,17 @@ public class TestCharset extends TestFmwk {
 
         }
     }
+    
     @Test
     public void TestASCIIConverter() {
         runTestASCIIBasedConverter("ASCII", 0x80);
-    }    
+    }
+    
     @Test
     public void Test88591Converter() {
         runTestASCIIBasedConverter("iso-8859-1", 0x100);
     }
-    @Test
+
     public void runTestASCIIBasedConverter(String converter, int limit){
         CharsetProvider icu = new CharsetProviderICU();
         Charset icuChar = icu.charsetForName(converter);
@@ -2132,7 +2134,7 @@ public class TestCharset extends TestFmwk {
         }
     }
 
-    @Test
+    // TODO(sgill): orphan method
     public void convertAllTest(ByteBuffer bSource, CharBuffer uSource) throws Exception {
         String encoding = "UTF-16";
         CharsetDecoder decoder = null;

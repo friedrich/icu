@@ -163,7 +163,7 @@ public class TestCanonicalIterator extends TestFmwk {
         }
     }
     
-    public void expectEqual(String message, String item, Object a, Object b) {
+    private void expectEqual(String message, String item, Object a, Object b) {
         if (!a.equals(b)) {
             errln("FAIL: " + message + getReadable(item));
             errln("\t" + getReadable(a));
@@ -188,8 +188,7 @@ public class TestCanonicalIterator extends TestFmwk {
         return "[" + (SHOW_NAMES ? hex(s) + "; " : "") + hex(s) + "]";
     }
     
-    @Test
-    public void characterTest(String s, int ch, CanonicalIterator it)
+    private void characterTest(String s, int ch, CanonicalIterator it)
     {
         int mixedCounter = 0;
         int lastMixedCounter = -1;

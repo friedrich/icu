@@ -9,6 +9,7 @@ package com.ibm.icu.dev.test.calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -27,17 +28,19 @@ import com.ibm.icu.util.ULocale;
  * Tests for the <code>Holiday</code> class.
  */
 public class HolidayTest extends TestFmwk {
-    protected void init()throws Exception{
+    @Before
+    public void init() throws Exception {
         if(cal==null){
             cal = new GregorianCalendar(1, 0, 1);
             longTimeAgo = cal.getTime();
             now = new Date();
         }
     }
-    static  Calendar cal;
-    static  Date longTimeAgo;
-    static  Date now;
-    static  long awhile = 3600L * 24 * 28; // 28 days
+    
+    private Calendar cal;
+    private Date longTimeAgo;
+    private Date now;
+    private static long awhile = 3600L * 24 * 28; // 28 days
 
     @Test
     public void TestAPI() {

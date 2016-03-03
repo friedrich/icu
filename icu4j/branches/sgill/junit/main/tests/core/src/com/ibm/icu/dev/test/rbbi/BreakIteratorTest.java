@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -30,7 +31,9 @@ public class BreakIteratorTest extends TestFmwk
     {
 
     }
-    protected void init(){
+    
+    @Before
+    public void init(){
         characterBreak = BreakIterator.getCharacterInstance();
         wordBreak = BreakIterator.getWordInstance();
         lineBreak = BreakIterator.getLineInstance();

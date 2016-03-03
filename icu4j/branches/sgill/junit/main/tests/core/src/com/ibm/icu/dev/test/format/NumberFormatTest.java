@@ -1406,8 +1406,10 @@ public class NumberFormatTest extends TestFmwk {
         }
     }
 
-    @Test
-    public void roundingTest(NumberFormat nf, double x, int maxFractionDigits, final String expected) {
+    /*
+     * Internal test utility.
+     */
+    private void roundingTest(NumberFormat nf, double x, int maxFractionDigits, final String expected) {
         nf.setMaximumFractionDigits(maxFractionDigits);
         String out = nf.format(x);
         logln(x + " formats with " + maxFractionDigits + " fractional digits to " + out);

@@ -88,8 +88,7 @@ public class NumberFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
         return  random.nextDouble() * range;
     } 
     
-    @Test
-    public void _test(NumberFormat fmt) {
+    private void _test(NumberFormat fmt) {
     
         _test(fmt, Double.NaN);
         _test(fmt, Double.POSITIVE_INFINITY);
@@ -141,18 +140,15 @@ public class NumberFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
     
-    @Test
-    public void _test(NumberFormat fmt, double value) {
+    private void _test(NumberFormat fmt, double value) {
         _test(fmt, new Double(value));
     }
     
-    @Test
-    public void _test(NumberFormat fmt, long value) {
+    private void _test(NumberFormat fmt, long value) {
         _test(fmt, new Long(value));
     }
     
-    @Test
-    public void _test(NumberFormat fmt, Number value) {
+    private void _test(NumberFormat fmt, Number value) {
         logln("test data = " + value);
         fmt.setMaximumFractionDigits(999);
         String s, s2;
@@ -217,7 +213,7 @@ public class NumberFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
     
     }
         
-    public double proportionalError(Number a, Number b) {
+    private double proportionalError(Number a, Number b) {
         double aa,bb;
         
         if(a.getClass().getName().equalsIgnoreCase("java.lang.Double"))

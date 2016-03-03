@@ -30,8 +30,7 @@ public class IntlTestNumberFormat extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Internal use
      */
-    @Test
-    public void _testLocale(Locale locale) {
+    private void _testLocale(Locale locale) {
         String localeName = locale + " (" + locale.getDisplayName() + ")";
             
         logln("Number test " + localeName);
@@ -77,8 +76,7 @@ public class IntlTestNumberFormat extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * call tryIt with many variations, called by testLocale
      */
-    @Test
-    public void _testFormat() {
+    private void _testFormat() {
         
         if (fNumberFormat == null){
             errln("**** FAIL: Null format returned by createXxxInstance.");

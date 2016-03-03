@@ -14,6 +14,8 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -93,11 +95,14 @@ public class CollationKanaTest extends TestFmwk{
     
     public CollationKanaTest() {
     }
-    protected void init()throws Exception{ 
+    
+    @Before
+    public void init()throws Exception { 
         if(myCollation==null){
             myCollation = Collator.getInstance(Locale.JAPANESE); 
         }
     }
+    
     // performs test with strength TERIARY
     @Test
     public void TestTertiary() {

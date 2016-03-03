@@ -10,6 +10,7 @@ package com.ibm.icu.dev.test.normalizer;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -252,14 +253,13 @@ public class UnicodeNormalizerConformanceTest extends TestFmwk {
     // taken from the conformance file, but culled out to make
     // debugging easier.  These can be eliminated without affecting
     // coverage.
-
+    @Ignore
     @Test
     public void _hideTestCase6() throws Exception{
         _testOneLine("0385;0385;00A8 0301;0020 0308 0301;0020 0308 0301;");
     }
 
-    @Test
-    public void _testOneLine(String line) throws Exception{
+    private void _testOneLine(String line) throws Exception{
         String[] fields = new String[5];
         StringBuffer buf = new StringBuffer();
         // Parse out the fields

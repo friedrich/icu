@@ -10,12 +10,10 @@ package com.ibm.icu.dev.test.collator;
 
 import java.util.Comparator;
 
-import org.junit.Test;
-
 public class TestComparator {
 
+    // TODO(sgill): apparently orphaned
     // test the symmetry and transitivity
-    @Test
     public void test(Comparator comp, int count) {
         Object c = null;
         Object b = newObject(c);

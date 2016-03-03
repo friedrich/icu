@@ -15,6 +15,7 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -166,14 +167,15 @@ public class CollationDummyTest extends TestFmwk {
     
     final int MAX_TOKEN_LEN = 16;
     
-    public RuleBasedCollator myCollation;
+    private RuleBasedCollator myCollation;
     
     public CollationDummyTest() {
     }
-    protected void init() throws Exception{
+    
+    @Before
+    public void init() throws Exception {
         String ruleset = "& C < ch, cH, Ch, CH & Five, 5 & Four, 4 & one, 1 & Ampersand; '&' & Two, 2 ";
         // String ruleset = "& Four, 4";
-        myCollation = null;
         myCollation = new RuleBasedCollator(ruleset);
     }
     

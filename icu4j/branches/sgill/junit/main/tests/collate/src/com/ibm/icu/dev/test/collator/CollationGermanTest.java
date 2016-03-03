@@ -14,6 +14,7 @@
  
  import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -71,9 +72,10 @@ import com.ibm.icu.text.Collator;
     private Collator myCollation = null;
     
     public CollationGermanTest() {
-
     }
-    protected void init() throws Exception{
+    
+    @Before
+    public void init() throws Exception {
         myCollation = Collator.getInstance(Locale.GERMAN);
         if(myCollation == null) {
             errln("ERROR: in creation of collator of GERMAN locale");

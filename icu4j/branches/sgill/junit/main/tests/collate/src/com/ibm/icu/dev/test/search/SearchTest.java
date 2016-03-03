@@ -24,6 +24,7 @@ import static com.ibm.icu.text.SearchIterator.ElementComparisonType.STANDARD_ELE
 import java.text.StringCharacterIterator;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -533,7 +534,8 @@ public class SearchTest extends TestFmwk {
 
     }
 
-    protected void init()throws Exception{
+    @Before
+    public void init() throws Exception {
         m_en_us_ = (RuleBasedCollator)Collator.getInstance(Locale.US);
         m_fr_fr_ = (RuleBasedCollator)Collator.getInstance(Locale.FRANCE);
         m_de_ = (RuleBasedCollator)Collator.getInstance(new Locale("de", "DE"));

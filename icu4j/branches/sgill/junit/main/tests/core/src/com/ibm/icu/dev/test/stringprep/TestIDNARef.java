@@ -540,8 +540,7 @@ public class TestIDNARef extends TestFmwk {
 
     //  test and ascertain
     //  func(func(func(src))) == func(src)
-    @Test
-    public void doTestChainingToASCII(String source)throws Exception{
+     private void doTestChainingToASCII(String source) throws Exception {
 
         if (!IDNAReference.isReady()) {
             logln("Transliterator is not available on this environment.  Skipping doTestChainingToASCII.");
@@ -573,8 +572,7 @@ public class TestIDNARef extends TestFmwk {
     }
     //  test and ascertain
     //  func(func(func(src))) == func(src)
-    @Test
-    public void doTestChainingToUnicode(String source)throws Exception{
+    public void doTestChainingToUnicode(String source) throws Exception {
 
         if (!IDNAReference.isReady()) {
             logln("Transliterator is not available on this environment.  Skipping doTestChainingToUnicode.");

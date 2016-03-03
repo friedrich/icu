@@ -86,8 +86,7 @@ public class DateFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
     
-    @Test
-    public void _test(Locale loc) {
+    private void _test(Locale loc) {
         if (!INFINITE) {
             logln("Locale: " + loc.getDisplayName());
         }
@@ -138,8 +137,7 @@ public class DateFormatRoundTripTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
     
-    @Test
-    public void _test(DateFormat fmt, boolean timeOnly) {
+    private void _test(DateFormat fmt, boolean timeOnly) {
     
         if (!(fmt instanceof SimpleDateFormat)) {
             errln("DateFormat wasn't a SimpleDateFormat");

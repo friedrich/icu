@@ -12,6 +12,7 @@
  
 package com.ibm.icu.dev.test.collator;
  
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -49,7 +50,9 @@ public class CollationFinnishTest extends TestFmwk {
     
     public CollationFinnishTest() {
     }
-    protected void init()throws Exception{
+    
+    @Before
+    public void init()throws Exception{
         myCollation = Collator.getInstance(new ULocale("fi_FI@collation=standard"));
     }
      

@@ -14,6 +14,7 @@ package com.ibm.icu.dev.test.util;
 
 import java.util.HashMap;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.impl.ICUResourceBundle;
@@ -41,13 +42,15 @@ public class LocaleAliasTest extends com.ibm.icu.dev.test.TestFmwk {
     };
     
     private static final int _LOCALE_NUMBER = _LOCALES.length;
-    private static ULocale[] available = null;
+    private ULocale[] available = null;
     private HashMap availableMap = new HashMap();
     private static final ULocale _DEFAULT_LOCALE = ULocale.US;
     
-    public LocaleAliasTest(){
+    public LocaleAliasTest() {
     }
-    protected void init(){
+    
+    @Before
+    public void init() {
         available = ULocale.getAvailableLocales();
         for(int i=0; i<available.length;i++){
             availableMap.put(available[i].toString(),"");

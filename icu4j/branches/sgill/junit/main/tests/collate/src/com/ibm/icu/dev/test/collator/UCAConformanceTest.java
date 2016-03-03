@@ -14,6 +14,7 @@ package com.ibm.icu.dev.test.collator;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -30,12 +31,13 @@ public class UCAConformanceTest extends TestFmwk {
 
     public UCAConformanceTest() {
     }
-    @Override
-    protected void init() throws Exception{
+    
+    @Before
+    public void init() throws Exception {
         UCA = (RuleBasedCollator)Collator.getInstance(ULocale.ROOT);
-
         comparer = new UTF16.StringComparator(true, false, UTF16.StringComparator.FOLD_CASE_DEFAULT);
     }
+    
     private RuleBasedCollator UCA;
     private RuleBasedCollator rbUCA;
     private UTF16.StringComparator comparer;

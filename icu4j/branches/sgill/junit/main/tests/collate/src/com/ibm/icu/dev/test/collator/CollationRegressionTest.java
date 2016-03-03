@@ -1090,9 +1090,6 @@ public class CollationRegressionTest extends TestFmwk {
         }
     }
 
-    protected void init()throws Exception{
-    }
-    
     @Test
     public void Test4244884() throws Exception {
         RuleBasedCollator coll = (RuleBasedCollator)Collator.getInstance(Locale.US);

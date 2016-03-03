@@ -76,8 +76,7 @@ public class TestDeprecatedNormalizerAPI extends TestFmwk
         doTestComposedChars(false);
     }
 
-    @Test
-    public void doTestComposedChars(boolean compat) {
+    private void doTestComposedChars(boolean compat) {
         int options = Normalizer.IGNORE_HANGUL;
         ComposedCharIter iter = new ComposedCharIter(compat, options);
 

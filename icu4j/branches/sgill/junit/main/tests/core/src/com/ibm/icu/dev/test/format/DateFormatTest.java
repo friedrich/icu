@@ -1634,8 +1634,7 @@ public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     }
     
     // internal test subroutine, used by TestRunTogetherPattern917
-    @Test
-    public void _testIt917(SimpleDateFormat fmt, String str, Date expected) {
+    private void _testIt917(SimpleDateFormat fmt, String str, Date expected) {
         logln("pattern=" + fmt.toPattern() + "   string=" + str);
         Date o = new Date();
         o = (Date) ((DateFormat) fmt).parseObject(str, new ParsePosition(0));
