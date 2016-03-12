@@ -22,7 +22,7 @@ import com.ibm.icu.util.VersionInfo;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class BidiTest extends TestFmwk {
+public class BidiFmwk extends TestFmwk {
 
     protected static final char[] charFromDirProp = {
          /* L      R    EN    ES    ET     AN    CS    B    S    WS    ON */
@@ -50,7 +50,7 @@ public class BidiTest extends TestFmwk {
         if (ucdVersion.compareTo(ucd401) >= 0) {
             /* Unicode 4.0.1 changes bidi classes for +-/ */
             /* change ES character from / to + */
-            charFromDirProp[TestData.ES] = 0x2b;
+            charFromDirProp[BidiData.ES] = 0x2b;
         }
     }
 

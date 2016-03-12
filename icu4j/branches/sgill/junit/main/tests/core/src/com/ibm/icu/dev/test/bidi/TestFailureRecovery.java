@@ -17,7 +17,7 @@ import com.ibm.icu.text.Bidi;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestFailureRecovery extends BidiTest {
+public class TestFailureRecovery extends BidiFmwk {
 
     @Test
     public void testFailureRecovery()

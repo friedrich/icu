@@ -29,7 +29,7 @@ import com.ibm.icu.util.ULocale;
 /**
  * Tests for the <code>IslamicCalendar</code> class.
  */
-public class IslamicTest extends CalendarTest {
+public class IslamicTest extends CalendarTestFmwk {
     /** Constants to save typing. */
     public static final int MUHARRAM = IslamicCalendar.MUHARRAM;
     public static final int SAFAR =  IslamicCalendar.SAFAR;

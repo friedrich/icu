@@ -17,7 +17,7 @@ import com.ibm.icu.text.Bidi;
  * Ported from C by Ramy Said
  */
 
-public class TestReorderArabicMathSymbols extends BidiTest {
+public class TestReorderArabicMathSymbols extends BidiFmwk {
 
     private static final String[] logicalOrder = {
         /* Arabic mathematical Symbols "\u1EE00 - "\u1EE1B */

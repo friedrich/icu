@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.dev.test.serializable.SerializableTestUtilities.Handler;
+import com.ibm.icu.dev.test.serializable.SerializableTestUtility.Handler;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -35,11 +35,11 @@ public class CompatibilityTest extends TestFmwk
     @Parameters(method="generateClassList")
     public void testCompatibility(String testFileName) throws ClassNotFoundException, IOException {
         File testFile = new File(testFileName);
-        Object[] oldObjects = SerializableTestUtilities.getSerializedObjects(testFile);
+        Object[] oldObjects = SerializableTestUtility.getSerializedObjects(testFile);
         int start = testFileName.lastIndexOf('/') + 1;
         int end = testFileName.lastIndexOf('.');
         String className = testFileName.substring(start, end);
-        Handler classHandler = SerializableTestUtilities.getHandler(className);
+        Handler classHandler = SerializableTestUtility.getHandler(className);
         
         Object[] testObjects = classHandler.getTestObjects();
         for (int i = 0; i < testObjects.length; i++) {
@@ -61,6 +61,13 @@ public class CompatibilityTest extends TestFmwk
                 return pathname.isDirectory();
             }});
 
+        File dataDirs2[] = topDir.listFiles();
+        System.out.println("topDir = " + topDir);
+        //System.out.println("dataDirs = " + dataDirs);
+        System.out.println("dataDirs2 = " + dataDirs2);
+        for (File dataDir : dataDirs2) {
+            System.out.println("\t" + dataDir);
+        }
         for (File dataDir : dataDirs) {
             File files[] = dataDir.listFiles(new FileFilter() { 
                 public boolean accept(File pathname) {

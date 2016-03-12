@@ -9,12 +9,12 @@
 
 package com.ibm.icu.dev.test.duration.languages;
 
-import com.ibm.icu.dev.test.duration.LanguageTestRoot;
+import com.ibm.icu.dev.test.duration.LanguageTestFmwk;
 
 /**
  * Test cases for en
  */
-public class Test_en extends LanguageTestRoot {
+public class Test_en extends LanguageTestFmwk {
   public Test_en() {
     super("en", false);
   }

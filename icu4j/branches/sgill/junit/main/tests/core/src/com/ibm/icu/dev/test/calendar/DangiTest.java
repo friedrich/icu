@@ -16,7 +16,7 @@ import com.ibm.icu.util.GregorianCalendar;
 import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 
-public class DangiTest extends CalendarTest {
+public class DangiTest extends CalendarTestFmwk {
     /**
      * Test basic mapping to and from Gregorian.
      */

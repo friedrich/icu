@@ -35,7 +35,7 @@ import com.ibm.icu.impl.duration.impl.DataRecord.EUnitVariant;
 /**
  * Test cases for en
  */
-public abstract class LanguageTestRoot extends TestFmwk implements TimeUnitConstants {
+public abstract class LanguageTestFmwk extends TestFmwk implements TimeUnitConstants {
 
     private static final TimeUnit[] units = {
         TimeUnit.YEAR, TimeUnit.MONTH, TimeUnit.WEEK, TimeUnit.DAY, TimeUnit.HOUR, 
@@ -77,7 +77,7 @@ public abstract class LanguageTestRoot extends TestFmwk implements TimeUnitConst
         TestData data = (TestData) datacache.get(locale);
         if (data == null) {
             try {
-                InputStream is = LanguageTestRoot.class
+                InputStream is = LanguageTestFmwk.class
                         .getResourceAsStream("testdata/testdata_" + locale
                                 + ".txt");
                 // debug
@@ -99,11 +99,11 @@ public abstract class LanguageTestRoot extends TestFmwk implements TimeUnitConst
         return data;
     }
 
-    public LanguageTestRoot(String locale, boolean ignore) {
+    public LanguageTestFmwk(String locale, boolean ignore) {
         this(getTestData(locale), locale);
     }
 
-    private LanguageTestRoot(TestData data, String locale) {
+    private LanguageTestFmwk(TestData data, String locale) {
         if (data == null) {
             data = DefaultData.getInstance();
         }
@@ -521,7 +521,7 @@ public abstract class LanguageTestRoot extends TestFmwk implements TimeUnitConst
 
 }
 
-class FileTestData extends LanguageTestRoot.TestData {
+class FileTestData extends LanguageTestFmwk.TestData {
     private int[] fullPluralizedFormCounts;
     private String[] fullPluralizedFormTargets;
     private String[] mediumFormTargets;
@@ -674,7 +674,7 @@ class FileTestData extends LanguageTestRoot.TestData {
     }
 }
 
-class DefaultData extends LanguageTestRoot.TestData {
+class DefaultData extends LanguageTestFmwk.TestData {
     private static final int[] fullPluralizedFormCounts = { -3, -2, -1, 0, 1,
             2, 3, 5, 10, 11, 12, 20, 21, 22, 23, 25 };
 

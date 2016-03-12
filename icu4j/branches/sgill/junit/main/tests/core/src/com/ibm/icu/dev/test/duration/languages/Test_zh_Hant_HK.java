@@ -9,13 +9,13 @@
 
 package com.ibm.icu.dev.test.duration.languages;
 
-import com.ibm.icu.dev.test.duration.LanguageTestRoot;
+import com.ibm.icu.dev.test.duration.LanguageTestFmwk;
 
 
 /**
  * Test cases for zh_Hant_HK
  */
-public class Test_zh_Hant_HK extends LanguageTestRoot {
+public class Test_zh_Hant_HK extends LanguageTestFmwk {
   public Test_zh_Hant_HK() {
     super("zh_Hant_HK", false);
   }

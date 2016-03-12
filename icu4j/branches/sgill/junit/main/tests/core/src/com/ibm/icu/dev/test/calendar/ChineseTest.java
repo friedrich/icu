@@ -61,7 +61,7 @@ import com.ibm.icu.util.ULocale;
  * Tue May 22 2096 = 4733-04*-01, Year 53, Cycle 79
  * Sun Mar 22 2099 = 4736-02*-01, Year 56, Cycle 79
  */
-public class ChineseTest extends CalendarTest {
+public class ChineseTest extends CalendarTestFmwk {
     /**
      * Test basic mapping to and from Gregorian.
      */

@@ -8,6 +8,9 @@ package com.ibm.icu.dev.test.rbbi;
 
 import java.util.ListResourceBundle;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
@@ -166,21 +169,24 @@ public class SimpleBITest extends TestFmwk{
         return iter;
     }
     
-    //@Test
+    @Ignore
+    @Test
     public void testWordBreak() throws Exception {
         BreakIterator wordBreak = createTestIterator(BreakIterator.KIND_WORD);
         int breaks = doTest(wordBreak);
         logln(String.valueOf(breaks));
     }
 
-    //@Test
+    @Ignore
+    @Test
     public void testLineBreak() throws Exception {
         BreakIterator lineBreak = createTestIterator(BreakIterator.KIND_LINE);
         int breaks = doTest(lineBreak);
         logln(String.valueOf(breaks));
     }
 
-    //@Test
+    @Ignore
+    @Test
     public void testSentenceBreak() throws Exception {
         BreakIterator sentenceBreak = createTestIterator(BreakIterator.KIND_SENTENCE);
         int breaks = doTest(sentenceBreak);

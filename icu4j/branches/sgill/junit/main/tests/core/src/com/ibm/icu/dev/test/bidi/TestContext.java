@@ -17,7 +17,7 @@ import com.ibm.icu.text.Bidi;
  * @author Matitiahu Allouche
  */
 
-public class TestContext extends BidiTest {
+public class TestContext extends BidiFmwk {
 
     private class ContextCase {
         String prologue;

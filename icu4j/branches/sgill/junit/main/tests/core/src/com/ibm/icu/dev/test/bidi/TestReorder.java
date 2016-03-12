@@ -18,7 +18,7 @@ import com.ibm.icu.text.Bidi;
  * ported from C by Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestReorder extends BidiTest {
+public class TestReorder extends BidiFmwk {
 
     private static final String[] logicalOrder = {
         "del(KC)add(K.C.&)",

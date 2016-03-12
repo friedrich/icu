@@ -26,7 +26,7 @@ import java.util.TreeMap;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.dev.test.serializable.SerializableTestUtilities;
+import com.ibm.icu.dev.test.serializable.SerializableTestUtility;
 import com.ibm.icu.impl.Pair;
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.math.BigDecimal;
@@ -1854,7 +1854,7 @@ public class MeasureUnitTest extends TestFmwk {
         assertNotEquals("verifyEqualsHashCodeHashNe", o.hashCode(), ne.hashCode());
     }
     
-    public static class MeasureUnitHandler implements SerializableTestUtilities.Handler
+    public static class MeasureUnitHandler implements SerializableTestUtility.Handler
     {
         public Object[] getTestObjects()
         {
@@ -1873,7 +1873,7 @@ public class MeasureUnitTest extends TestFmwk {
         }
     }
    
-    public static class MeasureFormatHandler  implements SerializableTestUtilities.Handler
+    public static class MeasureFormatHandler  implements SerializableTestUtility.Handler
     {
         public Object[] getTestObjects()
         {

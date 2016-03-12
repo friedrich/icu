@@ -11,7 +11,7 @@ package com.ibm.icu.dev.test.duration.languages;
 
 import org.junit.Test;
 
-import com.ibm.icu.dev.test.duration.LanguageTestRoot;
+import com.ibm.icu.dev.test.duration.LanguageTestFmwk;
 import com.ibm.icu.impl.duration.BasicPeriodFormatterFactory;
 import com.ibm.icu.impl.duration.Period;
 import com.ibm.icu.impl.duration.PeriodFormatter;
@@ -20,7 +20,7 @@ import com.ibm.icu.impl.duration.TimeUnitConstants;
 /**
  * Test cases for en
  */
-public class Test_ja extends LanguageTestRoot implements TimeUnitConstants {
+public class Test_ja extends LanguageTestFmwk implements TimeUnitConstants {
   private BasicPeriodFormatterFactory pff;
 
   public Test_ja() {

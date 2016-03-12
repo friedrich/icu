@@ -22,7 +22,7 @@ import com.ibm.icu.text.Bidi;
  * @author Matitiahu Allouche
  */
 
-public class TestCompatibility extends BidiTest {
+public class TestCompatibility extends BidiFmwk {
 
     void compareBidi(Bidi bidi, java.text.Bidi jbidi)
     {

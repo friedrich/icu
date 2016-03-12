@@ -24,7 +24,7 @@ import com.ibm.icu.util.SimpleTimeZone;
  * A base class for classes that test individual Calendar subclasses.
  * Defines various useful utility methods and constants
  */
-public class CalendarTest extends TestFmwk {
+public class CalendarTestFmwk extends TestFmwk {
     
     // Constants for use by subclasses, solely to save typing
     public final static int SUN = Calendar.SUNDAY;

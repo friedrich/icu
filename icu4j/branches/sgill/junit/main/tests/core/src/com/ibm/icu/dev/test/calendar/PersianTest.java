@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.ULocale;
 
-public class PersianTest extends CalendarTest {
+public class PersianTest extends CalendarTestFmwk {
     /**
      * Test basic mapping to and from Gregorian.
      */

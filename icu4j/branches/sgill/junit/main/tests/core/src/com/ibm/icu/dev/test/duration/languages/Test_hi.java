@@ -11,13 +11,13 @@ package com.ibm.icu.dev.test.duration.languages;
 
 import org.junit.Test;
 
-import com.ibm.icu.dev.test.duration.LanguageTestRoot;
+import com.ibm.icu.dev.test.duration.LanguageTestFmwk;
 import com.ibm.icu.impl.duration.TimeUnitConstants;
 
 /**
  * Test cases for hi
  */
-public class Test_hi extends LanguageTestRoot implements TimeUnitConstants {
+public class Test_hi extends LanguageTestFmwk implements TimeUnitConstants {
   public Test_hi() {
     super("hi", false);
   }

@@ -23,7 +23,7 @@ import com.ibm.icu.util.ULocale;
 /**
  * Tests for the <code>EthiopicCalendar</code> class.
  */
-public class EthiopicTest extends CalendarTest 
+public class EthiopicTest extends CalendarTestFmwk 
 {
     /** Constants to save typing. */
     public static final int MESKEREM = EthiopicCalendar.MESKEREM;

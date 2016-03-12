@@ -9,12 +9,12 @@
 
 package com.ibm.icu.dev.test.duration.languages;
 
-import com.ibm.icu.dev.test.duration.LanguageTestRoot;
+import com.ibm.icu.dev.test.duration.LanguageTestFmwk;
 
 /**
  * Test cases for fr
  */
-public class Test_fr extends LanguageTestRoot {
+public class Test_fr extends LanguageTestFmwk {
   public Test_fr() {
     super("fr", false);
   }

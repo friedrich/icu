@@ -58,7 +58,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     public void Test4075713(){
 
         try {
-            MyNumberFormatTest tmp = new MyNumberFormatTest();
+            MyNumberFormat tmp = new MyNumberFormat();
             if (!tmp.equals(null))
                 logln("NumberFormat.equals passed");
         } catch (NullPointerException e) {
@@ -73,8 +73,8 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     @Test
     public void Test4074620() {
 
-        MyNumberFormatTest nf1 = new MyNumberFormatTest();
-        MyNumberFormatTest nf2 = new MyNumberFormatTest();
+        MyNumberFormat nf1 = new MyNumberFormat();
+        MyNumberFormat nf2 = new MyNumberFormat();
 
         nf1.setGroupingUsed(false);
         nf2.setGroupingUsed(true);
@@ -1908,7 +1908,7 @@ class myformat implements Serializable
     }
 }
 
-class MyNumberFormatTest extends NumberFormat {
+class MyNumberFormat extends NumberFormat {
     /**
      * For serialization
      */

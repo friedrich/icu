@@ -24,7 +24,7 @@ import com.ibm.icu.util.ULocale;
 /**
  * Tests for the <code>JapaneseCalendar</code> class.
  */
-public class JapaneseTest extends CalendarTest {
+public class JapaneseTest extends CalendarTestFmwk {
     @Test
     public void TestCoverage() {
     {

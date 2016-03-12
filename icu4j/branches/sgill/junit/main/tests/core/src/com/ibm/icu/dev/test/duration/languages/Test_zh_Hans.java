@@ -9,13 +9,13 @@
 
 package com.ibm.icu.dev.test.duration.languages;
 
-import com.ibm.icu.dev.test.duration.LanguageTestRoot;
+import com.ibm.icu.dev.test.duration.LanguageTestFmwk;
 
 
 /**
  * Test cases for zh_Hans
  */
-public class Test_zh_Hans extends LanguageTestRoot {
+public class Test_zh_Hans extends LanguageTestFmwk {
   public Test_zh_Hans() {
     super("zh_Hans", false);
   }

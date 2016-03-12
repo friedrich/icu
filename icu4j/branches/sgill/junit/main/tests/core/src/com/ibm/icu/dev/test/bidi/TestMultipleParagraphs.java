@@ -21,7 +21,7 @@ import com.ibm.icu.text.BidiRun;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestMultipleParagraphs extends BidiTest {
+public class TestMultipleParagraphs extends BidiFmwk {
 
     private static final String text =
         "__ABC\u001c"                  /* Para #0 offset 0 */

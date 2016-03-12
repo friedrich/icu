@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.dev.test.serializable.SerializableTestUtilities.Handler;
+import com.ibm.icu.dev.test.serializable.SerializableTestUtility.Handler;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -33,7 +33,7 @@ public class CoverageTest extends TestFmwk {
         Class c = Class.forName(className);
         int m = c.getModifiers();
 
-        Handler classHandler = SerializableTestUtilities.getHandler(className);
+        Handler classHandler = SerializableTestUtility.getHandler(className);
         if (classHandler == null) {
             if (!Modifier.isAbstract(m)) {
                 //errln("Missing test handler. Update the list of tests in SerializableTest.java to include a test case for " + className);
@@ -41,8 +41,8 @@ public class CoverageTest extends TestFmwk {
             return;
         }
         Object[] testObjects = classHandler.getTestObjects();
-        byte[] serializedBytes = SerializableTestUtilities.getSerializedBytes(testObjects);
-        Object[] serializedObjects = SerializableTestUtilities.getSerializedObjects(serializedBytes);
+        byte[] serializedBytes = SerializableTestUtility.getSerializedBytes(testObjects);
+        Object[] serializedObjects = SerializableTestUtility.getSerializedObjects(serializedBytes);
         for (int i = 0; i < testObjects.length; i++) {
             if (!classHandler.hasSameBehavior(serializedObjects[i], testObjects[i])) {
                 errln("Input object " + i + " failed behavior test.");
@@ -51,7 +51,7 @@ public class CoverageTest extends TestFmwk {
     }
     
     List<String> generateClassList() throws IOException {
-        return SerializableTestUtilities.getSerializationClassList(this);
+        return SerializableTestUtility.getSerializationClassList(this);
     }
 
 }

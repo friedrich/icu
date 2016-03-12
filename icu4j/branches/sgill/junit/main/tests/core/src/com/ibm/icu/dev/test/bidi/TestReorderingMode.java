@@ -19,7 +19,7 @@ import com.ibm.icu.text.Bidi;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestReorderingMode extends BidiTest {
+public class TestReorderingMode extends BidiFmwk {
 
     static final String[] textIn = {
     /* (0) 123 */

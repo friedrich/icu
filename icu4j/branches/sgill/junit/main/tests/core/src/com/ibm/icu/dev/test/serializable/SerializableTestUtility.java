@@ -58,7 +58,7 @@ import com.ibm.icu.util.VTimeZone;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class SerializableTestUtilities {
+public class SerializableTestUtility {
     private static Class serializable;
     static {
         try {
@@ -730,62 +730,62 @@ public class SerializableTestUtilities {
         map.put("com.ibm.icu.math.BigDecimal", new BigDecimalHandler());
         map.put("com.ibm.icu.math.MathContext", new MathContextHandler());
         
-        map.put("com.ibm.icu.text.NumberFormat", new FormatTests.NumberFormatHandler());
-        map.put("com.ibm.icu.text.DecimalFormat", new FormatTests.DecimalFormatHandler());
-        map.put("com.ibm.icu.text.CompactDecimalFormat", new FormatTests.CompactDecimalFormatHandler());
-        map.put("com.ibm.icu.text.RuleBasedNumberFormat", new FormatTests.RuleBasedNumberFormatHandler());
-        map.put("com.ibm.icu.text.CurrencyPluralInfo", new FormatTests.CurrencyPluralInfoHandler());
-        map.put("com.ibm.icu.text.DecimalFormatSymbols", new FormatTests.DecimalFormatSymbolsHandler());
-        map.put("com.ibm.icu.text.MessageFormat", new FormatTests.MessageFormatHandler());
-        map.put("com.ibm.icu.text.DateFormat", new FormatTests.DateFormatHandler());
-        map.put("com.ibm.icu.text.DateFormatSymbols", new FormatTests.DateFormatSymbolsHandler());
+        map.put("com.ibm.icu.text.NumberFormat", new FormatHandler.NumberFormatHandler());
+        map.put("com.ibm.icu.text.DecimalFormat", new FormatHandler.DecimalFormatHandler());
+        map.put("com.ibm.icu.text.CompactDecimalFormat", new FormatHandler.CompactDecimalFormatHandler());
+        map.put("com.ibm.icu.text.RuleBasedNumberFormat", new FormatHandler.RuleBasedNumberFormatHandler());
+        map.put("com.ibm.icu.text.CurrencyPluralInfo", new FormatHandler.CurrencyPluralInfoHandler());
+        map.put("com.ibm.icu.text.DecimalFormatSymbols", new FormatHandler.DecimalFormatSymbolsHandler());
+        map.put("com.ibm.icu.text.MessageFormat", new FormatHandler.MessageFormatHandler());
+        map.put("com.ibm.icu.text.DateFormat", new FormatHandler.DateFormatHandler());
+        map.put("com.ibm.icu.text.DateFormatSymbols", new FormatHandler.DateFormatSymbolsHandler());
         map.put("com.ibm.icu.util.DateInterval", new DateIntervalHandler());
-        map.put("com.ibm.icu.text.DateIntervalFormat", new FormatTests.DateIntervalFormatHandler());
-        map.put("com.ibm.icu.text.DateIntervalInfo", new FormatTests.DateIntervalInfoHandler());
-        map.put("com.ibm.icu.text.DateIntervalInfo$PatternInfo", new FormatTests.PatternInfoHandler());
-        map.put("com.ibm.icu.text.SimpleDateFormat", new FormatTests.SimpleDateFormatHandler());
-        map.put("com.ibm.icu.text.ChineseDateFormat", new FormatTests.ChineseDateFormatHandler());
-        map.put("com.ibm.icu.text.ChineseDateFormatSymbols", new FormatTests.ChineseDateFormatSymbolsHandler());
-        map.put("com.ibm.icu.impl.DateNumberFormat", new FormatTests.DateNumberFormatHandler());
-        map.put("com.ibm.icu.text.PluralFormat", new FormatTests.PluralFormatHandler());
-        map.put("com.ibm.icu.text.PluralRules", new FormatTests.PluralRulesHandler());
-        map.put("com.ibm.icu.text.PluralRulesSerialProxy", new FormatTests.PluralRulesSerialProxyHandler());
-        map.put("com.ibm.icu.text.TimeUnitFormat", new FormatTests.TimeUnitFormatHandler());
-        map.put("com.ibm.icu.text.SelectFormat", new FormatTests.SelectFormatHandler());
-        map.put("com.ibm.icu.impl.TimeZoneNamesImpl", new FormatTests.TimeZoneNamesHandler());
-        map.put("com.ibm.icu.text.TimeZoneFormat", new FormatTests.TimeZoneFormatHandler());
-        map.put("com.ibm.icu.impl.TimeZoneGenericNames", new FormatTests.TimeZoneGenericNamesHandler());
-        map.put("com.ibm.icu.impl.TZDBTimeZoneNames", new FormatTests.TZDBTimeZoneNamesHandler());
+        map.put("com.ibm.icu.text.DateIntervalFormat", new FormatHandler.DateIntervalFormatHandler());
+        map.put("com.ibm.icu.text.DateIntervalInfo", new FormatHandler.DateIntervalInfoHandler());
+        map.put("com.ibm.icu.text.DateIntervalInfo$PatternInfo", new FormatHandler.PatternInfoHandler());
+        map.put("com.ibm.icu.text.SimpleDateFormat", new FormatHandler.SimpleDateFormatHandler());
+        map.put("com.ibm.icu.text.ChineseDateFormat", new FormatHandler.ChineseDateFormatHandler());
+        map.put("com.ibm.icu.text.ChineseDateFormatSymbols", new FormatHandler.ChineseDateFormatSymbolsHandler());
+        map.put("com.ibm.icu.impl.DateNumberFormat", new FormatHandler.DateNumberFormatHandler());
+        map.put("com.ibm.icu.text.PluralFormat", new FormatHandler.PluralFormatHandler());
+        map.put("com.ibm.icu.text.PluralRules", new FormatHandler.PluralRulesHandler());
+        map.put("com.ibm.icu.text.PluralRulesSerialProxy", new FormatHandler.PluralRulesSerialProxyHandler());
+        map.put("com.ibm.icu.text.TimeUnitFormat", new FormatHandler.TimeUnitFormatHandler());
+        map.put("com.ibm.icu.text.SelectFormat", new FormatHandler.SelectFormatHandler());
+        map.put("com.ibm.icu.impl.TimeZoneNamesImpl", new FormatHandler.TimeZoneNamesHandler());
+        map.put("com.ibm.icu.text.TimeZoneFormat", new FormatHandler.TimeZoneFormatHandler());
+        map.put("com.ibm.icu.impl.TimeZoneGenericNames", new FormatHandler.TimeZoneGenericNamesHandler());
+        map.put("com.ibm.icu.impl.TZDBTimeZoneNames", new FormatHandler.TZDBTimeZoneNamesHandler());
 
-        map.put("com.ibm.icu.util.Calendar", new CalendarTests.CalendarHandler());
-        map.put("com.ibm.icu.util.BuddhistCalendar", new CalendarTests.BuddhistCalendarHandler());
-        map.put("com.ibm.icu.util.ChineseCalendar", new CalendarTests.ChineseCalendarHandler());
-        map.put("com.ibm.icu.util.CopticCalendar", new CalendarTests.CopticCalendarHandler());
-        map.put("com.ibm.icu.util.DangiCalendar", new CalendarTests.DangiCalendarHandler());
-        map.put("com.ibm.icu.util.EthiopicCalendar", new CalendarTests.EthiopicCalendarHandler());
-        map.put("com.ibm.icu.util.GregorianCalendar", new CalendarTests.GregorianCalendarHandler());
-        map.put("com.ibm.icu.util.HebrewCalendar", new CalendarTests.HebrewCalendarHandler());
-        map.put("com.ibm.icu.util.IndianCalendar", new CalendarTests.IndianCalendarHandler());
-        map.put("com.ibm.icu.util.IslamicCalendar", new CalendarTests.IslamicCalendarHandler());
-        map.put("com.ibm.icu.util.JapaneseCalendar", new CalendarTests.JapaneseCalendarHandler());
-        map.put("com.ibm.icu.util.PersianCalendar", new CalendarTests.PersianCalendarHandler());
-        map.put("com.ibm.icu.util.TaiwanCalendar", new CalendarTests.TaiwanCalendarHandler());
+        map.put("com.ibm.icu.util.Calendar", new CalendarHandler.BasicCalendarHandler());
+        map.put("com.ibm.icu.util.BuddhistCalendar", new CalendarHandler.BuddhistCalendarHandler());
+        map.put("com.ibm.icu.util.ChineseCalendar", new CalendarHandler.ChineseCalendarHandler());
+        map.put("com.ibm.icu.util.CopticCalendar", new CalendarHandler.CopticCalendarHandler());
+        map.put("com.ibm.icu.util.DangiCalendar", new CalendarHandler.DangiCalendarHandler());
+        map.put("com.ibm.icu.util.EthiopicCalendar", new CalendarHandler.EthiopicCalendarHandler());
+        map.put("com.ibm.icu.util.GregorianCalendar", new CalendarHandler.GregorianCalendarHandler());
+        map.put("com.ibm.icu.util.HebrewCalendar", new CalendarHandler.HebrewCalendarHandler());
+        map.put("com.ibm.icu.util.IndianCalendar", new CalendarHandler.IndianCalendarHandler());
+        map.put("com.ibm.icu.util.IslamicCalendar", new CalendarHandler.IslamicCalendarHandler());
+        map.put("com.ibm.icu.util.JapaneseCalendar", new CalendarHandler.JapaneseCalendarHandler());
+        map.put("com.ibm.icu.util.PersianCalendar", new CalendarHandler.PersianCalendarHandler());
+        map.put("com.ibm.icu.util.TaiwanCalendar", new CalendarHandler.TaiwanCalendarHandler());
         
-        map.put("com.ibm.icu.text.ArabicShapingException", new ExceptionTests.ArabicShapingExceptionHandler());
-        map.put("com.ibm.icu.text.StringPrepParseException", new ExceptionTests.StringPrepParseExceptionHandler());
-        map.put("com.ibm.icu.util.UResourceTypeMismatchException", new ExceptionTests.UResourceTypeMismatchExceptionHandler());
-        map.put("com.ibm.icu.impl.InvalidFormatException", new ExceptionTests.InvalidFormatExceptionHandler());
+        map.put("com.ibm.icu.text.ArabicShapingException", new ExceptionHandler.ArabicShapingExceptionHandler());
+        map.put("com.ibm.icu.text.StringPrepParseException", new ExceptionHandler.StringPrepParseExceptionHandler());
+        map.put("com.ibm.icu.util.UResourceTypeMismatchException", new ExceptionHandler.UResourceTypeMismatchExceptionHandler());
+        map.put("com.ibm.icu.impl.InvalidFormatException", new ExceptionHandler.InvalidFormatExceptionHandler());
 
-        map.put("com.ibm.icu.text.NumberFormat$Field", new FormatTests.NumberFormatFieldHandler());
-        map.put("com.ibm.icu.text.DateFormat$Field", new FormatTests.DateFormatFieldHandler());
-        map.put("com.ibm.icu.text.ChineseDateFormat$Field", new FormatTests.ChineseDateFormatFieldHandler());
-        map.put("com.ibm.icu.text.MessageFormat$Field", new FormatTests.MessageFormatFieldHandler());
+        map.put("com.ibm.icu.text.NumberFormat$Field", new FormatHandler.NumberFormatFieldHandler());
+        map.put("com.ibm.icu.text.DateFormat$Field", new FormatHandler.DateFormatFieldHandler());
+        map.put("com.ibm.icu.text.ChineseDateFormat$Field", new FormatHandler.ChineseDateFormatFieldHandler());
+        map.put("com.ibm.icu.text.MessageFormat$Field", new FormatHandler.MessageFormatFieldHandler());
 
-        map.put("com.ibm.icu.impl.duration.BasicDurationFormat", new FormatTests.BasicDurationFormatHandler());
-        map.put("com.ibm.icu.impl.RelativeDateFormat", new FormatTests.RelativeDateFormatHandler());
-        map.put("com.ibm.icu.util.IllformedLocaleException", new ExceptionTests.IllformedLocaleExceptionHandler());
-        map.put("com.ibm.icu.impl.locale.LocaleSyntaxException", new ExceptionTests.LocaleSyntaxExceptionHandler());
-        map.put("com.ibm.icu.impl.IllegalIcuArgumentException", new ExceptionTests.IllegalIcuArgumentExceptionHandler());
+        map.put("com.ibm.icu.impl.duration.BasicDurationFormat", new FormatHandler.BasicDurationFormatHandler());
+        map.put("com.ibm.icu.impl.RelativeDateFormat", new FormatHandler.RelativeDateFormatHandler());
+        map.put("com.ibm.icu.util.IllformedLocaleException", new ExceptionHandler.IllformedLocaleExceptionHandler());
+        map.put("com.ibm.icu.impl.locale.LocaleSyntaxException", new ExceptionHandler.LocaleSyntaxExceptionHandler());
+        map.put("com.ibm.icu.impl.IllegalIcuArgumentException", new ExceptionHandler.IllegalIcuArgumentExceptionHandler());
 
         map.put("com.ibm.icu.text.PluralRules$FixedDecimal", new PluralRulesTest.FixedDecimalHandler());
         map.put("com.ibm.icu.util.MeasureUnit", new MeasureUnitTest.MeasureUnitHandler());

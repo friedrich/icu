@@ -20,7 +20,7 @@ import com.ibm.icu.text.Bidi;
  * ported from C by Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestInverse extends BidiTest {
+public class TestInverse extends BidiFmwk {
 
     private int countRoundtrips = 0;
     private int countNonRoundtrips = 0;

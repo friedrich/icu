@@ -23,7 +23,7 @@ import com.ibm.icu.util.ULocale;
 /**
  * Tests for the <code>IndianCalendar</code> class.
  */
-public class IndianTest extends CalendarTest 
+public class IndianTest extends CalendarTestFmwk 
 {
     // Months in indian calendar are 0-based. Here taking 1-based names:
     public static final int CHAITRA = IndianCalendar.CHAITRA + 1; 

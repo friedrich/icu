@@ -33,7 +33,7 @@ import java.util.TreeSet;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.dev.test.serializable.SerializableTestUtilities;
+import com.ibm.icu.dev.test.serializable.SerializableTestUtility;
 import com.ibm.icu.dev.util.CollectionUtilities;
 import com.ibm.icu.impl.Relation;
 import com.ibm.icu.impl.Utility;
@@ -1063,7 +1063,7 @@ public class PluralRulesTest extends TestFmwk {
         logln("max \tsize:\t" + max);
     }
 
-    public static class FixedDecimalHandler implements SerializableTestUtilities.Handler {
+    public static class FixedDecimalHandler implements SerializableTestUtility.Handler {
         public Object[] getTestObjects() {
             FixedDecimal items[] = { new FixedDecimal(3d), new FixedDecimal(3d, 2), new FixedDecimal(3.1d, 1),
                     new FixedDecimal(3.1d, 2), };

@@ -31,7 +31,7 @@ import com.ibm.icu.util.ULocale;
 /**
  * @summary Tests of new functionality in IBMCalendar
  */
-public class IBMCalendarTest extends CalendarTest {
+public class IBMCalendarTest extends CalendarTestFmwk {
     /**
      * Test weekend support in IBMCalendar.
      *

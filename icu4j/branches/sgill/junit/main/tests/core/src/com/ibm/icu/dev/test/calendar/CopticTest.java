@@ -24,7 +24,7 @@ import com.ibm.icu.util.ULocale;
 /**
  * Tests for the <code>CopticCalendar</code> class.
  */
-public class CopticTest extends CalendarTest 
+public class CopticTest extends CalendarTestFmwk 
 {
     /** Constants to save typing. */
     public static final int TOUT      = CopticCalendar.TOUT;

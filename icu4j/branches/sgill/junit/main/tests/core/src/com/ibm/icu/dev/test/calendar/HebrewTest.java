@@ -22,7 +22,7 @@ import com.ibm.icu.util.ULocale;
 /**
  * Tests for the <code>HebrewCalendar</code> class.
  */
-public class HebrewTest extends CalendarTest {
+public class HebrewTest extends CalendarTestFmwk {
     // Constants to save typing.
     public static final int TISHRI  = HebrewCalendar.TISHRI;
     public static final int HESHVAN = HebrewCalendar.HESHVAN;

@@ -19,7 +19,7 @@ import com.ibm.icu.lang.UCharacterDirection;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestCharFromDirProp extends BidiTest {
+public class TestCharFromDirProp extends BidiFmwk {
 
     /* verify that the exemplar characters have the expected bidi classes */
     @Test

@@ -17,8 +17,7 @@ import com.ibm.icu.text.Bidi;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestReorderRunsOnly extends BidiTest {
-
+public class TestReorderRunsOnly extends BidiFmwk {
 
     static class TestCase {
         String textIn;
@@ -108,6 +107,7 @@ public class TestReorderRunsOnly extends BidiTest {
                                      {"123", "123"}},
                      new int[] {0, 0})
     };
+
 
     @Test
     public void testReorderRunsOnly() {

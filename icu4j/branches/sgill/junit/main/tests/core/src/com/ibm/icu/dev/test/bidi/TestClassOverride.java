@@ -18,23 +18,23 @@ import com.ibm.icu.text.BidiClassifier;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestClassOverride extends BidiTest {
+public class TestClassOverride extends BidiFmwk {
 
-    private static final int DEF = TestData.DEF;
-    private static final int L   = TestData.L;
-    private static final int R   = TestData.R;
-    private static final int AL  = TestData.AL;
-    private static final int AN  = TestData.AN;
-    private static final int EN  = TestData.EN;
-    private static final int LRE = TestData.LRE;
-    private static final int RLE = TestData.RLE;
-    private static final int LRO = TestData.LRO;
-    private static final int RLO = TestData.RLO;
-    private static final int PDF = TestData.PDF;
-    private static final int NSM = TestData.NSM;
-    private static final int B   = TestData.B;
-    private static final int S   = TestData.S;
-    private static final int BN  = TestData.BN;
+    private static final int DEF = BidiData.DEF;
+    private static final int L   = BidiData.L;
+    private static final int R   = BidiData.R;
+    private static final int AL  = BidiData.AL;
+    private static final int AN  = BidiData.AN;
+    private static final int EN  = BidiData.EN;
+    private static final int LRE = BidiData.LRE;
+    private static final int RLE = BidiData.RLE;
+    private static final int LRO = BidiData.LRO;
+    private static final int RLO = BidiData.RLO;
+    private static final int PDF = BidiData.PDF;
+    private static final int NSM = BidiData.NSM;
+    private static final int B   = BidiData.B;
+    private static final int S   = BidiData.S;
+    private static final int BN  = BidiData.BN;
 
     private static final int[] customClasses = {
     /*  0/8    1/9    2/A    3/B    4/C    5/D    6/E    7/F  */
@@ -120,7 +120,7 @@ public class TestClassOverride extends BidiTest {
         bidi = new Bidi();
         verifyClassifier(bidi);
 
-        classifier = new CustomClassifier(new Integer(TestData.R));
+        classifier = new CustomClassifier(new Integer(BidiData.R));
         bidi.setCustomClassifier(classifier);
         verifyClassifier(bidi);
 

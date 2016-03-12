@@ -17,7 +17,7 @@ import com.ibm.icu.text.Bidi;
  * Ported from C by Lina Kemmel, Matitiahu Allouche
  *
  */
-public class TestData {
+public class BidiData {
     protected static final int L   = UCharacterDirection.LEFT_TO_RIGHT;
     protected static final int R   = UCharacterDirection.RIGHT_TO_LEFT;
     protected static final int EN  = UCharacterDirection.EUROPEAN_NUMBER;
@@ -246,7 +246,7 @@ public class TestData {
     protected byte[] levels;
     protected int[] visualMap;
 
-    private TestData(short[] dirProps, int lineStart, int lineLimit,
+    private BidiData(short[] dirProps, int lineStart, int lineLimit,
             byte direction, byte paraLevel, byte resultLevel, byte[] levels,
             int[] visualMap) {
         this.dirProps = dirProps;
@@ -259,8 +259,8 @@ public class TestData {
         this.visualMap = visualMap;
     }
 
-    protected static TestData getTestData(int testNumber) {
-        return new TestData(testDirProps[testNumber],
+    protected static BidiData getTestData(int testNumber) {
+        return new BidiData(testDirProps[testNumber],
                 testLineStarts[testNumber], testLineLimits[testNumber],
                 testDirections[testNumber], testParaLevels[testNumber],
                 testResultLevels[testNumber], testLevels[testNumber],

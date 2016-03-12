@@ -18,7 +18,7 @@ import com.ibm.icu.text.Bidi;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestStreaming extends BidiTest {
+public class TestStreaming extends BidiFmwk {
 
     static final int MAXPORTIONS = 10;
 

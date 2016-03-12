@@ -20,7 +20,7 @@ import com.ibm.icu.text.BidiRun;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestBidi extends BidiTest {
+public class TestBidi extends BidiFmwk {
 
     private static final int MAXLEN = 256;
     private static final String levelString = "............................";
@@ -45,10 +45,10 @@ public class TestBidi extends BidiTest {
         String string;
         int lineStart;
         byte paraLevel;
-        int bidiTestCount = TestData.testCount();
+        int bidiTestCount = BidiData.testCount();
 
         for (testNumber = 0; testNumber < bidiTestCount; ++testNumber) {
-            TestData test = TestData.getTestData(testNumber);
+            BidiData test = BidiData.getTestData(testNumber);
             string = getStringFromDirProps(test.dirProps);
             paraLevel = test.paraLevel;
             try {
@@ -92,7 +92,7 @@ public class TestBidi extends BidiTest {
         }
     }
 
-    private void doTest(Bidi bidi, int testNumber, TestData test,
+    private void doTest(Bidi bidi, int testNumber, BidiData test,
                         int lineStart, boolean countRunsFirst) {
         short[] dirProps = test.dirProps;
         byte[] levels = test.levels;
@@ -115,7 +115,7 @@ public class TestBidi extends BidiTest {
 
         for (i = 0; i < len; ++i) {
             logln(i + "  " + bidi.getLevelAt(i) + "  " + levelString
-                    + TestData.dirPropNames[dirProps[lineStart + i]] + "  "
+                    + BidiData.dirPropNames[dirProps[lineStart + i]] + "  "
                     + bidi.getVisualIndex(i));
         }
 
