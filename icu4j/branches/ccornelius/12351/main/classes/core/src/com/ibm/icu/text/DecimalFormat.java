@@ -874,7 +874,7 @@ public class DecimalFormat extends NumberFormat {
                 fieldPosition.setBeginIndex(result.length());
             }
 
-            // Add attribute for infinity here.
+            // [Spark/CDO] Add attribute for infinity here.
             result.append(symbols.getInfinity());
             if (parseAttr) {
                 addAttribute(Field.INTEGER, result.length() - symbols.getInfinity().length(),
@@ -1485,11 +1485,11 @@ public class DecimalFormat extends NumberFormat {
                 // Set only for the first instance.
                 if (fieldPosition.getFieldAttribute() == Field.GROUPING_SEPARATOR &&
                     fieldPosition.getBeginIndex() == 0 && fieldPosition.getEndIndex() == 0) {
+                    // Length of grouping separator is 1.
                     fieldPosition.setBeginIndex(result.length()-1);
                     fieldPosition.setEndIndex(result.length());
                 }
                 if (parseAttr) {
-                    // Length of grouping separator is 1.
                     addAttribute(Field.GROUPING_SEPARATOR, result.length() - 1, result.length());
                 }
             }
@@ -4258,28 +4258,21 @@ public class DecimalFormat extends NumberFormat {
 
         // Look for SIGN, PERCENT, PERMILLE in the formatted affix.
         if (fieldPosition.getFieldAttribute() == NumberFormat.Field.SIGN) {
-            String aff;
-            if (isNegative) {
-                aff = symbols.getMinusString();
-            } else {
-                aff = symbols.getPlusString();
-            }
-            int firstPos = affix.indexOf(aff);
+            String sign = isNegative ? symbols.getMinusString() : symbols.getPlusString();
+            int firstPos = affix.indexOf(sign);
             if (firstPos > -1) {
                 int startPos = buf.length() + firstPos;
                 fieldPosition.setBeginIndex(startPos);
-                fieldPosition.setEndIndex(startPos + aff.length());
+                fieldPosition.setEndIndex(startPos + sign.length());
             }
-        } else
-        if (fieldPosition.getFieldAttribute() == NumberFormat.Field.PERCENT) {
+        } else if (fieldPosition.getFieldAttribute() == NumberFormat.Field.PERCENT) {
             int firstPos = affix.indexOf(symbols.getPercent());
             if (firstPos > -1) {
                 int startPos = buf.length() + firstPos;
                 fieldPosition.setBeginIndex(startPos);
                 fieldPosition.setEndIndex(startPos + 1);
             }
-        } else
-        if (fieldPosition.getFieldAttribute() == NumberFormat.Field.PERMILLE) {
+        } else if (fieldPosition.getFieldAttribute() == NumberFormat.Field.PERMILLE) {
             int firstPos = affix.indexOf(symbols.getPerMill());
             if (firstPos > -1) {
                 int startPos = buf.length() + firstPos;
@@ -4287,7 +4280,7 @@ public class DecimalFormat extends NumberFormat {
                 fieldPosition.setEndIndex(startPos + 1);
             }
         } else
-        // If kCurrencySymbol or kIntlCurrencySymbol is in the affix, check for currency symbol.
+        // If CurrencySymbol or InternationalCurrencySymbol is in the affix, check for currency symbol.
         // Get spelled out name if "¤¤¤" is in the pattern.
         if (fieldPosition.getFieldAttribute() == NumberFormat.Field.CURRENCY) {
             if (affix.indexOf(symbols.getCurrencySymbol()) > -1) {
@@ -4298,7 +4291,7 @@ public class DecimalFormat extends NumberFormat {
                 fieldPosition.setBeginIndex(start);
                 fieldPosition.setEndIndex(end);
             } else if (affix.indexOf(symbols.getInternationalCurrencySymbol()) > -1) {
-                String aff = symbols.getInternationalCurrencySymbol(); 
+                String aff = symbols.getInternationalCurrencySymbol();
                 int firstPos = affix.indexOf(aff);
                 int start = buf.length() + firstPos;
                 int end = start + aff.length();

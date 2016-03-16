@@ -4528,7 +4528,7 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         assertEquals("End index:  ", 11, iterator.getEndIndex());
     }
 
-    private void t_FormatWithField(int count, Format format, Object object,
+    private void CheckFormatWithField(int count, Format format, Object object,
                 String text, Format.Field field, int begin, int end) {
             StringBuffer buffer = new StringBuffer();
         FieldPosition pos = new FieldPosition(field);
@@ -4542,16 +4542,16 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
-    public void TestMissingFiedPositionsIssue12351() {
+    public void TestMissingFieldPositionsIssue12351() {
         DecimalFormat format = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
         Number number = new Double(92314587.66);
         String text = "$92,314,587.66";
 
-        t_FormatWithField(0, format, number, text, NumberFormat.Field.CURRENCY, 0, 1);
-        t_FormatWithField(1, format, number, text, NumberFormat.Field.INTEGER, 1, 11);
-        t_FormatWithField(2, format, number, text, NumberFormat.Field.GROUPING_SEPARATOR, 3, 4);
-        t_FormatWithField(3, format, number, text, NumberFormat.Field.DECIMAL_SEPARATOR, 11, 12);
-        t_FormatWithField(4, format, number, text, NumberFormat.Field.FRACTION, 12, 14);
+        CheckFormatWithField(0, format, number, text, NumberFormat.Field.CURRENCY, 0, 1);
+        CheckFormatWithField(1, format, number, text, NumberFormat.Field.INTEGER, 1, 11);
+        CheckFormatWithField(2, format, number, text, NumberFormat.Field.GROUPING_SEPARATOR, 3, 4);
+        CheckFormatWithField(3, format, number, text, NumberFormat.Field.DECIMAL_SEPARATOR, 11, 12);
+        CheckFormatWithField(4, format, number, text, NumberFormat.Field.FRACTION, 12, 14);
 
         // test for exponential fields with double
         ULocale usLoc = new ULocale("en-US");
@@ -4560,87 +4560,87 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         DecimalFormat fmt2 = new DecimalFormat("0.#####E+00", US);
         String numFmtted = fmt2.format(number2);
 
-        t_FormatWithField(0, fmt2, number2, numFmtted, NumberFormat.Field.SIGN, 0, 1);
-        t_FormatWithField(1, fmt2, number2, numFmtted, NumberFormat.Field.INTEGER, 1, 2);
-        t_FormatWithField(2, fmt2, number2, numFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
-        t_FormatWithField(3, fmt2, number2, numFmtted, NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
-        t_FormatWithField(4, fmt2, number2, numFmtted, NumberFormat.Field.EXPONENT_SIGN, 9, 10);
-        t_FormatWithField(5, fmt2, number2, numFmtted, NumberFormat.Field.EXPONENT, 10, 12);
+        CheckFormatWithField(0, fmt2, number2, numFmtted, NumberFormat.Field.SIGN, 0, 1);
+        CheckFormatWithField(1, fmt2, number2, numFmtted, NumberFormat.Field.INTEGER, 1, 2);
+        CheckFormatWithField(2, fmt2, number2, numFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        CheckFormatWithField(3, fmt2, number2, numFmtted, NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
+        CheckFormatWithField(4, fmt2, number2, numFmtted, NumberFormat.Field.EXPONENT_SIGN, 9, 10);
+        CheckFormatWithField(5, fmt2, number2, numFmtted, NumberFormat.Field.EXPONENT, 10, 12);
 
         // Check PERCENT and PERMILLE.
         DecimalFormat percentFormat = (DecimalFormat) NumberFormat.getPercentInstance(Locale.US);
         Number numberPercent = new Double(-0.986);
         String numberPercentFormatted = percentFormat.format(numberPercent);
-        t_FormatWithField(0, percentFormat, numberPercent, numberPercentFormatted, NumberFormat.Field.SIGN, 0, 1);
-        t_FormatWithField(1, percentFormat, numberPercent, numberPercentFormatted, NumberFormat.Field.INTEGER, 1, 3);
-        t_FormatWithField(2, percentFormat, numberPercent, numberPercentFormatted, NumberFormat.Field.PERCENT, 3, 4);
+        CheckFormatWithField(0, percentFormat, numberPercent, numberPercentFormatted, NumberFormat.Field.SIGN, 0, 1);
+        CheckFormatWithField(1, percentFormat, numberPercent, numberPercentFormatted, NumberFormat.Field.INTEGER, 1, 3);
+        CheckFormatWithField(2, percentFormat, numberPercent, numberPercentFormatted, NumberFormat.Field.PERCENT, 3, 4);
 
         DecimalFormat fmtPercent2 = new DecimalFormat("0.#####%", US);
         numFmtted = fmtPercent2.format(numberPercent);
-        t_FormatWithField(0, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.SIGN, 0, 1);
-        t_FormatWithField(1, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.INTEGER, 1, 3);
-        t_FormatWithField(2, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 3, 4);
-        t_FormatWithField(3, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.FRACTION, 4, 5);
-        t_FormatWithField(4, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.PERCENT, 5, 6);
+        CheckFormatWithField(0, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.SIGN, 0, 1);
+        CheckFormatWithField(1, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.INTEGER, 1, 3);
+        CheckFormatWithField(2, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 3, 4);
+        CheckFormatWithField(3, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.FRACTION, 4, 5);
+        CheckFormatWithField(4, fmtPercent2, numberPercent, numFmtted, NumberFormat.Field.PERCENT, 5, 6);
 
         DecimalFormat fmtPercent3 = new DecimalFormat("0.######‰", US);
         Number numberPermille = new Double(-0.98654);
         numFmtted = fmtPercent3.format(numberPermille);
-        t_FormatWithField(0, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.SIGN, 0, 1);
-        t_FormatWithField(1, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.INTEGER, 1, 4);
-        t_FormatWithField(2, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 4, 5);
-        t_FormatWithField(3, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.FRACTION, 5, 7);
-        t_FormatWithField(4, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.PERMILLE, 7, 8);
+        CheckFormatWithField(0, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.SIGN, 0, 1);
+        CheckFormatWithField(1, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.INTEGER, 1, 4);
+        CheckFormatWithField(2, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 4, 5);
+        CheckFormatWithField(3, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.FRACTION, 5, 7);
+        CheckFormatWithField(4, fmtPercent3, numberPermille, numFmtted, NumberFormat.Field.PERMILLE, 7, 8);
 
         // Check BigInteger, BigDecimal, Long types.
         Number number4 = new BigInteger("-123456789987654321");
         String bigIntFmtted = fmt2.format(number4);
-        t_FormatWithField(0, fmt2, number4, bigIntFmtted, NumberFormat.Field.SIGN, 0, 1);
-        t_FormatWithField(1, fmt2, number4, bigIntFmtted, NumberFormat.Field.INTEGER, 1, 2);
-        t_FormatWithField(2, fmt2, number4, bigIntFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
-        t_FormatWithField(3, fmt2, number4, bigIntFmtted, NumberFormat.Field.FRACTION, 3, 8);
-        t_FormatWithField(4, fmt2, number4, bigIntFmtted, NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
-        t_FormatWithField(5, fmt2, number4, bigIntFmtted, NumberFormat.Field.EXPONENT_SIGN, 9, 10);
-        t_FormatWithField(6, fmt2, number4, bigIntFmtted, NumberFormat.Field.EXPONENT, 10, 12);
+        CheckFormatWithField(0, fmt2, number4, bigIntFmtted, NumberFormat.Field.SIGN, 0, 1);
+        CheckFormatWithField(1, fmt2, number4, bigIntFmtted, NumberFormat.Field.INTEGER, 1, 2);
+        CheckFormatWithField(2, fmt2, number4, bigIntFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        CheckFormatWithField(3, fmt2, number4, bigIntFmtted, NumberFormat.Field.FRACTION, 3, 8);
+        CheckFormatWithField(4, fmt2, number4, bigIntFmtted, NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
+        CheckFormatWithField(5, fmt2, number4, bigIntFmtted, NumberFormat.Field.EXPONENT_SIGN, 9, 10);
+        CheckFormatWithField(6, fmt2, number4, bigIntFmtted, NumberFormat.Field.EXPONENT, 10, 12);
 
         Number number5 = new BigDecimal("-123456789987654321");
         String bigDecFmtted = fmt2.format(number5);
-        t_FormatWithField(0, fmt2, number5, bigDecFmtted, NumberFormat.Field.SIGN, 0, 1);
-        t_FormatWithField(1, fmt2, number5, bigDecFmtted, NumberFormat.Field.INTEGER, 1, 2);
-        t_FormatWithField(2, fmt2, number5, bigDecFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
-        t_FormatWithField(3, fmt2, number5, bigDecFmtted, NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
-        t_FormatWithField(4, fmt2, number5, bigDecFmtted, NumberFormat.Field.EXPONENT_SIGN, 9, 10);
-        t_FormatWithField(5, fmt2, number5, bigDecFmtted, NumberFormat.Field.EXPONENT, 10, 12);
+        CheckFormatWithField(0, fmt2, number5, bigDecFmtted, NumberFormat.Field.SIGN, 0, 1);
+        CheckFormatWithField(1, fmt2, number5, bigDecFmtted, NumberFormat.Field.INTEGER, 1, 2);
+        CheckFormatWithField(2, fmt2, number5, bigDecFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        CheckFormatWithField(3, fmt2, number5, bigDecFmtted, NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
+        CheckFormatWithField(4, fmt2, number5, bigDecFmtted, NumberFormat.Field.EXPONENT_SIGN, 9, 10);
+        CheckFormatWithField(5, fmt2, number5, bigDecFmtted, NumberFormat.Field.EXPONENT, 10, 12);
 
         Number number6 = new Long("-123456789987654321");
         String longFmtted = fmt2.format(number6);
-        t_FormatWithField(0, fmt2, number6, longFmtted, NumberFormat.Field.SIGN, 0, 1);
-        t_FormatWithField(1, fmt2, number6, longFmtted, NumberFormat.Field.INTEGER, 1, 2);
-        t_FormatWithField(2, fmt2, number6, longFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
-        t_FormatWithField(3, fmt2, number6, longFmtted, NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
-        t_FormatWithField(4, fmt2, number6, longFmtted, NumberFormat.Field.EXPONENT_SIGN, 9, 10);
-        t_FormatWithField(5, fmt2, number6, longFmtted, NumberFormat.Field.EXPONENT, 10, 12);
+        CheckFormatWithField(0, fmt2, number6, longFmtted, NumberFormat.Field.SIGN, 0, 1);
+        CheckFormatWithField(1, fmt2, number6, longFmtted, NumberFormat.Field.INTEGER, 1, 2);
+        CheckFormatWithField(2, fmt2, number6, longFmtted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        CheckFormatWithField(3, fmt2, number6, longFmtted, NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
+        CheckFormatWithField(4, fmt2, number6, longFmtted, NumberFormat.Field.EXPONENT_SIGN, 9, 10);
+        CheckFormatWithField(5, fmt2, number6, longFmtted, NumberFormat.Field.EXPONENT, 10, 12);
 
         // Check complex positive;negative pattern.
         DecimalFormat fmtPosNegSign = new DecimalFormat("+0.####E+00;-0.#######E+0", US);
         Number positiveExp = new Double("9876543210");
         String posExpFormatted = fmtPosNegSign.format(positiveExp);
-        t_FormatWithField(0, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.SIGN, 0, 1);
-        t_FormatWithField(1, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.INTEGER, 1, 2);
-        t_FormatWithField(2, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
-        t_FormatWithField(2, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.FRACTION, 3, 7);
-        t_FormatWithField(3, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.EXPONENT_SYMBOL, 7, 8);
-        t_FormatWithField(4, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.EXPONENT_SIGN, 8, 9);
-        t_FormatWithField(5, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.EXPONENT, 9, 11);
+        CheckFormatWithField(0, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.SIGN, 0, 1);
+        CheckFormatWithField(1, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.INTEGER, 1, 2);
+        CheckFormatWithField(2, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        CheckFormatWithField(2, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.FRACTION, 3, 7);
+        CheckFormatWithField(3, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.EXPONENT_SYMBOL, 7, 8);
+        CheckFormatWithField(4, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.EXPONENT_SIGN, 8, 9);
+        CheckFormatWithField(5, fmtPosNegSign, positiveExp, posExpFormatted, NumberFormat.Field.EXPONENT, 9, 11);
 
         Number negativeExp = new BigDecimal("-0.000000987654321083");
         String negExpFormatted = fmtPosNegSign.format(negativeExp);
-        t_FormatWithField(0, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.SIGN, 0, 1);
-        t_FormatWithField(1, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.INTEGER, 1, 2);
-        t_FormatWithField(2, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
-        t_FormatWithField(2, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.FRACTION, 3, 7);
-        t_FormatWithField(3, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.EXPONENT_SYMBOL, 7, 8);
-        t_FormatWithField(4, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.EXPONENT_SIGN, 8, 9);
-        t_FormatWithField(5, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.EXPONENT, 9, 11);
+        CheckFormatWithField(0, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.SIGN, 0, 1);
+        CheckFormatWithField(1, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.INTEGER, 1, 2);
+        CheckFormatWithField(2, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        CheckFormatWithField(2, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.FRACTION, 3, 7);
+        CheckFormatWithField(3, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.EXPONENT_SYMBOL, 7, 8);
+        CheckFormatWithField(4, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.EXPONENT_SIGN, 8, 9);
+        CheckFormatWithField(5, fmtPosNegSign, negativeExp, negExpFormatted, NumberFormat.Field.EXPONENT, 9, 11);
     }
 }
