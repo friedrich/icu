@@ -843,6 +843,9 @@ public class DecimalFormat extends NumberFormat {
             }
 
             result.append(symbols.getNaN());
+            // TODO: Combine setting a single FieldPosition or adding to an AttributedCharacterIterator
+            // into a function like recordAttribute(FieldAttribute, begin, end).
+
             // [Spark/CDL] Add attribute for NaN here.
             // result.append(symbols.getNaN());
             if (parseAttr) {
@@ -874,7 +877,7 @@ public class DecimalFormat extends NumberFormat {
                 fieldPosition.setBeginIndex(result.length());
             }
 
-            // [Spark/CDO] Add attribute for infinity here.
+            // [Spark/CDL] Add attribute for infinity here.
             result.append(symbols.getInfinity());
             if (parseAttr) {
                 addAttribute(Field.INTEGER, result.length() - symbols.getInfinity().length(),
@@ -1482,9 +1485,11 @@ public class DecimalFormat extends NumberFormat {
             // Output grouping separator if necessary.
             if (isGroupingPosition(i)) {
                 result.append(grouping);
+                 // [Spark/CDL] Add grouping separator attribute here.
                 // Set only for the first instance.
+                // Length of grouping separator is 1.
                 if (fieldPosition.getFieldAttribute() == Field.GROUPING_SEPARATOR &&
-                    fieldPosition.getBeginIndex() == 0 && fieldPosition.getEndIndex() == 0) {
+                        fieldPosition.getBeginIndex() == 0 && fieldPosition.getEndIndex() == 0) {
                     // Length of grouping separator is 1.
                     fieldPosition.setBeginIndex(result.length()-1);
                     fieldPosition.setEndIndex(result.length());
@@ -1519,6 +1524,7 @@ public class DecimalFormat extends NumberFormat {
         // able to parse this string.
         if (!fractionPresent && result.length() == sizeBeforeIntegerPart)
             result.append(digits[0]);
+        // [Spark/CDL] Add attribute for integer part.
         if (parseAttr) {
             addAttribute(Field.INTEGER, intBegin, result.length());
         }
@@ -1531,6 +1537,7 @@ public class DecimalFormat extends NumberFormat {
             if (fieldPosition.getFieldAttribute() == Field.DECIMAL_SEPARATOR) {
                 fieldPosition.setEndIndex(result.length());
             }
+            // [Spark/CDL] Add attribute for decimal separator
             if (parseAttr) {
                 addAttribute(Field.DECIMAL_SEPARATOR, result.length() - 1, result.length());
             }
@@ -1612,7 +1619,7 @@ public class DecimalFormat extends NumberFormat {
             ((UFieldPosition) fieldPosition).setFractionDigits(fractionalDigitsCount, fractionalDigits);
         }
 
-        // Add attribute information if necessary.
+        // [Spark/CDL] Add attribute information if necessary.
         if (parseAttr && (decimalSeparatorAlwaysShown || fractionPresent)) {
             addAttribute(Field.FRACTION, fracBegin, result.length());
         }
@@ -1641,6 +1648,7 @@ public class DecimalFormat extends NumberFormat {
             fieldPosition.setBeginIndex(-1);
         }
 
+        // [Spark/CDL]
         // the begin index of integer part
         // the end index of integer part
         // the begin index of fractional part
@@ -1710,6 +1718,7 @@ public class DecimalFormat extends NumberFormat {
                     fieldPosition.setEndIndex(result.length());
                 }
 
+                // [Spark/CDL] Add attribute for integer part
                 if (parseAttr) {
                     intEnd = result.length();
                     addAttribute(Field.INTEGER, intBegin, result.length());
@@ -1721,6 +1730,7 @@ public class DecimalFormat extends NumberFormat {
                 if (fieldPosition.getFieldAttribute() == Field.DECIMAL_SEPARATOR) {
                     fieldPosition.setEndIndex(result.length());
                 }
+                // [Spark/CDL] Add attribute for decimal separator
                 if (parseAttr) {
                     // Length of decimal separator is 1.
                     int decimalSeparatorBegin = result.length() - 1;
@@ -1796,6 +1806,7 @@ public class DecimalFormat extends NumberFormat {
         if (fieldPosition.getFieldAttribute() == Field.EXPONENT_SYMBOL) {
             fieldPosition.setEndIndex(result.length());
         }
+        // [Spark/CDL] For exponent symbol, add an attribute.
         if (parseAttr) {
             addAttribute(Field.EXPONENT_SYMBOL, result.length() -
                          symbols.getExponentSeparator().length(), result.length());
@@ -1828,6 +1839,7 @@ public class DecimalFormat extends NumberFormat {
             if (fieldPosition.getFieldAttribute() == Field.EXPONENT_SIGN) {
                 fieldPosition.setEndIndex(result.length());
             }
+            // [Spark/CDL] Add an plus sign attribute.
             if (parseAttr) {
                 // Length of exponent sign is 1.
                 int expSignBegin = result.length() - 1;
@@ -1848,7 +1860,7 @@ public class DecimalFormat extends NumberFormat {
             result.append((i < digitList.count) ? digits[digitList.getDigitValue(i)]
                           : digits[0]);
         }
-        // Add attribute for exponent part.
+        // [Spark/CDL] Add attribute for exponent part.
         if (fieldPosition.getFieldAttribute() == Field.EXPONENT) {
             fieldPosition.setBeginIndex(expBegin);
             fieldPosition.setEndIndex(result.length());
