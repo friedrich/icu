@@ -1485,7 +1485,7 @@ public class DecimalFormat extends NumberFormat {
             // Output grouping separator if necessary.
             if (isGroupingPosition(i)) {
                 result.append(grouping);
-                 // [Spark/CDL] Add grouping separator attribute here.
+                // [Spark/CDL] Add grouping separator attribute here.
                 // Set only for the first instance.
                 // Length of grouping separator is 1.
                 if (fieldPosition.getFieldAttribute() == Field.GROUPING_SEPARATOR &&
