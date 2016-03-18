@@ -4542,8 +4542,8 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
-    public void TestMissingFieldPositionsIssue12351Currency() {
-        DecimalFormat formatter = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
+    public void TestMissingFieldPositionsCurrency() {
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getCurrencyInstance(ULocale.US);
         Number number = new Double(92314587.66);
         String result = "$92,314,587.66";
 
@@ -4559,9 +4559,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             NumberFormat.Field.FRACTION, 12, 14);
     }
 
-    public void TestMissingFieldPositionsIssueNegativeDouble() {
+    public void TestMissingFieldPositionsNegativeDouble() {
         // test for exponential fields with double
-        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(new ULocale("en-US"));
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
         Number number = new Double(-12345678.90123);
         DecimalFormat formatter = new DecimalFormat("0.#####E+00", us_symbols);
         String numFmtted = formatter.format(number);
@@ -4580,9 +4580,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             NumberFormat.Field.EXPONENT, 10, 12);
     }
 
-    public void TestMissingFieldPositionsIssue1235PerCent() {
+    public void TestMissingFieldPositionsPerCent() {
         // Check PERCENT
-        DecimalFormat percentFormat = (DecimalFormat) NumberFormat.getPercentInstance(Locale.US);
+        DecimalFormat percentFormat = (DecimalFormat) NumberFormat.getPercentInstance(ULocale.US);
         Number number = new Double(-0.986);
         String numberFormatted = percentFormat.format(number);
         checkFormatWithField("sign", percentFormat, number, numberFormatted,
@@ -4593,9 +4593,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             NumberFormat.Field.PERCENT, 3, 4);
     }
 
-    public void TestMissingFieldPositionsIssue1235PerCentPattern() {
+    public void TestMissingFieldPositionsPerCentPattern() {
         // Check PERCENT with more digits
-        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(new ULocale("en-US"));
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
         DecimalFormat fmtPercent = new DecimalFormat("0.#####%", us_symbols);
         Number number = new Double(-0.986);
         String numFmtted = fmtPercent.format(number);
@@ -4612,9 +4612,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             NumberFormat.Field.PERCENT, 5, 6);
     }
 
-    public void TestMissingFieldPositionsIssue1235PerMille() {
+    public void TestMissingFieldPositionsPerMille() {
         // Check PERMILLE
-        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(new ULocale("en-US"));
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
         DecimalFormat fmtPerMille = new DecimalFormat("0.######‰", us_symbols);
         Number numberPermille = new Double(-0.98654);
         String numFmtted = fmtPerMille.format(numberPermille);
@@ -4631,8 +4631,8 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             NumberFormat.Field.PERMILLE, 7, 8);
     }
 
-    public void TestMissingFieldPositionsIssue12351NegativeBigInt() {
-        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(new ULocale("en-US"));
+    public void TestMissingFieldPositionsNegativeBigInt() {
+      DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
         DecimalFormat formatter = new DecimalFormat("0.#####E+0", us_symbols);
         Number number = new BigDecimal("-123456789987654321");
         String bigDecFmtted = formatter.format(number);
@@ -4651,9 +4651,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             NumberFormat.Field.EXPONENT, 10, 12);
     }
 
-    public void TestMissingFieldPositionsIssue12351NegativeLong() {
+    public void TestMissingFieldPositionsNegativeLong() {
         Number number = new Long("-123456789987654321");
-        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(new ULocale("en-US"));
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
         DecimalFormat formatter = new DecimalFormat("0.#####E+0", us_symbols);
         String longFmtted = formatter.format(number);
 
@@ -4671,9 +4671,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             NumberFormat.Field.EXPONENT, 10, 12);
     }
 
-    public void TestMissingFieldPositionsIssue12351PositiveBigDec() {
+    public void TestMissingFieldPositionsPositiveBigDec() {
         // Check complex positive;negative pattern.
-        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(new ULocale("en-US"));
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
         DecimalFormat fmtPosNegSign = new DecimalFormat("+0.####E+00;-0.#######E+0", us_symbols);
         Number positiveExp = new Double("9876543210");
         String posExpFormatted = fmtPosNegSign.format(positiveExp);
@@ -4694,9 +4694,9 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             NumberFormat.Field.EXPONENT, 9, 11);
     }
 
-    public void TestMissingFieldPositionsIssue12351NegativeBigDec() {
+    public void TestMissingFieldPositionsNegativeBigDec() {
         // Check complex positive;negative pattern.
-        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(new ULocale("en-US"));
+      DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
         DecimalFormat fmtPosNegSign = new DecimalFormat("+0.####E+00;-0.#######E+0", us_symbols);
         Number negativeExp = new BigDecimal("-0.000000987654321083");
         String negExpFormatted = fmtPosNegSign.format(negativeExp);
@@ -4711,7 +4711,7 @@ public class NumberFormatTest extends com.ibm.icu.dev.test.TestFmwk {
             NumberFormat.Field.FRACTION, 3, 7);
         checkFormatWithField("exponent symbol", fmtPosNegSign, negativeExp, negExpFormatted,
             NumberFormat.Field.EXPONENT_SYMBOL, 7, 8);
-        checkFormatWithField("exponent sign", fmtPosNegSign, negativeExp, negExpFormatted, 
+        checkFormatWithField("exponent sign", fmtPosNegSign, negativeExp, negExpFormatted,
             NumberFormat.Field.EXPONENT_SIGN, 8, 9);
         checkFormatWithField("exponent", fmtPosNegSign, negativeExp, negExpFormatted,
             NumberFormat.Field.EXPONENT, 9, 11);
