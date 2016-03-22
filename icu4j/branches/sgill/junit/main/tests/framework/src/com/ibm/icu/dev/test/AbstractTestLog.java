@@ -47,8 +47,9 @@ public abstract class AbstractTestLog implements TestLog {
      * Add a message.
      */
     public static final void log(String message) {
+        // TODO(stuartg): turned off - causing OOM running under ant
         // Probably temporary - must decide what to do with these
-        System.out.print(message);
+        //System.out.print(message);
         //msg(message, LOG, true, false);
     }
 
@@ -56,8 +57,9 @@ public abstract class AbstractTestLog implements TestLog {
      * Add a message and newline.
      */
     public static final void logln(String message) {
+        // TODO(stuartg): turned off - causing OOM running under ant
         // Probably temporary - must decide what to do with these
-        System.out.println(message);
+        //System.out.println(message);
         //msg(message, LOG, true, true);
     }
 
@@ -81,7 +83,8 @@ public abstract class AbstractTestLog implements TestLog {
      * Report a warning (generally missing tests or data).
      */
     public static final void warn(String message) {
-        System.out.print(message);
+        // TODO(stuartg): turned off - causing OOM running under ant
+        //System.out.print(message);
         //msg(message, WARN, true, false);
     }
 
@@ -89,7 +92,8 @@ public abstract class AbstractTestLog implements TestLog {
      * Report a warning (generally missing tests or data) and newline.
      */
     public static final void warnln(String message) {
-        System.out.println(message);
+        // TODO(stuartg): turned off - causing OOM running under ant
+        //System.out.println(message);
         //msg(message, WARN, true, true);
     }
 

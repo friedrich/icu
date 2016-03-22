@@ -1695,14 +1695,15 @@ public class TestFmwk extends AbstractTestLog {
      */
     //@Override
     public static void msg(String message, int level, boolean incCount, boolean newln) {
-        while (level > 0) {
-            System.out.print(" ");
-            level--;
-        }
-        System.out.print(message);
-        if (newln) {
-            System.out.println();
-        }
+        // TODO(stuartg): turned off - causing OOM running under ant
+//        while (level > 0) {
+//            System.out.print(" ");
+//            level--;
+//        }
+//        System.out.print(message);
+//        if (newln) {
+//            System.out.println();
+//        }
     }
 
 }
