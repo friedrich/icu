@@ -208,7 +208,7 @@ $CANT_CM = [ $SP $BK $CR $LF $NL $ZW $CM];       # Bases that can't take CMs
 #            so for this one case we need to manually list out longer sequences.
 #
 $AL_FOLLOW_NOCM = [$BK $CR $LF $NL $ZW $SP];
-$AL_FOLLOW_CM   = [$CL $CP $EX $HL $IS $SY $WJ $GL $OP $QU $BA $HY $NS $IN $NU $ALPlus];
+$AL_FOLLOW_CM   = [$CL $CP $EX $HL $IS $SY $WJ $GL $OP $QU $BA $HY $NS $IN $NU $PR $PO $ALPlus];
 $AL_FOLLOW      = [$AL_FOLLOW_NOCM $AL_FOLLOW_CM];
 
 
@@ -309,6 +309,7 @@ $OPcm $SP* $CAN_CM $CM*;
 $OPcm $SP* $CANT_CM;
 
 $OPcm $SP+ $CM+ $AL_FOLLOW?;    # by rule 10, stand-alone CM behaves as AL
+                                # by rule 8, CM following a SP is stand-alone.
 
 # LB 15
 $QUcm $SP* $OPcm;
@@ -369,19 +370,23 @@ $NUcm    $INcm;
 
 
 # $LB 23
-($ID | $EB | $EM) $CM*  $POcm;
-$ALcm  $NUcm;       # includes $LB19
-$HLcm  $NUcm;
+#
+($ALPlus | $HL) $CM* $NU;
 ^$CM+  $NUcm;       # Rule 10, any otherwise unattached CM behaves as AL
-$NUcm  $ALcm;
-$NUcm  $HLcm;
+$NU $CM* ($ALPlus | $HL);
+
+# LB 23a
+#
+$PR $CM* ($ID | $EB | $EM);
+($ID | $EB | $EM) $CM*  $PO;
+
 
 #
 # LB 24
 #
-$PRcm ($ID | $EB | $EM);
-$PRcm ($ALcm | $HLcm);
-$POcm ($ALcm | $HLcm);
+($PR | $PO) $CM* ($ALPlus | $HL);
+($ALPlus | $HL) $CM* ($PR | $PO);
+^$CM+ ($PR | $PO);       # Rule 10, any otherwise unattached CM behaves as AL
 
 #
 # LB 25   Numbers.
@@ -488,7 +493,7 @@ $AL_FOLLOW $CM+ / (
 #  This rule is concerned about getting the second of the two <breaks> in place.
 #
 
-[$PR   ] / $CM+ [$BK $CR $LF $NL $ZW $SP {eof}];
+# [$PR   ] / $CM+ [$BK $CR $LF $NL $ZW $SP {eof}];
 
 
 
@@ -557,19 +562,15 @@ $SY [$LB8NonBreaks-$CM];
 
 # Rule 13 & 14 taken together for an edge case.
 #   Match this, shown forward
-#     OP SP+  ($CM+ behaving as $AL) (CL | CP | EX | IS | IY)
+#     OP SP+  ($CM+ behaving as $AL) (CL | CP | EX | IS | SY)
 #   This really wants to chain at the $CM+ (which is acting as an $AL)
 #   except for $CM chaining being disabled.
-[$CL $CP $EX $IS $SY] $CM+ $SP+ $CM* $OP;
+#[$CL $CP $EX $IS $SY] $CM+ $SP+ $CM* $OP;
 
 # LB 14    OP SP* x
 #
-$CAN_CM    $SP* $CM* $OP;
-     $CANT_CM   $SP* $CM* $OP;
-$AL_FOLLOW? $CM+  $SP $SP* $CM* $OP;     #  by LB 10, behaves like $AL_FOLLOW? $AL $SP* $CM* $OP
-
-     $AL_FOLLOW_NOCM $CM+ $SP+ $CM* $OP;
-$AL_FOLLOW_CM   $CM+ $SP+ $CM* $OP;
+.   $SP* $CM* $OP;
+$AL_FOLLOW? $CM+ $SP+ $CM* $OP;     #  by LB 10, behaves like $AL_FOLLOW? $AL $SP+ $CM* $OP
 
 
 # LB 15
@@ -620,14 +621,16 @@ $IN $CM* $IN;
 $IN $CM* $NU;
 
 # LB 23
-$PO $CM* ($ID | $EB | $EM);
 $NU $CM* ($ALPlus | $HL);
 ($ALPlus | $HL) $CM* $NU;
 
-# LB 24
+# LB23a
 ($ID | $EB | $EM) $CM* $PR;
-($ALPlus | $HL) $CM* $PR;
-($ALPlus | $HL) $CM* $PO;
+$PO $CM* ($ID | $EB | $EM);
+
+# LB 24
+($ALPlus | $HL) $CM* ($PR | $PO);
+($PR | $PO) $CM* [$ALPlus $HL];
 
 
 # LB 25
