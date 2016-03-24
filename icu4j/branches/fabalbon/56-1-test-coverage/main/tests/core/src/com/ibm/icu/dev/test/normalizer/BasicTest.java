@@ -1720,7 +1720,12 @@ public class BasicTest extends TestFmwk {
             options|=Normalizer.INPUT_IS_FCD;
         }
 
-        return Normalizer.compare(s1, s2, options);
+        int cmpStrings = Normalizer.compare(s1, s2, options);
+        int cmpArrays = Normalizer.compare(
+                s1.toCharArray(), 0, s1.length(),
+                s2.toCharArray(), 0, s2.length(), options);
+        assertEquals("compare strings == compare char arrays", cmpStrings, cmpArrays);
+        return cmpStrings;
     }
 
     // reference implementation of UnicodeString::caseCompare
