@@ -1092,6 +1092,9 @@ public class ULocaleTest extends TestFmwk {
                 ULocale locale = new ULocale(item.displayLocale);
                 LocaleDisplayNames ldn = LocaleDisplayNames.getInstance(locale, item.dialectHandling, item.capitalization, item.nameLength);
                 DisplayContext dialectHandling = ldn.getContext(DisplayContext.Type.DIALECT_HANDLING);
+                assertEquals("consistent dialect handling",
+                        dialectHandling == DisplayContext.DIALECT_NAMES,
+                        ldn.getDialectHandling() == LocaleDisplayNames.DialectHandling.DIALECT_NAMES);
                 DisplayContext capitalization = ldn.getContext(DisplayContext.Type.CAPITALIZATION);
                 DisplayContext nameLength = ldn.getContext(DisplayContext.Type.DISPLAY_LENGTH);
                 if (dialectHandling != item.dialectHandling || capitalization != item.capitalization || nameLength != item.nameLength) {
