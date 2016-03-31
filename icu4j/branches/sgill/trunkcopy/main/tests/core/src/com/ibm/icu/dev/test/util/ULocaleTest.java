@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
 import com.ibm.icu.dev.test.TestUtil.JavaVendor;
@@ -50,10 +52,7 @@ public class ULocaleTest extends TestFmwk {
     private static final boolean JAVA7_OR_LATER =
             TestUtil.getJavaVendor() == JavaVendor.Android || TestUtil.getJavaVersion() >= 7;
 
-    public static void main(String[] args) throws Exception {
-        new ULocaleTest().run(args);
-    }
-
+    @Test
     public void TestCalendar() {
         // TODO The CalendarFactory mechanism is not public,
         // so we can't test it yet.  If it becomes public,
@@ -95,6 +94,7 @@ public class ULocaleTest extends TestFmwk {
     // and this is not equal to the requested locale zh_TW_TAIPEI, the
     // checkService call would always fail.  So we now omit the test.
     /*
+    @Test
     public void TestCurrency() {
         checkService("zh_TW_TAIPEI", new ServiceFacade() {
                 public Object create(ULocale req) {
@@ -111,6 +111,7 @@ public class ULocaleTest extends TestFmwk {
     }
      */
 
+    @Test
     public void TestDateFormat() {
         checkService("de_CH_ZURICH", new ServiceFacade() {
             public Object create(ULocale req) {
@@ -123,6 +124,7 @@ public class ULocaleTest extends TestFmwk {
         }, null);
     }
 
+    @Test
     public void TestNumberFormat() {
         class NFactory extends SimpleNumberFormatFactory {
             NumberFormat proto;
@@ -157,6 +159,7 @@ public class ULocaleTest extends TestFmwk {
         });
     }
 
+    @Test
     public void TestSetULocaleKeywords() {
         ULocale uloc = new ULocale("en_Latn_US");
         uloc = uloc.setKeywordValue("Foo", "FooValue");
@@ -184,6 +187,7 @@ public class ULocaleTest extends TestFmwk {
     /*
      * ticket#5060
      */
+    @Test
     public void TestJavaLocaleCompatibility() {
         Locale backupDefault = Locale.getDefault();
         ULocale orgUlocDefault = ULocale.getDefault();
@@ -604,6 +608,7 @@ public class ULocaleTest extends TestFmwk {
     //    private static final int DVAR_EL = 26;
     //    private static final int DNAME_EL = 27;
 
+    @Test
     public void TestBasicGetters() {
         int i;
         logln("Testing Basic Getters\n");
@@ -634,6 +639,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestPrefixes() {
         // POSIX ids are no longer handled by getName, so POSIX failures are ignored
         final String [][] testData = new String[][]{
@@ -752,21 +758,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
-    public void TestUldnWithGarbage(){
-        LocaleDisplayNames ldn = LocaleDisplayNames.getInstance(Locale.US, DisplayContext.DIALECT_NAMES);
-        String badLocaleID = "english (United States) [w";
-        String expectedResult = "english [united states] [w"; // case changed from input
-        String result = ldn.localeDisplayName(badLocaleID);
-        if (result.compareTo(expectedResult) != 0) {
-            errln("FAIL: LocaleDisplayNames.localeDisplayName(String) for bad locale ID \"" + badLocaleID + "\", expected \"" + expectedResult + "\", got \"" + result + "\"");
-        }
-        ULocale badLocale = new ULocale(badLocaleID);
-        result = ldn.localeDisplayName(badLocale);
-        if (result.compareTo(expectedResult) != 0) {
-            errln("FAIL: LocaleDisplayNames.localeDisplayName(ULocale) for bad locale ID \"" + badLocaleID + "\", expected \"" + expectedResult + "\", got \"" + result + "\"");
-        }
-    }
-
+    @Test
     public void TestObsoleteNames(){
         final String[][] tests = new String[][]{
                 /* locale, language3, language2, Country3, country2 */
@@ -860,6 +852,8 @@ public class ULocaleTest extends TestFmwk {
             errln("ULocale.getLanguage(\"kok\") failed. Expected: kok Got: "+buff);
         }
     }
+
+    @Test
     public void TestCanonicalization(){
         final String[][]testCases = new String[][]{
                 { "ca_ES_PREEURO", "ca_ES_PREEURO", "ca_ES@currency=ESP" },
@@ -977,6 +971,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestGetAvailable(){
         ULocale[] locales = ULocale.getAvailableLocales();
         if(locales.length<10){
@@ -987,6 +982,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestDisplayNames() {
         // consistency check, also check that all data is available
         {
@@ -1162,6 +1158,7 @@ public class ULocaleTest extends TestFmwk {
         return true;
     }
 
+    @Test
     public void TestCoverage() {
         {
             //Cover displayXXX
@@ -1220,6 +1217,7 @@ public class ULocaleTest extends TestFmwk {
         ULocale.getISOCountries(); // To check the result ?!
     }
 
+    @Test
     public void TestBamBm() {
         // "bam" shouldn't be there since the official code is 'bm'
         String[] isoLanguages = ULocale.getISOLanguages();
@@ -1233,6 +1231,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestDisplayKeyword() {
         //prepare testing data
         initHashtable();
@@ -1325,6 +1324,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestDisplayWithKeyword() {
         // Note, this test depends on locale display data for the U.S. and Taiwan.
         // If the data changes (in particular, the keyTypePattern may change for Taiwan),
@@ -1461,6 +1461,7 @@ public class ULocaleTest extends TestFmwk {
     };
 
 
+    @Test
     public void TestAcceptLanguage() {
         for(int i = 0 ; i < (ACCEPT_LANGUAGE_HTTP.length); i++) {
             Boolean expectBoolean = new Boolean(ACCEPT_LANGUAGE_TESTS[i][1]);
@@ -1569,6 +1570,7 @@ public class ULocaleTest extends TestFmwk {
         return acceptList;
     }
 
+    @Test
     public void TestAcceptLanguage2() {
         for(int i = 0 ; i < (ACCEPT_LANGUAGE_HTTP.length); i++) {
             Boolean expectBoolean = new Boolean(ACCEPT_LANGUAGE_TESTS[i][1]);
@@ -1595,6 +1597,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestOrientation() {
         {
             String toTest [][] = {
@@ -1621,6 +1624,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestJB3962(){
         ULocale loc = new ULocale("de_CH");
         String disp = loc.getDisplayName(ULocale.GERMAN);
@@ -1629,6 +1633,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestMinimize() {
         String[][] data = {
                 // source, favorRegion, favorScript
@@ -1656,6 +1661,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestAddLikelySubtags() {
         String[][] data = {
                 {"en", "en_Latn_US"},
@@ -3884,6 +3890,8 @@ public class ULocaleTest extends TestFmwk {
             }
         }
     }
+
+    @Test
     public void TestCLDRVersion() {
         //VersionInfo zeroVersion = VersionInfo.getInstance(0, 0, 0, 0);
         VersionInfo testExpect;
@@ -3917,6 +3925,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestToLanguageTag() {
         final String[][] locale_to_langtag = {
                 {"",            "und"},
@@ -3969,6 +3978,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestForLanguageTag() {
         final Integer NOERROR = Integer.valueOf(-1);
 
@@ -4066,6 +4076,7 @@ public class ULocaleTest extends TestFmwk {
      * Test that if you use any locale without keyword that you will get a NULL
      * string returned and not throw and exception.
      */
+    @Test
     public void Test4735()
     {
         try {
@@ -4076,6 +4087,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestGetFallback() {
         // Testing static String getFallback(String)
         final String[][] TESTIDS =
@@ -4113,6 +4125,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestExtension() {
         String[][] TESTCASES = {
                 // {"<langtag>", "<ext key1>", "<ext val1>", "<ext key2>", "<ext val2>", ....},
@@ -4159,6 +4172,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestUnicodeLocaleExtension() {
         String[][] TESTCASES = {
                 //"<langtag>", "<attr1>,<attr2>,...", "<key1>,<key2>,...", "<type1>", "<type2>", ...},
@@ -4233,6 +4247,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestForLocale() {
         Object[][] DATA = {
                 {new Locale(""),                    ""},
@@ -4294,6 +4309,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestToLocale() {
         Object[][] DATA = {
                 {"",                new Locale("")},
@@ -4355,6 +4371,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestCategoryDefault() {
         Locale backupDefault = Locale.getDefault();
 
@@ -4417,6 +4434,7 @@ public class ULocaleTest extends TestFmwk {
     //
     // Test case for the behavior of Comparable implementation.
     //
+    @Test
     public void TestComparable() {
         // Test strings used for creating ULocale objects.
         // This list contains multiple different strings creating
@@ -4528,6 +4546,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestToUnicodeLocaleKey() {
         String[][] DATA = {
                 {"calendar",    "ca"},
@@ -4547,6 +4566,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestToLegacyKey() {
         String[][] DATA = {
                 {"kb",          "colbackwards"},
@@ -4567,6 +4587,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestToUnicodeLocaleType() {
         String[][] DATA = {
                 {"tz",              "Asia/Kolkata",     "inccu"},
@@ -4604,6 +4625,7 @@ public class ULocaleTest extends TestFmwk {
 
     }
 
+    @Test
     public void TestToLegacyType() {
         String[][] DATA = {
                 {"calendar",        "gregory",          "gregorian"},
@@ -4642,6 +4664,7 @@ public class ULocaleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestIsRightToLeft() {
         assertFalse("root LTR", ULocale.ROOT.isRightToLeft());
         assertFalse("zh LTR", ULocale.CHINESE.isRightToLeft());
@@ -4654,6 +4677,7 @@ public class ULocaleTest extends TestFmwk {
         assertFalse("he-Zyxw LTR", new ULocale("he-Zyxw").isRightToLeft());
     }
 
+    @Test
     public void TestChineseToLocale() {
         final ULocale[][] LOCALES = {
                 {ULocale.CHINESE,               new ULocale("zh")},

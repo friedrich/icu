@@ -9,5 +9,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/icu4j-langdata"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/icu4j-regiondata"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/icu4j-core-tests"/>
+	<classpathentry kind="lib" path="/external-libraries/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="/external-libraries/hamcrest-core-1.3.jar"/>
 	<classpathentry kind="output" path="out/bin"/>
 </classpath>

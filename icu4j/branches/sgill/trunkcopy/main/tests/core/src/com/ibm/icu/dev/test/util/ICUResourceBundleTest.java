@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.jar.JarEntry;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.Utility;
@@ -35,10 +37,7 @@ import com.ibm.icu.util.UResourceTypeMismatchException;
 public final class ICUResourceBundleTest extends TestFmwk {
     private static final ClassLoader testLoader = ICUResourceBundleTest.class.getClassLoader();
 
-    public static void main(String args[]) throws Exception {
-        ICUResourceBundleTest test = new ICUResourceBundleTest();
-        test.run(args);
-    }
+    @Test
     public void TestGetResources(){
         try{
             // It does not work well in eclipse plug-in test because of class loader configuration??
@@ -83,6 +82,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
             errln("Unexpected exception: "+ ex);
         }
     }
+    @Test
     public void TestResourceBundleWrapper(){
         UResourceBundle bundle = UResourceBundle.getBundleInstance("com.ibm.icu.impl.data.HolidayBundle", "da_DK");
         Object o = bundle.getObject("holidays");
@@ -110,6 +110,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
 
 
     }
+    @Test
     public void TestJB3879(){
         // this tests tests loading of root bundle when a resource bundle
         // for the default locale is requested
@@ -123,6 +124,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
             warnln("could not load test data: " + ex.getMessage());
         }
     }
+    @Test
     public void TestOpen(){
         UResourceBundle bundle = (UResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, "en_US_POSIX");
 
@@ -175,6 +177,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestBasicTypes(){
         UResourceBundle bundle = null;
         try {
@@ -349,6 +352,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
             this.value = value;
         }
     }
+    @Test
     public void TestTable32(){
         TestCase[] arr = new TestCase[]{
           new TestCase  ( "ooooooooooooooooo", 0 ),
@@ -441,6 +445,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         return number;
     }
 
+    @Test
     public void TestAliases(){
        String simpleAlias   = "Open";
 
@@ -582,6 +587,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         }
 
     }
+    @Test
     public void TestAlias(){
         logln("Testing %%ALIAS");
         UResourceBundle rb = (UResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME,"iw_IL");
@@ -596,6 +602,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
             errln("%%ALIAS mechanism failed for iw_IL");
         }
     }
+    @Test
     public void TestXPathAlias(){
         UResourceBundle rb = (UResourceBundle) UResourceBundle.getBundleInstance("com/ibm/icu/dev/data/testdata","te_IN",testLoader);
         UResourceBundle b = rb.get("aliasClient");
@@ -616,6 +623,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
             errln("Could not get rootAliasClient");
         }
     }
+    @Test
     public void TestCircularAliases(){
         try{
             UResourceBundle rb = (UResourceBundle)UResourceBundle.getBundleInstance("com/ibm/icu/dev/data/testdata","testaliases",testLoader);
@@ -632,6 +640,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestPreventFallback() {
         String noFallbackResource = "string_in_te_no_te_IN_fallback";
         ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance("com/ibm/icu/dev/data/testdata","te_IN_NE",testLoader);
@@ -646,6 +655,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         rb.getStringWithFallback(noFallbackResource);
     }
 
+    @Test
     public void TestGetWithFallback(){
         /*
         UResourceBundle bundle =(UResourceBundle) UResourceBundle.getBundleInstance("com/ibm/icu/dev/data/testdata","te_IN");
@@ -678,6 +688,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
     private static final String CALENDAR_RESNAME = "calendar";
     private static final String CALENDAR_KEYWORD = "calendar";
 
+    @Test
     public void TestLocaleDisplayNames() {
         ULocale[] locales = ULocale.getAvailableLocales();
         for (int i = 0; i < locales.length; ++i) {
@@ -714,6 +725,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         return !country.equals(localizedVersion);
     }
 
+    @Test
     public void TestFunctionalEquivalent(){
        String[] calCases = {
        //  avail    locale                              equiv
@@ -769,6 +781,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestNorwegian(){
         try{
             UResourceBundle rb = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_REGION_BASE_NAME, "no_NO_NY");
@@ -783,6 +796,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
             errln("Caught an unexpected expected");
         }
     }
+    @Test
     public void TestJB4102(){
         try {
             ICUResourceBundle root =(ICUResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, "root");
@@ -808,6 +822,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestCLDRStyleAliases() {
         String result = null;
         String expected = null;
@@ -867,6 +882,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         assertEqualLoadingStatus(msg, ICUResourceBundle.FROM_LOCALE, result);
     }
    
+    @Test
     public void TestLoadingStatus(){
         ICUResourceBundle bundle = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, "yi_IL");
         assertFallbackLoadingStatus("base/yi_IL", bundle.getLoadingStatus());
@@ -905,6 +921,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         assertRootLoadingStatus("testdata/a/a4/sh_YU", temp.getLoadingStatus());
     }
     
+    @Test
     public void TestCoverage(){
         UResourceBundle bundle;
         bundle = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME);
@@ -935,6 +952,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
             errln("UResourceBundle.getLoclae(Locale) should delegate to (ULocale)");
         }
     }
+    @Test
     public void TestJavaULocaleBundleLoading(){
         String baseName="com.ibm.icu.dev.data.resources.TestDataElements";
         String locName = "en_Latn_US";
@@ -1000,6 +1018,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
             errln("Could not load bundle fr_Latn_FR");
         }
     }
+    @Test
     public void TestAliasFallback(){
         try{
             ULocale loc = new ULocale("en_US");
@@ -1024,6 +1043,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
      * JDK JavaDoc for ResourceBundle.getKeys() says that it returns
      * "an Enumeration of the keys contained in this ResourceBundle and its parent bundles."
      */
+    @Test
     public void TestICUGetKeysAtTopLevel() {
         String baseName="com/ibm/icu/dev/data/testdata";
         UResourceBundle te_IN = UResourceBundle.getBundleInstance(baseName, "te_IN", testLoader);
@@ -1042,6 +1062,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
      * Test ICUResourceBundle.getKeys() for a resource item (not a whole bundle/top-level resource).
      * This does not take parent bundles into account.
      */
+    @Test
     public void TestICUGetKeysForResourceItem() {
         String baseName="com/ibm/icu/dev/data/testdata";
         UResourceBundle te = UResourceBundle.getBundleInstance(baseName, "te", testLoader);
@@ -1062,6 +1083,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
      * a similarly named class (only case differences) exists in the
      * same package.  See Ticket#6844
      */
+    @Test
     public void TestT6844() {
         try {
             UResourceBundle rb1
@@ -1076,6 +1098,7 @@ public final class ICUResourceBundleTest extends TestFmwk {
         }
     }
     
+    @Test
     public void TestUResourceBundleCoverage() {
         Locale locale = null;
         ULocale ulocale = null;

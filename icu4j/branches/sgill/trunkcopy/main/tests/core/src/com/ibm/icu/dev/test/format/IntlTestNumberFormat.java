@@ -14,6 +14,8 @@ package com.ibm.icu.dev.test.format;
 import java.util.Locale;
 import java.util.Random;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
 
@@ -25,14 +27,10 @@ public class IntlTestNumberFormat extends com.ibm.icu.dev.test.TestFmwk {
     
     public NumberFormat fNumberFormat;
 
-    public static void main(String[] args) throws Exception {
-        new IntlTestNumberFormat().run(args);
-    }
-    
     /**
      * Internal use
      */
-    public void _testLocale(Locale locale) {
+    private void _testLocale(Locale locale) {
         String localeName = locale + " (" + locale.getDisplayName() + ")";
             
         logln("Number test " + localeName);
@@ -57,6 +55,7 @@ public class IntlTestNumberFormat extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * call _testFormat for currency, percent and plain number instances
      */
+    @Test
     public void TestLocale() {
         Locale locale = Locale.getDefault();
         String localeName = locale + " (" + locale.getDisplayName() + ")";
@@ -77,7 +76,7 @@ public class IntlTestNumberFormat extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * call tryIt with many variations, called by testLocale
      */
-    public void _testFormat() {
+    private void _testFormat() {
         
         if (fNumberFormat == null){
             errln("**** FAIL: Null format returned by createXxxInstance.");
@@ -242,6 +241,7 @@ public class IntlTestNumberFormat extends com.ibm.icu.dev.test.TestFmwk {
     /**
      *  test NumberFormat::getAvailableLocales
      **/
+    @Test
     public void TestAvailableLocales() {
         final Locale[] locales = NumberFormat.getAvailableLocales();
         int count = locales.length;
@@ -264,6 +264,7 @@ public class IntlTestNumberFormat extends com.ibm.icu.dev.test.TestFmwk {
     /**
      *  call testLocale for all locales
      **/    
+    @Test
     public void TestMonster() {
         final String SEP = "============================================================\n";
         int count;

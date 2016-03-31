@@ -1,0 +1,7 @@
+<ivy-module version="2.0">
+	<info organisation="com.ibm.icu" module="icu4j"/>
+	<dependencies>
+		<dependency org="junit" name="junit" rev="4.10"/>
+		<dependency org="pl.pragmatists" name="JUnitParams" rev="1.0.4" />
+	</dependencies>
+</ivy-module>

@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.PatternTokenizer;
 import com.ibm.icu.impl.Utility;
@@ -48,10 +50,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     public static int RANDOM_COUNT = 1000;
     public static boolean DEBUG = false;
 
-    public static void main(String[] args) throws Exception {
-        new DateTimeGeneratorTest().run(args);
-    }
-
+    @Test
     public void TestC() {
         String[][] tests = {
                 {"zh", "Cm", "Bh:mm"},
@@ -69,6 +68,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestSimple() {
         // some simple use cases
         ULocale locale = ULocale.GERMANY;
@@ -138,6 +138,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestRoot() {
         DateTimePatternGenerator rootGen = DateTimePatternGenerator.getInstance(ULocale.ROOT);
         SimpleDateFormat rootFormat = new SimpleDateFormat(rootGen.getBestPattern("yMdHms"), ULocale.ROOT);
@@ -146,6 +147,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         assertEquals("root format: yMdHms", "1999-10-14 06:58:59", rootFormat.format(sampleDate)); 
     }
 
+    @Test
     public void TestEmpty() {
         // now nothing
         DateTimePatternGenerator nullGen = DateTimePatternGenerator.getEmptyInstance();
@@ -154,6 +156,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         format.setTimeZone(rootZone);
     }
 
+    @Test
     public void TestPatternParser() {
         StringBuffer buffer = new StringBuffer();
         PatternTokenizer pp = new PatternTokenizer()
@@ -233,6 +236,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
 
     static final String[] statusName = {"DONE", "SYNTAX", "LITERAL", "BROKEN_QUOTE", "BROKEN_ESCAPE", "UNKNOWN"};
 
+    @Test
     public void TestBasic() {
         ULocale uLocale = null;
         DateTimePatternGenerator dtfg = null;
@@ -497,6 +501,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         new String[] {"JJmm", "11:58"},
     };
 
+    @Test
     public void DayMonthTest() {
         final ULocale locale = ULocale.FRANCE;
 
@@ -514,6 +519,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         // for French, the result is "13 sept."
     }
 
+    @Test
     public void TestOrdering() {
         ULocale[] locales = ULocale.getAvailableLocales();
         for (int i = 0; i < locales.length; ++i) {
@@ -525,6 +531,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestReplacingZoneString() {
         Date testDate = new Date();
         TimeZone testTimeZone = TimeZone.getTimeZone("America/New_York");
@@ -544,7 +551,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
             count++;
             // Skipping some test case in the non-exhaustive mode to reduce the test time
             //ticket#6503
-            if(params.inclusion<=5 && count%3!=0){
+            if(getParams().getInclusion()<=5 && count%3!=0){
                 continue;
             }
             logln(locales[i].toString());
@@ -576,6 +583,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestVariableCharacters() {
         UnicodeSet valid = new UnicodeSet("[G y Y u U r Q q M L l w W d D F g E e c a h H K k m s S A z Z O v V X x]");
         for (char c = 0; c < 0xFF; ++c) {
@@ -766,9 +774,11 @@ public class DateTimeGeneratorTest extends TestFmwk {
         }
         return result;
     }
+
     /* Tests the method
      *        public static DateTimePatternGenerator getInstance()
      */
+    @Test
     public void TestGetInstance(){
         try{
             DateTimePatternGenerator.getInstance();
@@ -781,6 +791,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *        public String getSkeleton(String pattern)
      */
+    @Test
     public void TestGetSkeleton(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
         String[] cases = {"MMDD","MMMDD","MMM-DD","DD/MMM","ddM","MMMMd"};
@@ -798,6 +809,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *        public String getBaseSkeleton(String pattern)
      */
+    @Test
     public void TestGetBaseSkeleton(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
         String[] cases = {"MMDD","MMMDD","MMM-DD","DD/MMM","ddM","MMMMd"};
@@ -815,6 +827,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *        public Map<String, String> getSkeletons(Map<String, String> result)
      */
+    @Test
     public void TestGetSkeletons(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
         // Tests when "if (result == null)" is true
@@ -838,6 +851,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *        public Set<String> getBaseSkeletons(Set<String> result)
      */
+    @Test
     public void TestGetBaseSkeletons(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
         // Tests when "if (result == null)" is true
@@ -861,6 +875,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *        public String getDecimal()
      */
+    @Test
     public void TestGetDecimal(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
         if(!dtpg.getDecimal().equals(".")){
@@ -881,6 +896,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *        public Collection<String> getRedundants(Collection<String> output)
      */
+    @Test
     public void TestGetRedundants(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
 
@@ -905,6 +921,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *        public String getAppendItemFormat(int field)
      */
+    @Test
     public void TestGetAppendItemFormat(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
         String[] cases = {"d","u","m","m","y"};
@@ -930,6 +947,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestGetAppendItemName(){
         final AppendItemName[] appendItemNames = {
                 new AppendItemName( DateTimePatternGenerator.YEAR,    "vuosi" ),
@@ -963,6 +981,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
      *    public static boolean isSingleField(String skeleton)
      */
     @SuppressWarnings("static-access")
+    @Test
     public void TestIsSingleField(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
         String[] cases = {" ", "m","mm","md","mmd","mmdd"};
@@ -980,6 +999,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
      *    public Object freeze()
      *    public Object cloneAsThawed()
      */
+    @Test
     public void TestFreezeAndCloneAsThawed(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
 
@@ -1012,6 +1032,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *    public Object clone()
      */
+    @Test
     public void TestClone(){
         DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
         DateTimePatternGenerator dtpg2 = (DateTimePatternGenerator) dtpg.clone();
@@ -1022,6 +1043,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
      *    public VariableField(String string)
      */
     @SuppressWarnings("unused")
+    @Test
     public void TestVariableField_String(){
         String[] cases = {"d","mm","aa"};
         String[] invalid = {null,"","dummy"};
@@ -1045,6 +1067,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *    public FormatParser set(String string, boolean strict)
      */
+    @Test
     public void TestSet(){
         FormatParser fp = new FormatParser();
         //Tests when "if (string.length() == 0)" is true
@@ -1059,6 +1082,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *    public String toString()
      */
+    @Test
     public void TestToString(){
         FormatParser fp = new FormatParser();
         if(!fp.toString().equals("")){
@@ -1080,6 +1104,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *    public boolean hasDateAndTimeFields()
      */
+    @Test
     public void TestHasDateAndTimeFields(){
         FormatParser fp = new FormatParser();
         if(fp.hasDateAndTimeFields() != false){
@@ -1105,6 +1130,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
      *    private void checkFrozen()
      * from public void setDateTimeFormat(String dateTimeFormat)
      */
+    @Test
     public void TestCheckFrozen(){
         // Tests when "if (isFrozen())" is true
         DateTimePatternGenerator dt = DateTimePatternGenerator.getInstance();
@@ -1121,6 +1147,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the method
      *    public String getFields(String pattern)
      */
+    @Test
     public void TestGetFields(){
         DateTimePatternGenerator dt = DateTimePatternGenerator.getInstance();
         String[] cases = {"MMDDYY", "HHMMSS", "", "MM/DD/YYYY HH:MM:SS",
@@ -1144,6 +1171,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /*
      * Test case for DateFormatPatternGenerator threading problem #7169
      */
+    @Test
     public void TestT7169() {
         Thread[] workers = new Thread[10];
         for (int i = 0 ; i < workers.length; i++) {
@@ -1214,6 +1242,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
             options = opts;
         }
     }
+    @Test
     public void TestOptions() {
         final TestOptionsItem[] testOptionsData = {
                 new TestOptionsItem( "en", "Hmm",  "HH:mm",   DateTimePatternGenerator.MATCH_NO_OPTIONS        ),
@@ -1279,6 +1308,8 @@ public class DateTimeGeneratorTest extends TestFmwk {
             mustIncludeOneOf = mI;
         }
     }
+
+    @Test
     public void TestAllFieldPatterns() {
         String[] localeNames = {
                 "root",
@@ -1383,6 +1414,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         }
     }
 
+    @Test
     public void TestJavaLocale() {
         DateTimePatternGenerator genUloc = DateTimePatternGenerator.getInstance(ULocale.GERMANY);
         DateTimePatternGenerator genLoc = DateTimePatternGenerator.getInstance(Locale.GERMANY);

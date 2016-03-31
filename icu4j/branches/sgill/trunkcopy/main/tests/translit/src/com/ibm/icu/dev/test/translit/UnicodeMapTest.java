@@ -16,6 +16,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.util.CollectionUtilities;
 import com.ibm.icu.dev.util.UnicodeMap;
@@ -33,10 +35,7 @@ public class UnicodeMapTest extends TestFmwk {
     static final int MODIFY_TEST_LIMIT = 32;
     static final int MODIFY_TEST_ITERATIONS = 100000;
 
-    public static void main(String[] args) throws Exception {
-        new UnicodeMapTest().run(args);
-    }
-
+    @Test
     public void TestIterations() {
         UnicodeMap<Double> foo = new UnicodeMap();
         checkToString(foo, "");
@@ -59,6 +58,7 @@ public class UnicodeMapTest extends TestFmwk {
         assertEquals("EntryRange<T>", expected, foo.toString());
     }
     
+    @Test
     public void TestRemove() {
         UnicodeMap<Double> foo = new UnicodeMap()
         .putAll(0x20, 0x29, -2d)
@@ -94,6 +94,7 @@ public class UnicodeMapTest extends TestFmwk {
         assertEquals("retainAll", afterFiiRetained, test);
     }
 
+    @Test
     public void TestAMonkey() {
         SortedMap<String,Integer> stayWithMe = new TreeMap<String,Integer>(OneFirstComparator);
 
@@ -242,6 +243,7 @@ public class UnicodeMapTest extends TestFmwk {
         return "a" + UTF16.valueOf(r + 'a'-1);
     }
 
+    @Test
     public void TestModify() {
         Random random = new Random(0);
         UnicodeMap unicodeMap = new UnicodeMap();
@@ -286,6 +288,7 @@ public class UnicodeMapTest extends TestFmwk {
         return true;
     }
     
+    @Test
     public void TestCloneAsThawed11721 () {
         UnicodeMap<Integer> test = new UnicodeMap().put("abc", 3).freeze();
         UnicodeMap<Integer> copy = test.cloneAsThawed();

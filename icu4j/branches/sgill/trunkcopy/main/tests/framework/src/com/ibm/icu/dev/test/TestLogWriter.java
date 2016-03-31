@@ -27,10 +27,13 @@ public final class TestLogWriter extends Writer {
         if (closed) {
             throw new IOException("stream closed");
         }
+        // TODO(sgill): figure out what to do with this set of message calls
         if ("\r\n".indexOf(str) != -1) {
-            log.msg("", level, level == TestLog.ERR, true);
+            TestFmwk.msg("", level, level == TestLog.ERR, true);
+            //log.msg("", level, level == TestLog.ERR, true);
         } else {
-            log.msg(str, level, level == TestLog.ERR, false);
+            TestFmwk.msg(str, level, level == TestLog.ERR, false);
+            //log.msg(str, level, level == TestLog.ERR, false);
         }
     }
 

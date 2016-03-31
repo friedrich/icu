@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.DecimalFormatSymbols;
 import com.ibm.icu.text.NumberFormat;
@@ -30,11 +32,8 @@ import com.ibm.icu.text.NumberFormat;
 // verifies that it works on a basic level.
 public class IntlTestDecimalFormatAPIC extends com.ibm.icu.dev.test.TestFmwk {
     
-    public static void main(String[] args)  throws Exception {
-        new IntlTestDecimalFormatAPIC().run(args);
-    }
-
     // This test checks various generic API methods in DecimalFormat to achieve 100% API coverage.
+    @Test
     public void TestAPI() {
 
         logln("DecimalFormat API test---");
@@ -229,6 +228,7 @@ public class IntlTestDecimalFormatAPIC extends com.ibm.icu.dev.test.TestFmwk {
        
     }
 
+    @Test
     public void TestRounding() {
         double Roundingnumber = 2.55;
         double Roundingnumber1 = -2.55;
@@ -276,6 +276,7 @@ public class IntlTestDecimalFormatAPIC extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void testFormatToCharacterIterator() {
 
         Number number = new Double(350.76);

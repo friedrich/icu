@@ -41,9 +41,6 @@ public class RoundTripTest extends TestFmwk {
     static final boolean EXTRA_TESTS = true;
     static final boolean PRINT_RULES = true;
 
-    public static void main(String[] args) throws Exception {
-        new RoundTripTest().run(args);
-    }
     /*
     public void TestSingle() throws IOException, ParseException {
         Transliterator t = Transliterator.getInstance("Latin-Greek");
@@ -119,6 +116,7 @@ public class RoundTripTest extends TestFmwk {
         logln(name + " took " + dur + " seconds");
     }
 
+    @org.junit.Test
     public void TestKana() throws IOException {
         long start = System.currentTimeMillis();
         new Test("Katakana-Hiragana")
@@ -126,6 +124,7 @@ public class RoundTripTest extends TestFmwk {
         showElapsed(start, "TestKana");
     }
 
+    @org.junit.Test
     public void TestHiragana() throws IOException {
         long start = System.currentTimeMillis();
         new Test("Latin-Hiragana")
@@ -133,6 +132,7 @@ public class RoundTripTest extends TestFmwk {
         showElapsed(start, "TestHiragana");
     }
 
+    @org.junit.Test
     public void TestKatakana() throws IOException {
         long start = System.currentTimeMillis();
         new Test("Latin-Katakana")
@@ -140,6 +140,7 @@ public class RoundTripTest extends TestFmwk {
         showElapsed(start, "TestKatakana");
     }
 
+    @org.junit.Test
     public void TestJamo() throws IOException {
         long start = System.currentTimeMillis();
         new Test("Latin-Jamo")
@@ -158,6 +159,7 @@ public class RoundTripTest extends TestFmwk {
         SLimit = SBase + SCount;    // D7A4
      */
 
+    @org.junit.Test
     public void TestHangul() throws IOException {
         long start = System.currentTimeMillis();
         Test t = new Test("Latin-Hangul", 5);
@@ -173,6 +175,7 @@ public class RoundTripTest extends TestFmwk {
      * This is a shorter version of the test for doubles, that allows us to skip lots of cases, but
      * does check the ones that should cause problems (if any do).
      */
+    @org.junit.Test
     public void TestHangul2() {
         Transliterator lh = Transliterator.getInstance("Latin-Hangul");
         Transliterator hl = lh.getInverse();
@@ -277,6 +280,7 @@ public class RoundTripTest extends TestFmwk {
     }
 
 
+    @org.junit.Test
     public void TestHan() throws UnsupportedEncodingException, FileNotFoundException {
         try{
             UnicodeSet exemplars = LocaleData.getExemplarSet(new ULocale("zh"),0);
@@ -321,6 +325,7 @@ public class RoundTripTest extends TestFmwk {
         }
     }
 
+    @org.junit.Test
     public void TestSingle() {
         Transliterator t = Transliterator.getInstance("Latin-Greek");
         t.transliterate("\u0061\u0101\u0069");
@@ -344,6 +349,7 @@ public class RoundTripTest extends TestFmwk {
         "] & [:Age=4.0:]]";
     }
 
+    @org.junit.Test
     public void TestGreek() throws IOException {
         long start = System.currentTimeMillis();
         new Test("Latin-Greek", 50)
@@ -353,6 +359,7 @@ public class RoundTripTest extends TestFmwk {
         showElapsed(start, "TestGreek");
     }
 
+    @org.junit.Test
     public void TestGreekUNGEGN() throws IOException {
         long start = System.currentTimeMillis();
         new Test("Latin-Greek/UNGEGN")
@@ -362,6 +369,7 @@ public class RoundTripTest extends TestFmwk {
         showElapsed(start, "TestGreekUNGEGN");
     }
 
+    @org.junit.Test
     public void Testel() throws IOException {
         long start = System.currentTimeMillis();
         new Test("Latin-el")
@@ -371,6 +379,7 @@ public class RoundTripTest extends TestFmwk {
         showElapsed(start, "Testel");
     }
 
+    @org.junit.Test
     public void TestCyrillic() throws IOException {
         long start = System.currentTimeMillis();
         new Test("Latin-Cyrillic")
@@ -380,6 +389,7 @@ public class RoundTripTest extends TestFmwk {
 
     static final String ARABIC = "[\u06A9\u060C\u061B\u061F\u0621\u0627-\u063A\u0641-\u0655\u0660-\u066C\u067E\u0686\u0698\u06A4\u06AD\u06AF\u06CB-\u06CC\u06F0-\u06F9]";
 
+    @org.junit.Test
     public void TestArabic() throws IOException {
         long start = System.currentTimeMillis();
         new Test("Latin-Arabic")
@@ -387,6 +397,7 @@ public class RoundTripTest extends TestFmwk {
         showElapsed(start, "TestArabic");
     }
 
+    @org.junit.Test
     public void TestHebrew() throws IOException {
         if (FIX_ME) {
             errln("TestHebrew needs to be updated to remove delete the [:Age=4.0:] filter ");
@@ -401,6 +412,7 @@ public class RoundTripTest extends TestFmwk {
         showElapsed(start, "TestHebrew");
     }
 
+    @org.junit.Test
     public void TestThai() throws IOException {
         long start = System.currentTimeMillis();
         if (FIX_ME) {
@@ -483,6 +495,7 @@ public class RoundTripTest extends TestFmwk {
     "\u1FE8-\u1FE9\u1FEC\u212A-\u212B\uE04D\uE064]"+
     "-[\uE000-\uE080 \u01E2\u01E3]& [[:latin:][:mark:]]]";
 
+    @org.junit.Test
     public void TestDevanagariLatin() throws IOException {
         long start = System.currentTimeMillis();
         if (FIX_ME) {
@@ -852,6 +865,7 @@ public class RoundTripTest extends TestFmwk {
         },
     };
 
+    @org.junit.Test
     public void TestInterIndic() throws Exception{
         long start = System.currentTimeMillis();
         int num = interIndicArray.length;
@@ -1153,6 +1167,7 @@ public class RoundTripTest extends TestFmwk {
         static final UnicodeSet okAnyway = new UnicodeSet("[^[:Letter:]]");
         static final UnicodeSet neverOk = new UnicodeSet("[:Other:]");
 
+    @org.junit.Test
         public void test(String srcRange, String trgtRange,
                 String rdtripExclusions, RoundTripTest logger, Legal legalSrc)
         throws java.io.IOException {
@@ -1165,6 +1180,7 @@ public class RoundTripTest extends TestFmwk {
          * that everything in targetRange maps to backtoSourceRange
          * that everything roundtrips from target -> source -> target, except roundtripExceptions
          */
+    @org.junit.Test
         public void test(String srcRange, String trgtRange, String backtoSourceRange,
                 String rdtripExclusions, RoundTripTest logger, Legal legalSrc)
         throws java.io.IOException {
@@ -1271,6 +1287,7 @@ public class RoundTripTest extends TestFmwk {
         Transliterator sourceToTarget;
         Transliterator targetToSource;
 
+        @org.junit.Test
         public void test2() {
 
             sourceToTarget = Transliterator.getInstance(transliteratorID);

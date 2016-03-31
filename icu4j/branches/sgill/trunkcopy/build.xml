@@ -5,7 +5,8 @@
 *******************************************************************************
 -->
 <project name="icu4j" default="jar" basedir="."
-    xmlns:jacoco="antlib:org.jacoco.ant">
+    xmlns:jacoco="antlib:org.jacoco.ant"
+    xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <property file="build-local.properties"/>
     <property file="build.properties"/>
@@ -145,12 +146,192 @@
         <delete dir="${module.dir}"/>
         <delete dir="${cldr.release.dir}"/>
 
+        <delete dir="${junit.out.dir}"/>
+
         <available file="eclipse-build" type="dir" property="eclipse-build.dir.present"/>
         <antcall target="_clean.eclipse-build"/>
     </target>
 
     <target name="_clean.eclipse-build" if="eclipse-build.dir.present">
         <ant dir="eclipse-build" target="clean" inheritAll="false"/>
+    </target>
+
+    <!-- Junit Targets -->
+    <property name="ivy.install.version" value="2.1.0-rc2" />
+    <condition property="ivy.home" value="${env.IVY_HOME}">
+      <isset property="env.IVY_HOME" />
+    </condition>
+    <property name="ivy.home" value="${user.home}/.ant" />
+    <property name="ivy.jar.dir" value="${ivy.home}/lib" />
+    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
+
+    <target name="download-ivy" unless="offline">
+
+        <mkdir dir="${ivy.jar.dir}"/>
+        <!-- download Ivy from web site so that it can be used even without any special installation -->
+        <get src="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" 
+             dest="${ivy.jar.file}" usetimestamp="true"/>
+    </target>
+
+    <target name="init-ivy" depends="download-ivy">
+      <!-- try to load ivy here from ivy home, in case the user has not already dropped
+              it into ant's lib dir (note that the latter copy will always take precedence).
+              We will not fail as long as local lib dir exists (it may be empty) and
+              ivy is in at least one of ant's lib dir or the local lib dir. -->
+        <path id="ivy.lib.path">
+            <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+    </target>
+
+    <target name="test-init-junit-dependency" depends="init-ivy">
+        <ivy:retrieve/>
+    </target>
+
+    <target name="junit" depends="main, tests">
+		<antcall target="junit-batch"/>
+    </target>
+
+    <property name="junit.out.dir" value="junit-out"/>    
+    <property name="junit.core.jar" value="external/junit/junit-4.10.jar"/>
+    <property name="junit.hamcrest.jar" value="external/junit/hamcrest-core-1.3.jar"/>
+    <property name="junit.junitparams.jar" value="external/junitparams/JUnitParams-1.0.2.jar"/>
+    <property name="junit.jars" value="${junit.core.jar};${junit.hamcrest.jar};${junit.junitparams.jar}"/>
+    <!--property name="junit.jars" value="external/junit/junit-4.10.jar; external/junit/hamcrest-core-1.3.jar; external/junitparams/JUnitParams-1.0.2.jar"/-->
+    <patternset id="test-classes">
+		<include name="**/*Test*"/>
+		<exclude name="**/*Fmwk*"/>
+		<exclude name="**/*TestUtility*"/>
+		<exclude name="**/*TestCase*"/>
+		<exclude name="**/*TestData*"/>
+		<exclude name="**/*TestSample*"/>
+		<exclude name="**/*$*.class"/>
+		<exclude name="**/data/**"/>
+    </patternset>
+    
+    <!--target name="junit-batch" depends="main, tests"-->
+    <target name="junit-batch">
+    	<!--echoproperties/-->
+    	<echo message="${env.JVM_OPTIONS}"/>
+        <delete dir="${junit.out.dir}"/>
+        <mkdir  dir="${junit.out.dir}"/>
+        
+		<junit fork="yes" printsummary="yes" haltonfailure="no">
+			<jvmarg value="-Xss4m"/>
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Djava.awt.headless=true"/>
+			<!--jvmarg value="${jvm_options}"/-->
+            <classpath>
+            	<pathelement path="${junit.jars}"/>
+                <pathelement location="${icu4j.core.jar}"/>
+                <pathelement location="${icu4j.collate.jar}"/>
+                <pathelement location="${icu4j.charset.jar}"/>
+                <pathelement location="${icu4j.currdata.jar}"/>
+                <pathelement location="${icu4j.langdata.jar}"/>
+                <pathelement location="${icu4j.regiondata.jar}"/>
+                <pathelement location="${icu4j.translit.jar}"/>
+                <pathelement location="${icu4j.test-framework.jar}"/>
+                <pathelement location="${icu4j.core-tests.jar}"/>
+                <pathelement location="${icu4j.collate-tests.jar}"/> 
+                <pathelement location="${icu4j.charset-tests.jar}"/>
+                <pathelement location="${icu4j.translit-tests.jar}"/>
+                <pathelement location="${icu4j.localespi-tests.jar}"/>
+                <pathelement location="${icu4j.packaging-tests.jar}"/>
+                <pathelement location="${icu4j.regiondata.jar}"/>
+            </classpath>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junit.out.dir}">
+				<multirootfileset>
+					<basedir file="${icu4j.core-tests.dir}/out/bin" />
+					<basedir file="${icu4j.collate-tests.dir}/out/bin" />
+					<basedir file="${icu4j.charset-tests.dir}/out/bin" />
+					<basedir file="${icu4j.packaging-tests.dir}/out/bin" />
+					<basedir file="${icu4j.translit-tests.dir}/out/bin" />
+					<patternset refid="test-classes"/>
+				</multirootfileset>
+				<!--basedir file="${icu4j.collate-tests.dir}" />
+				<basedir file="${icu4j.charset-tests.dir}" />
+				<basedir file="${icu4j.localespi-tests.dir}" />
+				<basedir file="${icu4j.packaging-tests.dir}" />
+				<basedir file="${icu4j.translit-tests.dir}" /-->
+			</batchtest>
+
+		</junit>
+    </target>
+
+    <target name="junit-translit">
+        <delete dir="${junit.out.dir}"/>
+        <mkdir  dir="${junit.out.dir}"/>
+
+		<junit fork="yes" printsummary="yes" haltonfailure="no">
+            <classpath>
+            	<pathelement location="external/junit/junit-4.10.jar"/>
+            	<pathelement location="external/junit/hamcrest-core-1.3.jar"/>
+            	<pathelement location="external/junitparams/JUnitParams-1.0.2.jar"/>
+                <pathelement location="${icu4j.core.jar}"/>
+                <pathelement location="${icu4j.collate.jar}"/>
+                <pathelement location="${icu4j.charset.jar}"/>
+                <pathelement location="${icu4j.currdata.jar}"/>
+                <pathelement location="${icu4j.langdata.jar}"/>
+                <pathelement location="${icu4j.regiondata.jar}"/>
+                <pathelement location="${icu4j.translit.jar}"/>
+                <pathelement location="${icu4j.test-framework.jar}"/>
+                <pathelement location="${icu4j.core-tests.jar}"/>
+                <pathelement location="${icu4j.collate-tests.jar}"/> 
+                <pathelement location="${icu4j.charset-tests.jar}"/>
+                <pathelement location="${icu4j.translit-tests.jar}"/>
+                <pathelement location="${icu4j.localespi-tests.jar}"/>
+                <pathelement location="${icu4j.packaging-tests.jar}"/>
+                <pathelement location="${icu4j.regiondata.jar}"/>
+                <!--pathelement location="${icu4j.testall.jar}"/-->
+            </classpath>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junit.out.dir}">
+				<multirootfileset>
+					<basedir file="${icu4j.translit-tests.dir}/out/bin" />
+					<include name="**/*Test*"/>
+					<exclude name="**/*Fmwk*"/>
+					<exclude name="**/*TestUtility*"/>
+					<exclude name="**/*TestCase*"/>
+					<exclude name="**/*TestData*"/>
+					<exclude name="**/*TestSample*"/>
+					<exclude name="**/*$*.class"/>
+					<exclude name="**/data/**"/>
+				</multirootfileset>
+				<!--basedir file="${icu4j.collate-tests.dir}" />
+				<basedir file="${icu4j.charset-tests.dir}" />
+				<basedir file="${icu4j.localespi-tests.dir}" />
+				<basedir file="${icu4j.packaging-tests.dir}" />
+				<basedir file="${icu4j.translit-tests.dir}" /-->
+			</batchtest>
+
+		</junit>
+    </target>
+
+    <!--target name="junit-spi" depends="localespi, localespi-tests"-->
+    <target name="junit-spi">
+		<junit printsummary="yes" haltonfailure="no">
+            <jvmarg line="-Djava.ext.dirs=${icu4j.core.dir}/${jar.dir}${path.separator}${icu4j.localespi.dir}/${jar.dir}${path.separator}${icu4j.collate.dir}/${jar.dir}${path.separator}${icu4j.currdata.dir}/${jar.dir}${path.separator}${icu4j.langdata.dir}/${jar.dir}${path.separator}${icu4j.regiondata.dir}/${jar.dir}${path.separator}${java.ext.dirs}"/>
+            <classpath>
+            	<pathelement path="${junit.jars}"/>
+                <pathelement location="${icu4j.localespi-tests.jar}"/>
+                <pathelement location="${icu4j.test-framework.jar}"/>
+            </classpath>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+			<batchtest fork="yes" todir="${junit.out.dir}">
+				<multirootfileset>
+					<basedir file="${icu4j.localespi-tests.dir}/out/bin" />
+					<patternset refid="test-classes"/>
+				</multirootfileset>
+			</batchtest>
+			
+        </junit>
     </target>
 
     <!-- meta build targets -->
@@ -166,14 +347,18 @@
     <target name="check" description="Run the standard ICU4J test suite">
         <antcall target="_runCheck">
             <param name="runcheck.arg" value=""/>
-            <param name="runcheck.jvmarg" value="${jvm_options} -ea"/>
+            <param name="runcheck.jvmarg" value="${jvm_options}"/>
         </antcall>
+    </target>
+
+    <target name="_runCheck" depends="main, tests">
+        <antcall target="junit.tests"/>
     </target>
 
     <target name="exhaustiveCheck" description="Run the standard ICU4J test suite in exhaustive mode">
         <antcall target="_runCheck">
             <param name="runcheck.arg" value="-e10"/>
-            <param name="runcheck.jvmarg" value="${jvm_options} -ea"/>
+            <param name="runcheck.jvmarg" value="${jvm_options}"/>
         </antcall>
     </target>
 
@@ -191,14 +376,16 @@
         </antcall>
     </target>
 
-    <target name="_runCheck" depends="main, tests">
-        <echo message="JVM argument:   ${runcheck.jvmarg} -Djava.awt.headless=true"/>
-        <echo message="Test argument:   ${runcheck.arg}"/>
+    <target name="junit.tests">
+        <delete dir="${junit.out.dir}"/>
+        <mkdir  dir="${junit.out.dir}"/>
 
-        <java classname="com.ibm.icu.dev.test.TestAll" fork="yes" failonerror="true">
-            <arg line="${runcheck.arg}"/>
-            <jvmarg line="${runcheck.jvmarg} -Djava.awt.headless=true"/>
+		<junit fork="yes" printsummary="yes" haltonfailure="no">
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Djava.awt.headless=true"/>
+			<!--jvmarg value="${jvm_options}"/-->
             <classpath>
+            	<pathelement path="${junit.jars}"/>
                 <pathelement location="${icu4j.core.jar}"/>
                 <pathelement location="${icu4j.collate.jar}"/>
                 <pathelement location="${icu4j.charset.jar}"/>
@@ -211,9 +398,21 @@
                 <pathelement location="${icu4j.collate-tests.jar}"/> 
                 <pathelement location="${icu4j.charset-tests.jar}"/>
                 <pathelement location="${icu4j.translit-tests.jar}"/>
-                <pathelement location="${icu4j.testall.jar}"/>
             </classpath>
-        </java>
+            
+            <formatter type="plain"/>
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junit.out.dir}">
+				<multirootfileset>
+					<basedir file="${icu4j.core-tests.dir}/out/bin" />
+					<basedir file="${icu4j.collate-tests.dir}/out/bin" />
+					<basedir file="${icu4j.charset-tests.dir}/out/bin" />
+					<basedir file="${icu4j.translit-tests.dir}/out/bin" />
+					<patternset refid="test-classes"/>
+				</multirootfileset>
+			</batchtest>
+        </junit>
     </target>
 
     <target name="_runTestArgCheck" unless="testarg">

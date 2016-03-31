@@ -18,17 +18,14 @@ import java.text.CharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
 import com.ibm.icu.util.ULocale;
 
 public class RBBITest extends TestFmwk {  
-    
-    public static void main(String[] args) throws Exception {
-        new RBBITest().run(args);
-    }
-
     public RBBITest() {
     }
   
@@ -40,6 +37,7 @@ public class RBBITest extends TestFmwk {
     // tests default rules based character iteration.
     // Builds a new iterator from the source rules in the default (prebuilt) iterator.
     //
+    @Test
     public void TestDefaultRuleBasedCharacterIteration() {
         RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator) BreakIterator.getCharacterInstance();
         logln("Testing the RBBI for character iteration by using default rules");
@@ -122,6 +120,7 @@ public class RBBITest extends TestFmwk {
 
     }
 
+    @Test
     public void TestDefaultRuleBasedWordIteration() {
         logln("Testing the RBBI for word iteration using default rules");
         RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator) BreakIterator.getWordInstance();
@@ -175,6 +174,7 @@ public class RBBITest extends TestFmwk {
 //    private static final String kParagraphSeparator = "\u2029";
     private static final String kLineSeparator      = "\u2028";
 
+    @Test
     public void TestDefaultRuleBasedSentenceIteration() {
         logln("Testing the RBBI for sentence iteration using default rules");
         RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator) BreakIterator.getSentenceInstance();
@@ -206,6 +206,7 @@ public class RBBITest extends TestFmwk {
         generalIteratorTest(sentIterDefault, sentdata);
     }
 
+    @Test
     public void TestDefaultRuleBasedLineIteration() {
         logln("Testing the RBBI for line iteration using default rules");
         RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator) RuleBasedBreakIterator.getLineInstance();
@@ -515,6 +516,7 @@ public class RBBITest extends TestFmwk {
          logln(out.toString());
     }
    
+    @Test
    public void TestThaiDictionaryBreakIterator() {
        int position;
        int index;
@@ -590,6 +592,7 @@ public class RBBITest extends TestFmwk {
   
    
    // TODO: Move these test cases to rbbitst.txt if they aren't there already, then remove this test. It is redundant.
+    @Test
     public void TestTailoredBreaks() {
         class TBItem {
             private int     type;
@@ -621,6 +624,7 @@ public class RBBITest extends TestFmwk {
                 }
                 return buildString.toString();
             }
+    @Test
             public void doTest() {
                 BreakIterator brkIter;
                 switch( type ) {
@@ -689,6 +693,7 @@ public class RBBITest extends TestFmwk {
     }
 
     /* Tests the method public Object clone() */
+    @Test
     public void TestClone() {
         RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         try {
@@ -704,6 +709,7 @@ public class RBBITest extends TestFmwk {
     /*
      * Tests the method public boolean equals(Object that)
      */
+    @Test
     public void TestEquals() {
         RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         RuleBasedBreakIterator rbbi1 = new RuleBasedBreakIterator("");
@@ -740,6 +746,7 @@ public class RBBITest extends TestFmwk {
     /*
      * Tests the method public void dump()
      */
+    @Test
     public void TestDump() {
         RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         try {
@@ -753,6 +760,7 @@ public class RBBITest extends TestFmwk {
     /*
      * Tests the method public int first()
      */
+    @Test
     public void TestFirst() {
         RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "if (fText == null)" is true
@@ -766,6 +774,7 @@ public class RBBITest extends TestFmwk {
     /*
      * Tests the method public int last()
      */
+    @Test
     public void TestLast() {
         RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "if (fText == null)" is true
@@ -779,6 +788,7 @@ public class RBBITest extends TestFmwk {
     /*
      * Tests the method public int following(int offset)
      */
+    @Test
     public void TestFollowing() {
         RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "else if (offset < fText.getBeginIndex())" is true
@@ -792,6 +802,7 @@ public class RBBITest extends TestFmwk {
     /*
      * Tests the method public int preceding(int offset)
      */
+    @Test
     public void TestPreceding() {
         RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "if (fText == null || offset > fText.getEndIndex())" is true
@@ -810,6 +821,7 @@ public class RBBITest extends TestFmwk {
     }
     
     /* Tests the method public int current() */
+    @Test
     public void TestCurrent(){
         RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "(fText != null) ? fText.getIndex() : BreakIterator.DONE" is true and false

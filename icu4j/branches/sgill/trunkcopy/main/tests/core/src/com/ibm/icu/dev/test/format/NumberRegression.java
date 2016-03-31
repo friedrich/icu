@@ -37,6 +37,8 @@ import java.text.ParsePosition;
 import java.util.Date;
 import java.util.Locale;
 
+import org.junit.Test;
+
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DecimalFormat;
@@ -47,20 +49,16 @@ import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.VersionInfo;
 
 public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
-
-    public static void main(String[] args) throws Exception {
-        new NumberRegression().run(args);
-    }
-
     private static final char EURO = '\u20ac';
 
     /**
      * NumberFormat.equals comparing with null should always return false.
      */
+    @Test
     public void Test4075713(){
 
         try {
-            MyNumberFormatTest tmp = new MyNumberFormatTest();
+            MyNumberFormat tmp = new MyNumberFormat();
             if (!tmp.equals(null))
                 logln("NumberFormat.equals passed");
         } catch (NullPointerException e) {
@@ -72,10 +70,11 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * NumberFormat.equals comparing two obj equal even the setGroupingUsed
      * flag is different.
      */
+    @Test
     public void Test4074620() {
 
-        MyNumberFormatTest nf1 = new MyNumberFormatTest();
-        MyNumberFormatTest nf2 = new MyNumberFormatTest();
+        MyNumberFormat nf1 = new MyNumberFormat();
+        MyNumberFormat nf2 = new MyNumberFormat();
 
         nf1.setGroupingUsed(false);
         nf2.setGroupingUsed(true);
@@ -90,6 +89,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * DecimalFormat.format() incorrectly uses maxFractionDigits setting.
      */
 
+    @Test
     public void Test4088161 (){
         DecimalFormat df = new DecimalFormat();
         double d = 100;
@@ -112,6 +112,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * DecimalFormatSymbols should be cloned in the ctor DecimalFormat.
      * DecimalFormat(String, DecimalFormatSymbols).
      */
+    @Test
     public void Test4087245 (){
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         DecimalFormat df = new DecimalFormat("#,##0.0", symbols);
@@ -129,6 +130,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.format() incorrectly formats 0.0
      */
+    @Test
     public void Test4087535 ()
     {
         DecimalFormat df = new DecimalFormat();
@@ -148,6 +150,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.format fails when groupingSize is set to 0.
      */
+    @Test
     public void Test4088503 (){
         DecimalFormat df = new DecimalFormat();
         df.setGroupingSize(0);
@@ -163,6 +166,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * NumberFormat.getCurrencyInstance is wrong.
      */
+    @Test
     public void Test4066646 () {
         //float returnfloat = 0.0f; //The variable is never used
         assignFloatValue(2.04f);
@@ -186,6 +190,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat throws exception when parsing "0"
      */
+    @Test
     public void Test4059870() {
         DecimalFormat format = new DecimalFormat("00");
         try {
@@ -197,6 +202,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * comparing with null.
      */
 
+    @Test
     public void Test4083018 (){
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         try {
@@ -209,6 +215,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat does not round up correctly.
      */
+    @Test
     public void Test4071492 (){
         double x = 0.00159999;
         NumberFormat nf = NumberFormat.getInstance();
@@ -224,6 +231,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * A space as a group separator for localized pattern causes
      * wrong format.  WorkAround : use non-breaking space.
      */
+    @Test
     public void Test4086575() {
 
         NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
@@ -260,6 +268,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.parse returns wrong value
      */
+    @Test
     public void Test4068693()
     {
         logln("----- Test Application -----");
@@ -275,6 +284,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * null pointer thrown when accessing a deserialized DecimalFormat
      * object.
      */
+    @Test
     public void Test4069754() throws Exception
     {
         //try {
@@ -304,6 +314,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.applyPattern(String) allows illegal patterns
      */
+    @Test
     public void Test4087251 (){
         DecimalFormat df = new DecimalFormat();
         try {
@@ -326,6 +337,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.format() loses precision
      */
+    @Test
     public void Test4090489 (){
         DecimalFormat df = new DecimalFormat();
         df.setMinimumFractionDigits(10);
@@ -345,6 +357,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.format() loses precision
      */
+    @Test
     public void Test4090504 ()
     {
         double d = 1;
@@ -367,6 +380,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.parse(String str, ParsePosition pp) loses precision
      */
+    @Test
     public void Test4095713 ()
     {
         DecimalFormat df = new DecimalFormat();
@@ -381,6 +395,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.parse() fails when multiplier is not set to 1
      */
+    @Test
     public void Test4092561 ()
     {
         Locale savedLocale = Locale.getDefault();
@@ -399,6 +414,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat: Negative format ignored.
      */
+    @Test
     public void Test4092480 ()
     {
         DecimalFormat dfFoo = new DecimalFormat("000");
@@ -438,6 +454,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * never contain the monetary separator!  Decimal separator in pattern is
      * interpreted as monetary separator if currency symbol is seen!
      */
+    @Test
     public void Test4087244 () {
         Locale de = new Locale("pt", "PT");
         DecimalFormat df = (DecimalFormat) NumberFormat.getCurrencyInstance(de);
@@ -468,6 +485,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Number format data rounding errors for locale FR
      */
+    @Test
     public void Test4070798 () {
         NumberFormat formatter;
         String tempString;
@@ -518,6 +536,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Data rounding errors for French (Canada) locale
      */
+    @Test
     public void Test4071005 () {
 
         NumberFormat formatter;
@@ -566,6 +585,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Data rounding errors for German (Germany) locale
      */
+    @Test
     public void Test4071014 () {
         NumberFormat formatter;
         String tempString;
@@ -616,6 +636,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Data rounding errors for Italian locale number formats
      * Note- with the Euro, there is no need for currency rounding anymore
      */
+    @Test
     public void Test4071859 () {
         NumberFormat formatter;
         String tempString;
@@ -665,6 +686,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /* bug 4071859
      * Test rounding for nearest even.
      */
+    @Test
     public void Test4093610()
     {
         DecimalFormat df = new DecimalFormat("#0.#");
@@ -691,6 +713,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Tests the setMaximumFractionDigits limit.
      */
+    @Test
     public void Test4098741()
     {
         try {
@@ -706,6 +729,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Fix comment : HShih A31 Part1 will not be fixed and javadoc needs to be updated.
      * Part2 has been fixed.
      */
+    @Test
     public void Test4074454()
     {
         try {
@@ -739,6 +763,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Otherwise, an IllegalArgumentException will be thrown when formatting
      * "January 35".  See GregorianCalendar class javadoc for more details.
      */
+    @Test
     public void Test4099404()
     {
         try {
@@ -759,6 +784,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.applyPattern doesn't set minimum integer digits
      */
+    @Test
     public void Test4101481()
     {
         DecimalFormat sdf = new DecimalFormat("#,##0");
@@ -768,6 +794,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Tests ParsePosition.setErrorPosition() and ParsePosition.getErrorPosition().
      */
+    @Test
     public void Test4052223()
     {
         try {
@@ -781,6 +808,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * API tests for API addition request A9.
      */
+    @Test
     public void Test4061302()
     {
         DecimalFormatSymbols fmt = new DecimalFormatSymbols();
@@ -810,6 +838,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * API tests for API addition request A23. FieldPosition.getBeginIndex and
      * FieldPosition.getEndIndex.
      */
+    @Test
     public void Test4062486()
     {
         DecimalFormat fmt = new DecimalFormat("#,##0.00");
@@ -828,6 +857,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.parse incorrectly works with a group separator.
      */
+    @Test
     public void Test4108738()
     {
 
@@ -846,6 +876,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.format() incorrectly formats negative doubles.
      */
+    @Test
     public void Test4106658()
     {
         Locale savedLocale = Locale.getDefault();
@@ -870,6 +901,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.parse returns 0 if string parameter is incorrect.
      */
+    @Test
     public void Test4106662()
     {
         DecimalFormat df = new DecimalFormat();
@@ -892,6 +924,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * NumberFormat.parse doesn't return null
      */
+    @Test
     public void Test4114639()
     {
         NumberFormat format = NumberFormat.getInstance();
@@ -904,6 +937,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.format(long n) fails if n * multiplier > MAX_LONG.
      */
+    @Test
     public void Test4106664()
     {
         DecimalFormat df = new DecimalFormat();
@@ -920,6 +954,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.format incorrectly formats -0.0.
      */
+    @Test
     public void Test4106667()
     {
         Locale savedLocale = Locale.getDefault();
@@ -939,6 +974,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.setMaximumIntegerDigits() works incorrectly.
      */
+    @Test
     public void Test4110936()
     {
         NumberFormat nf = NumberFormat.getInstance();
@@ -956,6 +992,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * 2) Make sure we get the same results using the generic symbol or a
      *    hard-coded one.
      */
+    @Test
     public void Test4122840()
     {
         Locale[] locales = NumberFormat.getAvailableLocales();
@@ -1021,6 +1058,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.format() delivers wrong string.
      */
+    @Test
     public void Test4125885()
     {
         double rate = 12.34;
@@ -1042,6 +1080,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      **
      * DecimalFormat produces extra zeros when formatting numbers.
      */
+    @Test
     public void Test4134034() {
         DecimalFormat nf = new DecimalFormat("##,###,###.00");
         
@@ -1076,6 +1115,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * Value 1.2 Format #0.0# Result '1.2'
      * Value 1.2 Format #0.00 Result '1.20'
      */
+    @Test
     public void Test4134300() {
         String[] DATA = {
          // Pattern      Expected string
@@ -1100,6 +1140,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * Empty pattern produces double negative prefix.
      */
+    @Test
     public void Test4140009() {
         final double IN[]  = {  123.456,   -123.456  };
         final String OUT[] = { "123.456", "-123.456" };
@@ -1126,6 +1167,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * BigDecimal numbers get their fractions truncated by NumberFormat.
      */
+    @Test
     public void Test4141750() {
         try {
             String str = "12345.67";
@@ -1143,6 +1185,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * DecimalFormat toPattern() doesn't quote special characters or handle
      * single quotes.
      */
+    @Test
     public void Test4145457() {
         try {
             DecimalFormat nf = (DecimalFormat)NumberFormat.getInstance();
@@ -1193,6 +1236,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * CANNOT REPRODUCE
      * This bug is a duplicate of 4139344, which is a duplicate of 4134300
      */
+    @Test
     public void Test4147295() {
         DecimalFormat sdf = new DecimalFormat();
         String pattern = "#,###";
@@ -1213,6 +1257,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * DecimalFormat formats -0.0 as +0.0
      * See also older related bug 4106658, 4106667
      */
+    @Test
     public void Test4147706() {
         DecimalFormat df = new DecimalFormat("#,##0.0##");
         df.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.ENGLISH));
@@ -1231,6 +1276,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * NumberFormat cannot format Double.MAX_VALUE
      */
+    @Test
     public void Test4162198() {
         double dbl = Double.MAX_VALUE;
         NumberFormat f = NumberFormat.getInstance();
@@ -1254,6 +1300,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * NumberFormat does not parse negative zero.
      */
+    @Test
     public void Test4162852() throws ParseException {
         for (int i=0; i<2; ++i) {
             NumberFormat f = (i == 0) ? NumberFormat.getInstance()
@@ -1274,6 +1321,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * NumberFormat truncates data
      */
+    @Test
     public void Test4167494() throws Exception {
         NumberFormat fmt = NumberFormat.getInstance(Locale.US);
         
@@ -1307,6 +1355,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.parse() fails when ParseIntegerOnly set to true
      */
+    @Test
     public void Test4170798() {
         Locale savedLocale = Locale.getDefault();
         Locale.setDefault(Locale.US);
@@ -1324,6 +1373,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * toPattern only puts the first grouping separator in.
      */
+    @Test
     public void Test4176114() {
         String[] DATA = {
             "00", "#00",
@@ -1348,6 +1398,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat is incorrectly rounding numbers like 1.2501 to 1.2
      */
+    @Test
     public void Test4179818() {
         String DATA[] = {
             // Input  Pattern  Expected output
@@ -1372,6 +1423,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
+    @Test
     public void Test4185761() throws IOException, ClassNotFoundException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -1469,6 +1521,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * symbol, percent, and permille.  This is filed as bugs 4212072 and
      * 4212073.
      */
+    @Test
     public void Test4212072() throws IOException, ClassNotFoundException {
         DecimalFormatSymbols sym = new DecimalFormatSymbols(Locale.US);
         DecimalFormat fmt = new DecimalFormat("#", sym);
@@ -1649,6 +1702,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * DecimalFormat.parse() fails for mulipliers 2^n.
      */
+    @Test
     public void Test4216742() throws ParseException {
         DecimalFormat fmt = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         long[] DATA = { Long.MIN_VALUE, Long.MAX_VALUE, -100000000L, 100000000L};
@@ -1669,6 +1723,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
      * DecimalFormat formats 1.001 to "1.00" instead of "1" with 2 fraction
      * digits.
      */
+    @Test
     public void Test4217661() {
         Object[] DATA = {
             new Double(0.001), "0",
@@ -1689,6 +1744,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * 4243011: Formatting .5 rounds to "1" instead of "0"
      */
+    @Test
     public void Test4243011() {
         double DATA[] = {0.5, 1.5, 2.5, 3.5, 4.5};
         String EXPECTED[] = {"0.", "2.", "2.", "4.", "4."};
@@ -1707,6 +1763,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * 4243108: format(0.0) gives "0.1" if preceded by parse("99.99")
      */
+    @Test
     public void Test4243108() {
         DecimalFormat f = new DecimalFormat("#.#");
         String result = f.format(0.0);
@@ -1737,6 +1794,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * 4330377: DecimalFormat engineering notation gives incorrect results
      */
+    @Test
     public void test4330377() {
         /*
         double[] input = {5000.0, 500.0, 50.0, 5.0, 0.5, 0.05, 0.005, 0.0005,
@@ -1780,6 +1838,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * 4233840: NumberFormat does not round correctly
      */
+    @Test
     public void test4233840() {
         float f = 0.0099f;
 
@@ -1796,6 +1855,7 @@ public class NumberRegression extends com.ibm.icu.dev.test.TestFmwk {
     /**
      * 4241880: Decimal format doesnt round a double properly when the number is less than 1
      */
+    @Test
     public void test4241880() {
         Locale savedLocale = Locale.getDefault();
         Locale.setDefault(Locale.US);
@@ -1848,7 +1908,7 @@ class myformat implements Serializable
     }
 }
 
-class MyNumberFormatTest extends NumberFormat {
+class MyNumberFormat extends NumberFormat {
     /**
      * For serialization
      */

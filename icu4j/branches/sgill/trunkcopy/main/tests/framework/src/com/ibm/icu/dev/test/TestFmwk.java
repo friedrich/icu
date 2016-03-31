@@ -6,29 +6,25 @@
  */
 package com.ibm.icu.dev.test;
 
-import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.MissingResourceException;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
@@ -109,7 +105,7 @@ public class TestFmwk extends AbstractTestLog {
         //System.err.println("TF handleException msg: " + msg);
         if (ex instanceof MissingResourceException || ex instanceof NoClassDefFoundError ||
                 msg.indexOf("java.util.MissingResourceException") >= 0) {
-            if (params.warnings || params.nodata) {
+            if (getParams().warnings || getParams().nodata) {
                 warnln(ex.toString() + '\n' + msg);
             } else {
                 errln(ex.toString() + '\n' + msg);
@@ -121,396 +117,40 @@ public class TestFmwk extends AbstractTestLog {
     // use this instead of new random so we get a consistent seed
     // for our tests
     protected Random createRandom() {
-        return new Random(params.seed);
+        return new Random(getParams().seed);
     }
-
-    /**
-     * A test that has no test methods itself, but instead runs other tests.
-     *
-     * This overrides methods are getTargets and getSubtest from TestFmwk.
-     *
-     * If you want the default behavior, pass an array of class names and an
-     * optional description to the constructor. The named classes must extend
-     * TestFmwk. If a provided name doesn't include a ".", package name is
-     * prefixed to it (the package of the current test is used if none was
-     * provided in the constructor). The resulting full name is used to
-     * instantiate an instance of the class using the default constructor.
-     *
-     * Class names are resolved to classes when getTargets or getSubtest is
-     * called. This allows instances of TestGroup to be compiled and run without
-     * all the targets they would normally invoke being available.
-     */
-    public static abstract class TestGroup extends TestFmwk {
-        private String defaultPackage;
-        private String[] names;
-        private String description;
-
-        private Class[] tests; // deferred init
-
-        /**
-         * Constructor that takes a default package name and a list of class
-         * names. Adopts and modifies the classname list
-         */
-        protected TestGroup(String defaultPackage, String[] classnames,
-                String description) {
-            if (classnames == null) {
-                throw new IllegalStateException("classnames must not be null");
-            }
-
-            if (defaultPackage == null) {
-                defaultPackage = getClass().getPackage().getName();
-            }
-            defaultPackage = defaultPackage + ".";
-
-            this.defaultPackage = defaultPackage;
-            this.names = classnames;
-            this.description = description;
-        }
-
-        /**
-         * Constructor that takes a list of class names and a description, and
-         * uses the package for this class as the default package.
-         */
-        protected TestGroup(String[] classnames, String description) {
-            this(null, classnames, description);
-        }
-
-        /**
-         * Constructor that takes a list of class names, and uses the package
-         * for this class as the default package.
-         */
-        protected TestGroup(String[] classnames) {
-            this(null, classnames, null);
-        }
-
-        protected String getDescription() {
-            return description;
-        }
-
-        protected Target getTargets(String targetName) {
-            Target target = null;
-            if (targetName != null) {
-                finishInit(); // hmmm, want to get subtest without initializing
-                // all tests
-
-                try {
-                    TestFmwk test = getSubtest(targetName);
-                    if (test != null) {
-                        target = test.new ClassTarget();
-                    } else {
-                        target = this.new Target(targetName);
-                    }
-                } catch (TestFmwkException e) {
-                    target = this.new Target(targetName);
-                }
-            } else if (params.doRecurse()) {
-                finishInit();
-                boolean groupOnly = params.doRecurseGroupsOnly();
-                for (int i = names.length; --i >= 0;) {
-                    Target newTarget = null;
-                    Class cls = tests[i];
-                    if (cls == null) { // hack no warning for missing tests
-                        if (params.warnings) {
-                            continue;
-                        }
-                        newTarget = this.new Target(names[i]);
-                    } else {
-                        TestFmwk test = getSubtest(i, groupOnly);
-                        if (test != null) {
-                            newTarget = test.new ClassTarget();
-                        } else {
-                            if (groupOnly) {
-                                newTarget = this.new EmptyTarget(names[i]);
-                            } else {
-                                newTarget = this.new Target(names[i]);
-                            }
-                        }
-                    }
-                    if (newTarget != null) {
-                        newTarget.setNext(target);
-                        target = newTarget;
-                    }
-                }
-            }
-
-            return target;
-        }
-        protected TestFmwk getSubtest(String testName) throws TestFmwkException {
-            finishInit();
-
-            for (int i = 0; i < names.length; ++i) {
-                if (names[i].equalsIgnoreCase(testName)) { // allow
-                    // case-insensitive
-                    // matching
-                    return getSubtest(i, false);
-                }
-            }
-            throw new TestFmwkException(testName);
-        }
-
-        private TestFmwk getSubtest(int i, boolean groupOnly) {
-            Class cls = tests[i];
-            if (cls != null) {
-                if (groupOnly && !TestGroup.class.isAssignableFrom(cls)) {
-                    return null;
-                }
-
-                try {
-                    TestFmwk subtest = (TestFmwk) cls.newInstance();
-                    subtest.params = params;
-                    return subtest;
-                } catch (InstantiationException e) {
-                    throw new IllegalStateException(e.getMessage());
-                } catch (IllegalAccessException e) {
-                    throw new IllegalStateException(e.getMessage());
-                }
-            }
-            return null;
-        }
-
-        private void finishInit() {
-            if (tests == null) {
-                tests = new Class[names.length];
-
-                for (int i = 0; i < names.length; ++i) {
-                    String name = names[i];
-                    if (name.indexOf('.') == -1) {
-                        name = defaultPackage + name;
-                    }
-                    try {
-                        Class cls = Class.forName(name);
-                        if (!TestFmwk.class.isAssignableFrom(cls)) {
-                            throw new IllegalStateException("class " + name
-                                    + " does not extend TestFmwk");
-                        }
-
-                        tests[i] = cls;
-                        names[i] = getClassTargetName(cls);
-                    } catch (ClassNotFoundException e) {
-                        // leave tests[i] null and name as classname
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * The default target is invalid.
-     */
-    public class Target {
-        private Target next;
-        public final String name;
-
-        public Target(String name) {
-            this.name = name;
-        }
-
-        public Target setNext(Target next) {
-            this.next = next;
-            return this;
-        }
-
-        public Target getNext() {
-            return next;
-        }
-
-        public Target append(Target targets) {
-            Target t = this;
-            while(t.next != null) {
-                t = t.next;
-            }
-            t.next = targets;
-            return this;
-        }
-
-        public void run() throws Exception {
-            int f = filter();
-            if (f == -1) {
-                ++params.invalidCount;
-            } else {
-                Locale.setDefault(defaultLocale);
-                TimeZone.setDefault(defaultTimeZone);
-
-                if (!validate()) {
-                    params.writeTestInvalid(name, params.nodata);
-                } else {
-                    params.push(name, getDescription(), f == 1);
-                    execute();
-                    params.pop();
-                }
-            }
-        }
-
-        protected int filter() {
-            return params.filter(name);
-        }
-
-        protected boolean validate() {
-            return false;
-        }
-
-        protected String getDescription() {
-            return null;
-        }
-
-        protected void execute() throws Exception{
-        }
-    }
-
-    public class EmptyTarget extends Target {
-        public EmptyTarget(String name) {
-            super(name);
-        }
-
-        protected boolean validate() {
-            return true;
-        }
-    }
-
-    public class MethodTarget extends Target {
-        private Method testMethod;
-
-        public MethodTarget(String name, Method method) {
-            super(name);
-            testMethod = method;
-        }
-
-        protected boolean validate() {
-            return testMethod != null && validateMethod(name);
-        }
-
-        protected String getDescription() {
-            return getMethodDescription(name);
-        }
-
-        protected void execute() throws Exception{
-            if (params.inDocMode()) {
-                // nothing to execute
-            } else if (!params.stack.included) {
-                ++params.invalidCount;
-            } else {
-                final Object[] NO_ARGS = new Object[0];
-                try {
-                    ++params.testCount;
-                    init();
-                    testMethod.invoke(TestFmwk.this, NO_ARGS);
-                } catch (IllegalAccessException e) {
-                    errln("Can't access test method " + testMethod.getName());
-                } catch (Exception e) {
-                    handleException(e);
-                }
-
-            }
-            // If non-exhaustive, check if the method target
-            // takes excessive time.
-            if (params.inclusion <= 5) {
-                double deltaSec = (double)(System.currentTimeMillis() - params.stack.millis)/1000;
-                if (deltaSec > params.maxTargetSec) {
-                    if (params.timeLog == null) {
-                        params.timeLog = new StringBuffer();
-                    }
-                    params.stack.appendPath(params.timeLog);
-                    params.timeLog.append(" (" + deltaSec + "s" + ")\n");
-                }
-            }
-        }
-
-        protected String getStackTrace(InvocationTargetException e) {
-            ByteArrayOutputStream bs = new ByteArrayOutputStream();
-            PrintStream ps = new PrintStream(bs);
-            e.getTargetException().printStackTrace(ps);
-            return bs.toString();
-        }
-    }
-
-    public class ClassTarget extends Target {
-        String targetName;
-
-        public ClassTarget() {
-            this(null);
-        }
-
-        public ClassTarget(String targetName) {
-            super(getClassTargetName(TestFmwk.this.getClass()));
-            this.targetName = targetName;
-        }
-
-        protected boolean validate() {
-            return TestFmwk.this.validate();
-        }
-
-        protected String getDescription() {
-            return TestFmwk.this.getDescription();
-        }
-
-        protected void execute() throws Exception {
-            params.indentLevel++;
-            Target target = randomize(getTargets(targetName));
-            while (target != null) {
-                target.run();
-                target = target.next;
-            }
-            params.indentLevel--;
-        }
-
-        private Target randomize(Target t) {
-            if (t != null && t.getNext() != null) {
-                ArrayList list = new ArrayList();
-                while (t != null) {
-                    list.add(t);
-                    t = t.getNext();
-                }
-
-                Target[] arr = (Target[]) list.toArray(new Target[list.size()]);
-
-                if (true) { // todo - add to params?
-                    // different jvms return class methods in different orders,
-                    // so we sort them (always, and then randomize them, so that
-                    // forcing a seed will also work across jvms).
-                    Arrays.sort(arr, new Comparator() {
-                        public int compare(Object lhs, Object rhs) {
-                            // sort in reverse order, later we link up in
-                            // forward order
-                            return ((Target) rhs).name
-                                    .compareTo(((Target) lhs).name);
-                        }
-                    });
-
-                    // t is null to start, ends up as first element
-                    // (arr[arr.length-1])
-                    for (int i = 0; i < arr.length; ++i) {
-                        t = arr[i].setNext(t); // relink in forward order
-                    }
-                }
-
-                if (params.random != null) {
-                    t = null; // reset t to null
-                    Random r = params.random;
-                    for (int i = arr.length; --i >= 1;) {
-                        int x = r.nextInt(i + 1);
-                        t = arr[x].setNext(t);
-                        arr[x] = arr[i];
-                    }
-
-                    t = arr[0].setNext(t); // new first element
-                }
-            }
-
-            return t;
-        }
-    }
-
-    //------------------------------------------------------------------------
-    // Everything below here is boilerplate code that makes it possible
-    // to add a new test by simply adding a function to an existing class
-    //------------------------------------------------------------------------
 
     protected TestFmwk() {
     }
 
-    protected void init() throws Exception{
+    protected static AtomicReference<TestParams> paramsReference = new AtomicReference<TestParams>();
+
+    @BeforeClass
+    public static void testFrameworkInitialize() {
+        // TODO(sgill): check that all methods in subclass of pattern [Tt]est.* | .*[Ttest] have annotation of @Test
+        
+        if (paramsReference.get() != null) {
+            return;
+        }
+        synchronized (paramsReference) {
+            if (paramsReference.get() != null) {
+                return;
+            }
+            TestParams params = TestParams.create(new String[0], new PrintWriter(System.out));
+            paramsReference.set(params);
+        }
     }
 
+    @Before
+    public void testInitialize() {
+        Locale.setDefault(defaultLocale);
+        TimeZone.setDefault(defaultTimeZone);
+    }
+    
+    protected static TestParams getParams() {
+        return paramsReference.get();
+    }
+    
     /**
      * Parse arguments into a TestParams object and a collection of target
      * paths. If there was an error parsing the TestParams, print usage and exit
@@ -521,137 +161,137 @@ public class TestFmwk extends AbstractTestLog {
      *
      * This method never returns, since it always exits with System.exit();
      */
-    public void run(String[] args) {
-        System.exit(run(args, new PrintWriter(System.out)));
-    }
+//    public void run(String[] args) {
+//        System.exit(run(args, new PrintWriter(System.out)));
+//    }
 
     /**
      * Like run(String[]) except this allows you to specify the error log.
      * Unlike run(String[]) this returns the error code as a result instead of
      * calling System.exit().
      */
-    public int run(String[] args, PrintWriter log) {
-        boolean prompt = false;
-        int wx = 0;
-        for (int i = 0; i < args.length; ++i) {
-            String arg = args[i];
-            if (arg.equals("-p") || arg.equals("-prompt")) {
-                prompt = true;
-            } else {
-                if (wx < i) {
-                    args[wx] = arg;
-                }
-                wx++;
-            }
-        }
-        while (wx < args.length) {
-            args[wx++] = null;
-        }
+//    public int run(String[] args, PrintWriter log) {
+//        boolean prompt = false;
+//        int wx = 0;
+//        for (int i = 0; i < args.length; ++i) {
+//            String arg = args[i];
+//            if (arg.equals("-p") || arg.equals("-prompt")) {
+//                prompt = true;
+//            } else {
+//                if (wx < i) {
+//                    args[wx] = arg;
+//                }
+//                wx++;
+//            }
+//        }
+//        while (wx < args.length) {
+//            args[wx++] = null;
+//        }
+//
+//        TestParams localParams = TestParams.create(args, log);
+//        if (localParams == null) {
+//            return -1;
+//        }
+//
+//        int errorCount = runTests(localParams, args);
+//
+//        if (localParams.seed != 0) {
+//            localParams.log.println("-random:" + localParams.seed);
+//            localParams.log.flush();
+//        }
+//
+//        if (localParams.timeLog != null && localParams.timeLog.length() > 0) {
+//            localParams.log.println("\nTest cases taking excessive time (>" +
+//                    localParams.maxTargetSec + "s):");
+//            localParams.log.println(localParams.timeLog.toString());
+//        }
+//
+//        if (localParams.knownIssues != null) {
+//            localParams.log.println("\nKnown Issues:");
+//            for (Entry<String, List<String>> entry : localParams.knownIssues.entrySet()) {
+//                String ticketLink = entry.getKey();
+//                localParams.log.println("[" + ticketLink + "]");
+//                for (String line : entry.getValue()) {
+//                    localParams.log.println("  - " + line);
+//                }
+//            }
+//        }
+//
+//        if (localParams.errorSummary != null && localParams.errorSummary.length() > 0) {
+//            localParams.log.println("\nError summary:");
+//            localParams.log.println(localParams.errorSummary.toString());
+//        }
+//
+//        if (errorCount > 0) {
+//            localParams.log.println("\n<< " + errorCount+ " TEST(S) FAILED >>");
+//        } else {
+//            localParams.log.println("\n<< ALL TESTS PASSED >>");
+//        }
+//
+//        if (prompt) {
+//            System.out.println("Hit RETURN to exit...");
+//            System.out.flush();
+//            try {
+//                System.in.read();
+//            } catch (IOException e) {
+//                localParams.log.println("Exception: " + e.toString() + e.getMessage());
+//            }
+//        }
+//
+//        localParams.log.flush();
+//
+//        return errorCount;
+//    }
 
-        TestParams localParams = TestParams.create(args, log);
-        if (localParams == null) {
-            return -1;
-        }
-
-        int errorCount = runTests(localParams, args);
-
-        if (localParams.seed != 0) {
-            localParams.log.println("-random:" + localParams.seed);
-            localParams.log.flush();
-        }
-
-        if (localParams.timeLog != null && localParams.timeLog.length() > 0) {
-            localParams.log.println("\nTest cases taking excessive time (>" +
-                    localParams.maxTargetSec + "s):");
-            localParams.log.println(localParams.timeLog.toString());
-        }
-
-        if (localParams.knownIssues != null) {
-            localParams.log.println("\nKnown Issues:");
-            for (Entry<String, List<String>> entry : localParams.knownIssues.entrySet()) {
-                String ticketLink = entry.getKey();
-                localParams.log.println("[" + ticketLink + "]");
-                for (String line : entry.getValue()) {
-                    localParams.log.println("  - " + line);
-                }
-            }
-        }
-
-        if (localParams.errorSummary != null && localParams.errorSummary.length() > 0) {
-            localParams.log.println("\nError summary:");
-            localParams.log.println(localParams.errorSummary.toString());
-        }
-
-        if (errorCount > 0) {
-            localParams.log.println("\n<< " + errorCount+ " TEST(S) FAILED >>");
-        } else {
-            localParams.log.println("\n<< ALL TESTS PASSED >>");
-        }
-
-        if (prompt) {
-            System.out.println("Hit RETURN to exit...");
-            System.out.flush();
-            try {
-                System.in.read();
-            } catch (IOException e) {
-                localParams.log.println("Exception: " + e.toString() + e.getMessage());
-            }
-        }
-
-        localParams.log.flush();
-
-        return errorCount;
-    }
-
-    public int runTests(TestParams _params, String[] tests) {
-        int ec = 0;
-
-        StringBuffer summary = null;
-        try {
-            if (tests.length == 0 || tests[0] == null) { // no args
-                _params.init();
-                resolveTarget(_params).run();
-                ec = _params.errorCount;
-            } else {
-                for (int i = 0; i < tests.length ; ++i) {
-                    if (tests[i] == null) continue;
-
-                    if (i > 0) {
-                        _params.log.println();
-                    }
-
-                    _params.init();
-                    resolveTarget(_params, tests[i]).run();
-                    ec += _params.errorCount;
-
-                    if (_params.errorSummary != null && _params.errorSummary.length() > 0) {
-                        if (summary == null) {
-                            summary = new StringBuffer();
-                        }
-                        summary.append("\nTest Root: " + tests[i] + "\n");
-                        summary.append(_params.errorSummary());
-                    }
-                }
-                _params.errorSummary = summary;
-            }
-        } catch (Exception e) {
-            // We should normally not get here because
-            // MethodTarget.execute() calls handleException().
-            ec++;
-            _params.log.println("\nencountered a test failure, exiting\n" + e);
-            e.printStackTrace(_params.log);
-        }
-
-        return ec;
-    }
+//    public int runTests(TestParams _params, String[] tests) {
+//        int ec = 0;
+//
+//        StringBuffer summary = null;
+//        try {
+//            if (tests.length == 0 || tests[0] == null) { // no args
+//                _params.init();
+//                resolveTarget(_params).run();
+//                ec = _params.errorCount;
+//            } else {
+//                for (int i = 0; i < tests.length ; ++i) {
+//                    if (tests[i] == null) continue;
+//
+//                    if (i > 0) {
+//                        _params.log.println();
+//                    }
+//
+//                    _params.init();
+//                    resolveTarget(_params, tests[i]).run();
+//                    ec += _params.errorCount;
+//
+//                    if (_params.errorSummary != null && _params.errorSummary.length() > 0) {
+//                        if (summary == null) {
+//                            summary = new StringBuffer();
+//                        }
+//                        summary.append("\nTest Root: " + tests[i] + "\n");
+//                        summary.append(_params.errorSummary());
+//                    }
+//                }
+//                _params.errorSummary = summary;
+//            }
+//        } catch (Exception e) {
+//            // We should normally not get here because
+//            // MethodTarget.execute() calls handleException().
+//            ec++;
+//            _params.log.println("\nencountered a test failure, exiting\n" + e);
+//            e.printStackTrace(_params.log);
+//        }
+//
+//        return ec;
+//    }
 
     /**
      * Return a ClassTarget for this test. Params is set on this test.
      */
-    public Target resolveTarget(TestParams paramsArg) {
-        this.params = paramsArg;
-        return new ClassTarget();
-    }
+//    public Target resolveTarget(TestParams paramsArg) {
+//        this.params = paramsArg;
+//        return new ClassTarget();
+//    }
 
     /**
      * Resolve a path from this test to a target. If this test has subtests, and
@@ -660,58 +300,58 @@ public class TestFmwk extends AbstractTestLog {
      * a ClassTarget created using the resolved test and remaining path (which
      * ought to be null or a method name). Params is set on the target's test.
      */
-    public Target resolveTarget(TestParams paramsArg, String targetPath) {
-        TestFmwk test = this;
-        test.params = paramsArg;
-
-        if (targetPath != null) {
-            if (targetPath.length() == 0) {
-                targetPath = null;
-            } else {
-                int p = 0;
-                int e = targetPath.length();
-
-                // trim all leading and trailing '/'
-                while (targetPath.charAt(p) == '/') {
-                    ++p;
-                }
-                while (e > p && targetPath.charAt(e - 1) == '/') {
-                    --e;
-                }
-                if (p > 0 || e < targetPath.length()) {
-                    targetPath = targetPath.substring(p, e - p);
-                    p = 0;
-                    e = targetPath.length();
-                }
-
-                try {
-                    for (;;) {
-                        int n = targetPath.indexOf('/');
-                        String prefix = n == -1 ? targetPath : targetPath
-                                .substring(0, n);
-                        TestFmwk subtest = test.getSubtest(prefix);
-
-                        if (subtest == null) {
-                            break;
-                        }
-
-                        test = subtest;
-
-                        if (n == -1) {
-                            targetPath = null;
-                            break;
-                        }
-
-                        targetPath = targetPath.substring(n + 1);
-                    }
-                } catch (TestFmwkException ex) {
-                    return test.new Target(targetPath);
-                }
-            }
-        }
-
-        return test.new ClassTarget(targetPath);
-    }
+//    public Target resolveTarget(TestParams paramsArg, String targetPath) {
+//        TestFmwk test = this;
+//        test.params = paramsArg;
+//
+//        if (targetPath != null) {
+//            if (targetPath.length() == 0) {
+//                targetPath = null;
+//            } else {
+//                int p = 0;
+//                int e = targetPath.length();
+//
+//                // trim all leading and trailing '/'
+//                while (targetPath.charAt(p) == '/') {
+//                    ++p;
+//                }
+//                while (e > p && targetPath.charAt(e - 1) == '/') {
+//                    --e;
+//                }
+//                if (p > 0 || e < targetPath.length()) {
+//                    targetPath = targetPath.substring(p, e - p);
+//                    p = 0;
+//                    e = targetPath.length();
+//                }
+//
+//                try {
+//                    for (;;) {
+//                        int n = targetPath.indexOf('/');
+//                        String prefix = n == -1 ? targetPath : targetPath
+//                                .substring(0, n);
+//                        TestFmwk subtest = test.getSubtest(prefix);
+//
+//                        if (subtest == null) {
+//                            break;
+//                        }
+//
+//                        test = subtest;
+//
+//                        if (n == -1) {
+//                            targetPath = null;
+//                            break;
+//                        }
+//
+//                        targetPath = targetPath.substring(n + 1);
+//                    }
+//                } catch (TestFmwkException ex) {
+//                    return test.new Target(targetPath);
+//                }
+//            }
+//        }
+//
+//        return test.new ClassTarget(targetPath);
+//    }
 
     /**
      * Return true if we can run this test (allows test to inspect jvm,
@@ -729,57 +369,57 @@ public class TestFmwk extends AbstractTestLog {
      * The default implementation returns a MethodTarget for each public method
      * of the object's class whose name starts with "Test" or "test".
      */
-    protected Target getTargets(String targetName) {
-        return getClassTargets(getClass(), targetName);
-    }
-
-    protected Target getClassTargets(Class cls, String targetName) {
-        if (cls == null) {
-            return null;
-        }
-
-        Target target = null;
-        if (targetName != null) {
-            try {
-                Method method = cls.getMethod(targetName, (Class[])null);
-                target = new MethodTarget(targetName, method);
-            } catch (NoSuchMethodException e) {
-                if (!inheritTargets()) {
-                    return new Target(targetName); // invalid target
-                }
-            } catch (SecurityException e) {
-                return null;
-            }
-        } else {
-            if (params.doMethods()) {
-                Method[] methods = cls.getDeclaredMethods();
-                for (int i = methods.length; --i >= 0;) {
-                    String name = methods[i].getName();
-                    if (name.startsWith("Test") || name.startsWith("test")) {
-                        target = new MethodTarget(name, methods[i])
-                        .setNext(target);
-                    }
-                }
-            }
-        }
-
-        if (inheritTargets()) {
-            Target parentTarget = getClassTargets(cls.getSuperclass(), targetName);
-            if (parentTarget == null) {
-                return target;
-            }
-            if (target == null) {
-                return parentTarget;
-            }
-            return parentTarget.append(target);
-        }
-
-        return target;
-    }
-
-    protected boolean inheritTargets() {
-        return false;
-    }
+//    protected Target getTargets(String targetName) {
+//        return getClassTargets(getClass(), targetName);
+//    }
+//
+//    protected Target getClassTargets(Class cls, String targetName) {
+//        if (cls == null) {
+//            return null;
+//        }
+//
+//        Target target = null;
+//        if (targetName != null) {
+//            try {
+//                Method method = cls.getMethod(targetName, (Class[])null);
+//                target = new MethodTarget(targetName, method);
+//            } catch (NoSuchMethodException e) {
+//                if (!inheritTargets()) {
+//                    return new Target(targetName); // invalid target
+//                }
+//            } catch (SecurityException e) {
+//                return null;
+//            }
+//        } else {
+//            if (params.doMethods()) {
+//                Method[] methods = cls.getDeclaredMethods();
+//                for (int i = methods.length; --i >= 0;) {
+//                    String name = methods[i].getName();
+//                    if (name.startsWith("Test") || name.startsWith("test")) {
+//                        target = new MethodTarget(name, methods[i])
+//                        .setNext(target);
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (inheritTargets()) {
+//            Target parentTarget = getClassTargets(cls.getSuperclass(), targetName);
+//            if (parentTarget == null) {
+//                return target;
+//            }
+//            if (target == null) {
+//                return parentTarget;
+//            }
+//            return parentTarget.append(target);
+//        }
+//
+//        return target;
+//    }
+//
+//    protected boolean inheritTargets() {
+//        return false;
+//    }
 
     protected String getDescription() {
         return null;
@@ -798,41 +438,49 @@ public class TestFmwk extends AbstractTestLog {
         return null;
     }
 
-    public boolean isVerbose() {
-        return params.verbose;
+    public static boolean isVerbose() {
+        return getParams().verbose;
     }
 
-    public boolean noData() {
-        return params.nodata;
+    public static boolean noData() {
+        return getParams().nodata;
     }
 
-    public boolean isTiming() {
-        return params.timing < Long.MAX_VALUE;
-    }
-
-    public boolean isMemTracking() {
-        return params.memusage;
-    }
-
+//    public boolean isTiming() {
+//        return getParams().timing < Long.MAX_VALUE;
+//    }
+//
+//    public boolean isMemTracking() {
+//        return getParams().memusage;
+//    }
+//
     /**
      * 0 = fewest tests, 5 is normal build, 10 is most tests
      */
-    public int getInclusion() {
-        return params.inclusion;
+    public static int getInclusion() {
+        return getParams().inclusion;
     }
 
-    public boolean isModularBuild() {
-        return params.warnings;
+    public static boolean isModularBuild() {
+        return getParams().warnings;
     }
 
-    public boolean isQuick() {
-        return params.inclusion == 0;
+    public static boolean isQuick() {
+        return getParams().getInclusion() == 0;
     }
 
-    public void msg(String message, int level, boolean incCount, boolean newln) {
-        params.msg(message, level, incCount, newln);
-    }
-
+//    public int getIndentLevel() {
+//        return getParams().indentLevel;
+//    }
+//    
+//    public void incrementIndentLevel() {
+//        getParams().indentLevel++;
+//    }
+//    
+//    public void decrementIndentLevel() {
+//        getParams().indentLevel--;
+//    }
+//    
     static final String ICU_TRAC_URL = "http://bugs.icu-project.org/trac/ticket/";
     static final String CLDR_TRAC_URL = "http://unicode.org/cldr/trac/ticket/";
     static final String CLDR_TICKET_PREFIX = "cldrbug:";
@@ -854,7 +502,8 @@ public class TestFmwk extends AbstractTestLog {
         }
 
         StringBuffer descBuf = new StringBuffer();
-        params.stack.appendPath(descBuf);
+        // TODO(sgill) : what to do about this?
+        //getParams().stack.appendPath(descBuf);
         if (comment != null && comment.length() > 0) {
             descBuf.append(" (" + comment + ")");
         }
@@ -871,13 +520,13 @@ public class TestFmwk extends AbstractTestLog {
             ticketLink = (isCldr ? CLDR_TRAC_URL : ICU_TRAC_URL) + ticket;
         }
 
-        if (params.knownIssues == null) {
-            params.knownIssues = new TreeMap<String, List<String>>();
+        if (getParams().knownIssues == null) {
+            getParams().knownIssues = new TreeMap<String, List<String>>();
         }
-        List<String> lines = params.knownIssues.get(ticketLink);
+        List<String> lines = getParams().knownIssues.get(ticketLink);
         if (lines == null) {
             lines = new ArrayList<String>();
-            params.knownIssues.put(ticketLink, lines);
+            getParams().knownIssues.put(ticketLink, lines);
         }
         if (!lines.contains(description)) {
             lines.add(description);
@@ -887,13 +536,13 @@ public class TestFmwk extends AbstractTestLog {
     }
 
     protected int getErrorCount() {
-        return params.errorCount;
+        return getParams().errorCount;
     }
 
     public String getProperty(String key) {
         String val = null;
-        if (key != null && key.length() > 0 && params.props != null) {
-            val = (String)params.props.get(key.toLowerCase());
+        if (key != null && key.length() > 0 && getParams().props != null) {
+            val = (String)getParams().props.get(key.toLowerCase());
         }
         return val;
     }
@@ -989,6 +638,7 @@ public class TestFmwk extends AbstractTestLog {
         pw.println(" If multiple targets are provided, each is executed in order.");
         pw.flush();
     }
+    
     public static String hex(char[] s){
         StringBuffer result = new StringBuffer();
         for (int i = 0; i < s.length; ++i) {
@@ -997,6 +647,7 @@ public class TestFmwk extends AbstractTestLog {
         }
         return result.toString();
     }
+    
     public static String hex(byte[] s){
         StringBuffer result = new StringBuffer();
         for (int i = 0; i < s.length; ++i) {
@@ -1005,6 +656,7 @@ public class TestFmwk extends AbstractTestLog {
         }
         return result.toString();
     }
+    
     public static String hex(char ch) {
         StringBuffer result = new StringBuffer();
         String foo = Integer.toString(ch, 16).toUpperCase();
@@ -1154,38 +806,71 @@ public class TestFmwk extends AbstractTestLog {
     // otherwise, we wait
 
     public static class TestParams {
-        public boolean prompt;
-        public boolean verbose;
-        public boolean quiet;
-        public int listlevel;
-        public boolean describe;
-        public boolean warnings;
-        public boolean nodata;
-        public long timing = 0;
-        public boolean memusage;
-        public int inclusion;
-        public String filter;
-        public long seed;
-        public String tfilter; // for transliterator tests
+//        public boolean prompt;
+//        public boolean verbose;
+//        public boolean quiet;
+//        public int listlevel;
+//        public boolean describe;
+//        public boolean warnings;
+//        public boolean nodata;
+//        public long timing = 0;
+//        public boolean memusage;
+//        public int inclusion;
+//        public String filter;
+//        public long seed;
+//        public String tfilter; // for transliterator tests
+//
+//        public State stack;
+//
+//        public StringBuffer errorSummary = new StringBuffer();
+//        private StringBuffer timeLog;
+//        private Map<String, List<String>> knownIssues;
+//
+//        public PrintWriter log;
+//        public int indentLevel;
+//        private boolean needLineFeed;
+//        private boolean suppressIndent;
+//        public int errorCount;
+//        public int warnCount;
+//        public int invalidCount;
+//        public int testCount;
+//        private NumberFormat tformat;
+//        public Random random;
+//        public int maxTargetSec = 10;
+//        public HashMap props;
 
-        public State stack;
+        private boolean prompt;
+        private boolean verbose;
+        private boolean quiet;
+        private int listlevel;
+        private boolean describe;
+        private boolean warnings;
+        private boolean nodata;
+        private long timing = 0;
+        private boolean memusage;
+        private int inclusion;
+        private String filter;
+        private long seed;
+        private String tfilter; // for transliterator tests
 
-        public StringBuffer errorSummary = new StringBuffer();
+        private State stack;
+
+        private StringBuffer errorSummary = new StringBuffer();
         private StringBuffer timeLog;
         private Map<String, List<String>> knownIssues;
 
-        public PrintWriter log;
-        public int indentLevel;
+        private PrintWriter log;
+        private int indentLevel;
         private boolean needLineFeed;
         private boolean suppressIndent;
-        public int errorCount;
-        public int warnCount;
-        public int invalidCount;
-        public int testCount;
+        private int errorCount;
+        private int warnCount;
+        private int invalidCount;
+        private int testCount;
         private NumberFormat tformat;
-        public Random random;
-        public int maxTargetSec = 10;
-        public HashMap props;
+        private Random random;
+        private int maxTargetSec = 10;
+        private HashMap props;
 
         private TestParams() {
         }
@@ -1715,10 +1400,14 @@ public class TestFmwk extends AbstractTestLog {
                 log.print("-- ");
             }
         }
+
+        public int getInclusion() {
+            return inclusion;
+        }
     }
 
     public String getTranslitTestFilter() {
-        return params.tfilter;
+        return getParams().tfilter;
     }
 
     /**
@@ -1726,22 +1415,22 @@ public class TestFmwk extends AbstractTestLog {
      * class name, or if the class declares a public static field
      * CLASS_TARGET_NAME, the value of that field.
      */
-    private static String getClassTargetName(Class testClass) {
-        String name = testClass.getName();
-        try {
-            Field f = testClass.getField("CLASS_TARGET_NAME");
-            name = (String) f.get(null);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(
-                    "static field CLASS_TARGET_NAME must be accessible");
-        } catch (NoSuchFieldException e) {
-            int n = Math.max(name.lastIndexOf('.'), name.lastIndexOf('$'));
-            if (n != -1) {
-                name = name.substring(n + 1);
-            }
-        }
-        return name;
-    }
+//    private static String getClassTargetName(Class testClass) {
+//        String name = testClass.getName();
+//        try {
+//            Field f = testClass.getField("CLASS_TARGET_NAME");
+//            name = (String) f.get(null);
+//        } catch (IllegalAccessException e) {
+//            throw new IllegalStateException(
+//                    "static field CLASS_TARGET_NAME must be accessible");
+//        } catch (NoSuchFieldException e) {
+//            int n = Math.max(name.lastIndexOf('.'), name.lastIndexOf('$'));
+//            if (n != -1) {
+//                name = name.substring(n + 1);
+//            }
+//        }
+//        return name;
+//    }
 
     /**
      * Check the given array to see that all the strings in the expected array
@@ -1831,28 +1520,28 @@ public class TestFmwk extends AbstractTestLog {
 
     // JUnit-like assertions.
 
-    protected boolean assertTrue(String message, boolean condition) {
+    protected static boolean assertTrue(String message, boolean condition) {
         return handleAssert(condition, message, "true", null);
     }
 
-    protected boolean assertFalse(String message, boolean condition) {
+    protected static boolean assertFalse(String message, boolean condition) {
         return handleAssert(!condition, message, "false", null);
     }
 
-    protected boolean assertEquals(String message, boolean expected,
+    protected static boolean assertEquals(String message, boolean expected,
             boolean actual) {
         return handleAssert(expected == actual, message, String
                 .valueOf(expected), String.valueOf(actual));
     }
 
-    protected boolean assertEquals(String message, long expected, long actual) {
+    protected static boolean assertEquals(String message, long expected, long actual) {
         return handleAssert(expected == actual, message, String
                 .valueOf(expected), String.valueOf(actual));
     }
 
     // do NaN and range calculations to precision of float, don't rely on
     // promotion to double
-    protected boolean assertEquals(String message, float expected,
+    protected static boolean assertEquals(String message, float expected,
             float actual, double error) {
         boolean result = Float.isInfinite(expected)
                 ? expected == actual
@@ -1862,7 +1551,7 @@ public class TestFmwk extends AbstractTestLog {
                 .valueOf(actual));
     }
 
-    protected boolean assertEquals(String message, double expected,
+    protected static boolean assertEquals(String message, double expected,
             double actual, double error) {
         boolean result = Double.isInfinite(expected)
                 ? expected == actual
@@ -1872,14 +1561,14 @@ public class TestFmwk extends AbstractTestLog {
                 .valueOf(actual));
     }
 
-    protected <T> boolean assertEquals(String message, T[] expected, T[] actual) {
+    protected static <T> boolean assertEquals(String message, T[] expected, T[] actual) {
         // Use toString on a List to get useful, readable messages
         String expectedString = expected == null ? "null" : Arrays.asList(expected).toString();
         String actualString = actual == null ? "null" : Arrays.asList(actual).toString();
         return assertEquals(message, expectedString, actualString);
     }
 
-    protected boolean assertEquals(String message, Object expected,
+    protected static boolean assertEquals(String message, Object expected,
             Object actual) {
         boolean result = expected == null ? actual == null : expected
                 .equals(actual);
@@ -1887,7 +1576,7 @@ public class TestFmwk extends AbstractTestLog {
                 stringFor(actual));
     }
 
-    protected boolean assertNotEquals(String message, Object expected,
+    protected static boolean assertNotEquals(String message, Object expected,
             Object actual) {
         boolean result = !(expected == null ? actual == null : expected
                 .equals(actual));
@@ -1900,26 +1589,26 @@ public class TestFmwk extends AbstractTestLog {
                 stringFor(actual), "==", false);
     }
 
-    protected boolean assertNotSame(String message, Object expected,
+    protected static boolean assertNotSame(String message, Object expected,
             Object actual) {
         return handleAssert(expected != actual, message, stringFor(expected),
                 stringFor(actual), "!=", true);
     }
 
-    protected boolean assertNull(String message, Object actual) {
+    protected static boolean assertNull(String message, Object actual) {
         return handleAssert(actual == null, message, null, stringFor(actual));
     }
 
-    protected boolean assertNotNull(String message, Object actual) {
+    protected static boolean assertNotNull(String message, Object actual) {
         return handleAssert(actual != null, message, null, stringFor(actual),
                 "!=", true);
     }
 
-    protected void fail() {
+    protected static void fail() {
         fail("");
     }
 
-    protected void fail(String message) {
+    protected static void fail(String message) {
         if (message == null) {
             message = "";            
         }
@@ -1929,12 +1618,12 @@ public class TestFmwk extends AbstractTestLog {
         errln(sourceLocation() + message);
     }
 
-    private boolean handleAssert(boolean result, String message,
+    private static boolean handleAssert(boolean result, String message,
             String expected, String actual) {
         return handleAssert(result, message, expected, actual, null, false);
     }
 
-    public boolean handleAssert(boolean result, String message,
+    public static boolean handleAssert(boolean result, String message,
             Object expected, Object actual, String relation, boolean flip) {
         if (!result || isVerbose()) {
             if (message == null) {
@@ -1959,7 +1648,7 @@ public class TestFmwk extends AbstractTestLog {
         return result;
     }
 
-    private final String stringFor(Object obj) {
+    private static final String stringFor(Object obj) {
         if (obj == null) {
             return "null";
         }
@@ -2000,8 +1689,25 @@ public class TestFmwk extends AbstractTestLog {
 
     // end PrintWriter support
 
-    protected TestParams params = null;
+    //protected TestParams params = null;
 
     private final static String spaces = "                                          ";
+
+    // TODO (sgill): added to keep errors away
+    /* (non-Javadoc)
+     * @see com.ibm.icu.dev.test.TestLog#msg(java.lang.String, int, boolean, boolean)
+     */
+    //@Override
+    public static void msg(String message, int level, boolean incCount, boolean newln) {
+        // TODO(stuartg): turned off - causing OOM running under ant
+//        while (level > 0) {
+//            System.out.print(" ");
+//            level--;
+//        }
+//        System.out.print(message);
+//        if (newln) {
+//            System.out.println();
+//        }
+    }
 
 }
