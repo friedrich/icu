@@ -26,8 +26,9 @@ import com.ibm.icu.lang.UScript;
 import com.ibm.icu.text.Transliterator;
 import com.ibm.icu.text.UnicodeSet;
 
+// TODO(sgill): change to actually be a test
 // TODO change to use test framework
-public class TestBagFormatter {
+public class DumpBagFormatter {
     
     static final void generatePropertyAliases(boolean showValues) {
         generatePropertyAliases(showValues, ICUPropertyFactory.make());

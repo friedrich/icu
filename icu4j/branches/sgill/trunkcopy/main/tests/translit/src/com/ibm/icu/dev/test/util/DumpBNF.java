@@ -14,7 +14,7 @@ import com.ibm.icu.dev.util.Quoter;
 import com.ibm.icu.dev.util.Tokenizer;
 import com.ibm.icu.text.UnicodeSet;
 
-public class TestBNF {
+public class DumpBNF {
     
     static final String[] testRules = {
         "$root = [ab]{3};",
