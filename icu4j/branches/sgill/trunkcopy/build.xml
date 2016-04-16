@@ -61,6 +61,7 @@
     <property name="doc.dir" value="doc"/>
     <property name="cldr.util.out.dir" value="${out.dir}/cldr_util"/>
     <property name="cldr.release.dir" value="release_cldr"/>
+    <property name="external-jars" value="lib"/>
 
     <!-- Java version check -->
     <condition property="is.java6.plus">
@@ -156,17 +157,16 @@
         <ant dir="eclipse-build" target="clean" inheritAll="false"/>
     </target>
 
-    <!-- Junit Targets -->
+    <!-- Ivy Targets -->
     <property name="ivy.install.version" value="2.1.0-rc2" />
     <condition property="ivy.home" value="${env.IVY_HOME}">
-      <isset property="env.IVY_HOME" />
+    	<isset property="env.IVY_HOME" />
     </condition>
     <property name="ivy.home" value="${user.home}/.ant" />
     <property name="ivy.jar.dir" value="${ivy.home}/lib" />
     <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
 
     <target name="download-ivy" unless="offline">
-
         <mkdir dir="${ivy.jar.dir}"/>
         <!-- download Ivy from web site so that it can be used even without any special installation -->
         <get src="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" 
@@ -188,17 +188,23 @@
     <target name="test-init-junit-dependency" depends="init-ivy">
         <ivy:retrieve/>
     </target>
-
-    <target name="junit" depends="main, tests">
+    
+    <!-- Junit Targets -->
+    <target name="junit" depends="main, tests, test-init-junit-dependency">
 		<antcall target="junit-batch"/>
     </target>
 
     <property name="junit.out.dir" value="junit-out"/>    
-    <property name="junit.core.jar" value="external/junit/junit-4.10.jar"/>
-    <property name="junit.hamcrest.jar" value="external/junit/hamcrest-core-1.3.jar"/>
-    <property name="junit.junitparams.jar" value="external/junitparams/JUnitParams-1.0.2.jar"/>
-    <property name="junit.jars" value="${junit.core.jar};${junit.hamcrest.jar};${junit.junitparams.jar}"/>
-    <!--property name="junit.jars" value="external/junit/junit-4.10.jar; external/junit/hamcrest-core-1.3.jar; external/junitparams/JUnitParams-1.0.2.jar"/-->
+    <property name="junit.core.jar" value="${external-jars}/junit-4.11.jar"/>
+    <property name="junit.hamcrest.jar" value="${external-jars}/hamcrest-core-1.3.jar"/>
+    <property name="junit.junitparams.jar" value="${external-jars}/JUnitParams-1.0.4.jar"/>
+    <!--property name="junit.jars" value="${junit.core.jar};${junit.hamcrest.jar};${junit.junitparams.jar}"/-->
+    <path id="junit.jars"> 
+    	<pathelement path="${junit.core.jar}"/>
+    	<pathelement path="${junit.hamcrest.jar}"/>
+    	<pathelement path="${junit.junitparams.jar}"/>
+    </path>
+
     <patternset id="test-classes">
 		<include name="**/*Test*"/>
 		<exclude name="**/*Fmwk*"/>
@@ -223,7 +229,7 @@
 			<jvmarg value="-Djava.awt.headless=true"/>
 			<!--jvmarg value="${jvm_options}"/-->
             <classpath>
-            	<pathelement path="${junit.jars}"/>
+            	<path refid="junit.jars"/>
                 <pathelement location="${icu4j.core.jar}"/>
                 <pathelement location="${icu4j.collate.jar}"/>
                 <pathelement location="${icu4j.charset.jar}"/>
@@ -344,14 +350,14 @@
     <!-- Check to see if JVM_OPTIONS enviroment variable is set. This can be use to set the heap size. -->
     <property name="env.JVM_OPTIONS" value=""/>
     <property name="jvm_options" value="${env.JVM_OPTIONS}"/>
-    <target name="check" description="Run the standard ICU4J test suite">
+    <target name="check" depends="main, tests" description="Run the standard ICU4J test suite">
         <antcall target="_runCheck">
             <param name="runcheck.arg" value=""/>
             <param name="runcheck.jvmarg" value="${jvm_options}"/>
         </antcall>
     </target>
 
-    <target name="_runCheck" depends="main, tests">
+    <target name="_runCheck">
         <antcall target="junit.tests"/>
     </target>
 
@@ -363,6 +369,48 @@
     </target>
 
     <target name="timeZoneCheck" description="Run the complete test for TimeZoneRoundTripAll">
+    	<!--echoproperties/-->
+    	<echo message="${env.JVM_OPTIONS}"/>
+        <delete dir="${junit.out.dir}/timeZoneCheck"/>
+        <mkdir  dir="${junit.out.dir}/timeZoneCheck"/>
+        
+		<junit fork="yes" printsummary="yes" haltonfailure="no">
+			<jvmarg value="-Xss4m"/>
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Djava.awt.headless=true"/>
+			<!--jvmarg value="${jvm_options}"/-->
+            <classpath>
+            	<path refid="junit.jars"/>
+                <pathelement location="${icu4j.core.jar}"/>
+                <pathelement location="${icu4j.collate.jar}"/>
+                <pathelement location="${icu4j.charset.jar}"/>
+                <pathelement location="${icu4j.currdata.jar}"/>
+                <pathelement location="${icu4j.langdata.jar}"/>
+                <pathelement location="${icu4j.regiondata.jar}"/>
+                <pathelement location="${icu4j.translit.jar}"/>
+                <pathelement location="${icu4j.test-framework.jar}"/>
+                <pathelement location="${icu4j.core-tests.jar}"/>
+                <pathelement location="${icu4j.collate-tests.jar}"/> 
+                <pathelement location="${icu4j.charset-tests.jar}"/>
+                <pathelement location="${icu4j.translit-tests.jar}"/>
+                <pathelement location="${icu4j.localespi-tests.jar}"/>
+                <pathelement location="${icu4j.packaging-tests.jar}"/>
+                <pathelement location="${icu4j.regiondata.jar}"/>
+            </classpath>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junit.out.dir}/timeZoneCheck">
+				<fileset dir="${icu4j.core-tests.dir}/out/bin">
+					<include name="**/TimeZoneFormatTest*"/>
+					<exclude name="**/*$*.class"/>
+				</fileset>
+			</batchtest>
+
+		</junit>
+    </target>
+
+    <target name="XXXtimeZoneCheck" description="Run the complete test for TimeZoneRoundTripAll">
         <antcall target="_runCheck">
             <param name="runcheck.arg" value="-prop:TimeZoneRoundTripAll=true Core/Format/DateFormat/TimeZoneFormatTest -v"/>
             <param name="runcheck.jvmarg" value="${jvm_options}"/>
@@ -376,6 +424,49 @@
         </antcall>
     </target>
 
+    <target name="translitIssues" description="Run the test with stack issues">
+    	<!--echoproperties/-->
+    	<echo message="${env.JVM_OPTIONS}"/>
+        <delete dir="${junit.out.dir}/translitIssues"/>
+        <mkdir  dir="${junit.out.dir}/translitIssues"/>
+        
+		<junit fork="yes" printsummary="yes" haltonfailure="no">
+			<jvmarg value="-Xss4m"/>
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Djava.awt.headless=true"/>
+			<!--jvmarg value="${jvm_options}"/-->
+            <classpath>
+            	<path refid="junit.jars"/>
+                <pathelement location="${icu4j.core.jar}"/>
+                <pathelement location="${icu4j.collate.jar}"/>
+                <pathelement location="${icu4j.charset.jar}"/>
+                <pathelement location="${icu4j.currdata.jar}"/>
+                <pathelement location="${icu4j.langdata.jar}"/>
+                <pathelement location="${icu4j.regiondata.jar}"/>
+                <pathelement location="${icu4j.translit.jar}"/>
+                <pathelement location="${icu4j.test-framework.jar}"/>
+                <pathelement location="${icu4j.core-tests.jar}"/>
+                <pathelement location="${icu4j.collate-tests.jar}"/> 
+                <pathelement location="${icu4j.charset-tests.jar}"/>
+                <pathelement location="${icu4j.translit-tests.jar}"/>
+                <pathelement location="${icu4j.localespi-tests.jar}"/>
+                <pathelement location="${icu4j.packaging-tests.jar}"/>
+                <pathelement location="${icu4j.regiondata.jar}"/>
+            </classpath>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junit.out.dir}/translitIssues">
+				<fileset dir="${icu4j.translit-tests.dir}/out/bin">
+					<include name="**/TestUnicodeProperty*"/>
+					<include name="**/TransliteratorTest*"/>
+					<exclude name="**/*$*.class"/>
+				</fileset>
+			</batchtest>
+
+		</junit>
+    </target>
+
     <target name="junit.tests">
         <delete dir="${junit.out.dir}"/>
         <mkdir  dir="${junit.out.dir}"/>
@@ -385,7 +476,7 @@
 			<jvmarg value="-Djava.awt.headless=true"/>
 			<!--jvmarg value="${jvm_options}"/-->
             <classpath>
-            	<pathelement path="${junit.jars}"/>
+            	<path refid="junit.jars"/>
                 <pathelement location="${icu4j.core.jar}"/>
                 <pathelement location="${icu4j.collate.jar}"/>
                 <pathelement location="${icu4j.charset.jar}"/>
@@ -496,9 +587,18 @@
         </java>
     </target>
 
-    <target name="collateCheck" depends="info, core, collate, currdata, langdata, regiondata, core-tests, collate-tests" description="Run only the collation tests">
-        <java classname="com.ibm.icu.dev.test.TestAllCollate" fork="yes" failonerror="true">
+    <target name="_collateCheck" description="Run only the collation tests">
+        <delete dir="${junit.out.dir}/collate"/>
+        <mkdir  dir="${junit.out.dir}/collate"/>
+
+		<junit fork="yes" printsummary="yes" haltonfailure="no">
+			<jvmarg value="-Xss4m"/>
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Djava.awt.headless=true"/>
+			<!--jvmarg value="${jvm_options}"/-->
             <classpath>
+            	<path refid="junit.jars"/>
+            	
                 <pathelement location="${icu4j.core.jar}"/>
                 <pathelement location="${icu4j.collate.jar}"/>
                 <pathelement location="${icu4j.test-framework.jar}"/>
@@ -510,32 +610,119 @@
                 <pathelement location="${icu4j.regiondata.jar}"/>
                 <pathelement location="${icu4j.core-tests.jar}"/>
             </classpath>
-        </java>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junit.out.dir}/collate">
+				<fileset dir="${icu4j.collate-tests.dir}/out/bin">
+					<patternset refid="test-classes"/>
+				</fileset>
+			</batchtest>
+        </junit>
     </target>
 
-    <target name="translitCheck" depends="info, core, translit, translit-tests" description="Run the ICU4J Translit test suite">
-        <java classname="com.ibm.icu.dev.test.TestAllTranslit" fork="yes" failonerror="true">
+    <target name="collateCheck" depends="info, core, collate, currdata, langdata, regiondata, core-tests, collate-tests" description="Run only the collation tests">
+		<antcall target="_collateCheck"/>
+    </target>
+
+    <target name="_translitCheck" description="Run only the transliteration tests">
+        <delete dir="${junit.out.dir}/translit"/>
+        <mkdir  dir="${junit.out.dir}/translit"/>
+
+		<junit fork="yes" printsummary="yes" haltonfailure="no">
+			<jvmarg value="-Xss4m"/>
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Djava.awt.headless=true"/>
+			<!--jvmarg value="${jvm_options}"/-->
             <classpath>
+            	<path refid="junit.jars"/>
+            	
                 <pathelement location="${icu4j.core.jar}"/>
                 <pathelement location="${icu4j.translit.jar}"/>
                 <pathelement location="${icu4j.test-framework.jar}"/>
                 <pathelement location="${icu4j.translit-tests.jar}"/>
             </classpath>
-        </java>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junit.out.dir}/translit">
+				<fileset dir="${icu4j.translit-tests.dir}/out/bin">
+					<patternset refid="test-classes"/>
+				</fileset>
+			</batchtest>
+        </junit>
     </target>
 
-    <target name="localespiCheck" if="is.java6.plus" depends="info" description="Run the ICU4J Locale SPI test suite">
-        <antcall target="_runLocalespiCheck"/>
+    <target name="translitCheck" depends="info, core, translit, translit-tests" description="Run the ICU4J Translit test suite">
+		<antcall target="_translitCheck"/>
     </target>
 
-    <target name="_runLocalespiCheck" depends="localespi, localespi-tests">
-        <java classname="com.ibm.icu.dev.test.localespi.TestAll" fork="yes" failonerror="true">
+    <target name="_localespiCheck" description="Run only the transliteration tests">
+        <delete dir="${junit.out.dir}/localespi"/>
+        <mkdir  dir="${junit.out.dir}/localespi"/>
+
+		<junit fork="yes" printsummary="yes" haltonfailure="no">
+			<jvmarg value="-Xss4m"/>
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Djava.awt.headless=true"/>
             <jvmarg line="-Djava.ext.dirs=${icu4j.core.dir}/${jar.dir}${path.separator}${icu4j.localespi.dir}/${jar.dir}${path.separator}${icu4j.collate.dir}/${jar.dir}${path.separator}${icu4j.currdata.dir}/${jar.dir}${path.separator}${icu4j.langdata.dir}/${jar.dir}${path.separator}${icu4j.regiondata.dir}/${jar.dir}${path.separator}${java.ext.dirs}"/>
+			<!--jvmarg value="${jvm_options}"/-->
             <classpath>
+            	<path refid="junit.jars"/>
+            	
                 <pathelement location="${icu4j.localespi-tests.jar}"/>
                 <pathelement location="${icu4j.test-framework.jar}"/>
             </classpath>
-        </java>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junit.out.dir}/localespi">
+				<fileset dir="${icu4j.localespi-tests.dir}/out/bin">
+					<patternset refid="test-classes"/>
+				</fileset>
+			</batchtest>
+        </junit>
+    </target>
+
+    <target name="localespiCheck" if="is.java6.plus" depends="info, localespi, localespi-tests" description="Run the ICU4J Locale SPI test suite">
+        <antcall target="_localespiCheck"/>
+    </target>
+
+    <target name="_secureCheck" description="Run the secure (applet-like) ICU4J test suite">
+        <delete dir="${junit.out.dir}/secure"/>
+        <mkdir  dir="${junit.out.dir}/secure"/>
+
+        <property name="securecheck.arg" value="-w"/>
+        <property name="securecheck.jvmarg"
+                value="${jvm_options} -Djava.security.manager -Djava.security.policy=${shared.dir}/data/security.policy -Djava.awt.headless=true"/>
+
+        <echo message="JVM argument:   ${securecheck.jvmarg}"/>
+        <echo message="Test argument:  ${securecheck.arg}"/>
+
+		<junit fork="yes" printsummary="yes" haltonfailure="no">
+			<jvmarg value="-Xss4m"/>
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Djava.awt.headless=true"/>
+            <jvmarg line="-Djava.ext.dirs=${icu4j.core.dir}/${jar.dir}${path.separator}${icu4j.localespi.dir}/${jar.dir}${path.separator}${icu4j.collate.dir}/${jar.dir}${path.separator}${icu4j.currdata.dir}/${jar.dir}${path.separator}${icu4j.langdata.dir}/${jar.dir}${path.separator}${icu4j.regiondata.dir}/${jar.dir}${path.separator}${java.ext.dirs}"/>
+            <!--arg line="${securecheck.arg}"/-->
+            <jvmarg line="${securecheck.jvmarg}"/>
+			<!--jvmarg value="${jvm_options}"/-->
+            <classpath>
+            	<path refid="junit.jars"/>
+            	
+                <pathelement location="${icu4j.jar.file}"/>
+                <pathelement location="${icu4j-charset.jar.file}"/>
+                <pathelement location="${icu4jtests.jar.file}"/>
+            </classpath>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+			
+			<batchtest todir="${junit.out.dir}/secure">
+				<fileset dir="${icu4j.localespi-tests.dir}/out/bin">
+					<patternset refid="test-classes"/>
+				</fileset>
+			</batchtest>
+        </junit>
     </target>
 
     <target name="secureCheck" depends="main, jar, icu4jtestsJar" description="Run the secure (applet-like) ICU4J test suite">
@@ -906,19 +1093,27 @@
     </target>
 
     <target name="test-framework" depends="core" description="Build test framework classes">
-        <ant dir="${icu4j.test-framework.dir}" inheritAll="false"/>
+        <ant dir="${icu4j.test-framework.dir}" inheritAll="false">
+        	<reference refid="junit.jars"/>
+        </ant>
     </target>
 
     <target name="core-tests" depends="core, test-framework" description="Build core tests">
-        <ant dir="${icu4j.core-tests.dir}" inheritAll="false"/>
+        <ant dir="${icu4j.core-tests.dir}" inheritAll="false">
+        	<reference refid="junit.jars"/>
+        </ant>
     </target>
 
     <target name="collate-tests" depends="collate, test-framework" description="Build core tests">
-        <ant dir="${icu4j.collate-tests.dir}" inheritAll="false"/>
+        <ant dir="${icu4j.collate-tests.dir}" inheritAll="false">
+        	<reference refid="junit.jars"/>
+        </ant>
     </target>
 
     <target name="charset-tests" depends="charset, test-framework" description="Build charset tests">
-        <ant dir="${icu4j.charset-tests.dir}" inheritAll="false"/>
+        <ant dir="${icu4j.charset-tests.dir}" inheritAll="false">
+        	<reference refid="junit.jars"/>
+        </ant>
     </target>
 
     <target name="localespi-tests" if="is.java6.plus" description="Build Locale SPI tests">
@@ -926,15 +1121,21 @@
     </target>
 
     <target name="_build-localespi-tests" depends="localespi, test-framework">
-        <ant dir="${icu4j.localespi-tests.dir}" inheritAll="false"/>
+        <ant dir="${icu4j.localespi-tests.dir}" inheritAll="false">
+        	<reference refid="junit.jars"/>
+        </ant>
     </target>
 
     <target name="packaging-tests" depends="test-framework" description="Build packaging tests">
-        <ant dir="${icu4j.packaging-tests.dir}" inheritAll="false"/>
+        <ant dir="${icu4j.packaging-tests.dir}" inheritAll="false">
+        	<reference refid="junit.jars"/>
+        </ant>
     </target>
 
     <target name="translit-tests" depends="translit, test-framework" description="Build translit tests">
-        <ant dir="${icu4j.translit-tests.dir}" inheritAll="false"/>
+        <ant dir="${icu4j.translit-tests.dir}" inheritAll="false">
+        	<reference refid="junit.jars"/>
+        </ant>
     </target>
 
     <target name="testall" depends="test-framework" description="Build top level TestAll">
@@ -1554,609 +1755,6 @@
                 compress="true"
                 basedir="${xliff.out.dir}/bin"
                 manifest="${icu4j.tools.dir}/src/com/ibm/icu/dev/tool/localeconverter/manifest.stub"/>
-    </target>
-
-
-    <!-- ICU4J modularization targets -->
-    <property name="module.dir" value="${out.dir}/module"/>
-    <property name="module.bin.dir" value="${module.dir}/bin"/>
-    <property name="module.tests.dir" value="${module.dir}/tests"/>
-    <property name="module.jar.dir" value="${module.dir}/lib"/>
-    <property name="module.jar" value="${module.jar.dir}/icu4j-module.jar"/>
-
-    <target name="moduleJar" description="Create a ICU4J module jar file">
-        <mkdir dir="${module.jar.dir}"/>
-        <jar jarfile="${module.jar}"
-                compress="true"
-                basedir="${module.bin.dir}">
-            <manifest>
-                <attribute name="Built-By" value="${corp}" />
-                <section name="com/ibm/icu">
-                    <attribute name="Specification-Title" value="ICU4J Modularized Build" />
-                    <attribute name="Specification-Version" value="${jar.spec.version}" />
-                    <attribute name="Specification-Vendor" value="ICU" />
-                    <attribute name="Implementation-Title" value=" ICU for Java Module" />
-                    <attribute name="Implementation-Version" value="${jar.impl.version}" />
-                    <attribute name="Implementation-Vendor" value="${corp}" />
-                    <attribute name="Implementation-Vendor-Id" value="com.ibm" />
-                    <attribute name="Copyright-Info" value="${jar.copyright.info}" />
-                    <attribute name="Sealed" value="false" />
-                </section>
-            </manifest>
-        </jar>
-        <copy file="${module.jar}" tofile="icu4j.jar"/>
-    </target>
-
-    <target name="moduleCheck" description="Run tests for a ICU4J module jar">
-        <java classname="com.ibm.icu.dev.test.TestAll" fork="yes" failonerror="true">
-            <arg value="-nodata"/>
-            <classpath>
-                <pathelement location="${module.jar}"/>
-                <pathelement location="${module.tests.dir}"/>
-            </classpath>
-        </java>
-    </target>
-
-    <patternset id="common.test.sources">
-        <include name="com/ibm/icu/dev/test/TestFmwk.java"/>
-        <include name="com/ibm/icu/dev/test/TestLog.java"/>
-        <include name="com/ibm/icu/dev/test/TestUtil.java"/>
-        <include name="com/ibm/icu/dev/test/UTF16Util.java"/>
-        <include name="com/ibm/icu/dev/test/TestAll.java"/>
-        <include name="com/ibm/icu/dev/test/TestAllCore.java"/>
-    </patternset>
-
-    <!-- Break Iterator -->
-    <target name="breakIterator" depends="_copyFullPropsData" description="Modular build of break iterator services">
-        <mkdir dir="${module.bin.dir}"/>
-        <javac srcdir="${icu4j.core.dir}/src"
-                destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off">
-            <include name="com/ibm/icu/impl/UCharacterName.java"/>
-            <include name="com/ibm/icu/impl/data/*Break*.java"/>
-            <include name="com/ibm/icu/lang/**/*.java"/>
-            <include name="com/ibm/icu/text/*BreakIterator*.java"/>
-            <include name="com/ibm/icu/text/UnicodeSetIterator.java"/>
-        </javac>
-    </target>
-
-    <target name="breakIteratorTests" depends="breakIterator" description="Modular build of break iterator test suite">
-        <mkdir dir="${module.tests.dir}"/>
-        <javac destdir="${module.tests.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                classpath="${module.bin.dir}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.test-framework.dir}/src"/>
-            <src path="${icu4j.core-tests.dir}/src"/>
-            <src path="${icu4j.testall.dir}/src"/>
-
-            <patternset refid="common.test.sources"/>
-            <include name="com/ibm/icu/dev/test/rbbi/**/*.java"/>
-        </javac>
-
-        <copy file="${icu4j.core-tests.dir}/src/com/ibm/icu/dev/test/rbbi/rbbitst.txt"
-                todir="${module.tests.dir}/com/ibm/icu/dev/test/rbbi"/>
-    </target>
-
-    <!-- Calendar -->
-    <target name="calendar" description="Modular build of calendar services">
-        <mkdir dir="${module.bin.dir}"/>
-        <javac srcdir="${icu4j.core.dir}/src"
-                destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off">
-            <include name="com/ibm/icu/impl/data/*Holiday*.java"/>
-            <include name="com/ibm/icu/impl/TimeZoneNames*.java"/>
-            <include name="com/ibm/icu/lang/UCharacter.java"/>
-            <include name="com/ibm/icu/text/UnicodeSetIterator.java"/>
-            <include name="com/ibm/icu/text/NumberFormatServiceShim.java"/>
-            <include name="com/ibm/icu/util/*Calendar*.java"/>
-        </javac>
-
-        <!-- Calendar does not require Collation data, BreakIterator data -->
-        <unjar src="${icu4j.data.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/pnames.icu" />
-                <include name="**/ucase.icu" />
-                <include name="**/unorm.icu" />
-                <include name="**/uprops.icu" />
-                <include name="**/unames.icu" />
-                <include name="**/*.res" />
-                <exclude name="**/coll/*.res" />
-                <exclude name="**/translit/*.res" />
-            </patternset>
-        </unjar>
-        <unjar src="${icu4j.tzdata.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/*.res" />
-            </patternset>
-        </unjar>
-    </target>
-
-    <target name="calendarTests" depends="calendar" description="Modular build of calendar test suite">
-        <mkdir dir="${module.tests.dir}"/>
-        <javac destdir="${module.tests.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                classpath="${module.bin.dir}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.test-framework.dir}/src"/>
-            <src path="${icu4j.core-tests.dir}/src"/>
-            <src path="${icu4j.testall.dir}/src"/>
-
-            <patternset refid="common.test.sources"/>
-            <include name="com/ibm/icu/dev/test/calendar/**/*.java" />
-        </javac>
-
-        <unjar src="${icu4j.testdata.jar}" dest="${module.tests.dir}">
-            <patternset>
-                <include name="**/calendar.res"/>
-            </patternset>
-        </unjar>
-    </target>
-
-    <!-- Collator -->
-    <!-- this module will soon be obsolete, use the collate jar -->
-    <target name="collator" description="Modular build of collator services">
-        <mkdir dir="${module.bin.dir}"/>
-        <javac  destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.collate.dir}/src"/>
-
-            <include name="com/ibm/icu/impl/coll/*.java"/>
-            <include name="com/ibm/icu/impl/data/*Break*.java"/>
-            <include name="com/ibm/icu/text/*BreakIterator*.java"/>
-            <include name="com/ibm/icu/text/*Collation*.java"/>
-            <include name="com/ibm/icu/text/*Collator*.java"/>
-            <include name="com/ibm/icu/text/Normalizer.java"/>
-            <include name="com/ibm/icu/text/Replaceable.java"/>
-            <include name="com/ibm/icu/text/ReplaceableString.java"/>
-            <include name="com/ibm/icu/text/UnicodeFilter.java"/>
-            <include name="com/ibm/icu/text/UnicodeSetIterator.java"/>
-            <include name="com/ibm/icu/text/UTF16.java"/>
-        </javac>
-
-        <unjar src="${icu4j.data.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/*.icu"/>
-                <include name="**/coll/*.res"/>
-                <include name="**/*.brk"/>
-                <include name="**/*.nrm"/>
-                <include name="**/icudt${icu4j.data.version}b/res_index.res"/>
-                <include name="**/keyTypeData.res"/>
-            </patternset>
-        </unjar>
-    </target>
-
-    <target name="collatorTests" depends="collator" description="Modular build of collator test suite">
-        <mkdir dir="${module.tests.dir}"/>
-        <javac destdir="${module.tests.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                classpath="${module.bin.dir}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.test-framework.dir}/src"/>
-            <src path="${icu4j.collate-tests.dir}/src"/>
-            <src path="${icu4j.testall.dir}/src"/>
-
-            <patternset refid="common.test.sources"/>
-            <include name="com/ibm/icu/dev/test/TestAllCollate.java"/>
-            <include name="com/ibm/icu/dev/test/collator/**/*.java"/>
-            <include name="java,com/ibm/icu/dev/test/search/**/*.java"/>
-            <exclude name="com/ibm/icu/dev/test/collator/AlphabeticIndexTest.java"/>
-            <exclude name="com/ibm/icu/dev/test/collator/RandomCollator.java"/>
-            <exclude name="com/ibm/icu/dev/test/collator/IndexCharactersTest.java"/>
-        </javac>
-
-        <copy todir="${module.tests.dir}">
-            <fileset dir="${icu4j.collate-tests.dir}/src">
-                <include name="com/ibm/icu/dev/data/*.txt"/>
-            </fileset>
-        </copy>
-    </target>
-
-    <!-- Compression -->
-    <target name="compression" description="Modular build of compression services">
-        <mkdir dir="${module.bin.dir}"/>
-        <javac srcdir="${icu4j.core.dir}/src"
-                destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off">
-            <include name="com/ibm/icu/text/SCSU.java"/>
-            <include name="com/ibm/icu/text/UnicodeCompressor.java"/>
-            <include name="com/ibm/icu/text/UnicodeDecompressor.java"/>
-        </javac>
-    </target>
-
-    <target name="compressionTests" depends="compression" description="Modular build of compression test suite">
-        <mkdir dir="${module.tests.dir}"/>
-        <javac destdir="${module.tests.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                classpath="${module.bin.dir}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.test-framework.dir}/src"/>
-            <src path="${icu4j.core-tests.dir}/src"/>
-            <src path="${icu4j.testall.dir}/src"/>
-
-            <patternset refid="common.test.sources"/>
-            <include name="com/ibm/icu/dev/test/compression/**/*.java"/>
-        </javac>
-    </target>
-
-    <!-- Format -->
-    <target name="format" description="Modular build of format services">
-        <mkdir dir="${module.bin.dir}"/>
-        <javac srcdir="${icu4j.core.dir}/src"
-                destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off">
-            <include name="com/ibm/icu/impl/LocaleDisplayNamesImpl.java"/>
-            <include name="com/ibm/icu/impl/TimeZoneNames*.java"/>
-            <include name="com/ibm/icu/lang/UCharacter.java"/>
-            <include name="com/ibm/icu/text/BreakIteratorFactory.java"/>
-            <include name="com/ibm/icu/text/*Collator*.java"/>
-            <include name="com/ibm/icu/text/*Format*.java"/>
-            <include name="com/ibm/icu/text/UnicodeSetIterator.java"/>
-            <include name="com/ibm/icu/util/CalendarServiceShim.java"/>
-        </javac>
-
-        <javac srcdir="${icu4j.regiondata.dir}/src"
-                destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off"/>
-
-        <javac srcdir="${icu4j.currdata.dir}/src"
-                destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off"/>
-
-        <unjar src="${icu4j.data.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/*.icu"/>
-                <include name="**/*.brk"/>
-                <include name="**/*.res"/>
-                <exclude name="**/translit/*.res"/>
-            </patternset>
-        </unjar>
-        <unjar src="${icu4j.tzdata.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/*.res" />
-            </patternset>
-        </unjar>
-    </target>
-
-    <target name="formatTests" depends="format" description="Modular build of format test suite">
-        <mkdir dir="${module.tests.dir}"/>
-        <javac destdir="${module.tests.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                classpath="${module.bin.dir}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.test-framework.dir}/src"/>
-            <src path="${icu4j.core-tests.dir}/src"/>
-            <src path="${icu4j.testall.dir}/src"/>
-
-            <patternset refid="common.test.sources"/>
-            <include name="com/ibm/icu/dev/test/format/**/*.java"/>
-            <exclude name="com/ibm/icu/dev/test/format/GlobalizationPreferencesTest.java"/>
-        </javac>
-
-        <unjar src="${icu4j.testdata.jar}" dest="${module.tests.dir}">
-            <patternset>
-                <include name="**/format.res"/>
-            </patternset>
-        </unjar>
-
-        <copy file="${icu4j.core-tests.dir}/src/com/ibm/icu/dev/test/format/NumberFormatTestCases.txt"
-                todir="${module.tests.dir}/com/ibm/icu/dev/test/format"/>
-
-        <copy file="${icu4j.core-tests.dir}/src/com/ibm/icu/dev/data/numberformattestspecification.txt"
-                todir="${module.tests.dir}/com/ibm/icu/dev/data"/>
-
-    </target>
-
-    <!-- Normalizer -->
-    <target name="normalizer" description="Modular build of normalizer services">
-        <mkdir dir="${module.bin.dir}"/>
-        <javac srcdir="${icu4j.core.dir}/src"
-                destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off">
-            <include name="com/ibm/icu/lang/**/*"/>
-            <include name="com/ibm/icu/text/CanonicalIterator.java"/>
-            <include name="com/ibm/icu/text/Normalizer.java"/>
-            <include name="com/ibm/icu/text/Replaceable.java"/>
-            <include name="com/ibm/icu/text/ReplaceableString.java"/>
-            <include name="com/ibm/icu/text/UCharacterIterator.java"/>
-            <include name="com/ibm/icu/text/UForwardCharacterIterator.java"/>
-            <include name="com/ibm/icu/text/UnicodeFilter.java"/>
-            <include name="com/ibm/icu/text/UnicodeSetIterator.java"/>
-            <include name="com/ibm/icu/text/UTF16.java"/>
-        </javac>
-
-        <unjar src="${icu4j.data.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/ubidi.icu"/>
-                <include name="**/ucase.icu"/>
-                <include name="**/unorm.icu"/>
-                <include name="**/uprops.icu"/>
-                <include name="**/pnames.icu"/>
-                <include name="**/unames.icu"/>
-                <include name="**/*.nrm"/>
-            </patternset>
-        </unjar>
-    </target>
-
-    <target name="normalizerTests" depends="normalizer" description="Modular build of normalizer test suite">
-        <mkdir dir="${module.tests.dir}"/>
-        <javac destdir="${module.tests.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                classpath="${module.bin.dir}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.test-framework.dir}/src"/>
-            <src path="${icu4j.core-tests.dir}/src"/>
-            <src path="${icu4j.testall.dir}/src"/>
-
-            <patternset refid="common.test.sources"/>
-            <include name="com/ibm/icu/dev/test/normalizer/**/*.java"/>
-            <exclude name="com/ibm/icu/dev/test/normalizer/TestDeprecatedNormalizerAPI.java"/>
-        </javac>
-
-        <copy todir="${module.tests.dir}">
-            <fileset dir="${icu4j.core-tests.dir}/src">
-                <include name="com/ibm/icu/dev/data/unicode/*.txt"/>
-            </fileset>
-        </copy>
-
-        <unjar src="${icu4j.testdata.jar}" dest="${module.tests.dir}">
-            <patternset>
-                <include name="**/testnorm.nrm"/>
-            </patternset>
-        </unjar>
-
-    </target>
-
-    <!-- Character Properties -->
-    <target name="_copyBasicPropsData">
-        <mkdir dir="${module.bin.dir}"/>
-        <unjar src="${icu4j.data.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/unorm.icu"/>
-                <include name="**/uprops.icu"/>
-                <include name="**/ubidi.icu"/>
-                <include name="**/ucase.icu"/>
-                <include name="**/pnames.icu"/>
-                <include name="**/unames.icu"/>
-                <include name="**/*.nrm"/>
-            </patternset>
-        </unjar>
-    </target>
-
-    <target name="_copyFullPropsData">
-        <mkdir dir="${module.bin.dir}"/>
-        <unjar src="${icu4j.data.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/unorm.icu"/>
-                <include name="**/uprops.icu"/>
-                <include name="**/ubidi.icu"/>
-                <include name="**/ucase.icu"/>
-                <include name="**/unames.icu"/>
-                <include name="**/pnames.icu"/>
-                <include name="**/*.res"/>
-                <include name="**/*.brk"/>
-                <include name="**/*.dict"/>
-                <include name="**/*.nrm"/>
-                <exclude name="**/coll/*.res"/>
-                <exclude name="**/translit/*.res"/>
-                <exclude name="**/rbnf/*.res"/>
-            </patternset>
-        </unjar>
-        <unjar src="${icu4j.tzdata.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/*.res" />
-            </patternset>
-        </unjar>
-    </target>
-
-    <target name="_propertiesClasses">
-        <mkdir dir="${module.bin.dir}"/>
-        <javac srcdir="${icu4j.core.dir}/src"
-                destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off">
-            <include name="com/ibm/icu/impl/data/*Break*.java"/>
-            <include name="com/ibm/icu/lang/**/*"/>
-            <include name="com/ibm/icu/text/*BreakDictionary*.java"/>
-            <include name="com/ibm/icu/text/*BreakIterator*.java"/>
-            <include name="com/ibm/icu/text/UnicodeSetIterator.java"/>
-        </javac>
-    </target>
-
-    <target name="_propertiesTests">
-        <mkdir dir="${module.tests.dir}"/>
-        <javac destdir="${module.tests.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                classpath="${module.bin.dir}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.test-framework.dir}/src"/>
-            <src path="${icu4j.core-tests.dir}/src"/>
-            <src path="${icu4j.testall.dir}/src"/>
-
-            <patternset refid="common.test.sources"/>
-            <include name="com/ibm/icu/dev/test/lang/**/*.java"/>
-            <exclude name="com/ibm/icu/dev/test/lang/TestUScriptRun.java"/>
-        </javac>
-
-        <copy todir="${module.tests.dir}">
-            <fileset dir="${icu4j.core-tests.dir}/src">
-                <include name="com/ibm/icu/dev/data/unicode/SpecialCasing.txt"/>
-                <include name="com/ibm/icu/dev/data/unicode/UnicodeData.txt"/>
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="propertiesBasic" depends="_propertiesClasses, _copyBasicPropsData" description="Modular build of basic character properties"/>
-
-    <target name="propertiesBasicTests" depends="propertiesBasic, _propertiesTests" description="Modular build of basic character properties test suite"/>
-
-    <target name="propertiesFull" depends="_propertiesClasses, _copyFullPropsData" description="Modular build of full character properties"/>
-
-    <target name="propertiesFullTests" depends="propertiesFull, _propertiesTests" description="Modular build of full character properties test suite"/>
-
-    <!-- Transliterator -->
-    <!-- this module will soon be obsolete, use the translit jar -->
-    <target name="transliterator" depends="_propertiesClasses" description="Modular build of transliterator services">
-        <mkdir dir="${module.bin.dir}"/>
-        <javac  destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.translit.dir}/src"/>
-
-            <include name="com/ibm/icu/impl/*Iterator*.java"/>
-            <include name="com/ibm/icu/impl/*Property*.java"/>
-            <include name="com/ibm/icu/impl/data/ResourceReader.java"/>
-            <include name="com/ibm/icu/impl/UtilityExtensions.java"/>
-            <include name="com/ibm/icu/text/*Transliterator*.java"/>
-            <include name="com/ibm/icu/text/UnicodeSetIterator.java"/>
-            <include name="com/ibm/icu/text/BreakIteratorFactory.java"/>
-        </javac>
-
-        <unjar src="${icu4j.data.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/unorm.icu"/>
-                <include name="**/uprops.icu"/>
-                <include name="**/ubidi.icu"/>
-                <include name="**/ucase.icu"/>
-                <include name="**/unames.icu"/>
-                <include name="**/pnames.icu"/>
-                <include name="**/*.brk"/>
-                <include name="**/*.dict"/>
-                <include name="**/*.nrm"/>
-                <include name="**/brkitr/*.res"/>
-                <include name="**/translit/*.res"/>
-                <include name="**/likelySubtags.res"/>
-            </patternset>
-        </unjar>
-    </target>
-
-    <target name="transliteratorTests" depends="transliterator" description="Modular build of transliterator test suite">
-        <mkdir dir="${module.tests.dir}"/>
-        <javac destdir="${module.tests.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                classpath="${module.bin.dir}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.test-framework.dir}/src"/>
-            <src path="${icu4j.translit-tests.dir}/src"/>
-            <src path="${icu4j.testall.dir}/src"/>
-
-            <patternset refid="common.test.sources"/>
-            <include name="com/ibm/icu/dev/test/TestAllTranslit.java"/>
-            <include name="com/ibm/icu/dev/test/translit/**/*.java"/>
-            <exclude name="com/ibm/icu/dev/test/translit/UnicodeFilterLogic*.java"/>
-        </javac>
-
-        <copy file="${icu4j.translit-tests.dir}/src/com/ibm/icu/dev/test/translit/langtagRegex.txt"
-                todir="${module.tests.dir}/com/ibm/icu/dev/test/translit"/>
-    </target>
-
-    <!-- StringPrep -->
-    <target name="stringPrep" depends="normalizer" description="Modular build of stringprep services">
-        <mkdir dir="${module.bin.dir}"/>
-        <javac srcdir="${icu4j.core.dir}/src"
-                destdir="${module.bin.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                debug="on" deprecation="off">
-            <include name="com/ibm/icu/impl/*StringPrep*.java"/>
-            <include name="com/ibm/icu/text/*IDNA*.java"/>
-            <include name="com/ibm/icu/text/*StringPrep*.java"/>
-        </javac>
-
-        <unjar src="${icu4j.data.jar}" dest="${module.bin.dir}">
-            <patternset>
-                <include name="**/*.spp"/>
-                <include name="**/ubidi.icu"/>
-                <include name="**/ucase.icu"/>
-                <include name="**/unorm.icu"/>
-                <include name="**/uprops.icu"/>
-                <include name="**/pnames.icu"/>
-                <include name="**/unames.icu"/>
-            </patternset>
-        </unjar>
-    </target>
-
-    <target name="stringPrepTests" depends="stringPrep" description="Modular build of stringprep test suite">
-        <mkdir dir="${module.tests.dir}"/>
-        <javac destdir="${module.tests.dir}"
-                source="${javac.source}"
-                target="${javac.target}"
-                encoding="${java.src.encoding}"
-                classpath="${module.bin.dir}"
-                debug="on" deprecation="off">
-            <src path="${icu4j.core.dir}/src"/>
-            <src path="${icu4j.test-framework.dir}/src"/>
-            <src path="${icu4j.core-tests.dir}/src"/>
-            <src path="${icu4j.testall.dir}/src"/>
-
-            <patternset refid="common.test.sources"/>
-            <include name="com/ibm/icu/dev/test/stringprep/**/*.java"/>
-        </javac>
-
-        <unjar src="${icu4j.testdata.jar}" dest="${module.tests.dir}">
-            <patternset>
-                <include name="**/*.spp"/>
-                <include name="**/idna_rules.res"/>
-            </patternset>
-        </unjar>
-
-        <copy file="${icu4j.core-tests.dir}/src/com/ibm/icu/dev/data/IDNATestInput.txt"
-                todir="${module.tests.dir}/com/ibm/icu/dev/data"/>
     </target>
 
     <target name="publishToMavenRepo" depends="releaseVer">

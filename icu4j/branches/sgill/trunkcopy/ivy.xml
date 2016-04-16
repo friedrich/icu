@@ -2,6 +2,8 @@
 	<info organisation="com.ibm.icu" module="icu4j"/>
 	<dependencies>
 		<dependency org="junit" name="junit" rev="4.10"/>
-		<dependency org="pl.pragmatists" name="JUnitParams" rev="1.0.4" />
+		<dependency org="pl.pragmatists" name="JUnitParams" rev="1.0.4">
+			<exclude org="junit" name="junit"/>
+		</dependency>
 	</dependencies>
 </ivy-module>

@@ -39,7 +39,7 @@ public class TestUnicodeProperty extends TestFmwk{
     }
 
     // TODO(sgill): turned off due to stack overflow issues - Mark Davis to investigate
-    @Ignore
+    //@Ignore
     @Test
     public void TestSymbolTable() {
         Factory factory = ICUPropertyFactory.make();
@@ -59,7 +59,7 @@ public class TestUnicodeProperty extends TestFmwk{
     }
 
     // TODO(sgill): turned off due to stack overflow issues - Mark Davis to investigate
-    @Ignore
+    //@Ignore
     @Test
     public void TestSymbolTable2() {
         Factory factory = new MyUnicodePropertyFactory();
