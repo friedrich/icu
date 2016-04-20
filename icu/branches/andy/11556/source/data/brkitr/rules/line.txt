@@ -383,16 +383,6 @@ $AL_FOLLOW $CM+ / (
                                                #                a rule compiler bug which complains about
                                                #                empty sets otherwise.
 
-#
-#  Sequences of the form  (shown forwards)
-#      [CANT_CM]  <break> [CM]  <break>  [PR]
-#  The CM needs to behave as an AL
-#  This rule is concerned about getting the second of the two <breaks> in place.
-#
-
-# [$PR   ] / $CM+ [$BK $CR $LF $NL $ZW $SP {eof}];
-
-
 
 # LB 4, 5, 6
 
@@ -521,7 +511,7 @@ $PO $CM* ($ID | $EB | $EM);
 
 # LB 24
 ($ALPlus | $HL) $CM* ($PR | $PO);
-($PR | $PO) $CM* [$ALPlus $HL];
+($PR | $PO) $CM* ($ALPlus | $HL);
 
 
 # LB 25
