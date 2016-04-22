@@ -345,38 +345,10 @@ $EB $CM* $EM;
 
 !!reverse;
 
-^$CM+ $ALPlus;
-^$CM+ $BA;
-^$CM+ $BB;
-^$CM+ $B2;
-^$CM+ $CL;
-^$CM+ $CP;
-^$CM+ $EB;
-^$CM+ $EM;
-^$CM+ $EX;
-^$CM+ $GL;
-^$CM+ $HL;
-^$CM+ $HY;
-^$CM+ $H2;
-^$CM+ $H3;
-^$CM+ $ID;
-^$CM+ $IN;
-^$CM+ $IS;
-^$CM+ $JL;
-^$CM+ $JV;
-^$CM+ $JT;
-^$CM+ $NS;
-^$CM+ $NSX;
-^$CM+ $NU;
-^$CM+ $OP;
-^$CM+ $PO;
-^$CM+ $PR;
-^$CM+ $QU;
-^$CM+ $RI;
-^$CM+ $SY;
-^$CM+ $WJ;
-^$CM+;
+#  LB 9 Combining Marks.
+#  Stick together any combining sequences that don't match other rules.
 
+^$CM+ $CAN_CM?;
 
 #
 #  Sequences of the form  (shown forwards)
