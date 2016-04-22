@@ -7,7 +7,7 @@
 #         Implement default line breaking as defined by
 #         Unicode Standard Annex #14 Revision 35 for Unicode 8.0
 #         http://www.unicode.org/reports/tr14/
-#         tailored as noted in 2nd paragraph below..
+#         tailored as noted in 2nd paragraph below.
 #
 #         Includes the Emoji breaking proposals from Unicode L2/16-011R3.
 #         http://www.unicode.org/L2/L2016/16011r3-break-prop-emoji.pdf
@@ -18,6 +18,9 @@
 #
 #         This tailors the line break behavior for Finnish, while otherwise behaving
 #         per UAX 14 which corresponds to CSS line-break=strict (BCP47 -u-lb-strict).
+#         It sets characters of class CJ to behave like NS.
+#
+#         This corresponds to CSS line-break=strict (BCP47 -u-lb-strict).
 #         It sets characters of class CJ to behave like NS.
 
 #
@@ -35,7 +38,7 @@ $EM = [\U0001F3FB-\U0001F3FF];
 $AI = [:LineBreak =  Ambiguous:];
 $AL = [[:LineBreak =  Alphabetic:] - [$EM\u2764]];
 $BA = [:LineBreak =  Break_After:];
-$HH = [\u2010];
+$HH = [\u2010];     # \u2010 is HYPHEN, default line break is BA.
 $BB = [:LineBreak =  Break_Before:];
 $BK = [:LineBreak =  Mandatory_Break:];
 $B2 = [:LineBreak =  Break_Both:];
@@ -90,6 +93,7 @@ $dictionary = [:LineBreak = Complex_Context:];
 #                         as $AL  (Alphabetic)
 #
 $ALPlus = [$AL $AI $SA $SG $XX];
+
 
 ## -------------------------------------------------
 
@@ -247,7 +251,7 @@ $LB20NonBreaks = [$LB18NonBreaks - $CB];
 $LB20NonBreaks $CM* ($BA | $HH | $HY | $NS) $CM* / $AL;
 $LB20NonBreaks $CM* ($BA | $HH | $HY | $NS);
 ($HY | $HH) $AL;
-^$CM+ ($BA | $HH | $HY | $NS);
+^$CM+ ($BA | $HY | $HH | $NS);
 
 $BB $CM* [^$CB];                                  #  $BB  x
 $BB $CM* $LB20NonBreaks;
@@ -292,7 +296,7 @@ $PR $CM* ($ID | $EB | $EM);
 #
 # LB 25   Numbers.
 #
-(($PR | $PO) $CM*)? (($OP | $HY) $CM*)? $NU ($CM* ($NU | $SY | $IS))*
+(($PR | $PO) $CM*)? (($OP | $HY) $CM*)? $NU ($CM* ($NU | $SY | $IS))* 
     ($CM* ($CL | $CP))? ($CM* ($PR | $PO))?;
 
 # LB 26  Do not break a Korean syllable
@@ -339,38 +343,10 @@ $EB $CM* $EM;
 
 !!reverse;
 
-^$CM+ $ALPlus;
-^$CM+ $BA;
-^$CM+ $HH;
-^$CM+ $BB;
-^$CM+ $B2;
-^$CM+ $CL;
-^$CM+ $CP;
-^$CM+ $EB;
-^$CM+ $EM;
-^$CM+ $EX;
-^$CM+ $GL;
-^$CM+ $HL;
-^$CM+ $HY;
-^$CM+ $H2;
-^$CM+ $H3;
-^$CM+ $ID;
-^$CM+ $IN;
-^$CM+ $IS;
-^$CM+ $JL;
-^$CM+ $JV;
-^$CM+ $JT;
-^$CM+ $NS;
-^$CM+ $NU;
-^$CM+ $OP;
-^$CM+ $PO;
-^$CM+ $PR;
-^$CM+ $QU;
-^$CM+ $RI;
-^$CM+ $SY;
-^$CM+ $WJ;
-^$CM+;
+#  LB 9 Combining Marks.
+#  Stick together any combining sequences that don't match other rules.
 
+^$CM+ $CAN_CM?;
 
 #
 #  Sequences of the form  (shown forwards)
@@ -388,16 +364,6 @@ $AL_FOLLOW $CM+ / (
                                                # Further note:  the $AL in [$AL {eof}] is only to work around
                                                #                a rule compiler bug which complains about
                                                #                empty sets otherwise.
-
-#
-#  Sequences of the form  (shown forwards)
-#      [CANT_CM]  <break> [CM]  <break>  [PR]
-#  The CM needs to behave as an AL
-#  This rule is concerned about getting the second of the two <breaks> in place.
-#
-
-# [$PR   ] / $CM+ [$BK $CR $LF $NL $ZW $SP {eof}];
-
 
 
 # LB 4, 5, 6
@@ -504,7 +470,7 @@ $AL ($HY | $HH) / $SP;
 # LB 21
 ($BA | $HH | $HY | $NS) $CM* [$LB20NonBreaks-$CM];     #  . x (BA | HY | NS)
 
-[$LB20NonBreaks-$CM] $CM* $BB;                        #  BB x .
+[$LB20NonBreaks-$CM] $CM* $BB;                   #  BB x .
 [^$CB] $CM* $BB;                                      #
 
 # LB21a
@@ -530,7 +496,7 @@ $PO $CM* ($ID | $EB | $EM);
 
 # LB 24
 ($ALPlus | $HL) $CM* ($PR | $PO);
-($PR | $PO) $CM* [$ALPlus $HL];
+($PR | $PO) $CM* ($ALPlus | $HL);
 
 
 # LB 25
