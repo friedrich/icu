@@ -8,23 +8,21 @@ package com.ibm.icu.impl;
 
 import java.text.FieldPosition;
 import java.text.ParsePosition;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.MissingResourceException;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.ibm.icu.impl.UResource;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DisplayContext;
 import com.ibm.icu.text.MessageFormat;
+import com.ibm.icu.text.RelativeDateTimeFormatter;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
-import com.ibm.icu.util.UResourceBundleIterator;
+
 
 /**
  * @author srl
@@ -35,20 +33,6 @@ public class RelativeDateFormat extends DateFormat {
      * @author srl
      *
      */
-    public static class URelativeString {
-        URelativeString(int offset, String string) {
-            this.offset = offset;
-            this.string = string;
-        }
-        URelativeString(String offset, String string) {
-            this.offset = Integer.parseInt(offset);
-            this.string = string;
-        }
-        public int    offset;
-        public String string;
-    }
-
-    // copy c'tor?
     
     /**
      * @param timeStyle The time style for the date and time.
@@ -62,9 +46,9 @@ public class RelativeDateFormat extends DateFormat {
         fLocale = locale;
         fTimeStyle = timeStyle;
         fDateStyle = dateStyle;
+        int newStyle = fDateStyle & ~DateFormat.RELATIVE;
 
         if (fDateStyle != DateFormat.NONE) {
-            int newStyle = fDateStyle & ~DateFormat.RELATIVE;
             DateFormat df = DateFormat.getDateInstance(newStyle, locale);
             if (df instanceof SimpleDateFormat) {
                 fDateTimeFormat = (SimpleDateFormat)df;
@@ -81,7 +65,6 @@ public class RelativeDateFormat extends DateFormat {
             }
         } else {
             // does not matter whether timeStyle is UDAT_NONE, we need something for fDateTimeFormat
-            int newStyle = fTimeStyle & ~DateFormat.RELATIVE;
             DateFormat df = DateFormat.getTimeInstance(newStyle, locale);
             if (df instanceof SimpleDateFormat) {
                 fDateTimeFormat = (SimpleDateFormat)df;
@@ -91,7 +74,7 @@ public class RelativeDateFormat extends DateFormat {
             fTimePattern = fDateTimeFormat.toPattern();
         }
 
-        initializeCalendar(null, fLocale);
+        initializeCalendar(fLocale);
         loadDates();
         initializeCombinedFormat(calendar, fLocale);
     }
@@ -216,7 +199,7 @@ public class RelativeDateFormat extends DateFormat {
     int fTimeStyle;
     ULocale  fLocale;
     
-    private transient URelativeString fDates[] = null; // array of strings
+    private transient String fDateStrings[] = null;  // Size depends on range in RelativeDateTimeFormatter
     
     private boolean combinedFormatHasDateAtStart = false;
     private boolean capitalizationInfoIsSet = false;
@@ -224,6 +207,10 @@ public class RelativeDateFormat extends DateFormat {
     private boolean capitalizationOfRelativeUnitsForStandAlone = false;
     private transient BreakIterator capitalizationBrkIter = null;
    
+    // TODO: TRY using RelativeDateTimeFormatter instead of this implementation.
+    // It will need a mapping from the date and time styles. This will effectively 
+    // make RDF a wrapper.
+    RelativeDateTimeFormatter relDateTimeFmt;
     
     /**
      * Get the string at a specific offset.
@@ -231,15 +218,80 @@ public class RelativeDateFormat extends DateFormat {
      * @return the string, or NULL if none at that location.
      */
     private String getStringForDay(int day) {
-        if(fDates == null) {
+        if(fDateStrings == null) {
             loadDates();
         }
-        for(int i=0;i<fDates.length;i++) {
-            if(fDates[i].offset == day) {
-                return fDates[i].string;
-            }
+        int dayOffset = day + 2;  // TODO: Compute from LAST_2.
+        if (dayOffset >= 0 && dayOffset < fDateStrings.length) {
+            return fDateStrings[dayOffset];  // Offset RelativeDateTimeFormatter.LAST_2
         }
         return null;
+    }
+    
+    // Implements basic sink structure to get "fields/day/relative". Use
+    //   alias mechanism to handle the other cases.
+    //
+    private static final class RelDateFmtCapContextSink extends UResource.TableSink {
+   
+        @Override
+        public void put(UResource.Key key, UResource.Value value) {
+            if (value.getType() == ICUResourceBundle.ALIAS) { 
+                // TODO: Handle alias.
+                String alias = value.getAliasString();
+                return;
+            }
+
+            if (key.contentEquals("relative")) {
+              //String val = value.getString();
+              if (contextValues == null) {
+                  contextValues = value.getIntVector();
+              }
+            }
+
+        }
+        
+        private int[] contextValues;
+        
+        public RelDateFmtCapContextSink() {
+            contextValues = null; // TODO: fill in if needed
+        }
+    }
+    
+    // Implements basic sink structure to get "fields/day/relative". Use
+    //   alias mechanism to handle the other cases.
+    //
+    private static final class RelDateFmtDataSink extends UResource.TableSink {
+
+        @Override
+        public void put(UResource.Key key, UResource.Value value) {
+            if (value.getType() == ICUResourceBundle.ALIAS) { 
+                // TODO: Handle alias.
+                String alias = value.getAliasString();
+                return;
+            }
+
+            int keyOffset;
+            try {
+                keyOffset = Integer.parseInt(key.toString()) + 2;  // TODO: Use LAST_2;
+            }
+            catch (NumberFormatException nfe) {
+                // Flag the error?
+                return;
+            }
+            // Check if already set.
+            if (localFDateStrings[keyOffset] == null) {
+                localFDateStrings[keyOffset] = value.getString(); 
+            }
+        }
+        
+        private String[] localFDateStrings;
+        
+        public RelDateFmtDataSink(String[] dateStrings) {
+            localFDateStrings = dateStrings;
+            for (int index = 0; index < localFDateStrings.length; index ++) {
+                localFDateStrings[index] = null;
+            }
+        }
     }
     
     /** 
@@ -247,30 +299,16 @@ public class RelativeDateFormat extends DateFormat {
      */
     private synchronized void loadDates() {
         ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, fLocale);
-        ICUResourceBundle rdb = rb.getWithFallback("fields/day/relative");
-        
-        Set<URelativeString> datesSet = new TreeSet<URelativeString>(new Comparator<URelativeString>() { 
-            public int compare(URelativeString r1, URelativeString r2) {
-                
-                if(r1.offset == r2.offset) {
-                    return 0;
-                } else if(r1.offset < r2.offset) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            }
-        }) ;
-        
-        for(UResourceBundleIterator i = rdb.getIterator();i.hasNext();) {
-            UResourceBundle line = i.next();
-            
-            String k = line.getKey();
-            String v = line.getString();
-            URelativeString rs = new URelativeString(k,v);
-            datesSet.add(rs);
+
+        // Use sink mechanism to traverse data structure.
+        if (fDateStrings == null) {
+         fDateStrings = new String[6];
         }
-        fDates = datesSet.toArray(new URelativeString[0]);
+        RelDateFmtDataSink sink = new RelDateFmtDataSink(fDateStrings);
+        rb.getAllTableItemsWithFallback("fields/day/relative", sink);
+        
+        RelDateFmtCapContextSink contextSink = new RelDateFmtCapContextSink();
+        rb.getAllTableItemsWithFallback("contextTransforms", contextSink);
     }
     
     /**
@@ -309,13 +347,9 @@ public class RelativeDateFormat extends DateFormat {
      * @param status Error code
      * @return the newly constructed fCalendar
      */
-    private Calendar initializeCalendar(TimeZone zone, ULocale locale) {
+    private Calendar initializeCalendar(ULocale locale) {
         if (calendar == null) {
-            if(zone == null) {
-                calendar = Calendar.getInstance(locale);
-            } else {
-                calendar = Calendar.getInstance(zone, locale);
-            }
+            calendar = Calendar.getInstance(locale);
         }
         return calendar;
     }

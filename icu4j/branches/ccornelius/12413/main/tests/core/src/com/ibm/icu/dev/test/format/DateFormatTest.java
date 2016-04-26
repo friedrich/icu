@@ -34,15 +34,19 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.text.ChineseDateFormat;
 import com.ibm.icu.text.ChineseDateFormat.Field;
 import com.ibm.icu.text.ChineseDateFormatSymbols;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DateFormat.BooleanAttribute;
+import com.ibm.icu.text.RelativeDateTimeFormatter.Direction;
+import com.ibm.icu.text.RelativeDateTimeFormatter.RelativeUnit;
 import com.ibm.icu.text.DateFormatSymbols;
 import com.ibm.icu.text.DisplayContext;
 import com.ibm.icu.text.NumberFormat;
+import com.ibm.icu.text.RelativeDateTimeFormatter;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.text.TimeZoneFormat;
 import com.ibm.icu.text.TimeZoneFormat.ParseOption;
@@ -3723,9 +3727,10 @@ public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
 
-    // based on TestRelativeDateFormat() in icu/trunk/source/test/cintltst/cdattst.c
+    // based on TestJat() in icu/trunk/source/test/cintltst/cdattst.c
     public void TestRelativeDateFormat() {
-        ULocale loc = ULocale.US;
+        // ULocale loc = ULocale.US;
+        ULocale loc = new ULocale("es");
         TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
         Calendar cal = new GregorianCalendar(tz, loc);
         Date now = new Date();
@@ -3779,6 +3784,86 @@ public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
                 }
             }
         }
+    }
+    
+    public void TestRelativeDateStyles() {
+        // Check if there is any difference between the style outputs.
+        String[] localeList = {"es", "en", "fr-CA", "ak", "en-GB", "sw", "zh-CN", "my", "chr", "ru-RU",
+                "ja", "zh-Hant", "en-AU", "es-419", "es-MX", "haw", "ar", "ar-EG"}; 
+        int[] dateStylesList = { DateFormat.RELATIVE_FULL, DateFormat.RELATIVE_LONG,
+                DateFormat.RELATIVE_MEDIUM, DateFormat.RELATIVE_SHORT };
+        
+        for (int locIndex = 0; locIndex < localeList.length; locIndex ++) {
+            ULocale loc = new ULocale(localeList[locIndex]);
+            TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
+            Calendar cal = new GregorianCalendar(tz, loc);
+            Date now = new Date();
+            cal.setTime(now);
+            cal.set(Calendar.HOUR_OF_DAY, 18);
+            cal.set(Calendar.MINUTE, 49);
+            cal.set(Calendar.SECOND, 0);
+            
+            StringBuffer fullDateTimeStr = new StringBuffer(64);
+            StringBuffer fullDateStr = new StringBuffer(64);
+            for (int i = 0; i < dateStylesList.length; i++) {
+                int dateStyle = dateStylesList[i];
+                DateFormat fmtRelDateTime = DateFormat.getDateTimeInstance(dateStyle, DateFormat.SHORT, loc);
+                DateFormat fmtRelDate = DateFormat.getDateInstance(dateStyle, loc);
+                
+                StringBuffer dateTimeStr = new StringBuffer(64);
+                StringBuffer dateStr = new StringBuffer(64);
+                FieldPosition fp = new FieldPosition(DateFormat.MINUTE_FIELD);
+                fmtRelDateTime.format(cal, dateTimeStr, fp);
+                fmtRelDate.format(cal, dateStr, new FieldPosition(0) );
+                
+                if (i == 0) {
+                    // record the RELATIVE_FULL value.
+                    fullDateTimeStr = dateTimeStr;
+                    fullDateStr = dateStr;
+                } else {
+                    assertEquals("dateTimeString style = " + i + "(" + localeList[locIndex] + ")",
+                                 dateTimeStr.toString(), fullDateTimeStr.toString());
+                    assertEquals("dateStr style = " + i + "(" + localeList[locIndex] + ")",
+                                 dateStr.toString(), fullDateStr.toString());
+                }
+            }
+        }
+    }
+    
+    public void TestCompareRDFwithRDTF() {
+        // Compare RDT with RTDF output.
+        int[] dateStylesList = { DateFormat.RELATIVE_FULL, DateFormat.RELATIVE_LONG,
+                DateFormat.RELATIVE_MEDIUM, DateFormat.RELATIVE_SHORT };
+        String[] localeList = {"es", "en", "fr-CA", "ak", "en-GB", "sw", "zh-CN", "my", "chr", "ru-RU",
+                "ja", "zh-Hant", "en-AU", "es-419", "es-MX", "haw", "ar", "ar-EG"}; 
+        
+       // Try to DateFormat 
+        int locIndex = 0;
+        ULocale loc = new ULocale(localeList[locIndex]);
+        TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
+        Calendar cal = new GregorianCalendar(tz, loc);
+        Date now = new Date();
+        cal.setTime(now);
+        cal.set(Calendar.HOUR_OF_DAY, 18);
+        cal.set(Calendar.MINUTE, 49);
+        cal.set(Calendar.SECOND, 0);
+        StringBuffer dateTimeStr = new StringBuffer(64);
+        StringBuffer dateStr = new StringBuffer(64);
+        FieldPosition fp = new FieldPosition(DateFormat.MINUTE_FIELD);
+
+        int dateStyleIndex = 0;
+        int dateStyle = dateStylesList[dateStyleIndex];
+
+        DateFormat fmtRelDateTime = DateFormat.getDateTimeInstance(dateStyle, DateFormat.SHORT, loc);
+        DateFormat fmtRelDate = DateFormat.getDateInstance(dateStyle, loc);
+        fmtRelDateTime.format(cal, dateTimeStr, fp);
+        fmtRelDate.format(cal, dateStr, new FieldPosition(0) );
+        
+        double amount = 0;
+
+        RelativeDateTimeFormatter fmt = RelativeDateTimeFormatter.getInstance(loc);
+        String s = fmt.format(Direction.THIS, RelativeDateTimeFormatter.AbsoluteUnit.DAY); 
+        String combinedResult = fmt.combineDateAndTime(s, "3:50");
     }
 
     public void Test6880() {
