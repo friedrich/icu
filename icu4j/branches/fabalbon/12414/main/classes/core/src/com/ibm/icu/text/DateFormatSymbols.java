@@ -10,21 +10,14 @@ package com.ibm.icu.text;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import com.ibm.icu.impl.*;
 import com.ibm.icu.text.TimeZoneNames.NameType;
+import com.ibm.icu.util.*;
 import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.ICUCloneNotSupportedException;
 import com.ibm.icu.util.TimeZone;
-import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.ULocale.Category;
-import com.ibm.icu.util.UResourceBundle;
-import com.ibm.icu.util.UResourceBundleIterator;
 
 /**
  * {@icuenhanced java.text.DateFormatSymbols}.{@icu _usage_}
@@ -239,7 +232,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      */
     public DateFormatSymbols(ULocale locale)
     {
-        initializeData(locale, CalendarUtil.getCalendarType(locale));
+        initializeData(locale, "dangi");//CalendarUtil.getCalendarType(locale));
     }
 
     /**
@@ -677,7 +670,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         METAZONE_SHORT
     }
 
-    /** Map from resource key to CapitalizationContextUsage value
+    /** Map from resource mapKey to CapitalizationContextUsage value
      */
     private static final Map<String, CapitalizationContextUsage> contextUsageTypeMap;
     static {
@@ -1564,6 +1557,409 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         this.requestedLocale = dfs.requestedLocale;
     }
 
+
+    private static final class CalendarDataSink extends UResource.TableSink {
+
+
+        /**
+         * Sink for enumerating an array of strings.
+         */
+        class StringArrayDataSink extends UResource.ArraySink {
+            private String mapKey = null;
+            private Map<String, String[]> map = null;
+
+            private String[] stringArray = null;
+
+            @Override
+            public void enter(int size) {
+                //TODO: Should I check if the size is valid (>=0)
+                stringArray = new String[size];
+                map.put(mapKey, stringArray);
+            }
+
+            @Override
+            public void put(int index, UResource.Value value) {
+                System.out.println(index + " " + value.toString());
+                //TODO: Should I check if the index is valid?
+                stringArray[index] = value.getString();
+            }
+
+            public void setMapKey(String mapKey) {
+                this.mapKey = mapKey;
+            }
+
+            public void setMap(Map<String, String[]> map) {
+                this.map = map;
+            }
+        }
+        StringArrayDataSink stringArrayDataSink = new StringArrayDataSink();
+
+
+        /**
+         * Sink for enumerating a table of types
+         */
+        class TypeDataSink extends UResource.TableSink {
+            private String mapKey = null;
+            private Map<String, Map<String, String[]>> map = null;
+
+            private Map<String, String[]> typeMap = null;
+
+            @Override
+            public void enter(int size) {
+                if (map.containsKey(mapKey)) {
+                    typeMap = map.get(mapKey);
+                } else {
+                    typeMap = new TreeMap<String, String[]>();
+                    map.put(mapKey, typeMap);
+                }
+            }
+
+            @Override
+            public UResource.ArraySink getOrCreateArraySink(UResource.Key key) {
+                System.out.println(key.toString());
+                String keyString = key.toString();
+
+                // Check if the key has already been added
+                if (typeMap.containsKey(keyString)) { return null; }
+                //NOTE: this only works if the replacement of a table is checked on this level
+                // (and not on a higher level). For example, for eras, this works only if the
+                // original algorithm checks if eras/narrow exists and not if eras exists on
+
+                // Store the array
+                stringArrayDataSink.setMap(typeMap);
+                stringArrayDataSink.setMapKey(keyString);
+                return stringArrayDataSink;
+            }
+
+            public void setMap(Map<String, Map<String, String[]>> map) {
+                this.map = map;
+            }
+
+            public void setMapKey(String mapKey) {
+                this.mapKey = mapKey;
+            }
+        }
+        TypeDataSink typeDataSink = new TypeDataSink();
+
+
+        /**
+         * Sink for enumerating a table of contexts.
+         */
+        class ContextTypeDataSink extends UResource.TableSink {
+            private String mapKey = null;
+            private Map<String, Map<String, Map<String, String[]>>> map = null;
+
+            private Map<String, Map<String, String[]>> contextMap = null;
+
+            @Override
+            public void enter(int size) {
+                if (map.containsKey(mapKey)) {
+                    contextMap = map.get(mapKey);
+                } else {
+                    contextMap = new TreeMap<String, Map<String, String[]>>();
+                    map.put(mapKey, contextMap);
+                }
+            }
+
+            @Override
+            public UResource.TableSink getOrCreateTableSink(UResource.Key key) {
+                System.out.println(key.toString());
+                String keyString = key.toString();
+
+                // NOTE: The existence of an array is checked on the innermost call of the sink.
+                // if T extends StringArrayDataSink then do not check the existence of the field on the map
+
+                // Store the array
+                typeDataSink.setMap(contextMap);
+                typeDataSink.setMapKey(keyString);
+                return typeDataSink;
+            }
+
+            public void setMap(Map<String, Map<String, Map<String, String[]>>> map) {
+                this.map = map;
+            }
+
+            public void setMapKey(String mapKey) {
+                this.mapKey = mapKey;
+            }
+        }
+        ContextTypeDataSink contextTypeDataSink = new ContextTypeDataSink();
+
+
+        @Override
+        public UResource.ArraySink getOrCreateArraySink(UResource.Key key) {
+            System.out.println(key.toString());
+
+            // On this calendar only visit resources that were referenced by an alias
+            // on the previous calendar.
+            if (!visitAllResources) {
+                if (resourcesToVisit.contains(key.toString())) {
+                    resourcesToVisit.remove(key.toString());
+                } else {
+                    return null;
+                }
+            }
+
+            // Check if the key is accepted
+            if (!key.contentEquals("AmPmMarkers")
+                && !key.contentEquals("AmPmMarkersAbbr")
+                && !key.contentEquals("AmPmMarkersNarrow")
+//                && !key.contentEquals("DateTimePatterns")
+                    ) { return null; }
+
+            String keyString = key.toString();
+
+            // Check if the key has already been added
+            if (firstLevelStringArrays.containsKey(keyString)) { return null; }
+
+            // Store the array
+            stringArrayDataSink.setMap(firstLevelStringArrays);
+            stringArrayDataSink.setMapKey(keyString);
+            return stringArrayDataSink;
+        }
+
+        @Override
+        public UResource.TableSink getOrCreateTableSink(UResource.Key key) {
+            System.out.println(key.toString());
+
+            // On this calendar only visit resources that were referenced by an alias
+            // on the previous calendar.
+            if (!visitAllResources) {
+                if (resourcesToVisit.contains(key.toString())) {
+                    resourcesToVisit.remove(key.toString());
+                } else {
+                    return null;
+                }
+            }
+
+            if (key.contentEquals("dayNames")
+                || key.contentEquals("monthNames")
+                || key.contentEquals("quarters")) {
+
+                contextTypeDataSink.setMap(thirdLevelStringArrays);
+                contextTypeDataSink.setMapKey(key.toString());
+                return contextTypeDataSink;
+
+            } else if (key.contentEquals("dayPeriod")) {
+                //NOTE: This is a dictionary
+
+            } else if (key.contentEquals("eras")) {
+                typeDataSink.setMap(secondLevelStringArrays);
+                typeDataSink.setMapKey("eras");
+                return typeDataSink;
+
+            } else if (key.contentEquals("cyclicNameSets")) {
+
+            } else if (key.contentEquals("monthPatterns")) {
+
+            }
+            return null;
+        }
+
+        @Override
+        public void enter(int size) {
+            if (currentCalendarType == null)
+                throw new ICUException("Set the calendar type (setCalendarType()) before using the sink object.");
+            nextCalendarType = null;
+            sameCalendarAliases.clear();
+        }
+
+        @Override
+        public void put(UResource.Key key, UResource.Value value) {
+            if (value.getType() != ICUResourceBundle.ALIAS) { return; }
+
+            // On this calendar only visit resources that were referenced by an alias
+            // on the previous calendar.
+            if (!visitAllResources) {
+                if (resourcesToVisit.contains(key.toString())) {
+                    resourcesToVisit.remove(key.toString());
+                } else {
+                    return;
+                }
+            }
+
+            // Get the resource id for the current alias path.
+            ResourceIdentifier id = getIdFromAliasPath(value.getAliasString());
+
+            // Check if this is a horizontal link at this level or a link to another calendar.
+            if (key.contentEquals("AmPmMarkers")
+                || key.contentEquals("AmPmMarkersAbbr")
+                || key.contentEquals("AmPmMarkersNarrow")
+//                || key.contentEquals("DateTimePatterns")
+                ) {
+                String keyString = key.toString();
+                if (id.calendarType.equals(currentCalendarType)
+                        && !id.resourceName.equals(keyString)) {
+                    sameCalendarAliases.add(id);
+                    return;
+
+                } else if (!id.calendarType.equals(currentCalendarType) && id.resourceName.equals(keyString)) {
+                    // Expecting aliases to just one calendar type other than gregorian.
+                    if (nextCalendarType == null || id.calendarType.equals(nextCalendarType)
+                            || id.calendarType.equals("gregorian")) {
+                        resourcesToVisit.add(id.resourceName);
+                        if(nextCalendarType == null && !id.calendarType.equals("gregorian"))
+                            nextCalendarType = id.calendarType;
+                        return;
+                    }
+                }
+                throw new ICUException("Unexpected alias: " + value.getAliasString() + ", current resource: "
+                        + id.toString());
+
+            } else if (key.contentEquals("dayNames")
+                || key.contentEquals("dayPeriod")
+                || key.contentEquals("monthNames")
+                || key.contentEquals("quarters")
+                || key.contentEquals("eras")
+                || key.contentEquals("cyclicNameSets")
+                || key.contentEquals("monthPatterns")) {
+
+                if (key.contentEquals(id.resourceName)) {
+                    // Expecting aliases to just one calendar type other than gregorian.
+                    if (nextCalendarType == null || id.calendarType.equals(nextCalendarType)
+                            || id.calendarType.equals("gregorian")) {
+                        resourcesToVisit.add(id.resourceName);
+                        if(nextCalendarType == null && !id.calendarType.equals("gregorian"))
+                            nextCalendarType = id.calendarType;
+                        return;
+                    }
+                }
+                throw new ICUException("Unexpected alias: " + value.getAliasString());
+            }
+        }
+
+        @Override
+        public void leave() {
+            visitAllResources = false;
+
+            //TODO: Iterate over the sameCalendarAliases and load the aliases.
+        }
+
+
+        Map<String, String[]> firstLevelStringArrays = new TreeMap<String, String[]>();
+        Map<String, Map<String, String[]>> secondLevelStringArrays = new TreeMap<String, Map<String, String[]>>();
+        Map<String, Map<String, Map<String, String[]>>> thirdLevelStringArrays =
+                new TreeMap<String, Map<String, Map<String, String[]>>>();
+
+        String currentCalendarType;
+        String nextCalendarType;
+
+        Set<String> resourcesToVisit = new HashSet<String>();
+        boolean visitAllResources;
+
+        List<ResourceIdentifier> sameCalendarAliases = new ArrayList<ResourceIdentifier>();
+
+        DateFormatSymbols dateFormatSymbols;
+
+        CalendarDataSink(DateFormatSymbols dateFormatSymbols) {
+            this.dateFormatSymbols = dateFormatSymbols;
+            this.currentCalendarType = null;
+            this.nextCalendarType = null;
+            this.reinitialize();
+        }
+
+        void setCalendarType(String calendarType) {
+            this.currentCalendarType = calendarType;
+        }
+
+        void reinitialize() {
+            this.visitAllResources = true;
+            this.resourcesToVisit.clear();
+        }
+
+        // Alias' path prefix
+        private static final String CALENDAR_ALIAS_PREFIX = "/LOCALE/calendar/";
+        private static final int CALENDAR_ALIAS_PREFIX_LENGTH = 17;
+
+        private static ResourceIdentifier getIdFromAliasPath(String aliasPath) {
+            if (aliasPath.startsWith(CALENDAR_ALIAS_PREFIX) &&
+                    aliasPath.length() > CALENDAR_ALIAS_PREFIX_LENGTH) {
+                String[] pathElements = aliasPath.split("/");
+
+                if (pathElements.length > 3) {
+                    String calendarType = pathElements[3];
+                    String resourceName = pathElements[4];
+                    String resourceContextName = (pathElements.length > 5)? pathElements[5] : null;
+                    String resourceTypeName = (pathElements.length > 6)? pathElements[6] : null;
+                    return new ResourceIdentifier(calendarType, resourceName, resourceContextName,
+                            resourceTypeName);
+                }
+            }
+            throw new ICUException("Malformed 'calendar' alias path: " + aliasPath);
+        }
+
+        private static class ResourceIdentifier {
+            String calendarType;
+            String resourceName;
+            String resourceContextName;
+            String resourceTypeName;
+
+//            ResourceIdentifier() {
+//                this.calendarType = "";
+//                this.resourceName = "";
+//                this.resourceContextName = "";
+//                this.resourceTypeName = "";
+//            }
+
+            ResourceIdentifier(String calendarType, String resourceName,
+                                      String resourceContextName, String resourceTypeName) {
+                this.calendarType = calendarType;
+                this.resourceName = resourceName;
+                this.resourceContextName = resourceContextName;
+                this.resourceTypeName = resourceTypeName;
+            }
+
+            @Override
+            public String toString() {
+                StringBuilder result = new StringBuilder("[" + calendarType
+                        + ", " + resourceName);
+                if (resourceContextName != null)
+                    result.append(", " + resourceContextName);
+                if (resourceTypeName != null)
+                    result.append(", " + resourceTypeName);
+                result.append("]");
+                return result.toString();
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+
+                ResourceIdentifier that = (ResourceIdentifier) o;
+
+                if (!calendarType.equals(that.calendarType)) return false;
+                if (!resourceName.equals(that.resourceName)) return false;
+                if (resourceContextName != null ? !resourceContextName.equals(that.resourceContextName) : that.resourceContextName != null)
+                    return false;
+                return resourceTypeName != null ? resourceTypeName.equals(that.resourceTypeName) : that.resourceTypeName == null;
+
+            }
+
+            @Override
+            public int hashCode() {
+                int result = calendarType.hashCode();
+                result = 31 * result + resourceName.hashCode();
+                result = 31 * result + (resourceContextName != null ? resourceContextName.hashCode() : 0);
+                result = 31 * result + (resourceTypeName != null ? resourceTypeName.hashCode() : 0);
+                return result;
+            }
+
+//            void resetToCalendarType(String calendarType) {
+//                this.calendarType = calendarType;
+//                this.resourceName = "";
+//                this.resourceContextName = "";
+//                this.resourceTypeName = "";
+//            }
+//
+//            void resetToResourceName(String resourceName) {
+//                this.resourceName = resourceName;
+//                this.resourceContextName = "";
+//                this.resourceTypeName = "";
+//            }
+        }
+    }
+
     /**
      * Initializes format symbols for the locale and calendar type
      * @param desiredLocale The locale whose symbols are desired.
@@ -1575,6 +1971,33 @@ public class DateFormatSymbols implements Serializable, Cloneable {
     // This API was accidentally marked as @stable ICU 3.0 formerly.
     protected void initializeData(ULocale desiredLocale, CalendarData calData)
     {
+        // Create a CalendarSink to load this data and a resource bundle
+        CalendarDataSink calendarSink = new CalendarDataSink(this);
+//        calendarSink.initializeSink();
+        ICUResourceBundle b = (ICUResourceBundle)UResourceBundle
+                .getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, desiredLocale);
+
+        // Iterate loading the data following the fallbacks to different calendars
+        String calendarType = calData.fMainType;
+        while (calendarType != null) {
+
+            // Set the calendar type to process and load the data for this calendar type
+            calendarSink.setCalendarType(calendarType);
+            b.getAllTableItemsWithFallback("calendar/" + calendarType, calendarSink);
+
+            // Stop loading when gregorian was loaded
+            if (calendarType.equals("gregorian"))
+                break;
+
+            // Get the next calendar type to process from the sink
+            calendarType = calendarSink.nextCalendarType;
+
+            // Gregorian is always the last fallback
+            if (calendarType == null)
+                calendarType = "gregorian";
+        }
+
+
         // FIXME: cache only ResourceBundle. Hence every time, will do
         // getObject(). This won't be necessary if the Resource itself
         // is cached.
@@ -1866,35 +2289,35 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      *      value of the <code>DAY_OF_WEEK</code> field.  Even though
      *      <code>DAY_OF_WEEK</code> starts with <code>SUNDAY</code> = 1,
      *      This array is 0-based; the name for Sunday goes in the
-     *      first position, at index 0.  If this key is not found
+     *      first position, at index 0.  If this mapKey is not found
      *      in the bundle, the day names are inherited from the
      *      default <code>DateFormatSymbols</code> for the requested locale.
      *
      * <li><b>DayAbbreviations</b> -
      *      An array of abbreviated day names corresponding
-     *      to the values in the "DayNames" array.  If this key
+     *      to the values in the "DayNames" array.  If this mapKey
      *      is not found in the resource bundle, the "DayNames"
-     *      values are used instead.  If neither key is found,
+     *      values are used instead.  If neither mapKey is found,
      *      the day abbreviations are inherited from the default
      *      <code>DateFormatSymbols</code> for the locale.
      *
      * <li><b>MonthNames</b> -
      *      An array of strings corresponding to each possible
-     *      value of the <code>MONTH</code> field.  If this key is not found
+     *      value of the <code>MONTH</code> field.  If this mapKey is not found
      *      in the bundle, the month names are inherited from the
      *      default <code>DateFormatSymbols</code> for the requested locale.
      *
      * <li><b>MonthAbbreviations</b> -
      *      An array of abbreviated day names corresponding
-     *      to the values in the "MonthNames" array.  If this key
+     *      to the values in the "MonthNames" array.  If this mapKey
      *      is not found in the resource bundle, the "MonthNames"
-     *      values are used instead.  If neither key is found,
+     *      values are used instead.  If neither mapKey is found,
      *      the day abbreviations are inherited from the default
      *      <code>DateFormatSymbols</code> for the locale.
      *
      * <li><b>Eras</b> -
      *      An array of strings corresponding to each possible
-     *      value of the <code>ERA</code> field.  If this key is not found
+     *      value of the <code>ERA</code> field.  If this mapKey is not found
      *      in the bundle, the era names are inherited from the
      *      default <code>DateFormatSymbols</code> for the requested locale.
      * </ul>
@@ -1930,35 +2353,35 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      *      value of the <code>DAY_OF_WEEK</code> field.  Even though
      *      <code>DAY_OF_WEEK</code> starts with <code>SUNDAY</code> = 1,
      *      This array is 0-based; the name for Sunday goes in the
-     *      first position, at index 0.  If this key is not found
+     *      first position, at index 0.  If this mapKey is not found
      *      in the bundle, the day names are inherited from the
      *      default <code>DateFormatSymbols</code> for the requested locale.
      *
      * <li><b>DayAbbreviations</b> -
      *      An array of abbreviated day names corresponding
-     *      to the values in the "DayNames" array.  If this key
+     *      to the values in the "DayNames" array.  If this mapKey
      *      is not found in the resource bundle, the "DayNames"
-     *      values are used instead.  If neither key is found,
+     *      values are used instead.  If neither mapKey is found,
      *      the day abbreviations are inherited from the default
      *      <code>DateFormatSymbols</code> for the locale.
      *
      * <li><b>MonthNames</b> -
      *      An array of strings corresponding to each possible
-     *      value of the <code>MONTH</code> field.  If this key is not found
+     *      value of the <code>MONTH</code> field.  If this mapKey is not found
      *      in the bundle, the month names are inherited from the
      *      default <code>DateFormatSymbols</code> for the requested locale.
      *
      * <li><b>MonthAbbreviations</b> -
      *      An array of abbreviated day names corresponding
-     *      to the values in the "MonthNames" array.  If this key
+     *      to the values in the "MonthNames" array.  If this mapKey
      *      is not found in the resource bundle, the "MonthNames"
-     *      values are used instead.  If neither key is found,
+     *      values are used instead.  If neither mapKey is found,
      *      the day abbreviations are inherited from the default
      *      <code>DateFormatSymbols</code> for the locale.
      *
      * <li><b>Eras</b> -
      *      An array of strings corresponding to each possible
-     *      value of the <code>ERA</code> field.  If this key is not found
+     *      value of the <code>ERA</code> field.  If this mapKey is not found
      *      in the bundle, the era names are inherited from the
      *      default <code>DateFormatSymbols</code> for the requested locale.
      * </ul>
