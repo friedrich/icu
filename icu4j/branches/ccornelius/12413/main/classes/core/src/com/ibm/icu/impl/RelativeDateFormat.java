@@ -236,24 +236,24 @@ public class RelativeDateFormat extends DateFormat {
         @Override
         public void put(UResource.Key key, UResource.Value value) {
             if (value.getType() == ICUResourceBundle.ALIAS) { 
-                // TODO: Handle alias.
-                String alias = value.getAliasString();
                 return;
             }
 
             if (key.contentEquals("relative")) {
-              //String val = value.getString();
               if (contextValues == null) {
                   contextValues = value.getIntVector();
               }
             }
-
         }
         
         private int[] contextValues;
+               
+        public int[] getCapitalizationContextValues() {
+          return contextValues;
+        }
         
         public RelDateFmtCapContextSink() {
-            contextValues = null; // TODO: fill in if needed
+          contextValues = null;
         }
     }
     
@@ -309,6 +309,10 @@ public class RelativeDateFormat extends DateFormat {
         
         RelDateFmtCapContextSink contextSink = new RelDateFmtCapContextSink();
         rb.getAllTableItemsWithFallback("contextTransforms", contextSink);
+        int[] contextValues = contextSink.getCapitalizationContextValues();
+        if (contextValues != null) {
+          
+        }
     }
     
     /**
@@ -316,9 +320,10 @@ public class RelativeDateFormat extends DateFormat {
      */
     private void initCapitalizationContextInfo(ULocale locale) {
         ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, locale);
-        try {
-            ICUResourceBundle rdb = rb.getWithFallback("contextTransforms/relative");
-            int[] intVector = rdb.getIntVector();
+        try { 
+            RelDateFmtCapContextSink contextSink = new RelDateFmtCapContextSink();
+            rb.getAllTableItemsWithFallback("contextTransforms", contextSink);
+            int[] intVector = contextSink.getCapitalizationContextValues();
             if (intVector.length >= 2) {
                 capitalizationOfRelativeUnitsForListOrMenu = (intVector[0] != 0);
                 capitalizationOfRelativeUnitsForStandAlone = (intVector[1] != 0);
