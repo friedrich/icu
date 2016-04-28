@@ -906,20 +906,13 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
             UResource.Table symbolsTable = value.getTable();
             for (int j = 0; symbolsTable.getKeyAndValue(j, key, value); ++j) {
-                // Look up the field index.
-                int i;
-                for (i = 0; i<SYMBOL_KEYS.length; i++) {
+                for (int i = 0; i < SYMBOL_KEYS.length; i++) {
                     if (key.contentEquals(SYMBOL_KEYS[i])) {
+                        if (numberElements[i] == null) {
+                            numberElements[i] = value.toString();
+                        }
                         break;
                     }
-                }
-
-                // If we didn't find the field name, leave now
-                if (i == SYMBOL_KEYS.length) continue;
-
-                // Set the value if null.
-                if (numberElements[i] == null) {
-                    numberElements[i] = value.toString();
                 }
             }
         }
@@ -978,12 +971,12 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         String[][] data = cachedLocaleData.get(locale);
         if (data == null) {
             // Cache miss!
+            // TODO: There does not appear to be a good reason why the "data" array is 2-D.
             data = new String[1][SYMBOL_KEYS.length];
 
             // Load using a data sink
             DecFmtDataSink sink = new DecFmtDataSink(data[0]);
             rb.getAllItemsWithFallback(NUMBER_ELEMENTS + "/" + nsName + "/" + SYMBOLS, sink);
-            resolveMissingMonetarySeparators(data[0]);
 
             // Load the Latin fallback if necessary
             boolean hasNull = false;
@@ -995,10 +988,18 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
             }
             if (hasNull && !nsName.equals(LATIN_NUMBERING_SYSTEM)) {
                 rb.getAllItemsWithFallback(NUMBER_ELEMENTS + "/" + LATIN_NUMBERING_SYSTEM + "/" + SYMBOLS, sink);
-                resolveMissingMonetarySeparators(data[0]);
             }
 
-            // Fill in missing values
+            // If monetary decimal or grouping were not explicitly set, then set them to be the same as
+            // their non-monetary counterparts.
+            if (data[0][10] == null) {
+                data[0][10] = data[0][0];
+            }
+            if (data[0][11] == null) {
+                data[0][11] = data[0][1];
+            }
+
+            // Fill in any remaining missing values
             for (int i = 0; i < SYMBOL_KEYS.length; i++) {
                 if (data[0][i] == null) {
                     data[0][i] = SYMBOL_DEFAULTS[i];
@@ -1066,20 +1067,6 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         currencySpcAfterSym[CURRENCY_SPC_CURRENCY_MATCH] = spcInfo.afterCurrencyMatch;
         currencySpcAfterSym[CURRENCY_SPC_SURROUNDING_MATCH] = spcInfo.afterContextMatch;
         currencySpcAfterSym[CURRENCY_SPC_INSERT] = spcInfo.afterInsert;
-    }
-
-    /**
-     * If monetary decimal or grouping were not explicitly set, then set them to be the same as
-     * their non-monetary counterparts.
-     * @param numberElements
-     */
-    private static void resolveMissingMonetarySeparators(String[] numberElements) {
-        if (numberElements[10] == null) {
-            numberElements[10] = numberElements[0];
-        }
-        if (numberElements[11] == null) {
-            numberElements[11] = numberElements[1];
-        }
     }
 
     /**
