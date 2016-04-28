@@ -986,9 +986,14 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
             resolveMissingMonetarySeparators(data[0]);
 
             // Load the Latin fallback if necessary
-            int numNull = 0;
-            for (String entry : data[0]) if (entry == null) numNull++;
-            if (numNull > 0 && !nsName.equals(LATIN_NUMBERING_SYSTEM)) {
+            boolean hasNull = false;
+            for (String entry : data[0]) {
+                if (entry == null) {
+                    hasNull = true;
+                    break;
+                }
+            }
+            if (hasNull && !nsName.equals(LATIN_NUMBERING_SYSTEM)) {
                 rb.getAllItemsWithFallback(NUMBER_ELEMENTS + "/" + LATIN_NUMBERING_SYSTEM + "/" + SYMBOLS, sink);
                 resolveMissingMonetarySeparators(data[0]);
             }
@@ -1069,10 +1074,12 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
      * @param numberElements
      */
     private static void resolveMissingMonetarySeparators(String[] numberElements) {
-        if (numberElements[10] == null)
+        if (numberElements[10] == null) {
             numberElements[10] = numberElements[0];
-        if (numberElements[11] == null)
+        }
+        if (numberElements[11] == null) {
             numberElements[11] = numberElements[1];
+        }
     }
 
     /**
