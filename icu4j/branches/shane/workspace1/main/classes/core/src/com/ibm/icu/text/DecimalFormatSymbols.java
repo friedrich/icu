@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import com.ibm.icu.impl.CurrencyData;
 import com.ibm.icu.impl.CurrencyData.CurrencyDisplayInfo;
@@ -976,7 +977,12 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
 
             // Load using a data sink
             DecFmtDataSink sink = new DecFmtDataSink(data[0]);
-            rb.getAllItemsWithFallback(NUMBER_ELEMENTS + "/" + nsName + "/" + SYMBOLS, sink);
+            try {
+                rb.getAllItemsWithFallback(NUMBER_ELEMENTS + "/" + nsName + "/" + SYMBOLS, sink);
+            } catch (MissingResourceException e) {
+                // The symbols don't exist for the given nsName and resource bundle.
+                // Silently ignore and fall back to Latin.
+            }
 
             // Load the Latin fallback if necessary
             boolean hasNull = false;
