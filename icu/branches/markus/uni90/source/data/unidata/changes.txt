@@ -96,7 +96,7 @@ http://www.unicode.org/reports/tr44/tr44-17.html
   and copy to $UNIDATA
     cp ~/unidata/uni90/20160503/security/confusables.txt $UNIDATA
 
-* initial preparseucd.py changes
+* preparseucd.py changes
 - remove or add new Unicode scripts from/to the
   only-in-ISO-15924 list according to the error messages:
     ValueError: remove ['Tang'] from _scripts_only_in_iso15924
@@ -111,18 +111,23 @@ http://www.unicode.org/reports/tr44/tr44-17.html
     0D5A          ; 0.0375 ; ; 3/80 # No       MALAYALAM FRACTION THREE EIGHTIETHS
     0D5B          ; 0.05 ; ; 1/20 # No       MALAYALAM FRACTION ONE TWENTIETH
     0D5D          ; 0.15 ; ; 3/20 # No       MALAYALAM FRACTION THREE TWENTIETHS
-  -> change uprops.h, uchar.c, corepropsbuilder.cpp/encodeNumericValue(), UCharacter.java
+  -> change uprops.h, corepropsbuilder.cpp/encodeNumericValue(),
+     uchar.c, UCharacterProperty.java
      to support a new series of values
-
-* adjust preparseucd.py for Tangut algorithmic names
+- adjust preparseucd.py for Tangut algorithmic names
   in ppucd.txt:
     algnamesrange;17000..187EC;han;CJK UNIFIED IDEOGRAPH-
   ->
     algnamesrange;17000..187EC;han;TANGUT IDEOGRAPH-
+- avoid block-compressing most String/Miscellaneous property values,
+  triggered by genprops not coping with a multi-code point Case_Folding on
+    block;1C80..1C8F;...;Cased;cf=0442;CWCF;...
+  keep block-compressing empty-string mappings NFKC_CF="" for tags and variation selectors
 
 * PropertyAliases.txt changes
 - 1 new property PCM=Prepended_Concatenation_Mark
   Ignore: Only useful for layout engines.
+  Ok to list in ppucd.txt.
 
 * PropertyValueAliases.txt new property values
     blk; Adlam                            ; Adlam
@@ -192,7 +197,7 @@ http://www.unicode.org/reports/tr44/tr44-17.html
 * build ICU (make install)
   so that the tools build can pick up the new definitions from the installed header files.
 
-  $ICU_ROOT/dbg$ echo;echo;make -j5 install > out.txt 2>&1 ; tail -n 20 out.txt
+  $ICU_ROOT/dbg$ echo;echo;make -j5 install > out.txt 2>&1 ; tail -n 30 out.txt
 
 * build Unicode tools using CMake+make
 
@@ -213,14 +218,12 @@ http://www.unicode.org/reports/tr44/tr44-17.html
     genuca/genuca --hanOrder implicit $ICU_SRC_DIR
     genuca/genuca --hanOrder radical-stroke $ICU_SRC_DIR
 - rebuild ICU (make install) & tools
-- run genuca again (see step above) so that it picks up the new nfc.nrm
-- rebuild ICU (make install) & tools
 
 * update uts46test.cpp and UTS46Test.java if there are new characters that are equivalent to
   sequences with non-LDH ASCII (that is, their decompositions contain '=' or similar)
 - grep IdnaMappingTable.txt or uts46.txt for "disallowed_STD3_valid" on non-ASCII characters
-- Unicode 6.0..8.0: U+2260, U+226E, U+226F
-- nothing new in 8.0, no test file to update
+- Unicode 6.0..9.0: U+2260, U+226E, U+226F
+- nothing new in 9.0, no test file to update
 
 * run & fix ICU4C tests
 - bad Cherokee case folding due to difference in fallbacks:
