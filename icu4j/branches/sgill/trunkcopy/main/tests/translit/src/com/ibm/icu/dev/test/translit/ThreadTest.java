@@ -22,7 +22,7 @@ public class ThreadTest extends TestFmwk {
     
     @Test
     public void TestThreads()  {
-        if (getInclusion() >= 9) {
+        if (TestFmwk.getExhaustiveness() >= 9) {
             // Exhaustive test.  Run longer.
             iterationCount = 1000000;
         }

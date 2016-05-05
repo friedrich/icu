@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.TZDBTimeZoneNames;
 import com.ibm.icu.impl.ZoneMeta;
 import com.ibm.icu.lang.UCharacter;
@@ -72,14 +73,15 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     };
     boolean REALLY_VERBOSE_LOG = false;
 
+    private static boolean TEST_ALL = TestFmwk.getBooleanProperty("ICU.TimeZone.RoundTripAll", false);
+
+
     /*
      * Test case for checking if a TimeZone is properly set in the result calendar
      * and if the result TimeZone has the expected behavior.
      */
     @Test
     public void TestTimeZoneRoundTrip() {
-        boolean TEST_ALL = getBooleanProperty("TimeZoneRoundTripAll", false);
-
         TimeZone unknownZone = new SimpleTimeZone(-31415, "Etc/Unknown");
         int badDstOffset = -1234;
         int badZoneOffset = -2345;
@@ -113,7 +115,7 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
 
         // Set up test locales
         ULocale[] LOCALES = null;
-        if (TEST_ALL || getInclusion() > 5) {
+        if (TEST_ALL || TestFmwk.getExhaustiveness() > 5) {
             LOCALES = ULocale.getAvailableLocales();
         } else {
             LOCALES = new ULocale[] {new ULocale("en"), new ULocale("en_CA"), new ULocale("fr"), new ULocale("zh_Hant")};
@@ -292,11 +294,9 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
     @Test
     public void TestTimeRoundTrip() {
 
-        boolean TEST_ALL = getBooleanProperty("TimeZoneRoundTripAll", false);
-
         int startYear, endYear;
 
-        if (TEST_ALL || getInclusion() > 5) {
+        if (TEST_ALL || TestFmwk.getExhaustiveness() > 5) {
             startYear = 1900;
         } else {
             startYear = 1990;
@@ -334,7 +334,7 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         if (TEST_ALL) {
             // It may take about an hour for testing all locales
             LOCALES = ULocale.getAvailableLocales();
-        } else if (getInclusion() > 5) {
+        } else if (TestFmwk.getExhaustiveness() > 5) {
             LOCALES = new ULocale[] {
                 new ULocale("ar_EG"), new ULocale("bg_BG"), new ULocale("ca_ES"), new ULocale("da_DK"), new ULocale("de"),
                 new ULocale("de_DE"), new ULocale("el_GR"), new ULocale("en"), new ULocale("en_AU"), new ULocale("en_CA"),

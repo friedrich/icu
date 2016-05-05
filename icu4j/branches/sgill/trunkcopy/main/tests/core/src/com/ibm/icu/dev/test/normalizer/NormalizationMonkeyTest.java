@@ -40,12 +40,7 @@ public class NormalizationMonkeyTest extends TestFmwk {
                 unicode_NFKC = new UnicodeNormalizer(UnicodeNormalizer.KC, true);
             }
             catch (Exception e) {
-                String msg = "Normalization tests could not be run: " + e.getMessage();
-                if (isModularBuild()) {
-                    warnln(msg);
-                } else {
-                    errln(msg);
-                }
+                errln("Normalization tests could not be run: " + e.getMessage());
             }
         }
         int i = 0;

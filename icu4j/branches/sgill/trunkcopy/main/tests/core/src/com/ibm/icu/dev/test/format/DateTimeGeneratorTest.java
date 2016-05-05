@@ -543,7 +543,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
         int count = 0;
         for (int i = 0; i < locales.length; ++i) {
             // skip the country locales unless we are doing exhaustive tests
-            if (getInclusion() < 6) {
+            if (getExhaustiveness() < 6) {
                 if (locales[i].getCountry().length() > 0) {
                     continue;
                 }
@@ -551,7 +551,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
             count++;
             // Skipping some test case in the non-exhaustive mode to reduce the test time
             //ticket#6503
-            if(getParams().getInclusion()<=5 && count%3!=0){
+            if(getExhaustiveness()<=5 && count%3!=0){
                 continue;
             }
             logln(locales[i].toString());

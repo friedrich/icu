@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DateIntervalFormat;
@@ -903,7 +904,7 @@ public class DateIntervalFormatTest extends com.ibm.icu.dev.test.TestFmwk {
      */
     @Test
     public void TestStress() {
-        if (getInclusion() <= 5) {
+        if (TestFmwk.getExhaustiveness() <= 5) {
             logln("INFO: Skipping test");
             return;
         }

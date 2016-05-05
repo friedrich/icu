@@ -134,7 +134,7 @@ public class RbnfLenientScannerTest extends TestFmwk {
             ULocale loc = locales[i];
             int count = numbers.length;
             boolean testParse = true;
-            if (getInclusion() <= 5) {
+            if (TestFmwk.getExhaustiveness() <= 5) {
                 testParse = false;
                 for (int k = 0; k < parseLocales.length; k++) {
                     if (loc.toString().equals(parseLocales[k])) {

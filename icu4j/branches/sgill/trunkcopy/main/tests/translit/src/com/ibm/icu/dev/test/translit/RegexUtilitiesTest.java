@@ -59,7 +59,7 @@ public class RegexUtilitiesTest extends TestFmwk {
     @Test
     public void TestCharacters() {
         UnicodeSet requiresQuote = new UnicodeSet("[\\$\\&\\-\\:\\[\\\\\\]\\^\\{\\}[:pattern_whitespace:]]");
-        boolean skip = getInclusion() < 10;
+        boolean skip = TestFmwk.getExhaustiveness() < 10;
         for (int cp = 0; cp < 0x110000; ++cp) {
             if (cp > 0xFF && skip && (cp % 37 != 0)) {
                 continue;
@@ -91,7 +91,7 @@ public class RegexUtilitiesTest extends TestFmwk {
      */
     @Test
     public void TestUnicodeProperties() {
-        final boolean skip = getInclusion() < 10;
+        final boolean skip = TestFmwk.getExhaustiveness() < 10;
         UnicodeSet temp = new UnicodeSet();
         for (int propNum = UProperty.INT_START; propNum < UProperty.INT_LIMIT; ++propNum) {
             if (skip && (propNum % 5 != 0)) {

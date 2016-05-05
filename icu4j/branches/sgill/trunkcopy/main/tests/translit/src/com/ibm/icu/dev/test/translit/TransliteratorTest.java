@@ -2809,9 +2809,6 @@ public class TransliteratorTest extends TestFmwk {
                     String id = source + "-" + target + "/" + variant;
                     logln("id: " + id);
 
-                    String filter = getTranslitTestFilter();
-                    if (filter != null && id.indexOf(filter) < 0) continue;
-
                     Transliterator t = Transliterator.getInstance(id);
                     CheckIncrementalAux(t, test);
 

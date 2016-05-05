@@ -409,7 +409,7 @@ public class TestUtilities extends TestFmwk {
     
     @Test
     public void TestTime() {
-        boolean shortTest = getInclusion() < 10;
+        boolean shortTest = TestFmwk.getExhaustiveness() < 10;
         double hashTime, umTime, icuTime, treeTime;
         int warmup = shortTest ? 1 : 20;
         umTime = checkSetTime(warmup, 0);

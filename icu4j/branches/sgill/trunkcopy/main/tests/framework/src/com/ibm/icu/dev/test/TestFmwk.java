@@ -6,25 +6,19 @@
  */
 package com.ibm.icu.dev.test;
 
-import java.io.CharArrayWriter;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.Random;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
@@ -42,445 +36,98 @@ import com.ibm.icu.util.ULocale;
  */
 public class TestFmwk extends AbstractTestLog {
     /**
-     * The default time zone for all of our tests. Used in Target.run();
+     * The default time zone for all of our tests. Used in @Before
      */
     private final static TimeZone defaultTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
 
     /**
-     * The default locale used for all of our tests. Used in Target.run();
+     * The default locale used for all of our tests. Used in @Before
      */
     private final static Locale defaultLocale = Locale.US;
 
-    public static final class TestFmwkException extends Exception {
-        /**
-         * For serialization
-         */
-        private static final long serialVersionUID = -3051148210247229194L;
+    private static final String EXHAUSTIVENESS = "icu.exhaustiveness";
+    private static final int DEFAULT_EXHAUSTIVENESS = 0;
+    private static final int MAX_EXHAUSTIVENESS = 10;
+    
+    private static final String LOGGING_LEVEL = "icu.logging";
+    private static final int DEFAULT_LOGGING_LEVEL = 0;
+    private static final int MAX_LOGGING_LEVEL = 3;
+    
+    public static final int LOGGING_NONE = 0;
+    public static final int LOGGING_WARN = 1;
+    public static final int LOGGING_INFO = 2;
+    public static final int LOGGING_DEBUG = 3;
+    
+    private static final String SEED = "icu.seed";
+    private static final String SECURITY_POLICY = "icu.securitypolicy";
 
-        TestFmwkException(String msg) {
-            super(msg);
-        }
+    private static final TestParams testParams;
+    static {
+        testParams = TestParams.create();
     }
 
-    static final class ICUTestError extends RuntimeException {
-        /**
-         * For serialization
-         */
-        private static final long serialVersionUID = 6170003850185143046L;
+//    @BeforeClass
+//    public static void testFrameworkInitialize() {
+//        // TODO(sgill): check that all methods in subclass of pattern [Tt]est.* | .*[Ttest] have annotation of @Test
+//        
+//        if (paramsReference.get() != null) {
+//            return;
+//        }
+//        synchronized (paramsReference) {
+//            if (paramsReference.get() != null) {
+//                return;
+//            }
+//            TestParams params = TestParams.create();
+//            paramsReference.set(params);
+//        }
+//    }
 
-        ICUTestError(String msg) {
-            super(msg);
-        }
-    }
-
-    // Handling exception thrown during text execution (not including
-    // RuntimeException thrown by errln).
-    protected void handleException(Throwable e){
-        Throwable ex = e.getCause();
-        if(ex == null){
-            ex = e;
-        }
-        if (ex instanceof OutOfMemoryError) {
-            // Once OOM happens, it does not make sense to run
-            // the rest of test cases.
-            throw new RuntimeException(ex);
-        }
-        if (ex instanceof ICUTestError) {
-            // ICUTestError is one produced by errln.
-            // We don't need to include useless stack trace information for
-            // such case.
-            return;
-        }
-        if (ex instanceof ExceptionInInitializerError){
-            ex = ((ExceptionInInitializerError)ex).getException();
-        }
-
-        //Stack trace
-        CharArrayWriter caw = new CharArrayWriter();
-        PrintWriter pw = new PrintWriter(caw);
-        ex.printStackTrace(pw);
-        pw.close();
-        String msg = caw.toString();
-
-        //System.err.println("TF handleException msg: " + msg);
-        if (ex instanceof MissingResourceException || ex instanceof NoClassDefFoundError ||
-                msg.indexOf("java.util.MissingResourceException") >= 0) {
-            if (getParams().warnings || getParams().nodata) {
-                warnln(ex.toString() + '\n' + msg);
-            } else {
-                errln(ex.toString() + '\n' + msg);
-            }
-        } else {
-            errln(ex.toString() + '\n' + msg);
-        }
-    }
     // use this instead of new random so we get a consistent seed
     // for our tests
     protected Random createRandom() {
-        return new Random(getParams().seed);
+        return new Random(getParams().getSeed());
     }
 
     protected TestFmwk() {
-    }
-
-    protected static AtomicReference<TestParams> paramsReference = new AtomicReference<TestParams>();
-
-    @BeforeClass
-    public static void testFrameworkInitialize() {
-        // TODO(sgill): check that all methods in subclass of pattern [Tt]est.* | .*[Ttest] have annotation of @Test
-        
-        if (paramsReference.get() != null) {
-            return;
-        }
-        synchronized (paramsReference) {
-            if (paramsReference.get() != null) {
-                return;
-            }
-            TestParams params = TestParams.create(new String[0], new PrintWriter(System.out));
-            paramsReference.set(params);
-        }
     }
 
     @Before
     public void testInitialize() {
         Locale.setDefault(defaultLocale);
         TimeZone.setDefault(defaultTimeZone);
+       
+        if (getParams().testSecurityManager != null) {
+            System.setSecurityManager(getParams().testSecurityManager);
+        }
     }
     
-    protected static TestParams getParams() {
-        return paramsReference.get();
+    @After
+    public void testTeardown() {
+        if (getParams().testSecurityManager != null) {
+            System.setSecurityManager(getParams().originalSecurityManager);
+        }
     }
     
-    /**
-     * Parse arguments into a TestParams object and a collection of target
-     * paths. If there was an error parsing the TestParams, print usage and exit
-     * with -1. Otherwise, call resolveTarget(TestParams, String) for each path,
-     * and run the returned target. After the last test returns, if prompt is
-     * set, prompt and wait for input from stdin. Finally, exit with number of
-     * errors.
-     *
-     * This method never returns, since it always exits with System.exit();
-     */
-//    public void run(String[] args) {
-//        System.exit(run(args, new PrintWriter(System.out)));
-//    }
-
-    /**
-     * Like run(String[]) except this allows you to specify the error log.
-     * Unlike run(String[]) this returns the error code as a result instead of
-     * calling System.exit().
-     */
-//    public int run(String[] args, PrintWriter log) {
-//        boolean prompt = false;
-//        int wx = 0;
-//        for (int i = 0; i < args.length; ++i) {
-//            String arg = args[i];
-//            if (arg.equals("-p") || arg.equals("-prompt")) {
-//                prompt = true;
-//            } else {
-//                if (wx < i) {
-//                    args[wx] = arg;
-//                }
-//                wx++;
-//            }
-//        }
-//        while (wx < args.length) {
-//            args[wx++] = null;
-//        }
-//
-//        TestParams localParams = TestParams.create(args, log);
-//        if (localParams == null) {
-//            return -1;
-//        }
-//
-//        int errorCount = runTests(localParams, args);
-//
-//        if (localParams.seed != 0) {
-//            localParams.log.println("-random:" + localParams.seed);
-//            localParams.log.flush();
-//        }
-//
-//        if (localParams.timeLog != null && localParams.timeLog.length() > 0) {
-//            localParams.log.println("\nTest cases taking excessive time (>" +
-//                    localParams.maxTargetSec + "s):");
-//            localParams.log.println(localParams.timeLog.toString());
-//        }
-//
-//        if (localParams.knownIssues != null) {
-//            localParams.log.println("\nKnown Issues:");
-//            for (Entry<String, List<String>> entry : localParams.knownIssues.entrySet()) {
-//                String ticketLink = entry.getKey();
-//                localParams.log.println("[" + ticketLink + "]");
-//                for (String line : entry.getValue()) {
-//                    localParams.log.println("  - " + line);
-//                }
-//            }
-//        }
-//
-//        if (localParams.errorSummary != null && localParams.errorSummary.length() > 0) {
-//            localParams.log.println("\nError summary:");
-//            localParams.log.println(localParams.errorSummary.toString());
-//        }
-//
-//        if (errorCount > 0) {
-//            localParams.log.println("\n<< " + errorCount+ " TEST(S) FAILED >>");
-//        } else {
-//            localParams.log.println("\n<< ALL TESTS PASSED >>");
-//        }
-//
-//        if (prompt) {
-//            System.out.println("Hit RETURN to exit...");
-//            System.out.flush();
-//            try {
-//                System.in.read();
-//            } catch (IOException e) {
-//                localParams.log.println("Exception: " + e.toString() + e.getMessage());
-//            }
-//        }
-//
-//        localParams.log.flush();
-//
-//        return errorCount;
-//    }
-
-//    public int runTests(TestParams _params, String[] tests) {
-//        int ec = 0;
-//
-//        StringBuffer summary = null;
-//        try {
-//            if (tests.length == 0 || tests[0] == null) { // no args
-//                _params.init();
-//                resolveTarget(_params).run();
-//                ec = _params.errorCount;
-//            } else {
-//                for (int i = 0; i < tests.length ; ++i) {
-//                    if (tests[i] == null) continue;
-//
-//                    if (i > 0) {
-//                        _params.log.println();
-//                    }
-//
-//                    _params.init();
-//                    resolveTarget(_params, tests[i]).run();
-//                    ec += _params.errorCount;
-//
-//                    if (_params.errorSummary != null && _params.errorSummary.length() > 0) {
-//                        if (summary == null) {
-//                            summary = new StringBuffer();
-//                        }
-//                        summary.append("\nTest Root: " + tests[i] + "\n");
-//                        summary.append(_params.errorSummary());
-//                    }
-//                }
-//                _params.errorSummary = summary;
-//            }
-//        } catch (Exception e) {
-//            // We should normally not get here because
-//            // MethodTarget.execute() calls handleException().
-//            ec++;
-//            _params.log.println("\nencountered a test failure, exiting\n" + e);
-//            e.printStackTrace(_params.log);
-//        }
-//
-//        return ec;
-//    }
-
-    /**
-     * Return a ClassTarget for this test. Params is set on this test.
-     */
-//    public Target resolveTarget(TestParams paramsArg) {
-//        this.params = paramsArg;
-//        return new ClassTarget();
-//    }
-
-    /**
-     * Resolve a path from this test to a target. If this test has subtests, and
-     * the path contains '/', the portion before the '/' is resolved to a
-     * subtest, until the path is consumed or the test has no subtests. Returns
-     * a ClassTarget created using the resolved test and remaining path (which
-     * ought to be null or a method name). Params is set on the target's test.
-     */
-//    public Target resolveTarget(TestParams paramsArg, String targetPath) {
-//        TestFmwk test = this;
-//        test.params = paramsArg;
-//
-//        if (targetPath != null) {
-//            if (targetPath.length() == 0) {
-//                targetPath = null;
-//            } else {
-//                int p = 0;
-//                int e = targetPath.length();
-//
-//                // trim all leading and trailing '/'
-//                while (targetPath.charAt(p) == '/') {
-//                    ++p;
-//                }
-//                while (e > p && targetPath.charAt(e - 1) == '/') {
-//                    --e;
-//                }
-//                if (p > 0 || e < targetPath.length()) {
-//                    targetPath = targetPath.substring(p, e - p);
-//                    p = 0;
-//                    e = targetPath.length();
-//                }
-//
-//                try {
-//                    for (;;) {
-//                        int n = targetPath.indexOf('/');
-//                        String prefix = n == -1 ? targetPath : targetPath
-//                                .substring(0, n);
-//                        TestFmwk subtest = test.getSubtest(prefix);
-//
-//                        if (subtest == null) {
-//                            break;
-//                        }
-//
-//                        test = subtest;
-//
-//                        if (n == -1) {
-//                            targetPath = null;
-//                            break;
-//                        }
-//
-//                        targetPath = targetPath.substring(n + 1);
-//                    }
-//                } catch (TestFmwkException ex) {
-//                    return test.new Target(targetPath);
-//                }
-//            }
-//        }
-//
-//        return test.new ClassTarget(targetPath);
-//    }
-
-    /**
-     * Return true if we can run this test (allows test to inspect jvm,
-     * environment, params before running)
-     */
-    protected boolean validate() {
-        return true;
+    private static TestParams getParams() {
+        //return paramsReference.get();
+        return testParams;
     }
-
-    /**
-     * Return the targets for this test. If targetName is null, return all
-     * targets, otherwise return a target for just that name. The returned
-     * target can be null.
-     *
-     * The default implementation returns a MethodTarget for each public method
-     * of the object's class whose name starts with "Test" or "test".
-     */
-//    protected Target getTargets(String targetName) {
-//        return getClassTargets(getClass(), targetName);
-//    }
-//
-//    protected Target getClassTargets(Class cls, String targetName) {
-//        if (cls == null) {
-//            return null;
-//        }
-//
-//        Target target = null;
-//        if (targetName != null) {
-//            try {
-//                Method method = cls.getMethod(targetName, (Class[])null);
-//                target = new MethodTarget(targetName, method);
-//            } catch (NoSuchMethodException e) {
-//                if (!inheritTargets()) {
-//                    return new Target(targetName); // invalid target
-//                }
-//            } catch (SecurityException e) {
-//                return null;
-//            }
-//        } else {
-//            if (params.doMethods()) {
-//                Method[] methods = cls.getDeclaredMethods();
-//                for (int i = methods.length; --i >= 0;) {
-//                    String name = methods[i].getName();
-//                    if (name.startsWith("Test") || name.startsWith("test")) {
-//                        target = new MethodTarget(name, methods[i])
-//                        .setNext(target);
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (inheritTargets()) {
-//            Target parentTarget = getClassTargets(cls.getSuperclass(), targetName);
-//            if (parentTarget == null) {
-//                return target;
-//            }
-//            if (target == null) {
-//                return parentTarget;
-//            }
-//            return parentTarget.append(target);
-//        }
-//
-//        return target;
-//    }
-//
-//    protected boolean inheritTargets() {
-//        return false;
-//    }
-
-    protected String getDescription() {
-        return null;
-    }
-
-    protected boolean validateMethod(String name) {
-        return true;
-    }
-
-    protected String getMethodDescription(String name) {
-        return null;
-    }
-
-    // method tests have no subtests, group tests override
-    protected TestFmwk getSubtest(String prefix) throws TestFmwkException {
-        return null;
-    }
-
+    
     public static boolean isVerbose() {
-        return getParams().verbose;
+        return getParams().getLoggingLevel() >= LOGGING_INFO;
     }
 
-    public static boolean noData() {
-        return getParams().nodata;
-    }
-
-//    public boolean isTiming() {
-//        return getParams().timing < Long.MAX_VALUE;
-//    }
-//
-//    public boolean isMemTracking() {
-//        return getParams().memusage;
-//    }
-//
     /**
      * 0 = fewest tests, 5 is normal build, 10 is most tests
      */
-    public static int getInclusion() {
+    public static int getExhaustiveness() {
         return getParams().inclusion;
-    }
-
-    public static boolean isModularBuild() {
-        return getParams().warnings;
     }
 
     public static boolean isQuick() {
         return getParams().getInclusion() == 0;
     }
 
-//    public int getIndentLevel() {
-//        return getParams().indentLevel;
-//    }
-//    
-//    public void incrementIndentLevel() {
-//        getParams().indentLevel++;
-//    }
-//    
-//    public void decrementIndentLevel() {
-//        getParams().indentLevel--;
-//    }
-//    
     static final String ICU_TRAC_URL = "http://bugs.icu-project.org/trac/ticket/";
     static final String CLDR_TRAC_URL = "http://unicode.org/cldr/trac/ticket/";
     static final String CLDR_TICKET_PREFIX = "cldrbug:";
@@ -535,31 +182,26 @@ public class TestFmwk extends AbstractTestLog {
         return true;
     }
 
-    protected int getErrorCount() {
-        return getParams().errorCount;
+    public static String getProperty(String key) {
+        return getParams().getProperty(key);
     }
 
-    public String getProperty(String key) {
-        String val = null;
-        if (key != null && key.length() > 0 && getParams().props != null) {
-            val = (String)getParams().props.get(key.toLowerCase());
-        }
-        return val;
+    public static boolean getBooleanProperty(String key) {
+        return getParams().getBooleanProperty(key);
+    }
+    
+    public static boolean getBooleanProperty(String key, boolean defVal) {
+        return getParams().getBooleanProperty(key, defVal);
     }
 
-    public boolean getBooleanProperty(String key, boolean defVal) {
-        String s = getProperty(key);
-        if (s != null) {
-            if (s.equalsIgnoreCase("yes") || s.equals("true")) {
-                return true;
-            }
-            if (s.equalsIgnoreCase("no") || s.equalsIgnoreCase("false")) {
-                return false;
-            }
-        }
-        return defVal;
+    public static int getIntProperty(String key, int defVal) {
+        return getParams().getIntProperty(key, defVal);
     }
-
+    
+    public static int getIntProperty(String key, int defVal, int maxVal) {
+        return getParams().getIntProperty(key, defVal, maxVal);
+    }
+    
     protected TimeZone safeGetTimeZone(String id) {
         TimeZone tz = TimeZone.getTimeZone(id);
         if (tz == null) {
@@ -572,72 +214,8 @@ public class TestFmwk extends AbstractTestLog {
         return tz;
     }
 
-    /**
-     * Print a usage message for this test class.
-     */
-    public void usage() {
-        usage(new PrintWriter(System.out), getClass().getName());
-    }
-
-    public static void usage(PrintWriter pw, String className) {
-        pw.println("Usage: " + className + " option* target*");
-        pw.println();
-        pw.println("Options:");
-        pw.println(" -d[escribe] Print a short descriptive string for this test and all");
-        pw.println("       listed targets.");
-        pw.println(" -e<n> Set exhaustiveness from 0..10.  Default is 0, fewest tests.\n"
-                + "       To run all tests, specify -e10.  Giving -e with no <n> is\n"
-                + "       the same as -e5.");
-        pw.println(" -filter:<str> Only tests matching filter will be run or listed.\n"
-                + "       <str> is of the form ['^']text[','['^']text].\n"
-                + "       Each string delimited by ',' is a separate filter argument.\n"
-                + "       If '^' is prepended to an argument, its matches are excluded.\n"
-                + "       Filtering operates on test groups as well as tests, if a test\n"
-                + "       group is included, all its subtests that are not excluded will\n"
-                + "       be run.  Examples:\n"
-                + "    -filter:A -- only tests matching A are run.  If A matches a group,\n"
-                + "       all subtests of this group are run.\n"
-                + "    -filter:^A -- all tests except those matching A are run.  If A matches\n"
-                + "        a group, no subtest of that group will be run.\n"
-                + "    -filter:A,B,^C,^D -- tests matching A or B and not C and not D are run\n"
-                + "       Note: Filters are case insensitive.");
-        pw.println(" -h[elp] Print this help text and exit.");
-        pw.println(" -hex Display non-ASCII characters in hexadecimal format");
-        pw.println(" -l[ist] List immediate targets of this test");
-        pw.println("   -la, -listAll List immediate targets of this test, and all subtests");
-        pw.println("   -le, -listExaustive List all subtests and targets");
-        // don't know how to get useful numbers for memory usage using java API
-        // calls
-        //      pw.println(" -m[emory] print memory usage and force gc for
-        // each test");
-        pw.println(" -n[othrow] Message on test failure rather than exception.\n"
-                + "       This is the default behavior and has no effects on ICU 55+.");
-        pw.println(" -p[rompt] Prompt before exiting");
-        pw.println(" -prop:<key>=<value> Set optional property used by this test");
-        pw.println(" -q[uiet] Do not show warnings");
-        pw.println(" -r[andom][:<n>] If present, randomize targets.  If n is present,\n"
-                + "       use it as the seed.  If random is not set, targets will\n"
-                + "       be in alphabetical order to ensure cross-platform consistency.");
-        pw.println(" -s[ilent] No output except error summary or exceptions.");
-        pw.println(" -tfilter:<str> Transliterator Test filter of ids.");
-        pw.println(" -t[ime]:<n> Print elapsed time only for tests exceeding n milliseconds.");
-        pw.println(" -v[erbose] Show log messages");
-        pw.println(" -u[nicode] Don't escape error or log messages (Default on ICU 55+)");
-        pw.println(" -w[arning] Continue in presence of warnings, and disable missing test warnings.");
-        pw.println(" -nodata | -nd Do not warn if resource data is not present.");
-        pw.println();
-        pw.println(" If a list or describe option is provided, no tests are run.");
-        pw.println();
-        pw.println("Targets:");
-        pw.println(" If no target is specified, all targets for this test are run.");
-        pw.println(" If a target contains no '/' characters, and matches a target");
-        pw.println(" of this test, the target is run.  Otherwise, the part before the");
-        pw.println(" '/' is used to match a subtest, which then evaluates the");
-        pw.println(" remainder of the target as above.  Target matching is case-insensitive.");
-        pw.println();
-        pw.println(" If multiple targets are provided, each is executed in order.");
-        pw.flush();
-    }
+   
+    // Utility Methods
     
     public static String hex(char[] s){
         StringBuffer result = new StringBuffer();
@@ -732,705 +310,104 @@ public class TestFmwk extends AbstractTestLog {
         return cal.getTime();
     }
 
-    public static class NullWriter extends PrintWriter {
-        public NullWriter() {
-            super(System.out, false);
-        }
-        public void write(int c) {
-        }
-        public void write(char[] buf, int off, int len) {
-        }
-        public void write(String s, int off, int len) {
-        }
-        public void println() {
-        }
-    }
-
-    public static class ASCIIWriter extends PrintWriter {
-        private StringBuffer buffer = new StringBuffer();
-
-        // Characters that we think are printable but that escapeUnprintable
-        // doesn't
-        private static final String PRINTABLES = "\t\n\r";
-
-        public ASCIIWriter(Writer w, boolean autoFlush) {
-            super(w, autoFlush);
-        }
-
-        public ASCIIWriter(OutputStream os, boolean autoFlush) {
-            super(os, autoFlush);
-        }
-
-        public void write(int c) {
-            synchronized (lock) {
-                buffer.setLength(0);
-                if (PRINTABLES.indexOf(c) < 0
-                        && TestUtil.escapeUnprintable(buffer, c)) {
-                    super.write(buffer.toString());
-                } else {
-                    super.write(c);
-                }
-            }
-        }
-
-        public void write(char[] buf, int off, int len) {
-            synchronized (lock) {
-                buffer.setLength(0);
-                int limit = off + len;
-                while (off < limit) {
-                    int c = UTF16Util.charAt(buf, 0, buf.length, off);
-                    off += UTF16Util.getCharCount(c);
-                    if (PRINTABLES.indexOf(c) < 0
-                            && TestUtil.escapeUnprintable(buffer, c)) {
-                        super.write(buffer.toString());
-                        buffer.setLength(0);
-                    } else {
-                        super.write(c);
-                    }
-                }
-            }
-        }
-
-        public void write(String s, int off, int len) {
-            write(s.substring(off, off + len).toCharArray(), 0, len);
-        }
-    }
-
-    // filters
-    // match against the entire hierarchy
-    // A;B;!C;!D --> (A ||B) && (!C && !D)
-    // positive, negative, unknown matches
-    // positive -- known to be included, negative- known to be excluded
-    // positive only if no excludes, and matches at least one include, if any
-    // negative only if matches at least one exclude
-    // otherwise, we wait
-
-    public static class TestParams {
-//        public boolean prompt;
-//        public boolean verbose;
-//        public boolean quiet;
-//        public int listlevel;
-//        public boolean describe;
-//        public boolean warnings;
-//        public boolean nodata;
-//        public long timing = 0;
-//        public boolean memusage;
-//        public int inclusion;
-//        public String filter;
-//        public long seed;
-//        public String tfilter; // for transliterator tests
-//
-//        public State stack;
-//
-//        public StringBuffer errorSummary = new StringBuffer();
-//        private StringBuffer timeLog;
-//        private Map<String, List<String>> knownIssues;
-//
-//        public PrintWriter log;
-//        public int indentLevel;
-//        private boolean needLineFeed;
-//        private boolean suppressIndent;
-//        public int errorCount;
-//        public int warnCount;
-//        public int invalidCount;
-//        public int testCount;
-//        private NumberFormat tformat;
-//        public Random random;
-//        public int maxTargetSec = 10;
-//        public HashMap props;
-
-        private boolean prompt;
-        private boolean verbose;
-        private boolean quiet;
-        private int listlevel;
-        private boolean describe;
-        private boolean warnings;
-        private boolean nodata;
-        private long timing = 0;
-        private boolean memusage;
+    private static class TestParams {
+        
         private int inclusion;
-        private String filter;
         private long seed;
-        private String tfilter; // for transliterator tests
-
-        private State stack;
-
-        private StringBuffer errorSummary = new StringBuffer();
-        private StringBuffer timeLog;
+        private int loggingLevel;
+        
+        private String policyFileName;
+        private SecurityManager testSecurityManager;
+        private SecurityManager originalSecurityManager;
+        
         private Map<String, List<String>> knownIssues;
 
-        private PrintWriter log;
-        private int indentLevel;
-        private boolean needLineFeed;
-        private boolean suppressIndent;
-        private int errorCount;
-        private int warnCount;
-        private int invalidCount;
-        private int testCount;
-        private NumberFormat tformat;
-        private Random random;
-        private int maxTargetSec = 10;
-        private HashMap props;
+        private Properties props;
 
+        
         private TestParams() {
         }
 
-        public static TestParams create(String arglist, PrintWriter log) {
-            String[] args = null;
-            if (arglist != null && arglist.length() > 0) {
-                args = arglist.split("\\s");
-            }
-            return create(args, log);
-        }
-
-        /**
-         * Create a TestParams from a list of arguments.  If successful, return the params object,
-         * else return null.  Error messages will be reported on errlog if it is not null.
-         * Arguments and values understood by this method will be removed from the args array
-         * and existing args will be shifted down, to be filled by nulls at the end.
-         * @param args the list of arguments
-         * @param log the error log, or null if no error log is desired
-         * @return the new TestParams object, or null if error
-         */
-        public static TestParams create(String[] args, PrintWriter log) {
-            TestParams params = new TestParams();
-
-            if (log == null) {
-                params.log = new NullWriter();
-            } else {
-                params.log = log;
-            }
-
-            boolean usageError = false;
-            String filter = null;
-            String fmt = "#,##0.000s";
-            int wx = 0; // write argets.
-            if (args != null) {
-                for (int i = 0; i < args.length; i++) {
-                    String arg = args[i];
-                    if (arg == null || arg.length() == 0) {
-                        continue;
-                    }
-                    if (arg.charAt(0) == '-') {
-                        arg = arg.toLowerCase();
-                        if (arg.equals("-verbose") || arg.equals("-v")) {
-                            params.verbose = true;
-                            params.quiet = false;
-                        } else if (arg.equals("-quiet") || arg.equals("-q")) {
-                            params.quiet = true;
-                            params.verbose = false;
-                        } else if (arg.equals("-hex")) {
-                            params.log =  new ASCIIWriter(log, true);
-                        } else if (arg.equals("-help") || arg.equals("-h")) {
-                            usageError = true;
-                        } else if (arg.equals("-warning") || arg.equals("-w")) {
-                            params.warnings = true;
-                        } else if (arg.equals("-nodata") || arg.equals("-nd")) {
-                            params.nodata = true;
-                        } else if (arg.equals("-list") || arg.equals("-l")) {
-                            params.listlevel = 1;
-                        } else if (arg.equals("-listall") || arg.equals("-la")) {
-                            params.listlevel = 2;
-                        } else if (arg.equals("-listexaustive") || arg.equals("-le")) {
-                            params.listlevel = 3;
-                        } else if (arg.equals("-memory") || arg.equals("-m")) {
-                            params.memusage = true;
-                        } else if (arg.equals("-nothrow") || arg.equals("-n")) {
-                            // Default since ICU 55. This option has no effects.
-                        } else if (arg.equals("-describe") || arg.equals("-d")) {
-                            params.describe = true;
-                        } else if (arg.startsWith("-r")) {
-                            String s = null;
-                            int n = arg.indexOf(':');
-                            if (n != -1) {
-                                s = arg.substring(n + 1);
-                                arg = arg.substring(0, n);
-                            }
-
-                            if (arg.equals("-r") || arg.equals("-random")) {
-                                if (s == null) {
-                                    params.seed = System.currentTimeMillis();
-                                } else {
-                                    params.seed = Long.parseLong(s);
-                                }
-                            } else {
-                                log.println("*** Error: unrecognized argument: " + arg);
-                                usageError = true;
-                                break;
-                            }
-                        } else if (arg.startsWith("-e")) {
-                            // see above
-                            params.inclusion = (arg.length() == 2)
-                                    ? 5
-                                            : Integer.parseInt(arg.substring(2));
-                            if (params.inclusion < 0 || params.inclusion > 10) {
-                                usageError = true;
-                                break;
-                            }
-                        } else if (arg.startsWith("-tfilter:")) {
-                            params.tfilter = arg.substring(8);
-                        } else if (arg.startsWith("-time") || arg.startsWith("-t")) {
-                            long val = 0;
-                            int inx = arg.indexOf(':');
-                            if (inx > 0) {
-                                String num = arg.substring(inx + 1);
-                                try {
-                                    val = Long.parseLong(num);
-                                } catch (Exception e) {
-                                    log.println("*** Error: could not parse time threshold '"
-                                            + num + "'");
-                                    usageError = true;
-                                    break;
-                                }
-                            }
-                            params.timing = val;
-                            if (val <= 10) {
-                                fmt = "#,##0.000s";
-                            } else if (val <= 100) {
-                                fmt = "#,##0.00s";
-                            } else if (val <= 1000) {
-                                fmt = "#,##0.0s";
-                            }
-                        } else if (arg.startsWith("-filter:")) {
-                            String temp = arg.substring(8).toLowerCase();
-                            filter = filter == null ? temp : filter + "," + temp;
-                        } else if (arg.startsWith("-f:")) {
-                            String temp = arg.substring(3).toLowerCase();
-                            filter = filter == null ? temp : filter + "," + temp;
-                        } else if (arg.startsWith("-s")) {
-                            params.log = new NullWriter();
-                        } else if (arg.startsWith("-u")) {
-                            if (params.log instanceof ASCIIWriter) {
-                                params.log = log;
-                            }
-                        } else if (arg.startsWith("-prop:")) {
-                            String temp = arg.substring(6);
-                            int eql = temp.indexOf('=');
-                            if (eql <= 0) {
-                                log.println("*** Error: could not parse custom property '" + arg + "'");
-                                usageError = true;
-                                break;
-                            }
-                            if (params.props == null) {
-                                params.props = new HashMap();
-                            }
-                            params.props.put(temp.substring(0, eql), temp.substring(eql+1));
-                        } else {
-                            log.println("*** Error: unrecognized argument: "
-                                    + args[i]);
-                            usageError = true;
-                            break;
-                        }
-                    } else {
-                        args[wx++] = arg; // shift down
-                    }
-                }
-
-                while (wx < args.length) {
-                    args[wx++] = null;
-                }
-            }
-
-            params.tformat = new DecimalFormat(fmt);
-
-            if (usageError) {
-                usage(log, "TestAll");
-                return null;
-            }
-
-            if (filter != null) {
-                params.filter = filter.toLowerCase();
-            }
-
-            params.init();
-
+        static TestParams create() {
+            TestParams params = new TestParams();            
+            Properties props = System.getProperties();
+            params.parseProperties(props);
             return params;
         }
-
-        public String errorSummary() {
-            return errorSummary == null ? "" : errorSummary.toString();
-        }
-
-        public void init() {
-            indentLevel = 0;
-            needLineFeed = false;
-            suppressIndent = false;
-            errorCount = 0;
-            warnCount = 0;
-            invalidCount = 0;
-            testCount = 0;
-            random = seed == 0 ? null : new Random(seed);
-        }
-
-        public class State {
-            State link;
-            String name;
-            StringBuffer buffer;
-            int level;
-            int ec;
-            int wc;
-            int ic;
-            int tc;
-            boolean flushed;
-            public boolean included;
-            long mem;
-            long millis;
-
-            public State(State link, String name, boolean included) {
-                this.link = link;
-                this.name = name;
-                if (link == null) {
-                    this.level = 0;
-                    this.included = included;
-                } else {
-                    this.level = link.level + 1;
-                    this.included = included || link.included;
-                }
-                this.ec = errorCount;
-                this.wc = warnCount;
-                this.ic = invalidCount;
-                this.tc = testCount;
-
-                if (link == null || this.included) {
-                    flush();
-                }
-
-                mem = getmem();
-                millis = System.currentTimeMillis();
-            }
-
-            void flush() {
-                if (!flushed) {
-                    if (link != null) {
-                        link.flush();
-                    }
-
-                    indent(level);
-                    log.print(name);
-                    log.flush();
-
-                    flushed = true;
-
-                    needLineFeed = true;
-                }
-            }
-
-            void appendPath(StringBuffer buf) {
-                if (this.link != null) {
-                    this.link.appendPath(buf);
-                    buf.append('/');
-                }
-                buf.append(name);
+        
+        private void parseProperties(Properties props) {
+            this.props = props;
+            
+            inclusion = getIntProperty(EXHAUSTIVENESS, DEFAULT_EXHAUSTIVENESS, MAX_EXHAUSTIVENESS);
+            seed = getLongProperty(SEED, System.currentTimeMillis());
+            loggingLevel = getIntProperty(LOGGING_LEVEL, DEFAULT_LOGGING_LEVEL, MAX_LOGGING_LEVEL);
+            
+            policyFileName = getProperty(SECURITY_POLICY);
+            if (policyFileName != null) {
+                String originalPolicyFileName = System.getProperty("java.security.policy");
+                originalSecurityManager = System.getSecurityManager();
+                System.setProperty("java.security.policy", policyFileName);
+                Policy.getPolicy().refresh();
+                testSecurityManager = new SecurityManager();
+                System.setProperty("java.security.policy", originalPolicyFileName==null ? "" : originalPolicyFileName);
             }
         }
-
-        public void push(String name, String description, boolean included) {
-            if (inDocMode() && describe && description != null) {
-                name += ": " + description;
+        
+        public String getProperty(String key) {
+            String val = null;
+            if (key != null && key.length() > 0) {
+                val = props.getProperty(key);
             }
-            stack = new State(stack, name, included);
+            return val;
         }
 
-        public void pop() {
-            if (stack != null) {
-                writeTestResult();
-                stack = stack.link;
+        public boolean getBooleanProperty(String key) {
+            return getBooleanProperty(key, false);
+        }
+        
+        public boolean getBooleanProperty(String key, boolean defVal) {
+            String s = getProperty(key);
+            if (s == null) {
+                return defVal;
             }
+            if (s.equalsIgnoreCase("yes") || s.equalsIgnoreCase("true") || s.equals("1")) {
+                return true;
+            }
+            return false;
         }
 
-        public boolean inDocMode() {
-            return describe || listlevel != 0;
+        public int getIntProperty(String key, int defVal) {
+            return getIntProperty(key, defVal, -1);
         }
-
-        public boolean doMethods() {
-            return !inDocMode() || listlevel == 3
-                    || (indentLevel == 1 && listlevel > 0);
+        
+        public int getIntProperty(String key, int defVal, int maxVal) {
+            String s = getProperty(key);
+            if (s == null) {
+                return defVal;
+            }
+            return (maxVal == -1) ? Integer.valueOf(s) : Integer.max(Integer.valueOf(s), maxVal);
         }
-
-        public boolean doRecurse() {
-            return !inDocMode() || listlevel > 1
-                    || (indentLevel == 1 && listlevel > 0);
+        
+        public long getLongProperty(String key, long defVal) {
+            String s = getProperty(key);
+            if (s == null) {
+                return defVal;
+            }
+            return Long.valueOf(s);
         }
-
-        public boolean doRecurseGroupsOnly() {
-            return inDocMode()
-                    && (listlevel == 2 || (indentLevel == 1 && listlevel > 0));
-        }
-
-        // return 0, -1, or 1
-        // 1: run this test
-        // 0: might run this test, no positive include or exclude on this group
-        // -1: exclude this test
-        public int filter(String testName) {
-            int result = 0;
-            if (filter == null) {
-                result = 1;
-            } else {
-                boolean noIncludes = true;
-                boolean noExcludes = filter.indexOf('^') == -1;
-                testName = testName.toLowerCase();
-                int ix = 0;
-                while (ix < filter.length()) {
-                    int nix = filter.indexOf(',', ix);
-                    if (nix == -1) {
-                        nix = filter.length();
-                    }
-                    if (filter.charAt(ix) == '^') {
-                        if (testName.indexOf(filter.substring(ix + 1, nix)) != -1) {
-                            result = -1;
-                            break;
-                        }
-                    } else {
-                        noIncludes = false;
-                        if (testName.indexOf(filter.substring(ix, nix)) != -1) {
-                            result = 1;
-                            if (noExcludes) {
-                                break;
-                            }
-                        }
-                    }
-
-                    ix = nix + 1;
-                }
-                if (result == 0 && noIncludes) {
-                    result = 1;
-                }
-            }
-            //              System.out.println("filter: " + testName + " returns: " +
-            // result);
-            return result;
-        }
-
-        /**
-         * Log access.
-         * @param msg The string message to write
-         */
-        public void write(String msg) {
-            write(msg, false);
-        }
-
-        public void writeln(String msg) {
-            write(msg, true);
-        }
-
-        private void write(String msg, boolean newln) {
-            if (!suppressIndent) {
-                if (needLineFeed) {
-                    log.println();
-                    needLineFeed = false;
-                }
-                log.print(spaces.substring(0, indentLevel * 2));
-            }
-            log.print(msg);
-            if (newln) {
-                log.println();
-            }
-            log.flush();
-            suppressIndent = !newln;
-        }
-
-        private void msg(String message, int level, boolean incCount,
-                boolean newln) {
-            int oldLevel = level;
-            //            if (level == WARN && (!warnings && !nodata)){
-            //                level = ERR;
-            //            }
-
-            if (incCount) {
-                if (level == WARN) {
-                    warnCount++;
-                    //                    invalidCount++;
-                } else if (level == ERR) {
-                    errorCount++;
-                }
-            }
-
-            // should roll indentation stuff into log ???
-            if (verbose || level > (quiet ? WARN : LOG)) {
-                if (!suppressIndent) {
-                    indent(indentLevel + 1);
-                    final String[] MSGNAMES = {"", "Warning: ", "Error: "};
-                    log.print(MSGNAMES[oldLevel]);
-                }
-
-                String testLocation = sourceLocation();
-                message = testLocation + message;
-                log.print(message);
-                if (newln) {
-                    log.println();
-                }
-                log.flush();
-            }
-
-            if (level == ERR) {
-                if (!suppressIndent && errorSummary != null && stack !=null
-                        && (errorCount == stack.ec + 1)) {
-                    stack.appendPath(errorSummary);
-                    errorSummary.append("\n");
-                }
-            }
-
-            suppressIndent = !newln;
-        }
-
-        private void writeTestInvalid(String name, boolean nodataArg) {
-            //              msg("***" + name + "*** not found or not valid.", WARN, true,
-            // true);
-            if (inDocMode()) {
-                if (!warnings) {
-                    if (stack != null) {
-                        stack.flush();
-                    }
-                    log.println(" *** Target not found or not valid.");
-                    log.flush();
-                    needLineFeed = false;
-                }
-            } else {
-                if(!nodataArg){
-                    msg("Test " + name + " not found or not valid.", WARN, true,
-                            true);
-                }
-            }
-        }
-
-        long getmem() {
-            long newmem = 0;
-            if (memusage) {
-                Runtime rt = Runtime.getRuntime();
-                long lastmem = Long.MAX_VALUE;
-                do {
-                    rt.gc();
-                    rt.gc();
-                    try {
-                        Thread.sleep(50);
-                    } catch (Exception e) {
-                        break;
-                    }
-                    lastmem = newmem;
-                    newmem = rt.totalMemory() - rt.freeMemory();
-                } while (newmem < lastmem);
-            }
-            return newmem;
-        }
-
-        private void writeTestResult() {
-            if (inDocMode()) {
-                if (needLineFeed) {
-                    log.println();
-                    log.flush();
-                }
-                needLineFeed = false;
-                return;
-            }
-
-            long dmem = getmem() - stack.mem;
-            long dtime = System.currentTimeMillis() - stack.millis;
-
-            int testDelta = testCount - stack.tc;
-            if (testDelta == 0) {
-                if (stack.included) {
-                    stack.flush();
-                    indent(indentLevel);
-                    log.println("} (0s) Empty");
-                }
-                return;
-            }
-
-            int errorDelta = errorCount - stack.ec;
-            int warnDelta = warnCount - stack.wc;
-            int invalidDelta = invalidCount - stack.ic;
-
-            stack.flush();
-
-            if (!needLineFeed) {
-                indent(indentLevel);
-                log.print("}");
-            }
-            needLineFeed = false;
-
-            if (memusage || dtime >= timing) {
-                log.print(" (");
-                if (memusage) {
-                    log.print("dmem: " + dmem);
-                }
-                if (dtime >= timing) {
-                    if (memusage) {
-                        log.print(", ");
-                    }
-                    log.print(tformat.format(dtime / 1000f));
-                }
-                log.print(")");
-            }
-
-            if (errorDelta != 0) {
-                log.println(" FAILED ("
-                        + errorDelta
-                        + " failure(s)"
-                        + ((warnDelta != 0) ? ", " + warnDelta
-                                + " warning(s)" : "")
-                                + ((invalidDelta != 0) ? ", " + invalidDelta
-                                        + " test(s) skipped)" : ")"));
-            } else if (warnDelta != 0) {
-                log.println(" ALERT ("
-                        + warnDelta
-                        + " warning(s)"
-                        + ((invalidDelta != 0) ? ", " + invalidDelta
-                                + " test(s) skipped)" : ")"));
-            } else if (invalidDelta != 0) {
-                log.println(" Qualified (" + invalidDelta + " test(s) skipped)");
-            } else {
-                log.println(" Passed");
-            }
-        }
-
-        private final void indent(int distance) {
-            boolean idm = inDocMode();
-            if (needLineFeed) {
-                if (idm) {
-                    log.println();
-                } else {
-                    log.println(" {");
-                }
-                needLineFeed = false;
-            }
-
-            log.print(spaces.substring(0, distance * (idm ? 3 : 2)));
-
-            if (idm) {
-                log.print("-- ");
-            }
-        }
-
+        
         public int getInclusion() {
             return inclusion;
         }
+        
+        public long getSeed() {
+            return seed;
+        }
+        
+        public int getLoggingLevel() {
+            return loggingLevel;
+        }
     }
-
-    public String getTranslitTestFilter() {
-        return getParams().tfilter;
-    }
-
-    /**
-     * Return the target name for a test class. This is either the end of the
-     * class name, or if the class declares a public static field
-     * CLASS_TARGET_NAME, the value of that field.
-     */
-//    private static String getClassTargetName(Class testClass) {
-//        String name = testClass.getName();
-//        try {
-//            Field f = testClass.getField("CLASS_TARGET_NAME");
-//            name = (String) f.get(null);
-//        } catch (IllegalAccessException e) {
-//            throw new IllegalStateException(
-//                    "static field CLASS_TARGET_NAME must be accessible");
-//        } catch (NoSuchFieldException e) {
-//            int n = Math.max(name.lastIndexOf('.'), name.lastIndexOf('$'));
-//            if (n != -1) {
-//                name = name.substring(n + 1);
-//            }
-//        }
-//        return name;
-//    }
 
     /**
      * Check the given array to see that all the strings in the expected array
@@ -1679,19 +656,19 @@ public class TestFmwk extends AbstractTestLog {
 
     // PrintWriter support
 
-    public PrintWriter getErrorLogPrintWriter() {
-        return new PrintWriter(new TestLogWriter(this, TestLog.ERR));
-    }
-
-    public PrintWriter getLogPrintWriter() {
-        return new PrintWriter(new TestLogWriter(this, TestLog.LOG));
-    }
+//    public PrintWriter getErrorLogPrintWriter() {
+//        return new PrintWriter(new TestLogWriter(this, TestLog.ERR));
+//    }
+//
+//    public PrintWriter getLogPrintWriter() {
+//        return new PrintWriter(new TestLogWriter(this, TestLog.LOG));
+//    }
 
     // end PrintWriter support
 
     //protected TestParams params = null;
 
-    private final static String spaces = "                                          ";
+    //private final static String spaces = "                                          ";
 
     // TODO (sgill): added to keep errors away
     /* (non-Javadoc)
@@ -1699,6 +676,9 @@ public class TestFmwk extends AbstractTestLog {
      */
     //@Override
     public static void msg(String message, int level, boolean incCount, boolean newln) {
+        if (level == TestLog.WARN || level == TestLog.ERR) {
+            Assert.fail(message);
+        }
         // TODO(stuartg): turned off - causing OOM running under ant
 //        while (level > 0) {
 //            System.out.print(" ");

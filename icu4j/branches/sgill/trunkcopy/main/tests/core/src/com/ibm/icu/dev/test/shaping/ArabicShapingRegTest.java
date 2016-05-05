@@ -563,8 +563,9 @@ public class ArabicShapingRegTest extends TestFmwk {
         }
     }
 
+    // TODO(sgill): remove this and convert callers to parameterized tests
     private void reportTestFailure(int index, TestData test, ArabicShaping shaper, String result, Exception error) {
-        if (noData() && error != null && error instanceof MissingResourceException ) {
+        if (error != null && error instanceof MissingResourceException ) {
             warnln(error.getMessage());
         }
 

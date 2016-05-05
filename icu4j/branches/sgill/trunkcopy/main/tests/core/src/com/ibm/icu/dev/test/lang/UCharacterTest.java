@@ -1117,7 +1117,7 @@ public final class UCharacterTest extends TestFmwk
                       + "U+0061");
             }
 
-            if (getInclusion() >= 5) {
+            if (TestFmwk.getExhaustiveness() >= 5) {
                 // extra testing different from icu
                 for (int i = UCharacter.MIN_VALUE; i < UCharacter.MAX_VALUE; i ++)
                 {
@@ -1132,7 +1132,7 @@ public final class UCharacterTest extends TestFmwk
             }
 
             // Test getCharNameCharacters
-            if (getInclusion() >= 10) {
+            if (TestFmwk.getExhaustiveness() >= 10) {
                 boolean map[] = new boolean[256];
 
                 UnicodeSet set = new UnicodeSet(1, 0); // empty set

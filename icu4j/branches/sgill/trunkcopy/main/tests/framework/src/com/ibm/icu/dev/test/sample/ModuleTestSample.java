@@ -6,8 +6,6 @@
  */
 package com.ibm.icu.dev.test.sample;
 
-import com.ibm.icu.dev.test.ModuleTest;
-
 // TODO(sgill) : turned off
 
 public class ModuleTestSample /*extends ModuleTest*/ {

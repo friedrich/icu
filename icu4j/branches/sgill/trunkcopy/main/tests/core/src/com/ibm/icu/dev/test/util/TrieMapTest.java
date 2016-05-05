@@ -50,11 +50,11 @@ public class TrieMapTest extends TestFmwk {
     @Before
     public void init() throws Exception {
         if (unicodeTestMap.size() == 0) {
-            if (getInclusion() < 5) {
+            if (TestFmwk.getExhaustiveness() < 5) {
                 logln("\tShort version, timing for 1s:\t to get more accurate figures and test for reasonable times, use -e5 or more");
                 t.setTimingPeriod(1*Timer.SECONDS);
             } else {
-                int seconds = getInclusion();
+                int seconds = TestFmwk.getExhaustiveness();
                 logln("\tExhaustive version, timing for " + seconds + "s");
                 t.setTimingPeriod(seconds*Timer.SECONDS);
                 useSmallList = false;

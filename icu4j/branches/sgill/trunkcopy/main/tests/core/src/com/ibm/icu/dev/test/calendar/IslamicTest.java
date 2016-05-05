@@ -16,6 +16,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -162,7 +163,7 @@ public class IslamicTest extends CalendarTestFmwk {
 
         IslamicCalendar islamic2 = new IslamicCalendar();
         islamic2.setCalculationType(CalculationType.ISLAMIC);
-        int testTime = getInclusion() <= 5 ? 20000 : 800000;
+        int testTime = TestFmwk.getExhaustiveness() <= 5 ? 20000 : 800000;
         doLimitsTest(islamic2, null, cal.getTime(), testTime);
         doTheoreticalLimitsTest(islamic2, true);
     }

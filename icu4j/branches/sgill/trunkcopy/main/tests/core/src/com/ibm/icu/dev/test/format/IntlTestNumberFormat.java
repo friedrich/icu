@@ -16,6 +16,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
 
@@ -273,7 +274,7 @@ public class IntlTestNumberFormat extends com.ibm.icu.dev.test.TestFmwk {
         count = locales.length;
         if (count != 0)
         {
-            if (getInclusion() < 10 && count > 6) {
+            if (TestFmwk.getExhaustiveness() < 10 && count > 6) {
                 count = 6;
                 locales = new Locale[6];
                 locales[0] = allLocales[0];

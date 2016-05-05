@@ -134,15 +134,10 @@ public class TestUScript extends TestFmwk {
                 UScript.getCode("ro-RO"));  // String not ULocale
     }
 
+    // TODO(sgill): remove this and convert the tests that use this to be parameterized
     private void reportDataErrors(int numErrors) {
         if (numErrors >0) {
-            // assume missing locale data, so not an error, just a warning
-            if (isModularBuild() || noData()) {
-                // if nodata is set don't even warn
-                warnln("Could not find locale data");
-            } else {
-                errln("encountered " + numErrors + " errors.");
-            }
+            errln("encountered " + numErrors + " errors.");
         }
     }
 

@@ -1601,7 +1601,7 @@ public class CollationMiscTest extends TestFmwk {
 
     @Test
     public void TestLocaleRuleBasedCollators() {
-        if (getInclusion() < 5) {
+        if (TestFmwk.getExhaustiveness() < 5) {
             // not serious enough to run this
             return;
         }

@@ -43,7 +43,7 @@ public class AnyScriptTest extends TestFmwk {
         String test = testBuffer.toString();
         logln("Test line: " + test);
         
-        int inclusion = getInclusion();
+        int inclusion = TestFmwk.getExhaustiveness();
         boolean testedUnavailableScript = false;
         
         for (int script = 0; script < UScript.CODE_LIMIT; ++script) {

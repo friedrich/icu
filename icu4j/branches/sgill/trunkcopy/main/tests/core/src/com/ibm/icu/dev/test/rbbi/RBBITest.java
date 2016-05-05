@@ -277,12 +277,9 @@ public class RBBITest extends TestFmwk {
         List<String> previousResults = _testLastAndPrevious(rbbi, text);
 
         logln("comparing forward and backward...");
-        int errs = getErrorCount();
         compareFragmentLists("forward iteration", "backward iteration", nextResults, previousResults);
-        if (getErrorCount() == errs) {
-            logln("comparing expected and actual...");
-            compareFragmentLists("expected result", "actual result", expectedResult, nextResults);
-        }
+        logln("comparing expected and actual...");
+        compareFragmentLists("expected result", "actual result", expectedResult, nextResults);
 
         int[] boundaries = new int[expectedResult.size() + 3];
         boundaries[0] = RuleBasedBreakIterator.DONE;

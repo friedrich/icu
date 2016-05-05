@@ -83,6 +83,7 @@ public abstract class AbstractTestLog implements TestLog {
      * Report a warning (generally missing tests or data).
      */
     public static final void warn(String message) {
+        Assert.fail(message);
         // TODO(stuartg): turned off - causing OOM running under ant
         //System.out.print(message);
         //msg(message, WARN, true, false);
@@ -92,6 +93,7 @@ public abstract class AbstractTestLog implements TestLog {
      * Report a warning (generally missing tests or data) and newline.
      */
     public static final void warnln(String message) {
+        Assert.fail(message);
         // TODO(stuartg): turned off - causing OOM running under ant
         //System.out.println(message);
         //msg(message, WARN, true, true);

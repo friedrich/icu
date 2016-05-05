@@ -341,7 +341,7 @@ public class CalendarTestFmwk extends TestFmwk {
      * doLimitsTest with default test duration
      */
     protected void doLimitsTest(Calendar cal, int[] fieldsToTest, Date startDate) {
-        int testTime = getInclusion() <= 5 ? -3 : -120; // in seconds
+        int testTime = TestFmwk.getExhaustiveness() <= 5 ? -3 : -120; // in seconds
         doLimitsTest(cal, fieldsToTest, startDate, testTime);
     }
     
