@@ -209,11 +209,11 @@ const int32_t SCRIPT_PROPS[] = {
     0x1128F | EXCLUSION,  // Mult
     0x11AC0 | EXCLUSION,  // Pauc
     0x1158E | EXCLUSION,  // Sidd
-    0x1E909 | LIMITED_USE | RTL,  // Adlm
+    0x1E909 | LIMITED_USE | RTL | CASED,  // Adlm
     0x11C0E | EXCLUSION,  // Bhks
     0x11C72 | EXCLUSION,  // Marc
     0x11412 | LIMITED_USE,  // Newa
-    0x104B5 | LIMITED_USE,  // Osge
+    0x104B5 | LIMITED_USE | CASED,  // Osge
     0x5B57 | RECOMMENDED | LB_LETTERS,  // Hanb
     0x1112 | RECOMMENDED,  // Jamo
     0,

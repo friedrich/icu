@@ -226,11 +226,6 @@ http://www.unicode.org/reports/tr44/tr44-17.html
 - nothing new in 9.0, no test file to update
 
 * run & fix ICU4C tests
-- bad Cherokee case folding due to difference in fallbacks:
-  UCD case folding falls back to no mapping,
-  ICU runtime case folding falls back to lowercasing;
-  fixed casepropsbuilder.cpp to generate scf mappings to self
-  when there is an slc mapping but no scf
 - Andy handles RBBI & spoof check test failures
 
 * collation: CLDR collation root, UCA DUCET
