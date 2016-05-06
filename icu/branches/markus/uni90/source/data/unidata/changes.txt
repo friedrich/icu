@@ -233,6 +233,7 @@ http://www.unicode.org/reports/tr44/tr44-17.html
 - UCA DUCET goes into Mark's Unicode tools, see
   https://sites.google.com/site/unicodetools/home#TOC-UCA
 - CLDR root data files are checked into (CLDR UCA branch)/common/uca/
+  cp (UCA generated)/CollationAuxiliary/* ~/svn.cldr/trunk/common/uca/
 - cd (CLDR UCA branch)/common/uca/
 - update source/data/unidata/FractionalUCA.txt with FractionalUCA_SHORT.txt
   cp FractionalUCA_SHORT.txt $ICU_SRC_DIR/source/data/unidata/FractionalUCA.txt
@@ -253,10 +254,11 @@ http://www.unicode.org/reports/tr44/tr44-17.html
   and regenerate (or update in parallel) $ICU_SRC_DIR/source/data/coll/root.txt
 - run genuca, see command line above;
   deal with
-    Error: Unknown script for first-primary sample character U+07d8 on line 23005 of /home/mscherer/svn.icu/trunk/src/source/data/unidata/FractionalUCA.txt
+    Error: Unknown script for first-primary sample character U+104B5 on line 32599 of /home/mscherer/svn.icu/trunk/src/source/data/unidata/FractionalUCA.txt:
+    FDD1 104B5;     [75 B8 02, 05, 05]      # Osage first primary (compressible)
         (add the character to genuca.cpp sampleCharsToScripts[])
-  + look up the script for the new sample characters
-    (e.g., in FractionalUCA.txt)
+  + look up the USCRIPT_ code for the new sample characters
+    (should be obvious from the comment in the error output)
   + *add* mappings to sampleCharsToScripts[], do not replace them
     (in case the script sample characters flip-flop)
   + insert new scripts in DUCET script order, see the top_byte table
