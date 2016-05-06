@@ -975,16 +975,19 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
             // TODO: There does not appear to be a good reason why the "data" array is 2-D.
             data = new String[1][SYMBOL_KEYS.length];
 
-            // Load using a data sink
+            // Load using a data sink.
+            // Start with loading this nsName if it is not Latin.
             DecFmtDataSink sink = new DecFmtDataSink(data[0]);
-            try {
-                rb.getAllItemsWithFallback(NUMBER_ELEMENTS + "/" + nsName + "/" + SYMBOLS, sink);
-            } catch (MissingResourceException e) {
-                // The symbols don't exist for the given nsName and resource bundle.
-                // Silently ignore and fall back to Latin.
+            if (!nsName.equals(LATIN_NUMBERING_SYSTEM)) {
+                try {
+                    rb.getAllItemsWithFallback(NUMBER_ELEMENTS + "/" + nsName + "/" + SYMBOLS, sink);
+                } catch (MissingResourceException e) {
+                    // The symbols don't exist for the given nsName and resource bundle.
+                    // Silently ignore and fall back to Latin.
+                }
             }
 
-            // Load the Latin fallback if necessary
+            // Load Latin if necessary.
             boolean hasNull = false;
             for (String entry : data[0]) {
                 if (entry == null) {
@@ -992,7 +995,7 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
                     break;
                 }
             }
-            if (hasNull && !nsName.equals(LATIN_NUMBERING_SYSTEM)) {
+            if (hasNull) {
                 rb.getAllItemsWithFallback(NUMBER_ELEMENTS + "/" + LATIN_NUMBERING_SYSTEM + "/" + SYMBOLS, sink);
             }
 
