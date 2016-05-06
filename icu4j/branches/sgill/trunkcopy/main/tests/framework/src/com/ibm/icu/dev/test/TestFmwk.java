@@ -45,11 +45,11 @@ public class TestFmwk extends AbstractTestLog {
      */
     private final static Locale defaultLocale = Locale.US;
 
-    private static final String EXHAUSTIVENESS = "icu.exhaustiveness";
+    private static final String EXHAUSTIVENESS = "ICU.exhaustive";
     private static final int DEFAULT_EXHAUSTIVENESS = 0;
     private static final int MAX_EXHAUSTIVENESS = 10;
     
-    private static final String LOGGING_LEVEL = "icu.logging";
+    private static final String LOGGING_LEVEL = "ICU.logging";
     private static final int DEFAULT_LOGGING_LEVEL = 0;
     private static final int MAX_LOGGING_LEVEL = 3;
     
@@ -58,8 +58,8 @@ public class TestFmwk extends AbstractTestLog {
     public static final int LOGGING_INFO = 2;
     public static final int LOGGING_DEBUG = 3;
     
-    private static final String SEED = "icu.seed";
-    private static final String SECURITY_POLICY = "icu.securitypolicy";
+    private static final String SEED = "ICU.seed";
+    private static final String SECURITY_POLICY = "ICU.securitypolicy";
 
     private static final TestParams testParams;
     static {
@@ -653,22 +653,6 @@ public class TestFmwk extends AbstractTestLog {
 
 
     // End JUnit-like assertions
-
-    // PrintWriter support
-
-//    public PrintWriter getErrorLogPrintWriter() {
-//        return new PrintWriter(new TestLogWriter(this, TestLog.ERR));
-//    }
-//
-//    public PrintWriter getLogPrintWriter() {
-//        return new PrintWriter(new TestLogWriter(this, TestLog.LOG));
-//    }
-
-    // end PrintWriter support
-
-    //protected TestParams params = null;
-
-    //private final static String spaces = "                                          ";
 
     // TODO (sgill): added to keep errors away
     /* (non-Javadoc)

@@ -294,12 +294,6 @@
     <!-- Check to see if JVM_OPTIONS enviroment variable is set. This can be use to set the heap size. -->
     <property name="env.JVM_OPTIONS" value=""/>
     <property name="jvm_options" value="${env.JVM_OPTIONS}"/>
-    <target name="check" depends="main, tests" description="Run the standard ICU4J test suite">
-        <antcall target="_check">
-            <param name="runcheck.arg" value=""/>
-            <param name="runcheck.jvmarg" value="${jvm_options}"/>
-        </antcall>
-    </target>
 
     <target name="_check">
         <antcall target="_charsetCheck"/>
@@ -310,11 +304,15 @@
 
     <target name="exhaustiveCheck" description="Run the standard ICU4J test suite in exhaustive mode">
         <antcall target="check">
-            <param name="runcheck.jvmarg" value="-e10"/>
-            <param name="runcheck.jvmarg" value="${jvm_options}"/>
+            <param name="internal-jvm-options" value="-DICU.exhaustive=10"/>
         </antcall>
     </target>
 	
+	<target name="check" depends="main, tests" description="Run the standard ICU4J test suite">
+        <antcall target="_check"/>
+    </target>
+
+
     <target name="timeZoneCheck" description="Run the complete test for TimeZoneRoundTripAll">
     	<icu-junit 
     		testdir="${icu4j.core-tests.dir}" output="timeZoneCheck"
