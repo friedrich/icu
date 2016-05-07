@@ -228,6 +228,6 @@ public class CalendarData {
     }
 
     private ICUResourceBundle fBundle;
-    public String fMainType;
+    private String fMainType;
     private String fFallbackType;
 }
