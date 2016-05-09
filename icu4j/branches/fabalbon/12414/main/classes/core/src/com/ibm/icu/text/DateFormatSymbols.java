@@ -1639,17 +1639,19 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                         }
 
                         // Expecting aliases to just one calendar type other than gregorian.
-                        if (nextCalendarType == null || aliasId.calendarType.equals(nextCalendarType)
-                                || aliasId.calendarType.equals("gregorian")) {
-
+                        if (aliasId.calendarType.equals("gregorian")) {
+                            continue;
+                        } else if (nextCalendarType == null || aliasId.calendarType.equals(nextCalendarType)) {
                             // Register this resource to be visited when enumerating the next calendar type
                             resourcesToVisitNext.add(aliasId.resourceName);
-                            if(nextCalendarType == null && !aliasId.calendarType.equals("gregorian"))
+                            if (nextCalendarType == null) {
                                 nextCalendarType = aliasId.calendarType;
+                            }
                             continue;
                         }
 
                     } else if (currentCalendarType.equals(aliasId.calendarType)){
+                        // Register same-calendar alias
                         pathAliasPairs.add(new PathAliasPair(currentPath, aliasId.relativeAliasPath));
                         continue;
                     }
