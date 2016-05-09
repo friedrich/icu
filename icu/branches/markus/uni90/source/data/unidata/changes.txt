@@ -265,14 +265,48 @@ http://www.unicode.org/reports/tr44/tr44-17.html
     at the beginning of FractionalUCA.txt
 - rebuild ICU4C
 
+* Unihan collators
+- run Unicode Tools
+    org.unicode.draft.GenerateUnihanCollators
+  with VM arguments
+    -DSVN_WORKSPACE=/home/mscherer/svn.unitools/trunk
+    -DOTHER_WORKSPACE=/home/mscherer/svn.unitools
+    -DUCD_DIR=/home/mscherer/svn.unitools/trunk/data
+    -DCLDR_DIR=/home/mscherer/svn.cldr/trunk
+    -DUVERSION=9.0.0
+    -ea
+- run Unicode Tools
+    org.unicode.draft.GenerateUnihanCollatorFiles
+  with the same arguments
+- check CLDR diffs
+    cd ~/svn.cldr/trunk
+    meld common/collation/zh.xml ../Generated/cldr/han/replace/zh.xml
+    meld common/transforms/Han-Latin.xml ../Generated/cldr/han/replace/Han-Latin.xml
+- copy to CLDR
+    cd ~/svn.cldr/trunk
+    cp ../Generated/cldr/han/replace/zh.xml common/collation/zh.xml
+    cp ../Generated/cldr/han/replace/Han-Latin.xml common/transforms/Han-Latin.xml
+- commit to CLDR
+- generate ICU zh collation data: run CLDR
+    org.unicode.cldr.icu.NewLdml2IcuConverter
+  with program arguments
+    -t collation
+    -s /home/mscherer/svn.cldr/trunk/common/collation
+    -m /home/mscherer/svn.cldr/trunk/common/supplemental
+    -d /home/mscherer/svn.icu/trunk/src/source/data/coll
+    -p /home/mscherer/svn.icu/trunk/src/source/data/xml/collation
+    zh
+  and VM arguments
+    -DCLDR_DIR=/home/mscherer/svn.cldr/trunk
+- TODO: instructions for generating ICU transform data (Han-Latin)
+- rebuild ICU4C
+
 * run & fix ICU4C tests, now with new CLDR collation root data
 - run all tests with the collation test data *_SHORT.txt or the full files
   (the full ones have comments, useful for debugging)
 - note on intltest: if collate/UCAConformanceTest fails, then
   utility/MultithreadTest/TestCollators will fail as well;
   fix the conformance test before looking into the multi-thread test
-- fixed bug in CollationWeights::getWeightRanges()
-  exposed by new data and CollationTest::TestRootElements
 
 * update Java data files
 - refresh just the UCD/UCA-related/derived files, just to be safe
