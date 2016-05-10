@@ -298,7 +298,6 @@ http://www.unicode.org/reports/tr44/tr44-17.html
     zh
   and VM arguments
     -DCLDR_DIR=/home/mscherer/svn.cldr/trunk
-- TODO: instructions for generating ICU transform data (Han-Latin)
 - rebuild ICU4C
 
 * run & fix ICU4C tests, now with new CLDR collation root data
@@ -315,17 +314,17 @@ http://www.unicode.org/reports/tr44/tr44-17.html
 - ~/svn.icu/trunk/dbg$ make ICU4J_ROOT=/tmp/icu4j icu4j-data-install
   output:
     ...
-    Unicode .icu files built to ./out/build/icudt56l
+    Unicode .icu files built to ./out/build/icudt57l
     echo timestamp > uni-core-data
-    mkdir -p ./out/icu4j/com/ibm/icu/impl/data/icudt56b
-    mkdir -p ./out/icu4j/tzdata/com/ibm/icu/impl/data/icudt56b
+    mkdir -p ./out/icu4j/com/ibm/icu/impl/data/icudt57b
+    mkdir -p ./out/icu4j/tzdata/com/ibm/icu/impl/data/icudt57b
     echo pnames.icu uprops.icu ucase.icu ubidi.icu nfc.nrm > ./out/icu4j/add.txt
-    LD_LIBRARY_PATH=../lib:../stubdata:../tools/ctestfw:$LD_LIBRARY_PATH  ../bin/icupkg ./out/tmp/icudt56l.dat ./out/icu4j/icudt56b.dat -a ./out/icu4j/add.txt -s ./out/build/icudt56l -x '*' -tb -d ./out/icu4j/com/ibm/icu/impl/data/icudt56b
-    mv ./out/icu4j/"com/ibm/icu/impl/data/icudt56b/zoneinfo64.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt56b/metaZones.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt56b/timezoneTypes.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt56b/windowsZones.res" "./out/icu4j/tzdata/com/ibm/icu/impl/data/icudt56b"
-    jar cf ./out/icu4j/icudata.jar -C ./out/icu4j com/ibm/icu/impl/data/icudt56b/
+    LD_LIBRARY_PATH=../lib:../stubdata:../tools/ctestfw:$LD_LIBRARY_PATH  ../bin/icupkg ./out/tmp/icudt57l.dat ./out/icu4j/icudt57b.dat -a ./out/icu4j/add.txt -s ./out/build/icudt57l -x '*' -tb -d ./out/icu4j/com/ibm/icu/impl/data/icudt57b
+    mv ./out/icu4j/"com/ibm/icu/impl/data/icudt57b/zoneinfo64.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt57b/metaZones.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt57b/timezoneTypes.res" ./out/icu4j/"com/ibm/icu/impl/data/icudt57b/windowsZones.res" "./out/icu4j/tzdata/com/ibm/icu/impl/data/icudt57b"
+    jar cf ./out/icu4j/icudata.jar -C ./out/icu4j com/ibm/icu/impl/data/icudt57b/
     mkdir -p /tmp/icu4j/main/shared/data
     cp ./out/icu4j/icudata.jar /tmp/icu4j/main/shared/data
-    jar cf ./out/icu4j/icutzdata.jar -C ./out/icu4j/tzdata com/ibm/icu/impl/data/icudt56b/
+    jar cf ./out/icu4j/icutzdata.jar -C ./out/icu4j/tzdata com/ibm/icu/impl/data/icudt57b/
     mkdir -p /tmp/icu4j/main/shared/data
     cp ./out/icu4j/icutzdata.jar /tmp/icu4j/main/shared/data
     make[1]: Leaving directory `/home/mscherer/svn.icu/trunk/dbg/data'
@@ -341,7 +340,7 @@ http://www.unicode.org/reports/tr44/tr44-17.html
     cp com/ibm/icu/impl/data/$ICUDT/*.nrm /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT
     cp com/ibm/icu/impl/data/$ICUDT/coll/* /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/coll
     cp com/ibm/icu/impl/data/$ICUDT/brkitr/* /tmp/icu4j/com/ibm/icu/impl/data/$ICUDT/brkitr
-    jar uf ~/svn.icu4j/trunk/src/main/shared/data/icudata.jar -C /tmp/icu4j com/ibm/icu/impl/data/$ICUDT
+    jar uvf ~/svn.icu4j/trunk/src/main/shared/data/icudata.jar -C /tmp/icu4j com/ibm/icu/impl/data/$ICUDT
 
 * When refreshing all of ICU4J data from ICU4C
 - ~/svn.icu/trunk/dbg$ make ICU4J_ROOT=/tmp/icu4j icu4j-data-install
@@ -360,16 +359,11 @@ or
     cp confusables.txt confusablesWholeScript.txt NormalizationCorrections.txt NormalizationTest.txt SpecialCasing.txt UnicodeData.txt ~/svn.icu4j/trunk/src/main/tests/core/src/com/ibm/icu/dev/data/unicode
     cd ../../test/testdata
     cp BidiCharacterTest.txt BidiTest.txt ~/svn.icu4j/trunk/src/main/tests/core/src/com/ibm/icu/dev/data/unicode
-    cp ~/unidata/uni80/20150415/ucd/CompositionExclusions.txt ~/svn.icu4j/trunk/src/main/tests/core/src/com/ibm/icu/dev/data/unicode
+    cp ~/unidata/uni90/20160503/ucd/CompositionExclusions.txt ~/svn.icu4j/trunk/src/main/tests/core/src/com/ibm/icu/dev/data/unicode
 
 * run & fix ICU4J tests
 
 *** LayoutEngine script information
-
-* ICU 56: Modify ScriptIDModuleWriter.java to not output @stable tags any more,
-  because the layout engine was deprecated in ICU 54.
-  Modify ScriptIDModuleWriter.java and ScriptTagModuleWriter.java
-  to write lines that we used to add manually.
 
 * Run icu4j-tools: com.ibm.icu.dev.tool.layout.ScriptNameBuilder.
   This generates LEScripts.h, LELanguages.h, ScriptAndLanguageTags.h and ScriptAndLanguageTags.cpp
