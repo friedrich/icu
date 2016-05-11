@@ -1209,7 +1209,7 @@ public class SimpleDateFormat extends DateFormat {
                         defaultIndex += (SHORT + 1);
                     }
                     String basePattern = patternsRb.getString(defaultIndex);
-                
+
                     cachedDefaultPattern = SimpleFormatterImpl.formatRawPattern(
                             basePattern, 2, 2,
                             patternsRb.getString(SHORT), patternsRb.getString(SHORT + 4));
