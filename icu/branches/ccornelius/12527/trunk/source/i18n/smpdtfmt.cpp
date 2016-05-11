@@ -50,10 +50,10 @@
 #include "unicode/vtzone.h"
 #include "unicode/udisplaycontext.h"
 #include "unicode/brkiter.h"
+#include "uresimp.h"
 #include "olsontz.h"
 #include "patternprops.h"
 #include "fphdlimp.h"
-#include "gregoimp.h"
 #include "hebrwcal.h"
 #include "cstring.h"
 #include "uassert.h"
@@ -164,9 +164,6 @@ static const UChar SUPPRESS_NEGATIVE_PREFIX[] = {0xAB00, 0};
  * These are the tags we expect to see in normal resource bundle files associated
  * with a locale.
  */
-static const char gDateTimePatternsTag[]="DateTimePatterns";
-
-//static const UChar gEtcUTC[] = {0x45, 0x74, 0x63, 0x2F, 0x55, 0x54, 0x43, 0x00}; // "Etc/UTC"
 static const UChar QUOTE = 0x27; // Single quote
 
 /*
@@ -702,8 +699,23 @@ void SimpleDateFormat::construct(EStyle timeStyle,
     initializeCalendar(NULL, locale, status);
     if (U_FAILURE(status)) return;
 
-    CalendarData calData(locale, fCalendar?fCalendar->getType():NULL, status);
-    UResourceBundle *dateTimePatterns = calData.getByKey(gDateTimePatternsTag, status);
+    // Load date time patterns directly from resources.
+    const char* cType = fCalendar ? fCalendar->getType() : NULL;
+    const UResourceBundle *bundle = ures_open(NULL, locale.getBaseName(), &status);
+    if (U_FAILURE(status)) return;
+
+    const StringPiece calBase("calendar/");
+    const StringPiece dtPatterns("/DateTimePatterns");
+    CharString resourcePath;
+    resourcePath.append(calBase, status);
+    if (U_FAILURE(status)) return;
+    resourcePath.append(cType, status).append(dtPatterns, status);
+    if (U_FAILURE(status)) return;
+
+    UResourceBundle* dateTimePatterns =
+        ures_getByKeyWithFallback(bundle, resourcePath.data(), (UResourceBundle*)NULL, &status);
+    if (U_FAILURE(status)) return;
+
     UResourceBundle *currentBundle;
 
     if (U_FAILURE(status)) return;
