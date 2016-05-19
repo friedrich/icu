@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,6 +32,8 @@ import junitparams.Parameters;
 @RunWith(JUnitParamsRunner.class)
 public class CompatibilityTest extends TestFmwk
 {
+    //TODO(junit) - requires code to read the serialized classes from a jar
+    @Ignore
     @Test
     @Parameters(method="generateClassList")
     public void testCompatibility(String testFileName) throws ClassNotFoundException, IOException {

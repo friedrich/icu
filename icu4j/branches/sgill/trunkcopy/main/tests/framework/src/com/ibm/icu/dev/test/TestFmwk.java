@@ -337,11 +337,11 @@ public class TestFmwk extends AbstractTestLog {
         
         private void parseProperties(Properties props) {
             this.props = props;
-            
+
             inclusion = getIntProperty(EXHAUSTIVENESS, DEFAULT_EXHAUSTIVENESS, MAX_EXHAUSTIVENESS);
             seed = getLongProperty(SEED, System.currentTimeMillis());
             loggingLevel = getIntProperty(LOGGING_LEVEL, DEFAULT_LOGGING_LEVEL, MAX_LOGGING_LEVEL);
-            
+
             policyFileName = getProperty(SECURITY_POLICY);
             if (policyFileName != null) {
                 String originalPolicyFileName = System.getProperty("java.security.policy");

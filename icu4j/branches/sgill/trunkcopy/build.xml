@@ -157,6 +157,10 @@
         <ant dir="eclipse-build" target="clean" inheritAll="false"/>
     </target>
 
+	<target name="ivy-clean">
+		<ivy:cleancache/>
+	</target>
+	
     <!-- Ivy Targets -->
     <property name="ivy.install.version" value="2.1.0-rc2" />
     <condition property="ivy.home" value="${env.IVY_HOME}">
@@ -189,6 +193,8 @@
         <ivy:retrieve/>
     </target>
     
+    <target name="init" depends="test-init-junit-dependency"/>
+    
     <!-- Junit Targets -->
 
     <macrodef name="icu-junit">
@@ -197,15 +203,16 @@
    		<attribute name="jvm-options" default=""/>
    		<attribute name="test-patternset" default="test-classes-patternset"/>
    		<attribute name="classpath" default="junit.icu.jars"/>
+   		<attribute name="failure-status" default="ignore"/>
    		<element name="junit-parameters" optional="true"/>
    		<sequential>
-   			<!--set the property - if set before it won't override-->
+   			<!--set the property - if it was set before it won't override-->
    			<property name="user-jvm-options" value=""/>
    			<property name="internal-jvm-options" value=""/>
 			<delete dir="${junit.out.dir}/@{output}"/>
 			<mkdir  dir="${junit.out.dir}/@{output}"/>
 		
-			<junit fork="yes" printsummary="yes" haltonfailure="no">
+			<junit fork="yes" printsummary="yes" haltonfailure="no" failureproperty="@{failure-status}">
 				<jvmarg value="-Xss4m"/>
 				<jvmarg value="-ea"/>
 				<jvmarg value="-Djava.awt.headless=true"/>
@@ -232,10 +239,9 @@
 	</macrodef>
 
     <property name="junit.out.dir" value="junit-out"/>    
-    <property name="junit.core.jar" value="${external-jars}/junit-4.11.jar"/>
+    <property name="junit.core.jar" value="${external-jars}/junit-4.12.jar"/>
     <property name="junit.hamcrest.jar" value="${external-jars}/hamcrest-core-1.3.jar"/>
-    <property name="junit.junitparams.jar" value="${external-jars}/JUnitParams-1.0.4.jar"/>
-    <!--property name="junit.jars" value="${junit.core.jar};${junit.hamcrest.jar};${junit.junitparams.jar}"/-->
+    <property name="junit.junitparams.jar" value="${external-jars}/JUnitParams-1.0.5.jar"/>
     <path id="junit.jars"> 
     	<pathelement path="${junit.core.jar}"/>
     	<pathelement path="${junit.hamcrest.jar}"/>
@@ -268,6 +274,7 @@
 		<exclude name="**/*TestCase*"/>
 		<exclude name="**/*TestData*"/>
 		<exclude name="**/*TestSample*"/>
+		<!--exclude name="**/*TestAll*"/-->
 		<exclude name="**/*$*.class"/>
 		<exclude name="**/data/**"/>
     </patternset>
@@ -306,10 +313,12 @@
         <antcall target="check">
             <param name="internal-jvm-options" value="-DICU.exhaustive=10"/>
         </antcall>
+        <fail message="test failed" if="icu-junit-failure" />        
     </target>
 	
 	<target name="check" depends="main, tests" description="Run the standard ICU4J test suite">
         <antcall target="_check"/>
+        <fail message="test failed" if="icu-junit-failure" />
     </target>
 
 
@@ -318,7 +327,9 @@
     		testdir="${icu4j.core-tests.dir}" output="timeZoneCheck"
     		test-patternset="timeZoneCheck-patternset"
     		jvm-options="-DICU.TimeZone.RoundTripAll=true"
+    		failure-status="icu-junit-failure"
     	/>
+        <fail message="test failed" if="icu-junit-failure" />
     </target>
     
     <target name="jdktzCheck" description="Run the standard ICU4J test suite with JDK TimeZone">
@@ -355,6 +366,7 @@
     	<icu-junit testdir="${icu4j.packaging-tests.dir}" output="packaging/NoLangData"
     		test-patternset="packagingCheck-patternset"
     		classpath="junit.icu.jars.PackagingCheckNoLangData"
+    		failure-status="icu-junit-failure"
     	/>
     </target>
     
@@ -363,6 +375,7 @@
     	<icu-junit testdir="${icu4j.packaging-tests.dir}" output="packaging/NoRegionData"
     		test-patternset="packagingCheck-patternset"
     		classpath="junit.icu.jars.PackagingCheckNoRegionData"
+    		failure-status="icu-junit-failure"
     	/>
     </target>
     
@@ -371,6 +384,7 @@
     	<icu-junit testdir="${icu4j.packaging-tests.dir}" output="packaging/NoLangNorRegionData"
     		test-patternset="packagingCheck-patternset"
     		classpath="junit.icu.jars.PackagingCheckNoLangNorRegionData"
+    		failure-status="icu-junit-failure"
     	/>
     </target>
 
@@ -378,48 +392,63 @@
 		<antcall target="_packagingCheckNoLangData"/>
 		<antcall target="_packagingCheckNoRegionData"/>
 		<antcall target="_packagingCheckNoLangNorRegionData"/>
+        <fail message="test failed" if="icu-junit-failure" />
     </target>
 
     <target name="_coreCheck" description="Run only the core tests">
-		<icu-junit testdir="${icu4j.core-tests.dir}" output="core"/>
+		<icu-junit testdir="${icu4j.core-tests.dir}" output="core"
+			failure-status="icu-junit-failure"
+		/>
     </target>
     
     <target name="coreCheck" depends="info, core, currdata, langdata, regiondata, core-tests" description="Run only the core tests">
 		<antcall target="_coreCheck"/>
+        <fail message="test failed" if="icu-junit-failure" />
     </target>
 
     <target name="_charsetCheck" description="Run only the charset tests">
-    	<icu-junit testdir="${icu4j.charset-tests.dir}" output="charset"/>
+    	<icu-junit testdir="${icu4j.charset-tests.dir}" output="charset"
+    		failure-status="icu-junit-failure"
+		/>
     </target>
 
     <target name="charsetCheck" depends="info, core, charset, currdata, langdata, regiondata, core-tests, charset-tests" description="Run only the charset tests">
 		<antcall target="_charsetCheck"/>
+        <fail message="test failed" if="icu-junit-failure" />
     </target>
 
     <target name="_collateCheck" description="Run only the collation tests">
-    	<icu-junit testdir="${icu4j.collate-tests.dir}" output="collate"/>
+    	<icu-junit testdir="${icu4j.collate-tests.dir}" output="collate"
+    	    failure-status="icu-junit-failure"
+		/>
     </target>
 
     <target name="collateCheck" depends="info, core, collate, currdata, langdata, regiondata, core-tests, collate-tests" description="Run only the collation tests">
 		<antcall target="_collateCheck"/>
+        <fail message="test failed" if="icu-junit-failure" />
     </target>
 
     <target name="_translitCheck" description="Run only the transliteration tests">
-    	<icu-junit testdir="${icu4j.translit-tests.dir}" output="translit"/>
+    	<icu-junit testdir="${icu4j.translit-tests.dir}" output="translit"
+    	    failure-status="icu-junit-failure"
+		/>
     </target>
 
     <target name="translitCheck" depends="info, core, translit, translit-tests" description="Run the ICU4J Translit test suite">
 		<antcall target="_translitCheck"/>
+        <fail message="test failed" if="icu-junit-failure" />
     </target>
 
     <target name="_localespiCheck" description="Run only the locale SPI tests">
     	<icu-junit testdir="${icu4j.localespi-tests.dir}" output="localespi"
     		jvm-options="-Djava.ext.dirs=${icu4j.core.dir}/${jar.dir}${path.separator}${icu4j.localespi.dir}/${jar.dir}${path.separator}${icu4j.collate.dir}/${jar.dir}${path.separator}${icu4j.currdata.dir}/${jar.dir}${path.separator}${icu4j.langdata.dir}/${jar.dir}${path.separator}${icu4j.regiondata.dir}/${jar.dir}${path.separator}${java.ext.dirs}"
+    		failure-status="icu-junit-failure"
     	/>
     </target>
 
     <target name="localespiCheck" if="is.java6.plus" depends="info, localespi, localespi-tests" description="Run the ICU4J Locale SPI test suite">
         <antcall target="_localespiCheck"/>
+        <fail message="test failed" if="icu-junit-failure" />
     </target>
 
     <target name="secureCheck" description="Run the secure (applet-like) ICU4J test suite">
