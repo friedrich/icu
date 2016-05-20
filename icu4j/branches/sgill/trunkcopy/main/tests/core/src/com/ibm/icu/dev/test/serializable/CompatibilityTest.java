@@ -94,7 +94,7 @@ public class CompatibilityTest extends TestFmwk
                 classList.add(file.getAbsolutePath());
             }
         }
-        // TODO(sgill): add randomization support on the list based on the params object
+        // TODO(junit): add randomization support on the list based on the params object
         
         return classList;
     }

@@ -1195,7 +1195,7 @@ public class CollationMiscTest extends TestFmwk {
         }
     }
 
-    // TODO(sgill): not running before
+    // TODO(junit): not running before
     @Ignore
     @Test
     public void DontTestJ831() { // Latvian does not use upper first

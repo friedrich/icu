@@ -840,7 +840,7 @@ public class SerializableTestUtility {
             CoverageClassVisitor visitor = new CoverageClassVisitor(classList);
             handler.guide(visitor, true, false);
         }
-        // TODO(sgill): add randomization support on the list based on the params object
+        // TODO(junit): add randomization support on the list based on the params object
 
         return classList;
     }

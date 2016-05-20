@@ -15,7 +15,7 @@ import org.junit.Test;
 
 public class TestComparator {
 
-    // TODO(sgill): apparently orphaned - added dummy test to pass ant junit
+    // TODO(junit): apparently orphaned - added dummy test to pass ant junit
     @Ignore
     @Test
     public void dummyTest() {}

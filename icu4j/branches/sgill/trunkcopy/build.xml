@@ -193,7 +193,8 @@
         <ivy:retrieve/>
     </target>
     
-    <target name="init" depends="test-init-junit-dependency"/>
+    <target name="init" depends="test-init-junit-dependency"
+    	description="Initialize the environment for build and test. May require internet access."/>
     
     <!-- Junit Targets -->
 
@@ -395,7 +396,7 @@
         <fail message="test failed" if="icu-junit-failure" />
     </target>
 
-    <target name="_coreCheck" description="Run only the core tests">
+    <target name="_coreCheck">
 		<icu-junit testdir="${icu4j.core-tests.dir}" output="core"
 			failure-status="icu-junit-failure"
 		/>
@@ -406,7 +407,7 @@
         <fail message="test failed" if="icu-junit-failure" />
     </target>
 
-    <target name="_charsetCheck" description="Run only the charset tests">
+    <target name="_charsetCheck">
     	<icu-junit testdir="${icu4j.charset-tests.dir}" output="charset"
     		failure-status="icu-junit-failure"
 		/>
@@ -417,7 +418,7 @@
         <fail message="test failed" if="icu-junit-failure" />
     </target>
 
-    <target name="_collateCheck" description="Run only the collation tests">
+    <target name="_collateCheck">
     	<icu-junit testdir="${icu4j.collate-tests.dir}" output="collate"
     	    failure-status="icu-junit-failure"
 		/>
@@ -428,7 +429,7 @@
         <fail message="test failed" if="icu-junit-failure" />
     </target>
 
-    <target name="_translitCheck" description="Run only the transliteration tests">
+    <target name="_translitCheck">
     	<icu-junit testdir="${icu4j.translit-tests.dir}" output="translit"
     	    failure-status="icu-junit-failure"
 		/>
@@ -439,7 +440,7 @@
         <fail message="test failed" if="icu-junit-failure" />
     </target>
 
-    <target name="_localespiCheck" description="Run only the locale SPI tests">
+    <target name="_localespiCheck">
     	<icu-junit testdir="${icu4j.localespi-tests.dir}" output="localespi"
     		jvm-options="-Djava.ext.dirs=${icu4j.core.dir}/${jar.dir}${path.separator}${icu4j.localespi.dir}/${jar.dir}${path.separator}${icu4j.collate.dir}/${jar.dir}${path.separator}${icu4j.currdata.dir}/${jar.dir}${path.separator}${icu4j.langdata.dir}/${jar.dir}${path.separator}${icu4j.regiondata.dir}/${jar.dir}${path.separator}${java.ext.dirs}"
     		failure-status="icu-junit-failure"

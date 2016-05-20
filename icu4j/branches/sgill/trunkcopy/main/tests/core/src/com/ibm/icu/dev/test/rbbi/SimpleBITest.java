@@ -47,7 +47,7 @@ import com.ibm.icu.text.RuleBasedBreakIterator;
 // that important, since we have a thai dictionary that we do test thoroughly.
 //
 
-// TODO(sgill): not running before JUnit so switched off
+// TODO(junit): not running before JUnit so switched off
 public class SimpleBITest extends TestFmwk{
     public static final String testText =
 //        "The rain in Spain stays mainly on the plain.  The plains in Spain are mainly pained with rain.";

@@ -28,7 +28,7 @@ import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
 
-// TODO(sgill): test is broken in main branch
+// TODO(junit): test is broken in main branch
 
 public class DisplayNameTest extends TestFmwk {
     static final boolean SHOW_ALL = false;

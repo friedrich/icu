@@ -2777,7 +2777,7 @@ public class TransliteratorTest extends TestFmwk {
     }
 
     // Check to see that incremental gets at least part way through a reasonable string.
-    // TODO(sgill): should be working - also should be converted to parameterized test
+    // TODO(junit): should be working - also should be converted to parameterized test
     @Ignore
     @Test
     public void TestIncrementalProgress() {

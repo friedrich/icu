@@ -143,7 +143,7 @@ public class TestUtilities extends TestFmwk {
         }
     }
 
-    // TODO(sgill): turned off
+    // TODO(junit): turned off
 //    public void testBoilerplate() {
 //        // check boilerplate
 //        List argList = new ArrayList();

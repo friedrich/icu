@@ -38,7 +38,7 @@ public class TimeZoneAliasTest extends TestFmwk {
      * 1. the alias set must be uniform: if a isAlias b, then aliasSet(a) == aliasSet(b)<br>
      * 2. all aliases must have the same offsets
       */
-    // TODO(sgill): not working before so turned off
+    // TODO(junit): not working before so turned off
     @Ignore
     @Test
     public void TestAliases() {
@@ -81,7 +81,7 @@ public class TimeZoneAliasTest extends TestFmwk {
     /**
      * We check to see that every timezone that is not an alias is actually different!
      */
-    // TODO(sgill): not working before so turned off
+    // TODO(junit): not working before so turned off
     @Ignore
     @Test
     public void TestDifferences() {

@@ -2144,7 +2144,7 @@ public class TestCharset extends TestFmwk {
         }
     }
 
-    // TODO(sgill): orphan method
+    // TODO(junit): orphan method
     public void convertAllTest(ByteBuffer bSource, CharBuffer uSource) throws Exception {
         String encoding = "UTF-16";
         CharsetDecoder decoder = null;

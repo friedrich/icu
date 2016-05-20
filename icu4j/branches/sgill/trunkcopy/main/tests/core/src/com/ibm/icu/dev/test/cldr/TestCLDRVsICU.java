@@ -107,7 +107,7 @@ public class TestCLDRVsICU extends TestFmwk {
 
     Set allLocales = new TreeSet();
 
-    // TODO(sgill): seems to be failing with missing locales - maybe rewrite as parameterized
+    // TODO(junit): seems to be failing with missing locales - maybe rewrite as parameterized
     @Ignore
     @Test
     public void TestFiles() throws SAXException, IOException {

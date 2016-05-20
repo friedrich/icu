@@ -68,7 +68,7 @@ public class TestFmwk extends AbstractTestLog {
 
 //    @BeforeClass
 //    public static void testFrameworkInitialize() {
-//        // TODO(sgill): check that all methods in subclass of pattern [Tt]est.* | .*[Ttest] have annotation of @Test
+//        // TODO(junit): check that all methods in subclass of pattern [Tt]est.* | .*[Ttest] have annotation of @Test
 //        
 //        if (paramsReference.get() != null) {
 //            return;
@@ -149,7 +149,7 @@ public class TestFmwk extends AbstractTestLog {
         }
 
         StringBuffer descBuf = new StringBuffer();
-        // TODO(sgill) : what to do about this?
+        // TODO(junit) : what to do about this?
         //getParams().stack.appendPath(descBuf);
         if (comment != null && comment.length() > 0) {
             descBuf.append(" (" + comment + ")");

@@ -204,7 +204,7 @@ public class TestCase {
                         }
                     }
                 }
-                // TODO(sgill): blanked out TestLog
+                // TODO(junit): blanked out TestLog
                 //log.errln(buf.toString());
                 return false;
             }

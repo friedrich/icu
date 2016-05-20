@@ -38,7 +38,7 @@ public class TestUnicodeProperty extends TestFmwk{
         }
     }
 
-    // TODO(sgill): turned off due to stack overflow issues - Mark Davis to investigate
+    // TODO(junit): turned off due to stack overflow issues - Mark Davis to investigate
     @Ignore
     @Test
     public void TestSymbolTable() {
@@ -58,7 +58,7 @@ public class TestUnicodeProperty extends TestFmwk{
         }
     }
 
-    // TODO(sgill): turned off due to stack overflow issues - Mark Davis to investigate
+    // TODO(junit): turned off due to stack overflow issues - Mark Davis to investigate
     @Ignore
     @Test
     public void TestSymbolTable2() {

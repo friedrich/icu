@@ -124,7 +124,7 @@ public abstract class AbstractTestLog implements TestLog {
 
         public void msg(String message, int level, boolean incCount, boolean newln) {
             if (delegate != null) {
-                // TODO(sgill): figure out what to do with this message call
+                // TODO(junit): figure out what to do with this message call
                 TestFmwk.msg(message, level, incCount, newln);
                 //delegate.msg(message, level, incCount, newln);
             }

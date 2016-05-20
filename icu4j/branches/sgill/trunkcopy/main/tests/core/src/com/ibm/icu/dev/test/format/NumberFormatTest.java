@@ -4335,14 +4335,14 @@ public class NumberFormatTest extends TestFmwk {
     }
     
 
-    //TODO(sgill): investigate
+    //TODO(junit): investigate
     @Test
     public void TestDataDrivenICU() {
         DataDrivenNumberFormatTestUtility.runSuite(
                 "numberformattestspecification.txt", ICU);
     }
 
-    //TODO(sgill): investigate
+    //TODO(junit): investigate
     @Test
     public void TestDataDrivenJDK() {
         DataDrivenNumberFormatTestUtility.runSuite(

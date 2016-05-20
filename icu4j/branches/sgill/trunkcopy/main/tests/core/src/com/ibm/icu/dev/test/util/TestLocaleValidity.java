@@ -193,7 +193,7 @@ public class TestLocaleValidity extends TestFmwk {
         }
     }
 
-    // TODO(sgill): turned off for failure - need to investigate
+    // TODO(junit): turned off for failure - need to investigate
     @Ignore
     @Test
     public void testMissing() {

@@ -134,7 +134,7 @@ public class TestUScript extends TestFmwk {
                 UScript.getCode("ro-RO"));  // String not ULocale
     }
 
-    // TODO(sgill): remove this and convert the tests that use this to be parameterized
+    // TODO(junit): remove this and convert the tests that use this to be parameterized
     private void reportDataErrors(int numErrors) {
         if (numErrors >0) {
             errln("encountered " + numErrors + " errors.");
