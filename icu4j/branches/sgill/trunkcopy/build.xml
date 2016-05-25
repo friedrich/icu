@@ -147,8 +147,6 @@
         <delete dir="${module.dir}"/>
         <delete dir="${cldr.release.dir}"/>
 
-        <delete dir="${junit.out.dir}"/>
-
         <available file="eclipse-build" type="dir" property="eclipse-build.dir.present"/>
         <antcall target="_clean.eclipse-build"/>
     </target>
@@ -239,7 +237,7 @@
     	</sequential>
 	</macrodef>
 
-    <property name="junit.out.dir" value="junit-out"/>    
+    <property name="junit.out.dir" value="${out.dir}/junit-results"/>    
     <property name="junit.core.jar" value="${external-jars}/junit-4.12.jar"/>
     <property name="junit.hamcrest.jar" value="${external-jars}/hamcrest-core-1.3.jar"/>
     <property name="junit.junitparams.jar" value="${external-jars}/JUnitParams-1.0.5.jar"/>
