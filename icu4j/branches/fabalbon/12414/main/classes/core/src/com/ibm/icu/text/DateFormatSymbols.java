@@ -1594,8 +1594,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         // Resources to visit when enumerating fallback calendars
         private Set<String> resourcesToVisit;
 
-        // Alias elements to be populated whenever an alias is read
-        private String aliasCalendarType;
+        // Alias' relative path populated when an alias is read
         private String aliasRelativePath;
 
         /**
@@ -1634,7 +1633,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 // == Handle aliases ==
                 AliasType aliasType = processAliasFromValue(keyString, value);
                 if (aliasType == AliasType.GREGORIAN) {
-                    // Ignore aliases to the gregorian calendar, all of the its resources will be loaded anyways.
+                    // Ignore aliases to the gregorian calendar, all of its resources will be loaded anyways.
                     continue;
 
                 } else if (aliasType == AliasType.DIFFERENT_CALENDAR) {
@@ -1644,9 +1643,6 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                         resourcesToVisitNext = new HashSet<String>();
                     }
                     resourcesToVisitNext.add(aliasRelativePath);
-                    if (nextCalendarType == null) {
-                        nextCalendarType = aliasCalendarType;
-                    }
                     continue;
 
                 } else if (aliasType == AliasType.SAME_CALENDAR) {
@@ -1681,58 +1677,54 @@ public class DateFormatSymbols implements Serializable, Cloneable {
             }
 
             // Apply same-calendar aliases
-            int previousPathAliasPairsSize;
+            boolean modified;
             do {
-                previousPathAliasPairsSize = aliasPathPairs.size();
-                Iterator<String> paIterator = aliasPathPairs.iterator();
-                while (paIterator.hasNext()) {
-                    String alias = paIterator.next();
-                    assert paIterator.hasNext();
-
-                    boolean arraysContainsAlias;
-                    if ((arraysContainsAlias = arrays.containsKey(alias)) || maps.containsKey((alias))) {
-                        // Remove the alias and read the path
-                        paIterator.remove();
-                        String path = paIterator.next();
-                        if (arraysContainsAlias) {
-                            arrays.put(path, arrays.get(alias));
-                        } else {
-                            maps.put(path, maps.get(alias));
-                        }
-                        // Remove the path
-                        paIterator.remove();
+                modified = false;
+                for (int i = 0; i < aliasPathPairs.size();) {
+                    boolean mod = false;
+                    String alias = aliasPathPairs.get(i);
+                    if (arrays.containsKey(alias)) {
+                        arrays.put(aliasPathPairs.get(i + 1), arrays.get(alias));
+                        mod = true;
+                    } else if (maps.containsKey(alias)) {
+                        maps.put(aliasPathPairs.get(i + 1), maps.get(alias));
+                        mod = true;
+                    }
+                    if (mod) {
+                        aliasPathPairs.remove(i + 1);
+                        aliasPathPairs.remove(i);
+                        modified = true;
                     } else {
-                        paIterator.next();
+                        i += 2;
                     }
                 }
-            } while (aliasPathPairs.size() > 0 && previousPathAliasPairsSize > aliasPathPairs.size());
+            } while (modified && !aliasPathPairs.isEmpty());
 
             // Set the resources to visit on the next calendar
             if (resourcesToVisitNext != null) {
                 resourcesToVisit = resourcesToVisitNext;
             }
         }
-        
+
         /**
          * Process the nested resource bundle tables
          * @param path Table's relative path to the calendar
          * @param key Resource bundle key
          * @param value Resource bundle value (has to have the table to read)
          */
-        protected void processResource(String path, UResource.Key key,
-                                       UResource.Value value) {
+        protected void processResource(String path, UResource.Key key, UResource.Value value) {
 
             UResource.Table table = value.getTable();
             Map<String, String> stringMap = null;
 
             // Iterate over all the elements of the table and add them to the map
             for(int i = 0; table.getKeyAndValue(i, key, value); i++) {
-                String keyString = key.toString();
-
                 // Ignore '%variant' keys
                 if (key.endsWith("%variant")) { continue; }
 
-                // == Handle String elements
+                String keyString = key.toString();
+
+                // == Handle String elements ==
                 if (value.getType() == ICUResourceBundle.STRING) {
                     // We are on a leaf, store the map elements into the stringMap
                     if (i == 0) {
@@ -1745,12 +1737,14 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 }
                 assert stringMap == null;
 
-                String currentPath = path + "/" + key;
-                // In cyclicNameSets ignore everything but years/format/abbreviated and zodiacs/format/abbreviated
+                String currentPath = path + "/" + keyString;
+                // In cyclicNameSets ignore everything but years/format/abbreviated
+                // and zodiacs/format/abbreviated
                 if (currentPath.startsWith("cyclicNameSets")) {
                     if (!"cyclicNameSets/years/format/abbreviated".startsWith(currentPath)
                             && !"cyclicNameSets/zodiacs/format/abbreviated".startsWith(currentPath)
-                            && !"cyclicNameSets/dayParts/format/abbreviated".startsWith(currentPath)) { continue; }
+                            && !"cyclicNameSets/dayParts/format/abbreviated".startsWith(currentPath))
+                    { continue; }
                 }
 
                 // == Handle aliases ==
@@ -1795,7 +1789,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                         aliasPath.length() > CALENDAR_ALIAS_PREFIX.length()) {
                     int typeLimit = aliasPath.indexOf('/', CALENDAR_ALIAS_PREFIX.length());
                     if (typeLimit > CALENDAR_ALIAS_PREFIX.length()) {
-                        aliasCalendarType = aliasPath.substring(CALENDAR_ALIAS_PREFIX.length(), typeLimit);
+                        String aliasCalendarType = aliasPath.substring(CALENDAR_ALIAS_PREFIX.length(), typeLimit);
                         aliasRelativePath = aliasPath.substring(typeLimit + 1);
 
                         if (currentCalendarType.equals(aliasCalendarType)
@@ -1809,6 +1803,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                             if (aliasCalendarType.equals("gregorian")) {
                                 return AliasType.GREGORIAN;
                             } else if (nextCalendarType == null || nextCalendarType.equals(aliasCalendarType)) {
+                                nextCalendarType = aliasCalendarType;
                                 return AliasType.DIFFERENT_CALENDAR;
                             }
                         }
