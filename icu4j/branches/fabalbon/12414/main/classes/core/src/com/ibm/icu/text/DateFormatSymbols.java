@@ -10,9 +10,11 @@ package com.ibm.icu.text;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -1582,7 +1584,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         // Data structures to store resources from the resource bundle
         Map<String, String[]> arrays = new TreeMap<String, String[]>();
         Map<String, Map<String, String>> maps = new TreeMap<String, Map<String, String>>();
-        Set<PathAliasPair> pathAliasPairs = new HashSet<PathAliasPair>();
+        List<PathAliasPair> pathAliasPairs = new ArrayList<PathAliasPair>();
 
         // Current and next calendar resource table which should be loaded
         String currentCalendarType = null;
@@ -1591,33 +1593,22 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         // Resources to visit when enumerating fallback calendars
         private Set<String> resourcesToVisit;
 
-        // AliasIdentifier object to be populated whenever an alias is read
-        private AliasIdentifier aliasId = new AliasIdentifier();
+        // Alias elements to be populated whenever an alias is read
+        private String aliasCalendarType;
+        private String aliasResourceName;
+        private String aliasRelativePath;
 
 
         /**
          * Initializes CalendarDataSink with default values
          */
-        CalendarDataSink() {
-            reinitialize();
-        }
-
-        /**
-         * Reinitialize CalendarDataSink object to be able to use it again
-         */
-        void reinitialize() {
-            arrays.clear();
-            maps.clear();
-            visitAllResources();
-        }
+        CalendarDataSink() { }
 
         /**
          * Configure the CalendarSink to visit all the resources
          */
         void visitAllResources() {
-            if (resourcesToVisit != null) {
-                resourcesToVisit.clear();
-            }
+            resourcesToVisit = null;
         }
 
         /**
@@ -1632,9 +1623,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         @Override
         public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
             // Assert that the currentCalendarType has been set
-            if (currentCalendarType == null || currentCalendarType.isEmpty()) {
-                throw new ICUException("Error: Empty calendar type");
-            }
+            assert currentCalendarType != null && !currentCalendarType.isEmpty();
 
             // CalendarData table.
             UResource.Table calendarData = value.getTable();
@@ -1649,36 +1638,34 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 String currentPath = keyString;
 
                 // Handle aliases
-                if (getAliasIdFromValue(aliasId, value)) {
+                AliasType aliasType = processAliasFromValue(currentPath, value);
+                if (aliasType == AliasType.DifferentCalendar) {
 
-                    // Handle aliases to other calendars or to other resources on the current calendar
-                    if (keyString.equals(aliasId.resourceName)) {
+                    // Expecting aliases to just one calendar type other than gregorian.
+                    if (aliasCalendarType.equals("gregorian")) {
+                        continue;
+                    } else if (nextCalendarType == null || aliasCalendarType.equals(nextCalendarType)) {
 
                         // Whenever an alias to the next calendar is encountered, register the resource it's pointing to
                         if (resourcesToVisitNext == null) {
                             resourcesToVisitNext = new HashSet<String>();
                         }
 
-                        // Expecting aliases to just one calendar type other than gregorian.
-                        if (aliasId.calendarType.equals("gregorian")) {
-                            continue;
-                        } else if (nextCalendarType == null || aliasId.calendarType.equals(nextCalendarType)) {
-                            // Register this resource to be visited when enumerating the next calendar type
-                            resourcesToVisitNext.add(aliasId.resourceName);
-                            if (nextCalendarType == null) {
-                                nextCalendarType = aliasId.calendarType;
-                            }
-                            continue;
+                        // Register this resource to be visited when enumerating the next calendar type
+                        resourcesToVisitNext.add(aliasResourceName);
+                        if (nextCalendarType == null) {
+                            nextCalendarType = aliasCalendarType;
                         }
-
-                    } else if (currentCalendarType.equals(aliasId.calendarType)){
-                        // Register same-calendar alias
-                        pathAliasPairs.add(new PathAliasPair(currentPath, aliasId.relativeAliasPath));
                         continue;
                     }
 
-                    throw new ICUException("Unexpected alias: '" + value.getAliasString() + "', current resource: "
-                            + aliasId.toString());
+                } else if (aliasType == AliasType.SameCalendar) {
+
+                    // Register same-calendar alias
+                    if (!arrays.containsKey(currentPath) && !maps.containsKey(currentPath)) {
+                        pathAliasPairs.add(new PathAliasPair(currentPath, aliasRelativePath));
+                    }
+                    continue;
                 }
 
                 // Only visit the resources that were referenced by an alias on the previous calendar
@@ -1726,16 +1713,12 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 Iterator<PathAliasPair> paIterator = pathAliasPairs.iterator();
                 while (paIterator.hasNext()) {
                     PathAliasPair pa = paIterator.next();
-                    if (arrays.containsKey(pa.path) || maps.containsKey(pa.path)) {
+                    if (arrays.containsKey(pa.alias)) {
+                        arrays.put(pa.path, arrays.get(pa.alias));
                         paIterator.remove();
-                    } else {
-                        if (arrays.containsKey(pa.alias)) {
-                            arrays.put(pa.path, arrays.get(pa.alias));
-                            paIterator.remove();
-                        } else if (maps.containsKey((pa.alias))) {
-                            maps.put(pa.path, maps.get(pa.alias));
-                            paIterator.remove();
-                        }
+                    } else if (maps.containsKey((pa.alias))) {
+                        maps.put(pa.path, maps.get(pa.alias));
+                        paIterator.remove();
                     }
                 }
             } while (pathAliasPairs.size() > 0 && previousPathAliasPairsSize > pathAliasPairs.size());
@@ -1756,10 +1739,8 @@ public class DateFormatSymbols implements Serializable, Cloneable {
          */
         protected void processResource(String path, UResource.Key key,
                                        UResource.Value value, int depth) {
-            // Check if the depth is valid
-            if (depth < 0) {
-                throw new ICUException("Error: invalid depth when enumerating the resource bundle tree: " + path);
-            }
+            // Assert that the depth is valid
+            assert depth >= 0;
 
             // Get the table
             UResource.Table table = value.getTable();
@@ -1770,13 +1751,15 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 String currentPath = path + "/" + key.toString();
 
                 // Handle aliases
-                if (getAliasIdFromValue(aliasId, value)) {
-                    if (currentCalendarType.equals(aliasId.calendarType)) {
-                        pathAliasPairs.add(new PathAliasPair(currentPath, aliasId.relativeAliasPath));
-                        continue;
+                AliasType aliasType = processAliasFromValue(currentPath, value);
+                if (aliasType == AliasType.SameCalendar) {
+                    if (!arrays.containsKey(currentPath) && !maps.containsKey(currentPath)) {
+                        pathAliasPairs.add(new PathAliasPair(currentPath, aliasRelativePath));
                     }
+                    continue;
+                } else if (aliasType == AliasType.DifferentCalendar) {
                     throw new ICUException("Unexpected alias: '" + value.getAliasString() + "', current resource: "
-                            + aliasId.toString());
+                            + "[" + aliasCalendarType + ", " + aliasRelativePath + "]");
                 }
 
                 // Check if the key has already been added
@@ -1823,7 +1806,6 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 // Make sure it's a table of strings
                 if (value.getType() != ICUResourceBundle.STRING) { return null; }
 
-                // Insert the element into the map
                 stringMap.put(key.toString(), value.getString());
             }
 
@@ -1832,48 +1814,51 @@ public class DateFormatSymbols implements Serializable, Cloneable {
 
         // Alias' path prefix
         private static final String CALENDAR_ALIAS_PREFIX = "/LOCALE/calendar/";
-        private static final int CALENDAR_ALIAS_PREFIX_LENGTH = 17;
 
         /**
          * Populates an AliasIdentifier with the alias information contained on the UResource.Value.
-         * @param id Alias identifier to populate
+         * @param currentRelativePath Relative path of this alias' resource
          * @param value Value which contains the alias
-         * @return True if the value contained an alias
+         * @return The AliasType of the alias found on Value
          */
-        private static boolean getAliasIdFromValue(AliasIdentifier id, UResource.Value value) {
-            if (id == null) {
-                throw new ICUException("An AliasIdentifier must be provided.");
-            }
+        private AliasType processAliasFromValue(String currentRelativePath, UResource.Value value) {
             if (value.getType() == ICUResourceBundle.ALIAS) {
                 String aliasPath = value.getAliasString();
                 if (aliasPath.startsWith(CALENDAR_ALIAS_PREFIX) &&
-                        aliasPath.length() > CALENDAR_ALIAS_PREFIX_LENGTH) {
+                        aliasPath.length() > CALENDAR_ALIAS_PREFIX.length()) {
                     String[] pathElements = aliasPath.split("/", 6);
 
                     if (pathElements.length > 3) {
-                        id.calendarType = pathElements[3];
-                        id.resourceName = pathElements[4];
-                        id.relativeAliasPath = pathElements[4] + (pathElements.length > 5 ? "/" + pathElements[5] : "");
-                        return true;
+                        aliasCalendarType = pathElements[3];
+                        aliasResourceName = pathElements[4];
+                        aliasRelativePath = pathElements[4] + (pathElements.length > 5 ? "/" + pathElements[5] : "");
+
+                        if (currentCalendarType.equals(aliasCalendarType)
+                                && !currentRelativePath.equals(aliasRelativePath)) {
+
+                            // If we have an alias to the same calendar, the path to the resource must be different
+                            return AliasType.SameCalendar;
+
+                        } else if (!currentCalendarType.equals(aliasCalendarType)
+                                && currentRelativePath.equals(aliasRelativePath)) {
+
+                            // If we have an alias to a different calendar, the path to the resource must be the same
+                            return AliasType.DifferentCalendar;
+                        }
                     }
                 }
-                throw new ICUException("Malformed 'calendar' alias path: " + aliasPath);
+                throw new ICUException("Malformed 'calendar' alias. Path: " + aliasPath);
             }
-            return false;
+            return AliasType.None;
         }
 
         /**
-         * Class to store the important elements of an alias.
+         * Enum which specifies the type of alias received, or no alias
          */
-        private static class AliasIdentifier {
-            String calendarType = "";
-            String resourceName = "";
-            String relativeAliasPath = "";
-
-            @Override
-            public String toString() {
-                return "[" + calendarType + ", " + resourceName + ", " + relativeAliasPath + "]";
-            }
+        private enum AliasType {
+            SameCalendar,
+            DifferentCalendar,
+            None
         }
 
         /**
@@ -1886,24 +1871,6 @@ public class DateFormatSymbols implements Serializable, Cloneable {
             PathAliasPair(String path, String alias) {
                 this.path = path;
                 this.alias = alias;
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
-
-                PathAliasPair that = (PathAliasPair) o;
-
-                if (!path.equals(that.path)) return false;
-                return alias.equals(that.alias);
-            }
-
-            @Override
-            public int hashCode() {
-                int result = path.hashCode();
-                result = 31 * result + alias.hashCode();
-                return result;
             }
 
             @Override
@@ -1941,6 +1908,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
             if (dataForType == null) {
                 if (!"gregorian".equals(calendarType)) {
                     calendarType = "gregorian";
+                    calendarSink.visitAllResources();
                     continue;
                 }
                 throw new MissingResourceException("The 'gregorian' calendar type wasn't found for the locale: "
