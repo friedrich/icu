@@ -1660,8 +1660,8 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                         && !keyString.equals("AmPmMarkersAbbr")) { continue; }
 
                 // == Handle data ==
-                if (keyString.startsWith("AmPmMarkers") && !keyString.endsWith("%variant")) {
-                    if (!arrays.containsKey(keyString)) {
+                if (keyString.startsWith("AmPmMarkers")) {
+                    if (!keyString.endsWith("%variant") && !arrays.containsKey(keyString)) {
                         String[] dataArray = value.getStringArray();
                         arrays.put(keyString, dataArray);
                     }
@@ -1748,20 +1748,18 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 }
 
                 // == Handle aliases ==
+                if (arrays.containsKey(currentPath)
+                        || maps.containsKey(currentPath)) { continue; }
+
                 AliasType aliasType = processAliasFromValue(currentPath, value);
                 if (aliasType == AliasType.SAME_CALENDAR) {
-                    if (!arrays.containsKey(currentPath) && !maps.containsKey(currentPath)) {
-                        aliasPathPairs.add(aliasRelativePath);
-                        aliasPathPairs.add(currentPath);
-                    }
+                    aliasPathPairs.add(aliasRelativePath);
+                    aliasPathPairs.add(currentPath);
                     continue;
                 }
                 assert aliasType == AliasType.NONE;
 
                 // == Handle data ==
-                if (arrays.containsKey(currentPath)
-                        || maps.containsKey(currentPath)) { continue; }
-
                 if (value.getType() == ICUResourceBundle.ARRAY) {
                     // We are on a leaf, store the array
                     String[] dataArray = value.getStringArray();
