@@ -1621,20 +1621,17 @@ public class DateFormatSymbols implements Serializable, Cloneable {
 
         @Override
         public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
-            // Assert that the currentCalendarType has been set
             assert currentCalendarType != null && !currentCalendarType.isEmpty();
 
-            // CalendarData table.
+            // Stores the resources to visit on the next calendar.
+            Set<String> resourcesToVisitNext = null;
             UResource.Table calendarData = value.getTable();
 
-            // Set to store the resources to visit on the next calendar if an alias is encountered.
-            Set<String> resourcesToVisitNext = null;
-
-            // Iterate
+            // Enumerate all resources for this calendar
             for (int i = 0; calendarData.getKeyAndValue(i, key, value); i++) {
                 String keyString = key.toString();
 
-                // Handle aliases
+                // == Handle aliases ==
                 AliasType aliasType = processAliasFromValue(keyString, value);
                 if (aliasType == AliasType.GREGORIAN) {
                     // Ignore aliases to the gregorian calendar, all of the its resources will be loaded anyways.
@@ -1666,22 +1663,20 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 if (resourcesToVisit != null && !resourcesToVisit.isEmpty() && !resourcesToVisit.contains(keyString)
                         && !keyString.equals("AmPmMarkersAbbr")) { continue; }
 
-                // Handle data
-                if (keyString.startsWith("AmPmMarkers")) {
+                // == Handle data ==
+                if (keyString.startsWith("AmPmMarkers") && !keyString.endsWith("%variant")) {
                     if (!arrays.containsKey(keyString)) {
                         String[] dataArray = value.getStringArray();
                         arrays.put(keyString, dataArray);
                     }
-                } else if (keyString.equals("eras")) {
-                    processResource(keyString, key, value, 0);
-                } else if (keyString.equals("dayNames")
+                } else if (keyString.equals("eras")
+                        || keyString.equals("dayNames")
                         || keyString.equals("monthNames")
                         || keyString.equals("quarters")
                         || keyString.equals("dayPeriod")
-                        || keyString.equals("monthPatterns")) {
-                    processResource(keyString, key, value, 1);
-                }  else if (keyString.equals("cyclicNameSets")) {
-                    processResource(keyString, key, value, 2);
+                        || keyString.equals("monthPatterns")
+                        || keyString.equals("cyclicNameSets")) {
+                    processResource(keyString, key, value);
                 }
             }
 
@@ -1717,26 +1712,48 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 resourcesToVisit = resourcesToVisitNext;
             }
         }
-
-
+        
         /**
          * Process the nested resource bundle tables
          * @param path Table's relative path to the calendar
          * @param key Resource bundle key
          * @param value Resource bundle value (has to have the table to read)
-         * @param remainingDepth Current remainingDepth in the resource bundle tree (0 for the leaf)
          */
         protected void processResource(String path, UResource.Key key,
-                                       UResource.Value value, int remainingDepth) {
-            assert remainingDepth >= 0;
+                                       UResource.Value value) {
 
             UResource.Table table = value.getTable();
+            Map<String, String> stringMap = null;
 
             // Iterate over all the elements of the table and add them to the map
             for(int i = 0; table.getKeyAndValue(i, key, value); i++) {
-                String currentPath = path + "/" + key.toString();
+                String keyString = key.toString();
 
-                // Handle aliases
+                // Ignore '%variant' keys
+                if (key.endsWith("%variant")) { continue; }
+
+                // == Handle String elements
+                if (value.getType() == ICUResourceBundle.STRING) {
+                    // We are on a leaf, store the map elements into the stringMap
+                    if (i == 0) {
+                        stringMap = new HashMap<String, String>();
+                        maps.put(path, stringMap);
+                    }
+                    assert stringMap != null;
+                    stringMap.put(keyString, value.getString());
+                    continue;
+                }
+                assert stringMap == null;
+
+                String currentPath = path + "/" + key;
+                // In cyclicNameSets ignore everything but years/format/abbreviated and zodiacs/format/abbreviated
+                if (currentPath.startsWith("cyclicNameSets")) {
+                    if (!"cyclicNameSets/years/format/abbreviated".startsWith(currentPath)
+                            && !"cyclicNameSets/zodiacs/format/abbreviated".startsWith(currentPath)
+                            && !"cyclicNameSets/dayParts/format/abbreviated".startsWith(currentPath)) { continue; }
+                }
+
+                // == Handle aliases ==
                 AliasType aliasType = processAliasFromValue(currentPath, value);
                 if (aliasType == AliasType.SAME_CALENDAR) {
                     if (!arrays.containsKey(currentPath) && !maps.containsKey(currentPath)) {
@@ -1747,50 +1764,19 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 }
                 assert aliasType == AliasType.NONE;
 
+                // == Handle data ==
                 if (arrays.containsKey(currentPath)
                         || maps.containsKey(currentPath)) { continue; }
 
-                if (remainingDepth == 0) {
-                    // We are on a leaf, store an array or a table
-                    if (value.getType() == ICUResourceBundle.ARRAY) {
-                        String[] dataArray = value.getStringArray();
-                        arrays.put(currentPath, dataArray);
-                    } else if (value.getType() == ICUResourceBundle.TABLE) {
-                        Map<String, String> stringMap = getStringMapFromResource(key, value);
-                        if (stringMap != null) {
-                            maps.put(currentPath, stringMap);
-                        }
-                    }
-                } else {
-                    // If we are not on a leaf, process the map
-                    if (value.getType() == ICUResourceBundle.TABLE) {
-                        processResource(currentPath, key, value, remainingDepth - 1);
-                    }
+                if (value.getType() == ICUResourceBundle.ARRAY) {
+                    // We are on a leaf, store the array
+                    String[] dataArray = value.getStringArray();
+                    arrays.put(currentPath, dataArray);
+                } else if (value.getType() == ICUResourceBundle.TABLE) {
+                    // We are not on a leaf, recursively process the subtable.
+                    processResource(currentPath, key, value);
                 }
             }
-        }
-
-        /**
-         * Stores a string-only table on a map.
-         * @param key Key used to iterate over the table
-         * @param value Value which contains the information of the table
-         * @return Map with the content of the string-only table
-         */
-        private static Map<String, String> getStringMapFromResource(UResource.Key key, UResource.Value value) {
-            UResource.Table table = value.getTable();
-
-            // Iterate over all the elements of the table and store them on the map
-            Map<String, String> stringMap = null;
-            for (int i = 0; table.getKeyAndValue(i, key, value); i++) {
-                // Make sure it's a table of strings
-                if (value.getType() != ICUResourceBundle.STRING) { return null; }
-                if (i == 0) {
-                    stringMap = new HashMap<String, String>();
-                }
-                stringMap.put(key.toString(), value.getString());
-            }
-
-            return stringMap;
         }
 
         // Alias' path prefix
