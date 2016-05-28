@@ -10,14 +10,31 @@ package com.ibm.icu.text;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TreeMap;
 
-import com.ibm.icu.impl.*;
+import com.ibm.icu.impl.CalendarUtil;
+import com.ibm.icu.impl.ICUCache;
+import com.ibm.icu.impl.ICUResourceBundle;
+import com.ibm.icu.impl.SimpleCache;
+import com.ibm.icu.impl.UResource;
+import com.ibm.icu.impl.Utility;
 import com.ibm.icu.text.TimeZoneNames.NameType;
-import com.ibm.icu.util.*;
 import com.ibm.icu.util.Calendar;
+import com.ibm.icu.util.ICUCloneNotSupportedException;
+import com.ibm.icu.util.ICUException;
 import com.ibm.icu.util.TimeZone;
+import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.ULocale.Category;
+import com.ibm.icu.util.UResourceBundle;
+import com.ibm.icu.util.UResourceBundleIterator;
 
 /**
  * {@icuenhanced java.text.DateFormatSymbols}.{@icu _usage_}
@@ -1563,8 +1580,8 @@ public class DateFormatSymbols implements Serializable, Cloneable {
     private static final class CalendarDataSink extends UResource.Sink {
 
         // Data structures to store resources from the resource bundle
-        Map<String, String[]> stringArrayResources = new TreeMap<String, String[]>();
-        Map<String, Map<String, String>> stringMapResources = new TreeMap<String, Map<String, String>>();
+        Map<String, String[]> arrays = new TreeMap<String, String[]>();
+        Map<String, Map<String, String>> maps = new TreeMap<String, Map<String, String>>();
         Set<PathAliasPair> pathAliasPairs = new HashSet<PathAliasPair>();
 
         // Current and next calendar resource table which should be loaded
@@ -1572,7 +1589,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         String nextCalendarType = null;
 
         // Resources to visit when enumerating fallback calendars
-        private Set<String> resourcesToVisit = new HashSet<String>();
+        private Set<String> resourcesToVisit;
 
         // AliasIdentifier object to be populated whenever an alias is read
         private AliasIdentifier aliasId = new AliasIdentifier();
@@ -1586,17 +1603,21 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         }
 
         /**
-         * Reinitialize CalendarDataSink in order to be able to use it again.
+         * Reinitialize CalendarDataSink object to be able to use it again
          */
         void reinitialize() {
+            arrays.clear();
+            maps.clear();
             visitAllResources();
         }
 
         /**
-         * Configure the CalendarSink to visit all the resources.
+         * Configure the CalendarSink to visit all the resources
          */
         void visitAllResources() {
-            this.resourcesToVisit.clear();
+            if (resourcesToVisit != null) {
+                resourcesToVisit.clear();
+            }
         }
 
         /**
@@ -1623,7 +1644,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
 
             // Iterate
             for (int i = 0; calendarData.getKeyAndValue(i, key, value); i++) {
-                // Get the current and path
+                // Get the current key and path
                 String keyString = key.toString();
                 String currentPath = keyString;
 
@@ -1662,7 +1683,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
 
                 // Only visit the resources that were referenced by an alias on the previous calendar
                 // (AmPmMarkersAbbr is an exception).
-                if (!resourcesToVisit.isEmpty() && !resourcesToVisit.contains(keyString)
+                if (resourcesToVisit != null && !resourcesToVisit.isEmpty() && !resourcesToVisit.contains(keyString)
                         && !keyString.equals("AmPmMarkersAbbr")) { continue; }
 
                 // Handle data
@@ -1671,11 +1692,11 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                         || keyString.equals("AmPmMarkersNarrow")) {
 
                     // Check if the key has already been added
-                    if (stringArrayResources.containsKey(currentPath)) { continue; }
+                    if (arrays.containsKey(currentPath)) { continue; }
 
                     // Store the data arrays
                     String[] dataArray = value.getStringArray();
-                    stringArrayResources.put(currentPath, dataArray);
+                    arrays.put(currentPath, dataArray);
 
                 } else if (keyString.equals("eras")) {
 
@@ -1705,14 +1726,14 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 Iterator<PathAliasPair> paIterator = pathAliasPairs.iterator();
                 while (paIterator.hasNext()) {
                     PathAliasPair pa = paIterator.next();
-                    if (stringArrayResources.containsKey(pa.path) || stringMapResources.containsKey(pa.path)) {
+                    if (arrays.containsKey(pa.path) || maps.containsKey(pa.path)) {
                         paIterator.remove();
                     } else {
-                        if (stringArrayResources.containsKey(pa.alias)) {
-                            stringArrayResources.put(pa.path, stringArrayResources.get(pa.alias));
+                        if (arrays.containsKey(pa.alias)) {
+                            arrays.put(pa.path, arrays.get(pa.alias));
                             paIterator.remove();
-                        } else if (stringMapResources.containsKey((pa.alias))) {
-                            stringMapResources.put(pa.path, stringMapResources.get(pa.alias));
+                        } else if (maps.containsKey((pa.alias))) {
+                            maps.put(pa.path, maps.get(pa.alias));
                             paIterator.remove();
                         }
                     }
@@ -1759,20 +1780,20 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                 }
 
                 // Check if the key has already been added
-                if (stringArrayResources.containsKey(currentPath)
-                        || stringMapResources.containsKey(currentPath)) { continue; }
+                if (arrays.containsKey(currentPath)
+                        || maps.containsKey(currentPath)) { continue; }
 
                 // Store data
                 if (depth == 0) {
                     // We are on a leaf, store an array or a table
                     if (value.getType() == ICUResourceBundle.ARRAY) {
                         String[] dataArray = value.getStringArray();
-                        stringArrayResources.put(currentPath, dataArray);
+                        arrays.put(currentPath, dataArray);
 
                     } else if (value.getType() == ICUResourceBundle.TABLE) {
                         Map<String, String> stringMap = getStringMapFromResource(key, value);
                         if (stringMap != null) {
-                            stringMapResources.put(currentPath, stringMap);
+                            maps.put(currentPath, stringMap);
                         }
                     }
                 } else {
@@ -1912,22 +1933,26 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                     .getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, desiredLocale);
         }
 
-        // Iterate loading the data following the fallbacks to different calendars
+        // Iterate over the resource bundle data following the fallbacks trough different calendar types
         while (calendarType != null) {
 
             // Enumerate this calendar type. If the calendar is not found fallback to gregorian.
-            calendarSink.preEnumerate(calendarType);
-            try {
-                b.getAllItemsWithFallback("calendar/" + calendarType, calendarSink);
-            } catch (MissingResourceException m) {
-                calendarType = "gregorian";
-                calendarSink.preEnumerate(calendarType);
-                b.getAllItemsWithFallback("calendar/gregorian", calendarSink);
+            ICUResourceBundle dataForType = b.findWithFallback("calendar/" + calendarType);
+            if (dataForType == null) {
+                if (!"gregorian".equals(calendarType)) {
+                    calendarType = "gregorian";
+                    continue;
+                }
+                throw new ICUException("The 'gregorian' calendar type wasn't found for the locale: "
+                        + desiredLocale.getBaseName());
             }
+            calendarSink.preEnumerate(calendarType);
+            dataForType.getAllItemsWithFallback("", calendarSink);
 
             // Stop loading when gregorian was loaded
-            if (calendarType.equals("gregorian"))
+            if (calendarType.equals("gregorian")) {
                 break;
+            }
 
             // Get the next calendar type to process from the sink
             calendarType = calendarSink.nextCalendarType;
@@ -1939,49 +1964,46 @@ public class DateFormatSymbols implements Serializable, Cloneable {
             }
         }
 
+        Map<String, String[]> arrays = calendarSink.arrays;
+        Map<String, Map<String, String>> maps = calendarSink.maps;
 
-        // FIXME: cache only ResourceBundle. Hence every time, will do
-        // getObject(). This won't be necessary if the Resource itself
-        // is cached.
-        eras = calendarSink.stringArrayResources.get("eras/abbreviated");
+        eras = arrays.get("eras/abbreviated");
+        eraNames = arrays.get("eras/wide");
+        narrowEras = arrays.get("eras/narrow");
 
-        eraNames = calendarSink.stringArrayResources.get("eras/wide");
+        months = arrays.get("monthNames/format/wide");
+        shortMonths = arrays.get("monthNames/format/abbreviated");
+        narrowMonths = arrays.get("monthNames/format/narrow");
 
-        narrowEras = calendarSink.stringArrayResources.get("eras/narrow");
+        standaloneMonths = arrays.get("monthNames/stand-alone/wide");
+        standaloneShortMonths = arrays.get("monthNames/stand-alone/abbreviated");
+        standaloneNarrowMonths = arrays.get("monthNames/stand-alone/narrow");
 
-        months = calendarSink.stringArrayResources.get("monthNames/format/wide");
-        shortMonths = calendarSink.stringArrayResources.get("monthNames/format/abbreviated");
-        narrowMonths = calendarSink.stringArrayResources.get("monthNames/format/narrow");
-
-        standaloneMonths = calendarSink.stringArrayResources.get("monthNames/stand-alone/wide");
-        standaloneShortMonths = calendarSink.stringArrayResources.get("monthNames/stand-alone/abbreviated");
-        standaloneNarrowMonths = calendarSink.stringArrayResources.get("monthNames/stand-alone/narrow");
-
-        String[] lWeekdays = calendarSink.stringArrayResources.get("dayNames/format/wide");
+        String[] lWeekdays = arrays.get("dayNames/format/wide");
         weekdays = new String[8];
         weekdays[0] = "";  // 1-based
         System.arraycopy(lWeekdays, 0, weekdays, 1, lWeekdays.length);
 
-        String[] aWeekdays = calendarSink.stringArrayResources.get("dayNames/format/abbreviated");
+        String[] aWeekdays = arrays.get("dayNames/format/abbreviated");
         shortWeekdays = new String[8];
         shortWeekdays[0] = "";  // 1-based
         System.arraycopy(aWeekdays, 0, shortWeekdays, 1, aWeekdays.length);
 
-        String[] sWeekdays = calendarSink.stringArrayResources.get("dayNames/format/short");
+        String[] sWeekdays = arrays.get("dayNames/format/short");
         shorterWeekdays = new String[8];
         shorterWeekdays[0] = "";  // 1-based
         System.arraycopy(sWeekdays, 0, shorterWeekdays, 1, sWeekdays.length);
 
-        String [] nWeekdays = calendarSink.stringArrayResources.get("dayNames/format/narrow");
+        String [] nWeekdays = arrays.get("dayNames/format/narrow");
         if (nWeekdays == null) {
-            nWeekdays = calendarSink.stringArrayResources.get("dayNames/stand-alone/narrow");
+            nWeekdays = arrays.get("dayNames/stand-alone/narrow");
 
             if (nWeekdays == null) {
-                nWeekdays = calendarSink.stringArrayResources.get("dayNames/format/abbreviated");
+                nWeekdays = arrays.get("dayNames/format/abbreviated");
 
                 if (nWeekdays == null) {
                     throw new MissingResourceException("Resource not found",
-                            this.getClass().getName(), "dayNames/format/abbreviated");
+                            getClass().getName(), "dayNames/format/abbreviated");
                 }
             }
         }
@@ -1990,85 +2012,63 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         System.arraycopy(nWeekdays, 0, narrowWeekdays, 1, nWeekdays.length);
 
         String [] swWeekdays = null;
-        swWeekdays = calendarSink.stringArrayResources.get("dayNames/stand-alone/wide");
+        swWeekdays = arrays.get("dayNames/stand-alone/wide");
         standaloneWeekdays = new String[8];
         standaloneWeekdays[0] = "";  // 1-based
         System.arraycopy(swWeekdays, 0, standaloneWeekdays, 1, swWeekdays.length);
 
         String [] saWeekdays = null;
-        saWeekdays = calendarSink.stringArrayResources.get("dayNames/stand-alone/abbreviated");
+        saWeekdays = arrays.get("dayNames/stand-alone/abbreviated");
         standaloneShortWeekdays = new String[8];
         standaloneShortWeekdays[0] = "";  // 1-based
         System.arraycopy(saWeekdays, 0, standaloneShortWeekdays, 1, saWeekdays.length);
 
         String [] ssWeekdays = null;
-        ssWeekdays = calendarSink.stringArrayResources.get("dayNames/stand-alone/short");
+        ssWeekdays = arrays.get("dayNames/stand-alone/short");
         standaloneShorterWeekdays = new String[8];
         standaloneShorterWeekdays[0] = "";  // 1-based
         System.arraycopy(ssWeekdays, 0, standaloneShorterWeekdays, 1, ssWeekdays.length);
 
         String [] snWeekdays = null;
-        snWeekdays = calendarSink.stringArrayResources.get("dayNames/stand-alone/narrow");
+        snWeekdays = arrays.get("dayNames/stand-alone/narrow");
         standaloneNarrowWeekdays = new String[8];
         standaloneNarrowWeekdays[0] = "";  // 1-based
         System.arraycopy(snWeekdays, 0, standaloneNarrowWeekdays, 1, snWeekdays.length);
 
-        ampms = calendarSink.stringArrayResources.get("AmPmMarkers");
-        ampmsNarrow = calendarSink.stringArrayResources.get("AmPmMarkersNarrow");
+        ampms = arrays.get("AmPmMarkers");
+        ampmsNarrow = arrays.get("AmPmMarkersNarrow");
 
-        quarters = calendarSink.stringArrayResources.get("quarters/format/wide");
-        shortQuarters = calendarSink.stringArrayResources.get("quarters/format/abbreviated");
+        quarters = arrays.get("quarters/format/wide");
+        shortQuarters = arrays.get("quarters/format/abbreviated");
 
-        standaloneQuarters = calendarSink.stringArrayResources.get("quarters/stand-alone/wide");
-        standaloneShortQuarters = calendarSink.stringArrayResources.get("quarters/stand-alone/abbreviated");
+        standaloneQuarters = arrays.get("quarters/stand-alone/wide");
+        standaloneShortQuarters = arrays.get("quarters/stand-alone/abbreviated");
 
-        abbreviatedDayPeriods = loadDayPeriodStrings(
-                calendarSink.stringMapResources.get("dayPeriod/format/abbreviated"));
-        wideDayPeriods = loadDayPeriodStrings(
-                calendarSink.stringMapResources.get("dayPeriod/format/wide"));
-        narrowDayPeriods = loadDayPeriodStrings(
-                calendarSink.stringMapResources.get("dayPeriod/format/narrow"));
-        standaloneAbbreviatedDayPeriods = loadDayPeriodStrings(
-                calendarSink.stringMapResources.get("dayPeriod/stand-alone/abbreviated"));
-        standaloneWideDayPeriods = loadDayPeriodStrings(
-                calendarSink.stringMapResources.get("dayPeriod/stand-alone/wide"));
-        standaloneNarrowDayPeriods = loadDayPeriodStrings(
-                calendarSink.stringMapResources.get("dayPeriod/stand-alone/narrow"));
+        abbreviatedDayPeriods = loadDayPeriodStrings(maps.get("dayPeriod/format/abbreviated"));
+        wideDayPeriods = loadDayPeriodStrings(maps.get("dayPeriod/format/wide"));
+        narrowDayPeriods = loadDayPeriodStrings(maps.get("dayPeriod/format/narrow"));
+        standaloneAbbreviatedDayPeriods = loadDayPeriodStrings(maps.get("dayPeriod/stand-alone/abbreviated"));
+        standaloneWideDayPeriods = loadDayPeriodStrings(maps.get("dayPeriod/stand-alone/wide"));
+        standaloneNarrowDayPeriods = loadDayPeriodStrings(maps.get("dayPeriod/stand-alone/narrow"));
 
-
-        ArrayList<Map<String, String>> leapMonthPatternsMap =
-                new ArrayList<Map<String, String>>(DT_MONTH_PATTERN_COUNT);
-        leapMonthPatternsMap.add(DT_LEAP_MONTH_PATTERN_FORMAT_WIDE,
-                calendarSink.stringMapResources.get("monthPatterns/format/wide"));
-        leapMonthPatternsMap.add(DT_LEAP_MONTH_PATTERN_FORMAT_ABBREV,
-                calendarSink.stringMapResources.get("monthPatterns/format/abbreviated"));
-        leapMonthPatternsMap.add(DT_LEAP_MONTH_PATTERN_FORMAT_NARROW,
-                calendarSink.stringMapResources.get("monthPatterns/format/narrow"));
-        leapMonthPatternsMap.add(DT_LEAP_MONTH_PATTERN_STANDALONE_WIDE,
-                calendarSink.stringMapResources.get("monthPatterns/stand-alone/wide"));
-        leapMonthPatternsMap.add(DT_LEAP_MONTH_PATTERN_STANDALONE_ABBREV,
-                calendarSink.stringMapResources.get("monthPatterns/stand-alone/abbreviated"));
-        leapMonthPatternsMap.add(DT_LEAP_MONTH_PATTERN_STANDALONE_NARROW,
-                calendarSink.stringMapResources.get("monthPatterns/stand-alone/narrow"));
-        leapMonthPatternsMap.add(DT_LEAP_MONTH_PATTERN_NUMERIC,
-                calendarSink.stringMapResources.get("monthPatterns/numeric/all"));
-
-        leapMonthPatterns = new String[DT_MONTH_PATTERN_COUNT];
-        boolean leapMonthPatternsMapFound = false;
         for (int i = 0; i < DT_MONTH_PATTERN_COUNT; i++) {
-            Map<String, String> monthPatternMap = leapMonthPatternsMap.get(i);
-            if (monthPatternMap != null) {
-                leapMonthPatterns[i] = monthPatternMap.get("leap");
-                leapMonthPatternsMapFound = true;
+            String monthPatternPath = LEAP_MONTH_PATTERNS_PATHS[i];
+            if (monthPatternPath != null) {
+                Map<String, String> monthPatternMap = maps.get(monthPatternPath);
+                if (monthPatternMap != null) {
+                    String leapMonthPattern = monthPatternMap.get("leap");
+                    if (leapMonthPattern != null) {
+                        if (leapMonthPatterns == null) {
+                            leapMonthPatterns = new String[DT_MONTH_PATTERN_COUNT];
+                        }
+                        leapMonthPatterns[i] = leapMonthPattern;
+                    }
+                }
             }
         }
 
-        if (!leapMonthPatternsMapFound) {
-            leapMonthPatterns = null;
-        }
-
-        shortYearNames = calendarSink.stringArrayResources.get("cyclicNameSets/years/format/abbreviated");
-        shortZodiacNames = calendarSink.stringArrayResources.get("cyclicNameSets/zodiacs/format/abbreviated");
+        shortYearNames = arrays.get("cyclicNameSets/years/format/abbreviated");
+        shortZodiacNames = arrays.get("cyclicNameSets/zodiacs/format/abbreviated");
 
         requestedLocale = desiredLocale;
 
@@ -2079,7 +2079,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         localPatternChars = patternChars;
 
         // TODO: obtain correct actual/valid locale later
-        ULocale uloc = rb.getULocale();//TODO(fabalbon): is this to obtain the locale that was effectively used? Can't we just use "desiredLocale"?
+        ULocale uloc = rb.getULocale();
         setLocale(uloc, uloc);
 
         capitalization = new HashMap<CapitalizationContextUsage,boolean[]>();
@@ -2125,6 +2125,20 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Resource bundle paths for each leap month pattern
+     */
+    private static final String[] LEAP_MONTH_PATTERNS_PATHS = new String[DT_MONTH_PATTERN_COUNT];
+    static {
+        LEAP_MONTH_PATTERNS_PATHS[DT_LEAP_MONTH_PATTERN_FORMAT_WIDE] = "monthPatterns/format/wide";
+        LEAP_MONTH_PATTERNS_PATHS[DT_LEAP_MONTH_PATTERN_FORMAT_ABBREV] = "monthPatterns/format/abbreviated";
+        LEAP_MONTH_PATTERNS_PATHS[DT_LEAP_MONTH_PATTERN_FORMAT_NARROW] = "monthPatterns/format/narrow";
+        LEAP_MONTH_PATTERNS_PATHS[DT_LEAP_MONTH_PATTERN_STANDALONE_WIDE] = "monthPatterns/stand-alone/wide";
+        LEAP_MONTH_PATTERNS_PATHS[DT_LEAP_MONTH_PATTERN_STANDALONE_ABBREV] = "monthPatterns/stand-alone/abbreviated";
+        LEAP_MONTH_PATTERNS_PATHS[DT_LEAP_MONTH_PATTERN_STANDALONE_NARROW] = "monthPatterns/stand-alone/narrow";
+        LEAP_MONTH_PATTERNS_PATHS[DT_LEAP_MONTH_PATTERN_NUMERIC] = "monthPatterns/numeric/all";
+    }
+
     private static final boolean arrayOfArrayEquals(Object[][] aa1, Object[][]aa2) {
         if (aa1 == aa2) { // both are null
             return true;
@@ -2157,9 +2171,9 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * @param resourceMap Contains the dayPeriod resource to load
      */
     private String[] loadDayPeriodStrings(Map<String, String> resourceMap) {
-        String strings[] = new String[10];
+        String strings[] = new String[DAY_PERIOD_KEYS.length];
         if (resourceMap != null) {
-            for (int i = 0; i < 10; ++i) {
+            for (int i = 0; i < DAY_PERIOD_KEYS.length; ++i) {
                 strings[i] = resourceMap.get(DAY_PERIOD_KEYS[i]);  // Null if string doesn't exist.
             }
         }
