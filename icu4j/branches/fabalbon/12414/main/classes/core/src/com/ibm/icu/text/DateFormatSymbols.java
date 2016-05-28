@@ -1933,7 +1933,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                     .getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, desiredLocale);
         }
 
-        // Iterate over the resource bundle data following the fallbacks trough different calendar types
+        // Iterate over the resource bundle data following the fallbacks through different calendar types
         while (calendarType != null) {
 
             // Enumerate this calendar type. If the calendar is not found fallback to gregorian.
@@ -1943,8 +1943,8 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                     calendarType = "gregorian";
                     continue;
                 }
-                throw new ICUException("The 'gregorian' calendar type wasn't found for the locale: "
-                        + desiredLocale.getBaseName());
+                throw new MissingResourceException("The 'gregorian' calendar type wasn't found for the locale: "
+                        + desiredLocale.getBaseName(), getClass().getName(), "gregorian");
             }
             calendarSink.preEnumerate(calendarType);
             dataForType.getAllItemsWithFallback("", calendarSink);
