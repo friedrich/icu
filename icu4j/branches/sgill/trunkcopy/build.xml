@@ -234,6 +234,14 @@
 				</batchtest>
 
 			</junit>
+			
+			<junitreport tofile="@{output}-TestSuite.xml" todir="${junit.out.dir}/@{output}">
+				<fileset dir="${junit.out.dir}/@{output}">
+					<include name="*.xml"/>
+				</fileset>
+				<report format="frames" todir="${junit.out.dir}/@{output}/html"/>
+			</junitreport>
+			
     	</sequential>
 	</macrodef>
 
