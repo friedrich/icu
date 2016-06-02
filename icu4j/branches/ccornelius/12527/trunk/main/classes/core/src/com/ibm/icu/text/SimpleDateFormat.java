@@ -1189,7 +1189,7 @@ public class SimpleDateFormat extends DateFormat {
         ULocale defaultLocale = ULocale.getDefault(Category.FORMAT);
         if (!defaultLocale.equals(cachedDefaultLocale)) {
             cachedDefaultLocale = defaultLocale;
-            Calendar cal = Calendar.getInstance(cachedDefaultLocale);           
+            Calendar cal = Calendar.getInstance(cachedDefaultLocale);
 
             try {
                 // Load the calendar data directly.
@@ -1202,7 +1202,7 @@ public class SimpleDateFormat extends DateFormat {
                     patternsRb = rb.findWithFallback("calendar/gregorian/DateTimePatterns");
                 }
                 if (patternsRb == null || patternsRb.getSize() < 9) {
-                    cachedDefaultPattern = FALLBACKPATTERN;                 
+                    cachedDefaultPattern = FALLBACKPATTERN;
                 } else {
                     int defaultIndex = 8;
                     if (patternsRb.getSize() >= 13) {
