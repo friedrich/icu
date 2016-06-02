@@ -1,7 +1,7 @@
 /*
  * Created on May 5, 2004
  *
- * Copyright (C) 2004-2015 International Business Machines Corporation and others.
+ * Copyright (C) 2004-2016 International Business Machines Corporation and others.
  * All Rights Reserved.
  *
  */

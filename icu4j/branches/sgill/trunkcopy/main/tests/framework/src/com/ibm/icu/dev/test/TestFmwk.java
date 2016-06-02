@@ -385,7 +385,7 @@ public class TestFmwk extends AbstractTestLog {
             if (s == null) {
                 return defVal;
             }
-            return (maxVal == -1) ? Integer.valueOf(s) : Integer.max(Integer.valueOf(s), maxVal);
+            return (maxVal == -1) ? Integer.valueOf(s) : Math.max(Integer.valueOf(s), maxVal);
         }
         
         public long getLongProperty(String key, long defVal) {

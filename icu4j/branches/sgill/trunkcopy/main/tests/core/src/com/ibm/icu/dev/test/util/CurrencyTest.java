@@ -190,18 +190,20 @@ public class CurrencyTest extends TestFmwk {
         // Warning: HARD-CODED LOCALE DATA in this test.  If it fails, CHECK
         // THE LOCALE DATA before diving into the code.
         assertEquals("USD.getName(SYMBOL_NAME)",
-                     "$",
-                     usd.getName(en, Currency.SYMBOL_NAME, isChoiceFormat));
+                "$",
+                usd.getName(en, Currency.SYMBOL_NAME, isChoiceFormat));
         assertEquals("USD.getName(LONG_NAME)",
-                     "US Dollar",
-                     usd.getName(en, Currency.LONG_NAME, isChoiceFormat));
+                "US Dollar",
+                usd.getName(en, Currency.LONG_NAME, isChoiceFormat));
         // TODO add more tests later
     }
 
     @Test
     public void TestCoverage() {
         Currency usd = Currency.getInstance("USD");
-        assertEquals("USD.getSymbol()", "$", usd.getSymbol());
+        assertEquals("USD.getSymbol()",
+                "$",
+                usd.getSymbol());
     }
     
     // A real test of the CurrencyDisplayNames class.

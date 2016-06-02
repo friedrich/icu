@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.text.ChineseDateFormat;
 import com.ibm.icu.text.ChineseDateFormat.Field;
@@ -2353,7 +2354,7 @@ public class DateFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         f = DateFormat.getDateInstance();
         logln("time yet again: " + f.format(now));
 
-        ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME,"de_DE");
+        ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME,"de_DE");
         DateFormatSymbols sym = new DateFormatSymbols(rb, Locale.GERMANY);
         DateFormatSymbols sym2 = (DateFormatSymbols)sym.clone();
         if (sym.hashCode() != sym2.hashCode()) {

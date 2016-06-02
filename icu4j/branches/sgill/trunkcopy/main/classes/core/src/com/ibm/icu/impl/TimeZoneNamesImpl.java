@@ -1,6 +1,6 @@
 /*
  *******************************************************************************
- * Copyright (C) 2011-2015, International Business Machines Corporation and
+ * Copyright (C) 2011-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -76,7 +76,7 @@ public class TimeZoneNamesImpl extends TimeZoneNames {
         if (METAZONE_IDS == null) {
             synchronized (TimeZoneNamesImpl.class) {
                 if (METAZONE_IDS == null) {
-                    UResourceBundle bundle = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, "metaZones");
+                    UResourceBundle bundle = UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, "metaZones");
                     UResourceBundle mapTimezones = bundle.get("mapTimezones");
                     Set<String> keys = mapTimezones.keySet();
                     METAZONE_IDS = Collections.unmodifiableSet(keys);
@@ -325,7 +325,7 @@ public class TimeZoneNamesImpl extends TimeZoneNames {
         }
 
         @Override
-        public TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+        public TableSink getOrCreateTableSink(UResource.Key key) {
             ZNamesLoader loader = keyToLoader.get(key);
             if (loader != null) {
                 if (loader == ZNamesLoader.DUMMY_LOADER) {
@@ -395,7 +395,7 @@ public class TimeZoneNamesImpl extends TimeZoneNames {
      */
     private void initialize(ULocale locale) {
         ICUResourceBundle bundle = (ICUResourceBundle)ICUResourceBundle.getBundleInstance(
-                ICUResourceBundle.ICU_ZONE_BASE_NAME, locale);
+                ICUData.ICU_ZONE_BASE_NAME, locale);
         _zoneStrings = (ICUResourceBundle)bundle.get(ZONE_STRINGS_BUNDLE);
 
         // TODO: Access is synchronized, can we use a non-concurrent map?
@@ -795,7 +795,7 @@ public class TimeZoneNamesImpl extends TimeZoneNames {
         protected List<MZMapEntry> createInstance(String key, String data) {
             List<MZMapEntry> mzMaps = null;
 
-            UResourceBundle bundle = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, "metaZones");
+            UResourceBundle bundle = UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, "metaZones");
             UResourceBundle metazoneInfoBundle = bundle.get("metazoneInfo");
 
             String tzkey = data.replace('/', ':');
@@ -902,7 +902,7 @@ public class TimeZoneNamesImpl extends TimeZoneNames {
         protected Map<String, String> createInstance(String key, String data) {
             Map<String, String> map = null;
 
-            UResourceBundle bundle = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, "metaZones");
+            UResourceBundle bundle = UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, "metaZones");
             UResourceBundle mapTimezones = bundle.get("mapTimezones");
 
             try {

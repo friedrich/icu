@@ -31,9 +31,6 @@ grant
 
     // for creating a fallback class loader
     permission java.lang.RuntimePermission "createClassLoader";
-    
-    // allows ICU TestFmwk to turn on and off the security manager before and after the test so that JUnit can work
-    permission java.lang.RuntimePermission "setSecurityManager";
 };
 
 // there must be a way for code in one jar file to call code in another jar

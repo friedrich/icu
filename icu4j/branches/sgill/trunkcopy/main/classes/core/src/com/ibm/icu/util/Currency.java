@@ -21,10 +21,13 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import com.ibm.icu.impl.CacheBase;
 import com.ibm.icu.impl.ICUCache;
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUDebug;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.SimpleCache;
+import com.ibm.icu.impl.SoftCache;
 import com.ibm.icu.impl.TextTrieMap;
 import com.ibm.icu.text.CurrencyDisplayNames;
 import com.ibm.icu.text.CurrencyMetaInfo;
@@ -227,39 +230,55 @@ public class Currency extends MeasureUnit {
     }
 
     private static final String EUR_STR = "EUR";
-    private static final ICUCache<ULocale, String> currencyCodeCache = new SimpleCache<ULocale, String>();
-    
+    private static final CacheBase<String, Currency, Void> regionCurrencyCache =
+            new SoftCache<String, Currency, Void>() {
+        @Override
+        protected Currency createInstance(String key, Void unused) {
+            return loadCurrency(key);
+        }
+    };
+
     /**
      * Instantiate a currency from resource data.
      */
     /* package */ static Currency createCurrency(ULocale loc) {
-        
         String variant = loc.getVariant();
         if ("EURO".equals(variant)) {
             return getInstance(EUR_STR);
         }
-        
-        String code = currencyCodeCache.get(loc);
-        if (code == null) {
-            String country = ULocale.getRegionForSupplementalData(loc, false);
-        
-            CurrencyMetaInfo info = CurrencyMetaInfo.getInstance();
-            List<String> list = info.currencies(CurrencyFilter.onRegion(country));
-            if (list.size() > 0) {
-                code = list.get(0);
-                boolean isPreEuro = "PREEURO".equals(variant);
-                if (isPreEuro && EUR_STR.equals(code)) {
-                    if (list.size() < 2) {
-                        return null;
-                    }
-                    code = list.get(1);
-                }
-            } else {
-                return null;
-            }
-            currencyCodeCache.put(loc, code);
+
+        // Cache the currency by region, and whether variant=PREEURO.
+        // Minimizes the size of the cache compared with caching by ULocale.
+        String key = ULocale.getRegionForSupplementalData(loc, false);
+        if ("PREEURO".equals(variant)) {
+            key = key + '-';
         }
-        return getInstance(code);
+        return regionCurrencyCache.getInstance(key, null);
+    }
+
+    private static Currency loadCurrency(String key) {
+        String region;
+        boolean isPreEuro;
+        if (key.endsWith("-")) {
+            region = key.substring(0, key.length() - 1);
+            isPreEuro = true;
+        } else {
+            region = key;
+            isPreEuro = false;
+        }
+        CurrencyMetaInfo info = CurrencyMetaInfo.getInstance();
+        List<String> list = info.currencies(CurrencyFilter.onRegion(region));
+        if (!list.isEmpty()) {
+            String code = list.get(0);
+            if (isPreEuro && EUR_STR.equals(code)) {
+                if (list.size() < 2) {
+                    return null;
+                }
+                code = list.get(1);
+            }
+            return getInstance(code);
+        }
+        return null;
     }
 
     /**
@@ -446,7 +465,7 @@ public class Currency extends MeasureUnit {
         int result = 0;
         try {
             UResourceBundle bundle = UResourceBundle.getBundleInstance(
-                    ICUResourceBundle.ICU_BASE_NAME,
+                    ICUData.ICU_BASE_NAME,
                     "currencyNumericCodes",
                     ICUResourceBundle.ICU_DATA_CLASS_LOADER);
             UResourceBundle codeMap = bundle.get("codeMap");

@@ -1,7 +1,7 @@
 /*
  *******************************************************************************
- * Copyright (C) 2005-2009, International Business Machines Corporation and    *
- * others. All Rights Reserved.                                                *
+ * Copyright (C) 2005-2016, International Business Machines Corporation and
+ * others. All Rights Reserved.
  *******************************************************************************
  */
 
@@ -13,6 +13,8 @@
 package com.ibm.icu.dev.test.util;
 
 import java.util.HashMap;
+
+import com.ibm.icu.impl.ICUData;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +44,7 @@ public class LocaleAliasTest extends com.ibm.icu.dev.test.TestFmwk {
     };
     
     private static final int _LOCALE_NUMBER = _LOCALES.length;
-    private ULocale[] available = null;
+    private static ULocale[] available = null;
     private HashMap availableMap = new HashMap();
     private static final ULocale _DEFAULT_LOCALE = ULocale.US;
     
@@ -191,6 +193,7 @@ public class LocaleAliasTest extends com.ibm.icu.dev.test.TestFmwk {
         }
         ULocale.setDefault(defLoc);
     }
+
     @Test
     public void TestUResourceBundle() {
         ULocale defLoc = ULocale.getDefault();
@@ -205,8 +208,8 @@ public class LocaleAliasTest extends com.ibm.icu.dev.test.TestFmwk {
             UResourceBundle urb1 = null;
             UResourceBundle urb2 = null;
             
-            urb1 = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, oldLoc);
-            urb2 = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, newLoc);
+            urb1 = UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, oldLoc);
+            urb2 = UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, newLoc);
             ULocale l1 = urb1.getULocale();
             ULocale l2 = urb2.getULocale();        
             if (!newLoc.equals(l1)) {

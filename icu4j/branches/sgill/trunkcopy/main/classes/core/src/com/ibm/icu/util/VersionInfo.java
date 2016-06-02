@@ -162,6 +162,12 @@ public final class VersionInfo implements Comparable<VersionInfo>
     public static final VersionInfo UNICODE_8_0;
 
     /**
+     * Unicode 9.0 version
+     * @stable ICU 58
+     */
+    public static final VersionInfo UNICODE_9_0;
+
+    /**
      * ICU4J current release version
      * @stable ICU 2.8
      */
@@ -174,7 +180,7 @@ public final class VersionInfo implements Comparable<VersionInfo>
      * @deprecated This API is ICU internal only.
      */
     @Deprecated
-    public static final String ICU_DATA_VERSION_PATH = "57b";
+    public static final String ICU_DATA_VERSION_PATH = "58b";
     
     /**
      * Data version in ICU4J.
@@ -531,10 +537,11 @@ public final class VersionInfo implements Comparable<VersionInfo>
         UNICODE_6_3   = getInstance(6, 3, 0, 0);
         UNICODE_7_0   = getInstance(7, 0, 0, 0);
         UNICODE_8_0   = getInstance(8, 0, 0, 0);
+        UNICODE_9_0   = getInstance(9, 0, 0, 0);
 
-        ICU_VERSION   = getInstance(57, 1, 0, 0);
-        ICU_DATA_VERSION = getInstance(57, 1, 0, 0);
-        UNICODE_VERSION = UNICODE_8_0;
+        ICU_VERSION   = getInstance(58, 0, 1, 0);
+        ICU_DATA_VERSION = getInstance(58, 0, 1, 0);
+        UNICODE_VERSION = UNICODE_9_0;
 
         UCOL_RUNTIME_VERSION = getInstance(9);
         UCOL_BUILDER_VERSION = getInstance(9);

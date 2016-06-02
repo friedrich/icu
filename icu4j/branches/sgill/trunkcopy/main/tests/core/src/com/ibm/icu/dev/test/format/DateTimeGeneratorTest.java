@@ -807,6 +807,24 @@ public class DateTimeGeneratorTest extends TestFmwk {
     }
 
     /* Tests the method
+     *        public String getCanonicalSkeletonAllowingDuplicates(String pattern)
+     */
+    @Test
+    public void TestGetCanonicalSkeletonAllowingDuplicates(){
+        DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance();
+        String[] cases = {"GyQMwEdaHmsSv","LegH","Legh"};
+        String[] results = {"GyQMwEdHmsSv","MEdH","MEdh"};
+        for(int i=0; i<cases.length; i++){
+            if(!dtpg.getCanonicalSkeletonAllowingDuplicates(cases[i]).equals(results[i])){
+                errln("DateTimePatternGenerator.getCanonicalSkeletonAllowingDuplicates(String) did " +
+                        "return the expected result when passing " + cases[i] +
+                        " and expected " + results[i] + " but got " +
+                        dtpg.getSkeleton(cases[i]));
+            }
+        }
+    }
+
+    /* Tests the method
      *        public String getBaseSkeleton(String pattern)
      */
     @Test
@@ -1042,6 +1060,7 @@ public class DateTimeGeneratorTest extends TestFmwk {
     /* Tests the constructor
      *    public VariableField(String string)
      */
+    //TODO(junit) why is this "unused"
     @SuppressWarnings("unused")
     @Test
     public void TestVariableField_String(){

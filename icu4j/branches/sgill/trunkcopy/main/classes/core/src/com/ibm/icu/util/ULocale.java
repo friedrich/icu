@@ -24,13 +24,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.ibm.icu.impl.ICUCache;
+import com.ibm.icu.impl.CacheBase;
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.ICUResourceTableAccess;
 import com.ibm.icu.impl.LocaleIDParser;
 import com.ibm.icu.impl.LocaleIDs;
 import com.ibm.icu.impl.LocaleUtility;
-import com.ibm.icu.impl.SimpleCache;
+import com.ibm.icu.impl.SoftCache;
 import com.ibm.icu.impl.locale.AsciiUtil;
 import com.ibm.icu.impl.locale.BaseLocale;
 import com.ibm.icu.impl.locale.Extension;
@@ -114,7 +115,12 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
     // using serialver from jdk1.4.2_05
     private static final long serialVersionUID = 3715177670352309217L;
 
-    private static ICUCache<String, String> nameCache = new SimpleCache<String, String>();
+    private static CacheBase<String, String, Void> nameCache = new SoftCache<String, String, Void>() {
+        @Override
+        protected String createInstance(String tmpLocaleID, Void unused) {
+            return new LocaleIDParser(tmpLocaleID).getName();
+        }
+    };
 
     /**
      * Useful constant for language.
@@ -304,7 +310,12 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
         FORMAT
     }
 
-    private static final SimpleCache<Locale, ULocale> CACHE = new SimpleCache<Locale, ULocale>();
+    private static final SoftCache<Locale, ULocale, Void> CACHE = new SoftCache<Locale, ULocale, Void>() {
+        @Override
+        protected ULocale createInstance(Locale key, Void unused) {
+            return JDKLocaleHelper.toULocale(key);
+        }
+    };
 
     /**
      * Cache the locale.
@@ -441,12 +452,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
         if (loc == null) {
             return null;
         }
-        ULocale result = CACHE.get(loc);
-        if (result == null) {
-            result = JDKLocaleHelper.toULocale(loc);
-            CACHE.put(loc, result);
-        }
-        return result;
+        return CACHE.getInstance(loc, null /* unused */);
     }
 
     /**
@@ -1164,12 +1170,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
         } else {
             tmpLocaleID = localeID;
         }
-        String name = nameCache.get(tmpLocaleID);
-        if (name == null) {
-            name = new LocaleIDParser(tmpLocaleID).getName();
-            nameCache.put(tmpLocaleID, name);
-        }
-        return name;
+        return nameCache.getInstance(tmpLocaleID, null /* unused */);
     }
 
     /**
@@ -1964,7 +1965,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * @stable ICU 4.0
      */
     public String getCharacterOrientation() {
-        return ICUResourceTableAccess.getTableString(ICUResourceBundle.ICU_BASE_NAME, this,
+        return ICUResourceTableAccess.getTableString(ICUData.ICU_BASE_NAME, this,
                 "layout", "characters");
     }
 
@@ -1976,7 +1977,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * @stable ICU 4.0
      */
     public String getLineOrientation() {
-        return ICUResourceTableAccess.getTableString(ICUResourceBundle.ICU_BASE_NAME, this,
+        return ICUResourceTableAccess.getTableString(ICUData.ICU_BASE_NAME, this,
                 "layout", "lines");
     }
 
@@ -2955,7 +2956,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
     private static String lookupLikelySubtags(String localeId) {
         UResourceBundle bundle =
                 UResourceBundle.getBundleInstance(
-                        ICUResourceBundle.ICU_BASE_NAME, "likelySubtags");
+                        ICUData.ICU_BASE_NAME, "likelySubtags");
         try {
             return bundle.getString(localeId);
         }

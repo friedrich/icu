@@ -9,12 +9,13 @@ package com.ibm.icu.text;
 import java.util.EnumMap;
 import java.util.Locale;
 
+import com.ibm.icu.impl.CacheBase;
 import com.ibm.icu.impl.CalendarData;
 import com.ibm.icu.impl.DontCareFieldPosition;
-import com.ibm.icu.impl.ICUCache;
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
-import com.ibm.icu.impl.SimpleCache;
 import com.ibm.icu.impl.SimpleFormatterImpl;
+import com.ibm.icu.impl.SoftCache;
 import com.ibm.icu.impl.StandardPlural;
 import com.ibm.icu.impl.UResource;
 import com.ibm.icu.lang.UCharacter;
@@ -863,17 +864,17 @@ public final class RelativeDateTimeFormatter {
     }
 
     private static class Cache {
-        private final ICUCache<String, RelativeDateTimeFormatterData> cache =
-            new SimpleCache<String, RelativeDateTimeFormatterData>();
+        private final CacheBase<String, RelativeDateTimeFormatterData, ULocale> cache =
+            new SoftCache<String, RelativeDateTimeFormatterData, ULocale>() {
+                @Override
+                protected RelativeDateTimeFormatterData createInstance(String key, ULocale locale) {
+                    return new Loader(locale).load();
+                }
+            };
 
         public RelativeDateTimeFormatterData get(ULocale locale) {
             String key = locale.toString();
-            RelativeDateTimeFormatterData result = cache.get(key);
-            if (result == null) {
-                result = new Loader(locale).load();
-                cache.put(key, result);
-            }
-            return result;
+            return cache.getInstance(key, locale);
         }
     }
 
@@ -1063,7 +1064,7 @@ public final class RelativeDateTimeFormatter {
         }
 
         @Override
-        public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+        public UResource.TableSink getOrCreateTableSink(UResource.Key key) {
             // Get base unit and style from the key value.
             style = styleFromKey(key);
             int limit = key.length() - styleSuffixLength(style);
@@ -1112,7 +1113,7 @@ public final class RelativeDateTimeFormatter {
         // Handles "relativeTime" entries, e.g., under "day", "hour", "minute", "minute-short", etc.
         class RelativeTimeSink extends UResource.TableSink {
             @Override
-            public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+            public UResource.TableSink getOrCreateTableSink(UResource.Key key) {
                 if (key.contentEquals("past")) {
                     pastFutureIndex = 0;
                 } else if (key.contentEquals("future")) {
@@ -1208,7 +1209,7 @@ public final class RelativeDateTimeFormatter {
             }
 
             @Override
-            public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+            public UResource.TableSink getOrCreateTableSink(UResource.Key key) {
                 if (key.contentEquals("relative")) {
                     return relativeSink;
                 } else if (key.contentEquals("relativeTime")) {
@@ -1231,7 +1232,7 @@ public final class RelativeDateTimeFormatter {
             // Sink for traversing data.
             RelDateTimeFmtDataSink sink = new RelDateTimeFmtDataSink(ulocale);
             ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.
-                    getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, ulocale);
+                    getBundleInstance(ICUData.ICU_BASE_NAME, ulocale);
 
             // Use sink mechanism to traverse data structure.
             r.getAllTableItemsWithFallback("fields", sink);
