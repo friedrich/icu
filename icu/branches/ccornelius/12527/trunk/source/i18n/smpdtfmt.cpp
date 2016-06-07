@@ -704,21 +704,28 @@ void SimpleDateFormat::construct(EStyle timeStyle,
     const UResourceBundle *bundle = ures_open(NULL, locale.getBaseName(), &status);
     if (U_FAILURE(status)) return;
 
-    const StringPiece calBase("calendar/");
-    const StringPiece dtPatterns("/DateTimePatterns");
-    CharString resourcePath;
-    resourcePath.append(calBase, status);
-    if (U_FAILURE(status)) return;
-    resourcePath.append(cType, status).append(dtPatterns, status);
-    if (U_FAILURE(status)) return;
+    UBool cTypeIsGregorian = TRUE;
+    UResourceBundle* dateTimePatterns;
+    if (cType != NULL && uprv_strcmp(cType, "gregorian") != 0) {
+        CharString resourcePath("calendar/", status);
+        resourcePath.append(cType, status).append("/DateTimePatterns", status);
+        dateTimePatterns =
+            ures_getByKeyWithFallback(bundle, resourcePath.data(),
+                                      (UResourceBundle*)NULL, &status);
+        cTypeIsGregorian = FALSE;
+    }
 
-    UResourceBundle* dateTimePatterns =
-        ures_getByKeyWithFallback(bundle, resourcePath.data(), (UResourceBundle*)NULL, &status);
+    // Check for "gregorian" fallback.
+    if (cTypeIsGregorian || status == U_MISSING_RESOURCE_ERROR) {
+        status = U_ZERO_ERROR;
+        dateTimePatterns =
+            ures_getByKeyWithFallback(bundle,
+                                      "calendar/gregorian/DateTimePatterns",
+                                      (UResourceBundle*)NULL, &status);
+    }
     if (U_FAILURE(status)) return;
 
     UResourceBundle *currentBundle;
-
-    if (U_FAILURE(status)) return;
 
     if (ures_getSize(dateTimePatterns) <= kDateTime)
     {
