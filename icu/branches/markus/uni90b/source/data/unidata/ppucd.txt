@@ -3537,7 +3537,7 @@ cp;08DE;age=9.0;ccc=230;na=ARABIC SMALL HIGH WORD QIF
 cp;08DF;age=9.0;ccc=230;na=ARABIC SMALL HIGH WORD WAQFA
 cp;08E0;age=9.0;-Alpha;ccc=230;na=ARABIC SMALL HIGH FOOTNOTE MARKER
 cp;08E1;age=9.0;-Alpha;ccc=230;na=ARABIC SMALL HIGH SIGN SAFHA
-cp;08E2;age=9.0;-Alpha;bc=AN;gc=Cf;GCB=CN;-Gr_Ext;-IDC;jt=U;lb=AL;na=ARABIC DISPUTED END OF AYAH;PCM;SB=FO;sc=Zyyy;WB=FO;-XIDC
+cp;08E2;age=9.0;-Alpha;bc=AN;gc=Cf;GCB=PP;-Gr_Ext;-IDC;jt=U;lb=AL;na=ARABIC DISPUTED END OF AYAH;PCM;SB=FO;sc=Zyyy;WB=FO;-XIDC
 # Extended vowel sign for Arwi
 cp;08E3;age=8.0;ccc=220;Dia;na=ARABIC TURNED DAMMA BELOW
 # Extended vowel signs for Rohingya

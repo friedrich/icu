@@ -66,8 +66,7 @@ http://www.unicode.org/reports/tr44/tr44-17.html
 - cldrbug 9414: UCA 9
 - ^/branches/markus/uni90 at r11518 from trunk at r11517
 
-- TODO cldrbug 8109: Unicode 8.0 script metadata
-- TODO cldrbug 8418: Updated segmentation for Unicode 8.0
+- cldrbug 8745: Unicode 9.0 script metadata
 
 *** Unicode version numbers
 - makedata.mak
