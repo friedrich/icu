@@ -227,46 +227,76 @@ public class RelativeDateFormat extends DateFormat {
         }
         return null;
     }
-    
+
+    // Implements basic sink structure to get "contextTransforms/relative". Use
+    //   alias mechanism to handle the other cases.
+    //
+    private static final class RelDateFmtCapContextSink extends UResource.Sink {
+        @Override
+        public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
+            UResource.Table table = value.getTable();
+            for (int i = 0; table.getKeyAndValue(i, key, value); ++i) {
+                if (key.contentEquals("relative") && localContextValues == null) {
+                    localContextValues = value.getIntVector();
+                }
+            }
+        }
+            
+        private int[] localContextValues;
+        
+        public int[] getCapitalizationContextValues() {
+            return localContextValues;
+          }
+            
+        public RelDateFmtCapContextSink() {
+            localContextValues = null;
+        }
+
+    }
+
     // Implements basic sink structure to get "fields/day/relative". Use
     //   alias mechanism to handle the other cases.
     //
-    private static final class RelDateFmtCapContextSink extends UResource.TableSink {
-   
+    private static final class RelDateFmtDataSink extends UResource.Sink {
+
         @Override
-        public void put(UResource.Key key, UResource.Value value) {
+        public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
             if (value.getType() == ICUResourceBundle.ALIAS) { 
                 return;
             }
+            
+            UResource.Table table = value.getTable();
+            for (int i = 0; table.getKeyAndValue(i, key, value); ++i) {
 
-            if (key.contentEquals("relative")) {
-              if (contextValues == null) {
-                  contextValues = value.getIntVector();
-              }
+                int keyOffset;
+                try {
+                    keyOffset = Integer.parseInt(key.toString()) + 2;  // TODO: Use LAST_2;
+                }
+                catch (NumberFormatException nfe) {
+                    // Flag the error?
+                    return;
+                }
+                // Check if already set.
+                if (localFDateStrings[keyOffset] == null) {
+                    localFDateStrings[keyOffset] = value.getString(); 
+                }
             }
         }
         
-        private int[] contextValues;
-               
-        public int[] getCapitalizationContextValues() {
-          return contextValues;
-        }
+        private String[] localFDateStrings;
         
-        public RelDateFmtCapContextSink() {
-          contextValues = null;
+        public RelDateFmtDataSink(String[] dateStrings) {
+            localFDateStrings = dateStrings;
+            for (int index = 0; index < localFDateStrings.length; index ++) {
+                localFDateStrings[index] = null;
+            }
         }
     }
-    
-    // Implements basic sink structure to get "fields/day/relative". Use
-    //   alias mechanism to handle the other cases.
-    //
-    private static final class RelDateFmtDataSink extends UResource.TableSink {
+    private static final class RelDateFmtDataSinkOld extends UResource.TableSink {
 
         @Override
         public void put(UResource.Key key, UResource.Value value) {
             if (value.getType() == ICUResourceBundle.ALIAS) { 
-                // TODO: Handle alias.
-                String alias = value.getAliasString();
                 return;
             }
 
@@ -286,7 +316,7 @@ public class RelativeDateFormat extends DateFormat {
         
         private String[] localFDateStrings;
         
-        public RelDateFmtDataSink(String[] dateStrings) {
+        public RelDateFmtDataSinkOld(String[] dateStrings) {
             localFDateStrings = dateStrings;
             for (int index = 0; index < localFDateStrings.length; index ++) {
                 localFDateStrings[index] = null;
@@ -305,14 +335,8 @@ public class RelativeDateFormat extends DateFormat {
          fDateStrings = new String[6];
         }
         RelDateFmtDataSink sink = new RelDateFmtDataSink(fDateStrings);
-        rb.getAllTableItemsWithFallback("fields/day/relative", sink);
-        
-        RelDateFmtCapContextSink contextSink = new RelDateFmtCapContextSink();
-        rb.getAllTableItemsWithFallback("contextTransforms", contextSink);
-        int[] contextValues = contextSink.getCapitalizationContextValues();
-        if (contextValues != null) {
-          
-        }
+// TODO        rb.getAllItemsWithFallback("fields/day/relative", sink);
+        rb.getAllItemsWithFallback("fields/day/relative", sink);
     }
     
     /**
@@ -321,12 +345,12 @@ public class RelativeDateFormat extends DateFormat {
     private void initCapitalizationContextInfo(ULocale locale) {
         ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, locale);
         try { 
-            RelDateFmtCapContextSink contextSink = new RelDateFmtCapContextSink();
-            rb.getAllTableItemsWithFallback("contextTransforms", contextSink);
-            int[] intVector = contextSink.getCapitalizationContextValues();
-            if (intVector.length >= 2) {
-                capitalizationOfRelativeUnitsForListOrMenu = (intVector[0] != 0);
-                capitalizationOfRelativeUnitsForStandAlone = (intVector[1] != 0);
+            RelDateFmtCapContextSink contextSinkNew = new RelDateFmtCapContextSink();
+            rb.getAllItemsWithFallback("contextTransforms", contextSinkNew);
+            int [] intVector2 = contextSinkNew.getCapitalizationContextValues();
+            if (intVector2.length >= 2) {
+                capitalizationOfRelativeUnitsForListOrMenu = (intVector2[0] != 0);
+                capitalizationOfRelativeUnitsForStandAlone = (intVector2[1] != 0);
             }
         } catch (MissingResourceException e) {
             // use default
