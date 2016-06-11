@@ -35,14 +35,15 @@ struct UTrie;
 U_NAMESPACE_BEGIN
 
 /** @internal */
-struct RBBIDataHeader;
-class  RuleBasedBreakIteratorTables;
+class  BreakCache;
 class  BreakIterator;
-class  RBBIDataWrapper;
-class  UStack;
 class  LanguageBreakEngine;
-class  UnhandledEngine;
+struct RBBIDataHeader;
+class  RBBIDataWrapper;
 struct RBBIStateTable;
+class  RuleBasedBreakIteratorTables;
+class  UnhandledEngine;
+class  UStack;
 
 
 
@@ -87,6 +88,12 @@ private:
      *    be returned from getText()
      */
     UCharCharacterIterator *fDCharIter;
+
+    /**
+     * A cache of already determined boundary positions.
+     *    Iteration results are taken from the cache when possible.
+     */
+    BreakCache         *fBreakCache;
 
     /**
      * The rule data for this BreakIterator instance

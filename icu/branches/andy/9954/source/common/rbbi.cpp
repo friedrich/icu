@@ -19,18 +19,19 @@
 #include "unicode/rbbi.h"
 #include "unicode/schriter.h"
 #include "unicode/uchriter.h"
-#include "unicode/udata.h"
 #include "unicode/uclean.h"
-#include "rbbidata.h"
-#include "rbbirb.h"
+#include "unicode/udata.h"
+
+#include "break_cache.h"
+#include "brkeng.h"
+#include "ucln_cmn.h"
 #include "cmemory.h"
 #include "cstring.h"
-#include "umutex.h"
-#include "ucln_cmn.h"
-#include "brkeng.h"
-
+#include "rbbidata.h"
+#include "rbbirb.h"
 #include "uassert.h"
-#include "uvector.h"
+#include "umutex.h"
+#include "uvectr32.h"
 
 // if U_LOCAL_SERVICE_HOOK is defined, then localsvc.cpp is expected to be included.
 #if U_LOCAL_SERVICE_HOOK
@@ -44,10 +45,10 @@ static UBool fTrace = FALSE;
 U_NAMESPACE_BEGIN
 
 // The state number of the starting state
-#define START_STATE 1
+static const int32_t START_STATE = 1;
 
 // The state-transition value indicating "stop"
-#define STOP_STATE  0
+static const int32_t STOP_STATE = 0;
 
 
 UOBJECT_DEFINE_RTTI_IMPLEMENTATION(RuleBasedBreakIterator)
@@ -1585,7 +1586,7 @@ int32_t RuleBasedBreakIterator::checkDictionary(int32_t startPos,
     uint16_t    category;
     int32_t     current;
     UErrorCode  status = U_ZERO_ERROR;
-    UStack      breaks(status);
+    UVector32   breaks(status);
     int32_t     foundBreakCount = 0;
     UChar32     c = utext_current32(fText);
 
@@ -1661,7 +1662,7 @@ int32_t RuleBasedBreakIterator::checkDictionary(int32_t startPos,
         // Ask the language object if there are any breaks. It will leave the text
         // pointer on the other side of its range, ready to search for the next one.
         if (lbe != NULL) {
-            foundBreakCount += lbe->findBreaks(fText, rangeStart, rangeEnd, FALSE, fBreakType, breaks);
+            foundBreakCount += lbe->findBreaks(fText, rangeStart, rangeEnd, fBreakType, breaks);
         }
         
         // Reload the loop variables for the next go-round
