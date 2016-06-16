@@ -8,12 +8,9 @@ package com.ibm.icu.impl;
 
 import java.text.FieldPosition;
 import java.text.ParsePosition;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.MissingResourceException;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.ibm.icu.impl.UResource;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.DateFormat;
@@ -24,7 +21,7 @@ import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
-import com.ibm.icu.util.UResourceBundleIterator;
+
 
 /**
  * @author srl
@@ -35,20 +32,6 @@ public class RelativeDateFormat extends DateFormat {
      * @author srl
      *
      */
-    public static class URelativeString {
-        URelativeString(int offset, String string) {
-            this.offset = offset;
-            this.string = string;
-        }
-        URelativeString(String offset, String string) {
-            this.offset = Integer.parseInt(offset);
-            this.string = string;
-        }
-        public int    offset;
-        public String string;
-    }
-
-    // copy c'tor?
     
     /**
      * @param timeStyle The time style for the date and time.
@@ -91,7 +74,7 @@ public class RelativeDateFormat extends DateFormat {
             fTimePattern = fDateTimeFormat.toPattern();
         }
 
-        initializeCalendar(null, fLocale);
+        initializeCalendar(fLocale);
         loadDates();
         initializeCombinedFormat(calendar, fLocale);
     }
@@ -216,61 +199,102 @@ public class RelativeDateFormat extends DateFormat {
     int fTimeStyle;
     ULocale  fLocale;
     
-    private transient URelativeString fDates[] = null; // array of strings
+    private transient String fDateStrings[] = null;
     
     private boolean combinedFormatHasDateAtStart = false;
     private boolean capitalizationInfoIsSet = false;
     private boolean capitalizationOfRelativeUnitsForListOrMenu = false;
     private boolean capitalizationOfRelativeUnitsForStandAlone = false;
     private transient BreakIterator capitalizationBrkIter = null;
-   
-    
+
     /**
      * Get the string at a specific offset.
      * @param day day offset ( -1, 0, 1, etc.. )
      * @return the string, or NULL if none at that location.
      */
     private String getStringForDay(int day) {
-        if(fDates == null) {
+        if(fDateStrings == null) {
             loadDates();
         }
-        for(int i=0;i<fDates.length;i++) {
-            if(fDates[i].offset == day) {
-                return fDates[i].string;
-            }
+        int dayOffset = day + 2;  // Offset RelativeDateTimeFormatter.LAST_2.
+        if (dayOffset >= 0 && dayOffset < fDateStrings.length) {
+            return fDateStrings[dayOffset];
         }
         return null;
     }
-    
+
+    // Sink to get "contextTransforms/relative".
+    private static final class RelDateFmtCapContextSink extends UResource.Sink {
+        @Override
+        public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
+            UResource.Table table = value.getTable();
+            for (int i = 0; table.getKeyAndValue(i, key, value); ++i) {
+                if (key.contentEquals("relative") && localContextValues == null) {
+                    localContextValues = value.getIntVector();
+                }
+            }
+        }
+
+        private int[] localContextValues;
+        
+        public int[] getCapitalizationContextValues() {
+            return localContextValues;
+          }
+            
+        public RelDateFmtCapContextSink() {
+            localContextValues = null;
+        }
+    }
+
+    // Sink to get "fields/day/relative".
+    private static final class RelDateFmtDataSink extends UResource.Sink {
+
+        @Override
+        public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
+            if (value.getType() == ICUResourceBundle.ALIAS) { 
+                return;
+            }
+            
+            UResource.Table table = value.getTable();
+            for (int i = 0; table.getKeyAndValue(i, key, value); ++i) {
+
+                int keyOffset;
+                try {
+                    keyOffset = Integer.parseInt(key.toString()) + 2;  // TODO: Use LAST_2;
+                }
+                catch (NumberFormatException nfe) {
+                    // Flag the error?
+                    return;
+                }
+                // Check if already set.
+                if (localFDateStrings[keyOffset] == null) {
+                    localFDateStrings[keyOffset] = value.getString(); 
+                }
+            }
+        }
+
+        private String[] localFDateStrings;
+        
+        public RelDateFmtDataSink(String[] dateStrings) {
+            localFDateStrings = dateStrings;
+            for (int index = 0; index < localFDateStrings.length; index ++) {
+                localFDateStrings[index] = null;
+            }
+        }
+    }
+
     /** 
      * Load the Date string array
      */
     private synchronized void loadDates() {
         ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, fLocale);
-        ICUResourceBundle rdb = rb.getWithFallback("fields/day/relative");
-        
-        Set<URelativeString> datesSet = new TreeSet<URelativeString>(new Comparator<URelativeString>() { 
-            public int compare(URelativeString r1, URelativeString r2) {
-                
-                if(r1.offset == r2.offset) {
-                    return 0;
-                } else if(r1.offset < r2.offset) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            }
-        }) ;
-        
-        for(UResourceBundleIterator i = rdb.getIterator();i.hasNext();) {
-            UResourceBundle line = i.next();
-            
-            String k = line.getKey();
-            String v = line.getString();
-            URelativeString rs = new URelativeString(k,v);
-            datesSet.add(rs);
+
+        // Use sink mechanism to traverse data structure.
+        if (fDateStrings == null) {
+         fDateStrings = new String[6];
         }
-        fDates = datesSet.toArray(new URelativeString[0]);
+        RelDateFmtDataSink sink = new RelDateFmtDataSink(fDateStrings);
+        rb.getAllItemsWithFallback("fields/day/relative", sink);
     }
     
     /**
@@ -278,12 +302,13 @@ public class RelativeDateFormat extends DateFormat {
      */
     private void initCapitalizationContextInfo(ULocale locale) {
         ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, locale);
-        try {
-            ICUResourceBundle rdb = rb.getWithFallback("contextTransforms/relative");
-            int[] intVector = rdb.getIntVector();
-            if (intVector.length >= 2) {
-                capitalizationOfRelativeUnitsForListOrMenu = (intVector[0] != 0);
-                capitalizationOfRelativeUnitsForStandAlone = (intVector[1] != 0);
+        try { 
+            RelDateFmtCapContextSink contextSinkNew = new RelDateFmtCapContextSink();
+            rb.getAllItemsWithFallback("contextTransforms", contextSinkNew);
+            int [] intVector2 = contextSinkNew.getCapitalizationContextValues();
+            if (intVector2.length >= 2) {
+                capitalizationOfRelativeUnitsForListOrMenu = (intVector2[0] != 0);
+                capitalizationOfRelativeUnitsForStandAlone = (intVector2[1] != 0);
             }
         } catch (MissingResourceException e) {
             // use default
@@ -309,13 +334,9 @@ public class RelativeDateFormat extends DateFormat {
      * @param status Error code
      * @return the newly constructed fCalendar
      */
-    private Calendar initializeCalendar(TimeZone zone, ULocale locale) {
+    private Calendar initializeCalendar(ULocale locale) {
         if (calendar == null) {
-            if(zone == null) {
-                calendar = Calendar.getInstance(locale);
-            } else {
-                calendar = Calendar.getInstance(zone, locale);
-            }
+            calendar = Calendar.getInstance(locale);
         }
         return calendar;
     }
