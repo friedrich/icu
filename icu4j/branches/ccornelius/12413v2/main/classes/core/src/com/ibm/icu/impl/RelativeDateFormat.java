@@ -249,10 +249,6 @@ public class RelativeDateFormat extends DateFormat {
                 }
             }
         }
-
-        
-        public RelDateFmtDataSink() {
-        }
     }
 
     /** 
