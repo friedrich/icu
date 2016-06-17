@@ -264,7 +264,7 @@ public class RelativeDateFormat extends DateFormat {
         RelDateFmtDataSink sink = new RelDateFmtDataSink();
         rb.getAllItemsWithFallback("fields/day/relative", sink);
     }
-    
+
     /**
      * Set capitalizationOfRelativeUnitsForListOrMenu, capitalizationOfRelativeUnitsForStandAlone 
      */
