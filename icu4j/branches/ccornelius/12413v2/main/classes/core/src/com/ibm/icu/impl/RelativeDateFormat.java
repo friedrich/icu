@@ -74,7 +74,7 @@ public class RelativeDateFormat extends DateFormat {
             fTimePattern = fDateTimeFormat.toPattern();
         }
 
-        initializeCalendar(fLocale);
+        initializeCalendar(null, fLocale);
         loadDates();
         initializeCombinedFormat(calendar, fLocale);
     }
@@ -223,38 +223,15 @@ public class RelativeDateFormat extends DateFormat {
         return null;
     }
 
-    // Sink to get "contextTransforms/relative".
-    private static final class RelDateFmtCapContextSink extends UResource.Sink {
-        @Override
-        public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
-            UResource.Table table = value.getTable();
-            for (int i = 0; table.getKeyAndValue(i, key, value); ++i) {
-                if (key.contentEquals("relative") && localContextValues == null) {
-                    localContextValues = value.getIntVector();
-                }
-            }
-        }
-
-        private int[] localContextValues;
-        
-        public int[] getCapitalizationContextValues() {
-            return localContextValues;
-          }
-            
-        public RelDateFmtCapContextSink() {
-            localContextValues = null;
-        }
-    }
-
     // Sink to get "fields/day/relative".
-    private static final class RelDateFmtDataSink extends UResource.Sink {
+    private final class RelDateFmtDataSink extends UResource.Sink {
 
         @Override
         public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
             if (value.getType() == ICUResourceBundle.ALIAS) { 
                 return;
             }
-            
+
             UResource.Table table = value.getTable();
             for (int i = 0; table.getKeyAndValue(i, key, value); ++i) {
 
@@ -267,19 +244,14 @@ public class RelativeDateFormat extends DateFormat {
                     return;
                 }
                 // Check if already set.
-                if (localFDateStrings[keyOffset] == null) {
-                    localFDateStrings[keyOffset] = value.getString(); 
+                if (fDateStrings[keyOffset] == null) {
+                    fDateStrings[keyOffset] = value.getString(); 
                 }
             }
         }
 
-        private String[] localFDateStrings;
         
-        public RelDateFmtDataSink(String[] dateStrings) {
-            localFDateStrings = dateStrings;
-            for (int index = 0; index < localFDateStrings.length; index ++) {
-                localFDateStrings[index] = null;
-            }
+        public RelDateFmtDataSink() {
         }
     }
 
@@ -291,9 +263,9 @@ public class RelativeDateFormat extends DateFormat {
 
         // Use sink mechanism to traverse data structure.
         if (fDateStrings == null) {
-         fDateStrings = new String[6];
+           fDateStrings = new String[6];
         }
-        RelDateFmtDataSink sink = new RelDateFmtDataSink(fDateStrings);
+        RelDateFmtDataSink sink = new RelDateFmtDataSink();
         rb.getAllItemsWithFallback("fields/day/relative", sink);
     }
     
@@ -302,13 +274,12 @@ public class RelativeDateFormat extends DateFormat {
      */
     private void initCapitalizationContextInfo(ULocale locale) {
         ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, locale);
-        try { 
-            RelDateFmtCapContextSink contextSinkNew = new RelDateFmtCapContextSink();
-            rb.getAllItemsWithFallback("contextTransforms", contextSinkNew);
-            int [] intVector2 = contextSinkNew.getCapitalizationContextValues();
-            if (intVector2.length >= 2) {
-                capitalizationOfRelativeUnitsForListOrMenu = (intVector2[0] != 0);
-                capitalizationOfRelativeUnitsForStandAlone = (intVector2[1] != 0);
+        try {
+            ICUResourceBundle rdb = rb.getWithFallback("contextTransforms/relative");
+            int[] intVector = rdb.getIntVector();
+            if (intVector.length >= 2) {
+                capitalizationOfRelativeUnitsForStandAlone = (intVector[1] != 0);
+                capitalizationOfRelativeUnitsForListOrMenu = (intVector[0] != 0);
             }
         } catch (MissingResourceException e) {
             // use default
@@ -334,9 +305,13 @@ public class RelativeDateFormat extends DateFormat {
      * @param status Error code
      * @return the newly constructed fCalendar
      */
-    private Calendar initializeCalendar(ULocale locale) {
+    private Calendar initializeCalendar(TimeZone zone, ULocale locale) {
         if (calendar == null) {
-            calendar = Calendar.getInstance(locale);
+            if (zone == null) {
+                calendar = Calendar.getInstance(locale);
+            } else {
+                calendar = Calendar.getInstance(zone, locale);
+            }
         }
         return calendar;
     }
