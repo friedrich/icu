@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -196,6 +197,19 @@ public class CurrencyTest extends TestFmwk {
                 "US Dollar",
                 usd.getName(en, Currency.LONG_NAME, isChoiceFormat));
         // TODO add more tests later
+    }
+
+    @Test
+    public void testGetName_Locale_Int_String_BooleanArray() {
+        Currency currency = Currency.getInstance(ULocale.CHINA);
+        boolean[] isChoiceFormat = new boolean[1];
+        int nameStyle = Currency.LONG_NAME;
+        String pluralCount = "";
+        String ulocaleName =
+                currency.getName(ULocale.CANADA, nameStyle, pluralCount, isChoiceFormat);
+        assertEquals("currency name mismatch", "Chinese Yuan", ulocaleName);
+        String localeName = currency.getName(Locale.CANADA, nameStyle, pluralCount, isChoiceFormat);
+        assertEquals("currency name mismatch", ulocaleName, localeName);
     }
 
     @Test
@@ -778,5 +792,31 @@ public class CurrencyTest extends TestFmwk {
     @Test
     public void TestCurrencyInfoCtor() {
         new CurrencyMetaInfo.CurrencyInfo("region", "code", 0, 0, 1);
+    }
+
+    /**
+     * Test cases for rounding and fractions.
+     */
+    @Test
+    public void testGetDefaultFractionDigits_CurrencyUsage() {
+        Currency currency = Currency.getInstance(ULocale.CHINA);
+        int cashFractionDigits = currency.getDefaultFractionDigits(Currency.CurrencyUsage.CASH);
+        assertEquals("number of digits in fraction incorrect", 2, cashFractionDigits);
+    }
+    @Test
+    public void testGetRoundingIncrement() {
+        Currency currency = Currency.getInstance(ULocale.JAPAN);
+        // It appears as though this always returns 0 irrespective of the currency.
+        double roundingIncrement = currency.getRoundingIncrement();
+        // TODO: replace the JUnit import with TestFmwk assertEquals.
+        Assert.assertEquals(0.0, roundingIncrement, 0.0);
+    }
+    @Test
+    public void testGetRoundingIncrement_CurrencyUsage() {
+        Currency currency = Currency.getInstance(ULocale.JAPAN);
+        // It appears as though this always returns 0 irrespective of the currency or usage.
+        double roundingIncrement = currency.getRoundingIncrement(Currency.CurrencyUsage.CASH);
+        // TODO: replace the JUnit import with TestFmwk assertEquals.
+        Assert.assertEquals(0.0, roundingIncrement, 0.0);
     }
 }

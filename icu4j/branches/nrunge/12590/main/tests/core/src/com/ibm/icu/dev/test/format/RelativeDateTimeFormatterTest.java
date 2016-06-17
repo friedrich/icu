@@ -937,4 +937,27 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         String w = fmt.format(6.0, Direction.NEXT, RelativeUnit.QUARTERS);
         assertEquals("narrow: in 6 qtr", "in 6 qtr", w);
     }
+
+    /**
+     * Ensure that it behaves the same with an implicit default locale as it does with explicitly
+     * specifying the default locale.
+     */
+    @Test
+    public void testGetInstance() {
+        RelativeDateTimeFormatter withImplicitDefaultLocale
+                = RelativeDateTimeFormatter.getInstance(Locale.CANADA);
+        RelativeDateTimeFormatter withExplicitDefaultLocale
+                = RelativeDateTimeFormatter.getInstance(ULocale.getDefault());
+        String formatWithImplicitDefaultLocale =
+                withImplicitDefaultLocale.format(5,
+                        RelativeDateTimeFormatter.Direction.NEXT,
+                        RelativeDateTimeFormatter.RelativeUnit.MINUTES);
+        String formatWithExplicitDefaultLocale =
+                withExplicitDefaultLocale.format(5,
+                        RelativeDateTimeFormatter.Direction.NEXT,
+                        RelativeDateTimeFormatter.RelativeUnit.MINUTES);
+        assertEquals("Explicit vs. implicit default locale formatting mismatch",
+		     formatWithExplicitDefaultLocale, formatWithImplicitDefaultLocale);
+    }
+
 }
