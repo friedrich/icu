@@ -16,6 +16,7 @@ import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DisplayContext;
 import com.ibm.icu.text.MessageFormat;
+import com.ibm.icu.text.RelativeDateTimeFormatter;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.TimeZone;
@@ -216,7 +217,8 @@ public class RelativeDateFormat extends DateFormat {
         if(fDateStrings == null) {
             loadDates();
         }
-        int dayOffset = day + 2;  // Offset RelativeDateTimeFormatter.LAST_2.
+        // Adjust to zero-based index. 
+        int dayOffset = day + RelativeDateTimeFormatter.Direction.THIS.ordinal();
         if (dayOffset >= 0 && dayOffset < fDateStrings.length) {
             return fDateStrings[dayOffset];
         }
@@ -237,7 +239,7 @@ public class RelativeDateFormat extends DateFormat {
 
                 int keyOffset;
                 try {
-                    keyOffset = Integer.parseInt(key.toString()) + 2;  // TODO: Use LAST_2;
+                    keyOffset = Integer.parseInt(key.toString()) + RelativeDateTimeFormatter.Direction.THIS.ordinal();
                 }
                 catch (NumberFormatException nfe) {
                     // Flag the error?
@@ -259,7 +261,8 @@ public class RelativeDateFormat extends DateFormat {
 
         // Use sink mechanism to traverse data structure.
         if (fDateStrings == null) {
-           fDateStrings = new String[6];
+            // Relative day values range from LAST_2 to PLAIN.
+            fDateStrings = new String[RelativeDateTimeFormatter.Direction.PLAIN.ordinal() + 1];
         }
         RelDateFmtDataSink sink = new RelDateFmtDataSink();
         rb.getAllItemsWithFallback("fields/day/relative", sink);
