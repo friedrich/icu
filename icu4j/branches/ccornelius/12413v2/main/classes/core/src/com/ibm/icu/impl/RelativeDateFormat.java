@@ -8,6 +8,7 @@ package com.ibm.icu.impl;
 
 import java.text.FieldPosition;
 import java.text.ParsePosition;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.MissingResourceException;
 import com.ibm.icu.impl.UResource;
@@ -16,13 +17,11 @@ import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DisplayContext;
 import com.ibm.icu.text.MessageFormat;
-import com.ibm.icu.text.RelativeDateTimeFormatter;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
-
 
 /**
  * @author srl
@@ -33,6 +32,20 @@ public class RelativeDateFormat extends DateFormat {
      * @author srl
      *
      */
+    public static class URelativeString {
+        URelativeString(int offset, String string) {
+            this.offset = offset;
+            this.string = string;
+        }
+        URelativeString(String offset, String string) {
+            this.offset = Integer.parseInt(offset);
+            this.string = string;
+        }
+        public int    offset;
+        public String string;
+    }
+
+    // copy c'tor?
     
     /**
      * @param timeStyle The time style for the date and time.
@@ -200,7 +213,7 @@ public class RelativeDateFormat extends DateFormat {
     int fTimeStyle;
     ULocale  fLocale;
     
-    private transient String fDateStrings[] = null;
+    private transient ArrayList<URelativeString> fDates = null;
     
     private boolean combinedFormatHasDateAtStart = false;
     private boolean capitalizationInfoIsSet = false;
@@ -214,13 +227,13 @@ public class RelativeDateFormat extends DateFormat {
      * @return the string, or NULL if none at that location.
      */
     private String getStringForDay(int day) {
-        if(fDateStrings == null) {
+        if(fDates == null) {
             loadDates();
         }
-        // Adjust to zero-based index. 
-        int dayOffset = day + RelativeDateTimeFormatter.Direction.THIS.ordinal();
-        if (dayOffset >= 0 && dayOffset < fDateStrings.length) {
-            return fDateStrings[dayOffset];
+        for(URelativeString dayItem : fDates) {
+            if(dayItem.offset == day) {
+                return dayItem.string;
+            }
         }
         return null;
     }
@@ -239,15 +252,16 @@ public class RelativeDateFormat extends DateFormat {
 
                 int keyOffset;
                 try {
-                    keyOffset = Integer.parseInt(key.toString()) + RelativeDateTimeFormatter.Direction.THIS.ordinal();
+                    keyOffset = Integer.parseInt(key.toString());
                 }
                 catch (NumberFormatException nfe) {
                     // Flag the error?
                     return;
                 }
                 // Check if already set.
-                if (fDateStrings[keyOffset] == null) {
-                    fDateStrings[keyOffset] = value.getString(); 
+                if (getStringForDay(keyOffset) == null) {
+                    URelativeString newDayInfo = new URelativeString(keyOffset, value.getString());
+                    fDates.add(newDayInfo); 
                 }
             }
         }
@@ -260,10 +274,7 @@ public class RelativeDateFormat extends DateFormat {
         ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, fLocale);
 
         // Use sink mechanism to traverse data structure.
-        if (fDateStrings == null) {
-            // Relative day values range from LAST_2 to PLAIN.
-            fDateStrings = new String[RelativeDateTimeFormatter.Direction.PLAIN.ordinal() + 1];
-        }
+        fDates = new ArrayList<URelativeString>();
         RelDateFmtDataSink sink = new RelDateFmtDataSink();
         rb.getAllItemsWithFallback("fields/day/relative", sink);
     }
@@ -277,8 +288,8 @@ public class RelativeDateFormat extends DateFormat {
             ICUResourceBundle rdb = rb.getWithFallback("contextTransforms/relative");
             int[] intVector = rdb.getIntVector();
             if (intVector.length >= 2) {
-                capitalizationOfRelativeUnitsForStandAlone = (intVector[1] != 0);
                 capitalizationOfRelativeUnitsForListOrMenu = (intVector[0] != 0);
+                capitalizationOfRelativeUnitsForStandAlone = (intVector[1] != 0);
             }
         } catch (MissingResourceException e) {
             // use default
@@ -306,7 +317,7 @@ public class RelativeDateFormat extends DateFormat {
      */
     private Calendar initializeCalendar(TimeZone zone, ULocale locale) {
         if (calendar == null) {
-            if (zone == null) {
+            if(zone == null) {
                 calendar = Calendar.getInstance(locale);
             } else {
                 calendar = Calendar.getInstance(zone, locale);
