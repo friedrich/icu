@@ -10,6 +10,7 @@ import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.MissingResourceException;
 import com.ibm.icu.impl.UResource;
 import com.ibm.icu.lang.UCharacter;
@@ -212,8 +213,8 @@ public class RelativeDateFormat extends DateFormat {
     int fDateStyle;
     int fTimeStyle;
     ULocale  fLocale;
-    
-    private transient ArrayList<URelativeString> fDates = null;
+
+    private transient List<URelativeString> fDates = null;
     
     private boolean combinedFormatHasDateAtStart = false;
     private boolean capitalizationInfoIsSet = false;
@@ -223,7 +224,7 @@ public class RelativeDateFormat extends DateFormat {
 
     /**
      * Get the string at a specific offset.
-     * @param day day offset ( -1, 0, 1, etc.. )
+     * @param day day offset ( -1, 0, 1, etc.. ). Does not require sorting by offset.
      * @return the string, or NULL if none at that location.
      */
     private String getStringForDay(int day) {
@@ -243,7 +244,7 @@ public class RelativeDateFormat extends DateFormat {
 
         @Override
         public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
-            if (value.getType() == ICUResourceBundle.ALIAS) { 
+            if (value.getType() == ICUResourceBundle.ALIAS) {
                 return;
             }
 
@@ -261,7 +262,7 @@ public class RelativeDateFormat extends DateFormat {
                 // Check if already set.
                 if (getStringForDay(keyOffset) == null) {
                     URelativeString newDayInfo = new URelativeString(keyOffset, value.getString());
-                    fDates.add(newDayInfo); 
+                    fDates.add(newDayInfo);
                 }
             }
         }
