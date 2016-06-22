@@ -9,9 +9,6 @@
 
 #if !UCONFIG_NO_BREAK_ITERATION
 
-#include "brkeng.h"
-#include "cmemory.h"
-#include "dictbe.h"
 #include "unicode/uchar.h"
 #include "unicode/uniset.h"
 #include "unicode/chariter.h"
@@ -22,8 +19,13 @@
 #include "unicode/uscript.h"
 #include "unicode/ucharstrie.h"
 #include "unicode/bytestrie.h"
+
+#include "brkeng.h"
+#include "cmemory.h"
+#include "dictbe.h"
 #include "charstr.h"
 #include "dictionarydata.h"
+#include "rbbi_dict_cache.h"
 #include "mutex.h"
 #include "uvector.h"
 #include "umutex.h"
