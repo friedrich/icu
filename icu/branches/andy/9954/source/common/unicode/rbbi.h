@@ -90,12 +90,6 @@ private:
     UCharCharacterIterator *fDCharIter;
 
     /**
-     * A cache of already determined boundary positions.
-     *    Iteration results are taken from the cache when possible.
-     */
-    BreakCache         *fBreakCache;
-
-    /**
      * The rule data for this BreakIterator instance
      * @internal
      */
@@ -683,7 +677,7 @@ private:
      * @param reverse   The call is for the reverse direction
      * @internal
      */
-    int32_t checkDictionary(int32_t startPos, int32_t endPos, UBool reverse);
+    void checkDictionary(int32_t startPos, int32_t endPos);
 
 
     /**

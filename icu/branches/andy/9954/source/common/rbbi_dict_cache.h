@@ -8,17 +8,22 @@
 
 #include "unicode/utypes.h"
 
+
 #include "unicode/uobject.h"
 
+#include "uvectr32.h"
 
 U_NAMESPACE_BEGIN
 
 class RBBIDictCache: public UMemory {
   public:
-     RBBIDictCache();
+     RBBIDictCache(UErrorCode &status);
      ~RBBIDictCache();
 
      void reset();
+
+     int32_t following(int32_t pos);
+     int32_t preceding(int32_t pos);
 
 
     /**
@@ -28,7 +33,9 @@ class RBBIDictCache: public UMemory {
      * leaves this range of text. Has the most impact for line breaking.
      * @internal
      */
-    int32_t*            fCachedBreakPositions;
+    // int32_t*            fCachedBreakPositions;
+
+    UVector32          *fBreaks;
 
     /**
      * The number of elements in fCachedBreakPositions
@@ -43,7 +50,8 @@ class RBBIDictCache: public UMemory {
      */
     int32_t             fPositionInCache;
 
-
+    int32_t             fStart;
+    int32_t             fLimit;
 };
 
 
