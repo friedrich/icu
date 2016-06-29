@@ -1472,10 +1472,10 @@ public class BasicTest extends TestFmwk {
             }
     
             // test setIndex()
-//            ch=norm.setIndex(3);
-//            if(ch!=0x4e3d) {
-//                errln("error in Normalizer(CharacterIterator).setIndex(3)");
-//            }
+            ch=norm.setIndex(3);
+            if(ch!=0x4e3d) {
+               errln("error in Normalizer(CharacterIterator).setIndex(3)");
+            }
     
             // test setText(CharacterIterator) and getText()
             String out, out2;
@@ -1579,6 +1579,19 @@ public class BasicTest extends TestFmwk {
             }
         };
 
+        // Test data for
+        // Normalize.concatenate(char[], int ,int, char[], int, int, char[], int, int Mode, int)    
+        Object[][]cases2 = new Object[][]{
+            /* mode, destination, left, right, result */
+            {
+               Normalizer.NFC,
+               "My resume is here",
+               "resume",
+               "re\u0301sum\u00e9 is HERE",
+               "My r\u00e9sum\u00e9 is HERE"
+            }
+        }; 
+
         String left, right, expect, result;
         Normalizer.Mode mode;
         int i;
@@ -1607,7 +1620,34 @@ public class BasicTest extends TestFmwk {
                 }
             }
         }
+
+        mode=(Normalizer.Mode)cases2[0][0];
+        char[] destination = ((String)cases2[0][1]).toCharArray();
+        left = (String)cases2[0][2];
+        right = (String)cases2[0][3];
+        expect = (String)cases2[0][4];
+
+        // Concatenates 're' with '\u0301sum\u00e9 is HERE' and places the result at
+        // position 3 of string 'My resume is here'.
+        int len = Normalizer.concatenate(left.toCharArray(), 0, 2, right.toCharArray(), 2, 15,
+                                         destination, 3, 17, mode, 0);
+        if(!String.valueOf(destination).equals(expect)) {
+            errln("error in Normalizer.concatenate(), cases2[] failed"
+                  +", result==expect: expected: "
+                  + hex(expect) + " =========> got: " + hex(destination));
+        }
+
+        // Error case when result of concatenation won't fit into destination array.
+        try {
+            len = Normalizer.concatenate(left.toCharArray(), 0, 2, right.toCharArray(), 2, 15,
+                                         destination, 3, 16, mode, 0);
+        } catch (IndexOutOfBoundsException e) {
+            assertTrue("Normalizer.concatenate() failed", e.getMessage().equals("14"));
+            return;
+	}
+        fail("Normalizer.concatenate() tested for failure but passed");
     }
+
     private final int RAND_MAX = 0x7fff;
 
     @Test
@@ -2442,7 +2482,9 @@ public class BasicTest extends TestFmwk {
                 UnicodeSet intersection  = ((UnicodeSet) expectSets[i].clone()).retainAll(skipSets[i]);
                 pattern = new StringBuilder(intersection.toPattern(true));
                 s.append(pattern);
-                s.append("\n\n");
+                // Special: test coverage for append(char).
+                s.append('\n');
+                s.append('\n');
 
                 errln(s.toString());
             }
@@ -2769,6 +2811,7 @@ public class BasicTest extends TestFmwk {
                 " \u1E09", out);
     }
 
+    @Test
     public void TestNFC() {
         // Coverage tests.
         Normalizer2 nfc = Normalizer2.getNFCInstance();
@@ -2776,6 +2819,7 @@ public class BasicTest extends TestFmwk {
         assertFalse("nfc.hasBoundaryAfter(ä)", nfc.hasBoundaryAfter('ä'));
     }
 
+    @Test
     public void TestNFD() {
         // Coverage tests.
         Normalizer2 nfd = Normalizer2.getNFDInstance();
@@ -2783,6 +2827,7 @@ public class BasicTest extends TestFmwk {
         assertFalse("nfd.hasBoundaryAfter(ä)", nfd.hasBoundaryAfter('ä'));
     }
 
+    @Test
     public void TestFCD() {
         // Coverage tests.
         Normalizer2 fcd = Normalizer2.getInstance(null, "nfc", Normalizer2.Mode.FCD);
@@ -2797,6 +2842,7 @@ public class BasicTest extends TestFmwk {
         assertEquals("fcd impl.getQuickCheck(ä)", 0, impl.getQuickCheck('ä'));
     }
 
+    @Test
     public void TestNoneNormalizer() {
         // Use the deprecated Mode Normalizer.NONE for coverage of the internal NoopNormalizer2
         // as far as its methods are reachable that way.
@@ -2805,6 +2851,7 @@ public class BasicTest extends TestFmwk {
         assertTrue("NONE.isNormalized()", Normalizer.isNormalized("ä\u0327", Normalizer.NONE, 0));
     }
 
+    @Test
     public void TestNoopNormalizer2() {
         // Use the internal class directly for coverage of methods that are not publicly reachable.
         Normalizer2 noop = Norm2AllModes.NOOP_NORMALIZER2;
@@ -2813,5 +2860,58 @@ public class BasicTest extends TestFmwk {
         assertEquals("noop.getDecomposition()", null, noop.getDecomposition('ä'));
         assertTrue("noop.hasBoundaryAfter()", noop.hasBoundaryAfter(0x0308));
         assertTrue("noop.isInert()", noop.isInert(0x0308));
+    }
+
+    /*
+     * This unit test covers two 'get' methods in class Normalizer2Impl. It only tests that
+     * an object is returned.
+     */
+    @Test
+    public void TestGetsFromImpl() {
+       Normalizer2Impl nfcImpl = Norm2AllModes.getNFCInstance().impl;
+       assertNotEquals("getNormTrie() returns null", null, nfcImpl.getNormTrie());
+       assertNotEquals("getFCD16FromBelow180() returns null", null,
+                       nfcImpl.getFCD16FromBelow180(0));
+    }
+
+    /*
+     * Abstract class Normalizer2 has non-abstract methods which are overwritten by
+     * its derived classes. To test these methods a derived class is defined here.
+     */
+    public class TestNormalizer2 extends Normalizer2 {
+        // 
+        public TestNormalizer2() {}
+        public StringBuilder normalize(CharSequence src, StringBuilder dest) { return null; }
+        public Appendable normalize(CharSequence src, Appendable dest) { return null; }
+        public StringBuilder normalizeSecondAndAppend(
+            StringBuilder first, CharSequence second) { return null; }
+        public StringBuilder append(StringBuilder first, CharSequence second) { return null; }
+        public String getDecomposition(int c) { return null; }
+        public boolean isNormalized(CharSequence s) { return false; }
+        public Normalizer.QuickCheckResult quickCheck(CharSequence s) { return null; }
+        public int spanQuickCheckYes(CharSequence s) { return 0; }
+        public boolean hasBoundaryBefore(int c) { return false; }
+        public boolean hasBoundaryAfter(int c) { return false; }
+        public boolean isInert(int c) { return false; }
+    }
+
+    final TestNormalizer2 tnorm2 = new TestNormalizer2();
+    @Test
+    public void TestGetRawDecompositionBase() {
+        int c = 'à';
+        assertEquals("Character decomposition failed", null, tnorm2.getRawDecomposition(c));
+    }
+
+    @Test
+    public void TestComposePairBase() {
+        int a = 'a';
+        int b = '\u0300';
+        assertEquals("Pair composition failed", -1, tnorm2.composePair(a, b));
+    }
+
+    @Test
+    public void TestGetCombiningClassBase() {
+        int c = '\u00e0';
+        assertEquals("Incorrect combining class", 0, tnorm2.getCombiningClass(c));
     }
 }
