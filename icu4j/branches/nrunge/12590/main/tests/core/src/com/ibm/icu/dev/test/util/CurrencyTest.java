@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -803,13 +802,13 @@ public class CurrencyTest extends TestFmwk {
         int cashFractionDigits = currency.getDefaultFractionDigits(Currency.CurrencyUsage.CASH);
         assertEquals("number of digits in fraction incorrect", 2, cashFractionDigits);
     }
+
     @Test
     public void testGetRoundingIncrement() {
         Currency currency = Currency.getInstance(ULocale.JAPAN);
         // It appears as though this always returns 0 irrespective of the currency.
         double roundingIncrement = currency.getRoundingIncrement();
-        // TODO: replace the JUnit import with TestFmwk assertEquals.
-        Assert.assertEquals(0.0, roundingIncrement, 0.0);
+        assertEquals("Rounding increment not zero", 0.0, roundingIncrement, 0.0);
     }
     @Test
     public void testGetRoundingIncrement_CurrencyUsage() {
@@ -817,6 +816,6 @@ public class CurrencyTest extends TestFmwk {
         // It appears as though this always returns 0 irrespective of the currency or usage.
         double roundingIncrement = currency.getRoundingIncrement(Currency.CurrencyUsage.CASH);
         // TODO: replace the JUnit import with TestFmwk assertEquals.
-        Assert.assertEquals(0.0, roundingIncrement, 0.0);
+        assertEquals("Rounding increment not zero", 0.0, roundingIncrement, 0.0);
     }
 }

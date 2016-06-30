@@ -948,14 +948,17 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
                 = RelativeDateTimeFormatter.getInstance(Locale.CANADA);
         RelativeDateTimeFormatter withExplicitDefaultLocale
                 = RelativeDateTimeFormatter.getInstance(ULocale.getDefault());
+
         String formatWithImplicitDefaultLocale =
                 withImplicitDefaultLocale.format(5,
                         RelativeDateTimeFormatter.Direction.NEXT,
                         RelativeDateTimeFormatter.RelativeUnit.MINUTES);
+
         String formatWithExplicitDefaultLocale =
                 withExplicitDefaultLocale.format(5,
                         RelativeDateTimeFormatter.Direction.NEXT,
                         RelativeDateTimeFormatter.RelativeUnit.MINUTES);
+
         assertEquals("Explicit vs. implicit default locale formatting mismatch",
 		     formatWithExplicitDefaultLocale, formatWithImplicitDefaultLocale);
     }

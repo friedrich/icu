@@ -1083,6 +1083,7 @@ public class AlphabeticIndexTest extends TestFmwk {
         assertEquals("Record count of empty index not 0", 0,
                 new AlphabeticIndex<String>(ULocale.CANADA).getRecordCount());
     }
+
     @Test
     public void testGetRecordCount_withRecords() {
         assertEquals("Record count of index with one record not 1", 1,
