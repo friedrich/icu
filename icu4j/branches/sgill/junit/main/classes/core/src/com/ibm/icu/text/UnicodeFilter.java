@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2016, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -10,11 +12,12 @@ package com.ibm.icu.text;
  * <code>UnicodeFilter</code> defines a protocol for selecting a
  * subset of the full range (U+0000 to U+FFFF) of Unicode characters.
  * Currently, filters are used in conjunction with classes like
- * <a href="Transliterator.html" title="class in com.ibm.icu.text"><code>Transliterator</code></a>
+ * {@link com.ibm.icu.text.Transliterator}
  * to only process selected characters through a
  * transformation.
  * @stable ICU 2.0
  */
+@SuppressWarnings("javadoc")    // com.imb.icu.text.Transliterator is in another project
 public abstract class UnicodeFilter implements UnicodeMatcher {
 
     /**

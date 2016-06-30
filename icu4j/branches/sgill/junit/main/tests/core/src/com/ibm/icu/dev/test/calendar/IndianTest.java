@@ -1,7 +1,9 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2005-2011, International Business Machines Corporation and    *
- * others. All Rights Reserved.                                                *
+ * Copyright (C) 2005-2016, International Business Machines Corporation and
+ * others. All Rights Reserved.
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.calendar;
@@ -123,7 +125,6 @@ public class IndianTest extends CalendarTestFmwk
 
     @Test
     public void TestCoverage() {
-
         {
             // new IndianCalendar(TimeZone)
             IndianCalendar cal = new IndianCalendar(TimeZone.getDefault()); 
@@ -277,5 +278,17 @@ public class IndianTest extends CalendarTestFmwk
         if (!fmt.format(cal.getTime()).equals("2011-04-20")){
             errln("Incorrect calendar value for year edge test");
         }
+    }
+
+    public void TestCoverage12424() {
+        class StubCalendar extends IndianCalendar {   
+            private static final long serialVersionUID = 1L;
+            public StubCalendar() {
+                assertEquals("Indian month 0 length", 30, handleGetMonthLength(1000, 0));
+                assertEquals("Indian month 2 length", 31, handleGetMonthLength(1000, 2));
+             }
+        }
+        
+        new StubCalendar();
     }
 }

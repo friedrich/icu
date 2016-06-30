@@ -1,5 +1,7 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
-*   Copyright (C) 2008-2015, International Business Machines
+*   Copyright (C) 2008-2016, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 */
 
@@ -17,6 +19,7 @@ import java.util.Map;
 import com.ibm.icu.impl.CalendarData;
 import com.ibm.icu.impl.ICUCache;
 import com.ibm.icu.impl.SimpleCache;
+import com.ibm.icu.impl.SimpleFormatterImpl;
 import com.ibm.icu.text.DateIntervalInfo.PatternInfo;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.DateInterval;
@@ -89,7 +92,7 @@ import com.ibm.icu.util.ULocale.Category;
  * second (though we do not currently have specific intervalFormat data for
  * skeletons with seconds). 
  * Those calendar fields can be defined in the following order:
- * year >  month > date > hour (in day) > minute > second
+ * year &gt; month &gt; date &gt; hour (in day) &gt; minute &gt; second
  *  
  * The largest different calendar fields between 2 calendars is the
  * first different calendar field in above order.
@@ -247,6 +250,12 @@ import com.ibm.icu.util.ULocale.Category;
  * 
  *
  * </pre>
+ * <h3>Synchronization</h3>
+ * 
+ * The format methods of DateIntervalFormat may be used concurrently from multiple threads.
+ * Functions that alter the state of a DateIntervalFormat object (setters) 
+ * may not be used concurrently with any other functions.
+ * 
  * @stable ICU 4.0
  */
 
@@ -296,7 +305,9 @@ public class DateIntervalFormat extends UFormat {
     private DateIntervalInfo     fInfo;
 
     /*
-     * The DateFormat object used to format single pattern
+     * The DateFormat object used to format single pattern.
+     * Because fDateFormat is modified during format operations, all
+     * access to it from logically const, thread safe functions must be synchronized.
      */
     private SimpleDateFormat     fDateFormat;
 
@@ -304,6 +315,8 @@ public class DateIntervalFormat extends UFormat {
      * The 2 calendars with the from and to date.
      * could re-use the calendar in fDateFormat,
      * but keeping 2 calendars make it clear and clean.
+     * Because these Calendars are modified during format operations, all
+     * access to them from logically const, thread safe functions must be synchronized.
      */
     private Calendar fFromCalendar;
     private Calendar fToCalendar;
@@ -559,7 +572,7 @@ public class DateIntervalFormat extends UFormat {
      * @return    A copy of the object.
      * @stable ICU 4.0
      */
-    public Object clone()
+    public synchronized Object clone()
     {
         DateIntervalFormat other = (DateIntervalFormat) super.clone();
         other.fDateFormat = (SimpleDateFormat) fDateFormat.clone();
@@ -618,7 +631,7 @@ public class DateIntervalFormat extends UFormat {
      * @return                  Reference to 'appendTo' parameter.
      * @stable ICU 4.0
      */
-    public final StringBuffer format(DateInterval dtInterval,
+    public final synchronized StringBuffer format(DateInterval dtInterval,
                                      StringBuffer appendTo,
                                      FieldPosition fieldPosition)
     {
@@ -686,7 +699,7 @@ public class DateIntervalFormat extends UFormat {
      * @throws    IllegalArgumentException  if the two calendars are not equivalent.
      * @stable ICU 4.0
      */
-    public final StringBuffer format(Calendar fromCalendar,
+    public final synchronized StringBuffer format(Calendar fromCalendar,
                                      Calendar toCalendar,
                                      StringBuffer appendTo,
                                      FieldPosition pos)
@@ -848,8 +861,8 @@ public class DateIntervalFormat extends UFormat {
             laterDate = fDateFormat.format(toCalendar, laterDate, otherPos);
             String fallbackPattern = fInfo.getFallbackIntervalPattern();
             adjustPosition(fallbackPattern, earlierDate.toString(), pos, laterDate.toString(), otherPos, pos);
-            String fallbackRange = MessageFormat.format(fallbackPattern, new Object[]
-                            {earlierDate.toString(), laterDate.toString()});
+            String fallbackRange = SimpleFormatterImpl.formatRawPattern(
+                    fallbackPattern, 2, 2, earlierDate, laterDate);
             if (formatDatePlusTimeRange) {
                 // fallbackRange has just the time range, need to format the date part and combine that
                 fDateFormat.applyPattern(fDatePattern);
@@ -858,8 +871,8 @@ public class DateIntervalFormat extends UFormat {
                 otherPos.setEndIndex(0);
                 datePortion = fDateFormat.format(fromCalendar, datePortion, otherPos);
                 adjustPosition(fDateTimeFormat, fallbackRange, pos, datePortion.toString(), otherPos, pos);
-                fallbackRange = MessageFormat.format(fDateTimeFormat, new Object[]
-                            {fallbackRange, datePortion.toString()});
+                fallbackRange = SimpleFormatterImpl.formatRawPattern(
+                        fDateTimeFormat, 2, 2, fallbackRange, datePortion);
             }
             appendTo.append(fallbackRange);
             if (formatDatePlusTimeRange) {
@@ -907,7 +920,6 @@ public class DateIntervalFormat extends UFormat {
      * This method should handle parsing of
      * date time interval strings into Formattable objects with 
      * DateInterval type, which is a pair of UDate.
-     * <P>
      * <P>
      * Before calling, set parse_pos.index to the offset you want to start
      * parsing at in the source. After calling, parse_pos.index is the end of
@@ -1008,7 +1020,7 @@ public class DateIntervalFormat extends UFormat {
      * this date interval formatter.
      * @stable ICU 4.0
      */
-    public DateFormat getDateFormat()
+    public synchronized DateFormat getDateFormat()
     {
         return (DateFormat)fDateFormat.clone();
     }
@@ -1803,8 +1815,8 @@ public class DateIntervalFormat extends UFormat {
         if ( timeItvPtnInfo != null ) {
             String timeIntervalPattern = timeItvPtnInfo.getFirstPart() + 
                                          timeItvPtnInfo.getSecondPart();
-            String pattern = MessageFormat.format(dtfmt, new Object[] 
-                                         {timeIntervalPattern, datePattern});
+            String pattern = SimpleFormatterImpl.formatRawPattern(
+                    dtfmt, 2, 2, timeIntervalPattern, datePattern);
             timeItvPtnInfo = DateIntervalInfo.genPatternInfo(pattern,
                                 timeItvPtnInfo.firstDateInPtnIsLaterDate());
             intervalPatterns.put(

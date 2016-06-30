@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2007-2011, International Business Machines Corporation and    *
@@ -1660,7 +1662,7 @@ public class TimeZoneRuleTest extends TestFmwk {
     };
 
     private String[] getTestZIDs() {
-        if (getInclusion() > 5) {
+        if (TestFmwk.getExhaustiveness() > 5) {
             return TimeZone.getAvailableIDs();
         }
         return TESTZIDS;
@@ -1677,7 +1679,7 @@ public class TimeZoneRuleTest extends TestFmwk {
         if (idx < TESTYEARS.length) {
             loyear = TESTYEARS[idx][0];
             hiyear = TESTYEARS[idx][1];
-        } else if (idx == TESTYEARS.length && getInclusion() > 5) {
+        } else if (idx == TESTYEARS.length && TestFmwk.getExhaustiveness() > 5) {
             loyear = 1850;
             hiyear = 2050;
         } else {

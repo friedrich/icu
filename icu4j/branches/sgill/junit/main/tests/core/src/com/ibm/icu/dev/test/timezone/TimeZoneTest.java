@@ -1,7 +1,9 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2000-2015, International Business Machines Corporation and    *
- * others. All Rights Reserved.                                                *
+ * Copyright (C) 2000-2016, International Business Machines Corporation and
+ * others. All Rights Reserved.
  *******************************************************************************
  */
 
@@ -22,7 +24,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.impl.ICUResourceBundle;
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.util.BasicTimeZone;
 import com.ibm.icu.util.Calendar;
@@ -151,7 +153,7 @@ public class TimeZoneTest extends TestFmwk
             new ZoneDescriptor("ECT", 60, true),    // ICU Link - Europe/Paris
             new ZoneDescriptor("MET", 60, true),    // Olson europe 1:00 C-Eur
             new ZoneDescriptor("CAT", 120, false),  // ICU Link - Africa/Harare
-            new ZoneDescriptor("ART", 120, false),  // ICU Link - Africa/Cairo
+            new ZoneDescriptor("ART", 120, true),   // ICU Link - Africa/Cairo
             new ZoneDescriptor("EET", 120, true),   // Olson europe 2:00 EU
             new ZoneDescriptor("EAT", 180, false),  // ICU Link - Africa/Addis_Ababa
             new ZoneDescriptor("NET", 240, false),  // ICU Link - Asia/Yerevan
@@ -404,8 +406,8 @@ public class TimeZoneTest extends TestFmwk
 
         // in icu4j 2.1 we know we have the zh_CN locale data, though it's incomplete
 //    /"DateFormatZoneData", 
-        UResourceBundle enRB = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME,Locale.ENGLISH);
-        UResourceBundle mtRB = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, mt_MT);
+        UResourceBundle enRB = UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME,Locale.ENGLISH);
+        UResourceBundle mtRB = UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, mt_MT);
         boolean noZH = enRB == mtRB;
 
         if (noZH) {
@@ -1541,6 +1543,7 @@ public class TimeZoneTest extends TestFmwk
                 {"America/Marigot", "America/Port_of_Spain"},
                 {"America/Montserrat", "America/Port_of_Spain"},
                 {"America/Panama", "America/Cayman"},
+                {"America/Santa_Isabel", "America/Tijuana"},
                 {"America/Shiprock", "America/Denver"},
                 {"America/St_Barthelemy", "America/Port_of_Spain"},
                 {"America/St_Kitts", "America/Port_of_Spain"},
@@ -2211,7 +2214,7 @@ public class TimeZoneTest extends TestFmwk
     @Test
     public void Test11619_UnrecognizedTimeZoneID() {
         VTimeZone vzone = VTimeZone.create("ABadTimeZoneId");
-        this.assertNull("", vzone);
+        TestFmwk.assertNull("", vzone);
     }
 
     private static boolean isDaylightTimeAvailable(TimeZone tz, long start) {

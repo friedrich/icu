@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2007-2010, International Business Machines Corporation and    *
+ * Copyright (C) 2007-2016, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -162,7 +164,7 @@ public abstract class TimeZoneRule implements Serializable {
     /**
      * Returns if this <code>TimeZoneRule</code> has one or more start times.
      * 
-     * @return true if this <TimeZoneRule</code> has one or more start times.
+     * @return true if this <code>TimeZoneRule</code> has one or more start times.
      * 
      * @stable ICU 3.8
      */

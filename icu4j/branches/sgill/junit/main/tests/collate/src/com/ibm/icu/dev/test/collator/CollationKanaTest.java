@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and
@@ -15,7 +17,6 @@ package com.ibm.icu.dev.test.collator;
 import java.util.Locale;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -102,7 +103,7 @@ public class CollationKanaTest extends TestFmwk{
             myCollation = Collator.getInstance(Locale.JAPANESE); 
         }
     }
-    
+
     // performs test with strength TERIARY
     @Test
     public void TestTertiary() {

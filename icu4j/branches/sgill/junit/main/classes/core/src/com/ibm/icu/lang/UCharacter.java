@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and
+ * Copyright (C) 1996-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -84,17 +86,14 @@ import com.ibm.icu.util.VersionInfo;
  *        <a href=
  * "http://source.icu-project.org/repos/icu/icu4j/trunk/src/com/ibm/icu/dev/test/lang/UCharacterCompare.java">
  *        com.ibm.icu.dev.test.lang.UCharacterCompare</a>
- * </p>
  * <p>
  * In addition to Java compatibility functions, which calculate derived properties,
  * this API provides low-level access to the Unicode Character Database.
- * </p>
  * <p>
  * Unicode assigns each code point (not just assigned character) values for
  * many properties.
  * Most of them are simple boolean flags, or constants from a small enumerated list.
  * For some properties, values are strings or other relatively more complex types.
- * </p>
  * <p>
  * For more information see
  * <a href="http://www.unicode/org/ucd/">"About the Unicode Character Database"</a>
@@ -102,14 +101,12 @@ import com.ibm.icu.util.VersionInfo;
  * and the <a href="http://www.icu-project.org/userguide/properties.html">ICU
  * User Guide chapter on Properties</a>
  * (http://www.icu-project.org/userguide/properties.html).
- * </p>
  * <p>
  * There are also functions that provide easy migration from C/POSIX functions
  * like isblank(). Their use is generally discouraged because the C/POSIX
  * standards do not define their semantics beyond the ASCII range, which means
  * that different implementations exhibit very different behavior.
  * Instead, Unicode properties should be used directly.
- * </p>
  * <p>
  * There are also only a few, broad C/POSIX character classes, and they tend
  * to be used for conflicting purposes. For example, the "isalpha()" class
@@ -118,13 +115,11 @@ import com.ibm.icu.util.VersionInfo;
  * characters (the latter including combining marks).
  * (In ICU, BreakIterator is the most sophisticated API for word boundaries.)
  * Another example: There is no "istitle()" class for titlecase characters.
- * </p>
  * <p>
  * ICU 3.4 and later provides API access for all twelve C/POSIX character classes.
  * ICU implements them according to the Standard Recommendations in
  * Annex C: Compatibility Properties of UTS #18 Unicode Regular Expressions
  * (http://www.unicode.org/reports/tr18/#Compatibility_Properties).
- * </p>
  * <p>
  * API access for C/POSIX character classes is as follows:
  * <pre>{@code
@@ -142,23 +137,21 @@ import com.ibm.icu.util.VersionInfo;
  * - cntrl:     getType(c)==CONTROL
  * - graph:     hasBinaryProperty(c, UProperty.POSIX_GRAPH)
  * - print:     hasBinaryProperty(c, UProperty.POSIX_PRINT)}</pre>
- * </p>
  * <p>
  * The C/POSIX character classes are also available in UnicodeSet patterns,
  * using patterns like [:graph:] or \p{graph}.
- * </p>
  *
- * {@icunote} There are several ICU (and Java) whitespace functions.
+ * <p>{@icunote} There are several ICU (and Java) whitespace functions.
  * Comparison:<ul>
  * <li> isUWhiteSpace=UCHAR_WHITE_SPACE: Unicode White_Space property;
  *       most of general categories "Z" (separators) + most whitespace ISO controls
  *       (including no-break spaces, but excluding IS1..IS4 and ZWSP)
  * <li> isWhitespace: Java isWhitespace; Z + whitespace ISO controls but excluding no-break spaces
  * <li> isSpaceChar: just Z (including no-break spaces)</ul>
- * </p>
+ *
  * <p>
  * This class is not subclassable.
- * </p>
+ *
  * @author Syn Wee Quek
  * @stable ICU 2.1
  * @see com.ibm.icu.lang.UCharacterEnums
@@ -1141,10 +1134,35 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
         /** @stable ICU 56 */
         public static final int SUTTON_SIGNWRITING_ID = 262; /*[1D800]*/
 
+        /* New blocks in Unicode 9.0 */
+
+        /** @stable ICU 58 */
+        public static final int ADLAM_ID = 263; /*[1E900]*/
+        /** @stable ICU 58 */
+        public static final int BHAIKSUKI_ID = 264; /*[11C00]*/
+        /** @stable ICU 58 */
+        public static final int CYRILLIC_EXTENDED_C_ID = 265; /*[1C80]*/
+        /** @stable ICU 58 */
+        public static final int GLAGOLITIC_SUPPLEMENT_ID = 266; /*[1E000]*/
+        /** @stable ICU 58 */
+        public static final int IDEOGRAPHIC_SYMBOLS_AND_PUNCTUATION_ID = 267; /*[16FE0]*/
+        /** @stable ICU 58 */
+        public static final int MARCHEN_ID = 268; /*[11C70]*/
+        /** @stable ICU 58 */
+        public static final int MONGOLIAN_SUPPLEMENT_ID = 269; /*[11660]*/
+        /** @stable ICU 58 */
+        public static final int NEWA_ID = 270; /*[11400]*/
+        /** @stable ICU 58 */
+        public static final int OSAGE_ID = 271; /*[104B0]*/
+        /** @stable ICU 58 */
+        public static final int TANGUT_ID = 272; /*[17000]*/
+        /** @stable ICU 58 */
+        public static final int TANGUT_COMPONENTS_ID = 273; /*[18800]*/
+
         /**
          * @stable ICU 2.4
          */
-        public static final int COUNT = 263;
+        public static final int COUNT = 274;
 
         // blocks objects ---------------------------------------------------
 
@@ -2372,6 +2390,36 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
         public static final UnicodeBlock SUTTON_SIGNWRITING =
                 new UnicodeBlock("SUTTON_SIGNWRITING", SUTTON_SIGNWRITING_ID); /*[1D800]*/
 
+        /* New blocks in Unicode 9.0 */
+
+        /** @stable ICU 58 */
+        public static final UnicodeBlock ADLAM = new UnicodeBlock("ADLAM", ADLAM_ID); /*[1E900]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock BHAIKSUKI = new UnicodeBlock("BHAIKSUKI", BHAIKSUKI_ID); /*[11C00]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock CYRILLIC_EXTENDED_C =
+                new UnicodeBlock("CYRILLIC_EXTENDED_C", CYRILLIC_EXTENDED_C_ID); /*[1C80]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock GLAGOLITIC_SUPPLEMENT =
+                new UnicodeBlock("GLAGOLITIC_SUPPLEMENT", GLAGOLITIC_SUPPLEMENT_ID); /*[1E000]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock IDEOGRAPHIC_SYMBOLS_AND_PUNCTUATION =
+                new UnicodeBlock("IDEOGRAPHIC_SYMBOLS_AND_PUNCTUATION", IDEOGRAPHIC_SYMBOLS_AND_PUNCTUATION_ID); /*[16FE0]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock MARCHEN = new UnicodeBlock("MARCHEN", MARCHEN_ID); /*[11C70]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock MONGOLIAN_SUPPLEMENT =
+                new UnicodeBlock("MONGOLIAN_SUPPLEMENT", MONGOLIAN_SUPPLEMENT_ID); /*[11660]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock NEWA = new UnicodeBlock("NEWA", NEWA_ID); /*[11400]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock OSAGE = new UnicodeBlock("OSAGE", OSAGE_ID); /*[104B0]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock TANGUT = new UnicodeBlock("TANGUT", TANGUT_ID); /*[17000]*/
+        /** @stable ICU 58 */
+        public static final UnicodeBlock TANGUT_COMPONENTS =
+                new UnicodeBlock("TANGUT_COMPONENTS", TANGUT_COMPONENTS_ID); /*[18800]*/
+
         /**
          * @stable ICU 2.4
          */
@@ -2424,8 +2472,9 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
         }
 
         /**
-         * Cover the JDK 1.5 API.  Return the Unicode block with the
-         * given name. {@icunote} Unlike JDK 1.5, this only matches
+         * Alternative to the {@link java.lang.Character.UnicodeBlock#forName(String)} method.
+         * Returns the Unicode block with the given name. {@icunote} Unlike
+         * {@link java.lang.Character.UnicodeBlock#forName(String)}, this only matches
          * against the official UCD name and the Java block name
          * (ignoring case).
          * @param blockName the name of the block to match
@@ -2957,10 +3006,17 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
         /** @stable ICU 54 */
         public static final int STRAIGHT_WAW = 85;
 
+        /** @stable ICU 58 */
+        public static final int AFRICAN_FEH = 86;
+        /** @stable ICU 58 */
+        public static final int AFRICAN_NOON = 87;
+        /** @stable ICU 58 */
+        public static final int AFRICAN_QAF = 88;
+
         /**
          * @stable ICU 2.4
          */
-        public static final int COUNT = 86;
+        public static final int COUNT = 89;
     }
 
     /**
@@ -3019,10 +3075,20 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
         public static final int PREPEND = 11;
         /** @stable ICU 50 */
         public static final int REGIONAL_INDICATOR = 12;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
+        /** @stable ICU 58 */
+        public static final int E_BASE = 13;          /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
+        /** @stable ICU 58 */
+        public static final int E_BASE_GAZ = 14;      /*[EBG]*/
+        /** @stable ICU 58 */
+        public static final int E_MODIFIER = 15;      /*[EM]*/
+        /** @stable ICU 58 */
+        public static final int GLUE_AFTER_ZWJ = 16;  /*[GAZ]*/
+        /** @stable ICU 58 */
+        public static final int ZWJ = 17;             /*[ZWJ]*/
         /**
          * @stable ICU 3.4
          */
-        public static final int COUNT = 13;
+        public static final int COUNT = 18;
     }
 
     /**
@@ -3091,10 +3157,20 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
         public static final int SINGLE_QUOTE = 15;     /*[SQ]*/
         /** @stable ICU 52 */
         public static final int DOUBLE_QUOTE = 16;     /*[DQ]*/
+        /** @stable ICU 58 */
+        public static final int E_BASE = 17;           /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
+        /** @stable ICU 58 */
+        public static final int E_BASE_GAZ = 18;       /*[EBG]*/
+        /** @stable ICU 58 */
+        public static final int E_MODIFIER = 19;       /*[EM]*/
+        /** @stable ICU 58 */
+        public static final int GLUE_AFTER_ZWJ = 20;   /*[GAZ]*/
+        /** @stable ICU 58 */
+        public static final int ZWJ = 21;              /*[ZWJ]*/
         /**
          * @stable ICU 4.0
          */
-        public static final int COUNT = 17;
+        public static final int COUNT = 22;
     }
 
     /**
@@ -3334,10 +3410,16 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
         public static final int HEBREW_LETTER = 38;  /*[HL]*/ /* new in Unicode 6.1/ICU 49 */
         /** @stable ICU 50 */
         public static final int REGIONAL_INDICATOR = 39;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
+        /** @stable ICU 58 */
+        public static final int E_BASE = 40;  /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
+        /** @stable ICU 58 */
+        public static final int E_MODIFIER = 41;  /*[EM]*/
+        /** @stable ICU 58 */
+        public static final int ZWJ = 42;  /*[ZWJ]*/
         /**
          * @stable ICU 2.4
          */
-        public static final int COUNT = 40;
+        public static final int COUNT = 43;
     }
 
     /**
@@ -3513,7 +3595,7 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
      * adjust it by looking for the next cased character, and titlecase that one.
      * Other characters are lowercased.
      *
-     * This follows Unicode 4 & 5 section 3.13 Default Case Operations:
+     * This follows Unicode 4 &amp; 5 section 3.13 Default Case Operations:
      *
      * R3  toTitlecase(X): Find the word boundaries based on Unicode Standard Annex
      * #29, "Text Boundaries." Between each pair of word boundaries, find the first
@@ -3604,16 +3686,16 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
 
     /**
      * {@icu} Returns the numeric value for a Unicode code point as defined in the
-     * Unicode Character Database.</p>
+     * Unicode Character Database.
      * <p>A "double" return type is necessary because some numeric values are
-     * fractions, negative, or too large for int.</p>
+     * fractions, negative, or too large for int.
      * <p>For characters without any numeric values in the Unicode Character
      * Database, this function will return NO_NUMERIC_VALUE.
-     * Note: This is different from the Unicode Standard which specifies NaN as the default value.</p>
+     * Note: This is different from the Unicode Standard which specifies NaN as the default value.
      * <p><em>API Change:</em> In release 2.2 and prior, this API has a
      * return type int and returns -1 when the argument ch does not have a
      * corresponding numeric value. This has been changed to synch with ICU4C
-     * </p>
+     *
      * This corresponds to the ICU4C function u_getNumericValue.
      * @param ch Code point to get the numeric value for.
      * @return numeric value of ch, or NO_NUMERIC_VALUE if none is defined.
@@ -3649,7 +3731,7 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
      * <em>NOTE:</em> the UCharacterCategory values are <em>not</em> compatible with
      * those returned by java.lang.Character.getType.  UCharacterCategory values
      * match the ones used in ICU4C, while java.lang.Character type
-     * values, though similar, skip the value 17.</p>
+     * values, though similar, skip the value 17.
      * @param ch code point whose type is to be determined
      * @return category which is a value of UCharacterCategory
      * @stable ICU 2.1
@@ -3695,8 +3777,8 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     /**
      * Determines if the specified code point is an ISO control character.
      * A code point is considered to be an ISO control character if it is in
-     * the range &#92u0000 through &#92u001F or in the range &#92u007F through
-     * &#92u009F.<br>
+     * the range &#92;u0000 through &#92;u001F or in the range &#92;u007F through
+     * &#92;u009F.<br>
      * Up-to-date Unicode implementation of java.lang.Character.isISOControl()
      * @param ch code point to determine if it is an ISO control character
      * @return true if code point is a ISO control character
@@ -3820,16 +3902,16 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
      * if it satisfies one of the following criteria:
      * <ul>
      * <li> It is a Unicode Separator character (categories "Z" = "Zs" or "Zl" or "Zp"), but is not
-     *      also a non-breaking space (&#92u00A0 or &#92u2007 or &#92u202F).
-     * <li> It is &#92u0009, HORIZONTAL TABULATION.
-     * <li> It is &#92u000A, LINE FEED.
-     * <li> It is &#92u000B, VERTICAL TABULATION.
-     * <li> It is &#92u000C, FORM FEED.
-     * <li> It is &#92u000D, CARRIAGE RETURN.
-     * <li> It is &#92u001C, FILE SEPARATOR.
-     * <li> It is &#92u001D, GROUP SEPARATOR.
-     * <li> It is &#92u001E, RECORD SEPARATOR.
-     * <li> It is &#92u001F, UNIT SEPARATOR.
+     *      also a non-breaking space (&#92;u00A0 or &#92;u2007 or &#92;u202F).
+     * <li> It is &#92;u0009, HORIZONTAL TABULATION.
+     * <li> It is &#92;u000A, LINE FEED.
+     * <li> It is &#92;u000B, VERTICAL TABULATION.
+     * <li> It is &#92;u000C, FORM FEED.
+     * <li> It is &#92;u000D, CARRIAGE RETURN.
+     * <li> It is &#92;u001C, FILE SEPARATOR.
+     * <li> It is &#92;u001D, GROUP SEPARATOR.
+     * <li> It is &#92;u001E, RECORD SEPARATOR.
+     * <li> It is &#92;u001F, UNIT SEPARATOR.
      * </ul>
      *
      * This API tries to sync with the semantics of Java's
@@ -4388,8 +4470,8 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
      * {@icu} Returns a name for a valid codepoint. Unlike, getName(int) and
      * getName1_0(int), this method will return a name even for codepoints that
      * are not assigned a name in UnicodeData.txt.
-     * </p>
-     * The names are returned in the following order.
+     *
+     * <p>The names are returned in the following order.
      * <ul>
      * <li> Most current Unicode name if there is any
      * <li> Unicode 1.0 name if there is any
@@ -4440,7 +4522,7 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
 
     /**
      * {@icu} <p>Finds a Unicode code point by its most current Unicode name and
-     * return its code point value. All Unicode names are in uppercase.</p>
+     * return its code point value. All Unicode names are in uppercase.
      * Note calling any methods related to code point names, e.g. get*Name*()
      * incurs a one-time initialisation cost to construct the name tables.
      * @param name most current Unicode character name whose code point is to
@@ -4456,7 +4538,7 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     /**
      * {@icu} Returns -1.
      * <p>Used to find a Unicode character by its version 1.0 Unicode name and return
-     * its code point value.</p>
+     * its code point value.
      * @param name Unicode 1.0 code point name whose code point is to be
      *             returned
      * @return -1
@@ -4472,13 +4554,13 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
      * {@icu} <p>Find a Unicode character by either its name and return its code
      * point value. All Unicode names are in uppercase.
      * Extended names are all lowercase except for numbers and are contained
-     * within angle brackets.</p>
+     * within angle brackets.
      * The names are searched in the following order
      * <ul>
      * <li> Most current Unicode name if there is any
      * <li> Unicode 1.0 name if there is any
      * <li> Extended name in the form of
-     *      "<codepoint_type-codepoint_hex_digits>". E.g. <noncharacter-FFFE>
+     *      "&lt;codepoint_type-codepoint_hex_digits&gt;". E.g. &lt;noncharacter-FFFE&gt;
      * </ul>
      * Note calling any methods related to code point names, e.g. get*Name*()
      * incurs a one-time initialisation cost to construct the name tables.
@@ -4494,7 +4576,7 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
 
     /**
      * {@icu} <p>Find a Unicode character by its corrected name alias and return
-     * its code point value. All Unicode names are in uppercase.</p>
+     * its code point value. All Unicode names are in uppercase.
      * Note calling any methods related to code point names, e.g. get*Name*()
      * incurs a one-time initialisation cost to construct the name tables.
      * @param name Unicode name alias whose code point is to be returned
@@ -4877,17 +4959,17 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * <p>Returns the titlecase version of the argument string.</p>
+     * <p>Returns the titlecase version of the argument string.
      * <p>Position for titlecasing is determined by the argument break
      * iterator, hence the user can customize his break iterator for
      * a specialized titlecasing. In this case only the forward iteration
      * needs to be implemented.
      * If the break iterator passed in is null, the default Unicode algorithm
      * will be used to determine the titlecase positions.
-     * </p>
+     *
      * <p>Only positions returned by the break iterator will be title cased,
-     * character in between the positions will all be in lower case.</p>
-     * <p>Casing is dependent on the default locale and context-sensitive</p>
+     * character in between the positions will all be in lower case.
+     * <p>Casing is dependent on the default locale and context-sensitive
      * @param str source string to be performed on
      * @param breakiter break iterator to determine the positions in which
      *        the character should be title cased.
@@ -4998,17 +5080,17 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * <p>Returns the titlecase version of the argument string.</p>
+     * <p>Returns the titlecase version of the argument string.
      * <p>Position for titlecasing is determined by the argument break
      * iterator, hence the user can customize his break iterator for
      * a specialized titlecasing. In this case only the forward iteration
      * needs to be implemented.
      * If the break iterator passed in is null, the default Unicode algorithm
      * will be used to determine the titlecase positions.
-     * </p>
+     *
      * <p>Only positions returned by the break iterator will be title cased,
-     * character in between the positions will all be in lower case.</p>
-     * <p>Casing is dependent on the argument locale and context-sensitive</p>
+     * character in between the positions will all be in lower case.
+     * <p>Casing is dependent on the argument locale and context-sensitive
      * @param locale which string is to be converted in
      * @param str source string to be performed on
      * @param breakiter break iterator to determine the positions in which
@@ -5023,17 +5105,17 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * <p>Returns the titlecase version of the argument string.</p>
+     * <p>Returns the titlecase version of the argument string.
      * <p>Position for titlecasing is determined by the argument break
      * iterator, hence the user can customize his break iterator for
      * a specialized titlecasing. In this case only the forward iteration
      * needs to be implemented.
      * If the break iterator passed in is null, the default Unicode algorithm
      * will be used to determine the titlecase positions.
-     * </p>
+     *
      * <p>Only positions returned by the break iterator will be title cased,
-     * character in between the positions will all be in lower case.</p>
-     * <p>Casing is dependent on the argument locale and context-sensitive</p>
+     * character in between the positions will all be in lower case.
+     * <p>Casing is dependent on the argument locale and context-sensitive
      * @param locale which string is to be converted in
      * @param str source string to be performed on
      * @param titleIter break iterator to determine the positions in which
@@ -5047,17 +5129,17 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * <p>Returns the titlecase version of the argument string.</p>
+     * <p>Returns the titlecase version of the argument string.
      * <p>Position for titlecasing is determined by the argument break
      * iterator, hence the user can customize his break iterator for
      * a specialized titlecasing. In this case only the forward iteration
      * needs to be implemented.
      * If the break iterator passed in is null, the default Unicode algorithm
      * will be used to determine the titlecase positions.
-     * </p>
+     *
      * <p>Only positions returned by the break iterator will be title cased,
-     * character in between the positions will all be in lower case.</p>
-     * <p>Casing is dependent on the argument locale and context-sensitive</p>
+     * character in between the positions will all be in lower case.
+     * <p>Casing is dependent on the argument locale and context-sensitive
      * @param locale which string is to be converted in
      * @param str source string to be performed on
      * @param titleIter break iterator to determine the positions in which
@@ -5267,17 +5349,17 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     } 
 
     /**
-     * {@icu} <p>Returns the titlecase version of the argument string.</p>
+     * {@icu} <p>Returns the titlecase version of the argument string.
      * <p>Position for titlecasing is determined by the argument break
      * iterator, hence the user can customize his break iterator for
      * a specialized titlecasing. In this case only the forward iteration
      * needs to be implemented.
      * If the break iterator passed in is null, the default Unicode algorithm
      * will be used to determine the titlecase positions.
-     * </p>
+     *
      * <p>Only positions returned by the break iterator will be title cased,
-     * character in between the positions will all be in lower case.</p>
-     * <p>Casing is dependent on the argument locale and context-sensitive</p>
+     * character in between the positions will all be in lower case.
+     * <p>Casing is dependent on the argument locale and context-sensitive
      * @param locale which string is to be converted in
      * @param str source string to be performed on
      * @param titleIter break iterator to determine the positions in which
@@ -5503,8 +5585,8 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * {@icu} <p>Returns an iterator for character types, iterating over codepoints.</p>
-     * Example of use:<br>
+     * {@icu} <p>Returns an iterator for character types, iterating over codepoints.
+     * <p>Example of use:<br>
      * <pre>
      * RangeValueIterator iterator = UCharacter.getTypeIterator();
      * RangeValueIterator.Element element = new RangeValueIterator.Element();
@@ -5560,11 +5642,11 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * {@icu} <p>Returns an iterator for character names, iterating over codepoints.</p>
+     * {@icu} <p>Returns an iterator for character names, iterating over codepoints.
      * <p>This API only gets the iterator for the modern, most up-to-date
      * Unicode names. For older 1.0 Unicode names use get1_0NameIterator() or
-     * for extended names use getExtendedNameIterator().</p>
-     * Example of use:<br>
+     * for extended names use getExtendedNameIterator().
+     * <p>Example of use:<br>
      * <pre>
      * ValueIterator iterator = UCharacter.getNameIterator();
      * ValueIterator.Element element = new ValueIterator.Element();
@@ -5575,7 +5657,7 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
      * }
      * </pre>
      * <p>The maximal range which the name iterator iterates is from
-     * UCharacter.MIN_VALUE to UCharacter.MAX_VALUE.</p>
+     * UCharacter.MIN_VALUE to UCharacter.MAX_VALUE.
      * @return an iterator
      * @stable ICU 2.6
      */
@@ -5586,7 +5668,7 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
 
     /**
      * {@icu} Returns an empty iterator.
-     * <p>Used to return an iterator for the older 1.0 Unicode character names, iterating over codepoints.</p>
+     * <p>Used to return an iterator for the older 1.0 Unicode character names, iterating over codepoints.
      * @return an empty iterator
      * @deprecated ICU 49
      * @see #getName1_0(int)
@@ -5603,11 +5685,11 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * {@icu} <p>Returns an iterator for character names, iterating over codepoints.</p>
+     * {@icu} <p>Returns an iterator for character names, iterating over codepoints.
      * <p>This API only gets the iterator for the extended names.
      * For modern, most up-to-date Unicode names use getNameIterator() or
-     * for older 1.0 Unicode names use get1_0NameIterator().</p>
-     * Example of use:<br>
+     * for older 1.0 Unicode names use get1_0NameIterator().
+     * <p>Example of use:<br>
      * <pre>
      * ValueIterator iterator = UCharacter.getExtendedNameIterator();
      * ValueIterator.Element element = new ValueIterator.Element();
@@ -5627,13 +5709,13 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * {@icu} Returns the "age" of the code point.</p>
+     * {@icu} Returns the "age" of the code point.
      * <p>The "age" is the Unicode version when the code point was first
      * designated (as a non-character or for Private Use) or assigned a
      * character.
      * <p>This can be useful to avoid emitting code points to receiving
-     * processes that do not accept newer characters.</p>
-     * <p>The data is from the UCD file DerivedAge.txt.</p>
+     * processes that do not accept newer characters.
+     * <p>The data is from the UCD file DerivedAge.txt.
      * @param ch The code point.
      * @return the Unicode version number
      * @stable ICU 2.6
@@ -5647,20 +5729,20 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * {@icu} <p>Check a binary Unicode property for a code point.</p>
+     * {@icu} <p>Check a binary Unicode property for a code point.
      * <p>Unicode, especially in version 3.2, defines many more properties
-     * than the original set in UnicodeData.txt.</p>
+     * than the original set in UnicodeData.txt.
      * <p>This API is intended to reflect Unicode properties as defined in
      * the Unicode Character Database (UCD) and Unicode Technical Reports
-     * (UTR).</p>
+     * (UTR).
      * <p>For details about the properties see
-     * <a href=http://www.unicode.org/>http://www.unicode.org/</a>.</p>
+     * <a href=http://www.unicode.org/>http://www.unicode.org/</a>.
      * <p>For names of Unicode properties see the UCD file
-     * PropertyAliases.txt.</p>
-     * <p>This API does not check the validity of the codepoint.</p>
+     * PropertyAliases.txt.
+     * <p>This API does not check the validity of the codepoint.
      * <p>Important: If ICU is built with UCD files from Unicode versions
      * below 3.2, then properties marked with "new" are not or
-     * not fully available.</p>
+     * not fully available.
      * @param ch code point to test.
      * @param property selector constant from com.ibm.icu.lang.UProperty,
      *        identifies which binary property to check.
@@ -5677,9 +5759,9 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * {@icu} <p>Check if a code point has the Alphabetic Unicode property.</p>
-     * <p>Same as UCharacter.hasBinaryProperty(ch, UProperty.ALPHABETIC).</p>
-     * <p>Different from UCharacter.isLetter(ch)!</p>
+     * {@icu} <p>Check if a code point has the Alphabetic Unicode property.
+     * <p>Same as UCharacter.hasBinaryProperty(ch, UProperty.ALPHABETIC).
+     * <p>Different from UCharacter.isLetter(ch)!
      * @stable ICU 2.6
      * @param ch codepoint to be tested
      */
@@ -5689,9 +5771,9 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * {@icu} <p>Check if a code point has the Lowercase Unicode property.</p>
-     * <p>Same as UCharacter.hasBinaryProperty(ch, UProperty.LOWERCASE).</p>
-     * <p>This is different from UCharacter.isLowerCase(ch)!</p>
+     * {@icu} <p>Check if a code point has the Lowercase Unicode property.
+     * <p>Same as UCharacter.hasBinaryProperty(ch, UProperty.LOWERCASE).
+     * <p>This is different from UCharacter.isLowerCase(ch)!
      * @param ch codepoint to be tested
      * @stable ICU 2.6
      */
@@ -5701,9 +5783,9 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * {@icu} <p>Check if a code point has the Uppercase Unicode property.</p>
-     * <p>Same as UCharacter.hasBinaryProperty(ch, UProperty.UPPERCASE).</p>
-     * <p>This is different from UCharacter.isUpperCase(ch)!</p>
+     * {@icu} <p>Check if a code point has the Uppercase Unicode property.
+     * <p>Same as UCharacter.hasBinaryProperty(ch, UProperty.UPPERCASE).
+     * <p>This is different from UCharacter.isUpperCase(ch)!
      * @param ch codepoint to be tested
      * @stable ICU 2.6
      */
@@ -5713,10 +5795,10 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * {@icu} <p>Check if a code point has the White_Space Unicode property.</p>
-     * <p>Same as UCharacter.hasBinaryProperty(ch, UProperty.WHITE_SPACE).</p>
+     * {@icu} <p>Check if a code point has the White_Space Unicode property.
+     * <p>Same as UCharacter.hasBinaryProperty(ch, UProperty.WHITE_SPACE).
      * <p>This is different from both UCharacter.isSpace(ch) and
-     * UCharacter.isWhitespace(ch)!</p>
+     * UCharacter.isWhitespace(ch)!
      * @param ch codepoint to be tested
      * @stable ICU 2.6
      */
@@ -5727,15 +5809,15 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
 
     /**
      * {@icu} <p>Returns the property value for an Unicode property type of a code point.
-     * Also returns binary and mask property values.</p>
+     * Also returns binary and mask property values.
      * <p>Unicode, especially in version 3.2, defines many more properties than
-     * the original set in UnicodeData.txt.</p>
+     * the original set in UnicodeData.txt.
      * <p>The properties APIs are intended to reflect Unicode properties as
      * defined in the Unicode Character Database (UCD) and Unicode Technical
      * Reports (UTR). For details about the properties see
-     * http://www.unicode.org/.</p>
+     * http://www.unicode.org/.
      * <p>For names of Unicode properties see the UCD file PropertyAliases.txt.
-     * </p>
+     *
      * <pre>
      * Sample usage:
      * int ea = UCharacter.getIntPropertyValue(c, UProperty.EAST_ASIAN_WIDTH);
@@ -5936,7 +6018,8 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     public static final int MIN_CODE_POINT = Character.MIN_CODE_POINT;
 
     /**
-     * Cover the JDK 1.5 API, for convenience.
+     * Equivalent to {@link Character#isValidCodePoint}.
+     *
      * @param cp the code point to check
      * @return true if cp is a valid code point
      * @stable ICU 3.0
@@ -6193,11 +6276,12 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * Cover the JDK API, for convenience.  Return a byte representing the directionality of
-     * the character.
+     * Equivalent to the {@link Character#getDirectionality(char)} method, for
+     * convenience. Returns a byte representing the directionality of the
+     * character.
      *
-     * {@icunote} Unlike the JDK, this returns DIRECTIONALITY_LEFT_TO_RIGHT for undefined
-     * or out-of-bounds characters.
+     * {@icunote} Unlike {@link Character#getDirectionality(char)}, this returns
+     * DIRECTIONALITY_LEFT_TO_RIGHT for undefined or out-of-bounds characters.
      *
      * {@icunote} The return value must be tested using the constants defined in {@link
      * UCharacterDirection} and its interface {@link
@@ -6214,7 +6298,9 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * Cover the JDK API, for convenience.  Count the number of code points in the range of text.
+     * Equivalent to the {@link Character#codePointCount(CharSequence, int, int)}
+     * method, for convenience.  Counts the number of code points in the range
+     * of text.
      * @param text the characters to check
      * @param start the start of the range
      * @param limit the limit of the range
@@ -6243,7 +6329,8 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * Cover the JDK API, for convenience.  Count the number of code points in the range of text.
+     * Equivalent to the {@link Character#codePointCount(char[], int, int)} method, for
+     * convenience. Counts the number of code points in the range of text.
      * @param text the characters to check
      * @param start the start of the range
      * @param limit the limit of the range
@@ -6272,7 +6359,8 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * Cover the JDK API, for convenience.  Adjust the char index by a code point offset.
+     * Equivalent to the {@link Character#offsetByCodePoints(CharSequence, int, int)}
+     * method, for convenience.  Adjusts the char index by a code point offset.
      * @param text the characters to check
      * @param index the index to adjust
      * @param codePointOffset the number of code points by which to offset the index
@@ -6316,7 +6404,9 @@ public final class UCharacter implements ECharacterCategory, ECharacterDirection
     }
 
     /**
-     * Cover the JDK API, for convenience.  Adjust the char index by a code point offset.
+     * Equivalent to the
+     * {@link Character#offsetByCodePoints(char[], int, int, int, int)}
+     * method, for convenience.  Adjusts the char index by a code point offset.
      * @param text the characters to check
      * @param start the start of the range to check
      * @param count the length of the range to check

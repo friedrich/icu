@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2012, International Business Machines Corporation and    *
@@ -2777,7 +2779,7 @@ public class TransliteratorTest extends TestFmwk {
     }
 
     // Check to see that incremental gets at least part way through a reasonable string.
-    // TODO(sgill): should be working - also should be converted to parameterized test
+    // TODO(junit): should be working - also should be converted to parameterized test
     @Ignore
     @Test
     public void TestIncrementalProgress() {
@@ -2808,9 +2810,6 @@ public class TransliteratorTest extends TestFmwk {
                     String variant = (String) variants.nextElement();
                     String id = source + "-" + target + "/" + variant;
                     logln("id: " + id);
-
-                    String filter = getTranslitTestFilter();
-                    if (filter != null && id.indexOf(filter) < 0) continue;
 
                     Transliterator t = Transliterator.getInstance(id);
                     CheckIncrementalAux(t, test);

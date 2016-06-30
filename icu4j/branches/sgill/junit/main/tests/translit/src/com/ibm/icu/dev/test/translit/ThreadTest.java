@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2014, International Business Machines Corporation and         *
@@ -22,7 +24,7 @@ public class ThreadTest extends TestFmwk {
     
     @Test
     public void TestThreads()  {
-        if (getInclusion() >= 9) {
+        if (TestFmwk.getExhaustiveness() >= 9) {
             // Exhaustive test.  Run longer.
             iterationCount = 1000000;
         }

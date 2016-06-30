@@ -1,21 +1,23 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
-* Copyright (C) 1996-2015, International Business Machines Corporation and
+* Copyright (C) 1996-2016, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 */
 package com.ibm.icu.text;
 
 import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUDebug;
 import com.ibm.icu.impl.ICUResourceBundle;
+import com.ibm.icu.impl.UResource;
 import com.ibm.icu.impl.coll.CollationData;
 import com.ibm.icu.impl.coll.CollationRoot;
 import com.ibm.icu.lang.UCharacter;
@@ -33,7 +35,7 @@ import com.ibm.icu.util.VersionInfo;
 *
 * <p>Collator performs locale-sensitive string comparison. A concrete
 * subclass, RuleBasedCollator, allows customization of the collation
-* ordering by the use of rule sets.</p>
+* ordering by the use of rule sets.
 *
 * <p>A Collator is thread-safe only when frozen. See {@link #isFrozen()} and {@link Freezable}.
 *
@@ -57,7 +59,7 @@ import com.ibm.icu.util.VersionInfo;
 * <li>TERTIARY strength: Upper and lower case differences in characters are
 *     distinguished at tertiary strength (for example, "ao" &lt; "Ao" &lt;
 *     "a&ograve;"). In addition, a variant of a letter differs from the base
-*     form on the tertiary strength (such as "A" and "&#9398;"). Another
+*     form on the tertiary strength (such as "A" and "Ⓐ"). Another
 *     example is the
 *     difference between large and small Kana. A tertiary difference is ignored
 *     when there is a primary or secondary difference anywhere in the strings.
@@ -90,10 +92,10 @@ import com.ibm.icu.util.VersionInfo;
 * producing the same results as if the text were normalized in NFD. If
 * canonical decomposition is turned off, it is the user's responsibility to
 * ensure that all text is already in the appropriate form before performing
-* a comparison or before getting a CollationKey.</p>
+* a comparison or before getting a CollationKey.
 *
 * <p>For more information about the collation service see the
-* <a href="http://userguide.icu-project.org/collation">User Guide</a>.</p>
+* <a href="http://userguide.icu-project.org/collation">User Guide</a>.
 *
 * <p>Examples of use
 * <pre>
@@ -124,7 +126,7 @@ import com.ibm.icu.util.VersionInfo;
 *     System.out.println("Error: &agrave;&#92;u0325 should be not equals to a&#92;u0325&#768; without decomposition");
 * }
 * </pre>
-* </p>
+*
 * @see RuleBasedCollator
 * @see CollationKey
 * @author Syn Wee Quek
@@ -187,10 +189,8 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
      * values of the NFD form of each string are compared, just in case there
      * is no difference.
      * See class documentation for more explanation.
-     * </p>
      * <p>
      * Note this value is different from JDK's
-     * </p>
      * @stable ICU 2.8
      */
     public final static int IDENTICAL = 15;
@@ -207,9 +207,9 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
      * Decomposition mode value. With NO_DECOMPOSITION set, Strings
      * will not be decomposed for collation. This is the default
      * decomposition setting unless otherwise specified by the locale
-     * used to create the Collator.</p>
+     * used to create the Collator.
      *
-     * <p><strong>Note</strong> this value is different from the JDK's.</p>
+     * <p><strong>Note</strong> this value is different from the JDK's.
      * @see #CANONICAL_DECOMPOSITION
      * @see #getDecomposition
      * @see #setDecomposition
@@ -220,12 +220,12 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
     /**
      * Decomposition mode value. With CANONICAL_DECOMPOSITION set,
      * characters that are canonical variants according to the Unicode standard
-     * will be decomposed for collation.</p>
+     * will be decomposed for collation.
      *
      * <p>CANONICAL_DECOMPOSITION corresponds to Normalization Form D as
      * described in <a href="http://www.unicode.org/unicode/reports/tr15/">
      * Unicode Technical Report #15</a>.
-     * </p>
+     *
      * @see #NO_DECOMPOSITION
      * @see #getDecomposition
      * @see #setDecomposition
@@ -306,7 +306,7 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
 
     /**
      * Compares the equality of two Collator objects. Collator objects are equal if they have the same
-     * collation (sorting & searching) behavior.
+     * collation (sorting &amp; searching) behavior.
      *
      * <p>The base class checks for null and for equal types.
      * Subclasses should override.
@@ -332,11 +332,11 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
     /**
      * Sets this Collator's strength attribute. The strength attribute
      * determines the minimum level of difference considered significant
-     * during comparison.</p>
+     * during comparison.
      *
      * <p>The base class method does nothing. Subclasses should override it if appropriate.
      *
-     * <p>See the Collator class description for an example of use.</p>
+     * <p>See the Collator class description for an example of use.
      * @param newStrength the new strength value.
      * @see #getStrength
      * @see #PRIMARY
@@ -373,16 +373,16 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
      * insure that all text is already in the appropriate form before
      * a comparison or before getting a CollationKey. Adjusting
      * decomposition mode allows the user to select between faster and
-     * more complete collation behavior.</p>
+     * more complete collation behavior.
      *
      * <p>Since a great many of the world's languages do not require
      * text normalization, most locales set NO_DECOMPOSITION as the
-     * default decomposition mode.</p>
+     * default decomposition mode.
      *
      * <p>The base class method does nothing. Subclasses should override it if appropriate.
      *
      * <p>See getDecomposition for a description of decomposition
-     * mode.</p>
+     * mode.
      *
      * @param decomposition the new decomposition mode
      * @see #getDecomposition
@@ -900,7 +900,7 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
         // TODO make this wrap getAvailableULocales later
         if (shim == null) {
             return ICUResourceBundle.getAvailableLocales(
-                ICUResourceBundle.ICU_COLLATION_BASE_NAME, ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+                ICUData.ICU_COLLATION_BASE_NAME, ICUResourceBundle.ICU_DATA_CLASS_LOADER);
         }
         return shim.getAvailableLocales();
     }
@@ -916,7 +916,7 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
     public static final ULocale[] getAvailableULocales() {
         if (shim == null) {
             return ICUResourceBundle.getAvailableULocales(
-                ICUResourceBundle.ICU_COLLATION_BASE_NAME, ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+                ICUData.ICU_COLLATION_BASE_NAME, ICUResourceBundle.ICU_DATA_CLASS_LOADER);
         }
         return shim.getAvailableULocales();
     }
@@ -940,7 +940,7 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
      * *since ICU 3.0
      */
     
-    private static final String BASE = ICUResourceBundle.ICU_COLLATION_BASE_NAME;
+    private static final String BASE = ICUData.ICU_COLLATION_BASE_NAME;
 
     /**
      * {@icu} Returns an array of all possible keywords that are relevant to
@@ -985,46 +985,45 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
      */
     public static final String[] getKeywordValuesForLocale(String key, ULocale locale, 
                                                            boolean commonlyUsed) {
-        // Note: The parameter commonlyUsed is actually not used.
+        // Note: The parameter commonlyUsed is not used.
         // The switch is in the method signature for consistency
         // with other locale services.
 
-        // Read available collation values from collation bundles
-        String baseLoc = locale.getBaseName();
+        // Read available collation values from collation bundles.
+        ICUResourceBundle bundle = (ICUResourceBundle)
+                UResourceBundle.getBundleInstance(
+                        ICUData.ICU_COLLATION_BASE_NAME, locale);
+        KeywordsSink sink = new KeywordsSink();
+        bundle.getAllItemsWithFallback("collations", sink);
+        return sink.values.toArray(new String[sink.values.size()]);
+    }
+
+    private static final class KeywordsSink extends UResource.Sink {
         LinkedList<String> values = new LinkedList<String>();
+        boolean hasDefault = false;
 
-        UResourceBundle bundle = UResourceBundle.getBundleInstance(
-                ICUResourceBundle.ICU_COLLATION_BASE_NAME, baseLoc);
-
-        String defcoll = null;
-        while (bundle != null) {
-            UResourceBundle collations = bundle.get("collations");
-            Enumeration<String> collEnum = collations.getKeys();
-            while (collEnum.hasMoreElements()) {
-                String collkey = collEnum.nextElement();
-                if (collkey.equals("default")) {
-                    if (defcoll == null) {
-                        // Keep the default
-                        defcoll = collations.getString("default");
+        @Override
+        public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
+            UResource.Table collations = value.getTable();
+            for (int i = 0; collations.getKeyAndValue(i, key, value); ++i) {
+                int type = value.getType();
+                if (type == UResourceBundle.STRING) {
+                    if (!hasDefault && key.contentEquals("default")) {
+                        String defcoll = value.getString();
+                        if (!defcoll.isEmpty()) {
+                            values.remove(defcoll);
+                            values.addFirst(defcoll);
+                            hasDefault = true;
+                        }
                     }
-                } else if (!collkey.startsWith("private-") && !values.contains(collkey)) {
-                    values.add(collkey);
+                } else if (type == UResourceBundle.TABLE && !key.startsWith("private-")) {
+                    String collkey = key.toString();
+                    if (!values.contains(collkey)) {
+                        values.add(collkey);
+                    }
                 }
             }
-            bundle = ((ICUResourceBundle)bundle).getParent();
         }
-        // Reordering
-        Iterator<String> itr = values.iterator();
-        String[] result = new String[values.size()];
-        result[0] = defcoll;
-        int idx = 1;
-        while (itr.hasNext()) {
-            String collKey = itr.next();
-            if (!collKey.equals(defcoll)) {
-                result[idx++] = collKey;
-            }
-        }
-        return result;
     }
 
     /**
@@ -1048,7 +1047,7 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
      * @param isAvailable If non-null, isAvailable[0] will receive and
      * output boolean that indicates whether the requested locale was
      * 'available' to the collation service. If non-null, isAvailable
-     * must have length >= 1.
+     * must have length &gt;= 1.
      * @return the locale
      * @stable ICU 3.0
      */
@@ -1127,12 +1126,10 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
     /**
      * Returns this Collator's strength attribute. The strength attribute
      * determines the minimum level of difference considered significant.
-     * </p>
      * {@icunote} This can return QUATERNARY strength, which is not supported by the
      * JDK version.
      * <p>
      * See the Collator class description for more details.
-     * </p>
      * <p>The base class method always returns {@link #TERTIARY}.
      * Subclasses should override it if appropriate.
      *
@@ -1153,10 +1150,8 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
     /**
      * Returns the decomposition mode of this Collator. The decomposition mode
      * determines how Unicode composed characters are handled.
-     * </p>
      * <p>
      * See the Collator class description for more details.
-     * </p>
      * <p>The base class method always returns {@link #NO_DECOMPOSITION}.
      * Subclasses should override it if appropriate.
      *
@@ -1209,7 +1204,7 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
      * equal to or greater than zero depending on whether the source String is
      * less than, equal to or greater than the target String. See the Collator
      * class description for an example of use.
-     * </p>
+     *
      * @param source the source String.
      * @param target the target String.
      * @return Returns an integer value. Value is less than zero if source is
@@ -1224,7 +1219,7 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
 
     /**
      * Compares the source Object to the target Object.
-     * </p>
+     *
      * @param source the source Object.
      * @param target the target Object.
      * @return Returns an integer value. Value is less than zero if source is
@@ -1258,7 +1253,7 @@ public abstract class Collator implements Comparator<Object>, Freezable<Collator
      * <p>Note that collation keys are often less efficient than simply doing comparison. 
      * For more details, see the ICU User Guide.
      *
-     * <p>See the CollationKey class documentation for more information.</p>
+     * <p>See the CollationKey class documentation for more information.
      * @param source the string to be transformed into a CollationKey.
      * @return the CollationKey for the given String based on this Collator's
      *         collation rules. If the source String is null, a null

@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 **********************************************************************
 * Copyright (c) 2002-2010, International Business Machines
@@ -107,7 +109,7 @@ public class TestCLDRVsICU extends TestFmwk {
 
     Set allLocales = new TreeSet();
 
-    // TODO(sgill): seems to be failing with missing locales - maybe rewrite as parameterized
+    // TODO(junit): seems to be failing with missing locales - maybe rewrite as parameterized
     @Ignore
     @Test
     public void TestFiles() throws SAXException, IOException {

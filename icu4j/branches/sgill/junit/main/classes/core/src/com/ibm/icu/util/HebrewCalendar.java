@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and
+ * Copyright (C) 1996-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -46,7 +48,7 @@ import com.ibm.icu.util.ULocale.Category;
  * calendar, see one of the following references:
  * <ul>
  * <li>"<a href="http://www.amazon.com/exec/obidos/ASIN/0521564743">Calendrical Calculations</a>",
- *      by Nachum Dershowitz & Edward Reingold, Cambridge University Press, 1997, pages 85-91.
+ *      by Nachum Dershowitz &amp; Edward Reingold, Cambridge University Press, 1997, pages 85-91.
  *
  * <li>Hebrew Calendar Science and Myths,
  *      <a href="http://web.archive.org/web/20090423084613/http://www.geocities.com/Athens/1584/">

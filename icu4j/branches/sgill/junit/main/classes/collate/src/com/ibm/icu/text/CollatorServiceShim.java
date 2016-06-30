@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
-* Copyright (C) 2003-2014, International Business Machines Corporation and
+* Copyright (C) 2003-2016, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 */
@@ -11,6 +13,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICULocaleService;
 import com.ibm.icu.impl.ICULocaleService.LocaleKeyFactory;
 import com.ibm.icu.impl.ICUResourceBundle;
@@ -91,7 +94,7 @@ final class CollatorServiceShim extends Collator.ServiceShim {
         // TODO rewrite this to just wrap getAvailableULocales later
         Locale[] result;
         if (service.isDefault()) {
-            result = ICUResourceBundle.getAvailableLocales(ICUResourceBundle.ICU_COLLATION_BASE_NAME,
+            result = ICUResourceBundle.getAvailableLocales(ICUData.ICU_COLLATION_BASE_NAME,
                     ICUResourceBundle.ICU_DATA_CLASS_LOADER);
         } else {
             result = service.getAvailableLocales();
@@ -102,7 +105,7 @@ final class CollatorServiceShim extends Collator.ServiceShim {
     ULocale[] getAvailableULocales() {
         ULocale[] result;
         if (service.isDefault()) {
-            result = ICUResourceBundle.getAvailableULocales(ICUResourceBundle.ICU_COLLATION_BASE_NAME,
+            result = ICUResourceBundle.getAvailableULocales(ICUData.ICU_COLLATION_BASE_NAME,
                     ICUResourceBundle.ICU_DATA_CLASS_LOADER);
         } else {
             result = service.getAvailableULocales();
@@ -121,7 +124,7 @@ final class CollatorServiceShim extends Collator.ServiceShim {
 
             class CollatorFactory extends ICUResourceBundleFactory {
                 CollatorFactory() {
-                    super(ICUResourceBundle.ICU_COLLATION_BASE_NAME);
+                    super(ICUData.ICU_COLLATION_BASE_NAME);
                 }
 
                 @Override

@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
 *   Copyright (C) 2001-2012, International Business Machines
@@ -563,8 +565,9 @@ public class ArabicShapingRegTest extends TestFmwk {
         }
     }
 
+    // TODO(junit): remove this and convert callers to parameterized tests
     private void reportTestFailure(int index, TestData test, ArabicShaping shaper, String result, Exception error) {
-        if (noData() && error != null && error instanceof MissingResourceException ) {
+        if (error != null && error instanceof MissingResourceException ) {
             warnln(error.getMessage());
         }
 

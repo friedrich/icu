@@ -1,7 +1,9 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  * Created on May 5, 2004
  *
- * Copyright (C) 2004-2015 International Business Machines Corporation and others.
+ * Copyright (C) 2004-2016 International Business Machines Corporation and others.
  * All Rights Reserved.
  *
  */
@@ -476,8 +478,8 @@ void executeTest(TestParams t) {
             int line = t.srcLine[bp];
             int rs = t.bi.getRuleStatus();
             if (rs != expectedTagVal) {
-                errln("Incorrect status for reverse break.  Pos=  " + bp +
-                        "File line,col= " + line + ", " + t.srcCol[bp] + "\n" +
+                errln("Incorrect status for reverse break.  Pos = " + bp +
+                      "  File line,col= " + line + ", " + t.srcCol[bp] + "\n" +
                       "          Actual, Expected status = " + rs + ", " + expectedTagVal);
             }
         }

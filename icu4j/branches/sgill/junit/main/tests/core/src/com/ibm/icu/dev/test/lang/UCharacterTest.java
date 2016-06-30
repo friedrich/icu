@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and
+ * Copyright (C) 1996-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -49,7 +51,7 @@ public final class UCharacterTest extends TestFmwk
     /**
      * Expected Unicode version.
      */
-    private final VersionInfo VERSION_ = VersionInfo.getInstance(8);
+    private final VersionInfo VERSION_ = VersionInfo.getInstance(9);
 
     // constructor ===================================================
 
@@ -1117,7 +1119,7 @@ public final class UCharacterTest extends TestFmwk
                       + "U+0061");
             }
 
-            if (getInclusion() >= 5) {
+            if (TestFmwk.getExhaustiveness() >= 5) {
                 // extra testing different from icu
                 for (int i = UCharacter.MIN_VALUE; i < UCharacter.MAX_VALUE; i ++)
                 {
@@ -1132,7 +1134,7 @@ public final class UCharacterTest extends TestFmwk
             }
 
             // Test getCharNameCharacters
-            if (getInclusion() >= 10) {
+            if (TestFmwk.getExhaustiveness() >= 10) {
                 boolean map[] = new boolean[256];
 
                 UnicodeSet set = new UnicodeSet(1, 0); // empty set
@@ -2496,6 +2498,21 @@ public final class UCharacterTest extends TestFmwk
     }
 
     @Test
+    public void TestEmojiProperties() {
+        assertFalse("space is not Emoji", UCharacter.hasBinaryProperty(0x20, UProperty.EMOJI));
+        assertTrue("shooting star is Emoji", UCharacter.hasBinaryProperty(0x1F320, UProperty.EMOJI));
+        UnicodeSet emoji = new UnicodeSet("[:Emoji:]");
+        assertTrue("lots of Emoji", emoji.size() > 700);
+
+        assertTrue("shooting star is Emoji_Presentation",
+                UCharacter.hasBinaryProperty(0x1F320, UProperty.EMOJI_PRESENTATION));
+        assertTrue("Fitzpatrick 6 is Emoji_Modifier",
+                UCharacter.hasBinaryProperty(0x1F3FF, UProperty.EMOJI_MODIFIER));
+        assertTrue("happy person is Emoji_Modifier_Base",
+                UCharacter.hasBinaryProperty(0x1F64B, UProperty.EMOJI_MODIFIER_BASE));
+    }
+
+    @Test
     public void TestIsBMP()
     {
         int ch[] = {0x0, -1, 0xffff, 0x10ffff, 0xff, 0x1ffff};
@@ -2564,7 +2581,7 @@ public final class UCharacterTest extends TestFmwk
 
    /* various tests for consistency of UCD data and API behavior */
     @Test
-   public void TestConsistency() {
+    public void TestConsistency() {
        UnicodeSet set1, set2, set3, set4;
 
        int start, end;

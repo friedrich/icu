@@ -1,7 +1,9 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2011-2015, International Business Machines Corporation and    *
- * others. All Rights Reserved.                                                *
+ * Copyright (C) 2011-2016, International Business Machines Corporation and
+ * others. All Rights Reserved.
  *******************************************************************************
  */
 package com.ibm.icu.text;
@@ -28,6 +30,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.SoftCache;
 import com.ibm.icu.impl.TZDBTimeZoneNames;
@@ -423,7 +426,7 @@ public class TimeZoneFormat extends UFormat implements Freezable<TimeZoneFormat>
 
         try {
             ICUResourceBundle bundle = (ICUResourceBundle) ICUResourceBundle.getBundleInstance(
-                    ICUResourceBundle.ICU_ZONE_BASE_NAME, locale);
+                    ICUData.ICU_ZONE_BASE_NAME, locale);
             try {
                 gmtPattern = bundle.getStringWithFallback("zoneStrings/gmtFormat");
             } catch (MissingResourceException e) {
@@ -490,12 +493,13 @@ public class TimeZoneFormat extends UFormat implements Freezable<TimeZoneFormat>
     }
 
     /**
-     * Returns a frozen instance of <code>TimeZoneFormat</code> for the given JDK locale.
+     * Returns a frozen instance of <code>TimeZoneFormat</code> for the given
+     * {@link java.util.Locale}.
      * <p><b>Note</b>: The instance returned by this method is frozen. If you want to
      * customize a TimeZoneFormat, you must use {@link #cloneAsThawed()} to get a
      * thawed copy first.
      * 
-     * @param locale the JDK locale.
+     * @param locale the {@link Locale}.
      * @return a frozen instance of <code>TimeZoneFormat</code> for the given locale.
      * @stable ICU 54
      */
@@ -717,7 +721,7 @@ public class TimeZoneFormat extends UFormat implements Freezable<TimeZoneFormat>
     /**
      * Sets the default parse options.
      * <p>
-     * <b>Note:</b> By default, an instance of <code>TimeZoneFormat></code>
+     * <b>Note:</b> By default, an instance of <code>TimeZoneFormat</code>
      * created by {#link {@link #getInstance(ULocale)} has no parse options set.
      * 
      * @param options the default parse options.
@@ -3119,7 +3123,7 @@ public class TimeZoneFormat extends UFormat implements Freezable<TimeZoneFormat>
      * @serialField _locale ULocale The locale of this TimeZoneFormat object.
      * @serialField _tznames TimeZoneNames The time zone name data.
      * @serialField _gmtPattern String The pattern string for localized GMT format.
-     * @serialField _gmtOffsetPatterns Stirng[] The array of GMT offset patterns used by localized GMT format
+     * @serialField _gmtOffsetPatterns String[] The array of GMT offset patterns used by localized GMT format
      *              (positive hour-min, positive hour-min-sec, negative hour-min, negative hour-min-sec).
      * @serialField _gmtOffsetDigits String[] The array of decimal digits used by localized GMT format
      *              (the size of array is 10).

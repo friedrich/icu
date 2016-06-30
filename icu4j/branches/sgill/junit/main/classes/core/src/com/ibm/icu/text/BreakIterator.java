@@ -1,18 +1,20 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2016, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 
 package com.ibm.icu.text;
 
-import java.lang.ref.SoftReference;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
+import com.ibm.icu.impl.CacheValue;
 import com.ibm.icu.impl.ICUDebug;
 import com.ibm.icu.util.ICUCloneNotSupportedException;
 import com.ibm.icu.util.ULocale;
@@ -181,7 +183,7 @@ import com.ibm.icu.util.ULocale;
  *     int last = wb.following(pos);
  *     int current = wb.next();
  *     while (current != BreakIterator.DONE) {
- *         for (int p = last; p < current; p++) {
+ *         for (int p = last; p &lt; current; p++) {
  *             if (Character.isLetter(text.charAt(p)))
  *                 return last;
  *         }
@@ -556,7 +558,7 @@ public abstract class BreakIterator implements Cloneable
      */
     private static final int KIND_COUNT = 5;
 
-    private static final SoftReference<?>[] iterCache = new SoftReference<?>[5];
+    private static final CacheValue<?>[] iterCache = new CacheValue<?>[5];
 
     /**
      * Returns a new instance of BreakIterator that locates word boundaries.
@@ -867,7 +869,7 @@ s     */
         BreakIterator result = getShim().createBreakIterator(where, kind);
 
         BreakIteratorCache cache = new BreakIteratorCache(where, result);
-        iterCache[kind] = new SoftReference<BreakIteratorCache>(cache);
+        iterCache[kind] = CacheValue.getInstance(cache);
         if (result instanceof RuleBasedBreakIterator) {
             RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator)result;
             rbbi.setBreakType(kind);

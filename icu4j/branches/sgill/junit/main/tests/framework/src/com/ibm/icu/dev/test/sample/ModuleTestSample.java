@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2001-2006, International Business Machines Corporation and    *
@@ -6,9 +8,7 @@
  */
 package com.ibm.icu.dev.test.sample;
 
-import com.ibm.icu.dev.test.ModuleTest;
-
-// TODO(sgill) : turned off
+// TODO(junit) : turned off
 
 public class ModuleTestSample /*extends ModuleTest*/ {
     ModuleTestSample(){

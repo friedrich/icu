@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2016, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -324,6 +326,7 @@ public class IslamicCalendar extends Calendar {
      * @param beCivil   <code>true</code> to use the civil calendar,
      *                  <code>false</code> to use the astronomical calendar.
      * @stable ICU 2.8
+     * @discouraged ICU 57 use setCalculationType(CalculationType) instead
      */
     public void setCivil(boolean beCivil)
     {
@@ -351,7 +354,7 @@ public class IslamicCalendar extends Calendar {
      * calendar, or <code>false</code> if using the religious, astronomical
      * calendar.
      * @stable ICU 2.8
-     * 
+     * @discouraged ICU 57 use getCalculationType() instead
      */
     public boolean isCivil() {
         if(cType == CalculationType.ISLAMIC_CIVIL) {
@@ -951,8 +954,7 @@ public class IslamicCalendar extends Calendar {
     /**
      * sets the calculation type for this calendar.
      * 
-     * @draft ICU 55
-     * @provisional This API might change or be removed in a future release.
+     * @stable ICU 55
      */
     public void setCalculationType(CalculationType type) {
         cType = type;
@@ -967,8 +969,7 @@ public class IslamicCalendar extends Calendar {
     /**
      * gets the calculation type for this calendar.
      * 
-     * @draft ICU 55
-     * @provisional This API might change or be removed in a future release.
+     * @stable ICU 55
      */
     public CalculationType getCalculationType() {
         return cType;

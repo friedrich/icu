@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  **********************************************************************
- * Copyright (c) 2002-2015, International Business Machines
+ * Copyright (c) 2002-2016, International Business Machines
  * Corporation and others.  All Rights Reserved.
  **********************************************************************
  * Author: Alan Liu
@@ -189,25 +191,21 @@ public class CurrencyTest extends TestFmwk {
         Currency usd = Currency.getInstance("USD");
         // Warning: HARD-CODED LOCALE DATA in this test.  If it fails, CHECK
         // THE LOCALE DATA before diving into the code.
-        if (!noData()) {
-            assertEquals("USD.getName(SYMBOL_NAME)",
-                         "$",
-                         usd.getName(en, Currency.SYMBOL_NAME, isChoiceFormat));
-            assertEquals("USD.getName(LONG_NAME)",
-                         "US Dollar",
-                         usd.getName(en, Currency.LONG_NAME, isChoiceFormat));
-        }
+        assertEquals("USD.getName(SYMBOL_NAME)",
+                "$",
+                usd.getName(en, Currency.SYMBOL_NAME, isChoiceFormat));
+        assertEquals("USD.getName(LONG_NAME)",
+                "US Dollar",
+                usd.getName(en, Currency.LONG_NAME, isChoiceFormat));
         // TODO add more tests later
     }
 
     @Test
     public void TestCoverage() {
         Currency usd = Currency.getInstance("USD");
-        if (!noData()) {
         assertEquals("USD.getSymbol()",
                 "$",
                 usd.getSymbol());
-        }
     }
     
     // A real test of the CurrencyDisplayNames class.
@@ -647,6 +645,9 @@ public class CurrencyTest extends TestFmwk {
             {"en@currency=CAD",     "USD", "USN"},
             {"fr@currency=ZZZ",     "EUR"},
             {"de_DE@currency=DEM",  "EUR"},
+            {"en_US@rg=THZZZZ",     "THB"},
+            {"de@rg=USZZZZ",        "USD", "USN"},
+            {"en_US@currency=CAD;rg=THZZZZ",  "THB"},
         };
 
         String[] ALL = Currency.getKeywordValuesForLocale("currency", ULocale.getDefault(), false);

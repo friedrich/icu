@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2008-2015, International Business Machines Corporation and
+ * Copyright (C) 2008-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -11,6 +13,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
+import com.ibm.icu.impl.SimpleFormatterImpl;
 import com.ibm.icu.impl.StandardPlural;
 import com.ibm.icu.text.MeasureFormat;
 import com.ibm.icu.text.MeasureFormat.FormatWidth;
@@ -60,11 +63,13 @@ public class PluralRangesTest extends TestFmwk {
             ULocale ulocale = new ULocale(test[0]);
             FormatWidth width = FormatWidth.valueOf(test[1]);
             String expected = test[2];
-            String actual = MeasureFormat.getRangePattern(ulocale, width);
+            String formatter = MeasureFormat.getRangeFormat(ulocale, width);
+            String actual = SimpleFormatterImpl.formatCompiledPattern(formatter, "{0}", "{1}");
             assertEquals("range pattern " + Arrays.asList(test), expected, actual);
         }
     }
-    
+
+    @Test
     @Test
     public void TestFormatting() {
         Object[][] tests = {

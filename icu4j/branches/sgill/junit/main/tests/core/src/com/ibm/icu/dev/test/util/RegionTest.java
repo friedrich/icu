@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  **********************************************************************
- * Copyright (c) 2011-2012, International Business Machines
+ * Copyright (c) 2011-2016, International Business Machines
  * Corporation and others.  All Rights Reserved.
  **********************************************************************
  * Author: John Emmons
@@ -278,7 +280,7 @@ public class RegionTest extends TestFmwk {
             { "SN" , "686", "011", "TERRITORY", "002" },
             { "SO" , "706", "014", "TERRITORY", "002" },
             { "SR" , "740", "005", "TERRITORY", "019" },
-            { "SS" , "728", "015", "TERRITORY", "002" },
+            { "SS" , "728", "014", "TERRITORY", "002" },
             { "ST" , "678", "017", "TERRITORY", "002" },
             { "SU" , "810", null , "DEPRECATED" , null},
             { "SV" , "222", "013", "TERRITORY", "019" },

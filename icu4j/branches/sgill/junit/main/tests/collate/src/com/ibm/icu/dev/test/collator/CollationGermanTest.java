@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and
@@ -81,6 +83,7 @@ import com.ibm.icu.text.Collator;
             errln("ERROR: in creation of collator of GERMAN locale");
         }
     }
+
     // perform test with strength TERTIARY
     @Test
     public void TestTertiary(){
@@ -104,7 +107,8 @@ import com.ibm.icu.text.Collator;
     public void TestSecondary(){
     }
     
-     // perform test with strength PRIMARY
+    // perform test with strength PRIMARY
+    @Test
     @Test
     public void TestPrimary(){
         if(myCollation == null ) {

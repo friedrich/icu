@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2013, International Business Machines Corporation and    *
@@ -467,6 +469,7 @@ public class HebrewTest extends CalendarTestFmwk {
             warnln("Could not load the locale data. "+ ex.getMessage());
         }
     }
+
     @Test
     public void Test1624() {
 

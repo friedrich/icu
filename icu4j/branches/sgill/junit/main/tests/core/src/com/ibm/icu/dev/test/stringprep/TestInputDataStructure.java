@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 
  *******************************************************************************
@@ -16,7 +18,7 @@ import org.junit.Test;
  */
 public class TestInputDataStructure {
     
-    // TODO(sgill): not running before - added empty test to keep failures away
+    // TODO(junit): not running before - added empty test to keep failures away
     @Ignore
     @Test
     public void dummyTest() {}

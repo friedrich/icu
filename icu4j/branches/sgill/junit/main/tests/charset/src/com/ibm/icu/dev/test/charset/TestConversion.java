@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and
@@ -86,7 +88,6 @@ public class TestConversion extends TestFmwk {
     // public methods --------------------------------------------------------
 
     public TestConversion() {
-        //super("com/ibm/icu/dev/data/testdata/", "conversion");
     }
 
     @SuppressWarnings("unused")
@@ -153,7 +154,7 @@ public class TestConversion extends TestFmwk {
             errln("error parsing conversion/toUnicode test case " + cc.caseNr);
             return;
         }
-
+        
         /*
          * Skip the following data driven converter tests.
          * These tests were added to the data driven conversion test in ICU
@@ -224,7 +225,7 @@ public class TestConversion extends TestFmwk {
         FromUnicodeCase(cc);
     }
 
-
+    
     private void FromUnicodeCase(ConversionCase cc) {
         // create charset encoder for conversion test
         CharsetProviderICU provider = new CharsetProviderICU();
@@ -234,19 +235,19 @@ public class TestConversion extends TestFmwk {
             // if cc.charset starts with '*', obtain it from com/ibm/icu/dev/data/testdata
             charset = (cc.charset != null && cc.charset.length() > 0 && cc.charset.charAt(0) == '*')
                     ? (Charset) provider.charsetForName(cc.charset.substring(1),
-                            "com/ibm/icu/dev/data/testdata", this.getClass().getClassLoader())
-                            : (Charset) provider.charsetForName(cc.charset);
-                    if (charset != null) {
-                        encoder = (CharsetEncoder) charset.newEncoder();
-                        encoder.onMalformedInput(CodingErrorAction.REPLACE);
-                        encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
-                        if (encoder instanceof CharsetEncoderICU) {
-                            ((CharsetEncoderICU)encoder).setFallbackUsed(cc.fallbacks);
-                            if (((CharsetEncoderICU)encoder).isFallbackUsed() != cc.fallbacks) {
-                                errln("Fallback could not be set for " + cc.charset);
-                            }
-                        }
+                        "com/ibm/icu/dev/data/testdata", this.getClass().getClassLoader())
+                    : (Charset) provider.charsetForName(cc.charset);
+            if (charset != null) {
+                encoder = (CharsetEncoder) charset.newEncoder();
+                encoder.onMalformedInput(CodingErrorAction.REPLACE);
+                encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+                if (encoder instanceof CharsetEncoderICU) {
+                    ((CharsetEncoderICU)encoder).setFallbackUsed(cc.fallbacks);
+                    if (((CharsetEncoderICU)encoder).isFallbackUsed() != cc.fallbacks) {
+                        errln("Fallback could not be set for " + cc.charset);
                     }
+                }
+            }
         } catch (Exception e) {
             encoder = null;
         }
@@ -363,7 +364,7 @@ public class TestConversion extends TestFmwk {
             break;
         }
     }
-
+    
     private int stepFromUnicode(ConversionCase cc, CharsetEncoder encoder, int step) {
         if (step < 0) {
             errln("Negative step size, test internal error.");
@@ -386,7 +387,7 @@ public class TestConversion extends TestFmwk {
             currentSourceLimit = sourceLen;
             currentTargetLimit = targetLen;
         }
-
+        
         CoderResult cr = null;
 
         for (;;) {
@@ -525,13 +526,13 @@ public class TestConversion extends TestFmwk {
             // if cc.charset starts with '*', obtain it from com/ibm/icu/dev/data/testdata
             charset = (cc.charset != null && cc.charset.length() > 0 && cc.charset.charAt(0) == '*')
                     ? (Charset) provider.charsetForName(cc.charset.substring(1),
-                            "com/ibm/icu/dev/data/testdata", this.getClass().getClassLoader())
-                            : (Charset) provider.charsetForName(cc.charset);
-                    if (charset != null) {
-                        decoder = (CharsetDecoder) charset.newDecoder();
-                        decoder.onMalformedInput(CodingErrorAction.REPLACE);
-                        decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
-                    }
+                        "com/ibm/icu/dev/data/testdata", this.getClass().getClassLoader())
+                    : (Charset) provider.charsetForName(cc.charset);
+            if (charset != null) {
+                decoder = (CharsetDecoder) charset.newDecoder();
+                decoder.onMalformedInput(CodingErrorAction.REPLACE);
+                decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+            }
         } catch (Exception e) {
             // TODO implement loading of test data.
             decoder = null;

@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and
@@ -506,6 +508,7 @@ public class CollationAPITest extends TestFmwk {
         doAssert((col.getStrength() != Collator.SECONDARY), "collation object's strength is secondary difference");
     
     }
+
     @Test
     public void TestJunkCollator(){
         logln("Create junk collation: ");
@@ -531,6 +534,7 @@ public class CollationAPITest extends TestFmwk {
         logln("Collator property test ended.");
     
     }
+
     /**
     * This tests the RuleBasedCollator
     * - constructor/destructor

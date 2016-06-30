@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2016, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -61,14 +63,18 @@ public class BreakIteratorTest extends TestFmwk
         List<String> previousResults = _testLastAndPrevious(bi, text);
 
         logln("comparing forward and backward...");
-        int errs = getErrorCount();
+        //TODO(junit) - needs to be rewritten
+        //int errs = getErrorCount();
         compareFragmentLists("forward iteration", "backward iteration", nextResults,
                         previousResults);
-        if (getErrorCount() == errs) {
-            logln("comparing expected and actual...");
-            compareFragmentLists("expected result", "actual result", expectedResult,
+        //if (getErrorCount() == errs) {
+        logln("comparing expected and actual...");
+        compareFragmentLists("expected result", "actual result", expectedResult,
+                        nextResults);
+        logln("comparing expected and actual...");
+        compareFragmentLists("expected result", "actual result", expectedResult,
                             nextResults);
-        }
+        //}
 
         int[] boundaries = new int[expectedResult.size() + 3];
         boundaries[0] = BreakIterator.DONE;
@@ -872,6 +878,22 @@ public class BreakIteratorTest extends TestFmwk
         }
     }
 
+    /**
+     * At present, Japanese doesn't have exceptions.
+     * However, this still should not fail.
+     */
+    @Test
+    public void TestFilteredJapanese() {
+        ULocale loc = ULocale.JAPANESE;
+        BreakIterator brk = FilteredBreakIteratorBuilder
+                .createInstance(loc)
+                .build(BreakIterator.getSentenceInstance(loc));
+        brk.setText("ＯＫです。");
+        assertEquals("Starting point", 0, brk.current());
+        assertEquals("Next point", 5, brk.next());
+        assertEquals("Last point", BreakIterator.DONE, brk.next());
+    }
+    
     /*
      * Test case for Ticket#10721. BreakIterator factory method should throw NPE
      * when specified locale is null.

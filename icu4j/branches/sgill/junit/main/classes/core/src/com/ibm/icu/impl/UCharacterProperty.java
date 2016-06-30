@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and
+ * Copyright (C) 1996-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -384,6 +386,10 @@ public final class UCharacterProperty
                 return !Normalizer2Impl.UTF16Plus.equal(dest, src);
             }
         },
+        new BinaryProperty(2, 1<<PROPS_2_EMOJI),
+        new BinaryProperty(2, 1<<PROPS_2_EMOJI_PRESENTATION),
+        new BinaryProperty(2, 1<<PROPS_2_EMOJI_MODIFIER),
+        new BinaryProperty(2, 1<<PROPS_2_EMOJI_MODIFIER_BASE),
     };
 
     public boolean hasBinaryProperty(int c, int which) {
@@ -813,7 +819,7 @@ public final class UCharacterProperty
             } else {
                 return -2;
             }
-        } else if(ntv<NTV_RESERVED_START_) {
+        } else if(ntv<NTV_FRACTION20_START_) {
             /* sexagesimal (base 60) integer */
             int numValue=(ntv>>2)-0xbf;
             int exp=(ntv&3)+1;
@@ -837,6 +843,9 @@ public final class UCharacterProperty
             }
 
             return numValue;
+        } else if(ntv<NTV_RESERVED_START_) {
+            // fraction-20 e.g. 3/80
+            return -2;
         } else {
             /* reserved */
             return -2;
@@ -891,7 +900,7 @@ public final class UCharacterProperty
             }
 
             return numValue;
-        } else if(ntv<NTV_RESERVED_START_) {
+        } else if(ntv<NTV_FRACTION20_START_) {
             /* sexagesimal (base 60) integer */
             int numValue=(ntv>>2)-0xbf;
             int exp=(ntv&3)+1;
@@ -915,6 +924,12 @@ public final class UCharacterProperty
             }
 
             return numValue;
+        } else if(ntv<NTV_RESERVED_START_) {
+            // fraction-20 e.g. 3/80
+            int frac20=ntv-NTV_FRACTION20_START_;  // 0..0x17
+            int numerator=2*(frac20&3)+1;
+            int denominator=20<<(frac20>>2);
+            return (double)numerator/denominator;
         } else {
             /* reserved */
             return UCharacter.NO_NUMERIC_VALUE;
@@ -990,8 +1005,15 @@ public final class UCharacterProperty
      * ((ntv>>2)-0xbf) * 60^((ntv&3)+1) = (1..9)*(60^1..60^4)
      */
     private static final int NTV_BASE60_START_=0x300;
+    /**
+     * Fraction-20 values:
+     * frac20 = ntv-0x324 = 0..0x17 -> 1|3|5|7 / 20|40|80|160|320|640
+     * numerator: num = 2*(frac20&3)+1
+     * denominator: den = 20<<(frac20>>2)
+     */
+    private static final int NTV_FRACTION20_START_ = NTV_BASE60_START_ + 36;  // 0x300+9*4=0x324
     /** No numeric value (yet). */
-    private static final int NTV_RESERVED_START_ = NTV_BASE60_START_ + 36;  // 0x300+9*4=0x324
+    private static final int NTV_RESERVED_START_ = NTV_FRACTION20_START_ + 24;  // 0x324+6*4=0x34c
 
     private static final int ntvGetType(int ntv) {
         return
@@ -1101,13 +1123,19 @@ public final class UCharacterProperty
     /*
      * Properties in vector word 2
      * Bits
-     * 31..26   reserved
+     * 31..28   http://www.unicode.org/reports/tr51/#Emoji_Properties
+     * 27..26   reserved
      * 25..20   Line Break
      * 19..15   Sentence Break
      * 14..10   Word Break
      *  9.. 5   Grapheme Cluster Break
      *  4.. 0   Decomposition Type
      */
+    private static final int PROPS_2_EMOJI = 28;
+    private static final int PROPS_2_EMOJI_PRESENTATION = 29;
+    private static final int PROPS_2_EMOJI_MODIFIER = 30;
+    private static final int PROPS_2_EMOJI_MODIFIER_BASE = 31;
+
     private static final int LB_MASK          = 0x03f00000;
     private static final int LB_SHIFT         = 20;
 

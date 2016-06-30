@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2010, International Business Machines Corporation and    *
@@ -15,7 +17,7 @@ import org.junit.Test;
 
 public class TestComparator {
 
-    // TODO(sgill): apparently orphaned - added dummy test to pass ant junit
+    // TODO(junit): apparently orphaned - added dummy test to pass ant junit
     @Ignore
     @Test
     public void dummyTest() {}

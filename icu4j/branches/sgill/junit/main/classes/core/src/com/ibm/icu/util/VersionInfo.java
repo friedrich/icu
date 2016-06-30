@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and
+ * Copyright (C) 1996-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -162,6 +164,12 @@ public final class VersionInfo implements Comparable<VersionInfo>
     public static final VersionInfo UNICODE_8_0;
 
     /**
+     * Unicode 9.0 version
+     * @stable ICU 58
+     */
+    public static final VersionInfo UNICODE_9_0;
+
+    /**
      * ICU4J current release version
      * @stable ICU 2.8
      */
@@ -174,7 +182,7 @@ public final class VersionInfo implements Comparable<VersionInfo>
      * @deprecated This API is ICU internal only.
      */
     @Deprecated
-    public static final String ICU_DATA_VERSION_PATH = "56b";
+    public static final String ICU_DATA_VERSION_PATH = "58b";
     
     /**
      * Data version in ICU4J.
@@ -218,7 +226,7 @@ public final class VersionInfo implements Comparable<VersionInfo>
      * @param version version String in the format of "major.minor.milli.micro"
      *                or "major.minor.milli" or "major.minor" or "major",
      *                where major, minor, milli, micro are non-negative numbers
-     *                <= 255. If the trailing version numbers are
+     *                &lt;= 255. If the trailing version numbers are
      *                not specified they are taken as 0s. E.g. Version "3.1" is
      *                equivalent to "3.1.0.0".
      * @return an instance of VersionInfo with the argument version.
@@ -263,11 +271,11 @@ public final class VersionInfo implements Comparable<VersionInfo>
 
     /**
      * Returns an instance of VersionInfo with the argument version.
-     * @param major major version, non-negative number <= 255.
-     * @param minor minor version, non-negative number <= 255.
-     * @param milli milli version, non-negative number <= 255.
-     * @param micro micro version, non-negative number <= 255.
-     * @exception IllegalArgumentException when either arguments are negative or > 255
+     * @param major major version, non-negative number &lt;= 255.
+     * @param minor minor version, non-negative number &lt;= 255.
+     * @param milli milli version, non-negative number &lt;= 255.
+     * @param micro micro version, non-negative number &lt;= 255.
+     * @exception IllegalArgumentException when either arguments are negative or &gt; 255
      * @stable ICU 2.6
      */
     public static VersionInfo getInstance(int major, int minor, int milli,
@@ -295,11 +303,11 @@ public final class VersionInfo implements Comparable<VersionInfo>
     /**
      * Returns an instance of VersionInfo with the argument version.
      * Equivalent to getInstance(major, minor, milli, 0).
-     * @param major major version, non-negative number <= 255.
-     * @param minor minor version, non-negative number <= 255.
-     * @param milli milli version, non-negative number <= 255.
+     * @param major major version, non-negative number &lt;= 255.
+     * @param minor minor version, non-negative number &lt;= 255.
+     * @param milli milli version, non-negative number &lt;= 255.
      * @exception IllegalArgumentException when either arguments are
-     *                                     negative or > 255
+     *                                     negative or &gt; 255
      * @stable ICU 2.6
      */
     public static VersionInfo getInstance(int major, int minor, int milli)
@@ -310,10 +318,10 @@ public final class VersionInfo implements Comparable<VersionInfo>
     /**
      * Returns an instance of VersionInfo with the argument version.
      * Equivalent to getInstance(major, minor, 0, 0).
-     * @param major major version, non-negative number <= 255.
-     * @param minor minor version, non-negative number <= 255.
+     * @param major major version, non-negative number &lt;= 255.
+     * @param minor minor version, non-negative number &lt;= 255.
      * @exception IllegalArgumentException when either arguments are
-     *                                     negative or > 255
+     *                                     negative or &gt; 255
      * @stable ICU 2.6
      */
     public static VersionInfo getInstance(int major, int minor)
@@ -324,9 +332,9 @@ public final class VersionInfo implements Comparable<VersionInfo>
     /**
      * Returns an instance of VersionInfo with the argument version.
      * Equivalent to getInstance(major, 0, 0, 0).
-     * @param major major version, non-negative number <= 255.
+     * @param major major version, non-negative number &lt;= 255.
      * @exception IllegalArgumentException when either arguments are
-     *                                     negative or > 255
+     *                                     negative or &gt; 255
      * @stable ICU 2.6
      */
     public static VersionInfo getInstance(int major)
@@ -531,10 +539,11 @@ public final class VersionInfo implements Comparable<VersionInfo>
         UNICODE_6_3   = getInstance(6, 3, 0, 0);
         UNICODE_7_0   = getInstance(7, 0, 0, 0);
         UNICODE_8_0   = getInstance(8, 0, 0, 0);
+        UNICODE_9_0   = getInstance(9, 0, 0, 0);
 
-        ICU_VERSION   = getInstance(56, 1, 0, 0);
-        ICU_DATA_VERSION = getInstance(56, 1, 0, 0);
-        UNICODE_VERSION = UNICODE_8_0;
+        ICU_VERSION   = getInstance(58, 0, 1, 0);
+        ICU_DATA_VERSION = getInstance(58, 0, 1, 0);
+        UNICODE_VERSION = UNICODE_9_0;
 
         UCOL_RUNTIME_VERSION = getInstance(9);
         UCOL_BUILDER_VERSION = getInstance(9);

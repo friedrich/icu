@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2005-2015, International Business Machines Corporation and
@@ -38,10 +40,6 @@ import com.ibm.icu.text.CharsetMatch;
  */
 public class TestCharsetDetector extends TestFmwk
 {
-    
-    /**
-     * Constructor
-     */
     public TestCharsetDetector()
     {
     }
@@ -762,7 +760,7 @@ public class TestCharsetDetector extends TestFmwk
     //  Bug #8309, test case submitted with original bug report.
     //
     @Test
-      public void TestFreshDetectorEachTime() throws Exception
+    public void TestFreshDetectorEachTime() throws Exception
       {
           CharsetDetector detector1 = new CharsetDetector();
           byte[] data1 = createData1();
@@ -779,7 +777,7 @@ public class TestCharsetDetector extends TestFmwk
       }
   
     @Test
-      public void TestReusingDetector() throws Exception
+    public void TestReusingDetector() throws Exception
       {
           CharsetDetector detector = new CharsetDetector();
  

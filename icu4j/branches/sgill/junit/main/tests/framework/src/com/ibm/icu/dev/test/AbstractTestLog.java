@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2003-2011, International Business Machines Corporation and
@@ -10,9 +12,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.ibm.icu.util.VersionInfo;
-
 import org.junit.Assert;
+
+import com.ibm.icu.util.VersionInfo;
 
 public abstract class AbstractTestLog implements TestLog {
     /**
@@ -83,6 +85,7 @@ public abstract class AbstractTestLog implements TestLog {
      * Report a warning (generally missing tests or data).
      */
     public static final void warn(String message) {
+        Assert.fail(message);
         // TODO(stuartg): turned off - causing OOM running under ant
         //System.out.print(message);
         //msg(message, WARN, true, false);
@@ -92,6 +95,7 @@ public abstract class AbstractTestLog implements TestLog {
      * Report a warning (generally missing tests or data) and newline.
      */
     public static final void warnln(String message) {
+        Assert.fail(message);
         // TODO(stuartg): turned off - causing OOM running under ant
         //System.out.println(message);
         //msg(message, WARN, true, true);
@@ -122,7 +126,7 @@ public abstract class AbstractTestLog implements TestLog {
 
         public void msg(String message, int level, boolean incCount, boolean newln) {
             if (delegate != null) {
-                // TODO(sgill): figure out what to do with this message call
+                // TODO(junit): figure out what to do with this message call
                 TestFmwk.msg(message, level, incCount, newln);
                 //delegate.msg(message, level, incCount, newln);
             }

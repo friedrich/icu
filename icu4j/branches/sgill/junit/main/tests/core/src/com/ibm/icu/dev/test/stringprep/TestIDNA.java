@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2003-2011, International Business Machines Corporation and    *
@@ -623,7 +625,7 @@ public class TestIDNA extends TestFmwk {
        
     }
     
-    // TODO(sgill): turned off because not running before
+    // TODO(junit): turned off because not running before
     @Ignore
     @Test
     public void MonkeyTest() throws Exception{

@@ -1,7 +1,9 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ****************************************************************************************
- * Copyright (C) 2009-2015, Google, Inc.; International Business Machines Corporation   *
- * and others. All Rights Reserved.                                                     *
+ * Copyright (C) 2009-2016, Google, Inc.; International Business Machines Corporation
+ * and others. All Rights Reserved.
  ****************************************************************************************
  */
 package com.ibm.icu.util;
@@ -17,6 +19,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.Relation;
 import com.ibm.icu.impl.Row;
@@ -32,7 +35,7 @@ import com.ibm.icu.impl.Utility;
  * LocaleMatcher matcher = new LocaleMatcher("fr, en-GB, en");
  * 
  * // afterwards:
- * matcher.getBestMatch("en-US").toLanguageTag() => "en"
+ * matcher.getBestMatch("en-US").toLanguageTag() =&gt; "en"
  * </pre>
  * 
  * It takes into account when languages are close to one another, such as fil
@@ -836,7 +839,7 @@ public class LocaleMatcher {
     @Deprecated
     public static ICUResourceBundle getICUSupplementalData() {
         ICUResourceBundle suppData = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-            ICUResourceBundle.ICU_BASE_NAME,
+            ICUData.ICU_BASE_NAME,
             "supplementalData",
             ICUResourceBundle.ICU_DATA_CLASS_LOADER);
         return suppData;

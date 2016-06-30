@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2009-2014, Google, International Business Machines Corporation and
@@ -43,7 +45,7 @@ public class AnyScriptTest extends TestFmwk {
         String test = testBuffer.toString();
         logln("Test line: " + test);
         
-        int inclusion = getInclusion();
+        int inclusion = TestFmwk.getExhaustiveness();
         boolean testedUnavailableScript = false;
         
         for (int script = 0; script < UScript.CODE_LIMIT; ++script) {

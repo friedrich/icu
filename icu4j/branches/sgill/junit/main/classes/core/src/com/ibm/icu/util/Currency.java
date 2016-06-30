@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2001-2015, International Business Machines Corporation and
+ * Copyright (C) 2001-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -21,10 +23,13 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import com.ibm.icu.impl.CacheBase;
 import com.ibm.icu.impl.ICUCache;
+import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUDebug;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.SimpleCache;
+import com.ibm.icu.impl.SoftCache;
 import com.ibm.icu.impl.TextTrieMap;
 import com.ibm.icu.text.CurrencyDisplayNames;
 import com.ibm.icu.text.CurrencyMetaInfo;
@@ -181,7 +186,8 @@ public class Currency extends MeasureUnit {
      * @stable ICU 4.0
      */
     public static String[] getAvailableCurrencyCodes(ULocale loc, Date d) {
-        CurrencyFilter filter = CurrencyFilter.onDate(d).withRegion(loc.getCountry());
+        String region = ULocale.getRegionForSupplementalData(loc, false);
+        CurrencyFilter filter = CurrencyFilter.onDate(d).withRegion(region);
         List<String> list = getTenderCurrencies(filter);
         // Note: Prior to 4.4 the spec didn't say that we return null if there are no results, but 
         // the test assumed it did.  Kept the behavior and amended the spec.
@@ -193,10 +199,10 @@ public class Currency extends MeasureUnit {
 
     /**
      * Returns an array of Strings which contain the currency
-     * identifiers that are valid for the given JDK locale on the 
+     * identifiers that are valid for the given {@link java.util.Locale} on the
      * given date.  If there are no such identifiers, returns null.
      * Returned identifiers are in preference order.
-     * @param loc the JDK locale for which to retrieve currency codes.
+     * @param loc the {@link java.util.Locale} for which to retrieve currency codes.
      * @param d the date for which to retrieve currency codes for the given locale.
      * @return The array of ISO currency codes.
      * @stable ICU 54
@@ -226,39 +232,55 @@ public class Currency extends MeasureUnit {
     }
 
     private static final String EUR_STR = "EUR";
-    private static final ICUCache<ULocale, String> currencyCodeCache = new SimpleCache<ULocale, String>();
-    
+    private static final CacheBase<String, Currency, Void> regionCurrencyCache =
+            new SoftCache<String, Currency, Void>() {
+        @Override
+        protected Currency createInstance(String key, Void unused) {
+            return loadCurrency(key);
+        }
+    };
+
     /**
      * Instantiate a currency from resource data.
      */
     /* package */ static Currency createCurrency(ULocale loc) {
-        
         String variant = loc.getVariant();
         if ("EURO".equals(variant)) {
             return getInstance(EUR_STR);
         }
-        
-        String code = currencyCodeCache.get(loc);
-        if (code == null) {
-            String country = loc.getCountry();
-        
-            CurrencyMetaInfo info = CurrencyMetaInfo.getInstance();
-            List<String> list = info.currencies(CurrencyFilter.onRegion(country));
-            if (list.size() > 0) {
-                code = list.get(0);
-                boolean isPreEuro = "PREEURO".equals(variant);
-                if (isPreEuro && EUR_STR.equals(code)) {
-                    if (list.size() < 2) {
-                        return null;
-                    }
-                    code = list.get(1);
-                }
-            } else {
-                return null;
-            }
-            currencyCodeCache.put(loc, code);
+
+        // Cache the currency by region, and whether variant=PREEURO.
+        // Minimizes the size of the cache compared with caching by ULocale.
+        String key = ULocale.getRegionForSupplementalData(loc, false);
+        if ("PREEURO".equals(variant)) {
+            key = key + '-';
         }
-        return getInstance(code);
+        return regionCurrencyCache.getInstance(key, null);
+    }
+
+    private static Currency loadCurrency(String key) {
+        String region;
+        boolean isPreEuro;
+        if (key.endsWith("-")) {
+            region = key.substring(0, key.length() - 1);
+            isPreEuro = true;
+        } else {
+            region = key;
+            isPreEuro = false;
+        }
+        CurrencyMetaInfo info = CurrencyMetaInfo.getInstance();
+        List<String> list = info.currencies(CurrencyFilter.onRegion(region));
+        if (!list.isEmpty()) {
+            String code = list.get(0);
+            if (isPreEuro && EUR_STR.equals(code)) {
+                if (list.size() < 2) {
+                    return null;
+                }
+                code = list.get(1);
+            }
+            return getInstance(code);
+        }
+        return null;
     }
 
     /**
@@ -404,14 +426,10 @@ public class Currency extends MeasureUnit {
         
         // Don't resolve region if the requested locale is 'und', it will resolve to US
         // which we don't want.
-        String prefRegion = locale.getCountry();
-        if (prefRegion.length() == 0) {
-            if (UND.equals(locale)) {
-                return EMPTY_STRING_ARRAY;
-            }
-            ULocale loc = ULocale.addLikelySubtags(locale);
-            prefRegion = loc.getCountry();
-       }
+        if (UND.equals(locale)) {
+            return EMPTY_STRING_ARRAY;
+        }
+        String prefRegion = ULocale.getRegionForSupplementalData(locale, true);
 
         CurrencyFilter filter = CurrencyFilter.now().withRegion(prefRegion);
         
@@ -449,7 +467,7 @@ public class Currency extends MeasureUnit {
         int result = 0;
         try {
             UResourceBundle bundle = UResourceBundle.getBundleInstance(
-                    ICUResourceBundle.ICU_BASE_NAME,
+                    ICUData.ICU_BASE_NAME,
                     "currencyNumericCodes",
                     ICUResourceBundle.ICU_DATA_CLASS_LOADER);
             UResourceBundle codeMap = bundle.get("codeMap");
@@ -599,7 +617,8 @@ public class Currency extends MeasureUnit {
      * If the resource data for the default locale contains no entry for this currency,
      * then the ISO 4217 code is returned.
      * <p>
-     * Note: This method was added for JDK compatibility support and equivalent to
+     * Note: This method is a convenience equivalent for
+     * {@link java.util.Currency#getDisplayName()} and is equivalent to
      * <code>getName(Locale.getDefault(), LONG_NAME, null)</code>.
      * 
      * @return The display name of this currency
@@ -607,6 +626,7 @@ public class Currency extends MeasureUnit {
      * @see #getName(Locale, int, boolean[])
      * @stable ICU 49
      */
+    @SuppressWarnings("javadoc")    // java.util.Currency#getDisplayName() is introduced in Java 7
     public String getDisplayName() {
         return getName(Locale.getDefault(), LONG_NAME, null);
     }
@@ -616,8 +636,9 @@ public class Currency extends MeasureUnit {
      * If the resource data for the given locale contains no entry for this currency,
      * then the ISO 4217 code is returned.
      * <p>
-     * Note: This method was added for JDK compatibility support and equivalent to
-     * <code>getName(locale, LONG_NAME, null)</code>.
+     * Note: This method is a convenience equivalent for
+     * {@link java.util.Currency#getDisplayName(java.util.Locale)} and is equivalent
+     * to <code>getName(locale, LONG_NAME, null)</code>.
      * 
      * @param locale locale in which to display currency
      * @return The display name of this currency for the specified locale
@@ -625,6 +646,7 @@ public class Currency extends MeasureUnit {
      * @see #getName(Locale, int, boolean[])
      * @stable ICU 49
      */
+    @SuppressWarnings("javadoc")    // java.util.Currency#getDisplayName() is introduced in Java 7
     public String getDisplayName(Locale locale) {
         return getName(locale, LONG_NAME, null);
     }
@@ -641,7 +663,7 @@ public class Currency extends MeasureUnit {
      * @param text the text to parse
      * @param type parse against currency type: LONG_NAME only or not
      * @param pos input-output position; on input, the position within
-     * text to match; must have 0 <= pos.getIndex() < text.length();
+     * text to match; must have 0 &lt;= pos.getIndex() &lt; text.length();
      * on output, the position after the last matched character. If
      * the parse fails, the position in unchanged upon output.
      * @return the ISO 4217 code, as a string, of the best match, or

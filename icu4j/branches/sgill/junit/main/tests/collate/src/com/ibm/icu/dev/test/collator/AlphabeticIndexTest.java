@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2008-2015, International Business Machines Corporation and
@@ -755,6 +757,7 @@ public class AlphabeticIndexTest extends TestFmwk {
     public void TestSimplified() {
         checkBuckets("zh", simplifiedNames, ULocale.ENGLISH, "W", "\u897f");
     }
+
     @Test
     public void TestTraditional() {
         checkBuckets("zh_Hant", traditionalNames, ULocale.ENGLISH, "\u4e9f", "\u5357\u9580");

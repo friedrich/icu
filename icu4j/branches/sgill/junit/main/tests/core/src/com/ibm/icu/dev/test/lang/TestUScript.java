@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
-* Copyright (C) 1996-2015, International Business Machines Corporation and
+* Copyright (C) 1996-2016, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 */
@@ -134,15 +136,11 @@ public class TestUScript extends TestFmwk {
                 UScript.getCode("ro-RO"));  // String not ULocale
     }
 
+    // TODO(junit): remove this and convert the tests that use this to be parameterized
     private void reportDataErrors(int numErrors) {
         if (numErrors >0) {
             // assume missing locale data, so not an error, just a warning
-            if (isModularBuild() || noData()) {
-                // if nodata is set don't even warn
-                warnln("Could not find locale data");
-            } else {
-                errln("encountered " + numErrors + " errors.");
-            }
+            errln("encountered " + numErrors + " errors.");
         }
     }
 
@@ -519,13 +517,17 @@ public class TestUScript extends TestFmwk {
      */
     private static final int getCharScript(int script) {
         switch(script) {
+        case UScript.HAN_WITH_BOPOMOFO:
         case UScript.SIMPLIFIED_HAN:
         case UScript.TRADITIONAL_HAN:
             return UScript.HAN;
         case UScript.JAPANESE:
             return UScript.HIRAGANA;
+        case UScript.JAMO:
         case UScript.KOREAN:
             return UScript.HANGUL;
+        case UScript.SYMBOLS_EMOJI:
+            return UScript.SYMBOLS;
         default:
             return script;
         }
@@ -641,13 +643,15 @@ public class TestUScript extends TestFmwk {
             "Loma", "Mende_Kikakui", "Meroitic_Cursive",
             "Old_North_Arabian", "Nabataean", "Palmyrene", "Khudawadi", "Warang_Citi",
             /* new in ICU 4.8 */
-            "Afak", "Jurc", "Mro", "Nshu", "Sharada", "Sora_Sompeng", "Takri", "Tang", "Wole",
+            "Afak", "Jurc", "Mro", "Nshu", "Sharada", "Sora_Sompeng", "Takri", "Tangut", "Wole",
             /* new in ICU 49 */
             "Anatolian_Hieroglyphs", "Khojki", "Tirhuta",
             /* new in ICU 52 */
             "Caucasian_Albanian", "Mahajani",
             /* new in ICU 54 */
-            "Ahom", "Hatran", "Modi", "Multani", "Pau_Cin_Hau", "Siddham"
+            "Ahom", "Hatran", "Modi", "Multani", "Pau_Cin_Hau", "Siddham",
+            // new in ICU 58
+            "Adlam", "Bhaiksuki", "Marchen", "Newa", "Osage", "Hanb", "Jamo", "Zsye"
         };
         String[] expectedShort = new String[]{
             "Bali", "Batk", "Blis", "Brah", "Cham", "Cirt", "Cyrs", "Egyd", "Egyh", "Egyp",
@@ -673,7 +677,9 @@ public class TestUScript extends TestFmwk {
             /* new in ICU 52 */
             "Aghb", "Mahj",
             /* new in ICU 54 */
-            "Ahom", "Hatr", "Modi", "Mult", "Pauc", "Sidd"
+            "Ahom", "Hatr", "Modi", "Mult", "Pauc", "Sidd",
+            // new in ICU 58
+            "Adlm", "Bhks", "Marc", "Newa", "Osge", "Hanb", "Jamo", "Zsye"
         };
         if(expectedLong.length!=(UScript.CODE_LIMIT-UScript.BALINESE)) {
             errln("need to add new script codes in lang.TestUScript.java!");

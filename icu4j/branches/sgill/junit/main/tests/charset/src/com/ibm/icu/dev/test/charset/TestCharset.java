@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
 * Copyright (C) 2006-2015, International Business Machines Corporation and
@@ -128,6 +130,7 @@ public class TestCharset extends TestFmwk {
             
         }
     }
+    
     @Test
     public void TestUTF32Converter(){
         CharsetProvider icu = new CharsetProviderICU();
@@ -469,6 +472,7 @@ public class TestCharset extends TestFmwk {
             }
         }
     }
+    
     @Test
     public void TestUTF8Converter() {
         String converter = "UTF-8";
@@ -1582,6 +1586,7 @@ public class TestCharset extends TestFmwk {
         
     }
 */
+
     @Test
     public void TestCanConvert(/*String encoding*/)throws Exception {
         char[] mySource = { 
@@ -1608,6 +1613,7 @@ public class TestCharset extends TestFmwk {
         }
 
     }
+    
     @Test
     public void TestAvailableCharsets() {
         SortedMap map = Charset.availableCharsets();
@@ -1659,7 +1665,8 @@ public class TestCharset extends TestFmwk {
             }
         }
     }
-    /* jitterbug 4312 */
+
+        /* jitterbug 4312 */
     @Test
     public void TestUnsupportedCharset(){
         CharsetProvider icu = new CharsetProviderICU();
@@ -1704,6 +1711,7 @@ public class TestCharset extends TestFmwk {
             warnln("Error creating charset encoder for " + encoding + ": " + e);
         }
     }
+    
     @Test
     public void TestSubBytes(){
         try{
@@ -1737,7 +1745,8 @@ public class TestCharset extends TestFmwk {
         }
     }
     /*
-    @Test
+
+        @Test
     public void TestImplFlushFailure(){
    
        try{
@@ -1755,7 +1764,8 @@ public class TestCharset extends TestFmwk {
        } 
     }
    */
-    @Test
+
+        @Test
     public void TestISO88591() {
        
         Charset cs = new CharsetProviderICU().charsetForName("iso-8859-1");
@@ -1771,6 +1781,7 @@ public class TestCharset extends TestFmwk {
         }
         
     }
+
     @Test
     public void TestUTF8Encode() {
         // Test with a lead surrogate in the middle of the input text.
@@ -1806,6 +1817,7 @@ public class TestCharset extends TestFmwk {
         buf.rewind();
     }
 */
+
     @Test
     public void TestUTF8() throws CharacterCodingException{
            try{
@@ -2134,7 +2146,7 @@ public class TestCharset extends TestFmwk {
         }
     }
 
-    // TODO(sgill): orphan method
+    // TODO(junit): orphan method
     public void convertAllTest(ByteBuffer bSource, CharBuffer uSource) throws Exception {
         String encoding = "UTF-16";
         CharsetDecoder decoder = null;
@@ -2182,6 +2194,7 @@ public class TestCharset extends TestFmwk {
         }
 
     }
+
     //TODO
     /*
     @Test
@@ -2458,6 +2471,7 @@ public class TestCharset extends TestFmwk {
             errln("\"x-doesNotExist\" returned " + xfake);
         }
     }
+
     //test to make sure that number of aliases and canonical names are in the charsets that are in
     @Test
     public void TestAllNames() {
@@ -2493,6 +2507,7 @@ public class TestCharset extends TestFmwk {
             }
         }
     }
+
     @Test
     public void TestDecoderImplFlush() {
         CharsetProviderICU provider = new CharsetProviderICU();
@@ -2501,6 +2516,7 @@ public class TestCharset extends TestFmwk {
         execDecoder(jcs);
         execDecoder(ics);
     }
+
     @Test
     public void TestEncoderImplFlush() {
         CharsetProviderICU provider = new CharsetProviderICU();
@@ -2544,6 +2560,7 @@ public class TestCharset extends TestFmwk {
             errln(e.getMessage()+" "+cs.getClass().toString());
         }
     }
+
     @Test
     public void TestDecodeMalformed() {
         CharsetProviderICU provider = new CharsetProviderICU();
@@ -2556,6 +2573,7 @@ public class TestCharset extends TestFmwk {
             errln("ICU's decoder did not return the same result as Sun. ICU: "+ir.toString()+" Sun: "+jr.toString());
         }
     }
+
     private CoderResult execMalformed(Charset cs){
         CharsetDecoder decoder = cs.newDecoder();
         decoder.onMalformedInput(CodingErrorAction.IGNORE);
@@ -2603,6 +2621,7 @@ public class TestCharset extends TestFmwk {
         }
         return null;
     }
+
     @Test
     public void TestUTF32BOM(){
 
@@ -2679,6 +2698,7 @@ public class TestCharset extends TestFmwk {
             System.out.println("!exception!");
         }
     }
+
     //Test CharsetICUProvider
     @Test
     public void TestNullCanonicalName() {
@@ -2689,6 +2709,7 @@ public class TestCharset extends TestFmwk {
             errln("getICUCanonicalName return a non-null string for given null string");
         }
     }
+
     @Test
     public void TestGetAllNames() {
         String[] names = null;
@@ -2699,6 +2720,7 @@ public class TestCharset extends TestFmwk {
             errln("getAllNames returned a null string.");
         }
     }
+
     //Test CharsetICU
     @Test
     public void TestCharsetContains() {
@@ -2730,6 +2752,7 @@ public class TestCharset extends TestFmwk {
             errln("Charset.contains returned true for a different charset.");
         }
     }
+
     @Test
     public void TestCharsetICUNullCharsetName() {
         String charsetName = null;
@@ -2805,6 +2828,7 @@ public class TestCharset extends TestFmwk {
             errln("Overflow error while encoding ASCII should have occurred.");
         }
     }
+
     //Test CharsetUTF7
     @Test
     public void TestCharsetUTF7() {
@@ -3237,6 +3261,7 @@ public class TestCharset extends TestFmwk {
         }
         //end of charset encoder code coverage code
     }
+
     //Test Charset ISCII
     @Test
     public void TestCharsetISCII() {

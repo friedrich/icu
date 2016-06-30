@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2015, International Business Machines Corporation and
+ * Copyright (C) 2015-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -54,13 +56,19 @@ public class ValidIdentifiers {
             if (makeMap) {
                 HashMap<String,Set<String>> _subdivisionData = new HashMap<String,Set<String>>();
                 for (String s : plainData) {
-                    int pos = s.indexOf('-');
-                    String key = s.substring(0,pos);
+                    int pos = s.indexOf('-'); // read v28 data also
+                    int pos2 = pos+1;
+                    if (pos < 0) {
+                        pos2 = pos = s.charAt(0) < 'A' ? 3 : 2;
+                    }
+                    final String key = s.substring(0, pos);
+                    final String subdivision = s.substring(pos2);
+
                     Set<String> oldSet = _subdivisionData.get(key);
                     if (oldSet == null) {
                         _subdivisionData.put(key, oldSet = new HashSet<String>());
                     }
-                    oldSet.add(s.substring(pos+1));
+                    oldSet.add(subdivision);
                 }
                 this.regularData = null;
                 HashMap<String,Set<String>> _subdivisionData2 = new HashMap<String,Set<String>>();
@@ -79,10 +87,7 @@ public class ValidIdentifiers {
                 this.subdivisionData = null;
             }
         }
-        /**
-         * @param code
-         * @return
-         */
+
         public boolean contains(String code) {
             if (regularData != null) {
                 return regularData.contains(code);
@@ -114,7 +119,7 @@ public class ValidIdentifiers {
         static {
             Map<Datatype, Map<Datasubtype, ValiditySet>> _data = new EnumMap<Datatype,Map<Datasubtype,ValiditySet>>(Datatype.class);
             UResourceBundle suppData = UResourceBundle.getBundleInstance(
-                    ICUResourceBundle.ICU_BASE_NAME,
+                    ICUData.ICU_BASE_NAME,
                     "supplementalData",
                     ICUResourceBundle.ICU_DATA_CLASS_LOADER);
             UResourceBundle validityInfo = suppData.get("idValidity");

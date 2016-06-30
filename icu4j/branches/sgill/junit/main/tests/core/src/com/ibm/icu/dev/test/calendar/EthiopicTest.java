@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2005-2010, International Business Machines Corporation and    *
@@ -42,7 +44,7 @@ public class EthiopicTest extends CalendarTestFmwk
 
     /* DY[20050507]  I don't know what this is for yet: 
     @Test
-       public void TestRoll() {
+    public void TestRoll() {
        int[][] tests = new int[][] {
        //       input                roll by          output
        //  year  month     day     field amount    year  month     day

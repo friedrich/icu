@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2001-2015, International Business Machines Corporation and
+ * Copyright (C) 2001-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -16,23 +18,27 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.text.AttributedCharacterIterator;
 import java.text.FieldPosition;
+import java.text.Format;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Test;
 
-import com.ibm.icu.dev.test.AbstractTestLog;
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
+import com.ibm.icu.dev.test.format.IntlTestDecimalFormatAPIC.FieldContainer;
 import com.ibm.icu.impl.ICUConfig;
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.impl.data.ResourceReader;
 import com.ibm.icu.impl.data.TokenIterator;
 import com.ibm.icu.math.BigDecimal;
 import com.ibm.icu.math.MathContext;
+import com.ibm.icu.text.CompactDecimalFormat;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.DecimalFormatSymbols;
 import com.ibm.icu.text.DisplayContext;
@@ -40,6 +46,8 @@ import com.ibm.icu.text.MeasureFormat;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.NumberFormat.NumberFormatFactory;
 import com.ibm.icu.text.NumberFormat.SimpleNumberFormatFactory;
+import com.ibm.icu.text.NumberingSystem;
+import com.ibm.icu.text.RuleBasedNumberFormat;
 import com.ibm.icu.util.Currency;
 import com.ibm.icu.util.CurrencyAmount;
 import com.ibm.icu.util.ULocale;
@@ -139,7 +147,7 @@ public class NumberFormatTest extends TestFmwk {
                     if (expected.doubleValue() != (actual.doubleValue())) {
                         return "Expected: " + expected + ", got: " + actual;
                     }
-                
+
                     if (!tuple.outputCurrency.equals(currAmt.getCurrency().toString())) {
                         return "Expected currency: " + tuple.outputCurrency + ", got: " + currAmt.getCurrency();
                     }
@@ -151,7 +159,7 @@ public class NumberFormatTest extends TestFmwk {
                  * @return
                  */
                 private DecimalFormat newDecimalFormat(NumberFormatTestData tuple) {
-             
+
                     DecimalFormat fmt = new DecimalFormat(
                             tuple.pattern == null ? "0" : tuple.pattern,
                             new DecimalFormatSymbols(tuple.locale == null ? EN : tuple.locale));
@@ -553,7 +561,7 @@ public class NumberFormatTest extends TestFmwk {
             }
         }
     }
-    
+
     @Test
     public void Test10419RoundingWith0FractionDigits() {
         Object[][] data = new Object[][]{
@@ -580,7 +588,7 @@ public class NumberFormatTest extends TestFmwk {
             double value = parser.parse("-0,5").doubleValue();
             assertEquals("Expect -0.5", -0.5, value);
         } catch (ParseException e) {
-            this.errln("Parsing -0.5 should have succeeded.");
+            TestFmwk.errln("Parsing -0.5 should have succeeded.");
         }
     }
 
@@ -591,7 +599,7 @@ public class NumberFormatTest extends TestFmwk {
             double value = parser.parse("\u208B0.5").doubleValue();
             assertEquals("Expect -0.5", -0.5, value);
         } catch (ParseException e) {
-            this.errln("Parsing -0.5 should have succeeded.");
+            TestFmwk.errln("Parsing -0.5 should have succeeded.");
         }
     }
 
@@ -1053,9 +1061,9 @@ public class NumberFormatTest extends TestFmwk {
                 // test locale without currency information 
                 {"root", "-1.23", "USD", "-US$ 1.23", "-USD 1.23", "-1.23 USD"}, 
                 {"root@numbers=latn", "-1.23", "USD", "-US$ 1.23", "-USD 1.23", "-1.23 USD"}, // ensure that the root locale is still used with modifiers 
-                {"root@numbers=arab", "-1.23", "USD", "\u200F-US$ ١٫٢٣", "\u200F-USD ١٫٢٣", "\u200F-١٫٢٣ USD"}, // ensure that the root locale is still used with modifiers 
+                {"root@numbers=arab", "-1.23", "USD", "\u200F-\u0661\u066B\u0662\u0663\u00A0US$", "\u200F-\u0661\u066B\u0662\u0663\u00A0USD", "\u200F-\u0661\u066B\u0662\u0663 USD"}, // ensure that the root locale is still used with modifiers
                 {"es_AR", "1", "INR", "INR\u00A01,00", "INR\u00A01,00", "1,00 rupia india"}, 
-                {"ar_EG", "1", "USD", "US$ ١٫٠٠", "USD ١٫٠٠", "١٫٠٠ دولار أمريكي"}, 
+                {"ar_EG", "1", "USD", "١٫٠٠\u00A0US$", "١٫٠٠\u00A0USD", "١٫٠٠ دولار أمريكي"}, 
         };
 
         for (int i=0; i<DATA.length; ++i) {
@@ -1083,7 +1091,7 @@ public class NumberFormatTest extends TestFmwk {
                 // using 'k' currency style.
                 String formatResult = DATA[i][resultDataIndex];
                 if (!strBuf.equals(formatResult)) {
-                    errln("FAIL: Expected " + formatResult + " actual: " + strBuf);
+                    errln("FAIL: localeID: " + localeString + ", expected(" + formatResult.length() + "): \"" + formatResult + "\", actual(" + strBuf.length() + "): \"" + strBuf + "\"");
                 }
                 try {
                     // test parsing, and test parsing for all currency formats.
@@ -1185,7 +1193,7 @@ public class NumberFormatTest extends TestFmwk {
                 new ParseCurrencyItem( "en_GB", "euros4",   "4,00\u00A0\u20AC", 0,  0,  0,  0,  ""    ),
                 new ParseCurrencyItem( "en_GB", "euros6",   "6\u00A0\u20AC",    0,  0,  0,  0,  ""    ),
                 new ParseCurrencyItem( "en_GB", "euros8",   "\u20AC8",          0,  0,  2,  8,  "EUR" ),
-                new ParseCurrencyItem( "en_GB", "dollars4", "$4",               0,  0,  2,  4,  "USD" ),
+                new ParseCurrencyItem( "en_GB", "dollars4", "US$4",             0,  0,  4,  4,  "USD" ),
 
                 new ParseCurrencyItem( "fr_FR", "euros4",   "4,00\u00A0\u20AC", 6,  4,  6,  4,  "EUR" ),
                 new ParseCurrencyItem( "fr_FR", "euros6",   "6\u00A0\u20AC",    3,  6,  3,  6,  "EUR" ),
@@ -1986,6 +1994,51 @@ public class NumberFormatTest extends TestFmwk {
             } else {
                 expect2(fmt,item.value,item.expectedResult);
             }
+        }
+    }
+    
+    // Coverage tests for methods not being called otherwise.
+    @Test
+    public void TestNumberingSystemCoverage() {
+        // Test getAvaliableNames
+        String[] availableNames = NumberingSystem.getAvailableNames();
+        if (availableNames == null || availableNames.length <= 0) {
+            errln("ERROR: NumberingSystem.getAvailableNames() returned a null or empty array.");
+        } else {
+            boolean latnFound = false;
+            for (String name : availableNames){
+                if ("latn".equals(name)) {
+                    latnFound = true;
+                    break;
+                }
+            }
+            
+            if (!latnFound) {
+                errln("ERROR: 'latn' numbering system not found on NumberingSystem.getAvailableNames().");
+            }
+        }
+        
+        // Test NumberingSystem.getInstance()
+        NumberingSystem ns1 = NumberingSystem.getInstance();
+        if (ns1 == null || ns1.isAlgorithmic()) {
+            errln("ERROR: NumberingSystem.getInstance() returned a null or invalid NumberingSystem");
+        }
+        
+        // Test NumberingSystem.getInstance(int,boolean,String)
+        /* Parameters used: the ones used in the default constructor
+         * radix = 10;
+         * algorithmic = false;
+         * desc = "0123456789";
+         */
+        NumberingSystem ns2 = NumberingSystem.getInstance(10, false, "0123456789");
+        if (ns2 == null || ns2.isAlgorithmic()) {
+            errln("ERROR: NumberingSystem.getInstance(int,boolean,String) returned a null or invalid NumberingSystem");
+        }
+        
+        // Test NumberingSystem.getInstance(Locale)
+        NumberingSystem ns3 = NumberingSystem.getInstance(Locale.ENGLISH);
+        if (ns3 == null || ns3.isAlgorithmic()) {
+            errln("ERROR: NumberingSystem.getInstance(Locale) returned a null or invalid NumberingSystem");
         }
     }
 
@@ -3009,6 +3062,7 @@ public class NumberFormatTest extends TestFmwk {
             }
         }
     }
+
     @Test
     public void TestJB5251(){
         //save default locale
@@ -3299,6 +3353,36 @@ public class NumberFormatTest extends TestFmwk {
     }
 
     /*
+     * Coverage tests for the implementation of abstract format methods not being called otherwise
+     */
+    public void TestFormatAbstractImplCoverage() {
+        NumberFormat df = DecimalFormat.getInstance(Locale.ENGLISH);
+        NumberFormat cdf = CompactDecimalFormat.getInstance(Locale.ENGLISH, CompactDecimalFormat.CompactStyle.SHORT);
+        NumberFormat rbf = new RuleBasedNumberFormat(ULocale.ENGLISH, RuleBasedNumberFormat.SPELLOUT);
+
+        /*
+         *  Test  NumberFormat.format(BigDecimal,StringBuffer,FieldPosition)
+         */
+        StringBuffer sb = new StringBuffer();
+        String result = df.format(new BigDecimal(2000.43), sb, new FieldPosition(0)).toString();
+        if (!"2,000.43".equals(result)) {
+            errln("DecimalFormat failed. Expected: 2,000.43 - Actual: " + result);
+        }
+
+        sb.delete(0, sb.length());
+        result = cdf.format(new BigDecimal(2000.43), sb, new FieldPosition(0)).toString();
+        if (!"2K".equals(result)) {
+            errln("DecimalFormat failed. Expected: 2K - Actual: " + result);
+        }
+
+        sb.delete(0, sb.length());
+        result = rbf.format(new BigDecimal(2000.43), sb, new FieldPosition(0)).toString();
+        if (!"two thousand point four three".equals(result)) {
+            errln("DecimalFormat failed. Expected: 'two thousand point four three' - Actual: '" + result + "'");
+        }  
+    }
+
+    /*
      * Tests the method public final static NumberFormat getInstance(int style) public static NumberFormat
      * getInstance(Locale inLocale, int style) public static NumberFormat getInstance(ULocale desiredLocale, int choice)
      */
@@ -3398,21 +3482,21 @@ public class NumberFormatTest extends TestFmwk {
          * Tests the method public boolean visible()
          */
         if (tf.visible() != true) {
-            errln("NumberFormatFactor.visible() was suppose to return true.");
+            errln("NumberFormatFactory.visible() was suppose to return true.");
         }
 
         /*
          * Tests the method public NumberFormat createFormat(Locale loc, int formatType)
          */
         if (tf.createFormat(new Locale(""), 0) != null) {
-            errln("NumberFormatFactor.createFormat(Locale loc, int formatType) " + "was suppose to return null");
+            errln("NumberFormatFactory.createFormat(Locale loc, int formatType) " + "was suppose to return null");
         }
 
         /*
          * Tests the method public NumberFormat createFormat(ULocale loc, int formatType)
          */
         if (tf1.createFormat(new ULocale(""), 0) != null) {
-            errln("NumberFormatFactor.createFormat(ULocale loc, int formatType) " + "was suppose to return null");
+            errln("NumberFormatFactory.createFormat(ULocale loc, int formatType) " + "was suppose to return null");
         }
     }
 
@@ -4221,7 +4305,7 @@ public class NumberFormatTest extends TestFmwk {
         // compare the Currency and Currency Cash Digits
         // Note that as of CLDR 26:
         // * TWD switches from 0 decimals to 2; PKR still has 0, so change test to that
-        // * CAD and all other currencies that rounded to .05 no longer do
+        // * CAD rounds to .05 in the cash style only.
         for (int i = 0; i < 2; i++) {
             String original_expected = "PKR124";
             DecimalFormat custom = null;
@@ -4269,7 +4353,7 @@ public class NumberFormatTest extends TestFmwk {
             }
 
             String cash_rounding_currency = fmt.format(123.567);
-            String cash__rounding_currency_expected = "CA$123.57";
+            String cash__rounding_currency_expected = "CA$123.55";
             assertEquals("Test Currency Context", cash__rounding_currency_expected, cash_rounding_currency);
         }
 
@@ -4312,7 +4396,7 @@ public class NumberFormatTest extends TestFmwk {
                 result = parser.parse(value2Parse).doubleValue();
                 assertEquals("wrong parsed value", parseValue, result);
             } catch (ParseException e) {
-               AbstractTestLog.errln("Parsing " + value2Parse + " should have succeeded with " + testPattern[i] + 
+                TestFmwk.errln("Parsing " + value2Parse + " should have succeeded with " + testPattern[i] + 
                             " and isDecimalPointMatchRequired set to: " + parser.isDecimalPatternMatchRequired());
             }
             
@@ -4320,7 +4404,7 @@ public class NumberFormatTest extends TestFmwk {
             try {
                 result = parser.parse(value2Parse).doubleValue();
                 if(hasDecimalPoint){
-                    AbstractTestLog.errln("Parsing " + value2Parse + " should NOT have succeeded with " + testPattern[i] + 
+                    TestFmwk.errln("Parsing " + value2Parse + " should NOT have succeeded with " + testPattern[i] + 
                             " and isDecimalPointMatchRequired set to: " + parser.isDecimalPatternMatchRequired());
                 }
             } catch (ParseException e) {
@@ -4330,12 +4414,15 @@ public class NumberFormatTest extends TestFmwk {
         
     }
     
+
+    //TODO(junit): investigate
     @Test
     public void TestDataDrivenICU() {
         DataDrivenNumberFormatTestUtility.runSuite(
                 "numberformattestspecification.txt", ICU);
     }
 
+    //TODO(junit): investigate
     @Test
     public void TestDataDrivenJDK() {
         DataDrivenNumberFormatTestUtility.runSuite(
@@ -4459,5 +4546,343 @@ public class NumberFormatTest extends TestFmwk {
         } catch (ArithmeticException expected) {
             // The exception should be thrown, since rounding is needed.
         }
+    }
+
+    // Testing for Issue 11735.
+    @Test
+    public void TestNPEIssue11735() {
+        DecimalFormat fmt = new DecimalFormat("0", new DecimalFormatSymbols(new ULocale("en")));
+        ParsePosition ppos = new ParsePosition(0);
+        assertEquals("Currency symbol missing in parse. Expect null result.",
+                fmt.parseCurrency("53.45", ppos), null);
+    }
+
+    private void CompareAttributedCharacterFormatOutput(AttributedCharacterIterator iterator,
+        List<FieldContainer> expected, String formattedOutput) {
+
+        List<FieldContainer> result = new ArrayList<FieldContainer>();
+        while (iterator.getIndex() != iterator.getEndIndex()) {
+            int start = iterator.getRunStart();
+            int end = iterator.getRunLimit();
+            Iterator it = iterator.getAttributes().keySet().iterator();
+            AttributedCharacterIterator.Attribute attribute = (AttributedCharacterIterator.Attribute) it.next();
+            Object value = iterator.getAttribute(attribute);
+            result.add(new FieldContainer(start, end, attribute, value));
+            iterator.setIndex(end);
+        }
+        assertEquals("Comparing vector length for " + formattedOutput,
+            expected.size(), result.size());
+
+        if (!expected.containsAll(result)) {
+          // Print information on the differences.
+          for (int i = 0; i < expected.size(); i++) {
+            System.out.println("     expected[" + i + "] =" +
+                expected.get(i).start + " " +
+                expected.get(i).end + " " +
+                expected.get(i).attribute + " " +
+                expected.get(i).value);
+            System.out.println(" result[" + i + "] =" +
+                result.get(i).start + " " +
+                result.get(i).end + " " +
+                result.get(i).attribute + " " +
+                result.get(i).value);
+          }
+        }
+        // TODO: restore when #11914 is fixed.
+        // assertTrue("Comparing vector results for " + formattedOutput,
+        //    expected.containsAll(result));
+    }
+
+    // Testing for Issue 11914, missing FieldPositions for some field types.
+    @Test
+    public void TestNPEIssue11914() {
+        // First test: Double value with grouping separators.
+        List<FieldContainer> v1 = new ArrayList<FieldContainer>(7);
+        v1.add(new FieldContainer(0, 3, NumberFormat.Field.INTEGER));
+        v1.add(new FieldContainer(3, 4, NumberFormat.Field.GROUPING_SEPARATOR));
+        v1.add(new FieldContainer(4, 7, NumberFormat.Field.INTEGER));
+        v1.add(new FieldContainer(7, 8, NumberFormat.Field.GROUPING_SEPARATOR));
+        v1.add(new FieldContainer(8, 11, NumberFormat.Field.INTEGER));
+        v1.add(new FieldContainer(11, 12, NumberFormat.Field.DECIMAL_SEPARATOR));
+        v1.add(new FieldContainer(12, 15, NumberFormat.Field.FRACTION));
+
+        Number number = new Double(123456789.9753);
+        ULocale usLoc = new ULocale("en-US");
+        DecimalFormatSymbols US = new DecimalFormatSymbols(usLoc);
+
+        NumberFormat outFmt = NumberFormat.getNumberInstance(usLoc);
+        String numFmtted = outFmt.format(number);
+        AttributedCharacterIterator iterator =
+                outFmt.formatToCharacterIterator(number);
+        CompareAttributedCharacterFormatOutput(iterator, v1, numFmtted);
+
+        // Second test: Double with scientific notation formatting.
+        List<FieldContainer> v2 = new ArrayList<FieldContainer>(7);
+        v2.add(new FieldContainer(0, 1, NumberFormat.Field.INTEGER));
+        v2.add(new FieldContainer(1, 2, NumberFormat.Field.DECIMAL_SEPARATOR));
+        v2.add(new FieldContainer(2, 5, NumberFormat.Field.FRACTION));
+        v2.add(new FieldContainer(5, 6, NumberFormat.Field.EXPONENT_SYMBOL));
+        v2.add(new FieldContainer(6, 7, NumberFormat.Field.EXPONENT_SIGN));
+        v2.add(new FieldContainer(7, 8, NumberFormat.Field.EXPONENT));
+        DecimalFormat fmt2 = new DecimalFormat("0.###E+0", US);
+
+        numFmtted = fmt2.format(number);
+        iterator = fmt2.formatToCharacterIterator(number);
+        CompareAttributedCharacterFormatOutput(iterator, v2, numFmtted);
+
+        // Third test. BigInteger with grouping separators.
+        List<FieldContainer> v3 = new ArrayList<FieldContainer>(7);
+        v3.add(new FieldContainer(0, 1, NumberFormat.Field.SIGN));
+        v3.add(new FieldContainer(1, 2, NumberFormat.Field.INTEGER));
+        v3.add(new FieldContainer(2, 3, NumberFormat.Field.GROUPING_SEPARATOR));
+        v3.add(new FieldContainer(3, 6, NumberFormat.Field.INTEGER));
+        v3.add(new FieldContainer(6, 7, NumberFormat.Field.GROUPING_SEPARATOR));
+        v3.add(new FieldContainer(7, 10, NumberFormat.Field.INTEGER));
+        v3.add(new FieldContainer(10, 11, NumberFormat.Field.GROUPING_SEPARATOR));
+        v3.add(new FieldContainer(11, 14, NumberFormat.Field.INTEGER));
+        v3.add(new FieldContainer(14, 15, NumberFormat.Field.GROUPING_SEPARATOR));
+        v3.add(new FieldContainer(15, 18, NumberFormat.Field.INTEGER));
+        v3.add(new FieldContainer(18, 19, NumberFormat.Field.GROUPING_SEPARATOR));
+        v3.add(new FieldContainer(19, 22, NumberFormat.Field.INTEGER));
+        v3.add(new FieldContainer(22, 23, NumberFormat.Field.GROUPING_SEPARATOR));
+        v3.add(new FieldContainer(23, 26, NumberFormat.Field.INTEGER));
+        BigInteger bigNumberInt = new BigInteger("-1234567890246813579");
+        String fmtNumberBigInt = outFmt.format(bigNumberInt);
+
+        iterator = outFmt.formatToCharacterIterator(bigNumberInt);
+        CompareAttributedCharacterFormatOutput(iterator, v3, fmtNumberBigInt);
+
+        // Fourth test: BigDecimal with exponential formatting.
+        List<FieldContainer> v4 = new ArrayList<FieldContainer>(7);
+        v4.add(new FieldContainer(0, 1, NumberFormat.Field.SIGN));
+        v4.add(new FieldContainer(1, 2, NumberFormat.Field.INTEGER));
+        v4.add(new FieldContainer(2, 3, NumberFormat.Field.DECIMAL_SEPARATOR));
+        v4.add(new FieldContainer(3, 6, NumberFormat.Field.FRACTION));
+        v4.add(new FieldContainer(6, 7, NumberFormat.Field.EXPONENT_SYMBOL));
+        v4.add(new FieldContainer(7, 8, NumberFormat.Field.EXPONENT_SIGN));
+        v4.add(new FieldContainer(8, 9, NumberFormat.Field.EXPONENT));
+
+        java.math.BigDecimal numberBigD = new java.math.BigDecimal(-123456789);
+        String fmtNumberBigDExp = fmt2.format(numberBigD);
+
+        iterator = fmt2.formatToCharacterIterator(numberBigD);
+        CompareAttributedCharacterFormatOutput(iterator, v4, fmtNumberBigDExp);
+
+    }
+
+    // Test that the decimal is shown even when there are no fractional digits
+    @Test
+    public void Test11621() throws Exception {
+        String pat = "0.##E0";
+
+        DecimalFormatSymbols icuSym = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat icuFmt = new DecimalFormat(pat, icuSym);
+        icuFmt.setDecimalSeparatorAlwaysShown(true);
+        String icu = ((NumberFormat)icuFmt).format(299792458);
+
+        java.text.DecimalFormatSymbols jdkSym = new java.text.DecimalFormatSymbols(Locale.US);
+        java.text.DecimalFormat jdkFmt = new java.text.DecimalFormat(pat,jdkSym);
+        jdkFmt.setDecimalSeparatorAlwaysShown(true);
+        String jdk = ((java.text.NumberFormat)jdkFmt).format(299792458);
+
+        assertEquals("ICU and JDK placement of decimal in exponent", jdk, icu);
+    }
+
+    private void checkFormatWithField(String testInfo, Format format, Object object,
+            String expected, Format.Field field, int begin, int end) {
+        StringBuffer buffer = new StringBuffer();
+        FieldPosition pos = new FieldPosition(field);
+        format.format(object, buffer, pos);
+
+        assertEquals("Test " + testInfo + ": incorrect formatted text", expected, buffer.toString());
+
+        if (begin != pos.getBeginIndex() || end != pos.getEndIndex()) {
+            assertEquals("Index mismatch", field + " " + begin + ".." + end,
+                pos.getFieldAttribute() + " " + pos.getBeginIndex() + ".." + pos.getEndIndex());
+        }
+    }
+
+    @Test
+    public void TestMissingFieldPositionsCurrency() {
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getCurrencyInstance(ULocale.US);
+        Number number = new Double(92314587.66);
+        String result = "$92,314,587.66";
+
+        checkFormatWithField("currency", formatter, number, result,
+            NumberFormat.Field.CURRENCY, 0, 1);
+        checkFormatWithField("integer", formatter, number, result,
+            NumberFormat.Field.INTEGER, 1, 11);
+        checkFormatWithField("grouping separator", formatter, number, result,
+            NumberFormat.Field.GROUPING_SEPARATOR, 3, 4);
+        checkFormatWithField("decimal separator", formatter, number, result,
+            NumberFormat.Field.DECIMAL_SEPARATOR, 11, 12);
+        checkFormatWithField("fraction", formatter, number, result,
+            NumberFormat.Field.FRACTION, 12, 14);
+    }
+
+    @Test
+    public void TestMissingFieldPositionsNegativeDouble() {
+        // test for exponential fields with double
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
+        Number number = new Double(-12345678.90123);
+        DecimalFormat formatter = new DecimalFormat("0.#####E+00", us_symbols);
+        String numFmtted = formatter.format(number);
+
+        checkFormatWithField("sign", formatter, number, numFmtted,
+            NumberFormat.Field.SIGN, 0, 1);
+        checkFormatWithField("integer", formatter, number, numFmtted,
+            NumberFormat.Field.INTEGER, 1, 2);
+        checkFormatWithField("decimal separator", formatter, number, numFmtted,
+            NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        checkFormatWithField("exponent symbol", formatter, number, numFmtted,
+            NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
+        checkFormatWithField("exponent sign", formatter, number, numFmtted,
+            NumberFormat.Field.EXPONENT_SIGN, 9, 10);
+        checkFormatWithField("exponent", formatter, number, numFmtted,
+            NumberFormat.Field.EXPONENT, 10, 12);
+    }
+
+    @Test
+    public void TestMissingFieldPositionsPerCent() {
+        // Check PERCENT
+        DecimalFormat percentFormat = (DecimalFormat) NumberFormat.getPercentInstance(ULocale.US);
+        Number number = new Double(-0.986);
+        String numberFormatted = percentFormat.format(number);
+        checkFormatWithField("sign", percentFormat, number, numberFormatted,
+            NumberFormat.Field.SIGN, 0, 1);
+        checkFormatWithField("integer", percentFormat, number, numberFormatted,
+            NumberFormat.Field.INTEGER, 1, 3);
+        checkFormatWithField("percent", percentFormat, number, numberFormatted,
+            NumberFormat.Field.PERCENT, 3, 4);
+    }
+
+    @Test
+    public void TestMissingFieldPositionsPerCentPattern() {
+        // Check PERCENT with more digits
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
+        DecimalFormat fmtPercent = new DecimalFormat("0.#####%", us_symbols);
+        Number number = new Double(-0.986);
+        String numFmtted = fmtPercent.format(number);
+
+        checkFormatWithField("sign", fmtPercent, number, numFmtted,
+            NumberFormat.Field.SIGN, 0, 1);
+        checkFormatWithField("integer", fmtPercent, number, numFmtted,
+            NumberFormat.Field.INTEGER, 1, 3);
+        checkFormatWithField("decimal separator", fmtPercent, number, numFmtted,
+            NumberFormat.Field.DECIMAL_SEPARATOR, 3, 4);
+        checkFormatWithField("fraction", fmtPercent, number, numFmtted,
+            NumberFormat.Field.FRACTION, 4, 5);
+        checkFormatWithField("percent", fmtPercent, number, numFmtted,
+            NumberFormat.Field.PERCENT, 5, 6);
+    }
+
+    @Test
+    public void TestMissingFieldPositionsPerMille() {
+        // Check PERMILLE
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
+        DecimalFormat fmtPerMille = new DecimalFormat("0.######‰", us_symbols);
+        Number numberPermille = new Double(-0.98654);
+        String numFmtted = fmtPerMille.format(numberPermille);
+
+        checkFormatWithField("sign", fmtPerMille, numberPermille, numFmtted,
+            NumberFormat.Field.SIGN, 0, 1);
+        checkFormatWithField("integer", fmtPerMille, numberPermille, numFmtted,
+            NumberFormat.Field.INTEGER, 1, 4);
+        checkFormatWithField("decimal separator", fmtPerMille, numberPermille, numFmtted,
+            NumberFormat.Field.DECIMAL_SEPARATOR, 4, 5);
+        checkFormatWithField("fraction", fmtPerMille, numberPermille, numFmtted,
+            NumberFormat.Field.FRACTION, 5, 7);
+        checkFormatWithField("permille", fmtPerMille, numberPermille, numFmtted,
+            NumberFormat.Field.PERMILLE, 7, 8);
+    }
+
+    @Test
+    public void TestMissingFieldPositionsNegativeBigInt() {
+      DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
+        DecimalFormat formatter = new DecimalFormat("0.#####E+0", us_symbols);
+        Number number = new BigDecimal("-123456789987654321");
+        String bigDecFmtted = formatter.format(number);
+
+        checkFormatWithField("sign", formatter, number, bigDecFmtted,
+            NumberFormat.Field.SIGN, 0, 1);
+        checkFormatWithField("integer", formatter, number, bigDecFmtted,
+            NumberFormat.Field.INTEGER, 1, 2);
+        checkFormatWithField("decimal separator", formatter, number, bigDecFmtted,
+            NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        checkFormatWithField("exponent symbol", formatter, number, bigDecFmtted,
+            NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
+        checkFormatWithField("exponent sign", formatter, number, bigDecFmtted,
+            NumberFormat.Field.EXPONENT_SIGN, 9, 10);
+        checkFormatWithField("exponent", formatter, number, bigDecFmtted,
+            NumberFormat.Field.EXPONENT, 10, 12);
+    }
+
+    @Test
+    public void TestMissingFieldPositionsNegativeLong() {
+        Number number = new Long("-123456789987654321");
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
+        DecimalFormat formatter = new DecimalFormat("0.#####E+0", us_symbols);
+        String longFmtted = formatter.format(number);
+
+        checkFormatWithField("sign", formatter, number, longFmtted,
+            NumberFormat.Field.SIGN, 0, 1);
+        checkFormatWithField("integer", formatter, number, longFmtted,
+            NumberFormat.Field.INTEGER, 1, 2);
+        checkFormatWithField("decimal separator", formatter, number, longFmtted,
+            NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        checkFormatWithField("exponent symbol", formatter, number, longFmtted,
+            NumberFormat.Field.EXPONENT_SYMBOL, 8, 9);
+        checkFormatWithField("exponent sign", formatter, number, longFmtted,
+            NumberFormat.Field.EXPONENT_SIGN, 9, 10);
+        checkFormatWithField("exponent", formatter, number, longFmtted,
+            NumberFormat.Field.EXPONENT, 10, 12);
+    }
+
+    @Test
+    public void TestMissingFieldPositionsPositiveBigDec() {
+        // Check complex positive;negative pattern.
+        DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
+        DecimalFormat fmtPosNegSign = new DecimalFormat("+0.####E+00;-0.#######E+0", us_symbols);
+        Number positiveExp = new Double("9876543210");
+        String posExpFormatted = fmtPosNegSign.format(positiveExp);
+
+        checkFormatWithField("sign", fmtPosNegSign, positiveExp, posExpFormatted,
+            NumberFormat.Field.SIGN, 0, 1);
+        checkFormatWithField("integer", fmtPosNegSign, positiveExp, posExpFormatted,
+            NumberFormat.Field.INTEGER, 1, 2);
+        checkFormatWithField("decimal separator", fmtPosNegSign, positiveExp, posExpFormatted,
+            NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        checkFormatWithField("fraction", fmtPosNegSign, positiveExp, posExpFormatted,
+            NumberFormat.Field.FRACTION, 3, 7);
+        checkFormatWithField("exponent symbol", fmtPosNegSign, positiveExp, posExpFormatted,
+            NumberFormat.Field.EXPONENT_SYMBOL, 7, 8);
+        checkFormatWithField("exponent sign", fmtPosNegSign, positiveExp, posExpFormatted,
+            NumberFormat.Field.EXPONENT_SIGN, 8, 9);
+        checkFormatWithField("exponent", fmtPosNegSign, positiveExp, posExpFormatted,
+            NumberFormat.Field.EXPONENT, 9, 11);
+    }
+
+    @Test
+    public void TestMissingFieldPositionsNegativeBigDec() {
+        // Check complex positive;negative pattern.
+      DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
+        DecimalFormat fmtPosNegSign = new DecimalFormat("+0.####E+00;-0.#######E+0", us_symbols);
+        Number negativeExp = new BigDecimal("-0.000000987654321083");
+        String negExpFormatted = fmtPosNegSign.format(negativeExp);
+
+        checkFormatWithField("sign", fmtPosNegSign, negativeExp, negExpFormatted,
+            NumberFormat.Field.SIGN, 0, 1);
+        checkFormatWithField("integer", fmtPosNegSign, negativeExp, negExpFormatted,
+            NumberFormat.Field.INTEGER, 1, 2);
+        checkFormatWithField("decimal separator", fmtPosNegSign, negativeExp, negExpFormatted,
+            NumberFormat.Field.DECIMAL_SEPARATOR, 2, 3);
+        checkFormatWithField("fraction", fmtPosNegSign, negativeExp, negExpFormatted,
+            NumberFormat.Field.FRACTION, 3, 7);
+        checkFormatWithField("exponent symbol", fmtPosNegSign, negativeExp, negExpFormatted,
+            NumberFormat.Field.EXPONENT_SYMBOL, 7, 8);
+        checkFormatWithField("exponent sign", fmtPosNegSign, negativeExp, negExpFormatted,
+            NumberFormat.Field.EXPONENT_SIGN, 8, 9);
+        checkFormatWithField("exponent", fmtPosNegSign, negativeExp, negExpFormatted,
+            NumberFormat.Field.EXPONENT, 9, 11);
     }
 }

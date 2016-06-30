@@ -1,6 +1,8 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2014, International Business Machines Corporation and
+ * Copyright (C) 2014-2016, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -23,14 +25,14 @@ import com.ibm.icu.util.ULocale;
  * <pre>
  * ULocale en = new ULocale("en");
  * ScientificNumberFormatter fmt = ScientificNumberFormatter.getMarkupInstance(
- *         en, "<sup>", "</sup>");
+ *         en, "&lt;sup&gt;", "&lt;/sup&gt;");
+ * </pre>
  * <pre>
- * // Output: "1.23456×10<sup>-78</sup>"
+ * // Output: "1.23456×10&lt;sup&gt;-78&lt;/sup&gt;"
  * System.out.println(fmt.format(1.23456e-78));
  * </pre>
  *
- * @draft ICU 55
- * @provisional This API might change or be removed in a future release.
+ * @stable ICU 55
  *
  */
 public final class ScientificNumberFormatter {
@@ -45,8 +47,7 @@ public final class ScientificNumberFormatter {
      * @param locale The locale
      * @return The ScientificNumberFormatter instance.
      * 
-     * @draft ICU 55
-     * @provisional This API might change or be removed in a future release.
+     * @stable ICU 55
      */
     public static ScientificNumberFormatter getSuperscriptInstance(ULocale locale) {
         return getInstanceForLocale(locale, SUPER_SCRIPT); 
@@ -60,8 +61,7 @@ public final class ScientificNumberFormatter {
      *   clones it when creating the ScientificNumberFormatter.
      * @return the ScientificNumberFormatter instance.
      * 
-     * @draft ICU 55
-     * @provisional This API might change or be removed in a future release.
+     * @stable ICU 55
      */ 
      public static ScientificNumberFormatter getSuperscriptInstance(
              DecimalFormat df) {
@@ -76,8 +76,7 @@ public final class ScientificNumberFormatter {
       * @param endMarkup the markup to end superscript e.g {@code </sup>}
       * @return The ScientificNumberFormatter instance.
       * 
-      * @draft ICU 55
-      * @provisional This API might change or be removed in a future release.
+      * @stable ICU 55
       */
      public static ScientificNumberFormatter getMarkupInstance(
              ULocale locale,
@@ -97,8 +96,7 @@ public final class ScientificNumberFormatter {
       * @param endMarkup the markup to end superscript e.g {@code </sup>}
       * @return The ScientificNumberFormatter instance.
       * 
-      * @draft ICU 55
-      * @provisional This API might change or be removed in a future release.
+      * @stable ICU 55
       */
      public static ScientificNumberFormatter getMarkupInstance(
              DecimalFormat df,
@@ -114,8 +112,7 @@ public final class ScientificNumberFormatter {
       *  anything that DecimalFormat#format(Object) accepts.
       * @return the formatted string.
       *
-      * @draft ICU 55
-      * @provisional This API might change or be removed in a future release.
+      * @stable ICU 55
       */
      public String format(Object number) {
          synchronized (fmt) {

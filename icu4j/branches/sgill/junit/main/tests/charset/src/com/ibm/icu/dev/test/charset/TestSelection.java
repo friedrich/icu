@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ******************************************************************************
  * Copyright (C) 1996-2013, International Business Machines Corporation and   *
@@ -37,7 +39,7 @@ public class TestSelection extends TestFmwk {
     @Test
     public void TestConversionUTF16() {
         List<String> testEncodings;
-        if (getInclusion() < 6) {
+        if (TestFmwk.getExhaustiveness() < 6) {
             testEncodings = Arrays.asList(
                     "Big5",
                     "EUC-JP",

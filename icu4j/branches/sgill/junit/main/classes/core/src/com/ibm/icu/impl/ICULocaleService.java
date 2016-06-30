@@ -1,7 +1,9 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2001-2015, International Business Machines Corporation and    *
- * others. All Rights Reserved.                                                *
+ * Copyright (C) 2001-2016, International Business Machines Corporation and
+ * others. All Rights Reserved.
  *******************************************************************************
  */
 package com.ibm.icu.impl;
@@ -537,7 +539,7 @@ public class ICULocaleService extends ICUService {
          * Convenience constructor that uses the main ICU bundle name.
          */
         public ICUResourceBundleFactory() {
-            this(ICUResourceBundle.ICU_BASE_NAME);
+            this(ICUData.ICU_BASE_NAME);
         }
 
         /**

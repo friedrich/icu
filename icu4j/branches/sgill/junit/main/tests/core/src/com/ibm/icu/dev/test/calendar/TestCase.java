@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2010, International Business Machines Corporation and    *
@@ -9,7 +11,7 @@ package com.ibm.icu.dev.test.calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import com.ibm.icu.dev.test.TestFmwk;
+import com.ibm.icu.dev.test.TestLog;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
 import com.ibm.icu.util.SimpleTimeZone;
@@ -187,8 +189,7 @@ public class TestCase {
      * 
      * @see #applyTime
      */
-    // TODO(sgill): blanked out TestLog
-    public boolean fieldsEqual(Calendar c, /*TestLog*/ Object log) {
+    public boolean fieldsEqual(Calendar c, TestLog log) {
         for (int i=0; i < c.getFieldCount(); i++) {
             if (isSet(i) && get(i) != c.get(i)) {
                 StringBuffer buf = new StringBuffer();
@@ -205,8 +206,8 @@ public class TestCase {
                         }
                     }
                 }
+                // TODO(junit): blanked out TestLog
                 //log.errln(buf.toString());
-                TestFmwk.errln(buf.toString());
                 return false;
             }
         }

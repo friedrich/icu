@@ -1,3 +1,5 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2008, International Business Machines Corporation and    *
@@ -28,7 +30,7 @@ import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
 
-// TODO(sgill): test is broken in main branch
+// TODO(junit): test is broken in main branch
 
 public class DisplayNameTest extends TestFmwk {
     static final boolean SHOW_ALL = false;
