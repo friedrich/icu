@@ -413,8 +413,6 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
 
     /**
      * Sink for enumerating all of the date interval skeletons.
-     * Contains inner sink classes, each one corresponding to a type of resource table.
-     * The outer class finds the dateInterval table or an alias.
      */
     private static final class DateIntervalSink extends UResource.Sink {
 
@@ -452,9 +450,10 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
                 }
 
                 // Handle aliases and tables. Ignore the rest.
-                if (value.getType() == ICUResourceBundle.ALIAS && key.contentEquals(INTERVAL_FORMATS_KEY)) {
+                if (value.getType() == ICUResourceBundle.ALIAS) {
                     // Get the calendar type from the alias path.
                     nextCalendarType = getCalendarTypeFromPath(value.getAliasString());
+                    break;
 
                 } else if (value.getType() == ICUResourceBundle.TABLE) {
                     // Iterate over all the skeletons in the 'intervalFormat' table.
@@ -465,6 +464,7 @@ public class DateIntervalInfo implements Cloneable, Freezable<DateIntervalInfo>,
                             processSkeletonTable(key, value);
                         }
                     }
+                    break;
                 }
             }
         }
