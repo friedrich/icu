@@ -22,8 +22,8 @@ class RBBIDictCache: public UMemory {
 
      void reset();
 
-     int32_t following(int32_t pos);
-     int32_t preceding(int32_t pos);
+     UBool following(int32_t fromPos, int32_t *pos, int32_t *statusIndex);
+     UBool preceding(int32_t fromPos, int32_t *pos, int32_t *statusIndex);
 
 
     /**
@@ -52,6 +52,9 @@ class RBBIDictCache: public UMemory {
 
     int32_t             fStart;
     int32_t             fLimit;
+
+    int32_t             fFirstRuleStatusIndex;
+    int32_t             fOtherRuleStatusIndex;
 };
 
 

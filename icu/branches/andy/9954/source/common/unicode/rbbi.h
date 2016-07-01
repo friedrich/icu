@@ -101,14 +101,6 @@ private:
     int32_t             fLastRuleStatusIndex;
 
     /**
-     * Rule tag value valid flag.
-     * Some iterator operations don't intrinsically set the correct tag value.
-     * This flag lets us lazily compute the value if we are ever asked for it.
-     * @internal
-     */
-    UBool               fLastStatusIndexValid;
-
-    /**
      * Counter for the number of characters encountered with the "dictionary"
      *   flag set.
      * @internal
@@ -674,10 +666,12 @@ private:
      * if going in reverse, startPos is the normal Unicode break result
      * @param startPos  The start position of a range of text
      * @param endPos    The end position of a range of text
-     * @param reverse   The call is for the reverse direction
+     * @param firstRuleStatus The rule status index that applies to the break at startPos
+     * @param otherRuleStatus The rule status index that applies to boundaries other than startPos
      * @internal
      */
-    void checkDictionary(int32_t startPos, int32_t endPos);
+    void checkDictionary(int32_t startPos, int32_t endPos,
+                         int32_t firstRuleStatus, int32_t otherRuleStatus);
 
 
     /**

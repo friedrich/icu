@@ -259,7 +259,6 @@ void RuleBasedBreakIterator::init(UErrorCode &status) {
     fDCharIter            = NULL;
     fData                 = NULL;
     fLastRuleStatusIndex  = 0;
-    fLastStatusIndexValid = TRUE;
     fDictionaryCharCount  = 0;
     fBreakType            = UBRK_WORD;  // Defaulting BreakType to word gives reasonable
                                         //   dictionary behavior for Break Iterators that are
@@ -515,10 +514,9 @@ RuleBasedBreakIterator &RuleBasedBreakIterator::refreshInputText(UText *input, U
 int32_t RuleBasedBreakIterator::first(void) {
     fDictionaryCache->reset();
     fLastRuleStatusIndex  = 0;
-    fLastStatusIndexValid = TRUE;
-    //if (fText == NULL)
-    //    return BreakIterator::DONE;
-
+    if (fText == NULL) {
+        return BreakIterator::DONE;
+    }
     utext_setNativeIndex(fText, 0);
     return 0;
 }
@@ -531,11 +529,10 @@ int32_t RuleBasedBreakIterator::last(void) {
     fDictionaryCache->reset();
     if (fText == NULL) {
         fLastRuleStatusIndex  = 0;
-        fLastStatusIndexValid = TRUE;
         return BreakIterator::DONE;
     }
 
-    fLastStatusIndexValid = FALSE;
+    // TODO: rule status will not be valid. Fix it somehow.
     int32_t pos = (int32_t)utext_nativeLength(fText);
     utext_setNativeIndex(fText, pos);
     return pos;
@@ -572,18 +569,17 @@ int32_t RuleBasedBreakIterator::next(void) {
     // covered by them, just move one step forward in the cache
 
     int32_t startPos = current();
-    int32_t dictResult = fDictionaryCache->following(startPos);
-    if (dictResult >= 0) {
+    int32_t dictResult = 0;
+    if (fDictionaryCache->following(startPos, &dictResult, &fLastRuleStatusIndex)) {
         utext_setNativeIndex(fText, dictResult);
         return dictResult;
     }
 
-    fDictionaryCharCount = 0;
+    int32_t prevStatus = fLastRuleStatusIndex;
     int32_t ruleResult = handleNext(fData->fForwardTable);
     if (fDictionaryCharCount > 0) {
-        checkDictionary(startPos, ruleResult);
-        dictResult = fDictionaryCache->following(startPos);
-        if (dictResult > 0) {
+        checkDictionary(startPos, ruleResult, prevStatus, fLastRuleStatusIndex);
+        if (fDictionaryCache->following(startPos, &dictResult, &fLastRuleStatusIndex)) {
             utext_setNativeIndex(fText, dictResult);
             return dictResult;
         }
@@ -592,206 +588,115 @@ int32_t RuleBasedBreakIterator::next(void) {
 }
 
 /**
- * Advances the iterator backwards, to the last boundary preceding this one.
- * @return The position of the last boundary position preceding this one.
+ * Move the iterator backwards, to the boundary preceding the current one.
+ *
+ *         Starts from the current position within fText.
+ *         Starting position need not be on a boundary.
+ *
+ * @return The position of the boundary position immediately preceding the starting position.
  */
 int32_t RuleBasedBreakIterator::previous(void) {
     int32_t startPos = current();
 
-    // if we have cached break positions and we're still in the range
-    // covered by them, just move one step backward in the cache
-    int32_t dictResult = fDictionaryCache->preceding(startPos);
-    if (dictResult >= 0) {
-        utext_setNativeIndex(fText, dictResult);
-        if (dictResult == fDictionaryCache->fStart) {
-            fLastStatusIndexValid = FALSE;    // TODO: figure out a better way to handle this.
-        }
-        return dictResult;
-    }
-
-    // if we're already sitting at the beginning of the text, return DONE
+    // if we're already positioned at the beginning of the text, return DONE
     if (fText == NULL || startPos == 0) {
         fLastRuleStatusIndex  = 0;
-        fLastStatusIndexValid = TRUE;
         return BreakIterator::DONE;
     }
 
-    int32_t ruleResult;
-    if (fData->fSafeRevTable != NULL || fData->fSafeFwdTable != NULL) {
-        fDictionaryCharCount = 0;
-        ruleResult = handlePrevious(fData->fReverseTable);
-        if (fDictionaryCharCount > 0) {
-            checkDictionary(ruleResult, startPos);
-            dictResult = fDictionaryCache->preceding(startPos);
-            if (dictResult >= 0) {
-                utext_setNativeIndex(fText, dictResult);
-                return dictResult;
-            }
-        }
-        return ruleResult;
+    // if we have cached break positions and we're still in the range
+    // covered by them, move one step backward in the cache
+    int32_t dictResult = 0;
+    if (fDictionaryCache->preceding(startPos, &dictResult, &fLastRuleStatusIndex)) {
+        utext_setNativeIndex(fText, dictResult);
+        return dictResult;
     }
 
-    // old rule syntax
-    // set things up.  handlePrevious() will back us up to some valid
-    // break position before the current position (we back our internal
-    // iterator up one step to prevent handlePrevious() from returning
-    // the current position), but not necessarily the last one before
-    // where we started
 
-    int32_t start = current();
+    // Loop, backing up a somewhat arbitrary amount on each interation, until we have
+    //       reach a position before the boundary that we are looking for.
 
-    (void)UTEXT_PREVIOUS32(fText);
-    int32_t lastResult    = handlePrevious(fData->fReverseTable);
-    if (lastResult == UBRK_DONE) {
-        lastResult = 0;
-        utext_setNativeIndex(fText, 0);
-    }
-    int32_t result = lastResult;
-    int32_t lastTag       = 0;
-    UBool   breakTagValid = FALSE;
-
-    // iterate forward from the known break position until we pass our
-    // starting point.  The last break position before the starting
-    // point is our return value
+    int32_t lastPos = 0;
+    int32_t lastTag = 0;
+    int32_t nextPos = 0;
+    int32_t backupPos = startPos;
 
     for (;;) {
-        result         = next();
-        if (result == BreakIterator::DONE || result >= start) {
+        utext_setNativeIndex(fText, backupPos - 10);
+        backupPos = handlePrevious(fData->fSafeRevTable);
+
+        if (backupPos == UBRK_DONE) {
+            backupPos = 0;
+            utext_setNativeIndex(fText, 0);
+        }
+        U_ASSERT(backupPos < startPos);
+
+        // Position is now on a "safe point", from which the forward rules will work correctly.
+        // Current position may or may not be an actual boundary.
+
+        lastPos = backupPos;
+        for (;;) {
+            nextPos = handleNext(fData->fForwardTable);
+            if (nextPos == BreakIterator::DONE || nextPos >= startPos) {
+                break;
+            }
+            lastPos = nextPos;
+            lastTag = fLastRuleStatusIndex;
+        }
+
+        if (backupPos < lastPos) {
+            // Good candidate boundary of lastPos
             break;
         }
-        lastResult     = result;
-        lastTag        = fLastRuleStatusIndex;
-        breakTagValid  = TRUE;
+        if (backupPos == 0 && lastPos == 0) {
+            // result is 0. Can't get before 0 to advance forwards to the boundary (at 0)
+            // which is why this is a separate case.
+            break;
+        }
+        // Didn't back up enough. Repeat the loop.
     }
 
-    // fLastBreakTag wants to have the value for section of text preceding
-    // the result position that we are to return (in lastResult.)  If
-    // the backwards rules overshot and the above loop had to do two or more
-    // next()s to move up to the desired return position, we will have a valid
-    // tag value. But, if handlePrevious() took us to exactly the correct result position,
-    // we wont have a tag value for that position, which is only set by handleNext().
+    if (fDictionaryCharCount > 0) {
+        U_ASSERT(nextPos > lastPos);
+        checkDictionary(lastPos, nextPos, lastTag, fLastRuleStatusIndex);
+        if (fDictionaryCache->preceding(startPos, &dictResult, &fLastRuleStatusIndex)) {
+            utext_setNativeIndex(fText, dictResult);
+            return dictResult;
+        }
+    }
 
-    // Set the current iteration position to be the last break position
-    // before where we started, and then return that value.
-    utext_setNativeIndex(fText, lastResult);
+    utext_setNativeIndex(fText, lastPos);
     fLastRuleStatusIndex  = lastTag;       // for use by getRuleStatus()
-    fLastStatusIndexValid = breakTagValid;
 
-    // No need to check the dictionary; it will have been handled by
-    // next()
-
-    return lastResult;
+    return lastPos;
 }
 
 /**
  * Sets the iterator to refer to the first boundary position following
  * the specified position.
- * @offset The position from which to begin searching for a break position.
+ * @startPos The position from which to begin searching for a break position.
  * @return The position of the first break after the current position.
  */
-int32_t RuleBasedBreakIterator::following(int32_t offset) {
+int32_t RuleBasedBreakIterator::following(int32_t startPos) {
     // if the offset passed in is already past the end of the text,
     // just return DONE; if it's before the beginning, return the
     // text's starting offset
-    if (fText == NULL || offset >= utext_nativeLength(fText)) {
+    if (fText == NULL || startPos >= utext_nativeLength(fText)) {
         last();
         return next();
     }
-    else if (offset < 0) {
+    if (startPos < 0) {
         return first();
     }
 
-    // Move requested offset to a code point start. It might be on a trail surrogate,
-    // or on a trail byte if the input is UTF-8.
-    utext_setNativeIndex(fText, offset);
-    offset = (int32_t)utext_getNativeIndex(fText);
-
-    // if we have cached break positions and offset is in the range
-    // covered by them, use them
-    // TODO: could use binary search
-    // TODO: what if offset is outside range, but break is not?
-    if (fDictionaryCache->fPositionInCache != -1) {
-        if (offset >= fDictionaryCache->fBreaks->elementAti(0)
-                && offset < fDictionaryCache->fBreaks->elementAti(fDictionaryCache->fNumCachedBreakPositions - 1)) {
-            fDictionaryCache->fPositionInCache = 0;
-            // We are guaranteed not to leave the array due to range test above
-            while (offset >= fDictionaryCache->fBreaks->elementAti(fDictionaryCache->fPositionInCache)) {
-                ++fDictionaryCache->fPositionInCache;
-            }
-            int32_t pos = fDictionaryCache->fBreaks->elementAti(fDictionaryCache->fPositionInCache);
-            utext_setNativeIndex(fText, pos);
-            return pos;
-        }
-        else {
-            fDictionaryCache->reset();
-        }
-    }
-
-    // Set our internal iteration position (temporarily)
-    // to the position passed in.  If this is the _beginning_ position,
-    // then we can just use next() to get our return value
-
+    // Back up to a safe point, then
+    utext_setNativeIndex(fText, startPos);
+    int32_t backupPos = handlePrevious(fData->fSafeRevTable);
+    (void)backupPos;
     int32_t result = 0;
-
-    if (fData->fSafeRevTable != NULL) {
-        // new rule syntax
-        utext_setNativeIndex(fText, offset);
-        // move forward one codepoint to prepare for moving back to a
-        // safe point.
-        // this handles offset being between a supplementary character
-        // TODO: is this still needed, with move to code point boundary handled above?
-        (void)UTEXT_NEXT32(fText);
-        // handlePrevious will move most of the time to < 1 boundary away
-        handlePrevious(fData->fSafeRevTable);
-        int32_t result = next();
-        while (result <= offset) {
-            result = next();
-        }
-        return result;
-    }
-    if (fData->fSafeFwdTable != NULL) {
-        // backup plan if forward safe table is not available
-        utext_setNativeIndex(fText, offset);
-        (void)UTEXT_PREVIOUS32(fText);
-        // handle next will give result >= offset
-        handleNext(fData->fSafeFwdTable);
-        // previous will give result 0 or 1 boundary away from offset,
-        // most of the time
-        // we have to
-        int32_t oldresult = previous();
-        while (oldresult > offset) {
-            int32_t result = previous();
-            if (result <= offset) {
-                return oldresult;
-            }
-            oldresult = result;
-        }
-        int32_t result = next();
-        if (result <= offset) {
-            return next();
-        }
-        return result;
-    }
-    // otherwise, we have to sync up first.  Use handlePrevious() to back
-    // up to a known break position before the specified position (if
-    // we can determine that the specified position is a break position,
-    // we don't back up at all).  This may or may not be the last break
-    // position at or before our starting position.  Advance forward
-    // from here until we've passed the starting position.  The position
-    // we stop on will be the first break position after the specified one.
-    // old rule syntax
-
-    utext_setNativeIndex(fText, offset);
-    if (offset==0 ||
-        (offset==1  && utext_getNativeIndex(fText)==0)) {
-        return next();
-    }
-    result = previous();
-
-    while (result != BreakIterator::DONE && result <= offset) {
+    do {
         result = next();
-    }
-
+    } while (result != BreakIterator::DONE && result <= startPos);
     return result;
 }
 
@@ -808,103 +713,14 @@ int32_t RuleBasedBreakIterator::preceding(int32_t offset) {
     if (fText == NULL || offset > utext_nativeLength(fText)) {
         return last();
     }
-    else if (offset < 0) {
+    if (offset <= 0) {
         return first();
     }
 
     // Move requested offset to a code point start. It might be on a trail surrogate,
     // or on a trail byte if the input is UTF-8.
     utext_setNativeIndex(fText, offset);
-    offset = (int32_t)utext_getNativeIndex(fText);
 
-    // if we have cached break positions and offset is in the range
-    // covered by them, use them
-    if (fDictionaryCache->fPositionInCache != -1) {
-        // TODO: binary search?
-        // TODO: What if offset is outside range, but break is not?
-        if (offset > fDictionaryCache->fBreaks->elementAti(0)
-                && offset <= fDictionaryCache->fBreaks->elementAti(fDictionaryCache->fNumCachedBreakPositions - 1)) {
-            fDictionaryCache->fPositionInCache = 0;
-            while (fDictionaryCache->fPositionInCache < fDictionaryCache->fNumCachedBreakPositions
-                   && offset > fDictionaryCache->fBreaks->elementAti(fDictionaryCache->fPositionInCache))
-                ++fDictionaryCache->fPositionInCache;
-            --fDictionaryCache->fPositionInCache;
-            // If we're at the beginning of the cache, need to reevaluate the
-            // rule status
-            if (fDictionaryCache->fPositionInCache <= 0) {
-                fLastStatusIndexValid = FALSE;
-            }
-            utext_setNativeIndex(fText, fDictionaryCache->fBreaks->elementAti(fDictionaryCache->fPositionInCache));
-            return fDictionaryCache->fBreaks->elementAti(fDictionaryCache->fPositionInCache);
-        }
-        else {
-            fDictionaryCache->reset();
-        }
-    }
-
-    // if we start by updating the current iteration position to the
-    // position specified by the caller, we can just use previous()
-    // to carry out this operation
-
-    if (fData->fSafeFwdTable != NULL) {
-        // new rule syntax
-        utext_setNativeIndex(fText, offset);
-        int32_t newOffset = (int32_t)UTEXT_GETNATIVEINDEX(fText);
-        if (newOffset != offset) {
-            // Will come here if specified offset was not a code point boundary AND
-            //   the underlying implmentation is using UText, which snaps any non-code-point-boundary
-            //   indices to the containing code point.
-            // For breakitereator::preceding only, these non-code-point indices need to be moved
-            //   up to refer to the following codepoint.
-            (void)UTEXT_NEXT32(fText);
-            offset = (int32_t)UTEXT_GETNATIVEINDEX(fText);
-        }
-
-        // TODO:  (synwee) would it be better to just check for being in the middle of a surrogate pair,
-        //        rather than adjusting the position unconditionally?
-        //        (Change would interact with safe rules.)
-        // TODO:  change RBBI behavior for off-boundary indices to match that of UText?
-        //        affects only preceding(), seems cleaner, but is slightly different.
-        (void)UTEXT_PREVIOUS32(fText);
-        handleNext(fData->fSafeFwdTable);
-        int32_t result = (int32_t)UTEXT_GETNATIVEINDEX(fText);
-        while (result >= offset) {
-            result = previous();
-        }
-        return result;
-    }
-    if (fData->fSafeRevTable != NULL) {
-        // backup plan if forward safe table is not available
-        //  TODO:  check whether this path can be discarded
-        //         It's probably OK to say that rules must supply both safe tables
-        //            if they use safe tables at all.  We have certainly never described
-        //            to anyone how to work with just one safe table.
-        utext_setNativeIndex(fText, offset);
-        (void)UTEXT_NEXT32(fText);
-
-        // handle previous will give result <= offset
-        handlePrevious(fData->fSafeRevTable);
-
-        // next will give result 0 or 1 boundary away from offset,
-        // most of the time
-        // we have to
-        int32_t oldresult = next();
-        while (oldresult < offset) {
-            int32_t result = next();
-            if (result >= offset) {
-                return oldresult;
-            }
-            oldresult = result;
-        }
-        int32_t result = previous();
-        if (result >= offset) {
-            return previous();
-        }
-        return result;
-    }
-
-    // old rule syntax
-    utext_setNativeIndex(fText, offset);
     return previous();
 }
 
@@ -1050,8 +866,9 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
     #endif
 
     // No matter what, handleNext alway correctly sets the break tag value.
-    fLastStatusIndexValid = TRUE;
     fLastRuleStatusIndex = 0;
+
+    fDictionaryCharCount = 0;
 
     // if we're already at the end of the text, return DONE.
     initialPosition = (int32_t)UTEXT_GETNATIVEINDEX(fText);
@@ -1237,13 +1054,6 @@ int32_t RuleBasedBreakIterator::handlePrevious(const RBBIStateTable *statetable)
         }
     #endif
 
-    // handlePrevious() never gets the rule status.
-    // Flag the status as invalid; if the user ever asks for status, we will need
-    // to back up, then re-find the break position using handleNext(), which does
-    // get the status value.
-    fLastStatusIndexValid = FALSE;
-    fLastRuleStatusIndex = 0;
-
     // if we're already at the start of the text, return DONE.
     if (fText == NULL || fData == NULL || UTEXT_GETNATIVEINDEX(fText)==0) {
         return BreakIterator::DONE;
@@ -1299,18 +1109,9 @@ int32_t RuleBasedBreakIterator::handlePrevious(const RBBIStateTable *statetable)
             // Note:  the 16 in UTRIE_GET16 refers to the size of the data being returned,
             //        not the size of the character going in, which is a UChar32.
             //
+            //  And off the dictionary flag bit. For reverse iteration it is not used.
             UTRIE_GET16(&fData->fTrie, c, category);
-
-            // Check the dictionary bit in the character's category.
-            //    Counter is only used by dictionary based iterators (subclasses).
-            //    Chars that need to be handled by a dictionary have a flag bit set
-            //    in their category values.
-            //
-            if ((category & 0x4000) != 0)  {
-                fDictionaryCharCount++;
-                //  And off the dictionary flag bit.
-                category &= ~0x4000;
-            }
+            category &= ~0x4000;
         }
 
         #ifdef RBBI_DEBUG
@@ -1406,40 +1207,9 @@ int32_t RuleBasedBreakIterator::handlePrevious(const RBBIStateTable *statetable)
 //                     position by iterating forwards, the value will have been
 //                     cached by the handleNext() function.
 //
-//                     If no cached status value is available, the status is
-//                     found by doing a previous() followed by a next(), which
-//                     leaves the iterator where it started, and computes the
-//                     status while doing the next().
-//
-//       TODO: totally replace this. Broken beyond repair in dictionary interactions.
-//
 //-------------------------------------------------------------------------------
-void RuleBasedBreakIterator::makeRuleStatusValid() {
-    if (fLastStatusIndexValid == FALSE) {
-        //  No cached status is available.
-        if (fText == NULL || current() == 0) {
-            //  At start of text, or there is no text.  Status is always zero.
-            fLastRuleStatusIndex = 0;
-            fLastStatusIndexValid = TRUE;
-        } else {
-            //  Not at start of text.  Find status the tedious way.
-            int32_t pa = current();
-            previous();
-            if (fDictionaryCache->fNumCachedBreakPositions > 0) {
-                fDictionaryCache->reset();
-            }
-            int32_t pb = next();
-            (void)pa; (void)pb;     // suppress unused variables warnings.
-            // U_ASSERT(pa == pb);
-        }
-    }
-    U_ASSERT(fLastRuleStatusIndex >= 0  &&  fLastRuleStatusIndex < fData->fStatusMaxIdx);
-}
-
 
 int32_t  RuleBasedBreakIterator::getRuleStatus() const {
-    RuleBasedBreakIterator *nonConstThis  = (RuleBasedBreakIterator *)this;
-    nonConstThis->makeRuleStatusValid();
 
     // fLastRuleStatusIndex indexes to the start of the appropriate status record
     //                                                 (the number of status values.)
@@ -1451,17 +1221,12 @@ int32_t  RuleBasedBreakIterator::getRuleStatus() const {
 }
 
 
-
-
 int32_t RuleBasedBreakIterator::getRuleStatusVec(
-             int32_t *fillInVec, int32_t capacity, UErrorCode &status)
-{
+             int32_t *fillInVec, int32_t capacity, UErrorCode &status) {
     if (U_FAILURE(status)) {
         return 0;
     }
 
-    RuleBasedBreakIterator *nonConstThis  = (RuleBasedBreakIterator *)this;
-    nonConstThis->makeRuleStatusValid();
     int32_t  numVals = fData->fRuleStatusTable[fLastRuleStatusIndex];
     int32_t  numValsToCopy = numVals;
     if (numVals > capacity) {
@@ -1527,9 +1292,12 @@ BreakIterator *  RuleBasedBreakIterator::createBufferClone(void * /*stackBuffer*
 //                        process.
 //
 //-------------------------------------------------------------------------------
-void RuleBasedBreakIterator::checkDictionary(int32_t startPos, int32_t endPos) {
+void RuleBasedBreakIterator::checkDictionary(int32_t startPos, int32_t endPos,
+                                             int32_t firstRuleStatus, int32_t otherRuleStatus) {
     // Reset the old break cache first.
     fDictionaryCache->reset();
+    fDictionaryCache->fFirstRuleStatusIndex = firstRuleStatus;
+    fDictionaryCache->fOtherRuleStatusIndex = otherRuleStatus;
 
     // note: code segment below assumes that dictionary chars are in the
     // startPos-endPos range
@@ -1555,8 +1323,8 @@ void RuleBasedBreakIterator::checkDictionary(int32_t startPos, int32_t endPos) {
     uint16_t    category;
     int32_t     current;
     UErrorCode  status = U_ZERO_ERROR;
+    fDictionaryCache->reset();
     UVector32   &breaks = *fDictionaryCache->fBreaks;
-    breaks.removeAllElements();
     int32_t     foundBreakCount = 0;
 
     // Is the character we're starting on a dictionary character? If so, we
@@ -1653,8 +1421,11 @@ void RuleBasedBreakIterator::checkDictionary(int32_t startPos, int32_t endPos) {
         }
         fDictionaryCache->fNumCachedBreakPositions = breaks.size();
         fDictionaryCache->fPositionInCache = 0;
-        fDictionaryCache->fStart = startPos;
-        fDictionaryCache->fLimit = endPos;
+        // fDictionaryCache->fStart = startPos;
+        // fDictionaryCache->fLimit = endPos;
+        // Note: Dictionary matching may extend beyond the original limit.
+        fDictionaryCache->fStart = breaks.elementAti(0);
+        fDictionaryCache->fLimit = breaks.peeki();
         return;
     }
 

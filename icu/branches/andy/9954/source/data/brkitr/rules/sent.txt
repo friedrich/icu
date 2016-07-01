@@ -83,20 +83,15 @@ $ATermEx $CloseEx* $SpEx* $NotLettersEx* $Lower;
 ## -------------------------------------------------
 
 !!reverse;
+# TODO: unused. Remove when rule compiler is updated to work with omitted reverse.
+.;
+
+!!safe_reverse;
 
 $SpEx_R       = ($Extend | $Format)* $Sp;
 $ATermEx_R    = ($Extend | $Format)* $ATerm;
 $STermEx_R    = ($Extend | $Format)* $STerm;
 $CloseEx_R    = ($Extend | $Format)* $Close;
-
-#
-#  Reverse rules.
-#     For now, use the old style inexact reverse rules, which are easier
-#     to write, but less efficient.
-#     TODO:  exact reverse rules.  It appears that exact reverse rules
-#            may require improving support for look-ahead breaks in the
-#            builder.  Needs more investigation.
-#
 
 [{bof}] (.? | $LF $CR) [^$Sep $CR $LF]* [$Sep $CR $LF {eof}] ($SpEx_R* $CloseEx_R* ($STermEx_R | $ATermEx_R))*;
 #.*;

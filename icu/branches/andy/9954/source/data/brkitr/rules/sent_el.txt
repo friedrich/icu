@@ -83,6 +83,11 @@ $ATermEx $CloseEx* $SpEx* $NotLettersEx* $Lower;
 ## -------------------------------------------------
 
 !!reverse;
+#TODO: remove once rule compiler is updated.
+.;
+
+
+!!safe_reverse;
 
 $SpEx_R       = ($Extend | $Format)* $Sp;
 $ATermEx_R    = ($Extend | $Format)* $ATerm;

@@ -1013,7 +1013,8 @@ void RBBITest::executeTest(TestParams *t, UErrorCode &status) {
     //  Run the iterator backwards, verify that the same breaks are found.
     //
     prevBP = utext_nativeLength(t->textToBreak)+2;  // start with a phony value for the last break pos seen.
-    for (bp = t->bi->last(); bp != BreakIterator::DONE; bp = t->bi->previous()) {
+    bp = t->bi->last();
+    while (bp != BreakIterator::DONE) {
         if (prevBP ==  bp) {
             // Fail for lack of progress.
             errln("Reverse Iteration, no progress.  Break Pos=%4d  File line,col=%4d,%4d",
@@ -1051,6 +1052,7 @@ void RBBITest::executeTest(TestParams *t, UErrorCode &status) {
         }
 
         prevBP = bp;
+        bp = t->bi->previous();
     }
 
     // Verify that there were no missed breaks prior to the last one found
