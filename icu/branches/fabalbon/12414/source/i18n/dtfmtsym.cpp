@@ -1489,6 +1489,14 @@ struct CalendarDataSink : public ResourceSink {
     Hashtable arrays;
     Hashtable arraySizes;
     Hashtable maps;
+    /** 
+     * Whenever there are aliases, the same object will be added twice to 'map'.
+     * To avoid double deletion, 'maps' won't take ownership of the objects. Instead,
+     * mapRefs will own them and will delete them when CalendarDataSink is deleted.
+     */
+    UVector mapRefs;
+
+    // Paths and the aliases they point to
     UVector aliasPathPairs;
 
     // Current and next calendar resource table which should be loaded
@@ -1504,6 +1512,7 @@ struct CalendarDataSink : public ResourceSink {
     // Initializes CalendarDataSink with default values
     CalendarDataSink(UErrorCode& status)
     :   arrays(FALSE, status), arraySizes(FALSE, status), maps(FALSE, status),
+        mapRefs(uprv_deleteUObject, NULL, 10, status),
         aliasPathPairs(uprv_deleteUObject, uhash_compareUnicodeString, status),
         currentCalendarType(), nextCalendarType(),
         resourcesToVisit(NULL), aliasRelativePath()
@@ -1628,7 +1637,6 @@ struct CalendarDataSink : public ResourceSink {
                     mod = true;
                 } else if ((aliasMap = (Hashtable*)maps.get(*alias)) != NULL) {
                     UnicodeString *path = (UnicodeString*)aliasPathPairs[i + 1];
-                    //TODO(fabalbon): Make a copy of the object, currently I'm deleting this two times which is an undefined behavior.
                     maps.put(*path, aliasMap, errorCode);
                     if (U_FAILURE(errorCode)) { return; }
                     mod = true;
@@ -1672,8 +1680,12 @@ struct CalendarDataSink : public ResourceSink {
                 if (i == 0) {
                     LocalPointer<Hashtable> stringMapPtr(new Hashtable(FALSE, errorCode), errorCode);
                     stringMap = stringMapPtr.getAlias();
-                    maps.put(path, stringMapPtr.orphan(), errorCode);
+                    maps.put(path, stringMap, errorCode);
+                    // mapRefs will take ownership of 'stringMap':
+                    mapRefs.addElement(stringMap, errorCode);
                     if (U_FAILURE(errorCode)) { return; }
+                    // Only release ownership after mapRefs takes it (no error happened):
+                    stringMapPtr.orphan();
                     stringMap->setValueDeleter(uprv_deleteUObject);
                 }
                 U_ASSERT(stringMap != NULL);
@@ -1821,7 +1833,6 @@ struct CalendarDataSink : public ResourceSink {
 // Virtual destructors have to be defined out of line
 CalendarDataSink::~CalendarDataSink() {
     arrays.setValueDeleter(deleteUObjectArray);
-    maps.setValueDeleter(uprv_deleteUObject);
 }
 }
 
