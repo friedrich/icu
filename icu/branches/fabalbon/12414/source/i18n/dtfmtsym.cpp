@@ -1698,17 +1698,17 @@ struct CalendarDataSink : public ResourceSink {
                 int32_t startIndex = UPRV_LENGTHOF(kCyclicNameSetsTagUChar);
                 int32_t length = 0;
                 if (startIndex == path.length()
-                    || path.compare(startIndex, (length = UPRV_LENGTHOF(kZodiacsUChar)), kZodiacsUChar, 0, length) == 0
-                    || path.compare(startIndex, (length = UPRV_LENGTHOF(kYearsTagUChar)), kYearsTagUChar, 0, length) == 0
-                    || path.compare(startIndex, (length = UPRV_LENGTHOF(kDayPartsTagUChar)), kDayPartsTagUChar, 0, length) == 0) {
+                    || path.compare(startIndex, (length = UPRV_LENGTHOF(kZodiacsUChar)), kZodiacsUChar, 0, UPRV_LENGTHOF(kZodiacsUChar)) == 0
+                    || path.compare(startIndex, (length = UPRV_LENGTHOF(kYearsTagUChar)), kYearsTagUChar, 0, UPRV_LENGTHOF(kYearsTagUChar)) == 0
+                    || path.compare(startIndex, (length = UPRV_LENGTHOF(kDayPartsTagUChar)), kDayPartsTagUChar, 0, UPRV_LENGTHOF(kDayPartsTagUChar)) == 0) {
                     startIndex += length;
                     length = 0;
                     if (startIndex == path.length()
-                        || path.compare(startIndex, (length = UPRV_LENGTHOF(kFormatTagUChar)), kFormatTagUChar, 0, length) == 0) {
+                        || path.compare(startIndex, (length = UPRV_LENGTHOF(kFormatTagUChar)), kFormatTagUChar, 0, UPRV_LENGTHOF(kFormatTagUChar)) == 0) {
                         startIndex += length;
                         length = 0;
                         if (startIndex == path.length()
-                            || path.compare(startIndex, (length = UPRV_LENGTHOF(kAbbrTagUChar)), kAbbrTagUChar, 0, length) == 0) {
+                            || path.compare(startIndex, (length = UPRV_LENGTHOF(kAbbrTagUChar)), kAbbrTagUChar, 0, UPRV_LENGTHOF(kAbbrTagUChar)) == 0) {
                             skip = FALSE;
                         }
                     }
@@ -1893,7 +1893,7 @@ initLeapMonthPattern(UnicodeString *field, int32_t index, CalendarDataSink &sink
         UnicodeString pathUString(path.data(), -1, US_INV);
         Hashtable *leapMonthTable = static_cast<Hashtable*>(sink.maps.get(pathUString));
         if (leapMonthTable != NULL) {
-            UnicodeString leapLabel(TRUE, kLeapTagUChar, UPRV_LENGTHOF(kLeapTagUChar));
+            UnicodeString leapLabel(FALSE, kLeapTagUChar, UPRV_LENGTHOF(kLeapTagUChar));
             UnicodeString *leapMonthPattern = static_cast<UnicodeString*>(leapMonthTable->get(leapLabel));
             if (leapMonthPattern != NULL) {
                 field[index].fastCopyFrom(*leapMonthPattern);
@@ -2093,6 +2093,7 @@ DateFormatSymbols::initializeData(const Locale& locale, const char *type, UError
         calendarTypeBuffer.appendInvariantChars(calendarType, status);
         if (U_FAILURE(status)) { return; }
         const char *calendarTypeCArray = calendarTypeBuffer.data();
+        //TODO(fabalbon): use UnicodeStirng.exctract(..., US_INV)
 
         // Enumerate this calendar type. If the calendar is not found fallback to gregorian
         UErrorCode oldStatus = status;
@@ -2177,7 +2178,7 @@ DateFormatSymbols::initializeData(const Locale& locale, const char *type, UError
     initField(&fShortYearNames, fShortYearNamesCount, calendarSink,
               buildResourcePath(path, gCyclicNameSetsTag, gNameSetYearsTag, gNamesFormatTag, gNamesAbbrTag, tempStatus), tempStatus);
     initField(&fShortZodiacNames, fShortZodiacNamesCount, calendarSink,
-              buildResourcePath(path, gCyclicNameSetsTag, gNameSetYearsTag, gNamesFormatTag, gNamesAbbrTag, tempStatus), tempStatus);
+              buildResourcePath(path, gCyclicNameSetsTag, gNameSetZodiacsTag, gNamesFormatTag, gNamesAbbrTag, tempStatus), tempStatus);
 
     // Load context transforms and capitalization
     tempStatus = U_ZERO_ERROR;
