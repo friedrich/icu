@@ -512,7 +512,6 @@ RuleBasedBreakIterator &RuleBasedBreakIterator::refreshInputText(UText *input, U
  * @return The new iterator position, which is zero.
  */
 int32_t RuleBasedBreakIterator::first(void) {
-    fDictionaryCache->reset();
     fLastRuleStatusIndex  = 0;
     if (fText == NULL) {
         return BreakIterator::DONE;
@@ -526,16 +525,25 @@ int32_t RuleBasedBreakIterator::first(void) {
  * @return The text's past-the-end offset.
  */
 int32_t RuleBasedBreakIterator::last(void) {
-    fDictionaryCache->reset();
     if (fText == NULL) {
         fLastRuleStatusIndex  = 0;
         return BreakIterator::DONE;
     }
 
-    // TODO: rule status will not be valid. Fix it somehow.
-    int32_t pos = (int32_t)utext_nativeLength(fText);
-    utext_setNativeIndex(fText, pos);
-    return pos;
+    int32_t endPos = (int32_t)utext_nativeLength(fText);
+    utext_setNativeIndex(fText, endPos);
+
+    // find the rule status. TODO: find a better way.
+    if (fDictionaryCache->fLimit == endPos) {
+        fLastRuleStatusIndex = fDictionaryCache->fOtherRuleStatusIndex;
+    } else {
+        int32_t tPos;
+        handlePrevious(fData->fSafeRevTable);
+        do {
+            tPos = handleNext(fData->fForwardTable);
+        } while (tPos != BreakIterator::DONE && tPos < endPos);
+    }
+    return endPos;
 }
 
 /**
@@ -707,14 +715,8 @@ int32_t RuleBasedBreakIterator::following(int32_t startPos) {
  * @return The position of the last boundary before the starting position.
  */
 int32_t RuleBasedBreakIterator::preceding(int32_t offset) {
-    // if the offset passed in is already past the end of the text,
-    // just return DONE; if it's before the beginning, return the
-    // text's starting offset
     if (fText == NULL || offset > utext_nativeLength(fText)) {
         return last();
-    }
-    if (offset <= 0) {
-        return first();
     }
 
     // Move requested offset to a code point start. It might be on a trail surrogate,
@@ -1294,7 +1296,8 @@ BreakIterator *  RuleBasedBreakIterator::createBufferClone(void * /*stackBuffer*
 //-------------------------------------------------------------------------------
 void RuleBasedBreakIterator::checkDictionary(int32_t startPos, int32_t endPos,
                                              int32_t firstRuleStatus, int32_t otherRuleStatus) {
-    // Reset the old break cache first.
+    int64_t initialTextPosition = utext_getNativeIndex(fText);
+
     fDictionaryCache->reset();
     fDictionaryCache->fFirstRuleStatusIndex = firstRuleStatus;
     fDictionaryCache->fOtherRuleStatusIndex = otherRuleStatus;
@@ -1305,25 +1308,12 @@ void RuleBasedBreakIterator::checkDictionary(int32_t startPos, int32_t endPos,
         return;
     }
 
-    int64_t initialTextPosition = utext_getNativeIndex(fText);
-
-    UBool reverse = FALSE;
-
-    // Starting from the starting point, scan towards the proposed result,
-    // looking for the first dictionary character (which may be the one
-    // we're on, if we're starting in the middle of a range).
-    utext_setNativeIndex(fText, reverse ? endPos : startPos);
-    if (reverse) {
-        UTEXT_PREVIOUS32(fText);
-    }
-
     int32_t rangeStart = startPos;
     int32_t rangeEnd = endPos;
 
     uint16_t    category;
     int32_t     current;
     UErrorCode  status = U_ZERO_ERROR;
-    fDictionaryCache->reset();
     UVector32   &breaks = *fDictionaryCache->fBreaks;
     int32_t     foundBreakCount = 0;
 
@@ -1572,7 +1562,6 @@ RuleBasedBreakIterator::getLanguageBreakEngine(UChar32 c) {
 
 void RuleBasedBreakIterator::setBreakType(int32_t type) {
     fBreakType = type;
-    fDictionaryCache->reset();
 }
 
 U_NAMESPACE_END
