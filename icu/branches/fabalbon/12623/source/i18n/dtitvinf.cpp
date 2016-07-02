@@ -289,16 +289,16 @@ struct DateIntervalSink : public ResourceSink {
         ResourceTable patternData = value.getTable(errorCode);
         if (U_FAILURE(errorCode)) { return; }
         for (int32_t k = 0; patternData.getKeyAndValue(k, key, value); k++) {
-            // Process the key
-            UCalendarDateFields calendarField = validateAndProcessPatternLetter(key);
+            if (value.getType() == URES_STRING) {
+                // Process the key
+                UCalendarDateFields calendarField = validateAndProcessPatternLetter(key);
 
-            // If the calendar field has a valid value
-            if (calendarField < UCAL_FIELD_COUNT) {
-                // Set the interval pattern
-                setIntervalPatternIfAbsent(currentSkeleton, calendarField, value, errorCode);
-            } else {
-                errorCode = U_INVALID_FORMAT_ERROR;
-                break;
+                // If the calendar field has a valid value
+                if (calendarField < UCAL_FIELD_COUNT) {
+                    // Set the interval pattern
+                    setIntervalPatternIfAbsent(currentSkeleton, calendarField, value, errorCode);
+                    if (U_FAILURE(errorCode)) { return; }
+                }
             }
         }
     }
