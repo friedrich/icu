@@ -1442,47 +1442,36 @@ DateFormatSymbols::setLocalPatternChars(const UnicodeString& newLocalPatternChar
 namespace {
 
 // Constants declarations
-static const UChar kCalendarAliasPrefixUChar[] =
-{
+static const UChar kCalendarAliasPrefixUChar[] = {
     SOLIDUS, CAP_L, CAP_O, CAP_C, CAP_A, CAP_L, CAP_E, SOLIDUS,
     LOW_C, LOW_A, LOW_L, LOW_E, LOW_N, LOW_D, LOW_A, LOW_R, SOLIDUS
 };
-static const UChar kGregorianTagUChar[] =
-{
+static const UChar kGregorianTagUChar[] = {
     LOW_G, LOW_R, LOW_E, LOW_G, LOW_O, LOW_R, LOW_I, LOW_A, LOW_N
 };
-static const UChar kVariantTagUChar[] =
-{
+static const UChar kVariantTagUChar[] = {
     PERCENT, LOW_V, LOW_A, LOW_R, LOW_I, LOW_A, LOW_N, LOW_T
 };
-static const UChar kLeapTagUChar[] =
-{
+static const UChar kLeapTagUChar[] = {
     LOW_L, LOW_E, LOW_A, LOW_P
 };
-static const UChar kCyclicNameSetsTagUChar[] =
-{
+static const UChar kCyclicNameSetsTagUChar[] = {
     LOW_C, LOW_Y, LOW_C, LOW_L, LOW_I, LOW_C, CAP_N, LOW_A, LOW_M, LOW_E, CAP_S, LOW_E, LOW_T, LOW_S
 };
-static const UChar kCyclicNameSetsYearsFormatAbbrPathUChar[] =
-{
-    LOW_C, LOW_Y, LOW_C, LOW_L, LOW_I, LOW_C, CAP_N, LOW_A, LOW_M, LOW_E, CAP_S, LOW_E, LOW_T, LOW_S, SOLIDUS,
-    LOW_Y, LOW_E, LOW_A, LOW_R, LOW_S, SOLIDUS,
-    LOW_F, LOW_O, LOW_R, LOW_M, LOW_A, LOW_T, SOLIDUS,
-    LOW_A, LOW_B, LOW_B, LOW_R, LOW_E, LOW_V, LOW_I, LOW_A, LOW_T, LOW_E, LOW_D
+static const UChar kYearsTagUChar[] = {
+    SOLIDUS, LOW_Y, LOW_E, LOW_A, LOW_R, LOW_S
 };
-static const UChar kCyclicNameSetsZodiacsFormatAbbrPathUChar[] =
-{
-    LOW_C, LOW_Y, LOW_C, LOW_L, LOW_I, LOW_C, CAP_N, LOW_A, LOW_M, LOW_E, CAP_S, LOW_E, LOW_T, LOW_S, SOLIDUS,
-    LOW_Z, LOW_O, LOW_D, LOW_I, LOW_A, LOW_C, LOW_S, SOLIDUS,
-    LOW_F, LOW_O, LOW_R, LOW_M, LOW_A, LOW_T, SOLIDUS,
-    LOW_A, LOW_B, LOW_B, LOW_R, LOW_E, LOW_V, LOW_I, LOW_A, LOW_T, LOW_E, LOW_D
+static const UChar kZodiacsUChar[] = {
+    SOLIDUS, LOW_Z, LOW_O, LOW_D, LOW_I, LOW_A, LOW_C, LOW_S
 };
-static const UChar kCyclicNameSetsDayPartsFormatAbbrPathUChar[] =
-{
-    LOW_C, LOW_Y, LOW_C, LOW_L, LOW_I, LOW_C, CAP_N, LOW_A, LOW_M, LOW_E, CAP_S, LOW_E, LOW_T, LOW_S, SOLIDUS,
-    LOW_D, LOW_A, LOW_Y, CAP_P, LOW_A, LOW_R, LOW_T, LOW_S, SOLIDUS,
-    LOW_F, LOW_O, LOW_R, LOW_M, LOW_A, LOW_T, SOLIDUS,
-    LOW_A, LOW_B, LOW_B, LOW_R, LOW_E, LOW_V, LOW_I, LOW_A, LOW_T, LOW_E, LOW_D
+static const UChar kDayPartsTagUChar[] = {
+    SOLIDUS, LOW_D, LOW_A, LOW_Y, CAP_P, LOW_A, LOW_R, LOW_T, LOW_S
+};
+static const UChar kFormatTagUChar[] = {
+    SOLIDUS, LOW_F, LOW_O, LOW_R, LOW_M, LOW_A, LOW_T
+};
+static const UChar kAbbrTagUChar[] = {
+    SOLIDUS, LOW_A, LOW_B, LOW_B, LOW_R, LOW_E, LOW_V, LOW_I, LOW_A, LOW_T, LOW_E, LOW_D
 };
 
 // ResourceSink to enumerate all calendar resources
@@ -1495,11 +1484,6 @@ struct CalendarDataSink : public ResourceSink {
         GREGORIAN,
         NONE
     };
-
-    // Constant UnicodeString labels
-    const UnicodeString cyclicNameSetsYearsFormatAbbrLabel;
-    const UnicodeString cyclicNameSetsZodiacsFormatAbbrLabel;
-    const UnicodeString cyclicNameSetsDayPartsFormatAbbrLabel;
 
     // Data structures to store resources from the current resource bundle
     Hashtable arrays;
@@ -1519,10 +1503,7 @@ struct CalendarDataSink : public ResourceSink {
 
     // Initializes CalendarDataSink with default values
     CalendarDataSink(UErrorCode& status)
-    : cyclicNameSetsYearsFormatAbbrLabel(TRUE, kCyclicNameSetsYearsFormatAbbrPathUChar, UPRV_LENGTHOF(kCyclicNameSetsYearsFormatAbbrPathUChar)),
-        cyclicNameSetsZodiacsFormatAbbrLabel(TRUE, kCyclicNameSetsZodiacsFormatAbbrPathUChar, UPRV_LENGTHOF(kCyclicNameSetsZodiacsFormatAbbrPathUChar)),
-        cyclicNameSetsDayPartsFormatAbbrLabel(TRUE, kCyclicNameSetsDayPartsFormatAbbrPathUChar, UPRV_LENGTHOF(kCyclicNameSetsDayPartsFormatAbbrPathUChar)),
-        arrays(FALSE, status), arraySizes(FALSE, status), maps(FALSE, status),
+    :   arrays(FALSE, status), arraySizes(FALSE, status), maps(FALSE, status),
         aliasPathPairs(uprv_deleteUObject, uhash_compareUnicodeString, status),
         currentCalendarType(), nextCalendarType(),
         resourcesToVisit(NULL), aliasRelativePath()
@@ -1533,15 +1514,13 @@ struct CalendarDataSink : public ResourceSink {
 
     // Configure the CalendarSink to visit all the resources
     void visitAllResources() {
-        if (resourcesToVisit != NULL) {
-            delete resourcesToVisit;
-            resourcesToVisit = NULL;
-        }
+        delete resourcesToVisit;
+        resourcesToVisit = NULL;
     }
 
     // Actions to be done before enumerating
     void preEnumerate(const UnicodeString &calendarType) {
-        currentCalendarType.setTo(calendarType, 0);
+        currentCalendarType = calendarType;
         nextCalendarType.setToBogus();
         aliasPathPairs.removeAllElements();
     }
@@ -1571,12 +1550,20 @@ struct CalendarDataSink : public ResourceSink {
                 // calendar type it's pointing to
                 if (resourcesToVisitNext == NULL) {
                     resourcesToVisitNext = new UVector(uprv_deleteUObject, uhash_compareUnicodeString, errorCode);
+                    if (resourcesToVisitNext == NULL) {
+                        errorCode = U_MEMORY_ALLOCATION_ERROR;
+                        return;
+                    }
                     if (U_FAILURE(errorCode)) {
                         delete resourcesToVisitNext;
                         return;
                     }
                 }
                 UnicodeString *aliasRelativePathCopy = new UnicodeString(aliasRelativePath);
+                if (aliasRelativePathCopy == NULL) {
+                    errorCode = U_MEMORY_ALLOCATION_ERROR;
+                    return;
+                }
                 resourcesToVisitNext->addElement(aliasRelativePathCopy, errorCode);
                 if (U_FAILURE(errorCode)) {
                     delete aliasRelativePathCopy;
@@ -1588,15 +1575,23 @@ struct CalendarDataSink : public ResourceSink {
                 // Register same-calendar alias
                 if (arrays.get(aliasRelativePath) == NULL && maps.get(aliasRelativePath) == NULL) {
                     UnicodeString *aliasRelativePathCopy = new UnicodeString(aliasRelativePath);
+                    if (aliasRelativePathCopy == NULL) {
+                        errorCode = U_MEMORY_ALLOCATION_ERROR;
+                        return;
+                    }
                     aliasPathPairs.addElement(aliasRelativePathCopy, errorCode);
                     if (U_FAILURE(errorCode)) {
                         delete aliasRelativePathCopy;
                         return;
                     }
-                    UnicodeString *keyUString = new UnicodeString(key, -1, US_INV);
-                    aliasPathPairs.addElement(keyUString, errorCode);
+                    UnicodeString *keyUStringCopy = new UnicodeString(keyUString);
+                    if (keyUStringCopy == NULL) {
+                        errorCode = U_MEMORY_ALLOCATION_ERROR;
+                        return;
+                    }
+                    aliasPathPairs.addElement(keyUStringCopy, errorCode);
                     if (U_FAILURE(errorCode)) {
-                        delete keyUString;
+                        delete keyUStringCopy;
                         return;
                     }
                 }
@@ -1606,7 +1601,7 @@ struct CalendarDataSink : public ResourceSink {
             // Only visit the resources that were referenced by an alias on the previous calendar
             // (AmPmMarkersAbbr is an exception).
             if (resourcesToVisit != NULL && !resourcesToVisit->isEmpty() && !resourcesToVisit->contains(&keyUString)
-                && uprv_strcmp(key, gAmPmMarkersAbbrTag) == 0) { continue; }
+                && uprv_strcmp(key, gAmPmMarkersAbbrTag) != 0) { continue; }
 
             // == Handle data ==
             if (uprv_strcmp(key, gAmPmMarkersTag) == 0
@@ -1616,6 +1611,10 @@ struct CalendarDataSink : public ResourceSink {
                     ResourceArray resourceArray = value.getArray(errorCode);
                     int32_t arraySize = resourceArray.getSize();
                     UnicodeString *stringArray = new UnicodeString[arraySize];
+                    if (stringArray == NULL) {
+                        errorCode = U_MEMORY_ALLOCATION_ERROR;
+                        return;
+                    }
                     value.getStringArray(stringArray, arraySize, errorCode);
                     if (U_FAILURE(errorCode)) {
                         delete[] stringArray;
@@ -1637,11 +1636,11 @@ struct CalendarDataSink : public ResourceSink {
         }
 
         // Apply same-calendar aliases
-        bool modified;
+        UBool modified;
         do {
             modified = false;
             for (int32_t i = 0; i < aliasPathPairs.size();) {
-                bool mod = false;
+                UBool mod = false;
                 UnicodeString *alias = (UnicodeString*)aliasPathPairs[i];
                 UnicodeString *aliasArray;
                 Hashtable *aliasMap;
@@ -1649,6 +1648,10 @@ struct CalendarDataSink : public ResourceSink {
                     // Clone the array
                     int32_t aliasArraySize = arraySizes.geti(*alias);
                     UnicodeString *aliasArrayCopy = new UnicodeString[aliasArraySize];
+                    if (aliasArrayCopy == NULL) {
+                        errorCode = U_MEMORY_ALLOCATION_ERROR;
+                        return;
+                    }
                     uprv_arrayCopy(aliasArray, aliasArrayCopy, aliasArraySize);
                     // Put the array on the 'arrays' map
                     UnicodeString *path = (UnicodeString*)aliasPathPairs[i + 1];
@@ -1678,9 +1681,7 @@ struct CalendarDataSink : public ResourceSink {
 
         // Set the resources to visit on the next calendar
         if (resourcesToVisitNext != NULL) {
-            if (resourcesToVisit != NULL) {
-                delete resourcesToVisit;
-            }
+            delete resourcesToVisit;
             resourcesToVisit = resourcesToVisitNext;
         }
     }
@@ -1695,7 +1696,7 @@ struct CalendarDataSink : public ResourceSink {
 
         // Iterate over all the elements of the table and add them to the map
         for (int i = 0; table.getKeyAndValue(i, key, value); i++) {
-            UnicodeString keyUString(key);
+            UnicodeString keyUString(key, -1, US_INV);
 
             // Ignore '%variant' keys
             if (keyUString.endsWith(kVariantTagUChar, UPRV_LENGTHOF(kVariantTagUChar))) {
@@ -1707,6 +1708,10 @@ struct CalendarDataSink : public ResourceSink {
                 // We are on a leaf, store the map elements into the stringMap
                 if (i == 0) {
                     stringMap = new Hashtable(FALSE, errorCode);
+                    if (stringMap == NULL) {
+                        errorCode = U_MEMORY_ALLOCATION_ERROR;
+                        return;
+                    }
                     if (U_FAILURE(errorCode)) {
                         delete stringMap;
                         return;
@@ -1722,6 +1727,10 @@ struct CalendarDataSink : public ResourceSink {
                 const UChar *valueString = value.getString(valueStringSize, errorCode);
                 if (U_FAILURE(errorCode)) { return; }
                 UnicodeString *valueUString = new UnicodeString(TRUE, valueString, valueStringSize);
+                if (valueUString == NULL) {
+                    errorCode = U_MEMORY_ALLOCATION_ERROR;
+                    return;
+                }
                 stringMap->put(keyUString, valueUString, errorCode);
                 if (U_FAILURE(errorCode)) {
                     delete valueUString;
@@ -1738,14 +1747,31 @@ struct CalendarDataSink : public ResourceSink {
             // In cyclicNameSets ignore everything but years/format/abbreviated
             // and zodiacs/format/abbreviated
             if (path.startsWith(kCyclicNameSetsTagUChar, UPRV_LENGTHOF(kCyclicNameSetsTagUChar))) {
-                if (!cyclicNameSetsYearsFormatAbbrLabel.startsWith(path)
-                    && !cyclicNameSetsZodiacsFormatAbbrLabel.startsWith(path)
-                    && !cyclicNameSetsDayPartsFormatAbbrLabel.startsWith(path)) {
+                UBool skip = TRUE;
+                int32_t startIndex = UPRV_LENGTHOF(kCyclicNameSetsTagUChar);
+                int32_t length = 0;
+                if (startIndex == path.length()
+                    || path.compare(startIndex, (length = UPRV_LENGTHOF(kZodiacsUChar)), kZodiacsUChar, 0, length) == 0
+                    || path.compare(startIndex, (length = UPRV_LENGTHOF(kYearsTagUChar)), kYearsTagUChar, 0, length) == 0
+                    || path.compare(startIndex, (length = UPRV_LENGTHOF(kDayPartsTagUChar)), kDayPartsTagUChar, 0, length) == 0) {
+                    startIndex += length;
+                    length = 0;
+                    if (startIndex == path.length()
+                        || path.compare(startIndex, (length = UPRV_LENGTHOF(kFormatTagUChar)), kFormatTagUChar, 0, length) == 0) {
+                        startIndex += length;
+                        length = 0;
+                        if (startIndex == path.length()
+                            || path.compare(startIndex, (length = UPRV_LENGTHOF(kAbbrTagUChar)), kAbbrTagUChar, 0, length) == 0) {
+                            skip = FALSE;
+                        }
+                    }
+                }
+                if (skip) {
                     // Drop the latest key on the path and continue
                     path.retainBetween(0, pathLength);
-                    continue;//TODO(fabalbon): Cannot have UnicodeString as static members.
+                    continue;
                 }
-            } //TODO(fabalbon): Make more efficient by comparing sections of having the whole paths as in java?
+            }
 
             // == Handle aliases ==
             if (arrays.get(path) != NULL || maps.get(path) != NULL) {
@@ -1759,12 +1785,20 @@ struct CalendarDataSink : public ResourceSink {
             if (aliasType == SAME_CALENDAR) {
                 // Store the alias path and the current path on aliasPathPairs
                 UnicodeString *aliasRelativePathCopy = new UnicodeString(aliasRelativePath);
+                if (aliasRelativePathCopy == NULL) {
+                    errorCode = U_MEMORY_ALLOCATION_ERROR;
+                    return;
+                }
                 aliasPathPairs.addElement(aliasRelativePathCopy, errorCode);
                 if (U_FAILURE(errorCode)) {
                     delete aliasRelativePathCopy;
                     return;
                 }
                 UnicodeString *pathCopy = new UnicodeString(path);
+                if (pathCopy == NULL) {
+                    errorCode = U_MEMORY_ALLOCATION_ERROR;
+                    return;
+                }
                 aliasPathPairs.addElement(pathCopy, errorCode);
                 if (U_FAILURE(errorCode)) {
                     delete pathCopy;
@@ -1783,6 +1817,10 @@ struct CalendarDataSink : public ResourceSink {
                 ResourceArray rDataArray = value.getArray(errorCode);
                 int32_t dataArraySize = rDataArray.getSize();
                 UnicodeString *dataArray = new UnicodeString[dataArraySize];
+                if (dataArray == NULL) {
+                    errorCode = U_MEMORY_ALLOCATION_ERROR;
+                    return;
+                }
                 value.getStringArray(dataArray, dataArraySize, errorCode);
                 arrays.put(path, dataArray, errorCode);
                 arraySizes.puti(path, dataArraySize, errorCode);
@@ -1831,7 +1869,7 @@ struct CalendarDataSink : public ResourceSink {
                         if (aliasCalendarType.compare(kGregorianTagUChar, UPRV_LENGTHOF(kGregorianTagUChar)) == 0) {
                             return GREGORIAN;
                         } else if (nextCalendarType.isBogus()) {
-                            nextCalendarType.setTo(aliasCalendarType);
+                            nextCalendarType = aliasCalendarType;
                             return DIFFERENT_CALENDAR;
                         } else if (nextCalendarType == aliasCalendarType) {
                             return DIFFERENT_CALENDAR;
@@ -1909,6 +1947,10 @@ initField(UnicodeString **field, int32_t& length, CalendarDataSink &sink, CharSt
             int32_t arrayLength = sink.arraySizes.geti(keyUString);
             length = arrayLength + arrayOffset;
             *field = new UnicodeString[length];
+            if (field == NULL) {
+                status = U_MEMORY_ALLOCATION_ERROR;
+                return;
+            }
             uprv_arrayCopy(array, 0, *field, arrayOffset, arrayLength);
         } else {
             length = 0;
@@ -1926,7 +1968,7 @@ initLeapMonthPattern(UnicodeString *field, int32_t index, CalendarDataSink &sink
         if (leapMonthTable != NULL) {
             UnicodeString leapLabel(TRUE, kLeapTagUChar, UPRV_LENGTHOF(kLeapTagUChar));
             UnicodeString *leapMonthPattern = static_cast<UnicodeString*>(leapMonthTable->get(leapLabel));
-            if (leapMonthTable != NULL) {
+            if (leapMonthPattern != NULL) {
                 field[index].fastCopyFrom(*leapMonthPattern);
             } else {
                 field[index].setToBogus();
@@ -2000,6 +2042,10 @@ UnicodeString* loadDayPeriodStrings(CalendarDataSink &sink, CharString &path,
 
     stringCount = UPRV_LENGTHOF(dayPeriodKeys);
     UnicodeString *strings = new UnicodeString[stringCount];
+    if (strings == NULL) {
+        status = U_MEMORY_ALLOCATION_ERROR;
+        return NULL;
+    }
 
     if (map != NULL) {
         for (int32_t i = 0; i < stringCount; ++i) {
