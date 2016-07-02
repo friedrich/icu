@@ -1496,7 +1496,7 @@ struct CalendarDataSink : public ResourceSink {
     UnicodeString nextCalendarType;
 
     // Resources to visit when enumerating fallback calendars
-    UVector *resourcesToVisit;
+    LocalPointer<UVector> resourcesToVisit;
 
     // Alias' relative path populated whenever an alias is read
     UnicodeString aliasRelativePath;
@@ -1514,8 +1514,7 @@ struct CalendarDataSink : public ResourceSink {
 
     // Configure the CalendarSink to visit all the resources
     void visitAllResources() {
-        delete resourcesToVisit;
-        resourcesToVisit = NULL;
+        resourcesToVisit.adoptInstead(NULL);
     }
 
     // Actions to be done before enumerating
@@ -1530,7 +1529,7 @@ struct CalendarDataSink : public ResourceSink {
         U_ASSERT(!currentCalendarType.isEmpty());
 
         // Stores the resources to visit on the next calendar.
-        UVector *resourcesToVisitNext = NULL;
+        LocalPointer<UVector> resourcesToVisitNext(NULL);
         ResourceTable calendarData = value.getTable(errorCode);
         if (U_FAILURE(errorCode)) { return; }
 
@@ -1548,59 +1547,38 @@ struct CalendarDataSink : public ResourceSink {
             } else if (aliasType == DIFFERENT_CALENDAR) {
                 // Whenever an alias to the next calendar (except gregorian) is encountered, register the
                 // calendar type it's pointing to
-                if (resourcesToVisitNext == NULL) {
-                    resourcesToVisitNext = new UVector(uprv_deleteUObject, uhash_compareUnicodeString, errorCode);
-                    if (resourcesToVisitNext == NULL) {
-                        errorCode = U_MEMORY_ALLOCATION_ERROR;
-                        return;
-                    }
-                    if (U_FAILURE(errorCode)) {
-                        delete resourcesToVisitNext;
-                        return;
-                    }
+                if (resourcesToVisitNext.isNull()) {
+                    resourcesToVisitNext
+                        .adoptInsteadAndCheckErrorCode(new UVector(uprv_deleteUObject, uhash_compareUnicodeString, errorCode), errorCode);
+                    if (U_FAILURE(errorCode)) { return; }
                 }
-                UnicodeString *aliasRelativePathCopy = new UnicodeString(aliasRelativePath);
-                if (aliasRelativePathCopy == NULL) {
-                    errorCode = U_MEMORY_ALLOCATION_ERROR;
-                    return;
-                }
-                resourcesToVisitNext->addElement(aliasRelativePathCopy, errorCode);
-                if (U_FAILURE(errorCode)) {
-                    delete aliasRelativePathCopy;
-                    return;
-                }
+                LocalPointer<UnicodeString> aliasRelativePathCopy(new UnicodeString(aliasRelativePath), errorCode);
+                resourcesToVisitNext->addElement(aliasRelativePathCopy.getAlias(), errorCode);
+                if (U_FAILURE(errorCode)) { return; }
+                // Only release ownership after resourcesToVisitNext takes it (no error happened):
+                aliasRelativePathCopy.orphan();
                 continue;
 
             } else if (aliasType == SAME_CALENDAR) {
                 // Register same-calendar alias
                 if (arrays.get(aliasRelativePath) == NULL && maps.get(aliasRelativePath) == NULL) {
-                    UnicodeString *aliasRelativePathCopy = new UnicodeString(aliasRelativePath);
-                    if (aliasRelativePathCopy == NULL) {
-                        errorCode = U_MEMORY_ALLOCATION_ERROR;
-                        return;
-                    }
-                    aliasPathPairs.addElement(aliasRelativePathCopy, errorCode);
-                    if (U_FAILURE(errorCode)) {
-                        delete aliasRelativePathCopy;
-                        return;
-                    }
-                    UnicodeString *keyUStringCopy = new UnicodeString(keyUString);
-                    if (keyUStringCopy == NULL) {
-                        errorCode = U_MEMORY_ALLOCATION_ERROR;
-                        return;
-                    }
-                    aliasPathPairs.addElement(keyUStringCopy, errorCode);
-                    if (U_FAILURE(errorCode)) {
-                        delete keyUStringCopy;
-                        return;
-                    }
+                    LocalPointer<UnicodeString> aliasRelativePathCopy(new UnicodeString(aliasRelativePath), errorCode);
+                    aliasPathPairs.addElement(aliasRelativePathCopy.getAlias(), errorCode);
+                    if (U_FAILURE(errorCode)) { return; }
+                    // Only release ownership after aliasPathPairs takes it (no error happened):
+                    aliasRelativePathCopy.orphan();
+                    LocalPointer<UnicodeString> keyUStringCopy(new UnicodeString(keyUString), errorCode);
+                    aliasPathPairs.addElement(keyUStringCopy.getAlias(), errorCode);
+                    if (U_FAILURE(errorCode)) { return; }
+                    // Only release ownership after aliasPathPairs takes it (no error happened):
+                    keyUStringCopy.orphan();
                 }
                 continue;
             }
 
             // Only visit the resources that were referenced by an alias on the previous calendar
             // (AmPmMarkersAbbr is an exception).
-            if (resourcesToVisit != NULL && !resourcesToVisit->isEmpty() && !resourcesToVisit->contains(&keyUString)
+            if (!resourcesToVisit.isNull() && !resourcesToVisit->isEmpty() && !resourcesToVisit->contains(&keyUString)
                 && uprv_strcmp(key, gAmPmMarkersAbbrTag) != 0) { continue; }
 
             // == Handle data ==
@@ -1610,17 +1588,9 @@ struct CalendarDataSink : public ResourceSink {
                 if (arrays.get(keyUString) == NULL) {
                     ResourceArray resourceArray = value.getArray(errorCode);
                     int32_t arraySize = resourceArray.getSize();
-                    UnicodeString *stringArray = new UnicodeString[arraySize];
-                    if (stringArray == NULL) {
-                        errorCode = U_MEMORY_ALLOCATION_ERROR;
-                        return;
-                    }
-                    value.getStringArray(stringArray, arraySize, errorCode);
-                    if (U_FAILURE(errorCode)) {
-                        delete[] stringArray;
-                        return;
-                    }
-                    arrays.put(keyUString, stringArray, errorCode);
+                    LocalArray<UnicodeString> stringArray(new UnicodeString[arraySize], errorCode);
+                    value.getStringArray(stringArray.getAlias(), arraySize, errorCode);
+                    arrays.put(keyUString, stringArray.orphan(), errorCode);
                     arraySizes.puti(keyUString, arraySize, errorCode);
                     if (U_FAILURE(errorCode)) { return; }
                 }
@@ -1647,20 +1617,14 @@ struct CalendarDataSink : public ResourceSink {
                 if ((aliasArray = (UnicodeString*)arrays.get(*alias)) != NULL) {
                     // Clone the array
                     int32_t aliasArraySize = arraySizes.geti(*alias);
-                    UnicodeString *aliasArrayCopy = new UnicodeString[aliasArraySize];
-                    if (aliasArrayCopy == NULL) {
-                        errorCode = U_MEMORY_ALLOCATION_ERROR;
-                        return;
-                    }
-                    uprv_arrayCopy(aliasArray, aliasArrayCopy, aliasArraySize);
+                    LocalArray<UnicodeString> aliasArrayCopy(new UnicodeString[aliasArraySize], errorCode);
+                    if (U_FAILURE(errorCode)) { return; }
+                    uprv_arrayCopy(aliasArray, aliasArrayCopy.getAlias(), aliasArraySize);
                     // Put the array on the 'arrays' map
                     UnicodeString *path = (UnicodeString*)aliasPathPairs[i + 1];
-                    arrays.put(*path, aliasArrayCopy, errorCode);
+                    arrays.put(*path, aliasArrayCopy.orphan(), errorCode);
                     arraySizes.puti(*path, aliasArraySize, errorCode);
-                    if (U_FAILURE(errorCode)) {
-                        delete[] aliasArrayCopy;
-                        return;
-                    }
+                    if (U_FAILURE(errorCode)) { return; }
                     mod = true;
                 } else if ((aliasMap = (Hashtable*)maps.get(*alias)) != NULL) {
                     UnicodeString *path = (UnicodeString*)aliasPathPairs[i + 1];
@@ -1680,9 +1644,8 @@ struct CalendarDataSink : public ResourceSink {
         } while (modified && !aliasPathPairs.isEmpty());
 
         // Set the resources to visit on the next calendar
-        if (resourcesToVisitNext != NULL) {
-            delete resourcesToVisit;
-            resourcesToVisit = resourcesToVisitNext;
+        if (!resourcesToVisitNext.isNull()) {
+            resourcesToVisit.moveFrom(resourcesToVisitNext);
         }
     }
 
@@ -1692,7 +1655,7 @@ struct CalendarDataSink : public ResourceSink {
 
         ResourceTable table = value.getTable(errorCode);
         if (U_FAILURE(errorCode)) return;
-        Hashtable *stringMap = NULL;
+        Hashtable* stringMap = NULL;
 
         // Iterate over all the elements of the table and add them to the map
         for (int i = 0; table.getKeyAndValue(i, key, value); i++) {
@@ -1707,35 +1670,19 @@ struct CalendarDataSink : public ResourceSink {
             if (value.getType() == URES_STRING) {
                 // We are on a leaf, store the map elements into the stringMap
                 if (i == 0) {
-                    stringMap = new Hashtable(FALSE, errorCode);
-                    if (stringMap == NULL) {
-                        errorCode = U_MEMORY_ALLOCATION_ERROR;
-                        return;
-                    }
-                    if (U_FAILURE(errorCode)) {
-                        delete stringMap;
-                        return;
-                    }
+                    LocalPointer<Hashtable> stringMapPtr(new Hashtable(FALSE, errorCode), errorCode);
+                    stringMap = stringMapPtr.getAlias();
+                    maps.put(path, stringMapPtr.orphan(), errorCode);
+                    if (U_FAILURE(errorCode)) { return; }
                     stringMap->setValueDeleter(uprv_deleteUObject);
-                    maps.put(path, stringMap, errorCode);
-                    if (U_FAILURE(errorCode)) {
-                        return;
-                    }
                 }
                 U_ASSERT(stringMap != NULL);
                 int32_t valueStringSize;
                 const UChar *valueString = value.getString(valueStringSize, errorCode);
                 if (U_FAILURE(errorCode)) { return; }
-                UnicodeString *valueUString = new UnicodeString(TRUE, valueString, valueStringSize);
-                if (valueUString == NULL) {
-                    errorCode = U_MEMORY_ALLOCATION_ERROR;
-                    return;
-                }
-                stringMap->put(keyUString, valueUString, errorCode);
-                if (U_FAILURE(errorCode)) {
-                    delete valueUString;
-                    return;
-                }
+                LocalPointer<UnicodeString> valueUString(new UnicodeString(TRUE, valueString, valueStringSize), errorCode);
+                stringMap->put(keyUString, valueUString.orphan(), errorCode);
+                if (U_FAILURE(errorCode)) { return; }
                 continue;
             }
             U_ASSERT(stringMap == NULL);
@@ -1784,26 +1731,16 @@ struct CalendarDataSink : public ResourceSink {
             if (U_FAILURE(errorCode)) { return; }
             if (aliasType == SAME_CALENDAR) {
                 // Store the alias path and the current path on aliasPathPairs
-                UnicodeString *aliasRelativePathCopy = new UnicodeString(aliasRelativePath);
-                if (aliasRelativePathCopy == NULL) {
-                    errorCode = U_MEMORY_ALLOCATION_ERROR;
-                    return;
-                }
-                aliasPathPairs.addElement(aliasRelativePathCopy, errorCode);
-                if (U_FAILURE(errorCode)) {
-                    delete aliasRelativePathCopy;
-                    return;
-                }
-                UnicodeString *pathCopy = new UnicodeString(path);
-                if (pathCopy == NULL) {
-                    errorCode = U_MEMORY_ALLOCATION_ERROR;
-                    return;
-                }
-                aliasPathPairs.addElement(pathCopy, errorCode);
-                if (U_FAILURE(errorCode)) {
-                    delete pathCopy;
-                    return;
-                }
+                LocalPointer<UnicodeString> aliasRelativePathCopy(new UnicodeString(aliasRelativePath), errorCode);
+                aliasPathPairs.addElement(aliasRelativePathCopy.getAlias(), errorCode);
+                if (U_FAILURE(errorCode)) { return; }
+                // Only release ownership after aliasPathPairs takes it (no error happened):
+                aliasRelativePathCopy.orphan();
+                LocalPointer<UnicodeString> pathCopy(new UnicodeString(path), errorCode);
+                aliasPathPairs.addElement(pathCopy.getAlias(), errorCode);
+                if (U_FAILURE(errorCode)) { return; }
+                // Only release ownership after aliasPathPairs takes it (no error happened):
+                pathCopy.orphan();
 
                 // Drop the latest key on the path and continue
                 path.retainBetween(0, pathLength);
@@ -1816,18 +1753,11 @@ struct CalendarDataSink : public ResourceSink {
                 // We are on a leaf, store the array
                 ResourceArray rDataArray = value.getArray(errorCode);
                 int32_t dataArraySize = rDataArray.getSize();
-                UnicodeString *dataArray = new UnicodeString[dataArraySize];
-                if (dataArray == NULL) {
-                    errorCode = U_MEMORY_ALLOCATION_ERROR;
-                    return;
-                }
-                value.getStringArray(dataArray, dataArraySize, errorCode);
-                arrays.put(path, dataArray, errorCode);
+                LocalArray<UnicodeString> dataArray(new UnicodeString[dataArraySize], errorCode);
+                value.getStringArray(dataArray.getAlias(), dataArraySize, errorCode);
+                arrays.put(path, dataArray.orphan(), errorCode);
                 arraySizes.puti(path, dataArraySize, errorCode);
-                if (U_FAILURE(errorCode)) {
-                    delete[] dataArray;
-                    return;
-                }
+                if (U_FAILURE(errorCode)) { return; }
             } else if (value.getType() == URES_TABLE) {
                 // We are not on a leaf, recursively process the subtable.
                 processResource(path, key, value, errorCode);
@@ -1892,9 +1822,6 @@ struct CalendarDataSink : public ResourceSink {
 CalendarDataSink::~CalendarDataSink() {
     arrays.setValueDeleter(deleteUObjectArray);
     maps.setValueDeleter(uprv_deleteUObject);
-    if (resourcesToVisit != NULL) {
-        delete resourcesToVisit;
-    }
 }
 }
 
