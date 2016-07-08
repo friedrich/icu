@@ -1515,8 +1515,7 @@ struct CalendarDataSink : public ResourceSink {
         mapRefs(uprv_deleteUObject, NULL, 10, status),
         aliasPathPairs(uprv_deleteUObject, uhash_compareUnicodeString, status),
         currentCalendarType(), nextCalendarType(),
-        resourcesToVisit(NULL), aliasRelativePath()
-    {
+        resourcesToVisit(NULL), aliasRelativePath() {
         if (U_FAILURE(status)) { return; }
     }
     virtual ~CalendarDataSink();
@@ -1550,7 +1549,7 @@ struct CalendarDataSink : public ResourceSink {
             AliasType aliasType = processAliasFromValue(keyUString, value, errorCode);
             if (U_FAILURE(errorCode)) { return; }
             if (aliasType == GREGORIAN) {
-                // Ignore aliases to the gregorian calendar, all of its resources will be loaded anyways.
+                // Ignore aliases to the gregorian calendar, all of its resources will be loaded anyway.
                 continue;
 
             } else if (aliasType == DIFFERENT_CALENDAR) {
@@ -1558,7 +1557,8 @@ struct CalendarDataSink : public ResourceSink {
                 // calendar type it's pointing to
                 if (resourcesToVisitNext.isNull()) {
                     resourcesToVisitNext
-                        .adoptInsteadAndCheckErrorCode(new UVector(uprv_deleteUObject, uhash_compareUnicodeString, errorCode), errorCode);
+                        .adoptInsteadAndCheckErrorCode(new UVector(uprv_deleteUObject, uhash_compareUnicodeString, errorCode),
+                                                       errorCode);
                     if (U_FAILURE(errorCode)) { return; }
                 }
                 LocalPointer<UnicodeString> aliasRelativePathCopy(new UnicodeString(aliasRelativePath), errorCode);
@@ -2100,11 +2100,10 @@ DateFormatSymbols::initializeData(const Locale& locale, const char *type, UError
     // Iterate over the resource bundle data following the fallbacks through different calendar types
     UnicodeString calendarType((type != NULL && *type != '\0')? type : gGregorianTag, -1, US_INV);
     while (!calendarType.isBogus()) {
-        CharString calendarTypeBuffer;
-        calendarTypeBuffer.appendInvariantChars(calendarType, status);
-        if (U_FAILURE(status)) { return; }
-        const char *calendarTypeCArray = calendarTypeBuffer.data();
-        //TODO(fabalbon): use UnicodeStirng.exctract(..., US_INV)
+        int32_t calendarTypeSize = calendarType.length();
+        char calendarTypeCArray[calendarTypeSize + 1];
+        calendarType.extract(0, calendarTypeSize, calendarTypeCArray, calendarTypeSize, US_INV);
+        calendarTypeCArray[calendarTypeSize] = '\0';
 
         // Enumerate this calendar type. If the calendar is not found fallback to gregorian
         UErrorCode oldStatus = status;
@@ -2467,7 +2466,6 @@ DateFormatSymbols::initializeData(const Locale& locale, const char *type, UError
     }
 
     // Close resources
-    //TODO(fabalbon): Should we keep the resource bundle open throughout the lifetime of the DateFormatSymbols object?
     ures_close(cb);
     ures_close(rb);
 }
