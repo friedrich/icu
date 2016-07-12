@@ -1826,13 +1826,13 @@ struct CalendarDataSink : public ResourceSink {
     }
 
     // Deleter function to be used by 'arrays'
-    static void deleteUObjectArray(void *uArray) {
-        delete[] static_cast<UObject *>(uArray);
+    static void deleteUnicodeStringArray(void *uArray) {
+        delete[] static_cast<UnicodeString *>(uArray);
     }
 };
 // Virtual destructors have to be defined out of line
 CalendarDataSink::~CalendarDataSink() {
-    arrays.setValueDeleter(deleteUObjectArray);
+    arrays.setValueDeleter(deleteUnicodeStringArray);
 }
 }
 
