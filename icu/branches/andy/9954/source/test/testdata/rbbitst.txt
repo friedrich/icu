@@ -12,7 +12,9 @@
 #   <sent>    any following data is for sentence break testing
 #   <line>    any following data is for line break testing
 #   <char>    any following data is for char break testing
-#   <locale local_name>  Switch to the named locale at the next occurence of <word>, <sent>, etc.
+#   <rules> rules ... </rules>  following data is tested against these rules.
+#                               Applies until a following occurence of <word>, <sent>, etc. or another <rules>
+#   <locale locale_name>  Switch to the named locale at the next occurence of <word>, <sent>, etc.
 #   <data> ... </data>   test data.  May span multiple lines.
 #      <>        Break position, status == 0
 #      •         Break position, status == 0   (Bullet, \u2022)
@@ -38,7 +40,6 @@
 #<data>•日本語<400>を<400>勉強<400>する<400>理由<400>について<400>　•て<400>こと<400>は<400>我<400>でも<400>知<400>ら<400>も<400>い<400>こと<400>なん<400>だ<400>。•</data>
 
 <data>•　•て<400></data>
-
 
 ## FILTERED BREAK TESTS
 
@@ -1072,3 +1073,20 @@ Bangkok)•</data>
 <line>
 #     •brk OK before 3063               •no brk before 301C •brk OK btw 2026   •no brk before FF01•
 <data>•\u3084•\u3063•\u3071•\u308A\u0020•\u0031\u301C\u0020•\u2026•\u2026\u0020•u30A2\uFF01\u0020•</data>
+
+
+####################################################################################
+#
+#  Test rule status values
+#
+####################################################################################
+<rules> $Letters = [:L:];
+    $Numbers = [:N:];
+    $Letters+{1};
+    $Numbers+{2}; 
+    Help\ me\!{4};
+    [^$Letters $Numbers];
+    !.*;
+</rules>
+<data>•abc<1>123<2>.•.•abc<1> •Help<1> •me<1> •Help me!<4></data>
+

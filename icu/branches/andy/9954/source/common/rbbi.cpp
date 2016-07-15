@@ -1317,57 +1317,14 @@ void RuleBasedBreakIterator::checkDictionary(int32_t startPos, int32_t endPos,
     UVector32   &breaks = *fDictionaryCache->fBreaks;
     int32_t     foundBreakCount = 0;
 
-    // Is the character we're starting on a dictionary character? If so, we
-    // need to back up to include the entire run; otherwise the results of
-    // the break algorithm will differ depending on where we start. Since
-    // the result is cached and there is typically a non-dictionary break
-    // within a small number of words, there should be little performance impact.
-
-    utext_setNativeIndex(fText, endPos);
-    UChar32     c = utext_current32(fText);
-    UTRIE_GET16(&fData->fTrie, c, category);
-    if (category & 0x4000) {
-        do {
-            utext_next32(fText);          // TODO:  recast to work directly with postincrement.
-            c = utext_current32(fText);
-            UTRIE_GET16(&fData->fTrie, c, category);
-        } while (c != U_SENTINEL && (category & 0x4000));
-        // Back up to the last dictionary character
-        rangeEnd = (int32_t)UTEXT_GETNATIVEINDEX(fText);
-        c = UTEXT_PREVIOUS32(fText);
-    }
-
-    utext_setNativeIndex(fText, startPos);
-    c = utext_current32(fText);
-    UTRIE_GET16(&fData->fTrie, c, category);
-    if (category & 0x4000) {
-        do {
-            c = UTEXT_PREVIOUS32(fText);
-            UTRIE_GET16(&fData->fTrie, c, category);
-        }
-        while (c != U_SENTINEL && (category & 0x4000));
-        // Back up to the last dictionary character
-        if (c == U_SENTINEL) {
-            // c = fText->first32();
-            c = utext_current32(fText);
-        }
-        else {
-            utext_next32(fText);
-            c = utext_current32(fText);
-        }
-        rangeStart = (int32_t)UTEXT_GETNATIVEINDEX(fText);
-    }
-
-    //printf("startPos, endPos = (%d, %d)\n", startPos, endPos);
-    //printf("rangeStart, rangeEnd = (%d, %d)\n", rangeStart, rangeEnd);
-
     // Loop through the text, looking for ranges of dictionary characters.
     // For each span, find the appropriate break engine, and ask it to find
     // any breaks within the span.
     // Note: we always do this in the forward direction, so that the break
     // cache is built in the right order.
+
     utext_setNativeIndex(fText, rangeStart);
-    c = utext_current32(fText);
+    UChar32     c = utext_current32(fText);
     UTRIE_GET16(&fData->fTrie, c, category);
 
     while(U_SUCCESS(status)) {

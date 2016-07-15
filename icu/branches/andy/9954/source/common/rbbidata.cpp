@@ -129,6 +129,14 @@ void RBBIDataWrapper::init(const RBBIDataHeader *data, UErrorCode &status) {
         fSafeRevTable = (RBBIStateTable *)((char *)data + fHeader->fSRTable);
     }
 
+    // Rule Compatibility Hacks
+    //    If a rule set includes reverse rules but does not explicitly include safe reverse rules,
+    //    the reverse rules are to be treated as safe reverse rules.
+
+    if (fSafeRevTable == NULL && fReverseTable != NULL) {
+        fSafeRevTable = fReverseTable;
+        fReverseTable = NULL;
+    }
 
     utrie_unserialize(&fTrie,
                        (uint8_t *)data + fHeader->fTrie,

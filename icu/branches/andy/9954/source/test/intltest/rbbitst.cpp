@@ -71,7 +71,6 @@ void RBBITest::runIndexedTest( int32_t index, UBool exec, const char* &name, cha
 #if !UCONFIG_NO_FILE_IO
     TESTCASE_AUTO(TestBug4153072);
 #endif
-    TESTCASE_AUTO(TestStatusReturn);
 #if !UCONFIG_NO_FILE_IO
     TESTCASE_AUTO(TestUnicodeFiles);
     TESTCASE_AUTO(TestEmptyString);
@@ -257,51 +256,6 @@ RBBITest::RBBITest() {
 
 
 RBBITest::~RBBITest() {
-}
-
-//-----------------------------------------------------------------------------------
-//
-//   Test for status {tag} return value from break rules.
-//        TODO:  a more thorough test.
-//
-//-----------------------------------------------------------------------------------
-void RBBITest::TestStatusReturn() {
-     UnicodeString rulesString1("$Letters = [:L:];\n"
-                                  "$Numbers = [:N:];\n"
-                                  "$Letters+{1};\n"
-                                  "$Numbers+{2};\n"
-                                  "Help\\ /me\\!{4};\n"
-                                  "[^$Letters $Numbers];\n"
-                                  "!.*;\n", -1, US_INV);
-     UnicodeString testString1  = "abc123..abc Help me Help me!";
-                                // 01234567890123456789012345678
-     int32_t bounds1[]   = {0, 3, 6, 7, 8, 11, 12, 16, 17, 19, 20, 25, 27, 28, -1};
-     int32_t brkStatus[] = {0, 1, 2, 0, 0,  1,  0,  1,  0,  1,  0,  4,  1,  0, -1};
-
-     UErrorCode status=U_ZERO_ERROR;
-     UParseError    parseError;
-
-     LocalPointer <BreakIterator> bi(new RuleBasedBreakIterator(rulesString1, parseError, status));
-     if(U_FAILURE(status)) {
-         dataerrln("%s:%d error in break iterator construction - %s", __FILE__, __LINE__,  u_errorName(status));
-         return;
-     }
-     int32_t  pos;
-     int32_t  i = 0;
-     bi->setText(testString1);
-     for (pos=bi->first(); pos!= BreakIterator::DONE; pos=bi->next()) {
-         if (pos != bounds1[i]) {
-             errln("%s:%d  expected break at %d, got %d\n", __FILE__, __LINE__, bounds1[i], pos);
-             break;
-         }
-
-         int tag = bi->getRuleStatus();
-         if (tag != brkStatus[i]) {
-             errln("%s:%d  break at %d, expected tag %d, got tag %d\n", __FILE__, __LINE__, pos, brkStatus[i], tag);
-             break;
-         }
-         i++;
-     }
 }
 
 
@@ -1124,14 +1078,12 @@ void RBBITest::TestExtended() {
     UErrorCode      status  = U_ZERO_ERROR;
     Locale          locale("");
 
-    UnicodeString       rules;
     TestParams          tp(status);
 
     RegexMatcher      localeMatcher(UNICODE_STRING_SIMPLE("<locale *([\\p{L}\\p{Nd}_@&=-]*) *>"), 0, status);
     if (U_FAILURE(status)) {
         dataerrln("Failure in file %s, line %d, status = \"%s\"", __FILE__, __LINE__, u_errorName(status));
     }
-
 
     //
     //  Open and read the test data file.
@@ -1163,7 +1115,8 @@ void RBBITest::TestExtended() {
         PARSE_COMMENT,
         PARSE_TAG,
         PARSE_DATA,
-        PARSE_NUM
+        PARSE_NUM,
+        PARSE_RULES
     }
     parseState = PARSE_TAG;
 
@@ -1172,7 +1125,6 @@ void RBBITest::TestExtended() {
     static const UChar CH_LF        = 0x0a;
     static const UChar CH_CR        = 0x0d;
     static const UChar CH_HASH      = 0x23;
-    /*static const UChar CH_PERIOD    = 0x2e;*/
     static const UChar CH_LT        = 0x3c;
     static const UChar CH_GT        = 0x3e;
     static const UChar CH_BACKSLASH = 0x5c;
@@ -1184,6 +1136,9 @@ void RBBITest::TestExtended() {
     int32_t    charIdx  = 0;
 
     int32_t    tagValue = 0;       // The numeric value of a <nnn> tag.
+
+    UnicodeString       rules;           // Holds rules from a <rules> ... </rules> block
+    int32_t             rulesFirstLine;  // Line number of the start of current <rules> block
 
     for (charIdx = 0; charIdx < len; ) {
         status = U_ZERO_ERROR;
@@ -1252,6 +1207,14 @@ void RBBITest::TestExtended() {
                 break;
             }
 
+            if (testString.compare(charIdx-1, 7, "<rules>") == 0) {
+                charIdx += 6;
+                parseState = PARSE_RULES;
+                rules.remove();
+                rulesFirstLine = lineNum;
+                break;
+            }
+
             // <locale  loc_name>
             localeMatcher.reset(testString);
             if (localeMatcher.lookingAt(charIdx-1, status)) {
@@ -1278,6 +1241,23 @@ void RBBITest::TestExtended() {
             savedState = PARSE_DATA;
             goto end_test; // Stop the test.
             }
+            break;
+
+        case PARSE_RULES:
+            if (testString.compare(charIdx-1, 8, "</rules>") == 0) {
+                charIdx += 7;
+                parseState = PARSE_TAG;
+                delete tp.bi;
+                UParseError pe;
+                tp.bi = new RuleBasedBreakIterator(rules, pe, status);
+                skipTest = U_FAILURE(status);
+                if (U_FAILURE(status)) {
+                    errln("file rbbitst.txt: %d - Error %s creating break iterator from rules.",
+                        rulesFirstLine + pe.line - 1, u_errorName(status));
+                }
+                break;
+            }
+            rules.append(c);
             break;
 
         case PARSE_DATA:
@@ -1354,7 +1334,6 @@ void RBBITest::TestExtended() {
                 }
                 break;
             }
-
 
 
 
@@ -1471,13 +1450,25 @@ void RBBITest::TestExtended() {
 
 
         if (U_FAILURE(status)) {
-            dataerrln("ICU Error %s while parsing test file at line %d.",
+            errln("ICU Error %s while parsing test file at line %d.",
                 u_errorName(status), lineNum);
             status = U_ZERO_ERROR;
             goto end_test; // Stop the test
         }
 
     }
+
+    // Reached end of test file. Raise an error if parseState indicates that we are
+    //   within a block that should have been terminated.
+
+    if (parseState == PARSE_RULES) {
+        errln("rbbitst.txt:%d <rules> block beginning at line %d is not closed.",
+            lineNum, rulesFirstLine);
+    }
+    if (parseState == PARSE_DATA) {
+        errln("rbbitst.txt:%d <data> block not closed.", lineNum);
+    }
+
 
 end_test:
     delete [] testFile;
