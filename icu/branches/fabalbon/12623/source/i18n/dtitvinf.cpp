@@ -350,7 +350,7 @@ struct DateIntervalInfo::DateIntervalSink : public ResourceSink {
     void setIntervalPatternIfAbsent(const char *currentSkeleton, UCalendarDateFields lrgDiffCalUnit,
                                     const ResourceValue &value, UErrorCode &errorCode) {
         // Check if the pattern has already been stored on the data structure
-        DateIntervalInfo::IntervalPatternIndex index =
+        IntervalPatternIndex index =
             dateIntervalInfo.calendarFieldToIntervalIndex(lrgDiffCalUnit, errorCode);
         if (U_FAILURE(errorCode)) { return; }
 
