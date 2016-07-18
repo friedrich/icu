@@ -225,7 +225,7 @@ static const UChar PATH_SUFFIX[] = {SOLIDUS, LOW_I, LOW_N, LOW_T, LOW_E, LOW_R, 
 /**
  * Sink for enumerating all of the date interval skeletons.
  */
-struct DateIntervalSink : public ResourceSink {
+struct DateIntervalInfo::DateIntervalSink : public ResourceSink {
 
     // Output data
     DateIntervalInfo &dateIntervalInfo;
@@ -375,7 +375,7 @@ struct DateIntervalSink : public ResourceSink {
 };
 
 // Virtual destructors must be defined out of line.
-DateIntervalSink::~DateIntervalSink() {}
+DateIntervalInfo::DateIntervalSink::~DateIntervalSink() {}
 
 
 
