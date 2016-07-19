@@ -468,12 +468,70 @@ RelativeDateFormat::initCapitalizationContextInfo(const Locale& thelocale)
 #endif
 }
 
+namespace {
+
+/**
+ * Sink for getting data from fields/day/relative data.
+ * For loading relative day names, e.g., "yesterday", "today".
+ */
+
+struct RelDateFmtDataSink : public ResourceSink {
+  URelativeString *fDatesPtr;
+  int32_t fDatesLen;
+
+  RelDateFmtDataSink(URelativeString* fDates, int len) : fDatesPtr(fDates) {
+    fDatesLen = len;
+    for (int32_t i = 0; i < len; ++i) {
+      fDatesPtr[i].offset = 0;
+      fDatesPtr[i].string = NULL;
+      fDatesPtr[i].len = -1;
+    }
+  }
+
+  virtual ~RelDateFmtDataSink();
+
+  virtual void put(const char *key, ResourceValue &value,
+                   UBool /*noFallback*/, UErrorCode &errorCode) {
+      ResourceTable relDayTable = value.getTable(errorCode);
+      int32_t n = 0;
+      int32_t len = 0;
+      for (int32_t i = 0; relDayTable.getKeyAndValue(i, key, value); ++i) {
+        // Find the relative offset.
+        int32_t offset = atoi(key);
+
+        bool alreadySet = false;
+        n = 0;
+        while (!alreadySet && n < fDatesLen && fDatesPtr[n].string != NULL) {
+          if (fDatesPtr[n].offset == offset) {
+            alreadySet = true;
+          }
+          n++;
+        }
+        // Don't override existing data.
+        if (!alreadySet && n < fDatesLen) {
+          // Not found and n is an empty slot.
+          fDatesPtr[n].offset = offset;
+          fDatesPtr[n].string = value.getString(len, errorCode);
+          fDatesPtr[n].len = len;
+        }
+      }
+  }
+
+};
+
+
+// Virtual destructors must be defined out of line.
+RelDateFmtDataSink::~RelDateFmtDataSink() {};
+
+}  // Namespace
+
+
 static const UChar patItem1[] = {0x7B,0x31,0x7D}; // "{1}"
 static const int32_t patItem1Len = 3;
 
 void RelativeDateFormat::loadDates(UErrorCode &status) {
     CalendarData calData(fLocale, "gregorian", status);
-    
+
     UErrorCode tempStatus = status;
     UResourceBundle *dateTimePatterns = calData.getByKey(DT_DateTimePatternsTag, tempStatus);
     if(U_SUCCESS(tempStatus)) {
@@ -515,12 +573,13 @@ void RelativeDateFormat::loadDates(UErrorCode &status) {
     }
 
     UResourceBundle *rb = ures_open(NULL, fLocale.getBaseName(), &status);
-    rb = ures_getByKeyWithFallback(rb, "fields", rb, &status);
-    rb = ures_getByKeyWithFallback(rb, "day", rb, &status);
-    rb = ures_getByKeyWithFallback(rb, "relative", rb, &status);
-    // set up min/max 
-    fDayMin=-1;
-    fDayMax=1;
+
+    // New data loading.
+    fDatesLen = 5; // Maximum - this should be a constant.
+    fDates = (URelativeString*) uprv_malloc(sizeof(fDates[0])*fDatesLen);
+
+    RelDateFmtDataSink sink(fDates, fDatesLen);
+    ures_getAllItemsWithFallback(rb, "fields/day/relative", sink, status);
 
     if(U_FAILURE(status)) {
         fDatesLen=0;
@@ -528,50 +587,17 @@ void RelativeDateFormat::loadDates(UErrorCode &status) {
         return;
     }
 
-    fDatesLen = ures_getSize(rb);
-    fDates = (URelativeString*) uprv_malloc(sizeof(fDates[0])*fDatesLen);
-
-    // Load in each item into the array...
-    int n = 0;
-
-    UResourceBundle *subString = NULL;
-    
-    while(ures_hasNext(rb) && U_SUCCESS(status)) {  // iterate over items
-        subString = ures_getNextResource(rb, subString, &status);
-        
-        if(U_FAILURE(status) || (subString==NULL)) break;
-        
-        // key = offset #
-        const char *key = ures_getKey(subString);
-        
-        // load the string and length
-        int32_t aLen;
-        const UChar* aString = ures_getString(subString, &aLen, &status);
-        
-        if(U_FAILURE(status) || aString == NULL) break;
-
-        // calculate the offset
-        int32_t offset = atoi(key);
-        
-        // set min/max
-        if(offset < fDayMin) {
-            fDayMin = offset;
-        }
-        if(offset > fDayMax) {
-            fDayMax = offset;
-        }
-        
-        // copy the string pointer
-        fDates[n].offset = offset;
-        fDates[n].string = aString;
-        fDates[n].len = aLen; 
-
-        n++;
+    // Set up fDayMin and fDayMax.
+    fDayMin = fDayMax = fDates[0].offset;
+    for (int32_t i = 0; i < fDatesLen; ++i) {
+      if (fDates[i].offset < fDayMin) {
+        fDayMin = fDates[i].offset;
+      }
+      if (fDates[i].offset > fDayMax) {
+        fDayMax = fDates[i].offset;
+      }
     }
-    ures_close(subString);
-    ures_close(rb);
-    
-    // the fDates[] array could be sorted here, for direct access.
+
 }
 
 //----------------------------------------------------------------------
@@ -610,4 +636,3 @@ int32_t RelativeDateFormat::dayDifference(Calendar &cal, UErrorCode &status) {
 U_NAMESPACE_END
 
 #endif
-
