@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 * Copyright (C) 1999-2016, International Business Machines
@@ -510,15 +512,6 @@ U_NAMESPACE_END
 U_CFUNC void
 ures_getAllTableItems(const ResourceData *pResData, Resource table,
                       icu::ResourceDataValue &value, icu::ResourceTableSink &sink,
-                      UErrorCode &errorCode);
-
-/**
- * @param value will be set during enumeration; input contents is ignored
- * @param sink receives all array item values
- */
-U_CFUNC void
-ures_getAllArrayItems(const ResourceData *pResData, Resource array,
-                      icu::ResourceDataValue &value, icu::ResourceArraySink &sink,
                       UErrorCode &errorCode);
 
 #endif  /* __cplusplus */

@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 * Copyright (C) 2007-2015, International Business Machines Corporation and    *
@@ -831,7 +833,7 @@ TimeZoneFormatTest::TestParse(void) {
             delete tz;
         } else {
             if (DATA[i].expected) {
-                errln((UnicodeString)"Fail: Parse failure - expected: " + DATA[i].expected);
+                errMsg = (UnicodeString)"Parse failure - expected: " + DATA[i].expected;
             }
         }
         if (errMsg.length() > 0) {

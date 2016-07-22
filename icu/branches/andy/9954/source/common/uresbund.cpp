@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 * Copyright (C) 1997-2016, International Business Machines Corporation and
@@ -1888,7 +1890,7 @@ namespace {
 void getAllItemsWithFallback(
         const UResourceBundle *bundle, ResourceDataValue &value,
         ResourceSink *sink,
-        ResourceArraySink *arraySink, ResourceTableSink *tableSink,
+        ResourceTableSink *tableSink,
         UErrorCode &errorCode) {
     if (U_FAILURE(errorCode)) { return; }
     // We recursively enumerate child-first,
@@ -1910,13 +1912,10 @@ void getAllItemsWithFallback(
         value.setResource(bundle->fRes);
         sink->put(bundle->fKey, value, !hasParent, errorCode);
     } else {
-        expectedType = arraySink != NULL ? URES_ARRAY : URES_TABLE;
+        expectedType = URES_TABLE;
         if (ures_getType(bundle) == expectedType) {
-            if (arraySink != NULL) {
-                ures_getAllArrayItems(&bundle->fResData, bundle->fRes, value, *arraySink, errorCode);
-            } else /* tableSink != NULL */ {
-                ures_getAllTableItems(&bundle->fResData, bundle->fRes, value, *tableSink, errorCode);
-            }
+            //tableSink != NULL
+            ures_getAllTableItems(&bundle->fResData, bundle->fRes, value, *tableSink, errorCode);
         }
     }
     if (hasParent) {
@@ -1953,7 +1952,7 @@ void getAllItemsWithFallback(
                                            &containerBundle, &pathErrorCode);
         }
         if (U_SUCCESS(pathErrorCode) && (expectedType == URES_NONE || ures_getType(rb) == expectedType)) {
-            getAllItemsWithFallback(rb, value, sink, arraySink, tableSink, errorCode);
+            getAllItemsWithFallback(rb, value, sink, tableSink, errorCode);
         }
         ures_close(&containerBundle);
         ures_close(&parentBundle);
@@ -1963,7 +1962,7 @@ void getAllItemsWithFallback(
 void getAllItemsWithFallback(
         const UResourceBundle *bundle, const char *path,
         ResourceSink *sink,
-        ResourceArraySink *arraySink, ResourceTableSink *tableSink,
+        ResourceTableSink *tableSink,
         UErrorCode &errorCode) {
     if (U_FAILURE(errorCode)) { return; }
     if (path == NULL) {
@@ -1984,7 +1983,7 @@ void getAllItemsWithFallback(
         }
     }
     if (sink == NULL) {
-        UResType expectedType = arraySink != NULL ? URES_ARRAY : URES_TABLE;
+        UResType expectedType = URES_TABLE;
         if (ures_getType(rb) != expectedType) {
             errorCode = U_RESOURCE_TYPE_MISMATCH;
             ures_close(&stackBundle);
@@ -1993,7 +1992,7 @@ void getAllItemsWithFallback(
     }
     // Get all table items with fallback.
     ResourceDataValue value;
-    getAllItemsWithFallback(rb, value, sink, arraySink, tableSink, errorCode);
+    getAllItemsWithFallback(rb, value, sink, tableSink, errorCode);
     ures_close(&stackBundle);
 }
 
@@ -2002,19 +2001,13 @@ void getAllItemsWithFallback(
 U_CAPI void U_EXPORT2
 ures_getAllItemsWithFallback(const UResourceBundle *bundle, const char *path,
                              icu::ResourceSink &sink, UErrorCode &errorCode) {
-    getAllItemsWithFallback(bundle, path, &sink, NULL, NULL, errorCode);
-}
-
-U_CAPI void U_EXPORT2
-ures_getAllArrayItemsWithFallback(const UResourceBundle *bundle, const char *path,
-                                  ResourceArraySink &sink, UErrorCode &errorCode) {
-    getAllItemsWithFallback(bundle, path, NULL, &sink, NULL, errorCode);
+    getAllItemsWithFallback(bundle, path, &sink, NULL, errorCode);
 }
 
 U_CAPI void U_EXPORT2
 ures_getAllTableItemsWithFallback(const UResourceBundle *bundle, const char *path,
                                   ResourceTableSink &sink, UErrorCode &errorCode) {
-    getAllItemsWithFallback(bundle, path, NULL, NULL, &sink, errorCode);
+    getAllItemsWithFallback(bundle, path, NULL, &sink, errorCode);
 }
 
 U_CAPI UResourceBundle* U_EXPORT2 ures_getByKey(const UResourceBundle *resB, const char* inKey, UResourceBundle *fillIn, UErrorCode *status) {

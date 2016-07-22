@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
 *   Copyright (C) 2000-2016, International Business Machines
@@ -227,10 +229,6 @@ ures_getStringByKeyWithFallback(const UResourceBundle *resB,
 U_CAPI void U_EXPORT2
 ures_getAllItemsWithFallback(const UResourceBundle *bundle, const char *path,
                              icu::ResourceSink &sink, UErrorCode &errorCode);
-
-U_CAPI void U_EXPORT2
-ures_getAllArrayItemsWithFallback(const UResourceBundle *bundle, const char *path,
-                                  icu::ResourceArraySink &sink, UErrorCode &errorCode);
 
 U_CAPI void U_EXPORT2
 ures_getAllTableItemsWithFallback(const UResourceBundle *bundle, const char *path,

@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 //
 //  file:  rbbistbl.cpp    Implementation of the ICU RBBISymbolTable class
 //
@@ -254,7 +256,7 @@ void RBBISymbolTable::rbbiSymtablePrint() const {
         }
         RBBISymbolTableEntry  *s   = (RBBISymbolTableEntry *)e->value.pointer;
         RBBI_DEBUG_printUnicodeString(s->key);
-        s->val->fLeftChild->printTree(TRUE);
+        RBBINode::printTree(s->val->fLeftChild, TRUE);
         RBBIDebugPrintf("\n");
     }
 }

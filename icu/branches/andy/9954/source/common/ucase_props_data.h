@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
  * Copyright (C) 1999-2016, International Business Machines
  * Corporation and others.  All Rights Reserved.
@@ -662,7 +664,7 @@ static const uint16_t ucase_props_trieIndex[11520]={
 0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,
 0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,0xf009,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-4,4,4,4,4,4,4,0,0,0,0,0,4,4,0,0x64,
+4,4,4,4,4,4,4,0,4,4,4,4,4,4,0,0x64,
 4,4,4,4,4,4,4,4,0,0,4,4,4,4,4,4,
 4,0,4,4,0,4,4,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0x64,0x64,0x64,0x64,0x64,0,0,0,

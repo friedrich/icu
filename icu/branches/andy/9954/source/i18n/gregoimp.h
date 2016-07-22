@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
  **********************************************************************
  * Copyright (c) 2003-2008, International Business Machines
@@ -315,34 +317,6 @@ public:
      * @internal
      */
     UResourceBundle* getByKey(const char *key, UErrorCode& status);
-
-    /**
-     * Load data for calendar. Note, this object owns the resources, do NOT call ures_close()!
-     * There is an implicit key of 'format'
-     * data is located in:   "calendar/key/format/subKey"
-     * for example,  calendar/dayNames/format/abbreviated
-     * The ResourceBundle C++ API should NOT be used because it is too slow for a low level API.
-     *
-     * @param key Resource key to data
-     * @param subKey Resource key to data
-     * @param status Error Status
-     * @internal
-     */
-    UResourceBundle* getByKey2(const char *key, const char *subKey, UErrorCode& status);
-
-    /**
-     * Load data for calendar. Note, this object owns the resources, do NOT call ures_close()!
-     * data is located in:   "calendar/key/contextKey/subKey"
-     * for example,  calendar/dayNames/standalone/narrow
-     * The ResourceBundle C++ API should NOT be used because it is too slow for a low level API.
-     *
-     * @param key Resource key to data
-     * @param contextKey Resource key to data
-     * @param subKey Resource key to data
-     * @param status Error Status
-     * @internal
-     */
-    UResourceBundle* getByKey3(const char *key, const char *contextKey, const char *subKey, UErrorCode& status);
 
     ~CalendarData();
 

@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
 *   Copyright (C) 2013, International Business Machines
@@ -38,6 +40,7 @@ class U_I18N_API ScriptSet: public UMemory {
     ~ScriptSet();
 
     UBool operator == (const ScriptSet &other) const;
+    UBool operator != (const ScriptSet &other) const {return !(*this == other);};
     ScriptSet & operator = (const ScriptSet &other);
 
     UBool      test(UScriptCode script, UErrorCode &status) const;

@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 * Copyright (C) 2007-2016, International Business Machines Corporation and
@@ -534,8 +536,10 @@ private:
 
     void initData(const Locale &locale, UErrorCode &status);
     void addCanonicalItems(UErrorCode &status);
-    UnicodeString addICUPatterns(const Locale& locale, UErrorCode& status);
+    void addICUPatterns(const Locale& locale, UErrorCode& status);
     void hackTimes(const UnicodeString& hackPattern, UErrorCode& status);
+    void getCalendarTypeToUse(const Locale& locale, CharString& destination, UErrorCode& err);
+    void consumeShortTimePattern(const UnicodeString& shortTimePattern, UErrorCode& status);
     void addCLDRData(const Locale& locale, UErrorCode& status);
     UDateTimePatternConflict addPatternWithSkeleton(const UnicodeString& pattern, const UnicodeString * skeletonToUse, UBool override, UnicodeString& conflictingPattern, UErrorCode& status);
     void initHashtable(UErrorCode& status);
@@ -543,6 +547,7 @@ private:
     void setDecimalSymbols(const Locale& locale, UErrorCode& status);
     UDateTimePatternField getAppendFormatNumber(const char* field) const;
     UDateTimePatternField getAppendNameNumber(const char* field) const;
+    UnicodeString& getMutableAppendItemName(UDateTimePatternField field);
     void getAppendName(UDateTimePatternField field, UnicodeString& value);
     int32_t getCanonicalIndex(const UnicodeString& field);
     const UnicodeString* getBestRaw(DateTimeMatcher& source, int32_t includeMask, DistanceInfo* missingFields, const PtnSkeleton** specifiedSkeletonPtr = 0);
@@ -555,6 +560,10 @@ private:
     UBool isCanonicalItem(const UnicodeString& item) const;
     static void loadAllowedHourFormatsData(UErrorCode &status);
     void getAllowedHourFormats(const Locale &locale, UErrorCode &status);
+
+    struct AppendItemFormatsSink;
+    struct AppendItemNamesSink;
+    struct AvailableFormatsSink;
 } ;// end class DateTimePatternGenerator
 
 U_NAMESPACE_END

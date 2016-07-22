@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
 *   Copyright (C) 1998-2016, International Business Machines
@@ -1934,7 +1936,6 @@ public:
    * @draft ICU 56
    */
   void swap(UnicodeString &other) U_NOEXCEPT;
-#endif  /* U_HIDE_DRAFT_API */
 
   /**
    * Non-member UnicodeString swap function.
@@ -1946,6 +1947,7 @@ public:
   swap(UnicodeString &s1, UnicodeString &s2) U_NOEXCEPT {
     s1.swap(s2);
   }
+#endif  /* U_HIDE_DRAFT_API */
 
   /**
    * Assignment operator.  Replace the characters in this UnicodeString
