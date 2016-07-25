@@ -58,6 +58,33 @@ class RBBIDictCache: public UMemory {
 };
 
 
+static const int32_t CACHE_BLOCK_SIZE = 128;
+
+class RBBICacheBlock: public UMemory {
+  public:
+    
+    int32_t             fStartTextIdx;
+    int32_t             fEndTextIdx;
+    int32_t             fStartBlockIdx;
+    int32_t             fLimitBlockIdx;
+
+    RBBICacheBlock     *fNextBlock;
+    RBBICacheBlock     *fPrevBlock;
+
+    struct {
+        uint16_t            fBoundaryOffset;
+        uint16_t            fStatusOffset;
+    } data[CACHE_BLOCK_SIZE];
+};
+
+
+class RBBICache: public UObject {
+  public:
+
+};
+
+    
+
 U_NAMESPACE_END
 
 #endif // RBBI_DICT_CACHE_H

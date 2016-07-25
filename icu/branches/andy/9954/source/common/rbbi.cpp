@@ -923,7 +923,7 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
             // Note:  the 16 in UTRIE_GET16 refers to the size of the data being returned,
             //        not the size of the character going in, which is a UChar32.
             //
-            UTRIE_GET16(&fData->fTrie, c, category);
+            category = UTRIE2_GET16(fData->fTrie, c);
 
             // Check the dictionary bit in the character's category.
             //    Counter is only used by dictionary based iterators (subclasses).
@@ -1114,7 +1114,7 @@ int32_t RuleBasedBreakIterator::handlePrevious(const RBBIStateTable *statetable)
             //        not the size of the character going in, which is a UChar32.
             //
             //  And off the dictionary flag bit. For reverse iteration it is not used.
-            UTRIE_GET16(&fData->fTrie, c, category);
+            category = UTRIE2_GET16(fData->fTrie, c);
             category &= ~0x4000;
         }
 
@@ -1327,13 +1327,13 @@ void RuleBasedBreakIterator::checkDictionary(int32_t startPos, int32_t endPos,
 
     utext_setNativeIndex(fText, rangeStart);
     UChar32     c = utext_current32(fText);
-    UTRIE_GET16(&fData->fTrie, c, category);
+    category = UTRIE2_GET16(fData->fTrie, c);
 
     while(U_SUCCESS(status)) {
         while((current = (int32_t)UTEXT_GETNATIVEINDEX(fText)) < rangeEnd && (category & 0x4000) == 0) {
             utext_next32(fText);           // TODO:  tweak for post-increment operation
             c = utext_current32(fText);
-            UTRIE_GET16(&fData->fTrie, c, category);
+            category = UTRIE2_GET16(fData->fTrie, c);
         }
         if (current >= rangeEnd) {
             break;
@@ -1351,7 +1351,7 @@ void RuleBasedBreakIterator::checkDictionary(int32_t startPos, int32_t endPos,
 
         // Reload the loop variables for the next go-round
         c = utext_current32(fText);
-        UTRIE_GET16(&fData->fTrie, c, category);
+        category = UTRIE2_GET16(fData->fTrie, c);
     }
 
     utext_setNativeIndex(fText, initialTextPosition);

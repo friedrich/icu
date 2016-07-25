@@ -14,7 +14,7 @@
 #include "unicode/utypes.h"
 #include "rbbidata.h"
 #include "rbbirb.h"
-#include "utrie.h"
+#include "utrie2.h"
 #include "udatamem.h"
 #include "cmemory.h"
 #include "cstring.h"
@@ -22,23 +22,6 @@
 
 #include "uassert.h"
 
-
-//-----------------------------------------------------------------------------------
-//
-//   Trie access folding function.  Copied as-is from properties code in uchar.c
-//
-//-----------------------------------------------------------------------------------
-U_CDECL_BEGIN
-static int32_t U_CALLCONV
-getFoldingOffset(uint32_t data) {
-    /* if bit 15 is set, then the folding offset is in bits 14..0 of the 16-bit trie result */
-    if(data&0x8000) {
-        return (int32_t)(data&0x7fff);
-    } else {
-        return 0;
-    }
-}
-U_CDECL_END
 
 U_NAMESPACE_BEGIN
 
@@ -140,15 +123,14 @@ void RBBIDataWrapper::init(const RBBIDataHeader *data, UErrorCode &status) {
         fReverseTable = NULL;
     }
 
-    utrie_unserialize(&fTrie,
-                       (uint8_t *)data + fHeader->fTrie,
-                       fHeader->fTrieLen,
-                       &status);
+    fTrie = utrie2_openFromSerialized(UTRIE2_16_VALUE_BITS,
+                                      (uint8_t *)data + fHeader->fTrie,
+                                      fHeader->fTrieLen,
+                                      NULL,
+                                      &status);
     if (U_FAILURE(status)) {
         return;
     }
-    fTrie.getFoldingOffset=getFoldingOffset;
-
 
     fRuleSource   = (UChar *)((char *)data + fHeader->fRuleSource);
     fRuleString.setTo(TRUE, fRuleSource, -1);
@@ -459,7 +441,7 @@ ubrk_swap(const UDataSwapper *ds, const void *inData, int32_t length, void *outD
     }
 
     // Trie table for character categories
-    utrie_swap(ds, inBytes+ds->readUInt32(rbbiDH->fTrie), ds->readUInt32(rbbiDH->fTrieLen),
+    utrie2_swap(ds, inBytes+ds->readUInt32(rbbiDH->fTrie), ds->readUInt32(rbbiDH->fTrieLen),
                             outBytes+ds->readUInt32(rbbiDH->fTrie), status);
 
     // Source Rules Text.  It's UChar data

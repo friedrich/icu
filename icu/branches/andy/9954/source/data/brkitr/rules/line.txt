@@ -23,6 +23,7 @@
 #
 
 !!chain;
+!!quoted_literals_only;
 
 $AI = [:LineBreak =  Ambiguous:];
 $AL = [:LineBreak =  Alphabetic:];

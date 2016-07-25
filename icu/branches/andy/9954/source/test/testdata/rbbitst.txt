@@ -1092,3 +1092,30 @@ Bangkok)•</data>
 </rules>
 <data>•abc<1>123<2>.•.•abc<1> •Help<1> •me<1> •Help me!<4></data>
 
+# Test option to prohibit unquoted literals.
+
+<rules>
+!!forward;
+    Hello\ World;
+!!reverse;
+    .*;
+</rules>
+<data>•Hello World•</data>
+
+<badrules>
+!!quoted_literals_only;
+!!forward;
+    Hello\ World;
+!!reverse;
+    .*;
+</badrules>
+
+<rules>
+!!quoted_literals_only;
+!!forward;
+    'Hello World';
+!!reverse;
+    .*;
+</rules>
+<data>•Hello World•</data>
+

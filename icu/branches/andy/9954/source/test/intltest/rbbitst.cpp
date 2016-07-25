@@ -1137,7 +1137,7 @@ void RBBITest::TestExtended() {
     int32_t    column   = 0;
     int32_t    charIdx  = 0;
 
-    int32_t    tagValue = 0;       // The numeric value of a <nnn> tag.
+    int32_t    tagValue = 0;             // The numeric value of a <nnn> tag.
 
     UnicodeString       rules;           // Holds rules from a <rules> ... </rules> block
     int32_t             rulesFirstLine;  // Line number of the start of current <rules> block
@@ -1209,8 +1209,10 @@ void RBBITest::TestExtended() {
                 break;
             }
 
-            if (testString.compare(charIdx-1, 7, "<rules>") == 0) {
-                charIdx += 6;
+            if (testString.compare(charIdx-1, 7, "<rules>") == 0 ||
+                testString.compare(charIdx-1, 10, "<badrules>") == 0) {
+                /// charIdx += 6;
+                charIdx = testString.indexOf(0x3e, charIdx) + 1;  // 0x3e == '>'
                 parseState = PARSE_RULES;
                 rules.remove();
                 rulesFirstLine = lineNum;
@@ -1256,6 +1258,18 @@ void RBBITest::TestExtended() {
                 if (U_FAILURE(status)) {
                     errln("file rbbitst.txt: %d - Error %s creating break iterator from rules.",
                         rulesFirstLine + pe.line - 1, u_errorName(status));
+                }
+                break;
+            }
+            if (testString.compare(charIdx-1, 11, "</badrules>") == 0) {
+                charIdx += 10;
+                parseState = PARSE_TAG;
+                UErrorCode ec = U_ZERO_ERROR;
+                UParseError pe;
+                RuleBasedBreakIterator bi(rules, pe, ec);
+                if (U_SUCCESS(ec)) {
+                    errln("file rbbitst.txt: %d - Expected, but did not get, a failure creating break iterator from rules.",
+                        rulesFirstLine + pe.line - 1);
                 }
                 break;
             }
