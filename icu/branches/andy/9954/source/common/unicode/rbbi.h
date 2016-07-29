@@ -35,7 +35,6 @@
 U_NAMESPACE_BEGIN
 
 /** @internal */
-class  BreakCache;
 class  BreakIterator;
 class  LanguageBreakEngine;
 struct RBBIDataHeader;
@@ -101,6 +100,12 @@ private:
     int32_t             fLastRuleStatusIndex;
 
     /**
+     *   Cache of previously determined boundary positions.
+     */
+    class BreakCache;
+    BreakCache         *fBreakCache;
+
+    /**
      * Counter for the number of characters encountered with the "dictionary"
      *   flag set.
      * @internal
@@ -155,10 +160,10 @@ private:
     RuleBasedBreakIterator(RBBIDataHeader* data, UErrorCode &status);
 
 
+    /** @internal */
     friend class RBBIRuleBuilder;
     /** @internal */
     friend class BreakIterator;
-
 
 
 public:
@@ -681,6 +686,12 @@ private:
      * @internal
      */
     const LanguageBreakEngine *getLanguageBreakEngine(UChar32 c);
+
+
+    // Add boundaries to cache following the last already-cached position.
+    // Return TRUE if success, FALSE if startPos is at end of text, and no
+    //                         no boundaries can be added to the cache.
+    UBool populateCacheFollowing(int32_t startPos, UErrorCode &status);
 
     /**
      *  @internal

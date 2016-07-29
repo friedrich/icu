@@ -8,7 +8,7 @@
 
 #include "unicode/utypes.h"
 
-
+#include "unicode/rbbi.h"
 #include "unicode/uobject.h"
 
 #include "uvectr32.h"
@@ -57,33 +57,49 @@ class RBBIDictCache: public UMemory {
     int32_t             fOtherRuleStatusIndex;
 };
 
+static const int32_t CACHE_CHUNK_SIZE = 128;
 
-static const int32_t CACHE_BLOCK_SIZE = 128;
-
-class RBBICacheBlock: public UMemory {
+class RuleBasedBreakIterator::BreakCache: public UObject {
   public:
-    
-    int32_t             fStartTextIdx;
-    int32_t             fEndTextIdx;
-    int32_t             fStartBlockIdx;
-    int32_t             fLimitBlockIdx;
+                BreakCache(RuleBasedBreakIterator *bi, UErrorCode &status);
+    virtual     ~BreakCache();
+    void        reset(int32_t pos = 0, int32_t ruleStatus = 0);
+    int32_t     following(int32_t startPosition, int32_t *ruleStatusIndex, UErrorCode &stauts);
 
-    RBBICacheBlock     *fNextBlock;
-    RBBICacheBlock     *fPrevBlock;
+    void        addFollowing(int32_t previousPos, int32_t newPos, int32_t ruleStatus, UErrorCode &status);
 
-    struct {
-        uint16_t            fBoundaryOffset;
-        uint16_t            fStatusOffset;
-    } data[CACHE_BLOCK_SIZE];
+    // Add boundaries to the cache near the specified position.
+    // The given position need not be a boundary itself.
+    // Include a boundary at or preceding the position, and one
+    // following the position.
+    // Return FALSE if the given position is outside the bounds of the text.
+    UBool populateNear(int32_t position, UErrorCode &status);
+
+    UBool populateFollowing(UErrorCode &status);
+
+    UBool populatePreceding(UErrorCode &status);
+
+    /**
+     *  Set the cache position to the specified position, or, if the position
+     *  falls between to cached boundaries, to the preceding boundary.
+     *  Return TRUE if successful, FALSE if the specified position is after
+     *  the last cached boundary or before the first.
+     */
+    UBool                   seek(int32_t startPosition);
+
+    static int32_t          modChunkSize(int index);
+
+    RuleBasedBreakIterator *fBI;
+    int32_t                 fStartBufIdx;
+    int32_t                 fEndBufIdx;
+
+    int32_t                 fTextIdx;
+    int32_t                 fBufIdx;
+
+    int32_t                 fBoundaries[CACHE_CHUNK_SIZE];
+    uint16_t                fStatuses[CACHE_CHUNK_SIZE];
+
 };
-
-
-class RBBICache: public UObject {
-  public:
-
-};
-
-    
 
 U_NAMESPACE_END
 

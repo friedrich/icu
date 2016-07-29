@@ -194,6 +194,9 @@ RuleBasedBreakIterator::~RuleBasedBreakIterator() {
         fData->removeReference();
         fData = NULL;
     }
+    delete fBreakCache;
+    fBreakCache = NULL;
+
     delete fDictionaryCache;
     fDictionaryCache = NULL;
 
@@ -213,6 +216,8 @@ RuleBasedBreakIterator::operator=(const RuleBasedBreakIterator& that) {
     if (this == &that) {
         return *this;
     }
+    fBreakCache->reset();
+
     fDictionaryCache->reset();    // Delete break cache information
     fBreakType = that.fBreakType;
     if (fLanguageBreakEngines != NULL) {
@@ -269,6 +274,7 @@ void RuleBasedBreakIterator::init(UErrorCode &status) {
 
     fLanguageBreakEngines = NULL;
     fUnhandledBreakEngine = NULL;
+    fBreakCache           = NULL;
     fDictionaryCache      = NULL;
 
     if (U_FAILURE(status)) {
@@ -277,7 +283,8 @@ void RuleBasedBreakIterator::init(UErrorCode &status) {
 
     fText            = utext_openUChars(NULL, NULL, 0, &status);
     fDictionaryCache = new RBBIDictCache(status);
-    if (U_SUCCESS(status) && (fText == NULL || fDictionaryCache == NULL)) {
+    fBreakCache      = new BreakCache(this, status);
+    if (U_SUCCESS(status) && (fText == NULL || fDictionaryCache == NULL || fBreakCache == NULL)) {
         status = U_MEMORY_ALLOCATION_ERROR;
     }
 
@@ -353,6 +360,7 @@ void RuleBasedBreakIterator::setText(UText *ut, UErrorCode &status) {
     if (U_FAILURE(status)) {
         return;
     }
+    fBreakCache->reset();
     fDictionaryCache->reset();
     fText = utext_clone(fText, ut, FALSE, TRUE, &status);
 
@@ -435,6 +443,7 @@ RuleBasedBreakIterator::adoptText(CharacterIterator* newText) {
 
     fCharIter = newText;
     UErrorCode status = U_ZERO_ERROR;
+    fBreakCache->reset();
     fDictionaryCache->reset();
     if (newText==NULL || newText->startIndex() != 0) {
         // startIndex !=0 wants to be an error, but there's no way to report it.
@@ -454,6 +463,7 @@ RuleBasedBreakIterator::adoptText(CharacterIterator* newText) {
 void
 RuleBasedBreakIterator::setText(const UnicodeString& newText) {
     UErrorCode status = U_ZERO_ERROR;
+    fBreakCache->reset();
     fDictionaryCache->reset();
     fText = utext_openConstUnicodeString(fText, &newText, &status);
 
@@ -575,9 +585,13 @@ int32_t RuleBasedBreakIterator::next(int32_t n) {
  * @return The position of the first boundary after this one.
  */
 int32_t RuleBasedBreakIterator::next(void) {
-    // if we have cached break positions and we're still in the range
-    // covered by them, just move one step forward in the cache
+    UErrorCode status = U_ZERO_ERROR;
+    int32_t startPos = current();
+    int32_t result = fBreakCache->following(startPos, &fLastRuleStatusIndex, status);
+    utext_setNativeIndex(fText, result);
+    return result;
 
+#if 0
     int32_t startPos = current();
     int32_t dictResult = 0;
     if (fDictionaryCache->following(startPos, &dictResult, &fLastRuleStatusIndex)) {
@@ -595,6 +609,7 @@ int32_t RuleBasedBreakIterator::next(void) {
         }
     }
     return ruleResult;
+#endif
 }
 
 /**
@@ -775,6 +790,53 @@ int32_t RuleBasedBreakIterator::current(void) const {
     int32_t  pos = (int32_t)UTEXT_GETNATIVEINDEX(fText);
     return pos;
 }
+
+//-----------------------------------------------------------------------
+//
+//  Caching related functions
+//
+//-----------------------------------------------------------------------
+
+// On call, cache position will be pre-set to startPos.
+//
+// Return TRUE if success, FALSE if startPos is at end of text, and no
+//                         no boundaries can be added to the cache.
+
+UBool RuleBasedBreakIterator::populateCacheFollowing(int32_t startPos, UErrorCode &status) {
+
+    utext_setNativeIndex(fText, startPos);
+    int32_t ruleResult = handleNext(fData->fForwardTable);
+    if (ruleResult == UBRK_DONE) {
+        return FALSE;
+    }
+    if (fDictionaryCharCount == 0) {
+        fBreakCache->addFollowing(startPos, ruleResult, fLastRuleStatusIndex, status);
+    } else {
+        // TODO: redo checkDictionary to be better optimized for working w this cache.
+        int32_t prevRuleStatus = fBreakCache->fStatuses[fBreakCache->fBufIdx];
+        checkDictionary(startPos, ruleResult, prevRuleStatus, fLastRuleStatusIndex);
+        int32_t previousDictBoundary = startPos;
+        int32_t dictBoundary = 0;
+        int32_t dictStatusIndex = 0;
+
+        while (fDictionaryCache->following(previousDictBoundary, &dictBoundary, &dictStatusIndex)) {
+            // TODO: what if number of dictionary boundaries is bigger than the Break Cache?
+            fBreakCache->addFollowing(previousDictBoundary, dictBoundary, dictStatusIndex, status);
+            previousDictBoundary = dictBoundary;
+        }
+        if (previousDictBoundary == startPos) {
+            // The Dictionary didn't subdivide the range. Go with the rule based result
+            // TODO: Handle in the dictionary caching itself?
+            fBreakCache->addFollowing(startPos, ruleResult, fLastRuleStatusIndex, status);
+        }
+
+    }
+    return TRUE;
+}
+
+
+UBool RuleBasedBreakIteartor::
+
 
 //=======================================================================
 // implementation
