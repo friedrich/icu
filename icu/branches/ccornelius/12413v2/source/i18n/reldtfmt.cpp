@@ -13,14 +13,15 @@
 
 #include "reldtfmt.h"
 #include "unicode/datefmt.h"
+#include "unicode/reldatefmt.h"
 #include "unicode/simpleformatter.h"
 #include "unicode/smpdtfmt.h"
 #include "unicode/udisplaycontext.h"
 #include "unicode/uchar.h"
 #include "unicode/brkiter.h"
 
-#include "gregoimp.h" // for CalendarData
 #include "cmemory.h"
+#include "cstr.h"
 #include "uresimp.h"
 
 U_NAMESPACE_BEGIN
@@ -352,20 +353,17 @@ const UChar *RelativeDateFormat::getStringForDay(int32_t day, int32_t &len, UErr
     if(U_FAILURE(status)) {
         return NULL;
     }
-    
+
     // Is it outside the resource bundle's range?
     if(day < fDayMin || day > fDayMax) {
         return NULL; // don't have it.
     }
-    
-    // Linear search the held strings
-    for(int n=0;n<fDatesLen;n++) {
-        if(fDates[n].offset == day) {
-            len = fDates[n].len;
-            return fDates[n].string;
-        }
+
+    int n = day + UDAT_DIRECTION_THIS;
+    if(fDates[n].offset == day) {
+        len = fDates[n].len;
+        return fDates[n].string;
     }
-    
     return NULL;  // not found.
 }
 
@@ -479,9 +477,8 @@ struct RelDateFmtDataSink : public ResourceSink {
   URelativeString *fDatesPtr;
   int32_t fDatesLen;
 
-  RelDateFmtDataSink(URelativeString* fDates, int len) : fDatesPtr(fDates) {
-    fDatesLen = len;
-    for (int32_t i = 0; i < len; ++i) {
+  RelDateFmtDataSink(URelativeString* fDates, int len) : fDatesPtr(fDates), fDatesLen(len) {
+    for (int32_t i = 0; i < fDatesLen; ++i) {
       fDatesPtr[i].offset = 0;
       fDatesPtr[i].string = NULL;
       fDatesPtr[i].len = -1;
@@ -499,16 +496,9 @@ struct RelDateFmtDataSink : public ResourceSink {
         // Find the relative offset.
         int32_t offset = atoi(key);
 
-        bool alreadySet = false;
-        n = 0;
-        while (!alreadySet && n < fDatesLen && fDatesPtr[n].string != NULL) {
-          if (fDatesPtr[n].offset == offset) {
-            alreadySet = true;
-          }
-          n++;
-        }
-        // Don't override existing data.
-        if (!alreadySet && n < fDatesLen) {
+        // Put in the proper spot, but don't override existing data.
+        n = offset + UDAT_DIRECTION_THIS; // Converts to index in UDAT_R
+        if (n < fDatesLen && fDatesPtr[n].string == NULL) {
           // Not found and n is an empty slot.
           fDatesPtr[n].offset = offset;
           fDatesPtr[n].string = value.getString(len, errorCode);
@@ -530,52 +520,31 @@ static const UChar patItem1[] = {0x7B,0x31,0x7D}; // "{1}"
 static const int32_t patItem1Len = 3;
 
 void RelativeDateFormat::loadDates(UErrorCode &status) {
-    CalendarData calData(fLocale, "gregorian", status);
-
-    UErrorCode tempStatus = status;
-    UResourceBundle *dateTimePatterns = calData.getByKey(DT_DateTimePatternsTag, tempStatus);
-    if(U_SUCCESS(tempStatus)) {
+    const UResourceBundle* bundle = ures_open(NULL, fLocale.getBaseName(), &status);
+    UResourceBundle* dateTimePatterns = ures_getByKeyWithFallback(bundle,
+                                                 "calendar/gregorian/DateTimePatterns",
+                                                 (UResourceBundle*)NULL, &status);
+    if(U_SUCCESS(status)) {
         int32_t patternsSize = ures_getSize(dateTimePatterns);
         if (patternsSize > kDateTime) {
             int32_t resStrLen = 0;
-
             int32_t glueIndex = kDateTime;
             if (patternsSize >= (DateFormat::kDateTimeOffset + DateFormat::kShort + 1)) {
-                // Get proper date time format
-                switch (fDateStyle) { 
-                case kFullRelative: 
-                case kFull: 
-                    glueIndex = kDateTimeOffset + kFull; 
-                    break; 
-                case kLongRelative: 
-                case kLong: 
-                    glueIndex = kDateTimeOffset + kLong; 
-                    break; 
-                case kMediumRelative: 
-                case kMedium: 
-                    glueIndex = kDateTimeOffset + kMedium; 
-                    break;         
-                case kShortRelative: 
-                case kShort: 
-                    glueIndex = kDateTimeOffset + kShort; 
-                    break; 
-                default: 
-                    break; 
-                } 
+              // Adjust based on the style, ignoring the Relative bit.
+              glueIndex = DateFormat::kDateTimeOffset + (fDateStyle & ~DateFormat::kRelative);
             }
 
-            const UChar *resStr = ures_getStringByIndex(dateTimePatterns, glueIndex, &resStrLen, &tempStatus);
-            if (U_SUCCESS(tempStatus) && resStrLen >= patItem1Len && u_strncmp(resStr,patItem1,patItem1Len)==0) {
+            const UChar *resStr = ures_getStringByIndex(dateTimePatterns, glueIndex, &resStrLen, &status);
+            if (U_SUCCESS(status) && resStrLen >= patItem1Len && u_strncmp(resStr,patItem1,patItem1Len)==0) {
                 fCombinedHasDateAtStart = TRUE;
             }
-            fCombinedFormat = new SimpleFormatter(UnicodeString(TRUE, resStr, resStrLen), 2, 2, tempStatus);
+            fCombinedFormat = new SimpleFormatter(UnicodeString(TRUE, resStr, resStrLen), 2, 2, status);
         }
     }
 
-    UResourceBundle *rb = ures_open(NULL, fLocale.getBaseName(), &status);
-
-    // New data loading.
-    fDatesLen = 5; // Maximum - this should be a constant.
+    // Data loading for relative names, e.g., "yesterday", "today", "tomorrow".
+    UResourceBundle *rb = ures_open(NULL, fLocale.getName(), &status);
+    fDatesLen = UDAT_DIRECTION_COUNT; // Maximum defined by data.
     fDates = (URelativeString*) uprv_malloc(sizeof(fDates[0])*fDatesLen);
 
     RelDateFmtDataSink sink(fDates, fDatesLen);
@@ -590,12 +559,14 @@ void RelativeDateFormat::loadDates(UErrorCode &status) {
     // Set up fDayMin and fDayMax.
     fDayMin = fDayMax = fDates[0].offset;
     for (int32_t i = 0; i < fDatesLen; ++i) {
-      if (fDates[i].offset < fDayMin) {
-        fDayMin = fDates[i].offset;
-      }
-      if (fDates[i].offset > fDayMax) {
-        fDayMax = fDates[i].offset;
-      }
+        if (fDates[i].string != NULL) {
+            if (fDates[i].offset < fDayMin) {
+                fDayMin = fDates[i].offset;
+            }
+            if (fDates[i].offset > fDayMax) {
+                fDayMax = fDates[i].offset;
+            }
+        }
     }
 
 }
