@@ -1,3 +1,5 @@
+// Copyright (C) 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 * Copyright (C) 2007-2016, International Business Machines Corporation and
@@ -45,7 +47,6 @@ RelativeDateFormat::RelativeDateFormat(const RelativeDateFormat& other) :
  DateFormat(other), fDateTimeFormatter(NULL), fDatePattern(other.fDatePattern),
  fTimePattern(other.fTimePattern), fCombinedFormat(NULL),
  fDateStyle(other.fDateStyle), fLocale(other.fLocale),
- fDayMin(other.fDayMin), fDayMax(other.fDayMax),
  fDatesLen(other.fDatesLen), fDates(NULL),
  fCombinedHasDateAtStart(other.fCombinedHasDateAtStart),
  fCapitalizationInfoSet(other.fCapitalizationInfoSet),
@@ -73,7 +74,7 @@ RelativeDateFormat::RelativeDateFormat(const RelativeDateFormat& other) :
 RelativeDateFormat::RelativeDateFormat( UDateFormatStyle timeStyle, UDateFormatStyle dateStyle,
                                         const Locale& locale, UErrorCode& status) :
  DateFormat(), fDateTimeFormatter(NULL), fDatePattern(), fTimePattern(), fCombinedFormat(NULL),
- fDateStyle(dateStyle), fLocale(locale), fDayMin(0), fDayMax(0), fDatesLen(0), fDates(NULL),
+ fDateStyle(dateStyle), fLocale(locale), fDatesLen(0), fDates(NULL),
  fCombinedHasDateAtStart(FALSE), fCapitalizationInfoSet(FALSE),
  fCapitalizationOfRelativeUnitsForUIListMenu(FALSE), fCapitalizationOfRelativeUnitsForStandAlone(FALSE),
  fCapitalizationBrkIter(NULL)
@@ -354,15 +355,13 @@ const UChar *RelativeDateFormat::getStringForDay(int32_t day, int32_t &len, UErr
         return NULL;
     }
 
-    // Is it outside the resource bundle's range?
-    if(day < fDayMin || day > fDayMax) {
-        return NULL; // don't have it.
-    }
-
+    // Is it inside the resource bundle's range?
     int n = day + UDAT_DIRECTION_THIS;
-    if(fDates[n].offset == day) {
-        len = fDates[n].len;
-        return fDates[n].string;
+    if (n >= 0 && n < fDatesLen) {
+        if (fDates[n].offset == day && fDates[n].string != NULL) {
+            len = fDates[n].len;
+            return fDates[n].string;
+        }
     }
     return NULL;  // not found.
 }
@@ -520,8 +519,8 @@ static const UChar patItem1[] = {0x7B,0x31,0x7D}; // "{1}"
 static const int32_t patItem1Len = 3;
 
 void RelativeDateFormat::loadDates(UErrorCode &status) {
-    const UResourceBundle* bundle = ures_open(NULL, fLocale.getBaseName(), &status);
-    UResourceBundle* dateTimePatterns = ures_getByKeyWithFallback(bundle,
+    UResourceBundle *rb = ures_open(NULL, fLocale.getName(), &status);
+    UResourceBundle* dateTimePatterns = ures_getByKeyWithFallback(rb,
                                                  "calendar/gregorian/DateTimePatterns",
                                                  (UResourceBundle*)NULL, &status);
     if(U_SUCCESS(status)) {
@@ -543,32 +542,19 @@ void RelativeDateFormat::loadDates(UErrorCode &status) {
     }
 
     // Data loading for relative names, e.g., "yesterday", "today", "tomorrow".
-    UResourceBundle *rb = ures_open(NULL, fLocale.getName(), &status);
     fDatesLen = UDAT_DIRECTION_COUNT; // Maximum defined by data.
     fDates = (URelativeString*) uprv_malloc(sizeof(fDates[0])*fDatesLen);
 
     RelDateFmtDataSink sink(fDates, fDatesLen);
     ures_getAllItemsWithFallback(rb, "fields/day/relative", sink, status);
 
+    ures_close(dateTimePatterns);
+    ures_close(rb);
+
     if(U_FAILURE(status)) {
         fDatesLen=0;
-        ures_close(rb);
         return;
     }
-
-    // Set up fDayMin and fDayMax.
-    fDayMin = fDayMax = fDates[0].offset;
-    for (int32_t i = 0; i < fDatesLen; ++i) {
-        if (fDates[i].string != NULL) {
-            if (fDates[i].offset < fDayMin) {
-                fDayMin = fDates[i].offset;
-            }
-            if (fDates[i].offset > fDayMax) {
-                fDayMax = fDates[i].offset;
-            }
-        }
-    }
-
 }
 
 //----------------------------------------------------------------------
