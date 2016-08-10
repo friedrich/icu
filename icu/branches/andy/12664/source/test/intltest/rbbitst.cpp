@@ -3008,6 +3008,8 @@ private:
     UnicodeSet  *fEB;
     UnicodeSet  *fEM;
     UnicodeSet  *fZJ;
+    UnicodeSet  *fGAZ;
+    UnicodeSet  *fEmoji;
 
     BreakIterator        *fCharBI;
     const UnicodeString  *fText;
@@ -3073,6 +3075,8 @@ RBBILineMonkey::RBBILineMonkey() :
     fEB    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=EB}]"), status);
     fEM    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=EM}]"), status);
     fZJ    = new UnicodeSet(UNICODE_STRING_SIMPLE("[\\p{Line_break=ZWJ}]"), status);
+    fEmoji = new UnicodeSet(UNICODE_STRING_SIMPLE("[[\\p{Emoji}]-[\\p{Line_break=RI}]]"), status);
+    fGAZ   = new UnicodeSet(UnicodeString(gGlueAfterZwj, -1, US_INV), status);
 
     if (U_FAILURE(status)) {
         deferredStatus = status;
@@ -3084,10 +3088,6 @@ RBBILineMonkey::RBBILineMonkey() :
     fAL->addAll(*fSG);     // Default behavior for SG is identical to AL.
 
     fNS->addAll(*fCJ);     // Default behavior for CJ is identical to NS.
-
-    fID->addAll(*fEB);     // Emoji Base and Emoji Modifier behave as ID.
-    fID->addAll(*fEM);
-
     fCM->addAll(*fZJ);     // ZWJ behaves as a CM.
 
     fSets->addElement(fBK, status);
@@ -3131,6 +3131,9 @@ RBBILineMonkey::RBBILineMonkey() :
     fSets->addElement(fEB, status);
     fSets->addElement(fEM, status);
     fSets->addElement(fZJ, status);
+    fSets->addElement(fGAZ, status);
+    fSets->addElement(fEmoji, status);
+
 
     const char *rules =
             "((\\p{Line_Break=PR}|\\p{Line_Break=PO})(\\p{Line_Break=CM}|\\u200d)*)?"
@@ -3317,14 +3320,14 @@ int32_t RBBILineMonkey::next(int32_t startPos) {
             break;
         }
 
-        // LB 8a ZJ x ID
+        // LB 8a ZWJ x (ID | GAZ | Emoji)
         //       The monkey test's way of ignoring combining characters doesn't work
         //       for this rule. ZJ is also a CM. Need to get the actual character
         //       preceding "thisChar", not ignoring combining marks, possibly ZJ.
         {
             int32_t prevIdx = fText->moveIndex32(pos, -1);
             UChar32 prevC = fText->char32At(prevIdx);
-            if (fZJ->contains(prevC) && fID->contains(thisChar)) {
+            if (fZJ->contains(prevC) && (fID->contains(thisChar) || fGAZ->contains(thisChar) || fEmoji->contains(thisChar))) {
                 continue;
             }
         }
@@ -3484,7 +3487,7 @@ int32_t RBBILineMonkey::next(int32_t startPos) {
         if ((fAL->contains(prevChar) && fIN->contains(thisChar)) ||
             (fEX->contains(prevChar) && fIN->contains(thisChar)) ||
             (fHL->contains(prevChar) && fIN->contains(thisChar)) ||
-            (fID->contains(prevChar) && fIN->contains(thisChar)) ||
+            ((fID->contains(prevChar) || fEB->contains(prevChar) || fEM->contains(prevChar)) && fIN->contains(thisChar)) ||
             (fIN->contains(prevChar) && fIN->contains(thisChar)) ||
             (fNU->contains(prevChar) && fIN->contains(thisChar)) )   {
             continue;
@@ -3680,6 +3683,8 @@ RBBILineMonkey::~RBBILineMonkey() {
     delete fEB;
     delete fEM;
     delete fZJ;
+    delete fGAZ;
+    delete fEmoji;
 
     delete fCharBI;
     delete fNumberMatcher;
