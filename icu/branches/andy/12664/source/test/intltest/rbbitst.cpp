@@ -2192,7 +2192,7 @@ int32_t RBBICharMonkey::next(int32_t prevPos) {
             continue;
         }
 
-        // Rule (GB11)   ZWJ x (Glue_After_ZWJ | EBG)
+        // Rule (GB11)   (Glue_After_ZWJ | Emoji) ZWJ x (Glue_After_ZWJ | Emoji)
         if ((fGAZSet->contains(c0) || fEmojiSet->contains(c0)) && fZWJSet->contains(c1) &&
                 (fGAZSet->contains(c2) || fEmojiSet->contains(c2))) {
             continue;
