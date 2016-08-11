@@ -66,6 +66,31 @@ public class RBBITestMonkey extends TestFmwk {
         int   fCharProperty;
     }
 
+    //
+    // Data scraped from CLDR common/properties/GlueAfterZwj.txt, version of 2016-07-01
+    //
+    static String gGlueAfterZwj = "[" +
+            "\\U0001F774-\\U0001F77F\\u2700-\\u2701\\u2703-\\u2704\\u270E\\u2710-\\u2711\\u2765-\\u2767\\U0001F030-\\U0001F093" +
+            "\\U0001F094-\\U0001F09F\\U0001F10D-\\U0001F10F\\U0001F12F\\U0001F16C-\\U0001F16F\\U0001F1AD-\\U0001F1E5" +
+            "\\U0001F203-\\U0001F20F\\U0001F23C-\\U0001F23F\\U0001F249-\\U0001F24F\\U0001F252-\\U0001F2FF\\U0001F7D5-\\U0001F7FF" +
+            "\\U0001F000-\\U0001F003\\U0001F005-\\U0001F02B\\U0001F02C-\\U0001F02F\\U0001F322-\\U0001F323\\U0001F394-\\U0001F395" +
+            "\\U0001F398\\U0001F39C-\\U0001F39D\\U0001F3F1-\\U0001F3F2\\U0001F3F6\\U0001F4FE\\U0001F53E-\\U0001F548" +
+            "\\U0001F54F\\U0001F568-\\U0001F56E\\U0001F571-\\U0001F572\\U0001F57B-\\U0001F586\\U0001F588-\\U0001F589" +
+            "\\U0001F58E-\\U0001F58F\\U0001F591-\\U0001F594\\U0001F597-\\U0001F5A3\\U0001F5A6-\\U0001F5A7\\U0001F5A9-\\U0001F5B0" +
+            "\\U0001F5B3-\\U0001F5BB\\U0001F5BD-\\U0001F5C1\\U0001F5C5-\\U0001F5D0\\U0001F5D4-\\U0001F5DB\\U0001F5DF-\\U0001F5E0" +
+            "\\U0001F5E2\\U0001F5E4-\\U0001F5E7\\U0001F5E9-\\U0001F5EE\\U0001F5F0-\\U0001F5F2\\U0001F5F4-\\U0001F5F9" +
+            "\\u2605\\u2607-\\u260D\\u260F-\\u2610\\u2612\\u2616-\\u2617\\u2619-\\u261C\\u261E-\\u261F\\u2621\\u2624-\\u2625" +
+            "\\u2627-\\u2629\\u262B-\\u262D\\u2630-\\u2637\\u263B-\\u2647\\u2654-\\u265F\\u2661-\\u2662\\u2664\\u2667" +
+            "\\u2669-\\u267A\\u267C-\\u267E\\u2680-\\u2691\\u2695\\u2698\\u269A\\u269D-\\u269F\\u26A2-\\u26A9\\u26AC-\\u26AF" +
+            "\\u26B2-\\u26BC\\u26BF-\\u26C3\\u26C6-\\u26C7\\u26C9-\\u26CD\\u26D0\\u26D2\\u26D5-\\u26E8\\u26EB-\\u26EF" +
+            "\\u26F6\\u26FB-\\u26FC\\u26FE-\\u26FF\\u2388\\U0001FA00-\\U0001FFFD\\U0001F0A0-\\U0001F0AE\\U0001F0B1-\\U0001F0BF" +
+            "\\U0001F0C1-\\U0001F0CF\\U0001F0D1-\\U0001F0F5\\U0001F0AF-\\U0001F0B0\\U0001F0C0\\U0001F0D0\\U0001F0F6-\\U0001F0FF" +
+            "\\U0001F80C-\\U0001F80F\\U0001F848-\\U0001F84F\\U0001F85A-\\U0001F85F\\U0001F888-\\U0001F88F\\U0001F8AE-\\U0001F8FF" +
+            "\\U0001F900-\\U0001F90F\\U0001F91F\\U0001F928-\\U0001F92F\\U0001F931-\\U0001F932\\U0001F93F\\U0001F94C-\\U0001F94F" +
+            "\\U0001F95F-\\U0001F97F\\U0001F992-\\U0001F9BF\\U0001F9C1-\\U0001F9FF\\U0001F6C6-\\U0001F6CA\\U0001F6E6-\\U0001F6E8" +
+            "\\U0001F6EA\\U0001F6F1-\\U0001F6F2\\U0001F6D3-\\U0001F6DF\\U0001F6ED-\\U0001F6EF\\U0001F6F7-\\U0001F6FF" +
+            "]";
+
 
     /**
      * Monkey test subclass for testing Character (Grapheme Cluster) boundaries.
@@ -91,6 +116,7 @@ public class RBBITestMonkey extends TestFmwk {
         UnicodeSet                fZWJSet;
         UnicodeSet                fGAZSet;
         UnicodeSet                fEBGSet;
+        UnicodeSet                fEmojiSet;
         UnicodeSet                fAnySet;
 
 
@@ -121,8 +147,9 @@ public class RBBITestMonkey extends TestFmwk {
 
             fEmojiBaseSet     = new UnicodeSet("[\\p{Grapheme_Cluster_Break = EB}]");
             fEmojiModifierSet = new UnicodeSet("[\\p{Grapheme_Cluster_Break = EM}]");
-            fGAZSet           = new UnicodeSet("[\\p{Grapheme_Cluster_Break = GAZ}]");
+            fGAZSet           = new UnicodeSet(gGlueAfterZwj);
             fEBGSet           = new UnicodeSet("[\\p{Grapheme_Cluster_Break = EBG}]");
+            fEmojiSet         = new UnicodeSet("[[\\p{Emoji}]-[\\p{Grapheme_Cluster_Break = Regional_Indicator}]]");
             fAnySet           = new UnicodeSet("[\\u0000-\\U0010ffff]");
 
 
@@ -142,17 +169,21 @@ public class RBBITestMonkey extends TestFmwk {
             fSets.add(fZWJSet);
             fSets.add(fGAZSet);
             fSets.add(fEBGSet);
+            fSets.add(fEmojiSet);
         }
 
 
+        @Override
         void setText(StringBuffer s) {
             fText = s;
         }
 
+        @Override
         List charClasses() {
             return fSets;
         }
 
+        @Override
         int next(int prevPos) {
             int    /*p0,*/ p1, p2, p3;    // Indices of the significant code points around the
             //   break position being tested.  The candidate break
@@ -262,8 +293,9 @@ public class RBBITestMonkey extends TestFmwk {
                     continue;
                 }
 
-                // Rule (GB11)   ZWJ x (Glue_After_Zwj | EBG)
-                if (fZWJSet.contains(c1) && (fGAZSet.contains(c2) || fEBGSet.contains(c2))) {
+                // Rule (GB11)   (Glue_After_Zwj | Emoji) ZWJ x (Glue_After_Zwj | Emoji)
+                if ((fGAZSet.contains(c0) || fEmojiSet.contains(c0)) && fZWJSet.contains(c1) &&
+                        (fGAZSet.contains(c2) || fEmojiSet.contains(c2))) {
                     continue;
                 }
 
@@ -324,6 +356,7 @@ public class RBBITestMonkey extends TestFmwk {
         UnicodeSet                fEModifierSet;
         UnicodeSet                fZWJSet;
         UnicodeSet                fGAZSet;
+        UnicodeSet                fEmojiSet;
 
 
         RBBIWordMonkey() {
@@ -349,7 +382,8 @@ public class RBBITestMonkey extends TestFmwk {
             fEBGSet          = new UnicodeSet("[\\p{Word_Break = EBG}]");
             fEModifierSet    = new UnicodeSet("[\\p{Word_Break = EM}]");
             fZWJSet          = new UnicodeSet("[\\p{Word_Break = ZWJ}]");
-            fGAZSet          = new UnicodeSet("[\\p{Word_Break = GAZ}]");
+            fGAZSet          = new UnicodeSet(gGlueAfterZwj);
+            fEmojiSet        = new UnicodeSet("[[\\p{Emoji}]-[\\p{Grapheme_Cluster_Break = Regional_Indicator}]]");
 
             fDictionarySet = new UnicodeSet("[[\\uac00-\\ud7a3][:Han:][:Hiragana:]]");
             fDictionarySet.addAll(fKatakanaSet);
@@ -379,6 +413,7 @@ public class RBBITestMonkey extends TestFmwk {
             fOtherSet.removeAll(fEModifierSet);
             fOtherSet.removeAll(fZWJSet);
             fOtherSet.removeAll(fGAZSet);
+            fOtherSet.removeAll(fEmojiSet);
 
             // Inhibit dictionary characters from being tested at all.
             // remove surrogates so as to not generate higher CJK characters
@@ -410,18 +445,22 @@ public class RBBITestMonkey extends TestFmwk {
             fSets.add(fEModifierSet);
             fSets.add(fZWJSet);
             fSets.add(fGAZSet);
+            fSets.add(fEmojiSet);
             fSets.add(fOtherSet);
         }
 
 
+        @Override
         List  charClasses() {
             return fSets;
         }
 
+        @Override
         void   setText(StringBuffer s) {
             fText = s;
         }
 
+        @Override
         int   next(int prevPos) {
             int    /*p0,*/ p1, p2, p3;      // Indices of the significant code points around the
             //   break position being tested.  The candidate break
@@ -488,10 +527,10 @@ public class RBBITestMonkey extends TestFmwk {
                     break;
                 }
 
-                // Rule (3c)    ZWJ x (GAZ | EBG).
+                // Rule (3c)    ZWJ x (GAZ | Emoji).
                 //              Not ignoring extend chars, so peek into input text to
                 //              get the potential ZWJ, the character immediately preceding c2.
-                if (fZWJSet.contains(fText.codePointBefore(p2)) && (fGAZSet.contains(c2) || fEBGSet.contains(c2))) {
+                if (fZWJSet.contains(fText.codePointBefore(p2)) && (fGAZSet.contains(c2) || fEmojiSet.contains(c2))) {
                     continue;
                 }
 
@@ -660,6 +699,8 @@ public class RBBITestMonkey extends TestFmwk {
         UnicodeSet  fEB;
         UnicodeSet  fEM;
         UnicodeSet  fZWJ;
+        UnicodeSet  fGAZ;
+        UnicodeSet  fEmoji;
 
         StringBuffer  fText;
         int           fOrigPositions;
@@ -713,6 +754,9 @@ public class RBBITestMonkey extends TestFmwk {
             fEB    = new UnicodeSet("[\\p{Line_break=EB}]");
             fEM    = new UnicodeSet("[\\p{Line_break=EM}]");
             fZWJ   = new UnicodeSet("[\\p{Line_break=ZWJ}]");
+            fEmoji = new UnicodeSet("[[\\p{Emoji}]-[\\p{Line_break=RI}]]");
+            fGAZ   = new UnicodeSet(gGlueAfterZwj);
+
 
             // Remove dictionary characters.
             // The monkey test reference implementation of line break does not replicate the dictionary behavior,
@@ -726,10 +770,6 @@ public class RBBITestMonkey extends TestFmwk {
             fAL.addAll(fSG);     // Default behavior for SG (unpaired surrogates) is AL
 
             fNS.addAll(fCJ);     // Default behavior for CJ is identical to NS.
-
-            fID.addAll(fEB);     // Emoji Base and Emoji Modifier behave as ID.
-            fID.addAll(fEM);
-
             fCM.addAll(fZWJ);    // ZWJ behaves as a CM.
 
             fSets.add(fBK);
@@ -773,9 +813,11 @@ public class RBBITestMonkey extends TestFmwk {
             fSets.add(fEB);
             fSets.add(fEM);
             fSets.add(fZWJ);
-
+            fSets.add(fGAZ);
+            fSets.add(fEmoji);
         }
 
+        @Override
         void setText(StringBuffer s) {
             fText       = s;
         }
@@ -783,6 +825,7 @@ public class RBBITestMonkey extends TestFmwk {
 
 
 
+        @Override
         int next(int startPos) {
             int    pos;       //  Index of the char following a potential break position
             int    thisChar;  //  Character at above position "pos"
@@ -907,13 +950,13 @@ public class RBBITestMonkey extends TestFmwk {
                     break;
                 }
 
-                // LB 8a ZJ x ID
+                // LB 8a:  ZWJ x (ID | GAZ | Emoji)
                 //       The monkey test's way of ignoring combining characters doesn't work
-                //       for this rule. ZJ is also a CM. Need to get the actual character
+                //       for this rule. ZWJ is also a CM. Need to get the actual character
                 //       preceding "thisChar", not ignoring combining marks, possibly ZJ.
                 {
                     int prevC = fText.codePointBefore(pos);
-                    if (fZWJ.contains(prevC) && fID.contains(thisChar)) {
+                    if (fZWJ.contains(prevC) && (fID.contains(thisChar) || fGAZ.contains(thisChar) || fEmoji.contains(thisChar))) {
                         continue;
                     }
                 }
@@ -1059,7 +1102,7 @@ public class RBBITestMonkey extends TestFmwk {
                 if (fAL.contains(prevChar) && fIN.contains(thisChar) ||
                         fEX.contains(prevChar) && fIN.contains(thisChar) ||
                         fHL.contains(prevChar) && fIN.contains(thisChar) ||
-                        fID.contains(prevChar) && fIN.contains(thisChar) ||
+                        (fID.contains(prevChar) || fEB.contains(prevChar) || fEM.contains(prevChar)) && fIN.contains(thisChar) ||
                         fIN.contains(prevChar) && fIN.contains(thisChar) ||
                         fNU.contains(prevChar) && fIN.contains(thisChar) )   {
                     continue;
@@ -1077,11 +1120,11 @@ public class RBBITestMonkey extends TestFmwk {
                 // LB 23a Do not break between numeric prefixes and ideographs, or between ideographs and numeric postfixes.
                 //      PR x (ID | EB | EM)
                 //     (ID | EB | EM) x PO
-                if (fPR.contains(prevChar) && 
+                if (fPR.contains(prevChar) &&
                         (fID.contains(thisChar) || fEB.contains(thisChar) || fEM.contains(thisChar)))  {
                     continue;
                 }
-                if ((fID.contains(prevChar) || fEB.contains(prevChar) || fEM.contains(prevChar)) && 
+                if ((fID.contains(prevChar) || fEB.contains(prevChar) || fEM.contains(prevChar)) &&
                         fPO.contains(thisChar)) {
                     continue;
                 }
@@ -1341,6 +1384,7 @@ public class RBBITestMonkey extends TestFmwk {
         }
 
 
+        @Override
         List  charClasses() {
             return fSets;
         }
@@ -1431,10 +1475,12 @@ public class RBBITestMonkey extends TestFmwk {
         }
 
 
+        @Override
         List  charClasses() {
             return fSets;
         }
 
+        @Override
         void   setText(StringBuffer s) {
             fText = s;
         }
@@ -1482,6 +1528,7 @@ public class RBBITestMonkey extends TestFmwk {
             return UTF16.charAt(fText, pos);
         }
 
+        @Override
         int   next(int prevPos) {
             int    /*p0,*/ p1, p2, p3;      // Indices of the significant code points around the
             //   break position being tested.  The candidate break
@@ -1729,7 +1776,7 @@ public class RBBITestMonkey extends TestFmwk {
     private static int  m_rand()
     {
         m_seed = m_seed * 1103515245 + 12345;
-        return (int)(m_seed >>> 16) % 32768;
+        return (m_seed >>> 16) % 32768;
     }
 
     // Helper function for formatting error output.
@@ -1757,13 +1804,13 @@ public class RBBITestMonkey extends TestFmwk {
         if (c < 0x10000) {
             dest.append("\\u");
             for (int bn=12; bn>=0; bn-=4) {
-                dest.append(hexChars.charAt((((int)c)>>bn)&0xf));
+                dest.append(hexChars.charAt(((c)>>bn)&0xf));
             }
             appendToBuf(dest, " ", fieldLen-6);
         } else {
             dest.append("\\U");
             for (int bn=28; bn>=0; bn-=4) {
-                dest.append(hexChars.charAt((((int)c)>>bn)&0xf));
+                dest.append(hexChars.charAt(((c)>>bn)&0xf));
             }
             appendToBuf(dest, " ", fieldLen-10);
 
