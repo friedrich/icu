@@ -38,9 +38,6 @@ struct URelativeString {
     const UChar* string;    /** string, or NULL if not set **/
 };
 
-static const char DT_DateTimePatternsTag[]="DateTimePatterns";
-
-
 UOBJECT_DEFINE_RTTI_IMPLEMENTATION(RelativeDateFormat)
 
 RelativeDateFormat::RelativeDateFormat(const RelativeDateFormat& other) :
@@ -82,7 +79,7 @@ RelativeDateFormat::RelativeDateFormat( UDateFormatStyle timeStyle, UDateFormatS
     if(U_FAILURE(status) ) {
         return;
     }
-    
+
     if (timeStyle < UDAT_NONE || timeStyle > UDAT_SHORT) {
         // don't support other time styles (e.g. relative styles), for now
         status = U_ILLEGAL_ARGUMENT_ERROR;
@@ -114,11 +111,12 @@ RelativeDateFormat::RelativeDateFormat( UDateFormatStyle timeStyle, UDateFormatS
         fDateTimeFormatter=dynamic_cast<SimpleDateFormat *>(df);
         if (fDateTimeFormatter == NULL) {
             status = U_UNSUPPORTED_ERROR;
+            delete df;
             return;
         }
         fDateTimeFormatter->toPattern(fTimePattern);
     }
-    
+
     // Initialize the parent fCalendar, so that parse() works correctly.
     initializeCalendar(NULL, locale, status);
     loadDates(status);
@@ -450,18 +448,20 @@ RelativeDateFormat::initCapitalizationContextInfo(const Locale& thelocale)
 #if !UCONFIG_NO_BREAK_ITERATION
     const char * localeID = (thelocale != NULL)? thelocale.getBaseName(): NULL;
     UErrorCode status = U_ZERO_ERROR;
-    UResourceBundle *rb = ures_open(NULL, localeID, &status);
-    rb = ures_getByKeyWithFallback(rb, "contextTransforms", rb, &status);
-    rb = ures_getByKeyWithFallback(rb, "relative", rb, &status);
+    LocalUResourceBundlePointer rb(ures_open(NULL, localeID, &status));
+    // TODO: Cleanup
+    // UResourceBundle *rb = ures_open(NULL, localeID, &status);
+    LocalUResourceBundlePointer relBundle(ures_getByKeyWithFallback(rb.getAlias(),
+                                                                    "contextTransforms/relative",
+                                                                    rb.getAlias(), &status));
     if (U_SUCCESS(status) && rb != NULL) {
         int32_t len = 0;
-        const int32_t * intVector = ures_getIntVector(rb, &len, &status);
+        const int32_t * intVector = ures_getIntVector(relBundle.getAlias(), &len, &status);
         if (U_SUCCESS(status) && intVector != NULL && len >= 2) {
             fCapitalizationOfRelativeUnitsForUIListMenu = intVector[0];
             fCapitalizationOfRelativeUnitsForStandAlone = intVector[1];
         }
     }
-    ures_close(rb);
 #endif
 }
 
@@ -520,11 +520,12 @@ static const int32_t patItem1Len = 3;
 
 void RelativeDateFormat::loadDates(UErrorCode &status) {
     UResourceBundle *rb = ures_open(NULL, fLocale.getName(), &status);
-    UResourceBundle* dateTimePatterns = ures_getByKeyWithFallback(rb,
-                                                 "calendar/gregorian/DateTimePatterns",
-                                                 (UResourceBundle*)NULL, &status);
+    LocalUResourceBundlePointer dateTimePatterns(
+        ures_getByKeyWithFallback(rb,
+                                  "calendar/gregorian/DateTimePatterns",
+                                  (UResourceBundle*)NULL, &status));
     if(U_SUCCESS(status)) {
-        int32_t patternsSize = ures_getSize(dateTimePatterns);
+        int32_t patternsSize = ures_getSize(dateTimePatterns.getAlias());
         if (patternsSize > kDateTime) {
             int32_t resStrLen = 0;
             int32_t glueIndex = kDateTime;
@@ -533,7 +534,7 @@ void RelativeDateFormat::loadDates(UErrorCode &status) {
               glueIndex = DateFormat::kDateTimeOffset + (fDateStyle & ~DateFormat::kRelative);
             }
 
-            const UChar *resStr = ures_getStringByIndex(dateTimePatterns, glueIndex, &resStrLen, &status);
+            const UChar *resStr = ures_getStringByIndex(dateTimePatterns.getAlias(), glueIndex, &resStrLen, &status);
             if (U_SUCCESS(status) && resStrLen >= patItem1Len && u_strncmp(resStr,patItem1,patItem1Len)==0) {
                 fCombinedHasDateAtStart = TRUE;
             }
@@ -548,7 +549,6 @@ void RelativeDateFormat::loadDates(UErrorCode &status) {
     RelDateFmtDataSink sink(fDates, fDatesLen);
     ures_getAllItemsWithFallback(rb, "fields/day/relative", sink, status);
 
-    ures_close(dateTimePatterns);
     ures_close(rb);
 
     if(U_FAILURE(status)) {
