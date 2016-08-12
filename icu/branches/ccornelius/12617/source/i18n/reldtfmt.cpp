@@ -476,7 +476,7 @@ struct RelDateFmtDataSink : public ResourceSink {
   URelativeString *fDatesPtr;
   int32_t fDatesLen;
 
-  RelDateFmtDataSink(URelativeString* fDates, int len) : fDatesPtr(fDates), fDatesLen(len) {
+  RelDateFmtDataSink(URelativeString* fDates, int32_t len) : fDatesPtr(fDates), fDatesLen(len) {
     for (int32_t i = 0; i < fDatesLen; ++i) {
       fDatesPtr[i].offset = 0;
       fDatesPtr[i].string = NULL;
@@ -518,7 +518,7 @@ static const UChar patItem1[] = {0x7B,0x31,0x7D}; // "{1}"
 static const int32_t patItem1Len = 3;
 
 void RelativeDateFormat::loadDates(UErrorCode &status) {
-    UResourceBundle *rb = ures_open(NULL, fLocale.getName(), &status);
+    UResourceBundle *rb = ures_open(NULL, fLocale.getBaseName(), &status);
     LocalUResourceBundlePointer dateTimePatterns(
         ures_getByKeyWithFallback(rb,
                                   "calendar/gregorian/DateTimePatterns",
@@ -528,9 +528,12 @@ void RelativeDateFormat::loadDates(UErrorCode &status) {
         if (patternsSize > kDateTime) {
             int32_t resStrLen = 0;
             int32_t glueIndex = kDateTime;
-            if (patternsSize >= (DateFormat::kDateTimeOffset + DateFormat::kShort + 1)) {
-              // Adjust based on the style, ignoring the Relative bit.
-              glueIndex = DateFormat::kDateTimeOffset + (fDateStyle & ~DateFormat::kRelative);
+            if (patternsSize >= (kDateTimeOffset + kShort + 1)) {
+                if ((int32_t)fDateStyle >= (int32_t)kFull &&
+                    (int32_t)fDateStyle <= (int32_t)kShortRelative) {
+                    // Adjust based on the style, ignoring the Relative bit.
+                    glueIndex = kDateTimeOffset + (fDateStyle & ~kRelative);
+                }
             }
 
             const UChar *resStr = ures_getStringByIndex(dateTimePatterns.getAlias(), glueIndex, &resStrLen, &status);
