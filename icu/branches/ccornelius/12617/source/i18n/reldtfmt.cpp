@@ -529,10 +529,10 @@ void RelativeDateFormat::loadDates(UErrorCode &status) {
             int32_t resStrLen = 0;
             int32_t glueIndex = kDateTime;
             if (patternsSize >= (kDateTimeOffset + kShort + 1)) {
-                if ((int32_t)fDateStyle >= (int32_t)kFull &&
-                    (int32_t)fDateStyle <= (int32_t)kShortRelative) {
-                    // Adjust based on the style, ignoring the Relative bit.
-                    glueIndex = kDateTimeOffset + (fDateStyle & ~kRelative);
+                int32_t offsetIncrement = (fDateStyle & ~kRelative); // Remove relative bit.
+                if (offsetIncrement >= (int32_t)kFull &&
+                    offsetIncrement <= (int32_t)kShortRelative) {
+                    glueIndex = kDateTimeOffset + offsetIncrement;
                 }
             }
 
