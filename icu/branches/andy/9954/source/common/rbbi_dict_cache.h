@@ -64,17 +64,23 @@ class RuleBasedBreakIterator::BreakCache: public UObject {
                 BreakCache(RuleBasedBreakIterator *bi, UErrorCode &status);
     virtual     ~BreakCache();
     void        reset(int32_t pos = 0, int32_t ruleStatus = 0);
-    int32_t     following(int32_t startPosition, int32_t *ruleStatusIndex, UErrorCode &stauts);
+    int32_t     next(UErrorCode &status);
 
-    void        addFollowing(int32_t previousPos, int32_t newPos, int32_t ruleStatus, UErrorCode &status);
+    int32_t     following(int32_t startPosition, int32_t *ruleStatusIndex, UErrorCode &status);
 
     // Add boundaries to the cache near the specified position.
     // The given position need not be a boundary itself.
     // Include a boundary at or preceding the position, and one
     // following the position.
+    // Leave cache position on the boundary at or preceding the requested position.
     // Return FALSE if the given position is outside the bounds of the text.
     UBool populateNear(int32_t position, UErrorCode &status);
 
+    /**
+     *  Add boundary(s) to the cache following the current last boundary.
+     *  Return FALSE if at the end of the text, and no more boundaries can be added.
+     *  Leave iteration position at the first newly added boundary.
+     */
     UBool populateFollowing(UErrorCode &status);
 
     UBool populatePreceding(UErrorCode &status);
@@ -91,7 +97,7 @@ class RuleBasedBreakIterator::BreakCache: public UObject {
 
     RuleBasedBreakIterator *fBI;
     int32_t                 fStartBufIdx;
-    int32_t                 fEndBufIdx;
+    int32_t                 fEndBufIdx;    // inclusive
 
     int32_t                 fTextIdx;
     int32_t                 fBufIdx;

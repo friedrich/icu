@@ -714,14 +714,8 @@ int32_t RuleBasedBreakIterator::following(int32_t startPos) {
         return first();
     }
 
-    // Back up to a safe point, then
-    utext_setNativeIndex(fText, startPos);
-    int32_t backupPos = handlePrevious(fData->fSafeRevTable);
-    (void)backupPos;
-    int32_t result = 0;
-    do {
-        result = next();
-    } while (result != BreakIterator::DONE && result <= startPos);
+    UErrorCode status = U_ZERO_ERROR;
+    int32_t result = fBreakCache->following(startPos, &fLastRuleStatusIndex, status);
     return result;
 }
 
@@ -797,6 +791,7 @@ int32_t RuleBasedBreakIterator::current(void) const {
 //
 //-----------------------------------------------------------------------
 
+#if 0
 // On call, cache position will be pre-set to startPos.
 //
 // Return TRUE if success, FALSE if startPos is at end of text, and no
@@ -837,6 +832,7 @@ UBool RuleBasedBreakIterator::populateCacheFollowing(int32_t startPos, UErrorCod
 
 UBool RuleBasedBreakIteartor::
 
+#endif
 
 //=======================================================================
 // implementation

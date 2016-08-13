@@ -139,70 +139,31 @@ int32_t RuleBasedBreakIterator::BreakCache::following(int32_t startPos, int32_t 
     if (U_FAILURE(status)) {
         return UBRK_DONE;
     }
-    if (((startPos == fTextIdx) || seek(startPos)) && (fEndBufIdx != fBufIdx)) {
-        // Chache Hit. return the next entry from this cache block.
-        int32_t newBufIdx = modChunkSize(fBufIdx + 1);
-        int32_t newTextIdx = fBoundaries[newBufIdx];
-        U_ASSERT(newTextIdx > fTextIdx);
-        fBufIdx = newBufIdx;
-        fTextIdx = newTextIdx;
-        *ruleStatus = fStatuses[newBufIdx];
-        return fTextIdx;
+    if (startPos == fTextIdx || seek(startPos) || populateNear(startPos, status)) {
+        // startPos is in the cache. Do a next() from that position.
+        return next(status);
     }
-    if (startPos == fBoundaries[fEndBufIdx]) {
-        //  Cache Miss at end of cache. Call back to the engine to add more boundaries.
-        if (fBI->populateCacheFollowing(startPos, status)) {
-            U_ASSERT(fBufIdx != fEndBufIdx);
-            static int recursionCount = 0;
-            if (recursionCount++ > 0) {
-                printf("Recursion!");
-            }
-            int32_t retVal = following(startPos, ruleStatus, status);
-            --recursionCount;
-            return retVal;
-        } else {
-            *ruleStatus = 0;
+    return UBRK_DONE;
+}
+
+
+int32_t RuleBasedBreakIterator::BreakCache::next(int32_t *ruleStatusIdx, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return UBRK_DONE;
+    }
+    if (fBufIdx == fEndBufIdx) {
+        // At end of cache. Add to it.
+        if (!populateFollowing(status)) {
             return UBRK_DONE;
         }
-    }
-
-    // Cache miss, asking for contents disjoint ... 
-    // Call coming in from RBBI::following(), which backs up with the safe rules, then calls next(), which ends up here.
-    // Replace with a direct call to BreakCache::following().
-    // Figure out where to put the safe rule invocation.
-}
-
-
-void RuleBasedBreakIterator::BreakCache::addFollowing(
-        int32_t previousPos, int32_t newPos, int32_t ruleStatus, UErrorCode &status) {
-    if (U_FAILURE(status)) {
-        return;
-    }
-    U_ASSERT(previousPos < newPos);
-    U_ASSERT(previousPos >= 0);
-    U_ASSERT(ruleStatus >= 0 && ruleStatus < UINT16_MAX);
-
-    if (previousPos == fBoundaries[fEndBufIdx]) {
-        // Appending to the existing cached range.
-        fEndBufIdx = modChunkSize(fEndBufIdx + 1);
-        if (fEndBufIdx == fStartBufIdx) {
-            // Buffer full, make space.
-            fStartBufIdx = modChunkSize(fStartBufIdx + 1);
-        }
-        fBoundaries[fEndBufIdx] = newPos;
-        fStatuses[fEndBufIdx] = (uint16_t)ruleStatus;
-    } else if (previousPos < fBoundaries[fStartBufIdx] || previousPos > fBoundaries[fEndBufIdx]) {
-        // Adding a position wholly outside of the existing cached range.
-        // Drop the existing cache and start over.
-        reset(newPos, ruleStatus);
     } else {
-        // Request to add a boundary within the existing cached range.
-        // Should be impossible to get here.
-        U_ASSERT(FALSE);
-        status = U_INTERNAL_PROGRAM_ERROR;
+        // Cache already holds the next boundary
+        fBufIdx = modChunkSize(fBufIdx + 1);
     }
+    fTextIdx = fBoundaries[fBufIdx];
+    *ruleStatusIdx = fStatuses[fBufIdx];
+    return TRUE;
 }
-
 
 UBool RuleBasedBreakIterator::BreakCache::seek(int32_t pos) {
     if (pos < fBoundaries[fStartBufIdx] || pos > fBoundaries[fEndBufIdx]) {
