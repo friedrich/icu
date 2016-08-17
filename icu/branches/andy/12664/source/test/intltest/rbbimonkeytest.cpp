@@ -139,7 +139,6 @@ CharClass *BreakRules::addCharClass(const UnicodeString &name, const UnicodeStri
     if (U_FAILURE(status)) {
         IntlTest::gTest->errln("%s:%d: error %s creating UnicodeSet %s", __FILE__, __LINE__,
                                u_errorName(status), CStr(name)());
-        printf("%s\n", CStr(expandedDef)());
         return NULL;
     }
     CharClass *cclass = new CharClass(name, definition, expandedDef, s);
