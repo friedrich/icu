@@ -110,6 +110,7 @@ RelativeDateFormat::RelativeDateFormat( UDateFormatStyle timeStyle, UDateFormatS
         fDateTimeFormatter=dynamic_cast<SimpleDateFormat *>(df);
         if (fDateTimeFormatter == NULL) {
             status = U_UNSUPPORTED_ERROR;
+            delete df;
             return;
         }
         fDateTimeFormatter->toPattern(fTimePattern);
