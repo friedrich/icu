@@ -35,7 +35,7 @@ LVT                = [\p{Grapheme_Cluster_Break = LVT}];
 
 # Emoji defintions
 
-Emoji              = [[\p{Emoji}] - Regional_Indicator];
+EmojiNRK           = [[\p{Emoji}] - [Regional_Indicator\u002a\u00230-9©®™]];
 E_Base             = [\p{Grapheme_Cluster_Break = EB}];
 E_Modifier         = [\p{Grapheme_Cluster_Break = EM}];
 E_Base_GAZ         = [\p{Grapheme_Cluster_Break = EBG}];
@@ -53,7 +53,7 @@ GB7:     (LV | V) (V | T);
 GB8:     (LVT | T) T;
 
 GB10:    (E_Base | E_Base_GAZ) Extend* E_Modifier;
-GB11:    (GAZ | Emoji) ZWJ (GAZ | Emoji);
+GB11:    (GAZ | EmojiNRK) ZWJ (GAZ | EmojiNRK);
 GB9:     . (Extend | ZWJ);
 
 GB9a:    . SpacingMark;
