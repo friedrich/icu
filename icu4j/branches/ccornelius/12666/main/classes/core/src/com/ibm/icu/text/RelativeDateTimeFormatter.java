@@ -1222,7 +1222,7 @@ public final class RelativeDateTimeFormatter {
         private String getDateTimePattern(ICUResourceBundle r) {
             String calType = r.getStringWithFallback("calendar/default");
             if (calType == null || calType == "") {
-                calType = "gergorian";
+                calType = "gregorian";
             }
             String resourcePath = "calendar/" + calType + "/DateTimePatterns";
             ICUResourceBundle patternsRb = r.findWithFallback(resourcePath);
