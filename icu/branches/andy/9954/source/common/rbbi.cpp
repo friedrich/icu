@@ -588,7 +588,9 @@ int32_t RuleBasedBreakIterator::next(void) {
     UErrorCode status = U_ZERO_ERROR;
     int32_t startPos = current();
     int32_t result = fBreakCache->following(startPos, &fLastRuleStatusIndex, status);
-    utext_setNativeIndex(fText, result);
+    if (result != UBRK_DONE) {
+        utext_setNativeIndex(fText, result);
+    }
     return result;
 
 #if 0

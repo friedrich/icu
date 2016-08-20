@@ -64,7 +64,7 @@ class RuleBasedBreakIterator::BreakCache: public UObject {
                 BreakCache(RuleBasedBreakIterator *bi, UErrorCode &status);
     virtual     ~BreakCache();
     void        reset(int32_t pos = 0, int32_t ruleStatus = 0);
-    int32_t     next(UErrorCode &status);
+    int32_t     next(int32_t *ruleStatus, UErrorCode &status);
 
     int32_t     following(int32_t startPosition, int32_t *ruleStatusIndex, UErrorCode &status);
 
@@ -84,6 +84,13 @@ class RuleBasedBreakIterator::BreakCache: public UObject {
     UBool populateFollowing(UErrorCode &status);
 
     UBool populatePreceding(UErrorCode &status);
+
+    enum UpdatePositionValues {
+        RetainCachePosition = 0,
+        UpdateCachePosition = 1
+    };
+    void addFollowing(int32_t position, int32_t ruleStatusIdx, UpdatePositionValues update);
+    void addPreceding(int32_t position, int32_t ruleStatusIdx, UpdatePositionValues update);
 
     /**
      *  Set the cache position to the specified position, or, if the position
@@ -105,6 +112,7 @@ class RuleBasedBreakIterator::BreakCache: public UObject {
     int32_t                 fBoundaries[CACHE_CHUNK_SIZE];
     uint16_t                fStatuses[CACHE_CHUNK_SIZE];
 
+    UVector32               fSideBuffer;
 };
 
 U_NAMESPACE_END
