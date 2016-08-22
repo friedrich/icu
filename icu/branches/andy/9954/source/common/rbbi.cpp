@@ -787,54 +787,6 @@ int32_t RuleBasedBreakIterator::current(void) const {
     return pos;
 }
 
-//-----------------------------------------------------------------------
-//
-//  Caching related functions
-//
-//-----------------------------------------------------------------------
-
-#if 0
-// On call, cache position will be pre-set to startPos.
-//
-// Return TRUE if success, FALSE if startPos is at end of text, and no
-//                         no boundaries can be added to the cache.
-
-UBool RuleBasedBreakIterator::populateCacheFollowing(int32_t startPos, UErrorCode &status) {
-
-    utext_setNativeIndex(fText, startPos);
-    int32_t ruleResult = handleNext(fData->fForwardTable);
-    if (ruleResult == UBRK_DONE) {
-        return FALSE;
-    }
-    if (fDictionaryCharCount == 0) {
-        fBreakCache->addFollowing(startPos, ruleResult, fLastRuleStatusIndex, status);
-    } else {
-        // TODO: redo checkDictionary to be better optimized for working w this cache.
-        int32_t prevRuleStatus = fBreakCache->fStatuses[fBreakCache->fBufIdx];
-        checkDictionary(startPos, ruleResult, prevRuleStatus, fLastRuleStatusIndex);
-        int32_t previousDictBoundary = startPos;
-        int32_t dictBoundary = 0;
-        int32_t dictStatusIndex = 0;
-
-        while (fDictionaryCache->following(previousDictBoundary, &dictBoundary, &dictStatusIndex)) {
-            // TODO: what if number of dictionary boundaries is bigger than the Break Cache?
-            fBreakCache->addFollowing(previousDictBoundary, dictBoundary, dictStatusIndex, status);
-            previousDictBoundary = dictBoundary;
-        }
-        if (previousDictBoundary == startPos) {
-            // The Dictionary didn't subdivide the range. Go with the rule based result
-            // TODO: Handle in the dictionary caching itself?
-            fBreakCache->addFollowing(startPos, ruleResult, fLastRuleStatusIndex, status);
-        }
-
-    }
-    return TRUE;
-}
-
-
-UBool RuleBasedBreakIteartor::
-
-#endif
 
 //=======================================================================
 // implementation

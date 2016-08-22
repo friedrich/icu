@@ -665,7 +665,7 @@ void RBBIAPITest::TestRuleStatus() {
 
      BreakIterator *bi = BreakIterator::createWordInstance(Locale::getEnglish(), status);
      if(U_FAILURE(status)) {
-         errcheckln(status, "Fail : in construction - %s", u_errorName(status));
+         errcheckln(status, "%s:%d Fail in construction - %s", __FILE__, __LINE__, u_errorName(status));
      } else {
          bi->setText(testString1);
          // First test that the breaks are in the right spots.
@@ -702,7 +702,7 @@ void RBBIAPITest::TestRuleStatus() {
 
      bi = BreakIterator::createLineInstance(Locale::getEnglish(), status);
      if(U_FAILURE(status)) {
-         errcheckln(status, "failed to create word break iterator. - %s", u_errorName(status));
+         errcheckln(status, "%s:%d failed to create line break iterator. - %s", __FILE__, __LINE__, u_errorName(status));
      } else {
          int32_t i = 0;
          int32_t pos, tag;
@@ -723,8 +723,8 @@ void RBBIAPITest::TestRuleStatus() {
                  success = FALSE; break;
              }
              if (success == FALSE) {
-                 errln("Fail: incorrect word break status or position.  i=%d, pos=%d, tag=%d",
-                     i, pos, tag);
+                 errln("%s:%d: incorrect line break status or position.  i=%d, pos=%d, tag=%d",
+                     __FILE__, __LINE__, i, pos, tag);
                  break;
              }
              pos = bi->next();
@@ -733,7 +733,7 @@ void RBBIAPITest::TestRuleStatus() {
          if (UBRK_LINE_SOFT >= UBRK_LINE_SOFT_LIMIT ||
              UBRK_LINE_HARD >= UBRK_LINE_HARD_LIMIT ||
              (UBRK_LINE_HARD > UBRK_LINE_SOFT && UBRK_LINE_HARD < UBRK_LINE_SOFT_LIMIT)) {
-             errln("UBRK_LINE_* constants from header are inconsistent.");
+             errln("%s:%d UBRK_LINE_* constants from header are inconsistent.", __FILE__, __LINE__);
          }
      }
      delete bi;

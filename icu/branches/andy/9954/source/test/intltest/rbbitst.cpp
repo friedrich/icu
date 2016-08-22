@@ -3854,7 +3854,12 @@ void RBBITest::TestWordBoundary(void)
     Locale        locale("en");
     UErrorCode    status = U_ZERO_ERROR;
     // BreakIterator  *bi = BreakIterator::createCharacterInstance(locale, status);
-    BreakIterator *bi = BreakIterator::createWordInstance(locale, status);
+    LocalPointer<BreakIterator> bi(BreakIterator::createWordInstance(locale, status), status);
+    if (U_FAILURE(status)) {
+        errcheckln(status, "%s:%d Creation of break iterator failed %s",
+                __FILE__, __LINE__, u_errorName(status));
+        return;
+    }
     UChar         str[50];
     static const char *strlist[] =
     {
@@ -3889,13 +3894,9 @@ void RBBITest::TestWordBoundary(void)
     "\\u003b\\u0027\\u00b7\\u47a3",
     };
     int loop;
-    if (U_FAILURE(status)) {
-        errcheckln(status, "Creation of break iterator failed %s", u_errorName(status));
-        return;
-    }
     for (loop = 0; loop < UPRV_LENGTHOF(strlist); loop ++) {
         // printf("looping %d\n", loop);
-        u_unescape(strlist[loop], str, 20);
+        u_unescape(strlist[loop], str, UPRV_LENGTHOF(str));
         UnicodeString ustr(str);
         int forward[50];
         int count = 0;
@@ -3904,28 +3905,33 @@ void RBBITest::TestWordBoundary(void)
         int prev = 0;
         int i;
         for (i = bi->first(); i != BreakIterator::DONE; i = bi->next()) {
-            forward[count ++] = i;
+            ++count;
+            if (count >= UPRV_LENGTHOF(forward)) {
+                errln("%s:%d too many breaks found. (loop, count, i) = (%d, %d, %d)",
+                        __FILE__, __LINE__, loop, count, i);
+                return;
+            }
+            forward[count] = i;
             if (i > prev) {
                 int j;
                 for (j = prev + 1; j < i; j ++) {
                     if (bi->isBoundary(j)) {
                         printStringBreaks(ustr, forward, count);
-                        errln("happy boundary test failed: expected %d not a boundary",
-                               j);
+                        errln("%s:%d happy boundary test failed: expected %d not a boundary",
+                               __FILE__, __LINE__, j);
                         return;
                     }
                 }
             }
             if (!bi->isBoundary(i)) {
                 printStringBreaks(ustr, forward, count);
-                errln("happy boundary test failed: expected %d a boundary",
-                       i);
+                errln("%s:%d happy boundary test failed: expected %d a boundary",
+                       __FILE__, __LINE__, i);
                 return;
             }
             prev = i;
         }
     }
-    delete bi;
 }
 
 void RBBITest::TestLineBreaks(void)

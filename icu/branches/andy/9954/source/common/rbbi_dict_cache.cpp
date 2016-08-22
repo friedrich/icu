@@ -216,6 +216,9 @@ UBool RuleBasedBreakIterator::BreakCache::seek(int32_t pos) {
 #endif
 
 UBool RuleBasedBreakIterator::BreakCache::populateNear(int32_t position, UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return FALSE;
+    }
     U_ASSERT(position < fBoundaries[fStartBufIdx] || position > fBoundaries[fEndBufIdx]);
     U_ASSERT(position >= 0);
 
@@ -282,6 +285,7 @@ UBool RuleBasedBreakIterator::BreakCache::populateFollowing(UErrorCode &status) 
 
     utext_setNativeIndex(fBI->fText, fromPosition);
     pos = fBI->handleNext(fBI->fData->fForwardTable);
+    ruleStatusIdx = fBI->fLastRuleStatusIndex;          // TODO: make a parameter of handleNext().
     if (pos == UBRK_DONE) {
         return FALSE;
     }
@@ -289,7 +293,7 @@ UBool RuleBasedBreakIterator::BreakCache::populateFollowing(UErrorCode &status) 
     if (fBI->fDictionaryCharCount > 0) {
         // Segment from the rules includes dictionary characters.
         // Subdivide it, with subdivided results going into the dictionary cache.
-        fBI->checkDictionary(fromPosition, pos, fromRuleStatusIdx, fBI->fLastRuleStatusIndex);
+        fBI->checkDictionary(fromPosition, pos, fromRuleStatusIdx, ruleStatusIdx);
         if (fBI->fDictionaryCache->following(fromPosition, &pos, &ruleStatusIdx)) {
             addFollowing(pos, ruleStatusIdx, UpdateCachePosition);
             return TRUE;
