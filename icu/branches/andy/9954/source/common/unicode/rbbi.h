@@ -94,17 +94,27 @@ private:
      */
     RBBIDataWrapper    *fData;
 
-    /** Index of the Rule {tag} values for the most recent match.
+    /** 
+     *  The iteration state - current position, rule status for the current position,
+     *                        and whether the iterator ran off the end, yielding UBRK_DONE.
+     *                        Current position is pinned to be 0 < position <= text.length.
+     *                        Current position is always set to a boundary.
      *  @internal
     */
-    int32_t             fLastRuleStatusIndex;
+    struct IterationState {
+        int32_t         fPosition;
+        int32_t         fRuleStatusIndex;
+        UBool           fDone;
+        IterationState() : fPosition(0), fRuleStatusIndex(0), fDone(FALSE) {};
+    }                fState;
 
     /**
      *   Cache of previously determined boundary positions.
      */
+  public:    // TODO: debug, return to private.
     class BreakCache;
     BreakCache         *fBreakCache;
-
+  private:
     /**
      * Counter for the number of characters encountered with the "dictionary"
      *   flag set.

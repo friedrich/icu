@@ -64,8 +64,7 @@ UOBJECT_DEFINE_RTTI_IMPLEMENTATION(RuleBasedBreakIterator)
  * Constructs a RuleBasedBreakIterator that uses the already-created
  * tables object that is passed in as a parameter.
  */
-RuleBasedBreakIterator::RuleBasedBreakIterator(RBBIDataHeader* data, UErrorCode &status)
-{
+RuleBasedBreakIterator::RuleBasedBreakIterator(RBBIDataHeader* data, UErrorCode &status) {
     init(status);
     fData = new RBBIDataWrapper(data, status); // status checked in constructor
     if (U_FAILURE(status)) {return;}
@@ -265,7 +264,7 @@ void RuleBasedBreakIterator::init(UErrorCode &status) {
     fSCharIter            = NULL;
     fDCharIter            = NULL;
     fData                 = NULL;
-    fLastRuleStatusIndex  = 0;
+    fState                = IterationState();
     fDictionaryCharCount  = 0;
     fBreakType            = UBRK_WORD;  // Defaulting BreakType to word gives reasonable
                                         //   dictionary behavior for Break Iterators that are
@@ -524,11 +523,11 @@ RuleBasedBreakIterator &RuleBasedBreakIterator::refreshInputText(UText *input, U
  * @return The new iterator position, which is zero.
  */
 int32_t RuleBasedBreakIterator::first(void) {
-    fLastRuleStatusIndex  = 0;
+    // TODO: talk to the cache.
+    fState = IterationState();
     if (fText == NULL) {
         return BreakIterator::DONE;
     }
-    utext_setNativeIndex(fText, 0);
     return 0;
 }
 
@@ -538,23 +537,14 @@ int32_t RuleBasedBreakIterator::first(void) {
  */
 int32_t RuleBasedBreakIterator::last(void) {
     if (fText == NULL) {
-        fLastRuleStatusIndex  = 0;
+        fState = IterationState();
         return BreakIterator::DONE;
     }
 
     int32_t endPos = (int32_t)utext_nativeLength(fText);
-    utext_setNativeIndex(fText, endPos);
-
-    // find the rule status. TODO: find a better way.
-    if (fDictionaryCache->fLimit == endPos) {
-        fLastRuleStatusIndex = fDictionaryCache->fOtherRuleStatusIndex;
-    } else {
-        int32_t tPos;
-        handlePrevious(fData->fSafeRevTable);
-        do {
-            tPos = handleNext(fData->fForwardTable);
-        } while (tPos != BreakIterator::DONE && tPos < endPos);
-    }
+    UBool endShouldBeBoundary = isBoundary(endPos);      // Has side effect of setting iterator position.
+    U_ASSERT(endShouldBeBoundary);
+    U_ASSERT(fState.fPosition == endPos);
     return endPos;
 }
 
@@ -587,31 +577,8 @@ int32_t RuleBasedBreakIterator::next(int32_t n) {
 int32_t RuleBasedBreakIterator::next(void) {
     UErrorCode status = U_ZERO_ERROR;
     int32_t startPos = current();
-    int32_t result = fBreakCache->following(startPos, &fLastRuleStatusIndex, status);
-    if (result != UBRK_DONE) {
-        utext_setNativeIndex(fText, result);
-    }
-    return result;
-
-#if 0
-    int32_t startPos = current();
-    int32_t dictResult = 0;
-    if (fDictionaryCache->following(startPos, &dictResult, &fLastRuleStatusIndex)) {
-        utext_setNativeIndex(fText, dictResult);
-        return dictResult;
-    }
-
-    int32_t prevStatus = fLastRuleStatusIndex;
-    int32_t ruleResult = handleNext(fData->fForwardTable);
-    if (fDictionaryCharCount > 0) {
-        checkDictionary(startPos, ruleResult, prevStatus, fLastRuleStatusIndex);
-        if (fDictionaryCache->following(startPos, &dictResult, &fLastRuleStatusIndex)) {
-            utext_setNativeIndex(fText, dictResult);
-            return dictResult;
-        }
-    }
-    return ruleResult;
-#endif
+    fBreakCache->following(startPos, status);
+    return fState.fPosition;
 }
 
 /**
@@ -623,18 +590,21 @@ int32_t RuleBasedBreakIterator::next(void) {
  * @return The position of the boundary position immediately preceding the starting position.
  */
 int32_t RuleBasedBreakIterator::previous(void) {
-    int32_t startPos = current();
+
+    return 0;    // TODO:
+
+#if 0
+    int32_t startPos = fState.fPosition;
 
     // if we're already positioned at the beginning of the text, return DONE
     if (fText == NULL || startPos == 0) {
-        fLastRuleStatusIndex  = 0;
         return BreakIterator::DONE;
     }
 
     // if we have cached break positions and we're still in the range
     // covered by them, move one step backward in the cache
     int32_t dictResult = 0;
-    if (fDictionaryCache->preceding(startPos, &dictResult, &fLastRuleStatusIndex)) {
+    if (fDictionaryCache->preceding(startPos, &dictResult) {
         utext_setNativeIndex(fText, dictResult);
         return dictResult;
     }
@@ -696,6 +666,7 @@ int32_t RuleBasedBreakIterator::previous(void) {
     fLastRuleStatusIndex  = lastTag;       // for use by getRuleStatus()
 
     return lastPos;
+#endif
 }
 
 /**
@@ -705,20 +676,20 @@ int32_t RuleBasedBreakIterator::previous(void) {
  * @return The position of the first break after the current position.
  */
 int32_t RuleBasedBreakIterator::following(int32_t startPos) {
-    // if the offset passed in is already past the end of the text,
-    // just return DONE; if it's before the beginning, return the
+    // if the supplied position is before the beginning, return the
     // text's starting offset
-    if (fText == NULL || startPos >= utext_nativeLength(fText)) {
-        last();
-        return next();
-    }
     if (startPos < 0) {
         return first();
     }
 
+    // Move requested offset to a code point start. It might be on a trail surrogate,
+    // or on a trail byte if the input is UTF-8. Or it may be beyond the end of the text.
+    utext_setNativeIndex(fText, startPos);
+    startPos = (int32_t)utext_getNativeIndex(fText);
+
     UErrorCode status = U_ZERO_ERROR;
-    int32_t result = fBreakCache->following(startPos, &fLastRuleStatusIndex, status);
-    return result;
+    fBreakCache->following(startPos, status);
+    return fState.fDone ? UBRK_DONE : fState.fPosition;
 }
 
 /**
@@ -731,6 +702,8 @@ int32_t RuleBasedBreakIterator::preceding(int32_t offset) {
     if (fText == NULL || offset > utext_nativeLength(fText)) {
         return last();
     }
+
+    // TODO: REWORK.
 
     // Move requested offset to a code point start. It might be on a trail surrogate,
     // or on a trail byte if the input is UTF-8.
@@ -747,36 +720,43 @@ int32_t RuleBasedBreakIterator::preceding(int32_t offset) {
  * @return True if "offset" is a boundary position.
  */
 UBool RuleBasedBreakIterator::isBoundary(int32_t offset) {
-    // the beginning index of the iterator is always a boundary position by definition
-    if (offset == 0) {
-        first();       // For side effects on current position, tag values.
-        return TRUE;
-    }
-
-    if (offset == (int32_t)utext_nativeLength(fText)) {
-        last();       // For side effects on current position, tag values.
-        return TRUE;
-    }
-
     // out-of-range indexes are never boundary positions
     if (offset < 0) {
         first();       // For side effects on current position, tag values.
         return FALSE;
     }
 
-    if (offset > utext_nativeLength(fText)) {
-        last();        // For side effects on current position, tag values.
+    // Offset beyond end of input is not a boundary, but we still must position
+    // the iterator to the end, including having a valid rule status.
+
+    int32_t textLength = utext_nativeLength(fText);
+    UBool offsetInRange = TRUE;
+    if (offset > textLength) {
+        offset = textLength;
+        offsetInRange = FALSE;
+    }
+
+    UErrorCode status = U_ZERO_ERROR;
+    if (fBreakCache->seek(offset) || fBreakCache->populateNear(offset, status)) {
+        if (fBreakCache->current() == offset) {
+            utext_setNativeIndex(fText, offset);
+            return offsetInRange;
+        }
+        // Not on a boundary. isBoundary() must leave iterator on the following boundary.
+        // Cache->seek() leaves us on the previous boundary, so advance one.
+        next();
+        return FALSE;
+    }
+    if (U_FAILURE(status)) {
         return FALSE;
     }
 
-    // otherwise, we can use following() on the position before the specified
-    // one and return true if the position we get back is the one the user
-    // specified
-    utext_previous32From(fText, offset);
-    int32_t backOne = (int32_t)UTEXT_GETNATIVEINDEX(fText);
-    UBool    result  = following(backOne) == offset;
-    return result;
+    U_ASSERT(FALSE);   // If we get here, we were unable to seek the break cache to
+                       // the requested position. Because positions are pre-screened to be
+                       // within the bounds of the input text, this should not happen.
+    return FALSE;
 }
+
 
 /**
  * Returns the current iteration position.
@@ -882,7 +862,7 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
     #endif
 
     // No matter what, handleNext alway correctly sets the break tag value.
-    fLastRuleStatusIndex = 0;
+    fState.fRuleStatusIndex = 0;
 
     fDictionaryCharCount = 0;
 
@@ -891,6 +871,8 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
     result          = initialPosition;
     c               = UTEXT_NEXT32(fText);
     if (fData == NULL || c==U_SENTINEL) {
+        fState.fPosition = initialPosition;
+        fState.fDone = TRUE;
         return BreakIterator::DONE;
     }
 
@@ -938,7 +920,7 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
             category = UTRIE2_GET16(fData->fTrie, c);
 
             // Check the dictionary bit in the character's category.
-            //    Counter is only used by dictionary based iterators (subclasses).
+            //    Counter is only used by dictionary based iteration.
             //    Chars that need to be handled by a dictionary have a flag bit set
             //    in their category values.
             //
@@ -979,7 +961,7 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
             if (mode != RBBI_START) {
                 result = (int32_t)UTEXT_GETNATIVEINDEX(fText);
             }
-            fLastRuleStatusIndex = row->fTagIdx;   // Remember the break status (tag) values.
+            fState.fRuleStatusIndex = row->fTagIdx;   // Remember the break status (tag) values.
         }
 
         int16_t completedRule = row->fAccepting;
@@ -987,8 +969,8 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
             // Lookahead match is completed.
             int32_t lookaheadResult = lookAheadMatches.getPosition(completedRule);
             if (lookaheadResult >= 0) {
-                fLastRuleStatusIndex = row->fTagIdx;
-                UTEXT_SETNATIVEINDEX(fText, lookaheadResult);
+                fState.fRuleStatusIndex = row->fTagIdx;
+                fState.fPosition = lookaheadResult;
                 return lookaheadResult;
             }
         }
@@ -1017,8 +999,6 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
                 mode = RBBI_RUN;
             }
         }
-
-
     }
 
     // The state machine is done.  Check whether it found a match...
@@ -1027,13 +1007,14 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
     //   (This really indicates a defect in the break rules.  They should always match
     //    at least one character.)
     if (result == initialPosition) {
-        UTEXT_SETNATIVEINDEX(fText, initialPosition);
-        UTEXT_NEXT32(fText);
-        result = (int32_t)UTEXT_GETNATIVEINDEX(fText);
+        utext_setNativeIndex(fText, initialPosition);
+        utext_next32(fText);
+        result = (int32_t)utext_getNativeIndex(fText);
+        fState.fRuleStatusIndex = 0;
     }
 
     // Leave the iterator at our result position.
-    UTEXT_SETNATIVEINDEX(fText, result);
+    fState.fPosition = result;
     #ifdef RBBI_DEBUG
         if (gTrace) {
             RBBIDebugPrintf("result = %d\n\n", result);
@@ -1230,7 +1211,7 @@ int32_t  RuleBasedBreakIterator::getRuleStatus() const {
     // fLastRuleStatusIndex indexes to the start of the appropriate status record
     //                                                 (the number of status values.)
     //   This function returns the last (largest) of the array of status values.
-    int32_t  idx = fLastRuleStatusIndex + fData->fRuleStatusTable[fLastRuleStatusIndex];
+    int32_t  idx = fState.fRuleStatusIndex + fData->fRuleStatusTable[fState.fRuleStatusIndex];
     int32_t  tagVal = fData->fRuleStatusTable[idx];
 
     return tagVal;
@@ -1243,7 +1224,7 @@ int32_t RuleBasedBreakIterator::getRuleStatusVec(
         return 0;
     }
 
-    int32_t  numVals = fData->fRuleStatusTable[fLastRuleStatusIndex];
+    int32_t  numVals = fData->fRuleStatusTable[fState.fRuleStatusIndex];
     int32_t  numValsToCopy = numVals;
     if (numVals > capacity) {
         status = U_BUFFER_OVERFLOW_ERROR;
@@ -1251,7 +1232,7 @@ int32_t RuleBasedBreakIterator::getRuleStatusVec(
     }
     int i;
     for (i=0; i<numValsToCopy; i++) {
-        fillInVec[i] = fData->fRuleStatusTable[fLastRuleStatusIndex + i + 1];
+        fillInVec[i] = fData->fRuleStatusTable[fState.fRuleStatusIndex + i + 1];
     }
     return numVals;
 }

@@ -137,34 +137,40 @@ void RuleBasedBreakIterator::BreakCache::reset(int32_t pos, int32_t ruleStatus) 
 }
 
 
-int32_t RuleBasedBreakIterator::BreakCache::following(int32_t startPos, int32_t *ruleStatus, UErrorCode &status) {
-    if (U_FAILURE(status)) {
-        return UBRK_DONE;
-    }
-    if (startPos == fTextIdx || seek(startPos) || populateNear(startPos, status)) {
-        // startPos is in the cache. Do a next() from that position.
-        return next(ruleStatus, status);
-    }
-    return UBRK_DONE;
+int32_t  RuleBasedBreakIterator::BreakCache::current() {
+    return fTextIdx;
 }
 
 
-int32_t RuleBasedBreakIterator::BreakCache::next(int32_t *ruleStatusIdx, UErrorCode &status) {
+void RuleBasedBreakIterator::BreakCache::following(int32_t startPos, UErrorCode &status) {
     if (U_FAILURE(status)) {
-        return UBRK_DONE;
+        return;
+    }
+    utext_setNativeIndex(fBI->fText, startPos);
+    int32_t pinnedStartPos = utext_getNativeIndex(fBI->fText);
+    if (pinnedStartPos == fTextIdx || seek(pinnedStartPos) || populateNear(pinnedStartPos, status)) {
+        // startPos is in the cache. Do a next() from that position.
+        next(status);
+    }
+    return;
+}
+
+
+void RuleBasedBreakIterator::BreakCache::next(UErrorCode &status) {
+    if (U_FAILURE(status)) {
+        return;
     }
     if (fBufIdx == fEndBufIdx) {
         // At end of cache. Add to it.
-        if (!populateFollowing(status)) {
-            return UBRK_DONE;
-        }
+        populateFollowing(status);
     } else {
         // Cache already holds the next boundary
         fBufIdx = modChunkSize(fBufIdx + 1);
+        fTextIdx = fBoundaries[fBufIdx];
+        fBI->fState.fPosition = fTextIdx;
+        fBI->fState.fRuleStatusIndex = fStatuses[fBufIdx];
     }
-    fTextIdx = fBoundaries[fBufIdx];
-    *ruleStatusIdx = fStatuses[fBufIdx];
-    return fTextIdx;
+    return;
 }
 
 UBool RuleBasedBreakIterator::BreakCache::seek(int32_t pos) {
@@ -195,37 +201,12 @@ UBool RuleBasedBreakIterator::BreakCache::seek(int32_t pos) {
     return TRUE;
 }
 
-#if 0
-    int32_t startPos = current();
-    int32_t dictResult = 0;
-    if (fDictionaryCache->following(startPos, &dictResult, &fLastRuleStatusIndex)) {
-        utext_setNativeIndex(fText, dictResult);
-        return dictResult;
-    }
-
-    int32_t prevStatus = fLastRuleStatusIndex;
-    int32_t ruleResult = handleNext(fData->fForwardTable);
-    if (fDictionaryCharCount > 0) {
-        checkDictionary(startPos, ruleResult, prevStatus, fLastRuleStatusIndex);
-        if (fDictionaryCache->following(startPos, &dictResult, &fLastRuleStatusIndex)) {
-            utext_setNativeIndex(fText, dictResult);
-            return dictResult;
-        }
-    }
-    return ruleResult;
-#endif
 
 UBool RuleBasedBreakIterator::BreakCache::populateNear(int32_t position, UErrorCode &status) {
     if (U_FAILURE(status)) {
         return FALSE;
     }
     U_ASSERT(position < fBoundaries[fStartBufIdx] || position > fBoundaries[fEndBufIdx]);
-    U_ASSERT(position >= 0);
-
-    utext_setNativeIndex(fBI->fText, position);
-    if (utext_current32(fBI->fText) == U_SENTINEL) {
-        return FALSE;
-    }
 
     // Apply safe reverse rule.
     int32_t backupPos = fBI->handlePrevious(fBI->fData->fSafeRevTable);
@@ -233,14 +214,14 @@ UBool RuleBasedBreakIterator::BreakCache::populateNear(int32_t position, UErrorC
     int32_t forwardPos = 0;
     if (backupPos == UBRK_DONE) {
         forwardPos = 0;
-        fBI->fLastRuleStatusIndex = 0;
+        fBI->fState.fRuleStatusIndex = 0;
         utext_setNativeIndex(fBI->fText, 0);
     } else {
         forwardPos = fBI->handleNext(fBI->fData->fForwardTable);
         // Note: Ignore possible dictionary breaking, just take end point of rule segment.
     }
 
-    reset(forwardPos, fBI->fLastRuleStatusIndex);   // Reset cache to hold forwardPos as a single starting point.
+    reset(forwardPos, fBI->fState.fRuleStatusIndex);   // Reset cache to hold forwardPos as a single starting point.
         
 
     while (fBoundaries[fEndBufIdx] < position) {
@@ -285,7 +266,7 @@ UBool RuleBasedBreakIterator::BreakCache::populateFollowing(UErrorCode &status) 
 
     utext_setNativeIndex(fBI->fText, fromPosition);
     pos = fBI->handleNext(fBI->fData->fForwardTable);
-    ruleStatusIdx = fBI->fLastRuleStatusIndex;          // TODO: make a parameter of handleNext().
+    ruleStatusIdx = fBI->fState.fRuleStatusIndex;
     if (pos == UBRK_DONE) {
         return FALSE;
     }
@@ -338,7 +319,7 @@ UBool RuleBasedBreakIterator::BreakCache::populatePreceding(UErrorCode &status) 
             positionStatusIdx = 0;
         } else {
             position = fBI->handleNext(fBI->fData->fForwardTable);
-            positionStatusIdx = fBI->fLastRuleStatusIndex;
+            positionStatusIdx = fBI->fState.fRuleStatusIndex;
 
         }
     } while (position >= fromPosition);
@@ -354,7 +335,7 @@ UBool RuleBasedBreakIterator::BreakCache::populatePreceding(UErrorCode &status) 
         int32_t prevPosition = position;
         int32_t prevStatusIdx = positionStatusIdx;
         position = fBI->handleNext(fBI->fData->fForwardTable);
-        positionStatusIdx = fBI->fLastRuleStatusIndex;
+        positionStatusIdx = fBI->fState.fRuleStatusIndex;
 
         if (fBI->fDictionaryCharCount == 0) {
             if (position < fromPosition) {
@@ -440,5 +421,15 @@ int32_t RuleBasedBreakIterator::BreakCache::modChunkSize(int32_t n) {
     return n;
 }
 
+
+void RuleBasedBreakIterator::BreakCache::dumpCache() {
+    printf("fTextIdx:%d   fBufIdx:%d\n", fTextIdx, fBufIdx);
+    for (int32_t i=fStartBufIdx; ; i=modChunkSize(i+1)) {
+        printf("%d  %d\n", i, fBoundaries[i]);
+        if (i == fEndBufIdx) {
+            break;
+        }
+    }
+}
 
 U_NAMESPACE_END
