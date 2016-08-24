@@ -1936,7 +1936,6 @@ public:
    * @draft ICU 56
    */
   void swap(UnicodeString &other) U_NOEXCEPT;
-#endif  /* U_HIDE_DRAFT_API */
 
   /**
    * Non-member UnicodeString swap function.
@@ -1948,6 +1947,7 @@ public:
   swap(UnicodeString &s1, UnicodeString &s2) U_NOEXCEPT {
     s1.swap(s2);
   }
+#endif  /* U_HIDE_DRAFT_API */
 
   /**
    * Assignment operator.  Replace the characters in this UnicodeString
@@ -3279,7 +3279,7 @@ public:
    * @see toUTF8String
    * @stable ICU 4.2
    */
-  static UnicodeString fromUTF8(const StringPiece &utf8);
+  static UnicodeString fromUTF8(StringPiece utf8);
 
   /**
    * Create a UnicodeString from a UTF-32 string.
@@ -3394,7 +3394,7 @@ protected:
 
 private:
   // For char* constructors. Could be made public.
-  UnicodeString &setToUTF8(const StringPiece &utf8);
+  UnicodeString &setToUTF8(StringPiece utf8);
   // For extract(char*).
   // We could make a toUTF8(target, capacity, errorCode) public but not
   // this version: New API will be cleaner if we make callers create substrings
