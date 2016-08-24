@@ -907,7 +907,7 @@ public final class RelativeDateTimeFormatter {
     private static final class RelDateTimeDataSink extends UResource.Sink {
 
         // For white list of units to handle in RelativeDateTimeFormatter.
-        private static enum DateTimeUnit {
+        private enum DateTimeUnit {
             SECOND(RelativeUnit.SECONDS, null),
             MINUTE(RelativeUnit.MINUTES, null),
             HOUR(RelativeUnit.HOURS, null),
@@ -1078,7 +1078,7 @@ public final class RelativeDateTimeFormatter {
 
         // Record past or future and
         public void consumeTableRelativeTime(UResource.Key key, UResource.Value value) {
-            if (unit.relUnit == null) {  // Should this be outside the loop?
+            if (unit.relUnit == null) {
                 return;
             }
             UResource.Table unitTypesTable = value.getTable();
@@ -1123,31 +1123,31 @@ public final class RelativeDateTimeFormatter {
         }
 
         private void handlePlainDirection(UResource.Key key, UResource.Value value) {
-                // Handle Display Name for PLAIN direction for some units.
-                AbsoluteUnit absUnit = unit.absUnit;
-                if (absUnit == null) {
-                    return;  // Not interesting.
-                }
-                EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap =
-                        qualitativeUnitMap.get(style);
-                if (unitMap == null) {
-                    unitMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
-                    qualitativeUnitMap.put(style, unitMap);
-                }
-                EnumMap<Direction,String> dirMap = unitMap.get(absUnit);
-                if (dirMap == null) {
-                    dirMap = new EnumMap<Direction,String>(Direction.class);
-                    unitMap.put(absUnit, dirMap);
-                }
-                if (dirMap.get(Direction.PLAIN) == null) {
-                    dirMap.put(Direction.PLAIN, value.toString());
-                }
+            AbsoluteUnit absUnit = unit.absUnit;
+            if (absUnit == null) {
+                return;  // Not interesting.
+            }
+            EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap =
+                    qualitativeUnitMap.get(style);
+            if (unitMap == null) {
+                unitMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
+                qualitativeUnitMap.put(style, unitMap);
+            }
+            EnumMap<Direction,String> dirMap = unitMap.get(absUnit);
+            if (dirMap == null) {
+                dirMap = new EnumMap<Direction,String>(Direction.class);
+                unitMap.put(absUnit, dirMap);
+            }
+            if (dirMap.get(Direction.PLAIN) == null) {
+                dirMap.put(Direction.PLAIN, value.toString());
+            }
         }
+
         // Handle at the Unit level,
         public void comsumeTimeUnit(UResource.Key key, UResource.Value value) {
             UResource.Table unitTypesTable = value.getTable();
             for (int i = 0; unitTypesTable.getKeyAndValue(i, key, value); i++) {
-                if (key.contentEquals("dn")) {
+                if (key.contentEquals("dn") && value.getType() == ICUResourceBundle.STRING) {
                     handlePlainDirection(key, value);
                 }
                 if (value.getType() == ICUResourceBundle.TABLE) {
