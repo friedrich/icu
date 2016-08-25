@@ -1144,7 +1144,7 @@ public final class RelativeDateTimeFormatter {
         }
 
         // Handle at the Unit level,
-        public void comsumeTimeUnit(UResource.Key key, UResource.Value value) {
+        public void consumeTimeUnit(UResource.Key key, UResource.Value value) {
             UResource.Table unitTypesTable = value.getTable();
             for (int i = 0; unitTypesTable.getKeyAndValue(i, key, value); i++) {
                 if (key.contentEquals("dn") && value.getType() == ICUResourceBundle.STRING) {
@@ -1202,7 +1202,7 @@ public final class RelativeDateTimeFormatter {
                     unit = DateTimeUnit.orNullFromString(key.substring(0, limit));
                     if (unit != null) {
                         // Process only if unitString is in the white list.
-                        comsumeTimeUnit(key, value);
+                        consumeTimeUnit(key, value);
                     }
                 }
             }
@@ -1226,11 +1226,20 @@ public final class RelativeDateTimeFormatter {
             }
             String resourcePath = "calendar/" + calType + "/DateTimePatterns";
             ICUResourceBundle patternsRb = r.findWithFallback(resourcePath);
+            if (patternsRb == null && calType != "gregorian") {
+                // Try with gregorian.
+                patternsRb = r.findWithFallback("calendar/gregorian/DateTimePatterns");
+            }
             if (patternsRb == null || patternsRb.getSize() < 9) {
                 // Undefined or too few elements.
                 return "{1} {0}";
             } else {
-                return patternsRb.getString(8);
+                int elementType = patternsRb.get(8).getType();
+                if (elementType == UResourceBundle.ARRAY) {
+                    return patternsRb.get(8).getString(0);
+                } else {
+                    return patternsRb.getString(8);
+                }
             }
         }
 
