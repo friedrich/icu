@@ -1221,12 +1221,12 @@ public final class RelativeDateTimeFormatter {
 
         private String getDateTimePattern(ICUResourceBundle r) {
             String calType = r.getStringWithFallback("calendar/default");
-            if (calType == null || calType == "") {
+            if (calType == null || calType.equals("")) {
                 calType = "gregorian";
             }
             String resourcePath = "calendar/" + calType + "/DateTimePatterns";
             ICUResourceBundle patternsRb = r.findWithFallback(resourcePath);
-            if (patternsRb == null && calType != "gregorian") {
+            if (patternsRb == null && calType.equals("gregorian")) {
                 // Try with gregorian.
                 patternsRb = r.findWithFallback("calendar/gregorian/DateTimePatterns");
             }
