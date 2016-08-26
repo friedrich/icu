@@ -338,7 +338,7 @@ public class RelativeDateFormat extends DateFormat {
             ICUData.ICU_BASE_NAME, locale);
         String resourcePath = "calendar/" + cal.getType() + "/DateTimePatterns";
         ICUResourceBundle patternsRb= rb.findWithFallback(resourcePath);
-        if (patternsRb == null && cal.getType() != "gregorian") {
+        if (patternsRb == null && !cal.getType().equals("gregorian")) {
             // Try again with gregorian, if not already attempted.
             patternsRb = rb.findWithFallback("calendar/gregorian/DateTimePatterns");
         }
