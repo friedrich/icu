@@ -433,7 +433,6 @@ struct RelDateTimeFmtDataSink : public ResourceSink {
                     // Handle "NOW"
                     outputData.absoluteUnits[style][UDAT_ABSOLUTE_NOW]
                         [UDAT_DIRECTION_PLAIN].fastCopyFrom(value.getUnicodeString(errorCode));
-                    continue;
                 }
 
                 int32_t absUnitIndex = absUnitFromGeneric(genericUnit);
