@@ -3219,13 +3219,13 @@ void NumberFormatTest::TestHost()
         Formattable number(10.00);
         full->format(number, result1, status);
         if (U_FAILURE(status)) {
-            errln("FAIL: Can't format for host");
+            errln("FAIL: Can't format for en_US@compat=host");
             return;
         }
         Formattable formattable;
         full->parse(result1, formattable, status);
         if (U_FAILURE(status)) {
-            errln("FAIL: Can't parse for host");
+            logln("WARNING: Can't parse formatted string for en_US@compat=host");
             return;
         }
     }
@@ -3243,7 +3243,7 @@ void NumberFormatTest::TestHostClone()
     UDate now = Calendar::getNow();
     NumberFormat *full = NumberFormat::createInstance(loc, status);
     if (full == NULL || U_FAILURE(status)) {
-        dataerrln("FAIL: Can't create Relative date instance - %s", u_errorName(status));
+        dataerrln("FAIL: Can't create NumberFormat instance - %s", u_errorName(status));
         return;
     }
     UnicodeString result1;
