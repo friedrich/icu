@@ -15,6 +15,10 @@
 package com.ibm.icu.dev.test.format;
 
 import java.io.IOException;
+import java.lang.Long;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.text.AttributedCharacterIterator;
 import java.text.FieldPosition;
@@ -41,6 +45,7 @@ import com.ibm.icu.math.MathContext;
 import com.ibm.icu.text.CompactDecimalFormat;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.DecimalFormatSymbols;
+//import com.ibm.icu.text.DigitList;
 import com.ibm.icu.text.DisplayContext;
 import com.ibm.icu.text.MeasureFormat;
 import com.ibm.icu.text.NumberFormat;
@@ -4864,7 +4869,7 @@ public class NumberFormatTest extends TestFmwk {
 
     @Test
     public void TestMissingFieldPositionsNegativeBigDec() {
-        // Check complex positive;negative pattern.
+      // Check complex positive;negative pattern.
       DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(ULocale.US);
         DecimalFormat fmtPosNegSign = new DecimalFormat("+0.####E+00;-0.#######E+0", us_symbols);
         Number negativeExp = new BigDecimal("-0.000000987654321083");
@@ -4885,4 +4890,37 @@ public class NumberFormatTest extends TestFmwk {
         checkFormatWithField("exponent", fmtPosNegSign, negativeExp, negExpFormatted,
             NumberFormat.Field.EXPONENT, 9, 11);
     }
+
+    @Test
+    public void TestDigitListCoverage() throws Exception {
+	long testdata = 1414213562;
+	// DigitList digit_list = new DigitList();
+	Class<?> DL = Class.forName("com.ibm.icu.text.DigitList");
+	Constructor<?> consrctr = DL.getDeclaredConstructor();
+	consrctr.setAccessible(true);
+	Object digit_list = consrctr.newInstance();
+	// digit_list.set(testdata);
+	Method setMethod = DL.getMethod("set", long.class);
+	setMethod.setAccessible(true);
+	setMethod.invoke(digit_list, testdata);
+
+        // Test toString() method
+	String digit_list_string = digit_list.toString();
+	assertEquals("DigitList incorrect", "0.1414213562x10^10", digit_list_string);
+
+        // Test hashCode() method
+        int digit_list_hashcode = digit_list.hashCode();
+        assertEquals("DigitList hash code incorrect", -616183837, digit_list_hashcode);
+
+        // Test equals() method
+        Object digit_list2 = consrctr.newInstance();
+        // Test for success
+        setMethod.invoke(digit_list2, testdata);
+        assertTrue("DigitList objects with same values found unequal", digit_list.equals(digit_list2));
+        // Test for failure
+        Object digit_list3 = consrctr.newInstance();
+        setMethod.invoke(digit_list3, testdata + 1);
+        assertFalse("DigitList objects with different values found equal", digit_list.equals(digit_list3));
+    }
+        
 }

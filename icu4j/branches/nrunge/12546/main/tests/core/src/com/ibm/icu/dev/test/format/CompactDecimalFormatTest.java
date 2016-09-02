@@ -8,9 +8,18 @@
  */
 package com.ibm.icu.dev.test.format;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.AttributedCharacterIterator;
 import java.text.CharacterIterator;
 import java.text.FieldPosition;
+import java.text.ParsePosition;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -264,13 +273,26 @@ public class CompactDecimalFormatTest extends TestFmwk {
         currencyAffixes.put("other", new String[] {"", "$s"});
 
         long[] divisors = new long[] {
-                0,0,0, 
+                0,0,0,
                 1000, 1000, 1000, 
+                1000000, 1000000, 1000000, 
+                1000000000L, 1000000000L, 1000000000L, 
+                1000000000000L, 1000000000000L, 1000000000000L};
+        long[] divisors_err = new long[] {
+                0,0,0,
+                13, 13, 13, 
                 1000000, 1000000, 1000000, 
                 1000000000L, 1000000000L, 1000000000L, 
                 1000000000000L, 1000000000000L, 1000000000000L};
         checkCore(affixes, null, divisors, TestACoreCompactFormatList);
         checkCore(affixes, currencyAffixes, divisors, TestACoreCompactFormatListCurrency);
+        try {
+            checkCore(affixes, null, divisors_err, TestACoreCompactFormatList);
+        } catch(AssertionError e) {
+            // Exception expected, thus return.
+            return;
+        }
+        fail("Error expected but passed");
     }
 
     private void checkCore(Map<String, String[][]> affixes, Map<String, String[]> currencyAffixes, long[] divisors, Object[][] testItems) {
@@ -433,6 +455,40 @@ public class CompactDecimalFormatTest extends TestFmwk {
 
     }
 
+    @Test
+    public void TestBig() {
+        CompactDecimalFormat cdf = CompactDecimalFormat.getInstance(
+                ULocale.ENGLISH, CompactStyle.LONG);
+        BigInteger source_int = new BigInteger("31415926535897932384626433");
+        assertEquals("BigInteger format wrong: ", "31,000,000,000,000 trillion",
+                     cdf.format(source_int));
+        BigDecimal source_dec = new BigDecimal(source_int);
+        assertEquals("BigDecimal format wrong: ", "31,000,000,000,000 trillion",
+                     cdf.format(source_dec));
+        // Test that negative numbers are not supported.
+        BigInteger source_neg = new BigInteger("-31415926535897932384626433");
+        try{
+            cdf.format(source_neg);
+        } catch(UnsupportedOperationException e) {
+            // Exception expected, thus return.
+            return;
+        }
+        fail("Negative BigInteger/BigDecimal: expected test to fail but passed");
+    }
+      
+    @Test
+    public void TestParsing() {
+        CompactDecimalFormat cdf = CompactDecimalFormat.getInstance(
+                ULocale.ENGLISH, CompactStyle.LONG);
+        try{
+            cdf.parse("Parse for failure", new ParsePosition(0));
+        } catch(UnsupportedOperationException e) {
+            // Exception expected, thus return.
+            return;
+        }
+        fail("Parsing currently unsupported, expected test to fail but passed");
+    }
+
     public void checkLocale(ULocale locale, CompactStyle style, Object[][] testData) {
         CompactDecimalFormat cdf = getCDFInstance(locale, style);
         checkCdf(locale + " (" + locale.getDisplayName(locale) + ") for ", cdf, testData);
@@ -471,5 +527,41 @@ public class CompactDecimalFormatTest extends TestFmwk {
         String result = CompactDecimalFormat.getInstance( new ULocale("no_NO"),
                 CompactDecimalFormat.CompactStyle.SHORT ).format(12000);
         assertNotEquals("CDF(12,000) for no_NO shouldn't be 12 (12K or similar)", "12", result);
+    }
+
+    @Test
+    public void TestwriteObject() throws IOException {
+        FileOutputStream ba_stream = new FileOutputStream("tmp.ser");
+        ObjectOutputStream objoutstream = new ObjectOutputStream(ba_stream);
+        CompactDecimalFormat cdf = CompactDecimalFormat.getInstance(
+                ULocale.ENGLISH, CompactStyle.LONG);
+
+        try{
+            objoutstream.writeObject(cdf);
+            } catch (NotSerializableException e) {
+                // Exception expected, thus return.
+                objoutstream.close();
+                return;
+            }
+            objoutstream.close();
+            fail("writeObject currently unsupported, expected invokation to fail but passed");
+    }
+
+    @Test
+    public void TestReadObject() throws IOException, ClassNotFoundException {
+        FileInputStream fi_stream = new FileInputStream("tmp.ser");
+        ObjectInputStream objinstream = new ObjectInputStream(fi_stream);
+        CompactDecimalFormat cdf = CompactDecimalFormat.getInstance(
+                ULocale.ENGLISH, CompactStyle.LONG);
+
+        try{
+            CompactDecimalFormat cmpctDF = (CompactDecimalFormat) objinstream.readObject();
+            } catch (NotSerializableException e) {
+                // Exception expected, thus return.
+                objinstream.close();
+                return;
+            }
+            objinstream.close();
+            fail("readObject currently unsupported, expected invokation to fail but passed");
     }
 }
