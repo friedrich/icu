@@ -42,6 +42,9 @@
 #include "uvector.h"
 #include "uvectr32.h"
 
+// TODO:  debug only
+#include "rbbi_dict_cache.h"
+
 #if !UCONFIG_NO_FILTERED_BREAK_ITERATION
 #include "unicode/filteredbrk.h"
 #endif // !UCONFIG_NO_FILTERED_BREAK_ITERATION
@@ -3711,16 +3714,16 @@ static void testBreakBoundPreceding(RBBITest *test, UnicodeString ustr,
     for (i = bi->first(); i != BreakIterator::DONE; i = bi->next()) {
         forward[count] = i;
         if (count < expectedcount && expected[count] != i) {
-            test->errln("break forward test failed: expected %d but got %d",
-                        expected[count], i);
+            test->errln("%s:%d break forward test failed: expected %d but got %d",
+                        __FILE__, __LINE__, expected[count], i);
             break;
         }
         count ++;
     }
     if (count != expectedcount) {
         printStringBreaks(ustr, expected, expectedcount);
-        test->errln("break forward test failed: missed %d match",
-                    expectedcount - count);
+        test->errln("%s:%d break forward test failed: missed %d match",
+                    __FILE__, __LINE__, expectedcount - count);
         return;
     }
     // testing boundaries
@@ -3728,13 +3731,15 @@ static void testBreakBoundPreceding(RBBITest *test, UnicodeString ustr,
         int j = expected[i - 1];
         if (!bi->isBoundary(j)) {
             printStringBreaks(ustr, expected, expectedcount);
-            test->errln("isBoundary() failed.  Expected boundary at position %d", j);
+            test->errln("%s:%d isBoundary() failed.  Expected boundary at position %d",
+                    __FILE__, __LINE__, j);
             return;
         }
         for (j = expected[i - 1] + 1; j < expected[i]; j ++) {
             if (bi->isBoundary(j)) {
                 printStringBreaks(ustr, expected, expectedcount);
-                test->errln("isBoundary() failed.  Not expecting boundary at position %d", j);
+                test->errln("%s:%d isBoundary() failed.  Not expecting boundary at position %d",
+                    __FILE__, __LINE__, j);
                 return;
             }
         }
@@ -3744,8 +3749,8 @@ static void testBreakBoundPreceding(RBBITest *test, UnicodeString ustr,
         count --;
         if (forward[count] != i) {
             printStringBreaks(ustr, expected, expectedcount);
-            test->errln("happy break test previous() failed: expected %d but got %d",
-                        forward[count], i);
+            test->errln("%s:%d happy break test previous() failed: expected %d but got %d",
+                        __FILE__, __LINE__, forward[count], i);
             break;
         }
     }
@@ -3760,9 +3765,12 @@ static void testBreakBoundPreceding(RBBITest *test, UnicodeString ustr,
         // int j = expected[i] + 1;
         int j = ustr.moveIndex32(expected[i], 1);
         for (; j <= expected[i + 1]; j ++) {
-            if (bi->preceding(j) != expected[i]) {
+            int32_t expectedPreceding = expected[i];
+            int32_t actualPreceding = bi->preceding(j);
+            if (actualPreceding != expectedPreceding) {
                 printStringBreaks(ustr, expected, expectedcount);
-                test->errln("preceding(): Not expecting boundary at position %d", j);
+                test->errln("%s:%d preceding(%d): expected %d, got %d",
+                        __FILE__, __LINE__, j, expectedPreceding, actualPreceding);
                 return;
             }
         }
@@ -3895,41 +3903,41 @@ void RBBITest::TestWordBoundary(void)
     };
     int loop;
     for (loop = 0; loop < UPRV_LENGTHOF(strlist); loop ++) {
-        // printf("looping %d\n", loop);
         u_unescape(strlist[loop], str, UPRV_LENGTHOF(str));
         UnicodeString ustr(str);
         int forward[50];
         int count = 0;
 
         bi->setText(ustr);
-        int prev = 0;
-        int i;
-        for (i = bi->first(); i != BreakIterator::DONE; i = bi->next()) {
+        int prev = -1;
+        for (int32_t boundary = bi->first(); boundary != BreakIterator::DONE; boundary = bi->next()) {
             ++count;
             if (count >= UPRV_LENGTHOF(forward)) {
-                errln("%s:%d too many breaks found. (loop, count, i) = (%d, %d, %d)",
-                        __FILE__, __LINE__, loop, count, i);
+                errln("%s:%d too many breaks found. (loop, count, boundary) = (%d, %d, %d)",
+                        __FILE__, __LINE__, loop, count, boundary);
                 return;
             }
-            forward[count] = i;
-            if (i > prev) {
-                int j;
-                for (j = prev + 1; j < i; j ++) {
-                    if (bi->isBoundary(j)) {
-                        printStringBreaks(ustr, forward, count);
-                        errln("%s:%d happy boundary test failed: expected %d not a boundary",
-                               __FILE__, __LINE__, j);
-                        return;
-                    }
+            forward[count] = boundary;
+            if (boundary <= prev) {
+                errln("%s:%d bi::next() did not advance. (loop, prev, boundary) = (%d, %d, %d)\n",
+                        __FILE__, __LINE__, loop, prev, boundary);
+                break;
+            }
+            for (int32_t nonBoundary = prev + 1; nonBoundary < boundary; nonBoundary ++) {
+                if (bi->isBoundary(nonBoundary)) {
+                    printStringBreaks(ustr, forward, count);
+                    errln("%s:%d isBoundary(nonBoundary) failed. (loop, prev, nonBoundary, boundary) = (%d, %d, %d, %d)",
+                           __FILE__, __LINE__, loop, prev, nonBoundary, boundary);
+                    return;
                 }
             }
-            if (!bi->isBoundary(i)) {
+            if (!bi->isBoundary(boundary)) {
                 printStringBreaks(ustr, forward, count);
                 errln("%s:%d happy boundary test failed: expected %d a boundary",
-                       __FILE__, __LINE__, i);
+                       __FILE__, __LINE__, boundary);
                 return;
             }
-            prev = i;
+            prev = boundary;
         }
     }
 }

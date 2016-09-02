@@ -31,7 +31,6 @@
 #include "unicode/schriter.h"
 #include "unicode/uchriter.h"
 
-
 U_NAMESPACE_BEGIN
 
 /** @internal */
@@ -697,19 +696,12 @@ private:
      */
     const LanguageBreakEngine *getLanguageBreakEngine(UChar32 c);
 
-
-#if 0
-    // Add boundaries to cache following the last already-cached position.
-    // Return TRUE if success, FALSE if startPos is at end of text, and no
-    //                         no boundaries can be added to the cache.
-    UBool populateCacheFollowing(int32_t startPos, UErrorCode &status);
-#endif
-
+  public:
     /**
-     *  @internal
+     *   Debugging function only.
+     *   @internal
      */
-    void makeRuleStatusValid();
-
+     void dumpCache();
 };
 
 //------------------------------------------------------------------------------

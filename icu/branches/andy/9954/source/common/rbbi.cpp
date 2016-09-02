@@ -331,7 +331,10 @@ RuleBasedBreakIterator::operator==(const BreakIterator& that) const {
         return FALSE;
     };
 
-    // TODO:  need a check for when in a dictionary region at different offsets.
+    if (fState.fPosition != that2.fState.fPosition || fState.fRuleStatusIndex != that2.fState.fRuleStatusIndex) {
+        return FALSE;
+    }
+
 
     if (that2.fData == fData ||
         (fData != NULL && that2.fData != NULL && *that2.fData == *fData)) {
@@ -408,7 +411,7 @@ RuleBasedBreakIterator::getRules() const {
             // TODO:  something more elegant here.
             //        perhaps API should return the string by value.
             //        Note:  thread unsafe init & leak are semi-ok, better than
-            //               what was before.  Sould be cleaned up, though.
+            //               what was before.  Should be cleaned up, though.
             s = new UnicodeString;
         }
         return *s;
@@ -523,11 +526,15 @@ RuleBasedBreakIterator &RuleBasedBreakIterator::refreshInputText(UText *input, U
  * @return The new iterator position, which is zero.
  */
 int32_t RuleBasedBreakIterator::first(void) {
-    // TODO: talk to the cache.
-    fState = IterationState();
+    UErrorCode status = U_ZERO_ERROR;
     if (fText == NULL) {
         return BreakIterator::DONE;
     }
+    if (!fBreakCache->seek(0)) {
+        fBreakCache->populateNear(0, status);
+    }
+    fBreakCache->current();
+    U_ASSERT(fState.fPosition == 0);
     return 0;
 }
 
@@ -559,6 +566,7 @@ int32_t RuleBasedBreakIterator::last(void) {
  */
 int32_t RuleBasedBreakIterator::next(int32_t n) {
     int32_t result = current();
+    // TODO: stop early if we hit end of text.
     while (n > 0) {
         result = next();
         --n;
@@ -576,9 +584,8 @@ int32_t RuleBasedBreakIterator::next(int32_t n) {
  */
 int32_t RuleBasedBreakIterator::next(void) {
     UErrorCode status = U_ZERO_ERROR;
-    int32_t startPos = current();
-    fBreakCache->following(startPos, status);
-    return fState.fPosition;
+    fBreakCache->next(status);
+    return fState.fDone ? UBRK_DONE : fState.fPosition;
 }
 
 /**
@@ -590,83 +597,9 @@ int32_t RuleBasedBreakIterator::next(void) {
  * @return The position of the boundary position immediately preceding the starting position.
  */
 int32_t RuleBasedBreakIterator::previous(void) {
-
-    return 0;    // TODO:
-
-#if 0
-    int32_t startPos = fState.fPosition;
-
-    // if we're already positioned at the beginning of the text, return DONE
-    if (fText == NULL || startPos == 0) {
-        return BreakIterator::DONE;
-    }
-
-    // if we have cached break positions and we're still in the range
-    // covered by them, move one step backward in the cache
-    int32_t dictResult = 0;
-    if (fDictionaryCache->preceding(startPos, &dictResult) {
-        utext_setNativeIndex(fText, dictResult);
-        return dictResult;
-    }
-
-
-    // Loop, backing up a somewhat arbitrary amount on each interation, until we have
-    //       reach a position before the boundary that we are looking for.
-
-    int32_t lastPos = 0;
-    int32_t lastTag = 0;
-    int32_t nextPos = 0;
-    int32_t backupPos = startPos;
-
-    for (;;) {
-        utext_setNativeIndex(fText, backupPos - 10);
-        backupPos = handlePrevious(fData->fSafeRevTable);
-
-        if (backupPos == UBRK_DONE) {
-            backupPos = 0;
-            utext_setNativeIndex(fText, 0);
-        }
-        U_ASSERT(backupPos < startPos);
-
-        // Position is now on a "safe point", from which the forward rules will work correctly.
-        // Current position may or may not be an actual boundary.
-
-        lastPos = backupPos;
-        for (;;) {
-            nextPos = handleNext(fData->fForwardTable);
-            if (nextPos == BreakIterator::DONE || nextPos >= startPos) {
-                break;
-            }
-            lastPos = nextPos;
-            lastTag = fLastRuleStatusIndex;
-        }
-
-        if (backupPos < lastPos) {
-            // Good candidate boundary of lastPos
-            break;
-        }
-        if (backupPos == 0 && lastPos == 0) {
-            // result is 0. Can't get before 0 to advance forwards to the boundary (at 0)
-            // which is why this is a separate case.
-            break;
-        }
-        // Didn't back up enough. Repeat the loop.
-    }
-
-    if (fDictionaryCharCount > 0) {
-        U_ASSERT(nextPos > lastPos);
-        checkDictionary(lastPos, nextPos, lastTag, fLastRuleStatusIndex);
-        if (fDictionaryCache->preceding(startPos, &dictResult, &fLastRuleStatusIndex)) {
-            utext_setNativeIndex(fText, dictResult);
-            return dictResult;
-        }
-    }
-
-    utext_setNativeIndex(fText, lastPos);
-    fLastRuleStatusIndex  = lastTag;       // for use by getRuleStatus()
-
-    return lastPos;
-#endif
+    UErrorCode status = U_ZERO_ERROR;
+    fBreakCache->previous(status);
+    return fState.fDone ? UBRK_DONE : fState.fPosition;
 }
 
 /**
@@ -703,19 +636,23 @@ int32_t RuleBasedBreakIterator::preceding(int32_t offset) {
         return last();
     }
 
-    // TODO: REWORK.
-
     // Move requested offset to a code point start. It might be on a trail surrogate,
     // or on a trail byte if the input is UTF-8.
-    utext_setNativeIndex(fText, offset);
 
-    return previous();
+    utext_setNativeIndex(fText, offset);
+    int32_t adjustedOffset = utext_getNativeIndex(fText);
+
+    UErrorCode status = U_ZERO_ERROR;
+    fBreakCache->preceding(adjustedOffset, status);
+    return fState.fDone ? UBRK_DONE : fState.fPosition;
 }
 
 /**
  * Returns true if the specfied position is a boundary position.  As a side
  * effect, leaves the iterator pointing to the first boundary position at
  * or after "offset".
+ * TODO: old ICU behavior with incoming offset not on a code point boundary needs to be confirmed.
+ *
  * @param offset the offset to check.
  * @return True if "offset" is a boundary position.
  */
@@ -726,35 +663,27 @@ UBool RuleBasedBreakIterator::isBoundary(int32_t offset) {
         return FALSE;
     }
 
-    // Offset beyond end of input is not a boundary, but we still must position
-    // the iterator to the end, including having a valid rule status.
+    // Adjust offset to be on a code point boundary and not beyond the end of the text.
+    utext_setNativeIndex(fText, offset);
+    int32_t adjustedOffset = utext_getNativeIndex(fText);
 
-    int32_t textLength = utext_nativeLength(fText);
-    UBool offsetInRange = TRUE;
-    if (offset > textLength) {
-        offset = textLength;
-        offsetInRange = FALSE;
-    }
-
+    UBool result = FALSE;
     UErrorCode status = U_ZERO_ERROR;
-    if (fBreakCache->seek(offset) || fBreakCache->populateNear(offset, status)) {
-        if (fBreakCache->current() == offset) {
-            utext_setNativeIndex(fText, offset);
-            return offsetInRange;
-        }
-        // Not on a boundary. isBoundary() must leave iterator on the following boundary.
-        // Cache->seek() leaves us on the previous boundary, so advance one.
-        next();
-        return FALSE;
-    }
-    if (U_FAILURE(status)) {
-        return FALSE;
+    if (fBreakCache->seek(adjustedOffset) || fBreakCache->populateNear(adjustedOffset, status)) {
+        result = (fBreakCache->current() == offset);
     }
 
-    U_ASSERT(FALSE);   // If we get here, we were unable to seek the break cache to
-                       // the requested position. Because positions are pre-screened to be
-                       // within the bounds of the input text, this should not happen.
-    return FALSE;
+    if (result && adjustedOffset < offset && utext_current32(fText) == U_SENTINEL) {
+        // original offset is beyond the end of the text. return FALSE, it's not a boundary,
+        // but the iteration position remains set to the end of the text, which is a boundary.
+        return FALSE;
+    }
+    if (!result) {
+        // Not on a boundary. isBoundary() must leave iterator on the following boundary.
+        // Cache->seek(), above, left us on the preceding boundary, so advance one.
+        next();
+    }
+    return result;
 }
 
 
@@ -763,8 +692,7 @@ UBool RuleBasedBreakIterator::isBoundary(int32_t offset) {
  * @return The current iteration position.
  */
 int32_t RuleBasedBreakIterator::current(void) const {
-    int32_t  pos = (int32_t)UTEXT_GETNATIVEINDEX(fText);
-    return pos;
+    return fState.fPosition;
 }
 
 
@@ -867,13 +795,13 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
     fDictionaryCharCount = 0;
 
     // if we're already at the end of the text, return DONE.
-    initialPosition = (int32_t)UTEXT_GETNATIVEINDEX(fText);
+    initialPosition = fState.fPosition;
+    UTEXT_SETNATIVEINDEX(fText, initialPosition);
     result          = initialPosition;
     c               = UTEXT_NEXT32(fText);
     if (fData == NULL || c==U_SENTINEL) {
-        fState.fPosition = initialPosition;
         fState.fDone = TRUE;
-        return BreakIterator::DONE;
+        return UBRK_DONE;
     }
 
     //  Set the initial state for the state machine
@@ -1030,9 +958,14 @@ int32_t RuleBasedBreakIterator::handleNext(const RBBIStateTable *statetable) {
 //  handlePrevious()
 //
 //      Iterate backwards, according to the logic of the reverse rules.
-//      This version handles the exact style backwards rules.
+//      Starting position is the current position of fText, the input text.
+//      Reverse iteration is used only with the safe reverse rules, to find
+//      a position to apply the forward rules.
 //
 //      The logic of this function is very similar to handleNext(), above.
+//
+//      TODO: eliminate state table parameter, we only use one, ever.
+//      TODO: make starting position an explicit parameter.
 //
 //-----------------------------------------------------------------------------------
 int32_t RuleBasedBreakIterator::handlePrevious(const RBBIStateTable *statetable) {
@@ -1514,6 +1447,10 @@ RuleBasedBreakIterator::getLanguageBreakEngine(UChar32 c) {
 
 void RuleBasedBreakIterator::setBreakType(int32_t type) {
     fBreakType = type;
+}
+
+void RuleBasedBreakIterator::dumpCache() {
+    fBreakCache->dumpCache();
 }
 
 U_NAMESPACE_END
