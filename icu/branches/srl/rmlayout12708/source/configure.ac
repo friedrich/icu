@@ -1108,7 +1108,7 @@ AC_ARG_ENABLE(layoutex,
 	layoutex=$have_icu_le_hb)
 ICU_CONDITIONAL(LAYOUTEX, test "$layoutex" = true)
 
-# Enable/disable layoutex
+# Enable/disable layout
 AC_ARG_ENABLE(layout,
 	[],
 	[case "${enableval}" in
