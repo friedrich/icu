@@ -335,6 +335,8 @@ UBool RuleBasedBreakIterator::BreakCache::populateFollowing(UErrorCode &status) 
     }
 
     // Rule based segment did not include dictionary characters.
+    // Or, it did contain dictionary chars, but the dictionary segmenter didn't handle them,
+    //    meaning that we didn't take the return, above.  TODO: clean this up.
     // Add its end point to the cache.
     addFollowing(pos, ruleStatusIdx, UpdateCachePosition);
     return TRUE;
@@ -393,22 +395,30 @@ UBool RuleBasedBreakIterator::BreakCache::populatePreceding(UErrorCode &status) 
             break;
         }
 
-        if (fBI->fDictionaryCharCount == 0) {
-            if (position < fromPosition) {
-                fSideBuffer.addElement(position, status);
-                fSideBuffer.addElement(positionStatusIdx, status);
-            }
-        } else {
+        UBool segmentHandledByDictionary = FALSE;
+        if (fBI->fDictionaryCharCount != 0) {
             // Segment from the rules includes dictionary characters.
             // Subdivide it, with subdivided results going into the dictionary cache.
-            fBI->checkDictionary(prevPosition, position, prevStatusIdx, positionStatusIdx);
-            while (fBI->fDictionaryCache->following(position, &position, &positionStatusIdx)) {
+            int32_t dictSegEndPosition = position;
+            int32_t dictSegStatusIdx = positionStatusIdx;
+            fBI->checkDictionary(prevPosition, dictSegEndPosition, prevStatusIdx, positionStatusIdx);
+            while (fBI->fDictionaryCache->following(prevPosition, &position, &positionStatusIdx)) {
+                segmentHandledByDictionary = TRUE;
+                U_ASSERT(position > prevPosition);
                 if (position >= fromPosition) {
                     break;
                 }
+                U_ASSERT(position <= dictSegEndPosition);
                 fSideBuffer.addElement(position, status);
                 fSideBuffer.addElement(positionStatusIdx, status);
+                prevPosition = position;
             }
+            U_ASSERT(position==dictSegEndPosition || position>=fromPosition);
+        }
+            
+        if (!segmentHandledByDictionary && position < fromPosition) {
+            fSideBuffer.addElement(position, status);
+            fSideBuffer.addElement(positionStatusIdx, status);
         }
     } while (position < fromPosition);
 
@@ -461,6 +471,10 @@ void RuleBasedBreakIterator::BreakCache::addPreceding(int32_t position, int32_t 
     if (update == UpdateCachePosition) {
         fBufIdx = nextIdx;
         fTextIdx = position;
+    } else {
+        // The original iteration position is being retained.
+        // The buffer shouldn't wrap around such that the newly added point overwrites the iteration position.
+        U_ASSERT(fBufIdx != nextIdx);
     }
 }
 
