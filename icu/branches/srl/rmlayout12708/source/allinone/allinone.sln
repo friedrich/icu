@@ -31,10 +31,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "i18n", "..\i18n\i18n.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "intltest", "..\test\intltest\intltest.vcxproj", "{73632960-B3A6-464D-83A3-4B43365F19B8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layout", "..\layout\layout.vcxproj", "{C920062A-0647-4553-A3B2-37C58065664B}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layoutex", "..\layoutex\layoutex.vcxproj", "{37FC2C7F-1904-4811-8955-2F478830EAD1}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "makeconv", "..\tools\makeconv\makeconv.vcxproj", "{F5AD9738-1A3D-4906-B9C4-A7D9CE33DC2C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "makedata", "..\data\makedata.vcxproj", "{D9DF7F2F-93B7-4810-B5CD-96F4F33C079B}"
