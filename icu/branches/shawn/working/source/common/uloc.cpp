@@ -22,6 +22,11 @@
 *                           brought canonicalization code into line with spec
 *****************************************************************************/
 
+#if U_PLATFORM == U_PF_WINDOWS && defined(_MSC_VER) && (_MSC_VER >= 1500)
+// Windows LCID <-> Name mapping APIs should be available.
+#define USE_WINDOWS_LCID_MAPPING_API
+#endif
+
 /*
    POSIX's locale format, from putil.c: [no spaces]
 
@@ -2112,6 +2117,22 @@ uloc_getLCID(const char* localeID)
 {
     UErrorCode status = U_ZERO_ERROR;
     char       langID[ULOC_FULLNAME_CAPACITY];
+#ifdef USE_WINDOWS_LCID_MAPPING_API
+    uint32_t   lcid = 0;
+
+    /* Check for incomplete id. */
+    if (!localeID || uprv_strlen(localeID) < 2) {
+        return 0;
+    }
+
+    // Attempt platform lookup if available
+    lcid = uprv_convertToLCIDPlatform(localeID);
+    if (lcid > 0)
+    {
+        // Windows found an LCID, return that
+        return lcid;
+    }
+#endif
 
     uloc_getLanguage(localeID, langID, sizeof(langID), &status);
     if (U_FAILURE(status)) {
