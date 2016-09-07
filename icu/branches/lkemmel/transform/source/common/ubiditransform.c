@@ -21,7 +21,7 @@
 #include "unicode/ushape.h"
 #include "unicode/utf16.h"
 #include "ustr_imp.h"
-#include "ubiditransform.h"
+#include "unicode/ubiditransform.h"
 
 /* Some convenience defines */
 #define LTR                     UBIDI_LTR
