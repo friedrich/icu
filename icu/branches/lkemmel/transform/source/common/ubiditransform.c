@@ -83,15 +83,15 @@ typedef struct {
 struct UBiDiTransform {
     UBiDi                   *pBidi;             /* pointer to a UBiDi object */
     const ReorderingScheme  *pActiveScheme;     /* active reordering scheme */
-    uint32_t                reorderingOptions;  /* reordering options - currently only suppot DO_MIRRORING */
-    uint32_t                digits;             /* digit option for ArabicShaping */
-    uint32_t                letters;            /* letter option for ArabicShaping */
     UChar                   *src;               /* input text */
     UChar                   *dest;              /* output text */
     uint32_t                srcLength;          /* input text length - not really needed as we are zero-terminated and can u_strlen */
     uint32_t                srcSize;            /* input text capacity excluding the trailing zero */
     uint32_t                destSize;           /* output text capacity in UChars */
     uint32_t                *pDestLength;       /* number of UChars written to dest */
+    uint32_t                reorderingOptions;  /* reordering options - currently only suppot DO_MIRRORING */
+    uint32_t                digits;             /* digit option for ArabicShaping */
+    uint32_t                letters;            /* letter option for ArabicShaping */
     UErrorCode              *pErrorCode;        /* pointer to an error code value */
 };
 
@@ -99,15 +99,14 @@ U_DRAFT UBiDiTransform* U_EXPORT2
 ubiditransform_open(UErrorCode *pErrorCode)
 {
     UBiDiTransform *pBiDiTransform = NULL;
-    if (U_FAILURE(*pErrorCode)) {
-        return NULL;
+    if (U_SUCCESS(*pErrorCode)) {
+        pBiDiTransform = (UBiDiTransform*) uprv_malloc(sizeof(UBiDiTransform));
+        if (pBiDiTransform == NULL) {
+            *pErrorCode = U_MEMORY_ALLOCATION_ERROR;
+        } else {
+            uprv_memset(pBiDiTransform, 0, sizeof(UBiDiTransform));
+        }
     }
-    pBiDiTransform = (UBiDiTransform*) uprv_malloc(sizeof(UBiDiTransform));
-    if (pBiDiTransform == NULL) {
-        *pErrorCode = U_MEMORY_ALLOCATION_ERROR;
-        return NULL;
-    }
-    uprv_memset(pBiDiTransform, 0, sizeof(UBiDiTransform));
     return pBiDiTransform;
 }
 
@@ -282,21 +281,17 @@ updateSrc(UBiDiTransform *pTransform, const UChar *newSrc, uint32_t newLength,
 static UBool
 shapeArabic(UBiDiTransform *pTransform)
 {
-    uint32_t letters = pTransform->letters;
-    uint32_t digits = pTransform->digits;
-    if ((letters | digits) == 0) {
+    if ((pTransform->letters | pTransform->digits) == 0) {
         return FALSE;
     }
-    letters |= pTransform->pActiveScheme->lettersDir;
-    digits |= pTransform->pActiveScheme->digitsDir;
-    if (((digits ^ letters) & U_SHAPE_TEXT_DIRECTION_MASK) == 0) {
-        doShape(pTransform, letters | digits);
+    if (pTransform->pActiveScheme->lettersDir == pTransform->pActiveScheme->digitsDir) {
+        doShape(pTransform, pTransform->letters | pTransform->digits | pTransform->pActiveScheme->lettersDir);
     } else {
-        doShape(pTransform, digits);
+        doShape(pTransform, pTransform->digits | pTransform->pActiveScheme->digitsDir);
         if (U_SUCCESS(*pTransform->pErrorCode)) {
             updateSrc(pTransform, pTransform->dest, *pTransform->pDestLength,
                     *pTransform->pDestLength);
-            doShape(pTransform, letters);
+            doShape(pTransform, pTransform->letters | pTransform->pActiveScheme->lettersDir);
         }
     }
     return TRUE;
@@ -401,17 +396,14 @@ static void
 resolveBaseDirection(const UChar *text, uint32_t length,
         UBiDiLevel *pInLevel, UBiDiLevel *pOutLevel)
 {
-    UBiDiLevel level = LTR;
     switch (*pInLevel) {
-        case UBIDI_DEFAULT_RTL:
-            level = RTL;
-            // fall through
         case UBIDI_DEFAULT_LTR:
-            *pInLevel = ubidi_getBaseDirection(text, length);
-            if (*pInLevel == UBIDI_NEUTRAL) {
-                *pInLevel = level;
-            }
+        case UBIDI_DEFAULT_RTL: {
+            UBiDiLevel level = ubidi_getBaseDirection(text, length);
+            *pInLevel = level != UBIDI_NEUTRAL ? level
+                    : *pInLevel == UBIDI_DEFAULT_RTL ? RTL : LTR;
             break;
+        }
         default:
             *pInLevel &= 1;
             break;
