@@ -493,11 +493,14 @@ ubiditransform_transform(UBiDiTransform *pBiDiTransform,
     pBiDiTransform->letters = shapingOptions & ~U_SHAPE_DIGITS_MASK;
 
     updateSrc(pBiDiTransform, src, srcLength, destSize > srcLength ? destSize : srcLength);
-    if (U_FAILURE(*pBiDiTransform->pErrorCode)) {
+    if (U_FAILURE(*pErrorCode)) {
         goto cleanup;
     }
     if (pBiDiTransform->pBidi == NULL) {
-        pBiDiTransform->pBidi = ubidi_open();
+        pBiDiTransform->pBidi = ubidi_openSized(0, 0, pErrorCode);
+        if (U_FAILURE(*pErrorCode)) {
+            goto cleanup;
+        }
     }
     pBiDiTransform->dest = dest;
     pBiDiTransform->destSize = destSize;
@@ -515,6 +518,8 @@ ubiditransform_transform(UBiDiTransform *pBiDiTransform,
             textChanged = TRUE;
         }
     }
+    ubidi_setInverse(pBiDiTransform->pBidi, FALSE);
+
     if (!textChanged && U_SUCCESS(*pErrorCode)) {
         /* Text was not changed - just copy src to dest */
         if (destSize < srcLength) {
@@ -525,7 +530,6 @@ ubiditransform_transform(UBiDiTransform *pBiDiTransform,
         }
     }
 cleanup:
-    ubidi_setInverse(pBiDiTransform->pBidi, FALSE);
     if (pOrigTransform != pBiDiTransform) {
         ubiditransform_close(pBiDiTransform);
     }
