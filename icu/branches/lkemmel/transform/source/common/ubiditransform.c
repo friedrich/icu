@@ -243,25 +243,29 @@ doShape(UBiDiTransform *pTransform, uint32_t options)
  * @param newSize A new source capacity in <code>UChar</code>s.
  */
 static void
-applyNewSrc(UBiDiTransform *pTransform, const UChar *newSrc, uint32_t newLength,
+updateSrc(UBiDiTransform *pTransform, const UChar *newSrc, uint32_t newLength,
         uint32_t newSize)
 {
+    if (newSize < newLength) {
+        *pTransform->pErrorCode = U_BUFFER_OVERFLOW_ERROR;
+        return;
+    }
     if (newSize > pTransform->srcSize) {
+        newSize += 50; // allocate slightly more than needed right now
         if (pTransform->src != NULL) {
             uprv_free(pTransform->src);
             pTransform->src = NULL;
         }
-        pTransform->src = (UChar *)uprv_malloc((newSize + 1) * sizeof(UChar));
+        pTransform->src = (UChar *)uprv_malloc(newSize * sizeof(UChar));
         if (pTransform->src == NULL) {
             *pTransform->pErrorCode = U_MEMORY_ALLOCATION_ERROR;
-            pTransform->srcLength = pTransform->srcSize = 0;
+            //pTransform->srcLength = pTransform->srcSize = 0;
             return;
         }
-        uprv_memset(pTransform->src, 0, (newSize + 1) * sizeof(UChar));
+        uprv_memset(pTransform->src, 0, newSize * sizeof(UChar));
         pTransform->srcSize = newSize;
     }
     u_strncpy(pTransform->src, newSrc, newLength);
-    //*(pTransform->src + newLength) = 0;
     pTransform->srcLength = u_terminateUChars(pTransform->src,
     		pTransform->srcSize, newLength, pTransform->pErrorCode);
 }
@@ -290,7 +294,7 @@ shapeArabic(UBiDiTransform *pTransform)
     } else {
         doShape(pTransform, digits);
         if (U_SUCCESS(*pTransform->pErrorCode)) {
-            applyNewSrc(pTransform, pTransform->dest, *pTransform->pDestLength,
+            updateSrc(pTransform, pTransform->dest, *pTransform->pDestLength,
                     *pTransform->pDestLength);
             doShape(pTransform, letters);
         }
@@ -496,7 +500,7 @@ ubiditransform_transform(UBiDiTransform *pBiDiTransform,
     pBiDiTransform->digits = shapingOptions & ~U_SHAPE_LETTERS_MASK;
     pBiDiTransform->letters = shapingOptions & ~U_SHAPE_DIGITS_MASK;
 
-    applyNewSrc(pBiDiTransform, src, srcLength, destSize > srcLength ? destSize : srcLength);
+    updateSrc(pBiDiTransform, src, srcLength, destSize > srcLength ? destSize : srcLength);
     if (U_FAILURE(*pBiDiTransform->pErrorCode)) {
         goto cleanup;
     }
@@ -512,8 +516,10 @@ ubiditransform_transform(UBiDiTransform *pBiDiTransform,
        for failure" - but here we don't want to continue the whole loop on failure. */
     for (action = pBiDiTransform->pActiveScheme->actions; action && *action && U_SUCCESS(*pErrorCode); action++) {
         if ((*action)(pBiDiTransform)) {
-            applyNewSrc(pBiDiTransform, pBiDiTransform->dest, *pBiDiTransform->pDestLength,
-                    *pBiDiTransform->pDestLength);
+            if (action + 1) {
+                updateSrc(pBiDiTransform, pBiDiTransform->dest, *pBiDiTransform->pDestLength,
+                        *pBiDiTransform->pDestLength);
+            }
             textChanged = TRUE;
         }
     }
