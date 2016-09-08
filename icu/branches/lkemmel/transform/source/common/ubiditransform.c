@@ -518,6 +518,11 @@ ubiditransform_transform(UBiDiTransform *pBiDiTransform,
 cleanup:
     if (pOrigTransform != pBiDiTransform) {
         ubiditransform_close(pBiDiTransform);
+    } else {
+        pBiDiTransform->dest = NULL;
+        pBiDiTransform->pDestLength = NULL;
+        pBiDiTransform->srcLength = 0;
+        pBiDiTransform->destSize = 0;
     }
     return U_FAILURE(*pErrorCode) ? 0 : destLength;
 }
