@@ -64,7 +64,7 @@ static void logResultsForDir(const UChar *src, const UChar *dest,
             const UChar *expected, UBiDiLevel inLevel, UBiDiLevel outLevel);
 
 static void verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src,
-            UChar *dest, const char *expectedChars, uint32_t digits,
+            const UChar *dest, const char *expectedChars, uint32_t digits,
             uint32_t letters);
 
 /*
@@ -125,10 +125,11 @@ logResultsForDir(const UChar *src, const UChar *dest, const UChar *expected,
 }
 
 /**
- * Tests all combinations of base directions for input and output, when at
- * least one of them equals to <code>UBIDI_DEFAULT_LTR</code> or
- * <code>UBIDI_DEFAULT_RTL</code>. Order is always <code>UBIDI_LOGICAL</code>
- * for the input and <code>UBIDI_VISUAL</code> for the output.
+ * Tests various combinations of base directions, with the input either
+ * <code>UBIDI_DEFAULT_LTR</code> or <code>UBIDI_DEFAULT_RTL</code>, and the
+ * output either <code>UBIDI_LTR</code> or <code>UBIDI_RTL</code>. Order is
+ * always <code>UBIDI_LOGICAL</code> for the input and <code>UBIDI_VISUAL</code>
+ * for the output.
  */
 static void
 testAutoDirection(void)
@@ -166,6 +167,7 @@ testAutoDirection(void)
                 ubiditransform_transform(pTransform, src, -1, dest, STR_CAPACITY - 1,
                         inLevels[i], UBIDI_LOGICAL, outLevels[j], UBIDI_VISUAL,
                         UBIDI_MIRRORING_OFF, 0, &errorCode);
+                /* Use UBiDi as a model we compare to */
                 ubidi_setPara(pBidi, src, srcLen, inLevels[i], NULL, &errorCode);
                 ubidi_writeReordered(pBidi, expected, STR_CAPACITY, UBIDI_REORDER_DEFAULT, &errorCode);
                 if (outLevels[j] == UBIDI_RTL) {
@@ -194,7 +196,7 @@ shapeDigits(UChar *str, uint32_t digits)
         j = i;
         U16_NEXT(str, i, length, c); 
         if (c >= srcZero && c <= srcZero + 9) {
-            /* c length here is always 1 UChar16 */
+            /* length of c here is always a single UChar16 */
             str[j] = c + extent;
         }
     }
@@ -202,7 +204,7 @@ shapeDigits(UChar *str, uint32_t digits)
 
 static void
 verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src,
-        UChar *dest, const char *expectedChars, uint32_t digits, uint32_t letters)
+        const UChar *dest, const char *expectedChars, uint32_t digits, uint32_t letters)
 {
     switch (digits) {
         case U_SHAPE_DIGITS_EN2AN:
@@ -223,6 +225,8 @@ verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src,
         while (i < length) {
             j = i;
             U16_NEXT(expected, i, length, c); 
+            /* below the length of old and new values is always a single
+               UChar16, so can just assign a new value to expected[j] */
             if (c == 0x0630) {
                 expected[j] = 0xfeab;
             } else if (c == 0x0631) {
@@ -233,7 +237,7 @@ verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src,
         }
     }
     if (u_strcmp(expected, dest)) {
-        log_err("Unexpected transform Dest: Test: %s; Digits: \t0x%08x; Letters:\t0x%08x\ninText: %s; outText: %s; expected: %s\n",
+        log_err("Unexpected transform Dest: Test: %s; Digits: 0x%08x; Letters: 0x%08x\ninText: %s; outText: %s; expected: %s\n",
                 pTest->pMessage, digits, letters, pseudoScript(src), pseudoScript(dest), pseudoScript(expected));
     }
 }
