@@ -12,37 +12,23 @@
  *   created by: Lina Kemmel
 */
 
-#if 0
-#include "unicode/putil.h"
+#include "cintltst.h"
 #include "unicode/ubidi.h"
-#include "unicode/ushape.h"
-#include "unicode/utext.h"
 #include "unicode/ubiditransform.h"
-#include "cintltst.h"
-#endif
-
-#include "cintltst.h"
-//#include "unicode/utypes.h"
-//#include "unicode/uchar.h"
+#include "unicode/ushape.h"
 #include "unicode/ustring.h"
-#include "unicode/ubidi.h"
-#include "unicode/ushape.h"
-#include "unicode/ubiditransform.h"
-//#include "cstring.h"
-/* the following include is needed for sprintf */
-#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define     LATN_ZERO   0x0030
-#define     ARAB_ZERO   0x0660
-#define     MIN_HEB_LETTER     0x05D0
-#define     MIN_ARAB_LETTER    0x0630
-#define     MIN_SHAPED_LETTER  0xFEAB
+#define     LATN_ZERO           0x0030
+#define     ARAB_ZERO           0x0660
+#define     MIN_HEB_LETTER      0x05D0
+#define     MIN_ARAB_LETTER     0x0630
+#define     MIN_SHAPED_LETTER   0xFEAB
 
-#define STR_CAPACITY   100
+#define     STR_CAPACITY        100
 
 typedef struct {
     UBiDiLevel  inLevel;
@@ -60,10 +46,6 @@ UChar dest[STR_CAPACITY] = { 0 };
 UChar expected[STR_CAPACITY] = { 0 };
 UChar temp[STR_CAPACITY * 2] = { 0 };
 char pseudo[STR_CAPACITY] = { 0 };
-
-UBiDiTransform *pTransform = NULL;
-
-UErrorCode errorCode = U_ZERO_ERROR;
 
 void addTransformTest(TestNode** root);
 
@@ -104,7 +86,7 @@ substituteByPseudoChar(const UChar *src, char *dest, const UChar baseReal,
 
 static char*
 pseudoScript(const UChar *str) {
-     char *p;
+    char *p;
     if (!str) {
         return "\0";
     }
@@ -124,7 +106,7 @@ pseudoScript(const UChar *str) {
                 substituteByPseudoChar(str, p, ARAB_ZERO, '5', '9');
                 break;
             default:
-                *p = (char) *str;
+                *p = (char)*str;
                 break;
         }
     }
@@ -149,7 +131,7 @@ logResultsForDir(const UChar *src, const UChar *dest, const UChar *expected,
  * for the input and <code>UBIDI_VISUAL</code> for the output.
  */
 static void
-testAutoDirection()
+testAutoDirection(void)
 {
     static const UBiDiLevel inLevels[] = {
         UBIDI_DEFAULT_LTR, UBIDI_DEFAULT_RTL
@@ -157,7 +139,7 @@ testAutoDirection()
     static const UBiDiLevel outLevels[] = {
         UBIDI_LTR, UBIDI_RTL
     };
-    static const char *srcTexts[]= {
+    static const char *srcTexts[] = {
         "abc \\u05d0\\u05d1\0",
         "... abc \\u05d0\\u05d1\0",
         "\\u05d0\\u05d1 abc\0",
@@ -168,15 +150,17 @@ testAutoDirection()
     uint32_t i, nInLevels = sizeof(inLevels) / sizeof(inLevels[0]);
     uint32_t j, nOutLevels = sizeof(outLevels) / sizeof(outLevels[0]);
 
-    UErrorCode errorCode = U_ZERO_ERROR;
-
     UBiDi *pBidi = ubidi_open();
+
+    UErrorCode errorCode = U_ZERO_ERROR;
+    UBiDiTransform *pTransform = ubiditransform_open(&errorCode);
 
     log_verbose("\nEntering bidi/testAutoDirection\n\n");
 
     while (nTexts-- > 0) {
-        uint32_t srcLen = u_strlen(src);
+        uint32_t srcLen;
         u_unescape(srcTexts[nTexts], src, STR_CAPACITY);
+        srcLen = u_strlen(src);
         for (i = 0; i < nInLevels; i++) {
             for (j = 0; j < nOutLevels; j++) {
                 ubiditransform_transform(pTransform, src, -1, dest, STR_CAPACITY - 1,
@@ -195,21 +179,22 @@ testAutoDirection()
         }
     }
     ubidi_close(pBidi);
-    log_verbose("\nExiting bidi/testAutoDirection\n\n");
+    ubiditransform_close(pTransform);
+    log_verbose("\nExiting bidi/transform/testAutoDirection\n\n");
 }
 
 static void
 shapeDigits(UChar *str, uint32_t digits)
 {
     const UChar srcZero = (digits & U_SHAPE_DIGITS_EN2AN) ? LATN_ZERO : ARAB_ZERO;
-    const int extent = srcZero == ARAB_ZERO ? LATN_ZERO - ARAB_ZERO : ARAB_ZERO - LATN_ZERO;
-    int32_t i = 0, j, length = u_strlen(str);
+    const UChar extent = srcZero == ARAB_ZERO ? LATN_ZERO - ARAB_ZERO : ARAB_ZERO - LATN_ZERO;
     UChar32 c = 0;
+    uint32_t i = 0, j, length = u_strlen(str);
     while (i < length) {
         j = i;
         U16_NEXT(str, i, length, c); 
         if (c >= srcZero && c <= srcZero + 9) {
-            /* c length here is always 1 */
+            /* c length here is always 1 UChar16 */
             str[j] = c + extent;
         }
     }
@@ -233,7 +218,7 @@ verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src,
             break;
     }
     if (letters & U_SHAPE_LETTERS_SHAPE) {
-        int32_t i = 0, j, length = u_strlen(expected);
+        uint32_t i = 0, j, length = u_strlen(expected);
         UChar32 c = 0;
         while (i < length) {
             j = i;
@@ -265,15 +250,15 @@ verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src,
  * </ul>
  */
 static void
-testAllTransformOptions()
- {
-    const char *inText =
+testAllTransformOptions(void)
+{
+    static const char *inText =
             "a[b]c \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662\0";
 
-    const UBidiTestCases testCases[] = {
+    static const UBidiTestCases testCases[] = {
         { UBIDI_LTR, UBIDI_LOGICAL,
             UBIDI_LTR, UBIDI_LOGICAL,
-            inText, // reordering no mirroring
+            "a[b]c \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662\0", // reordering no mirroring
             "a[b]c \\u05d0)\\u05d1\\u05d2 \\u05d3(\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662", // mirroring
             "a[b]c \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 d \\u0630 \\u0662\\u0663\\u0660 e\\u0631\\u0664 f \\u0632 \\u0661\\u0662", // context numeric shaping
             "1: Logical LTR ==> Logical LTR" },
@@ -292,7 +277,8 @@ testAllTransformOptions()
             "\\u0632 \\u0662\\u0661 f \\u06314e \\u0630 \\u066032 d \\u05d0)\\u05d1\\u05d2 \\u05d3(\\u05d4 1 c]b[a",
             "\\u0632 \\u0662\\u0661 f \\u0631\\u0664e \\u0630 \\u0660\\u0663\\u0662 d \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 c]b[a",
             "4: Logical LTR ==> Visual RTL" },
-        { UBIDI_RTL, UBIDI_LOGICAL, UBIDI_RTL, UBIDI_LOGICAL, inText,
+        { UBIDI_RTL, UBIDI_LOGICAL, UBIDI_RTL, UBIDI_LOGICAL,
+            "a[b]c \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662\0",
             "a[b]c \\u05d0)\\u05d1\\u05d2 \\u05d3(\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662", // mirroring
             "a[b]c \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662",
             "5: Logical RTL ==> Logical RTL" },
@@ -311,7 +297,8 @@ testAllTransformOptions()
             "\\u0661\\u0662 \\u0632 f 4\\u0631e 23\\u0660 \\u0630 d 1 \\u05d4(\\u05d3 \\u05d2\\u05d1)\\u05d0 a[b]c",
             "\\u0661\\u0662 \\u0632 f 4\\u0631e 23\\u0660 \\u0630 d 1 \\u05d4)\\u05d3 \\u05d2\\u05d1(\\u05d0 a[b]c",
             "8: Logical RTL ==> Visual LTR" },
-        { UBIDI_LTR, UBIDI_VISUAL, UBIDI_LTR, UBIDI_VISUAL, inText,
+        { UBIDI_LTR, UBIDI_VISUAL, UBIDI_LTR, UBIDI_VISUAL, 
+            "a[b]c \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662\0",
             "a[b]c \\u05d0)\\u05d1\\u05d2 \\u05d3(\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662", // mirroring
             "a[b]c \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 d \\u0630 \\u0662\\u0663\\u0660 e\\u0631\\u0664 f \\u0632 \\u0661\\u0662",
             "9: Visual LTR ==> Visual LTR" },
@@ -330,7 +317,8 @@ testAllTransformOptions()
             "\\u0661\\u0662 \\u0632 f 4\\u0631e 23\\u0660 \\u0630 d 1 \\u05d4(\\u05d3 \\u05d2\\u05d1)\\u05d0 a[b]c",
             "\\u0661\\u0662 \\u0632 f \\u0664\\u0631e \\u0662\\u0663\\u0660 \\u0630 d 1 \\u05d4)\\u05d3 \\u05d2\\u05d1(\\u05d0 a[b]c",
             "12: Visual LTR ==> Logical RTL" }, 
-        { UBIDI_RTL, UBIDI_VISUAL, UBIDI_RTL, UBIDI_VISUAL, inText,
+        { UBIDI_RTL, UBIDI_VISUAL, UBIDI_RTL, UBIDI_VISUAL,
+            "a[b]c \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662\0",
             "a[b]c \\u05d0)\\u05d1\\u05d2 \\u05d3(\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662",
             "a[b]c \\u05d0(\\u05d1\\u05d2 \\u05d3)\\u05d4 1 d \\u0630 23\\u0660 e\\u06314 f \\u0632 \\u0661\\u0662",
             "13: Visual RTL ==> Visual RTL" },
@@ -375,31 +363,26 @@ testAllTransformOptions()
             "20: Logical RTL ==> Visual DEFAULT_RTL" }
 #endif
     };
-    const uint32_t digits[] = {
+    static const uint32_t digits[] = {
         U_SHAPE_DIGITS_NOOP,
         U_SHAPE_DIGITS_AN2EN,
         U_SHAPE_DIGITS_EN2AN,
         U_SHAPE_DIGITS_ALEN2AN_INIT_LR
     };
-    const uint32_t letters[] = {
+    static const uint32_t letters[] = {
         U_SHAPE_LETTERS_UNSHAPE,
         U_SHAPE_LETTERS_SHAPE
     };
     uint32_t i, nTestCases = sizeof(testCases) / sizeof(testCases[0]);
     uint32_t j, nDigits = sizeof(digits) / sizeof(digits[0]);
     uint32_t k, nLetters = sizeof(letters) / sizeof(letters[0]);
-    //logln("\nEntering verifyAllOptions\n");
     
+    UErrorCode errorCode = U_ZERO_ERROR;
+    UBiDiTransform *pTransform = ubiditransform_open(&errorCode);
+
     log_verbose("\nEntering bidi/testAllTransformOptions\n\n");
 
     u_unescape(inText, src, STR_CAPACITY);
-
-    // Test null and default options
-    //u_bidiTransform(src, -1, dest, STR_CAPACITY, NULL, pOutOpt, &errorCode);
-    //errln("Arguments is null, but exception was not thrown");
-    //} catch (IllegalArgumentException e) {
-    //}
-    //assertEquals("Unexpected output for default options", inText, bidiTransform.transform(inText, inOpt, outOpt));
 
     // Test various combinations of para level, order, mirroring, digits and letters
     for (i = 0; i < nTestCases; i++) {
@@ -424,21 +407,17 @@ testAllTransformOptions()
             }
         }
     }
-    log_verbose("\nExiting bidi/testAllTransformOptions\n\n");
+    ubiditransform_close(pTransform);
+    log_verbose("\nExiting bidi/transform/testAllTransformOptions\n\n");
 }
 
 void
 addTransformTest(TestNode** root)
 {
-    UErrorCode errorCode = U_ZERO_ERROR;
-
-    pTransform = ubiditransform_open(&errorCode);
-
     addTest(root, testAutoDirection, "bidi/transform/TestAutoDirection");
     addTest(root, testAllTransformOptions, "bidi/transform/TestAllTransformOptions");
-
-    ubiditransform_close(pTransform);
 }
+
 #ifdef __cplusplus
 }
 #endif

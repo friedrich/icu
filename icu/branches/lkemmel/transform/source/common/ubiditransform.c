@@ -115,8 +115,6 @@ ubiditransform_close(UBiDiTransform *pBiDiTransform)
         if (pBiDiTransform->src != NULL) {
             uprv_free(pBiDiTransform->src);
         }
-        /* Fill up with zeros to be on the safe side */
-        uprv_memset(pBiDiTransform, 0, sizeof(UBiDiTransform));
         uprv_free(pBiDiTransform);
     }
 }
