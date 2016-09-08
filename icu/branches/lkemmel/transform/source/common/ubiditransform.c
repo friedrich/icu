@@ -28,7 +28,6 @@
 #define RTL                     UBIDI_RTL
 #define LOGICAL                 UBIDI_LOGICAL
 #define VISUAL                  UBIDI_VISUAL
-#define NOMINAL                 U_SHAPE_DIGITS_NOOP
 #define SHAPE_LOGICAL           U_SHAPE_TEXT_DIRECTION_LOGICAL
 #define SHAPE_VISUAL            U_SHAPE_TEXT_DIRECTION_VISUAL_LTR
 
@@ -52,21 +51,17 @@ typedef UBool (*bidiAction)(UBiDiTransform *);
  * Structure that holds a predefined reordering scheme, including the following
  * information:
  * <ul>
- * <li>input base direction,</li>
- * <li>input order,</li>
- * <li>output base direction,</li>
- * <li>output order,</li>
- * <li>a digit option that should be applied when the shaping engine is
+ * <li>an input base direction,</li>
+ * <li>an input order,</li>
+ * <li>an output base direction,</li>
+ * <li>an output order,</li>
+ * <li>a digit shaping direction,</li>
+ * <li>a letter shaping direction,</li>
+ * <li>a base direction that should be applied when the reordering engine is
  *     invoked (which can not always be derived from the caller-defined
  *     options),</li>
- * <li>a letter option that should be applied when the shaping engine is
- *     invoked (which can not always be derived from the caller-defined
- *     options),</li>
- * <li>base direction that should be applied when the reordering engine is
- *     invoked (which can not always be derived from the caller-defined
- *     options),</li>
- * <li>array of pointers to functions that perform actions aimed at
- *     accomplishing the required bidi layout transformation.</li>
+ * <li>an array of pointers to functions that accomplish the bidi layout
+ *     transformation.</li>
  * </ul>
  */
 typedef struct {
@@ -82,12 +77,12 @@ typedef struct {
 
 struct UBiDiTransform {
     UBiDi                   *pBidi;             /* pointer to a UBiDi object */
-    const ReorderingScheme  *pActiveScheme;     /* active reordering scheme */
+    const ReorderingScheme  *pActiveScheme;     /* effective reordering scheme */
     UChar                   *src;               /* input text */
     UChar                   *dest;              /* output text */
     uint32_t                srcLength;          /* input text length - not really needed as we are zero-terminated and can u_strlen */
     uint32_t                srcSize;            /* input text capacity excluding the trailing zero */
-    uint32_t                destSize;           /* output text capacity in UChars */
+    uint32_t                destSize;           /* output text capacity */
     uint32_t                *pDestLength;       /* number of UChars written to dest */
     uint32_t                reorderingOptions;  /* reordering options - currently only suppot DO_MIRRORING */
     uint32_t                digits;             /* digit option for ArabicShaping */
@@ -218,26 +213,12 @@ reverse(UBiDiTransform *pTransform)
 }
 
 /**
- * Calls a lower level shaping function.
- * 
- * @param pTransform Pointer to the <code>UBiDiTransform</code> structure.
- * @param options Shaping options.
- */
-static void
-doShape(UBiDiTransform *pTransform, uint32_t options)
-{
-    *pTransform->pDestLength = u_shapeArabic(pTransform->src,
-            pTransform->srcLength, pTransform->dest, pTransform->destSize,
-            options, pTransform->pErrorCode);
-}
-
-/**
  * Applies a new value to the text that serves as input at the current
  * processing step. This value is identical to the original one when we begin
  * the processing, but usually changes as the transformation progresses.
  * 
  * @param pTransform A pointer to the <code>UBiDiTransform</code> structure.
- * @param newSrc A pointer to the new text to be used as input.
+ * @param newSrc A pointer whose value is to be used as input text.
  * @param newLength A length of the new text in <code>UChar</code>s.
  * @param newSize A new source capacity in <code>UChar</code>s.
  */
@@ -270,7 +251,21 @@ updateSrc(UBiDiTransform *pTransform, const UChar *newSrc, uint32_t newLength,
 }
 
 /**
- * Performs numeric and literal shaping.
+ * Calls a lower level shaping function.
+ * 
+ * @param pTransform Pointer to the <code>UBiDiTransform</code> structure.
+ * @param options Shaping options.
+ */
+static void
+doShape(UBiDiTransform *pTransform, uint32_t options)
+{
+    *pTransform->pDestLength = u_shapeArabic(pTransform->src,
+            pTransform->srcLength, pTransform->dest, pTransform->destSize,
+            options, pTransform->pErrorCode);
+}
+
+/**
+ * Performs digit and letter shaping.
  * 
  * @param pTransform Pointer to the <code>UBiDiTransform</code> structure.
  *
@@ -385,7 +380,7 @@ static const ReorderingScheme Schemes[] =
             {reverse, resolve, mirror, shapeArabic, reverse, NULL}}
 };
 
-static const int32_t nSchemes = sizeof(Schemes) / sizeof(*Schemes);
+static const uint32_t nSchemes = sizeof(Schemes) / sizeof(*Schemes);
 
 /**
  * When the direction option is <code>UBIDI_DEFAULT_LTR</code> or
@@ -429,7 +424,7 @@ static const ReorderingScheme*
 findMatchingScheme(UBiDiLevel inLevel, UBiDiLevel outLevel,
         UBiDiOrder inOrder, UBiDiOrder outOrder)
 {
-    int i;
+    uint32_t i;
     for (i = 0; i < nSchemes; i++) {
         const ReorderingScheme *pScheme = Schemes + i;
         if (inLevel == pScheme->inLevel && outLevel == pScheme->outLevel
@@ -488,6 +483,8 @@ ubiditransform_transform(UBiDiTransform *pBiDiTransform,
             : UBIDI_REORDER_DEFAULT;
     pBiDiTransform->pErrorCode = pErrorCode;
 
+    /* Ignore TEXT_DIRECTION_* flags, as we apply our own depending on the text
+       scheme at the time shaping is invoked. */
     shapingOptions &= ~U_SHAPE_TEXT_DIRECTION_MASK;
     pBiDiTransform->digits = shapingOptions & ~U_SHAPE_LETTERS_MASK;
     pBiDiTransform->letters = shapingOptions & ~U_SHAPE_DIGITS_MASK;

@@ -15,6 +15,9 @@
 *
 */
 
+#ifndef UBIDITRANSFORM_H
+#define UBIDITRANSFORM_H
+
 #include "unicode/uchar.h"
 #include "unicode/localpointer.h"
 
@@ -303,5 +306,7 @@ U_NAMESPACE_BEGIN
 U_DEFINE_LOCAL_OPEN_POINTER(LocalUBiDiTransformPointer, UBiDiTransform, ubiditransform_close);
 
 U_NAMESPACE_END
+
+#endif
 
 #endif
