@@ -47,25 +47,29 @@ UChar expected[STR_CAPACITY] = { 0 };
 UChar temp[STR_CAPACITY * 2] = { 0 };
 char pseudo[STR_CAPACITY] = { 0 };
 
-void addTransformTest(TestNode** root);
+void addBidiTransformTest(TestNode** root);
 
 static void testAutoDirection(void);
 
 static void testAllTransformOptions(void);
 
-static void substituteByPseudoChar(const UChar *src, char *dest,
-            const UChar baseReal, const char basePseudo, const char max);
-
 static char* pseudoScript(const UChar *str);
 
 static void shapeDigits(UChar *str, uint32_t digits);
 
-static void logResultsForDir(const UChar *src, const UChar *dest,
-            const UChar *expected, UBiDiLevel inLevel, UBiDiLevel outLevel);
+static void logResultsForDir(const UChar *srcText, const UChar *destTxt,
+            const UChar *expectedTxt, UBiDiLevel inLevel, UBiDiLevel outLevel);
 
-static void verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src,
-            const UChar *dest, const char *expectedChars, uint32_t digits,
+static void verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *srcTxt,
+            const UChar *destTxt, const char *expectedChars, uint32_t digits,
             uint32_t letters);
+
+#if 0
+static void substituteByPseudoChar(const UChar *src, char *dest,
+            const UChar baseReal, const char basePseudo, const char max);
+
+
+/* TODO: This code assumes the codepage is ASCII based. */
 
 /*
  * Using the following conventions:
@@ -78,7 +82,7 @@ static void verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src
 static void
 substituteByPseudoChar(const UChar *src, char *dest, const UChar baseReal,
            const char basePseudo, const char max) {
-    *dest = basePseudo + (*src - baseReal);
+    *dest = basePseudo + (*src - baseReal); /* (range math won't work on EBCDIC) */
     if (*dest > max) {
         *dest = max;
     }
@@ -113,14 +117,20 @@ pseudoScript(const UChar *str) {
     *p = '\0';
     return pseudo;
 }
+#else
+static char*
+pseudoScript(const UChar *str) {
+    return aescstrdup(str, -1);
+}
+#endif
 
 static void
-logResultsForDir(const UChar *src, const UChar *dest, const UChar *expected,
+logResultsForDir(const UChar *srcTxt, const UChar *destTxt, const UChar *expectedTxt,
             UBiDiLevel inLevel, UBiDiLevel outLevel)
 {
-    if (u_strcmp(expected, dest)) {
+    if (u_strcmp(expectedTxt, destTxt)) {
         log_err("Unexpected transform Dest: inLevel: 0x%02x; outLevel: 0x%02x;\ninText: %s; outText: %s; expected: %s\n",
-                inLevel, outLevel, pseudoScript(src), pseudoScript(dest), pseudoScript(expected));
+                inLevel, outLevel, pseudoScript(srcTxt), pseudoScript(destTxt), pseudoScript(expectedTxt));
     }
 }
 
@@ -156,8 +166,6 @@ testAutoDirection(void)
     UErrorCode errorCode = U_ZERO_ERROR;
     UBiDiTransform *pTransform = ubiditransform_open(&errorCode);
 
-    log_verbose("\nEntering bidi/testAutoDirection\n\n");
-
     while (nTexts-- > 0) {
         uint32_t srcLen;
         u_unescape(srcTexts[nTexts], src, STR_CAPACITY);
@@ -182,7 +190,6 @@ testAutoDirection(void)
     }
     ubidi_close(pBidi);
     ubiditransform_close(pTransform);
-    log_verbose("\nExiting bidi/transform/testAutoDirection\n\n");
 }
 
 static void
@@ -203,8 +210,8 @@ shapeDigits(UChar *str, uint32_t digits)
 }
 
 static void
-verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src,
-        const UChar *dest, const char *expectedChars, uint32_t digits, uint32_t letters)
+verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *srcTxt,
+        const UChar *destTxt, const char *expectedChars, uint32_t digits, uint32_t letters)
 {
     switch (digits) {
         case U_SHAPE_DIGITS_EN2AN:
@@ -238,7 +245,7 @@ verifyResultsForAllOpt(const UBidiTestCases *pTest, const UChar *src,
     }
     if (u_strcmp(expected, dest)) {
         log_err("Unexpected transform Dest: Test: %s; Digits: 0x%08x; Letters: 0x%08x\ninText: %s; outText: %s; expected: %s\n",
-                pTest->pMessage, digits, letters, pseudoScript(src), pseudoScript(dest), pseudoScript(expected));
+                pTest->pMessage, digits, letters, pseudoScript(srcTxt), pseudoScript(destTxt), pseudoScript(expected));
     }
 }
 
@@ -384,8 +391,6 @@ testAllTransformOptions(void)
     UErrorCode errorCode = U_ZERO_ERROR;
     UBiDiTransform *pTransform = ubiditransform_open(&errorCode);
 
-    log_verbose("\nEntering bidi/testAllTransformOptions\n\n");
-
     u_unescape(inText, src, STR_CAPACITY);
 
     // Test various combinations of para level, order, mirroring, digits and letters
@@ -412,14 +417,13 @@ testAllTransformOptions(void)
         }
     }
     ubiditransform_close(pTransform);
-    log_verbose("\nExiting bidi/transform/testAllTransformOptions\n\n");
 }
 
 void
-addTransformTest(TestNode** root)
+addBidiTransformTest(TestNode** root)
 {
-    addTest(root, testAutoDirection, "bidi/transform/TestAutoDirection");
-    addTest(root, testAllTransformOptions, "bidi/transform/TestAllTransformOptions");
+    addTest(root, testAutoDirection, "complex/bidi-transform/TestAutoDirection");
+    addTest(root, testAllTransformOptions, "complex/bidi-transform/TestAllTransformOptions");
 }
 
 #ifdef __cplusplus
