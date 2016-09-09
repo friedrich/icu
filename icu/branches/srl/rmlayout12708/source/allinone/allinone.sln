@@ -53,8 +53,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "icupkg", "..\tools\icupkg\i
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gendict", "..\tools\gendict\gendict.vcxproj", "{9D4211F7-2C77-439C-82F0-30A4E43BA569}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "letest", "..\test\letest\letest.vcxproj", "{67351485-4D18-4245-BE39-A7EF0675ACD2}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gencfu", "..\tools\gencfu\gencfu.vcxproj", "{691EE0C0-DC57-4A48-8AEE-8ED75EB3A057}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gennorm2", "..\tools\gennorm2\gennorm2.vcxproj", "{C7891A65-80AB-4245-912E-5F1E17B0E6C4}"
@@ -291,14 +289,6 @@ Global
 		{9D4211F7-2C77-439C-82F0-30A4E43BA569}.Release|Win32.Build.0 = Release|Win32
 		{9D4211F7-2C77-439C-82F0-30A4E43BA569}.Release|x64.ActiveCfg = Release|x64
 		{9D4211F7-2C77-439C-82F0-30A4E43BA569}.Release|x64.Build.0 = Release|x64
-		{67351485-4D18-4245-BE39-A7EF0675ACD2}.Debug|Win32.ActiveCfg = Debug|Win32
-		{67351485-4D18-4245-BE39-A7EF0675ACD2}.Debug|Win32.Build.0 = Debug|Win32
-		{67351485-4D18-4245-BE39-A7EF0675ACD2}.Debug|x64.ActiveCfg = Debug|x64
-		{67351485-4D18-4245-BE39-A7EF0675ACD2}.Debug|x64.Build.0 = Debug|x64
-		{67351485-4D18-4245-BE39-A7EF0675ACD2}.Release|Win32.ActiveCfg = Release|Win32
-		{67351485-4D18-4245-BE39-A7EF0675ACD2}.Release|Win32.Build.0 = Release|Win32
-		{67351485-4D18-4245-BE39-A7EF0675ACD2}.Release|x64.ActiveCfg = Release|x64
-		{67351485-4D18-4245-BE39-A7EF0675ACD2}.Release|x64.Build.0 = Release|x64
 		{691EE0C0-DC57-4A48-8AEE-8ED75EB3A057}.Debug|Win32.ActiveCfg = Debug|Win32
 		{691EE0C0-DC57-4A48-8AEE-8ED75EB3A057}.Debug|Win32.Build.0 = Debug|Win32
 		{691EE0C0-DC57-4A48-8AEE-8ED75EB3A057}.Debug|x64.ActiveCfg = Debug|x64
