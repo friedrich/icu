@@ -232,14 +232,6 @@ public class BidiTransform
             throw new IllegalArgumentException();
         }
         this.text = text.toString();
-        this.bidi = new Bidi();
-
-        this.reorderingOptions = Mirroring.ON.equals(doMirroring)
-              ? Bidi.DO_MIRRORING : Bidi.REORDER_DEFAULT;
-
-        /* Ignore TEXT_DIRECTION_* flags, as we apply our own depending on the
-           text scheme at the time shaping is invoked. */
-        this.shapingOptions = shapingOptions & ~ArabicShaping.TEXT_DIRECTION_MASK;
 
         byte[] levels = {inParaLevel, outParaLevel};
         resolveBaseDirection(levels);
@@ -247,6 +239,13 @@ public class BidiTransform
         ReorderingScheme currentScheme = findMatchingScheme(levels[0], inOrder,
                 levels[1], outOrder);
         if (currentScheme != null) {
+            this.bidi = new Bidi();
+            this.reorderingOptions = Mirroring.ON.equals(doMirroring)
+                    ? Bidi.DO_MIRRORING : Bidi.REORDER_DEFAULT;
+
+              /* Ignore TEXT_DIRECTION_* flags, as we apply our own depending on the
+                 text scheme at the time shaping is invoked. */
+            this.shapingOptions = shapingOptions & ~ArabicShaping.TEXT_DIRECTION_MASK;
             currentScheme.doTransform(this);
         }
         return this.text;
