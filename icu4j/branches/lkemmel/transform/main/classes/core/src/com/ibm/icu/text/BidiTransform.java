@@ -12,9 +12,9 @@ import com.ibm.icu.lang.UCharacter;
 
 /**
  * Bidi Layout Transformation Engine.
- * 
+ *
  * @author Lina Kemmel
- * 
+ *
  * @draft ICU 58
  * @nal This API might change or be removed in a future release.
  */
@@ -51,7 +51,7 @@ public class BidiTransform
      * Arabic shaping, and - if the input/output base directions mismatch -
      * string reverse operations.</li>
      * </ul>
-     * 
+     *
      * @see Bidi#setInverse
      * @see Bidi#setReorderingMode
      * @see Bidi#REORDER_DEFAULT
@@ -79,7 +79,7 @@ public class BidiTransform
      * <code>{@link Mirroring}</code> indicates whether or not characters with
      * the "mirrored" property in RTL runs should be replaced with their
      * mirror-image counterparts.
-     * 
+     *
      * @see Bidi#DO_MIRRORING
      * @see Bidi#setReorderingOptions
      * @see Bidi#writeReordered
@@ -89,7 +89,7 @@ public class BidiTransform
      */
     public enum Mirroring {
         /**
-         * Constant indicating that character mirroring should not be 
+         * Constant indicating that character mirroring should not be
          * performed. This is the default.
          * @draft ICU 58
          * @nal This API might change or be removed in a future release.
@@ -113,7 +113,7 @@ public class BidiTransform
 
     /**
      * <code>{@link BidiTransform}</code> default constructor.
-     * 
+     *
      * @draft ICU 58
      * @provisional This API might change or be removed in a future release.
      */
@@ -228,11 +228,14 @@ public class BidiTransform
             byte outParaLevel, Order outOrder,
             Mirroring doMirroring, int shapingOptions)
     {
+        if (text == null || inOrder == null || outOrder == null || doMirroring == null) {
+            throw new IllegalArgumentException();
+        }
         this.text = text.toString();
         this.bidi = new Bidi();
 
         this.reorderingOptions = Mirroring.ON.equals(doMirroring)
-              ? Bidi.DO_MIRRORING : Bidi.REORDER_DEFAULT;        
+              ? Bidi.DO_MIRRORING : Bidi.REORDER_DEFAULT;
 
         /* Ignore TEXT_DIRECTION_* flags, as we apply our own depending on the
            text scheme at the time shaping is invoked. */
@@ -240,7 +243,7 @@ public class BidiTransform
 
         byte[] levels = {inParaLevel, outParaLevel};
         resolveBaseDirection(levels);
-        
+
         ReorderingScheme currentScheme = findMatchingScheme(levels[0], inOrder,
                 levels[1], outOrder);
         if (currentScheme != null) {
@@ -255,7 +258,7 @@ public class BidiTransform
      * <code>{@link Direction#DIRECTION_DEFAULT_RTL}</code>, resolves the base
      * direction according to that of the first strong directional character in
      * the text.
-     * 
+     *
      * @param levels Byte array, where levels[0] is an input level levels[1] is
      *        an output level. Resolved levels override these.
      */
@@ -277,8 +280,8 @@ public class BidiTransform
     /**
      * Finds a valid <code>{@link ReorderingScheme}</code> matching the
      * caller-defined scheme.
-     * 
-     * @return A valid <code>ReorderingScheme</code> object or null 
+     *
+     * @return A valid <code>ReorderingScheme</code> object or null
      */
     private ReorderingScheme findMatchingScheme(byte inLevel, Order inOrder,
             byte outLevel, Order outOrder) {
@@ -292,7 +295,7 @@ public class BidiTransform
 
     /**
      * Performs bidi resolution of text.
-     * 
+     *
      * @param level Base embedding level
      * @param options Reordering options
      */
@@ -304,7 +307,7 @@ public class BidiTransform
 
     /**
      * Performs basic reordering of text (Logical LTR or RTL to Visual LTR).
-     * 
+     *
      */
     void reorder() {
         text = bidi.writeReordered(reorderingOptions);
@@ -566,12 +569,12 @@ public class BidiTransform
         /**
          * Indicates whether this scheme matches another one in terms of
          * equality of base direction and ordering scheme.
-         * 
+         *
          * @param inLevel Base level of the input text
          * @param inOrder Order of the input text
          * @param outLevel Base level of the output text
          * @param outOrder Order of the output text
-         * 
+         *
          * @return <code>true</code> if it's a match, <code>false</code>
          * otherwise
          */
@@ -603,7 +606,7 @@ public class BidiTransform
     private static boolean IsRTL(byte level) {
         return (level & 1) == 1;
     }
-    
+
     /**
      * Is order logical? convenience method
 

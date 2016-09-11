@@ -29,7 +29,6 @@ public class TestBidiTransform extends TestFmwk {
 
     static final char LATN_ZERO         = '\u0030';
     static final char ARAB_ZERO         = '\u0660';
-    static final char LRM               = '\u200e';
     static final char MIN_HEB_LETTER    = '\u05d0';
     static final char MIN_ARAB_LETTER   = '\u0630'; // relevant to this test only
     static final char MIN_SHAPED_LETTER = '\ufeab'; // relevant to this test only
