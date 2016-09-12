@@ -8,6 +8,8 @@
  */
 package com.ibm.icu.dev.test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -637,6 +639,26 @@ abstract public class TestFmwk extends AbstractTestLog {
             }
         }
         throw new InternalError();
+    }
+
+    protected static boolean checkDefaultPrivateConstructor(String fullyQualifiedClassName) throws Exception {
+        return checkDefaultPrivateConstructor(Class.forName(fullyQualifiedClassName));
+    }
+
+    protected static boolean checkDefaultPrivateConstructor(Class<?> classToBeTested) throws Exception {
+        Constructor<?> constructor = classToBeTested.getDeclaredConstructor();
+
+        // Check that the constructor is private.
+        boolean isPrivate = Modifier.isPrivate(constructor.getModifiers());
+
+        // Call the constructor for coverage.
+        constructor.setAccessible(true);
+        constructor.newInstance();
+
+        if (!isPrivate) {
+            errln("Default private constructor for class: " + classToBeTested.getName() + " is not private.");
+        }
+        return isPrivate;
     }
 
 

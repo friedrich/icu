@@ -16,12 +16,14 @@ package com.ibm.icu.dev.test.format;
 
 import java.text.FieldPosition;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 
+import com.ibm.icu.util.*;
 import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
@@ -31,10 +33,6 @@ import com.ibm.icu.text.DateIntervalFormat;
 import com.ibm.icu.text.DateIntervalInfo;
 import com.ibm.icu.text.DateIntervalInfo.PatternInfo;
 import com.ibm.icu.text.SimpleDateFormat;
-import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.DateInterval;
-import com.ibm.icu.util.TimeZone;
-import com.ibm.icu.util.ULocale;
 
 public class DateIntervalFormatTest extends com.ibm.icu.dev.test.TestFmwk {
 
@@ -1351,6 +1349,43 @@ public class DateIntervalFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         if (di.hashCode() != 1) {
             errln("hasCode() should return 1.");
         }
+    }
+
+    @Test
+    public void TestDateIntervalFormatCoverage() throws Exception{
+        long date1 = 1299090600000L;
+        long date2 = 1299115800000L;
+        DateInterval dtitv = new DateInterval(date1, date2);
+        DateIntervalFormat dtitvfmt = DateIntervalFormat.getInstance("MMMd", Locale.ENGLISH);
+        DateIntervalInfo dtintinf = new DateIntervalInfo(ULocale.ENGLISH);
+
+        // Check the default private constructor
+        checkDefaultPrivateConstructor(DateIntervalFormat.class);
+
+        // Check clone
+        DateIntervalFormat dtitvfmtClone = (DateIntervalFormat) dtitvfmt.clone();
+        assertEquals("DateIntervalFormat.clone() failed", dtitvfmt.format(dtitv), dtitvfmtClone.format(dtitv));
+
+        // Coverage for getInstance
+        assertNotNull("Expected DateIntervalFormat object", DateIntervalFormat.getInstance("MMMd", dtintinf));
+        assertNotNull("Expected DateIntervalFormat object",
+                DateIntervalFormat.getInstance("MMMdHHmm", Locale.ENGLISH, dtintinf));
+
+        // Coverage for parseObject. Exception expected.
+        try {
+            dtitvfmt.parseObject("", new ParsePosition(0));
+            errln("Exception was expected when calling DateIntervalFormat.parseObject()");
+        } catch (Exception e) { /* No op */ }
+
+        // Check getPatterns()
+        Output<String> secondPart = new Output<>();
+        Calendar fromCalendar = Calendar.getInstance(Locale.ENGLISH);
+        fromCalendar.set(2016, 5, 22);
+        Calendar toCalendar= Calendar.getInstance(Locale.ENGLISH);
+        toCalendar.set(2016, 5, 23);
+        assertEquals("Date interval pattern mismatch.",
+                dtitvfmt.getPatterns(fromCalendar, toCalendar, secondPart), "MMM d – ");
+        assertEquals("Date interval pattern mismatch.", secondPart.value, "d");
     }
 
     @Test
