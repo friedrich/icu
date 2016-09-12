@@ -17,37 +17,37 @@ import com.ibm.icu.lang.UCharacter;
  * @author Lina Kemmel
  *
  * @draft ICU 58
- * @nal This API might change or be removed in a future release.
+ * @provisional This API might change or be removed in a future release.
  */
 public class BidiTransform
 {
     /**
-     * <code>{@link #Order}</code> indicates the order of text.
+     * <code>{@link Order}</code> indicates the order of text.
      * <p>
      * This bidi transformation engine supports all possible combinations (4 in
      * total) of input and output text order:
      * <ul>
-     * <li><logical input, visual output>: unless the output direction is RTL,
+     * <li>{logical input, visual output}: unless the output direction is RTL,
      * this corresponds to a normal operation of the Bidi algorithm as
      * described in the Unicode Technical Report and implemented by
      * <code>{@link Bidi}</code> when the reordering mode is set to
      * <code>Bidi#REORDER_DEFAULT</code>. Visual RTL mode is not supported by
      * <code>{@link Bidi}</code> and is accomplished through reversing a visual
      * LTR string,</li>
-     * <li><visual input, logical output>: unless the input direction is RTL,
+     * <li>{visual input, logical output}: unless the input direction is RTL,
      * this corresponds to an "inverse bidi algorithm" in
      * <code>{@link Bidi}</code> with the reordering mode set to
      * <code>{@link Bidi#REORDER_INVERSE_LIKE_DIRECT}</code>. Visual RTL mode
      * is not not supported by <code>{@link Bidi}</code> and is accomplished
      * through reversing a visual LTR string,</li>
-     * <li><logical input, logical output>: if the input and output base
+     * <li>{logical input, logical output}: if the input and output base
      * directions mismatch, this corresponds to the <code>{@link Bidi}</code>
      * implementation with the reordering mode set to
      * <code>{@link Bidi#REORDER_RUNS_ONLY}</code>; and if the input and output
      * base directions are identical, the transformation engine will only
      * handle character mirroring and Arabic shaping operations without
      * reordering,</li>
-     * <li><visual input, visual output>: this reordering mode is not supported
+     * <li>{visual input, visual output}: this reordering mode is not supported
      * by the <code>{@link Bidi}</code> engine; it implies character mirroring,
      * Arabic shaping, and - if the input/output base directions mismatch -
      * string reverse operations.</li>
@@ -59,19 +59,19 @@ public class BidiTransform
      * @see Bidi#REORDER_INVERSE_LIKE_DIRECT
      * @see Bidi#REORDER_RUNS_ONLY
      * @draft ICU 58
-     * @nal This API might change or be removed in a future release.
+     * @provisional This API might change or be removed in a future release.
      */
     public enum Order {
         /** Constant indicating a logical order.
-          * This is the default for input text.
+          *
           * @draft ICU 58
-          * @nal This API might change or be removed in a future release.
+          * @provisional This API might change or be removed in a future release.
           */
         LOGICAL,
         /** Constant indicating a visual order.
-          * This is a default for output text.
+          *
           * @draft ICU 58
-          * @nal This API might change or be removed in a future release.
+          * @provisional This API might change or be removed in a future release.
           */
         VISUAL;
     }
@@ -86,21 +86,24 @@ public class BidiTransform
      * @see Bidi#writeReordered
      * @see Bidi#writeReverse
      * @draft ICU 58
-     * @nal This API might change or be removed in a future release.
+     * @provisional This API might change or be removed in a future release.
      */
     public enum Mirroring {
         /**
          * Constant indicating that character mirroring should not be
-         * performed. This is the default.
+         * performed.
+         *
          * @draft ICU 58
-         * @nal This API might change or be removed in a future release.
+         * @provisional This API might change or be removed in a future release.
          */
         OFF,
         /**
          * Constant indicating that character mirroring should be performed.
+         * <p>
          * This corresponds to calling <code>{@link Bidi#writeReordered}</code>
          * or <code>{@link Bidi#writeReverse}</code> with the
          * <code>{@link Bidi#DO_MIRRORING}</code> option bit set.
+         *
          * @draft ICU 58
          * @provisional This API might change or be removed in a future release.
          */
@@ -129,6 +132,7 @@ public class BidiTransform
      * <p>
      * In terms of <code>{@link Bidi}</code> class, such a transformation
      * implies:
+     * <ul>
      * <li>calling <code>{@link Bidi#setReorderingMode}</code> as needed (when
      * the reordering mode is other than normal),</li>
      * <li>calling <code>{@link Bidi#setInverse}</code> as needed (when text
@@ -140,58 +144,62 @@ public class BidiTransform
      * to the output, by calling <code>{@link Bidi#writeReordered}</code>,</li>
      * <li>performing Arabic digit and letter shaping on the output text by
      * calling <code>{@link ArabicShaping#shape}</code>.</li>
-     * </ul>
+     * </ul><p>
      * An "ordering scheme" encompasses the base direction and the order of
      * text, and these characteristics must be defined by the caller for both
      * input and output explicitly .<p>
-     * There are 36 possible combinations of <input, output> ordering schemes,
+     * There are 36 possible combinations of {input, output} ordering schemes,
      * which are partially supported by <code>{@link Bidi}</code> already.
      * Examples of the currently supported combinations:
      * <ul>
-     * <li><Logical LTR, Visual LTR>: this is equivalent to calling
+     * <li>{Logical LTR, Visual LTR}: this is equivalent to calling
      * <code>{@link Bidi#setPara}</code> with
      * <code>paraLevel == {@link Bidi#LTR}</code>,</li>
-     * <li><Logical RTL, Visual LTR>: this is equivalent to calling
+     * <li>{Logical RTL, Visual LTR}: this is equivalent to calling
      * <code>{@link Bidi#setPara}</code> with
      * <code>paraLevel == {@link Bidi#RTL}</code>,</li>
-     * <li><Logical Default ("Auto") LTR, Visual LTR>: this is equivalent to
+     * <li>{Logical Default ("Auto") LTR, Visual LTR}: this is equivalent to
      * calling <code>{@link Bidi#setPara}</code> with
      * <code>paraLevel == {@link Bidi#LEVEL_DEFAULT_LTR}</code>,</li>
-     * <li><Logical Default ("Auto") RTL, Visual LTR>: this is equivalent to
+     * <li>{Logical Default ("Auto") RTL, Visual LTR}: this is equivalent to
      * calling <code>{@link Bidi#setPara}</code> with
      * <code>paraLevel == {@link Bidi#LEVEL_DEFAULT_RTL}</code>,</li>
-     * <li><Visual LTR, Logical LTR>: this is equivalent to
+     * <li>{Visual LTR, Logical LTR}: this is equivalent to
      * calling <code>{@link Bidi#setInverse}(true)</code> and then
      * <code>{@link Bidi#setPara}</code> with
      * <code>paraLevel == {@link Bidi#LTR}</code>,</li>
-     * <li><Visual LTR, Logical RTL>: this is equivalent to calling
+     * <li>{Visual LTR, Logical RTL}: this is equivalent to calling
      * <code>{@link Bidi#setInverse}(true)</code> and then
      * <code>{@link Bidi#setPara}</code> with
      * <code>paraLevel == {@link Bidi#RTL}</code>.</li>
-     * </ul>
+     * </ul><p>
      * All combinations that involve the Visual RTL scheme are unsupported by
      * <code>{@link Bidi}</code>, for instance:
      * <ul>
-     * <li><Logical LTR, Visual RTL>,</li>
-     * <li><Visual RTL, Logical RTL>.</li>
+     * <li>{Logical LTR, Visual RTL},</li>
+     * <li>{Visual RTL, Logical RTL}.</li>
      * </ul>
      * <p>Example of usage of the transformation engine:<br>
      * <pre>
-     * String in = "abc\u062510";
+     * BidiTransform bidiTransform = new BidiTransform();
+     * String in = "abc \u06f0123"; // "abc \\u06f0123"
      * // Run a transformation.
-     * String out = BidiTransform.transform(in,
+     * String out = bidiTransform.transform(in,
      *          Bidi.LTR, Order.VISUAL,
      *          Bidi.RTL, Order.LOGICAL,
      *          Mirroring.OFF,
-     *          ArabicShaping.SHAPE_DIGITS_AN2EN | ArabicShaping.SHAPE_DIGIT_TYPE_AN_EXTENDED);
+     *          ArabicShaping.DIGITS_AN2EN | ArabicShaping.DIGIT_TYPE_AN_EXTENDED);
+     * // Result: "0123 abc".
      * // Do something with out.
-     *  out = out.replace('0', '2');
+     * out = out.replace('0', '4');
+     * // Result: "4123 abc".
      * // Run a reverse transformation.
-     * in = BidiTransform.transform(out,
+     * String inNew = bidiTransform.transform(out,
      *          Bidi.RTL, Order.LOGICAL,
      *          Bidi.LTR, Order.VISUAL,
      *          Mirroring.OFF,
-     *          ArabicShaping.SHAPE_DIGITS_EN2AN | ArabicShaping.SHAPE_DIGIT_TYPE_AN_EXTENDED);
+     *          ArabicShaping.DIGITS_EN2AN | ArabicShaping.DIGIT_TYPE_AN_EXTENDED);
+     * // Result: "abc \\u06f4\\u06f1\\u06f2\\u06f3"
      * </pre>
      * </p>
      *
@@ -220,7 +228,7 @@ public class BidiTransform
      *        transformation.
      * @throws IllegalArgumentException if <code>text</code>,
      *        <code>inOrder</code>, <code>outOrder</code>, or
-     *        <code>doMirroring</code> is <code>null</code>.
+     *        <code>doMirroring</code> parameter is <code>null</code>.
      * @draft ICU 58
      * @provisional This API might change or be removed in a future release.
      */

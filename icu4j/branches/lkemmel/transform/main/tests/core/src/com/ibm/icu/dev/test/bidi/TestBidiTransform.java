@@ -54,10 +54,11 @@ public class TestBidiTransform extends TestFmwk {
 
     /**
      * Tests various combinations of base directions, with the input either
-     * <code>Direction.DEFAULT_LTR</code> or <code>Direction.DEFAULT_RTL</code>,
-     * and the output either <code>Direction.LTR</code> or
-     * <code>Direction.RTL</code>. Order is always <code>Order.LOGICAL</code>
-     * for the input and <code>Order.VISUAL</code> for the output.
+     * <code>Bidi.LEVEL_DEFAULT_LTR</code> or
+     * <code>Bidi.LEVEL_DEFAULT_LTR</code>, and the output either
+     * <code>Bidi.LEVEL_LTR</code> or <code>Bidi.LEVEL_RTL</code>. Order is
+     * always <code>Order.LOGICAL</code> for the input and
+     * <code>Order.VISUAL</code> for the output.
      */
     private void autoDirectionTest() {
         final String[] inTexts = {
