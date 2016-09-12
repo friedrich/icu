@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1117,6 +1118,38 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         if (found.intValue() != numIteration) {
             errln("Incorrect count: " + found.toString() + ", expected: " + numIteration);
         }
+    }
+
+    @Test
+    public void TestGetDisplayNames() {
+        long date = System.currentTimeMillis();
+        NameType[] types = new NameType[]{
+                NameType.LONG_STANDARD, NameType.LONG_DAYLIGHT,
+                NameType.SHORT_STANDARD, NameType.SHORT_DAYLIGHT
+        };
+        Set<String> zones = ZoneMeta.getAvailableIDs(SystemTimeZoneType.ANY, null, null);
+
+        int casesTested = 0;
+        Random rnd = new Random(2016);
+        for (ULocale uloc : ULocale.getAvailableLocales()) {
+            if (rnd.nextDouble() > 0.01) { continue; }
+            TimeZoneNames tznames = TimeZoneNames.getInstance(uloc);
+            for (String zone : zones) {
+                if (rnd.nextDouble() > 0.01) { continue; }
+                casesTested++;
+                String[] result = new String[types.length];
+                tznames.getDisplayNames(zone, types, date, result, 0);
+                for (int i=0; i<types.length; i++) {
+                    NameType type = types[i];
+                    String expected = result[i];
+                    String actual = tznames.getDisplayName(zone, type, date);
+                    assertEquals("getDisplayNames() returns different result than getDisplayName() for " + zone + " in locale " + uloc,
+                            expected, actual);
+                }
+            }
+        }
+
+        assertTrue("No cases were tested", casesTested > 0);
     }
 
     // Basic get/set test for methods not being called otherwise.
