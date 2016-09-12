@@ -1133,18 +1133,38 @@ public class TimeZoneFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         Random rnd = new Random(2016);
         for (ULocale uloc : ULocale.getAvailableLocales()) {
             if (rnd.nextDouble() > 0.01) { continue; }
-            TimeZoneNames tznames = TimeZoneNames.getInstance(uloc);
             for (String zone : zones) {
                 if (rnd.nextDouble() > 0.01) { continue; }
                 casesTested++;
-                String[] result = new String[types.length];
-                tznames.getDisplayNames(zone, types, date, result, 0);
-                for (int i=0; i<types.length; i++) {
-                    NameType type = types[i];
-                    String expected = result[i];
-                    String actual = tznames.getDisplayName(zone, type, date);
-                    assertEquals("getDisplayNames() returns different result than getDisplayName() for " + zone + " in locale " + uloc,
-                            expected, actual);
+
+                // Test default TimeZoneNames (uses an overridden getDisplayNames)
+                {
+                    TimeZoneNames tznames = TimeZoneNames.getInstance(uloc);
+                    tznames.loadAllDisplayNames();
+                    String[] result = new String[types.length];
+                    tznames.getDisplayNames(zone, types, date, result, 0);
+                    for (int i=0; i<types.length; i++) {
+                        NameType type = types[i];
+                        String expected = result[i];
+                        String actual = tznames.getDisplayName(zone, type, date);
+                        assertEquals("TimeZoneNames: getDisplayNames() returns different result than getDisplayName()"
+                                + " for " + zone + " in locale " + uloc, expected, actual);
+                    }
+                }
+
+                // Test TZDBTimeZoneNames (uses getDisplayNames from abstract class)
+                {
+                    TimeZoneNames tznames = new TZDBTimeZoneNames(uloc);
+                    tznames.loadAllDisplayNames();
+                    String[] result = new String[types.length];
+                    tznames.getDisplayNames(zone, types, date, result, 0);
+                    for (int i=0; i<types.length; i++) {
+                        NameType type = types[i];
+                        String expected = result[i];
+                        String actual = tznames.getDisplayName(zone, type, date);
+                        assertEquals("TZDBTimeZoneNames: getDisplayNames() returns different result than getDisplayName()"
+                                + " for " + zone + " in locale " + uloc, expected, actual);
+                    }
                 }
             }
         }
