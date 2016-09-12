@@ -104,111 +104,112 @@ public class TestBidiTransform extends TestFmwk {
      * </ul>
      */
     private void allTransformOptionsTest() {
-        final String inText = "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 23\u0660 e\u0631456 f \u0632 \u0661\u0662";
+        final String inText = "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 23\u0660 e\u0631456 f \ufeaf \u0661\u0662";
 
+        /* !!! TODO: Replace Strings with char[] array and manipulate chars */
         final Object[][] testCases = {
             { Bidi.LTR, Order.LOGICAL, Bidi.LTR, Order.LOGICAL,
                     inText, // reordering no mirroring
-                    "a[b]c \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 23\u0660 e\u0631456 f \u0632 \u0661\u0662", // mirroring
-                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u0662\u0663\u0660 e\u0631\u0664\u0665\u0666 f \u0632 \u0661\u0662", // context numeric shaping
-                    "1: Logical LTR ==> Logical LTR" },
+                    "a[b]c \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 23\u0660 e\u0631456 f \ufeaf \u0661\u0662", // mirroring
+                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u0662\u0663\u0660 e\u0631\u0664\u0665\u0666 f \ufeaf \u0661\u0662", // context numeric shaping
+                    "1: Logical LTR ==> Logical LTR" }, // message
             { Bidi.LTR, Order.LOGICAL, Bidi.LTR, Order.VISUAL,
-                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \u0632",
-                    "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \u0632",
-                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d \u0662\u0663\u0660 \u0630 e\u0664\u0665\u0666\u0631 f \u0661\u0662 \u0632",
+                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
+                    "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
+                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d \u0662\u0663\u0660 \u0630 e\u0664\u0665\u0666\u0631 f \u0661\u0662 \ufeaf",
                     "2: Logical LTR ==> Visual LTR" },
             { Bidi.LTR, Order.LOGICAL, Bidi.RTL, Order.LOGICAL,
-                    "\u0632 \u0661\u0662 f \u0631e456 \u0630 23\u0660 d \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 a[b]c",
-                    "\u0632 \u0661\u0662 f \u0631e456 \u0630 23\u0660 d \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 a[b]c",
-                    "\u0632 \u0661\u0662 f \u0631e\u0664\u0665\u0666 \u0630 \u0662\u0663\u0660 d \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 a[b]c",
+                    "\ufeaf \u0661\u0662 f \u0631e456 \u0630 23\u0660 d \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 a[b]c",
+                    "\ufeaf \u0661\u0662 f \u0631e456 \u0630 23\u0660 d \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 a[b]c",
+                    "\ufeaf \u0661\u0662 f \u0631e\u0664\u0665\u0666 \u0630 \u0662\u0663\u0660 d \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 a[b]c",
                     "3: Logical LTR ==> Logical RTL" },
             { Bidi.LTR, Order.LOGICAL, Bidi.RTL, Order.VISUAL,
-                    "\u0632 \u0662\u0661 f \u0631654e \u0630 \u066032 d \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 c]b[a",
-                    "\u0632 \u0662\u0661 f \u0631654e \u0630 \u066032 d \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 c]b[a",
-                    "\u0632 \u0662\u0661 f \u0631\u0666\u0665\u0664e \u0630 \u0660\u0663\u0662 d \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 c]b[a",
+                    "\ufeaf \u0662\u0661 f \u0631654e \u0630 \u066032 d \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 c]b[a",
+                    "\ufeaf \u0662\u0661 f \u0631654e \u0630 \u066032 d \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 c]b[a",
+                    "\ufeaf \u0662\u0661 f \u0631\u0666\u0665\u0664e \u0630 \u0660\u0663\u0662 d \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 c]b[a",
                     "4: Logical LTR ==> Visual RTL" },
 
             { Bidi.RTL, Order.LOGICAL, Bidi.RTL, Order.LOGICAL, inText,
-                    "a[b]c \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 23\u0660 e\u0631456 f \u0632 \u0661\u0662", // mirroring
-                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 23\u0660 e\u0631456 f \u0632 \u0661\u0662",
+                    "a[b]c \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 23\u0660 e\u0631456 f \ufeaf \u0661\u0662",
+                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 23\u0660 e\u0631456 f \ufeaf \u0661\u0662",
                     "5: Logical RTL ==> Logical RTL" },
             { Bidi.RTL, Order.LOGICAL, Bidi.RTL, Order.VISUAL,
-                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
-                    "c]b[a \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
-                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
+                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
+                    "c]b[a \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
+                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
                     "6: Logical RTL ==> Visual RTL" },
             { Bidi.RTL, Order.LOGICAL, Bidi.LTR, Order.LOGICAL,
-                    "\u0632 \u0661\u0662 f 456\u0631e 23\u0630 \u0660 d 1 \u05d0(\u05d1\u05d2 \u05d3)\u05d4 a[b]c",
-                    "\u0632 \u0661\u0662 f 456\u0631e 23\u0630 \u0660 d 1 \u05d0)\u05d1\u05d2 \u05d3(\u05d4 a[b]c",
-                    "\u0632 \u0661\u0662 f 456\u0631e 23\u0630 \u0660 d 1 \u05d0(\u05d1\u05d2 \u05d3)\u05d4 a[b]c",
+                    "\ufeaf \u0661\u0662 f 456\u0631e 23\u0630 \u0660 d 1 \u05d0(\u05d1\u05d2 \u05d3)\u05d4 a[b]c",
+                    "\ufeaf \u0661\u0662 f 456\u0631e 23\u0630 \u0660 d 1 \u05d0)\u05d1\u05d2 \u05d3(\u05d4 a[b]c",
+                    "\ufeaf \u0661\u0662 f 456\u0631e 23\u0630 \u0660 d 1 \u05d0(\u05d1\u05d2 \u05d3)\u05d4 a[b]c",
                     "7: Logical RTL ==> Logical LTR" },
             { Bidi.RTL, Order.LOGICAL, Bidi.LTR, Order.VISUAL,
-                    "\u0661\u0662 \u0632 f 456\u0631e 23\u0660 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 a[b]c",
-                    "\u0661\u0662 \u0632 f 456\u0631e 23\u0660 \u0630 d 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 a[b]c",
-                    "\u0661\u0662 \u0632 f 456\u0631e 23\u0660 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 a[b]c",
+                    "\u0661\u0662 \ufeaf f 456\u0631e 23\u0660 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 a[b]c",
+                    "\u0661\u0662 \ufeaf f 456\u0631e 23\u0660 \u0630 d 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 a[b]c",
+                    "\u0661\u0662 \ufeaf f 456\u0631e 23\u0660 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 a[b]c",
                     "8: Logical RTL ==> Visual LTR" },
 
             { Bidi.LTR, Order.VISUAL, Bidi.LTR, Order.VISUAL, inText,
-                    "a[b]c \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 23\u0660 e\u0631456 f \u0632 \u0661\u0662", // mirroring
-                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u0662\u0663\u0660 e\u0631\u0664\u0665\u0666 f \u0632 \u0661\u0662",
+                    "a[b]c \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 23\u0660 e\u0631456 f \ufeaf \u0661\u0662",
+                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u0662\u0663\u0660 e\u0631\u0664\u0665\u0666 f \ufeaf \u0661\u0662",
                     "9: Visual LTR ==> Visual LTR" },
             { Bidi.LTR, Order.VISUAL, Bidi.LTR, Order.LOGICAL,
-                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \u0632",
-                    "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \u0632",
-                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \u0632",
+                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
+                    "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
+                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
                     "10: Visual LTR ==> Logical LTR" },
             { Bidi.LTR, Order.VISUAL, Bidi.RTL, Order.VISUAL,
-                    "\u0662\u0661 \u0632 f 654\u0631e \u066032 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 c]b[a",
-                    "\u0662\u0661 \u0632 f 654\u0631e \u066032 \u0630 d 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 c]b[a",
-                    "\u0662\u0661 \u0632 f \u0666\u0665\u0664\u0631e \u0660\u0663\u0662 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 c]b[a",
+                    "\u0662\u0661 \ufeaf f 654\u0631e \u066032 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 c]b[a",
+                    "\u0662\u0661 \ufeaf f 654\u0631e \u066032 \u0630 d 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 c]b[a",
+                    "\u0662\u0661 \ufeaf f \u0666\u0665\u0664\u0631e \u0660\u0663\u0662 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 c]b[a",
                     "11: Visual LTR ==> Visual RTL" },
             { Bidi.LTR, Order.VISUAL, Bidi.RTL, Order.LOGICAL,
-                    "\u0661\u0662 \u0632 f 456\u0631e 23\u0660 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 a[b]c",
-                    "\u0661\u0662 \u0632 f 456\u0631e 23\u0660 \u0630 d 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 a[b]c",
-                    "\u0661\u0662 \u0632 f \u0664\u0665\u0666\u0631e \u0662\u0663\u0660 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 a[b]c",
+                    "\u0661\u0662 \ufeaf f 456\u0631e 23\u0660 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 a[b]c",
+                    "\u0661\u0662 \ufeaf f 456\u0631e 23\u0660 \u0630 d 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 a[b]c",
+                    "\u0661\u0662 \ufeaf f \u0664\u0665\u0666\u0631e \u0662\u0663\u0660 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 a[b]c",
                     "12: Visual LTR ==> Logical RTL" },
 
             { Bidi.RTL, Order.VISUAL, Bidi.RTL, Order.VISUAL, inText,
-                    "a[b]c \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 23\u0660 e\u0631456 f \u0632 \u0661\u0662",
-                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 23\u0660 e\u0631456 f \u0632 \u0661\u0662",
+                    "a[b]c \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 23\u0660 e\u0631456 f \ufeaf \u0661\u0662",
+                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 23\u0660 e\u0631456 f \ufeaf \u0661\u0662",
                     "13: Visual RTL ==> Visual RTL" },
             { Bidi.RTL, Order.VISUAL, Bidi.RTL, Order.LOGICAL,
-                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
-                    "c]b[a \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
-                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
+                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
+                    "c]b[a \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
+                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
                     "14: Visual RTL ==> Logical RTL" },
             { Bidi.RTL, Order.VISUAL, Bidi.LTR, Order.VISUAL,
-                    "\u0662\u0661 \u0632 f 654\u0631e \u066032 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 c]b[a",
-                    "\u0662\u0661 \u0632 f 654\u0631e \u066032 \u0630 d 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 c]b[a",
-                    "\u0662\u0661 \u0632 f 654\u0631e \u066032 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 c]b[a",
+                    "\u0662\u0661 \ufeaf f 654\u0631e \u066032 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 c]b[a",
+                    "\u0662\u0661 \ufeaf f 654\u0631e \u066032 \u0630 d 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 c]b[a",
+                    "\u0662\u0661 \ufeaf f 654\u0631e \u066032 \u0630 d 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 c]b[a",
                     "15: Visual RTL ==> Visual LTR" },
             { Bidi.RTL, Order.VISUAL, Bidi.LTR, Order.LOGICAL,
-                    "\u0632 \u0662\u0661 f 654\u0631e \u066032 \u0630 d 1 \u05d0(\u05d1\u05d2 \u05d3)\u05d4 c]b[a",
-                    "\u0632 \u0662\u0661 f 654\u0631e \u066032 \u0630 d 1 \u05d0)\u05d1\u05d2 \u05d3(\u05d4 c]b[a",
-                    "\u0632 \u0662\u0661 f 654\u0631e \u066032 \u0630 d 1 \u05d0(\u05d1\u05d2 \u05d3)\u05d4 c]b[a",
+                    "\ufeaf \u0662\u0661 f 654\u0631e \u066032 \u0630 d 1 \u05d0(\u05d1\u05d2 \u05d3)\u05d4 c]b[a",
+                    "\ufeaf \u0662\u0661 f 654\u0631e \u066032 \u0630 d 1 \u05d0)\u05d1\u05d2 \u05d3(\u05d4 c]b[a",
+                    "\ufeaf \u0662\u0661 f 654\u0631e \u066032 \u0630 d 1 \u05d0(\u05d1\u05d2 \u05d3)\u05d4 c]b[a",
                     "16: Visual RTL ==> Logical LTR" },
 
             { Bidi.LEVEL_DEFAULT_RTL, Order.LOGICAL, Bidi.LTR, Order.VISUAL,
-                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \u0632",
-                    "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \u0632",
-                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d \u0662\u0663\u0660 \u0630 e\u0664\u0665\u0666\u0631 f \u0661\u0662 \u0632",
+                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
+                    "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
+                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d \u0662\u0663\u0660 \u0630 e\u0664\u0665\u0666\u0631 f \u0661\u0662 \ufeaf",
                     "17: Logical DEFAULT_RTL ==> Visual LTR" },
             /*
             { Bidi.RTL, Order.LOGICAL, Bidi.LEVEL_DEFAULT_LTR, Order.VISUAL,
-                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
-                    "c]b[a \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
-                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
+                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
+                    "c]b[a \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
+                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
                     "18: Logical RTL ==> Visual DEFAULT_LTR" },
             */
             { Bidi.LEVEL_DEFAULT_LTR, Order.LOGICAL, Bidi.LTR, Order.VISUAL,
-                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \u0632",
-                    "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \u0632",
-                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d \u0662\u0663\u0660 \u0630 e\u0664\u0665\u0666\u0631 f \u0661\u0662 \u0632",
+                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
+                    "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
+                    "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d \u0662\u0663\u0660 \u0630 e\u0664\u0665\u0666\u0631 f \u0661\u0662 \ufeaf",
                     "19: Logical DEFAULT_LTR ==> Visual LTR" },
             { Bidi.RTL, Order.LOGICAL, Bidi.LEVEL_DEFAULT_RTL, Order.VISUAL,
-                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
-                    "c]b[a \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
-                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \u0632 \u0662\u0661",
+                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
+                    "c]b[a \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
+                    "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
                     "20: Logical RTL ==> Visual DEFAULT_RTL" },
         };
 
@@ -243,24 +244,20 @@ public class TestBidiTransform extends TestFmwk {
     private void logResultsForDir(String inText, String outText, String expected,
             byte inLevel, byte outLevel) {
 
-        //assertEquals("Unexpected output for BTD", expected, outText);
-        if (!expected.equals(outText)) {
-            errln("======");
-            errln("inLevel: " + inLevel);
-            errln("outLevel: " + outLevel);
-            /* TODO: BidiFwk#u16ToPseudo isn't sufficient for us at present, maybe update it and use here? */
-            errln("inText: " + pseudoScript(inText));
-            errln("outText: " + pseudoScript(outText));
-            errln("expected: " + pseudoScript(expected));
-        }
+        assertEquals("inLevel: " + inLevel + ", outLevel: " + outLevel
+                /* TODO: BidiFwk#u16ToPseudo isn't good for us, needs an update to be used here */
+                + "\ninText:   " + pseudoScript(inText) + "\noutText:  " + pseudoScript(outText)
+                + "\nexpected: " + pseudoScript(expected) + "\n", expected, outText);
     }
 
     private void verifyResultsForAllOpts(Object[] test, String inText, String outText, int expectedIdx, int digits, int letters) {
         String expected = (String)test[expectedIdx];
         switch (digits) {
             case ArabicShaping.DIGITS_AN2EN:
+                expected = shapeNumeralsToEN(expected);
+                break;
             case ArabicShaping.DIGITS_EN2AN:
-                expected = shapeNumerals(expected, digits);
+                expected = shapeNumeralsToAN(expected);
                 break;
             case ArabicShaping.DIGITS_EN2AN_INIT_AL:
                 expected = (String)test[6];
@@ -268,23 +265,20 @@ public class TestBidiTransform extends TestFmwk {
             case ArabicShaping.DIGITS_NOOP:
                 break;
         }
-        if ((letters & ArabicShaping.LETTERS_SHAPE) != 0) {
-            /*
-             * TODO: the goal is not to thoroughly test ArabicShaping, so the test can be quite trivial,
-             * but maybe still more sophisticated?
-             */
-            expected = expected.replace('\u0630', '\ufeab').replace('\u0631', '\ufead').replace('\u0632', '\ufeaf');
+        switch (letters) {
+            case ArabicShaping.LETTERS_SHAPE:
+                expected = shapeLetters(expected);
+                break;
+            case ArabicShaping.LETTERS_UNSHAPE:
+                expected = unshapeLetters(expected);
+                break;
+            default:
+                break;
         }
-        //assertEquals("Unexpected output for All Options", expected, outText);
-        if (!expected.equals(outText)) {
-            errln("======");
-            errln("Test " + test[7]);
-            errln("Digits: " + digits);
-            errln("Letters: " + letters);
-            errln("In: " + pseudoScript(inText));
-            errln("Out: " + pseudoScript(outText));
-            errln("Expected: " + pseudoScript(expected));
-        }
+        assertEquals("\nTest " + test[7] + "\ndigits: " + digits + ", letters: " + letters
+                /* TODO: BidiFwk#u16ToPseudo isn't good for us, needs an update to be used here */
+                + "\ninText:   " + pseudoScript(inText) + "\noutText:  " + pseudoScript(outText)
+                + "\nexpected: " + pseudoScript(expected) + "\n", expected, outText);
     }
 
     /*
@@ -326,19 +320,39 @@ public class TestBidiTransform extends TestFmwk {
         return new String(uchars);
     }
 
-    private static String shapeNumerals(String text, int digits) {
+    private static String shapeNumeralsToEN(String text) {
         char[] chars = text.toCharArray();
-        char srcZero = LATN_ZERO, destZero = ARAB_ZERO;
-        if (digits == ArabicShaping.DIGITS_AN2EN) {
-            srcZero = ARAB_ZERO;
-            destZero = LATN_ZERO;
-        }
         for (int i = chars.length; i-- > 0;) {
-            if (chars[i] >= srcZero && chars[i] <= srcZero + 9) {
-                chars[i] = substituteChar(chars[i], srcZero, destZero, (char)(destZero + 9));
+            if (chars[i] >= ARAB_ZERO && chars[i] <= ARAB_ZERO + 9) {
+                chars[i] = substituteChar(chars[i], ARAB_ZERO, LATN_ZERO, (char)(LATN_ZERO + 9));
             }
         }
         return new String(chars);
     }
 
+    private static String shapeNumeralsToAN(String text) {
+        char[] chars = text.toCharArray();
+        for (int i = chars.length; i-- > 0;) {
+            if (chars[i] >= LATN_ZERO && chars[i] <= LATN_ZERO + 9) {
+                chars[i] = substituteChar(chars[i], LATN_ZERO, ARAB_ZERO, (char)(ARAB_ZERO + 9));
+            }
+        }
+        return new String(chars);
+    }
+
+    private static String shapeLetters(String text) {
+        /*
+         * TODO: the goal is not to thoroughly test ArabicShaping, so the test can be quite trivial,
+         * but maybe still more sophisticated?
+         */
+        return text.replace('\u0630', '\ufeab').replace('\u0631', '\ufead').replace('\u0632', '\ufeaf');
+    }
+
+    private static String unshapeLetters(String text) {
+        /*
+         * TODO: the goal is not to thoroughly test ArabicShaping, so the test can be quite trivial,
+         * but maybe still more sophisticated?
+         */
+        return text.replace('\ufeab', '\u0630').replace('\ufead', '\u0631').replace('\ufeaf', '\u0632');
+    }
 }

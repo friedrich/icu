@@ -1,11 +1,12 @@
 // © 2016 and later: Unicode, Inc. and others.
 // License & terms of use: http://www.unicode.org/copyright.html#License
 /*
- *******************************************************************************
- * Copyright (C) 2016, International Business Machines
- * Corporation and others. All Rights Reserved.
- *******************************************************************************
- */
+*******************************************************************************
+*   Copyright (C) 2016, International Business Machines
+*   Corporation and others.  All Rights Reserved.
+*******************************************************************************
+*/
+
 package com.ibm.icu.text;
 
 import com.ibm.icu.lang.UCharacter;
@@ -243,8 +244,8 @@ public class BidiTransform
             this.reorderingOptions = Mirroring.ON.equals(doMirroring)
                     ? Bidi.DO_MIRRORING : Bidi.REORDER_DEFAULT;
 
-              /* Ignore TEXT_DIRECTION_* flags, as we apply our own depending on the
-                 text scheme at the time shaping is invoked. */
+             /* Ignore TEXT_DIRECTION_* flags, as we apply our own depending on the
+                text scheme at the time shaping is invoked. */
             this.shapingOptions = shapingOptions & ~ArabicShaping.TEXT_DIRECTION_MASK;
             currentScheme.doTransform(this);
         }
@@ -338,7 +339,7 @@ public class BidiTransform
             i += UTF16.getCharCount(ch);
         }
         text = sb.toString();
-        reorderingOptions = Bidi.REORDER_DEFAULT;
+        reorderingOptions &= ~Bidi.DO_MIRRORING;
     }
 
     /**
@@ -351,13 +352,17 @@ public class BidiTransform
      *      option).
      */
     void shapeArabic(int digitsDir, int lettersDir) {
-        /* Honor all shape options other than letters (not necessarily digits
-           only) */
-        shapeArabic((shapingOptions & ~ArabicShaping.LETTERS_MASK) | digitsDir);
+        if (digitsDir == lettersDir) {
+            shapeArabic(shapingOptions | digitsDir);
+        } else {
+            /* Honor all shape options other than letters (not necessarily digits
+               only) */
+            shapeArabic((shapingOptions & ~ArabicShaping.LETTERS_MASK) | digitsDir);
 
-        /* Honor all shape options other than digits (not necessarily letters
-           only) */
-        shapeArabic((shapingOptions & ~ArabicShaping.DIGITS_MASK) | lettersDir);
+            /* Honor all shape options other than digits (not necessarily letters
+               only) */
+            shapeArabic((shapingOptions & ~ArabicShaping.DIGITS_MASK) | lettersDir);
+        }
     }
 
     /**
