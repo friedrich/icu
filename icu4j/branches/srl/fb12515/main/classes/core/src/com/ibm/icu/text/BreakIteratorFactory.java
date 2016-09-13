@@ -163,7 +163,7 @@ final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim 
         iter.setLocale(uloc, uloc);
         iter.setBreakType(kind);
 
-        // filtered
+        // filtered break
         if (kind == BreakIterator.KIND_SENTENCE) {
             final String ssKeyword = locale.getKeywordValue("ss");
             if (ssKeyword != null && ssKeyword.equals("standard")) {

@@ -11,6 +11,7 @@ package com.ibm.icu.impl;
 import java.text.CharacterIterator;
 import java.util.HashSet;
 
+import com.ibm.icu.impl.ICUResourceBundle.OpenType;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.FilteredBreakIteratorBuilder;
 import com.ibm.icu.text.UCharacterIterator;
@@ -19,7 +20,6 @@ import com.ibm.icu.util.CharsTrie;
 import com.ibm.icu.util.CharsTrieBuilder;
 import com.ibm.icu.util.StringTrieBuilder;
 import com.ibm.icu.util.ULocale;
-import com.ibm.icu.util.UResourceBundle;
 
 /**
  * @author tomzhang
@@ -215,20 +215,18 @@ public class SimpleFilteredSentenceBreakIterator extends BreakIterator {
          * @param loc the locale to get filtered iterators
          */
         public Builder(ULocale loc) {
-            ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-                    ICUData.ICU_BRKITR_BASE_NAME, loc);
-            ICUResourceBundle exceptions = rb.findWithFallback("exceptions");
-            if (exceptions != null) {
-                ICUResourceBundle breaks = exceptions.findWithFallback("SentenceBreak");
-    
-                if (breaks != null) {
-                    for (int index = 0, size = breaks.getSize(); index < size; ++index) {
-                        ICUResourceBundle b = (ICUResourceBundle) breaks.get(index);
-                        String br = b.getString();
-                        filterSet.add(br);
-                    }
+            ICUResourceBundle rb = ICUResourceBundle.getBundleInstance(
+                    ICUData.ICU_BRKITR_BASE_NAME, loc, OpenType.LOCALE_ROOT);
+
+            ICUResourceBundle breaks = rb.findWithFallback("exceptions/SentenceBreak");
+
+            if (breaks != null) {
+                for (int index = 0, size = breaks.getSize(); index < size; ++index) {
+                    ICUResourceBundle b = (ICUResourceBundle) breaks.get(index);
+                    String br = b.getString();
+                    filterSet.add(br);
                 }
-            } // else - no exceptions.
+            }
         }
 
         /**
@@ -261,7 +259,7 @@ public class SimpleFilteredSentenceBreakIterator extends BreakIterator {
                 // Short circuit - nothing to except.
                 return adoptBreakIterator;
             }
-            
+
             CharsTrieBuilder builder = new CharsTrieBuilder();
             CharsTrieBuilder builder2 = new CharsTrieBuilder();
 

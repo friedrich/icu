@@ -980,14 +980,7 @@ public class BreakIteratorTest extends TestFmwk
             logln("Building new BI\n");
             filteredBI = builder.build(baseBI);
 
-            logln("Testing:");
-            filteredBI.setText(text);
-            assertEquals("1st next", 20, filteredBI.next());
-            assertEquals("1st next", 84, filteredBI.next());
-            assertEquals("1st next", 90, filteredBI.next());
-            assertEquals("1st next", 181, filteredBI.next());
-            assertEquals("1st next", 278, filteredBI.next());
-            filteredBI.first();
+            assertDefaultBreakBehavior(filteredBI, text);
         }
 
         {
@@ -1072,12 +1065,7 @@ public class BreakIteratorTest extends TestFmwk
           filteredBI = builder.build(baseBI);
 
           if(filteredBI != null) {
-            logln("Testing:");
-            filteredBI.setText(text);
-
-            assertEquals("5th next", 84, filteredBI.next());
-            assertEquals("5th next", 278, filteredBI.next());
-            filteredBI.first();
+            assertEnglishBreakBehavior(filteredBI, text);
           }
         }
 
@@ -1086,13 +1074,28 @@ public class BreakIteratorTest extends TestFmwk
             filteredBI = BreakIterator.getSentenceInstance(ULocale.forLanguageTag("en-US-u-ss-standard"));
 
             if(filteredBI != null) {
-              logln("Testing:");
-              filteredBI.setText(text);
-
-              assertEquals("5th next", 84, filteredBI.next());
-              assertEquals("5th next", 278, filteredBI.next());
-              filteredBI.first();
+              assertEnglishBreakBehavior(filteredBI, text);
             }
+        }
+
+        {
+            logln("Constructing Afrikaans @ss=standard - should be == default\n");
+            filteredBI = BreakIterator.getSentenceInstance(ULocale.forLanguageTag("af-u-ss-standard"));
+
+            assertDefaultBreakBehavior(filteredBI, text);
+        }
+
+        {
+            logln("Constructing Japanese @ss=standard - should be == default\n");
+            filteredBI = BreakIterator.getSentenceInstance(ULocale.forLanguageTag("ja-u-ss-standard"));
+
+            assertDefaultBreakBehavior(filteredBI, text);
+        }
+        {
+            logln("Constructing tfg @ss=standard - should be == default\n");
+            filteredBI = BreakIterator.getSentenceInstance(ULocale.forLanguageTag("tfg-u-ss-standard"));
+
+            assertDefaultBreakBehavior(filteredBI, text);
         }
 
         {
@@ -1106,12 +1109,48 @@ public class BreakIteratorTest extends TestFmwk
           filteredBI = builder.build(baseBI);
 
           if(filteredBI != null) {
-            logln("Testing:");
-            filteredBI.setText(text);
-            assertEquals("6th next", 20, filteredBI.next());
-            assertEquals("6th next", 84, filteredBI.next());
-            filteredBI.first();
+            assertFrenchBreakBehavior(filteredBI, text);
           }
         }
+    }
+
+    /**
+     * @param filteredBI
+     * @param text
+     */
+    private void assertFrenchBreakBehavior(BreakIterator filteredBI, String text) {
+        logln("Testing French behavior:");
+        filteredBI.setText(text);
+        assertEquals("6th next", 20, filteredBI.next());
+        assertEquals("6th next", 84, filteredBI.next());
+        filteredBI.first();
+    }
+
+    /**
+     * @param filteredBI
+     * @param text
+     */
+    private void assertEnglishBreakBehavior(BreakIterator filteredBI, String text) {
+        logln("Testing English filtered behavior:");
+          filteredBI.setText(text);
+
+          assertEquals("5th next", 84, filteredBI.next());
+          assertEquals("5th next", 278, filteredBI.next());
+          filteredBI.first();
+    }
+
+    /**
+     * @param filteredBI
+     * @param text
+     */
+    private void assertDefaultBreakBehavior(BreakIterator filteredBI, String text) {
+        logln("Testing Default Behavior:");
+        filteredBI.setText(text);
+        assertEquals("1st next", 20, filteredBI.next());
+        assertEquals("1st next", 84, filteredBI.next());
+        assertEquals("1st next", 90, filteredBI.next());
+        assertEquals("1st next", 181, filteredBI.next());
+        assertEquals("1st next", 278, filteredBI.next());
+        filteredBI.first();
     }
 }
