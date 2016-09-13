@@ -2474,6 +2474,7 @@ public class DecimalFormat extends NumberFormat {
             // strict parsing
             boolean strictParse = isParseStrict();
             boolean strictFail = false; // did we exit with a strict parse failure?
+            int lastGroup = -1; // where did we last see a grouping separator?
             int groupedDigitCount = 0;  // tracking count of digits delimited by grouping separator
             int gs2 = groupingSize2 == 0 ? groupingSize : groupingSize2;
 
@@ -2494,14 +2495,26 @@ public class DecimalFormat extends NumberFormat {
                 int matchLen = matchesDigit(text, position, parsedDigit);
                 if (matchLen > 0) {
                     // matched a digit
-                    groupedDigitCount++;
-                    backup = -1;
-                    if (strictParse && sawGrouping && groupedDigitCount > groupingSize) {
-                        strictFail = true;
-                        break;
+                    // Cancel out backup setting (see grouping handler below)
+                    if (backup != -1) {
+                        if (strictParse) {
+                            // comma followed by digit, so group before comma is a secondary
+                            // group. If there was a group separator before that, the group
+                            // must == the secondary group length, else it can be <= the the
+                            // secondary group length.
+                            if ((lastGroup != -1 && groupedDigitCount != gs2)
+                                    || (lastGroup == -1 && groupedDigitCount > gs2)) {
+                                strictFail = true;
+                                break;
+                            }
+                        }
+                        lastGroup = backup;
+                        groupedDigitCount = 0;
                     }
 
+                    groupedDigitCount++;
                     position += matchLen;
+                    backup = -1;
                     sawDigit = true;
                     if (parsedDigit[0] == 0 && digits.count == 0) {
                         // Handle leading zeros
@@ -2524,9 +2537,12 @@ public class DecimalFormat extends NumberFormat {
                 int decimalStrLen = decimal.length();
                 if (text.regionMatches(position, decimal, 0, decimalStrLen)) {
                     // matched a decimal separator
-                    if (strictParse && sawGrouping && groupedDigitCount != groupingSize) {
-                        strictFail = true;
-                        break;
+                    if (strictParse) {
+                        if (backup != -1 ||
+                            (lastGroup != -1 && groupedDigitCount != groupingSize)) {
+                            strictFail = true;
+                            break;
+                        }
                     }
 
                     // If we're only parsing integers, or if we ALREADY saw the decimal,
@@ -2549,9 +2565,12 @@ public class DecimalFormat extends NumberFormat {
                             break;
                         }
 
-                        if (strictParse && sawGrouping && groupedDigitCount != gs2) {
-                            strictFail = true;
-                            break;
+                        if (strictParse) {
+                            if ((!sawDigit || backup != -1)) {
+                                // leading group, or two group separators in a row
+                                strictFail = true;
+                                break;
+                            }
                         }
 
                         // Ignore grouping characters, if we are using them, but require that
@@ -2560,19 +2579,20 @@ public class DecimalFormat extends NumberFormat {
                         backup = position;
                         position += groupingStrLen;
                         sawGrouping = true;
-                        // reset grouped digit count
-                        groupedDigitCount = 0;
                         continue;
                     }
                 }
 
                 // Check if the code point at the current position matches one of decimal/grouping equivalent group chars
                 int cp = text.codePointAt(position);
-                if (decimalEquiv.contains(cp)) {
+                if (!sawDecimal && decimalEquiv.contains(cp)) {
                     // matched a decimal separator
-                    if (strictParse && sawGrouping && groupedDigitCount != groupingSize) {
-                        strictFail = true;
-                        break;
+                    if (strictParse) {
+                        if (backup != -1 ||
+                            (lastGroup != -1 && groupedDigitCount != groupingSize)) {
+                            strictFail = true;
+                            break;
+                        }
                     }
 
                     // If we're only parsing integers, or if we ALREADY saw the decimal,
@@ -2582,21 +2602,33 @@ public class DecimalFormat extends NumberFormat {
                     }
 
                     digits.decimalAt = digitCount; // Not digits.count!
+
+                    // Once we see a decimal separator character, we only accept that
+                    // decimal separator character from then on.
+                    decimal = String.valueOf(Character.toChars(cp));
+
                     sawDecimal = true;
                     position += Character.charCount(cp);
                     continue;
                 }
 
-                if (isGroupingUsed() && groupEquiv.contains(cp)) {
+                if (isGroupingUsed() && !sawGrouping && groupEquiv.contains(cp)) {
                     // matched a grouping separator
                     if (sawDecimal) {
                         break;
                     }
 
-                    if (strictParse && sawGrouping && groupedDigitCount != gs2) {
-                        strictFail = true;
-                        break;
+                    if (strictParse) {
+                        if ((!sawDigit || backup != -1)) {
+                            // leading group, or two group separators in a row
+                            strictFail = true;
+                            break;
+                        }
                     }
+
+                    // Once we see a grouping character, we only accept that grouping
+                    // character from then on.
+                    grouping = String.valueOf(Character.toChars(cp));
 
                     // Ignore grouping characters, if we are using them, but require that
                     // they be followed by a digit. Otherwise we backup and reprocess
@@ -2604,8 +2636,6 @@ public class DecimalFormat extends NumberFormat {
                     backup = position;
                     position += Character.charCount(cp);
                     sawGrouping = true;
-                    // reset grouped digit count
-                    groupedDigitCount = 0;
                     continue;
                 }
 
@@ -2690,7 +2720,7 @@ public class DecimalFormat extends NumberFormat {
 
             // check for strict parse errors
             if (strictParse && !sawDecimal) {
-                if (sawGrouping && groupedDigitCount != groupingSize) {
+                if (lastGroup != -1 && groupedDigitCount != groupingSize) {
                     strictFail = true;
                 }
             }
@@ -3075,6 +3105,8 @@ public class DecimalFormat extends NumberFormat {
                 continue;
             }
 
+            String affix = null;
+
             switch (c) {
             case CURRENCY_SIGN:
                 // since the currency names in choice format is saved the same way as
@@ -3115,29 +3147,39 @@ public class DecimalFormat extends NumberFormat {
                         Currency effectiveCurr = getEffectiveCurrency();
                         if (iso.compareTo(effectiveCurr.getCurrencyCode()) != 0) {
                             pos = -1;
-                            break;
+                            continue;
                         }
                     }
                     pos = ppos.getIndex();
                 } else {
                     pos = -1;
                 }
-                break;
+                continue;
             case PATTERN_PERCENT:
-                pos = match(text, pos, symbols.getPercentString());
+                affix = symbols.getPercentString();
                 break;
             case PATTERN_PER_MILLE:
-                pos = match(text, pos, symbols.getPerMillString());
+                affix = symbols.getPerMillString();
                 break;
-            case PATTERN_MINUS:
-                pos = match(text, pos, symbols.getMinusSignString());
+            case PATTERN_PLUS_SIGN:
+                affix = symbols.getPlusSignString();
+                break;
+            case PATTERN_MINUS_SIGN:
+                affix = symbols.getMinusSignString();
                 break;
             default:
-                pos = match(text, pos, c);
-                if (PatternProps.isWhiteSpace(c)) {
-                    i = skipPatternWhiteSpace(affixPat, i);
-                }
+                // fall through to affix != null test, which will fail
                 break;
+            }
+
+            if (affix != null) {
+                pos = match(text, pos, affix);
+                continue;
+            }
+
+            pos = match(text, pos, c);
+            if (PatternProps.isWhiteSpace(c)) {
+                i = skipPatternWhiteSpace(affixPat, i);
             }
         }
 
@@ -3177,12 +3219,12 @@ public class DecimalFormat extends NumberFormat {
      * white space in text.
      */
     static final int match(String text, int pos, String str) {
-if (str == null) {
-    System.out.println("Debug here");
-}
         for (int i = 0; i < str.length() && pos >= 0;) {
             int ch = UTF16.charAt(str, i);
             i += UTF16.getCharCount(ch);
+            if (isBidiMark(ch)) {
+                continue;
+            }
             pos = match(text, pos, ch);
             if (PatternProps.isWhiteSpace(ch)) {
                 i = skipPatternWhiteSpace(str, i);
@@ -4210,7 +4252,7 @@ if (str == null) {
             case PATTERN_PER_MILLE:
                 buffer.append(symbols.getPerMillString());
                 break;
-            case PATTERN_MINUS:
+            case PATTERN_MINUS_SIGN:
                 buffer.append(symbols.getMinusSignString());
                 break;
             default:
@@ -4461,7 +4503,7 @@ if (str == null) {
                 case PATTERN_PERCENT:
                     ch = symbols.getPercent();
                     break;
-                case PATTERN_MINUS:
+                case PATTERN_MINUS_SIGN:
                     ch = symbols.getMinusSign();
                     break;
                 }
@@ -4620,7 +4662,7 @@ if (str == null) {
             }
             if (part == 0) {
                 if (negativeSuffix.equals(positiveSuffix) &&
-                    negativePrefix.equals(PATTERN_MINUS + positivePrefix)) {
+                    negativePrefix.equals(PATTERN_MINUS_SIGN + positivePrefix)) {
                     break;
                 } else {
                     result.append(localized ? symbols.getPatternSeparator() : PATTERN_SEPARATOR);
@@ -4712,7 +4754,7 @@ if (str == null) {
         String exponent = String.valueOf(PATTERN_EXPONENT);
         char plus = PATTERN_PLUS_SIGN;
         char padEscape = PATTERN_PAD_ESCAPE;
-        char minus = PATTERN_MINUS; // Bug 4212072 [Richard/GCL]
+        char minus = PATTERN_MINUS_SIGN; // Bug 4212072 [Richard/GCL]
         if (localized) {
             zeroDigit = symbols.getZeroDigit();
             sigDigit = symbols.getSignificantDigit();
@@ -4974,7 +5016,7 @@ if (str == null) {
                         // Fall through to append(ch)
                     } else if (ch == minus) {
                         // Convert to non-localized pattern
-                        ch = PATTERN_MINUS;
+                        ch = PATTERN_MINUS_SIGN;
                         // Fall through to append(ch)
                     } else if (ch == padEscape) {
                         if (padPos >= 0) {
@@ -5168,7 +5210,7 @@ if (str == null) {
             (negPrefixPattern.equals(posPrefixPattern)
              && negSuffixPattern.equals(posSuffixPattern))) {
             negSuffixPattern = posSuffixPattern;
-            negPrefixPattern = PATTERN_MINUS + posPrefixPattern;
+            negPrefixPattern = PATTERN_MINUS_SIGN + posPrefixPattern;
         }
         setLocale(null, null);
         // save the pattern
@@ -5959,15 +6001,12 @@ if (str == null) {
     static final char PATTERN_SIGNIFICANT_DIGIT = '@';
     static final char PATTERN_EXPONENT = 'E';
     static final char PATTERN_PLUS_SIGN = '+';
+    static final char PATTERN_MINUS_SIGN = '-';
 
     // Affix
     private static final char PATTERN_PER_MILLE = '\u2030';
     private static final char PATTERN_PERCENT = '%';
     static final char PATTERN_PAD_ESCAPE = '*';
-    /**
-     * Bug 4212072 To meet the need of expandAffix(String, StirngBuffer) [Richard/GCL]
-     */
-    private static final char PATTERN_MINUS = '-';
 
     // Other
     private static final char PATTERN_SEPARATOR = ';';

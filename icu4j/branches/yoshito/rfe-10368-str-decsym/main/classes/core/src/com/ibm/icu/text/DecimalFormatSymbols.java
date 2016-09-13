@@ -246,10 +246,6 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
     * <p>
     * <b>Note:</b>
     * <p>
-    * Although this API accepts <code>String</code> representation of decimal digits,
-    * the implementation currently does not support a digit represented by multiple
-    * Unicode code points.
-    * <p>
     * When the input array of digit strings contains any strings
     * represented by multiple Java chars, then {@link #getDigits()} will return
     * the default digits ('0' - '9') and {@link #getZeroDigit()} will return the
@@ -257,8 +253,7 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
     *
     * @param digitStrings The array of digit strings. The length of the array must be exactly 10.
     * @throws NullPointerException if the <code>digitStrings</code> is null.
-    * @throws IllegalArgumentException if the length of the array is not 10, or there
-    * are any digits not represented by exactly one Unicode code point.
+    * @throws IllegalArgumentException if the length of the array is not 10.
     * @see #getDigitStrings()
     * @draft ICU 58
     * @provisional This API might change or be removed in a future release.
@@ -1319,7 +1314,8 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         setDecimalSeparatorString(numberElements[0]);
         setGroupingSeparatorString(numberElements[1]);
 
-        assert numberElements[2].length() == 1;
+        // See CLDR #9781
+        // assert numberElements[2].length() == 1;
         patternSeparator = numberElements[2].charAt(0);
 
         setPercentString(numberElements[3]);
@@ -1522,6 +1518,9 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
                     }
                 } else {
                     char digit = zeroDigit;
+                    if (digits == null) {
+                        digits = new char[10];
+                    }
                     for (int i = 0; i < 10; i++) {
                         digits[i] = digit;
                         digitStrings[i] = String.valueOf(digit);
