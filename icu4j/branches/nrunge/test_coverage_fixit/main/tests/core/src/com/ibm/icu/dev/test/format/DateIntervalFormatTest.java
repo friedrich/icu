@@ -1378,7 +1378,7 @@ public class DateIntervalFormatTest extends com.ibm.icu.dev.test.TestFmwk {
         } catch (Exception e) { /* No op */ }
 
         // Check getPatterns()
-        Output<String> secondPart = new Output<>();
+        Output<String> secondPart = new Output<String>();
         Calendar fromCalendar = Calendar.getInstance(Locale.ENGLISH);
         fromCalendar.set(2016, 5, 22);
         Calendar toCalendar= Calendar.getInstance(Locale.ENGLISH);
