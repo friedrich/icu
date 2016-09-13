@@ -40,16 +40,16 @@
 ## FILTERED BREAK TESTS
 
 # (William Bradford, public domain. http://catalog.hathitrust.org/Record/008651224 ) - edited.
-#<locale en>
-#<sent>
-#<data>\
-#•In the meantime Mr. •Weston arrived with his small ship, which he had now recovered. •Capt. •Gorges, who informed the Sgt. here that one purpose of his going east was to meet with Mr. •Weston, took this opportunity to call him to account for some abuses he had to lay to his charge.•</data>
-#
+<locale en>
+<sent>
+<data>\
+•In the meantime Mr. •Weston arrived with his small ship, which he had now recovered. •Capt. •Gorges, who informed the Sgt. here that one purpose of his going east was to meet with Mr. •Weston, took this opportunity to call him to account for some abuses he had to lay to his charge.•</data>
+
 #<locale en@ss=standard>
 #<sent>
 #<data>\
 #•In the meantime Mr. Weston arrived with his small ship, which he had now recovered. •Capt. Gorges, who informed the Sgt. here that one purpose of his going east was to meet with Mr. Weston, took this opportunity to call him to account for some abuses he had to lay to his charge.•</data>
-#
+
 ## END FILTERED BREAK TESTS
 
 ########################################################################################

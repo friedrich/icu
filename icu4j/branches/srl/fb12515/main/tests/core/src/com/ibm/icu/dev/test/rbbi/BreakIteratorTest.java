@@ -33,7 +33,7 @@ public class BreakIteratorTest extends TestFmwk
     {
 
     }
-    
+
     @Before
     public void init(){
         characterBreak = BreakIterator.getCharacterInstance();
@@ -301,8 +301,8 @@ public class BreakIteratorTest extends TestFmwk
                 for (int k = tb.first(); k != BreakIterator.DONE; k = tb.next())
                     if (k == 2) {
                         errln("Break between CR and LF in string U+" + Integer.toHexString(
-                                (int)(work.charAt(0))) + ", U+d U+a U+" + Integer.toHexString(
-                                (int)(work.charAt(3))));
+                                (work.charAt(0))) + ", U+d U+a U+" + Integer.toHexString(
+                                (work.charAt(3))));
                         errorCount++;
                         if (errorCount >= 75)
                             return;
@@ -328,8 +328,8 @@ public class BreakIteratorTest extends TestFmwk
                 tb.setText(work.toString());
                 for (int k = tb.first(); k != BreakIterator.DONE; k = tb.next())
                     if (k == 2) {
-                        errln("Break between U+" + Integer.toHexString((int)(work.charAt(1)))
-                                + " and U+" + Integer.toHexString((int)(work.charAt(2))));
+                        errln("Break between U+" + Integer.toHexString((work.charAt(1)))
+                                + " and U+" + Integer.toHexString((work.charAt(2))));
                         errorCount++;
                         if (errorCount >= 75)
                             return;
@@ -348,7 +348,7 @@ public class BreakIteratorTest extends TestFmwk
                 out.append(c);
             else {
                 out.append("\\u");
-                temp = Integer.toHexString((int)c);
+                temp = Integer.toHexString(c);
                 out.append(zeros.substring(0, 4 - temp.length()));
                 out.append(temp);
             }
@@ -568,7 +568,7 @@ public class BreakIteratorTest extends TestFmwk
         generalIteratorTest(lineBreak, lineSelectionData);
     }
 
- 
+
 
     /**
      * @bug 4117554
@@ -709,7 +709,7 @@ public class BreakIteratorTest extends TestFmwk
         int begin = 3;
         int end = str.length() - 3;
         // not used boolean gotException = false;
- 
+
 
         iter.setText(new StringCharacterIterator(str, begin, end, begin));
         for (int index = -1; index < begin + 1; ++index) {
@@ -772,16 +772,16 @@ public class BreakIteratorTest extends TestFmwk
         if (locList.length == 0)
             errln("getAvailableLocales() returned an empty list!");
         // I have no idea how to test this function...
-        
+
         com.ibm.icu.util.ULocale[] ulocList = BreakIterator.getAvailableULocales();
         if (ulocList.length == 0) {
-            errln("getAvailableULocales() returned an empty list!");        
+            errln("getAvailableULocales() returned an empty list!");
         } else {
             logln("getAvailableULocales() returned " + ulocList.length + " locales");
         }
     }
 
-    
+
     /**
      * @bug 4068137
      */
@@ -838,7 +838,7 @@ public class BreakIteratorTest extends TestFmwk
         }
     }
 
-    
+
     /**
      * Bug 4450804
      */
@@ -893,7 +893,7 @@ public class BreakIteratorTest extends TestFmwk
         assertEquals("Next point", 5, brk.next());
         assertEquals("Last point", BreakIterator.DONE, brk.next());
     }
-    
+
     /*
      * Test case for Ticket#10721. BreakIterator factory method should throw NPE
      * when specified locale is null.
@@ -956,7 +956,7 @@ public class BreakIteratorTest extends TestFmwk
             errln("getWordInstance((ULocale)null) did not throw NPE.");
         } catch (NullPointerException e) { /* OK */ }
     }
-    
+
     /**
      * Test FilteredBreakIteratorBuilder newly introduced
      */
@@ -1015,7 +1015,7 @@ public class BreakIteratorTest extends TestFmwk
             assertEquals("2nd next", 278, filteredBI.next());
             filteredBI.first();
         }
-        
+
 
         {
           logln("Constructing empty builder\n");
@@ -1079,6 +1079,20 @@ public class BreakIteratorTest extends TestFmwk
             assertEquals("5th next", 278, filteredBI.next());
             filteredBI.first();
           }
+        }
+
+        {
+            logln("Constructing English @ss=standard\n");
+            filteredBI = BreakIterator.getSentenceInstance(ULocale.forLanguageTag("en-US-u-ss-standard"));
+
+            if(filteredBI != null) {
+              logln("Testing:");
+              filteredBI.setText(text);
+
+              assertEquals("5th next", 84, filteredBI.next());
+              assertEquals("5th next", 278, filteredBI.next());
+              filteredBI.first();
+            }
         }
 
         {
