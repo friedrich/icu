@@ -218,19 +218,23 @@ public class TestBidiTransform extends TestFmwk {
                 ArabicShaping.LETTERS_NOOP, ArabicShaping.LETTERS_SHAPE, ArabicShaping.LETTERS_UNSHAPE
         };
 
+        char[] expectedChars;
+
         logln("\nEntering allTransformOptionsTest\n");
 
         // Test various combinations of base level, order, mirroring, digits and letters
         for (Object[] test : testCases) {
+            expectedChars = ((String)test[5]).toCharArray();
             verifyResultsForAllOpts(test, inText, bidiTransform.transform(inText, (Byte)test[0], (Order)test[1],
-                    (Byte)test[2], (Order)test[3], Mirroring.ON, 0), ((String)test[5]).toCharArray(), 0, 0);
+                    (Byte)test[2], (Order)test[3], Mirroring.ON, 0), expectedChars, 0, 0);
 
             for (int digit : digits) {
+                expectedChars = ((String)(digit == ArabicShaping.DIGITS_EN2AN_INIT_AL ? test[6] : test[4]))
+                        .toCharArray();
                 for (int letter : letters) {
                     verifyResultsForAllOpts(test, inText, bidiTransform.transform(inText, (Byte)test[0],
                             (Order)test[1], (Byte)test[2], (Order)test[3], Mirroring.OFF, digit | letter),
-                            ((String)(digit == ArabicShaping.DIGITS_EN2AN_INIT_AL ? test[6] : test[4])).toCharArray(),
-                            digit, letter);
+                            expectedChars, digit, letter);
                 }
             }
         }
