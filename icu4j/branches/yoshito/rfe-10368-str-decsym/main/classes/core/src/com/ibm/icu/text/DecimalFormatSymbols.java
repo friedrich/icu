@@ -194,10 +194,6 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
      * @discouraged ICU 58 use {@link #setDigitStrings(String[])} instead.
      */
     public void setZeroDigit(char zeroDigit) {
-        if (this.zeroDigit == zeroDigit) {
-            // No changes
-            return;
-        }
         this.zeroDigit = zeroDigit;
 
         // digitStrings or digits might be referencing a cached copy for
@@ -272,10 +268,6 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         for (int i = 0; i < 10; i++) {
             if (digitStrings[i] == null) {
                 throw new IllegalArgumentException("The input digit string array contains a null element");
-            }
-            if (digitStrings[i].codePointCount(0, digitStrings[i].length()) != 1) {
-                throw new IllegalArgumentException(
-                        "The input digit string array contains digit not represented by a single Unicode code point");
             }
             tmpDigitStrings[i] = digitStrings[i];
             if (tmpDigits != null && digitStrings[i].length() == 1) {
