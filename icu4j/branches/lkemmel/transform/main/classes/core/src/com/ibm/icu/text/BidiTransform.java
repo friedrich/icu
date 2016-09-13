@@ -593,10 +593,10 @@ public class BidiTransform
         abstract boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder);
 
         /**
-         * Performs series of bidi layout transformations unique for the current
+         * Performs a series of bidi layout transformations unique for the current
          * scheme.
 
-         * @param transform bidi transformation engine
+         * @param transform Bidi transformation engine
          */
         abstract void doTransform(BidiTransform transform);
     }

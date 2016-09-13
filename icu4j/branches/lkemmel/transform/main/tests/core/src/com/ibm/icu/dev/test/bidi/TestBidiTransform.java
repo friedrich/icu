@@ -97,22 +97,21 @@ public class TestBidiTransform extends TestFmwk {
      * This method covers:
      * <ul>
      * <li>all possible combinations of ordering schemes and <strong>explicit</strong>
-     * base directions, applied to both input and output,</li>
+     * base levels, applied to both input and output,</li>
      * <li>selected tests for auto direction (systematically, auto direction is
      * covered in a dedicated test) applied on both input and output,</li>
-     * <li>all possible combinations of mirroring, numerals and literals applied
+     * <li>all possible combinations of mirroring, digits and letters applied
      * to output only.</li>
      * </ul>
      */
     private void allTransformOptionsTest() {
         final String inText = "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 23\u0660 e\u0631456 f \ufeaf \u0661\u0662";
 
-        /* !!! TODO: Replace Strings with char[] array and manipulate chars */
         final Object[][] testCases = {
             { Bidi.LTR, Order.LOGICAL, Bidi.LTR, Order.LOGICAL,
-                    inText, // reordering no mirroring
+                    inText, // reordering without mirroring
                     "a[b]c \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 23\u0660 e\u0631456 f \ufeaf \u0661\u0662", // mirroring
-                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u0662\u0663\u0660 e\u0631\u0664\u0665\u0666 f \ufeaf \u0661\u0662", // context numeric shaping
+                    "a[b]c \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u0662\u0663\u0660 e\u0631\u0664\u0665\u0666 f \ufeaf \u0661\u0662", // context digit shaping
                     "1: Logical LTR ==> Logical LTR" }, // message
             { Bidi.LTR, Order.LOGICAL, Bidi.LTR, Order.VISUAL,
                     "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
@@ -195,13 +194,11 @@ public class TestBidiTransform extends TestFmwk {
                     "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
                     "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d \u0662\u0663\u0660 \u0630 e\u0664\u0665\u0666\u0631 f \u0661\u0662 \ufeaf",
                     "17: Logical DEFAULT_RTL ==> Visual LTR" },
-            /*
             { Bidi.RTL, Order.LOGICAL, Bidi.LEVEL_DEFAULT_LTR, Order.VISUAL,
                     "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
                     "c]b[a \u05d0)\u05d1\u05d2 \u05d3(\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
                     "c]b[a \u05d0(\u05d1\u05d2 \u05d3)\u05d4 1 d \u0630 \u066032 e\u0631654 f \ufeaf \u0662\u0661",
                     "18: Logical RTL ==> Visual DEFAULT_LTR" },
-            */
             { Bidi.LEVEL_DEFAULT_LTR, Order.LOGICAL, Bidi.LTR, Order.VISUAL,
                     "a[b]c 1 \u05d4)\u05d3 \u05d2\u05d1(\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
                     "a[b]c 1 \u05d4(\u05d3 \u05d2\u05d1)\u05d0 d 23\u0660 \u0630 e456\u0631 f \u0661\u0662 \ufeaf",
@@ -223,19 +220,17 @@ public class TestBidiTransform extends TestFmwk {
 
         logln("\nEntering allTransformOptionsTest\n");
 
-        // Test various combinations of Direction, Order, Mirroring, Numerals and Literals
+        // Test various combinations of base level, order, mirroring, digits and letters
         for (Object[] test : testCases) {
-            verifyResultsForAllOpts(test, inText,
-                    bidiTransform.transform(inText, (Byte)test[0], (Order)test[1], (Byte)test[2],
-                            (Order)test[3], Mirroring.ON, 0),
-                    5, 0, 0);
+            verifyResultsForAllOpts(test, inText, bidiTransform.transform(inText, (Byte)test[0], (Order)test[1],
+                    (Byte)test[2], (Order)test[3], Mirroring.ON, 0), (String)test[5], 0, 0);
 
             for (int digit : digits) {
                 for (int letter : letters) {
-                    verifyResultsForAllOpts(test, inText,
-                            bidiTransform.transform(inText, (Byte)test[0], (Order)test[1], (Byte)test[2],
-                                    (Order)test[3], Mirroring.OFF, digit | letter),
-                            4, digit, letter);
+                    verifyResultsForAllOpts(test, inText, bidiTransform.transform(inText, (Byte)test[0],
+                            (Order)test[1], (Byte)test[2], (Order)test[3], Mirroring.OFF, digit | letter),
+                            (String)(digit == ArabicShaping.DIGITS_EN2AN_INIT_AL ? test[6] : test[4]),
+                            digit, letter);
                 }
             }
         }
@@ -251,19 +246,15 @@ public class TestBidiTransform extends TestFmwk {
                 + "\nexpected: " + pseudoScript(expected) + "\n", expected, outText);
     }
 
-    private void verifyResultsForAllOpts(Object[] test, String inText, String outText, int expectedIdx, int digits, int letters) {
-        String expected = (String)test[expectedIdx];
+    private void verifyResultsForAllOpts(Object[] test, String inText, String outText, String expected, int digits, int letters) {
         switch (digits) {
             case ArabicShaping.DIGITS_AN2EN:
-                expected = shapeNumeralsToEN(expected);
+                expected = shapeDigits(expected, ARAB_ZERO, LATN_ZERO);
                 break;
             case ArabicShaping.DIGITS_EN2AN:
-                expected = shapeNumeralsToAN(expected);
+                expected = shapeDigits(expected, LATN_ZERO, ARAB_ZERO);
                 break;
-            case ArabicShaping.DIGITS_EN2AN_INIT_AL:
-                expected = (String)test[6];
-                break;
-            case ArabicShaping.DIGITS_NOOP:
+            default:
                 break;
         }
         switch (letters) {
@@ -321,21 +312,11 @@ public class TestBidiTransform extends TestFmwk {
         return new String(uchars);
     }
 
-    private static String shapeNumeralsToEN(String text) {
+    private static String shapeDigits(String text, char srcZero, char destZero) {
         char[] chars = text.toCharArray();
         for (int i = chars.length; i-- > 0;) {
-            if (chars[i] >= ARAB_ZERO && chars[i] <= ARAB_ZERO + 9) {
-                chars[i] = substituteChar(chars[i], ARAB_ZERO, LATN_ZERO, (char)(LATN_ZERO + 9));
-            }
-        }
-        return new String(chars);
-    }
-
-    private static String shapeNumeralsToAN(String text) {
-        char[] chars = text.toCharArray();
-        for (int i = chars.length; i-- > 0;) {
-            if (chars[i] >= LATN_ZERO && chars[i] <= LATN_ZERO + 9) {
-                chars[i] = substituteChar(chars[i], LATN_ZERO, ARAB_ZERO, (char)(ARAB_ZERO + 9));
+            if (chars[i] >= srcZero && chars[i] <= srcZero + 9) {
+                chars[i] = substituteChar(chars[i], srcZero, destZero, (char)(destZero + 9));
             }
         }
         return new String(chars);
