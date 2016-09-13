@@ -223,13 +223,13 @@ public class TestBidiTransform extends TestFmwk {
         // Test various combinations of base level, order, mirroring, digits and letters
         for (Object[] test : testCases) {
             verifyResultsForAllOpts(test, inText, bidiTransform.transform(inText, (Byte)test[0], (Order)test[1],
-                    (Byte)test[2], (Order)test[3], Mirroring.ON, 0), (String)test[5], 0, 0);
+                    (Byte)test[2], (Order)test[3], Mirroring.ON, 0), ((String)test[5]).toCharArray(), 0, 0);
 
             for (int digit : digits) {
                 for (int letter : letters) {
                     verifyResultsForAllOpts(test, inText, bidiTransform.transform(inText, (Byte)test[0],
                             (Order)test[1], (Byte)test[2], (Order)test[3], Mirroring.OFF, digit | letter),
-                            (String)(digit == ArabicShaping.DIGITS_EN2AN_INIT_AL ? test[6] : test[4]),
+                            ((String)(digit == ArabicShaping.DIGITS_EN2AN_INIT_AL ? test[6] : test[4])).toCharArray(),
                             digit, letter);
                 }
             }
@@ -246,27 +246,28 @@ public class TestBidiTransform extends TestFmwk {
                 + "\nexpected: " + pseudoScript(expected) + "\n", expected, outText);
     }
 
-    private void verifyResultsForAllOpts(Object[] test, String inText, String outText, String expected, int digits, int letters) {
+    private void verifyResultsForAllOpts(Object[] test, String inText, String outText, char[] expectedChars, int digits, int letters) {
         switch (digits) {
             case ArabicShaping.DIGITS_AN2EN:
-                expected = shapeDigits(expected, ARAB_ZERO, LATN_ZERO);
+                shapeDigits(expectedChars, ARAB_ZERO, LATN_ZERO);
                 break;
             case ArabicShaping.DIGITS_EN2AN:
-                expected = shapeDigits(expected, LATN_ZERO, ARAB_ZERO);
+                shapeDigits(expectedChars, LATN_ZERO, ARAB_ZERO);
                 break;
             default:
                 break;
         }
         switch (letters) {
             case ArabicShaping.LETTERS_SHAPE:
-                expected = shapeLetters(expected);
+                shapeLetters(expectedChars, 0);
                 break;
             case ArabicShaping.LETTERS_UNSHAPE:
-                expected = unshapeLetters(expected);
+                shapeLetters(expectedChars, 1);
                 break;
             default:
                 break;
         }
+        String expected = new String(expectedChars);
         assertEquals("\nTest " + test[7] + "\ndigits: " + digits + ", letters: " + letters
                 /* TODO: BidiFwk#u16ToPseudo isn't good for us, needs an update to be used here */
                 + "\ninText:   " + pseudoScript(inText) + "\noutText:  " + pseudoScript(outText)
@@ -312,29 +313,26 @@ public class TestBidiTransform extends TestFmwk {
         return new String(uchars);
     }
 
-    private static String shapeDigits(String text, char srcZero, char destZero) {
-        char[] chars = text.toCharArray();
+    private static void shapeDigits(char[] chars, char srcZero, char destZero) {
         for (int i = chars.length; i-- > 0;) {
             if (chars[i] >= srcZero && chars[i] <= srcZero + 9) {
                 chars[i] = substituteChar(chars[i], srcZero, destZero, (char)(destZero + 9));
             }
         }
-        return new String(chars);
     }
 
-    private static String shapeLetters(String text) {
-        /*
-         * TODO: the goal is not to thoroughly test ArabicShaping, so the test can be quite trivial,
-         * but maybe still more sophisticated?
-         */
-        return text.replace('\u0630', '\ufeab').replace('\u0631', '\ufead').replace('\u0632', '\ufeaf');
-    }
+    /*
+     * TODO: the goal is not to thoroughly test ArabicShaping, so the test can be quite trivial,
+     * but maybe still more sophisticated?
+     */
+    private static final String letters = "\u0630\ufeab\u0631\ufead\u0632\ufeaf";
 
-    private static String unshapeLetters(String text) {
-        /*
-         * TODO: the goal is not to thoroughly test ArabicShaping, so the test can be quite trivial,
-         * but maybe still more sophisticated?
-         */
-        return text.replace('\ufeab', '\u0630').replace('\ufead', '\u0631').replace('\ufeaf', '\u0632');
+    private static void shapeLetters(char[] chars, int indexParity) {
+        for (int i = chars.length; i-- > 0;) {
+            int index = letters.indexOf(chars[i]);
+            if (index >= 0 && (index & 1) == indexParity) {
+                chars[i] = letters.charAt(index ^ 1);
+            }
+        }
     }
 }
