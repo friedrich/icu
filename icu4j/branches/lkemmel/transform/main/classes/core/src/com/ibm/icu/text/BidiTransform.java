@@ -1,15 +1,10 @@
 // © 2016 and later: Unicode, Inc. and others.
 // License & terms of use: http://www.unicode.org/copyright.html#License
-/*
-*******************************************************************************
-*   Copyright (C) 2016, International Business Machines
-*   Corporation and others.  All Rights Reserved.
-*******************************************************************************
-*/
 
 package com.ibm.icu.text;
 
 import com.ibm.icu.lang.UCharacter;
+import com.ibm.icu.text.RelativeDateTimeFormatter.Direction;
 
 /**
  * Bidi Layout Transformation Engine.
@@ -62,17 +57,19 @@ public class BidiTransform
      * @provisional This API might change or be removed in a future release.
      */
     public enum Order {
-        /** Constant indicating a logical order.
-          *
-          * @draft ICU 58
-          * @provisional This API might change or be removed in a future release.
-          */
+        /**
+         * Constant indicating a logical order.
+         *
+         * @draft ICU 58
+         * @provisional This API might change or be removed in a future release.
+         */
         LOGICAL,
-        /** Constant indicating a visual order.
-          *
-          * @draft ICU 58
-          * @provisional This API might change or be removed in a future release.
-          */
+        /**
+         * Constant indicating a visual order.
+         *
+         * @draft ICU 58
+         * @provisional This API might change or be removed in a future release.
+         */
         VISUAL;
     }
 
@@ -232,7 +229,7 @@ public class BidiTransform
      * @draft ICU 58
      * @provisional This API might change or be removed in a future release.
      */
-    public /*synchronized */String transform(CharSequence text,
+    public String transform(CharSequence text,
             byte inParaLevel, Order inOrder,
             byte outParaLevel, Order outOrder,
             Mirroring doMirroring, int shapingOptions)
@@ -307,7 +304,7 @@ public class BidiTransform
      * @param level Base embedding level
      * @param options Reordering options
      */
-    void resolve(byte level, int options) {
+    private void resolve(byte level, int options) {
         bidi.setInverse((options & Bidi.REORDER_INVERSE_LIKE_DIRECT) != 0);
         bidi.setReorderingMode(options);
         bidi.setPara(text, level, null);
@@ -317,7 +314,7 @@ public class BidiTransform
      * Performs basic reordering of text (Logical LTR or RTL to Visual LTR).
      *
      */
-    void reorder() {
+    private void reorder() {
         text = bidi.writeReordered(reorderingOptions);
         reorderingOptions = Bidi.REORDER_DEFAULT;
     }
@@ -325,7 +322,7 @@ public class BidiTransform
     /**
      * Performs string reverse.
      */
-    void reverse() {
+    private void reverse() {
         text = Bidi.writeReverse(text, Bidi.OPTION_DEFAULT);
     }
 
@@ -333,7 +330,7 @@ public class BidiTransform
      * Performs character mirroring without reordering. When this method is
      * called, <code>{@link #text}</code> should be in a Logical form.
      */
-    void mirror() {
+    private void mirror() {
         if ((reorderingOptions & Bidi.DO_MIRRORING) == 0) {
             return;
         }
@@ -359,7 +356,7 @@ public class BidiTransform
      *      should be treated as logical or visual form (can mismatch the digit
      *      option).
      */
-    void shapeArabic(int digitsDir, int lettersDir) {
+    private void shapeArabic(int digitsDir, int lettersDir) {
         if (digitsDir == lettersDir) {
             shapeArabic(shapingOptions | digitsDir);
         } else {
@@ -390,10 +387,12 @@ public class BidiTransform
 
     private enum ReorderingScheme {
         LOG_LTR_TO_VIS_LTR {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsLTR(inLevel) && IsLogical(inOrder)
                         && IsLTR(outLevel) && IsVisual(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.shapeArabic(ArabicShaping.TEXT_DIRECTION_LOGICAL, ArabicShaping.TEXT_DIRECTION_LOGICAL);
                 transform.resolve(Bidi.LTR, Bidi.REORDER_DEFAULT);
@@ -401,10 +400,12 @@ public class BidiTransform
             }
         },
         LOG_RTL_TO_VIS_LTR {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsRTL(inLevel) && IsLogical(inOrder)
                         && IsLTR(outLevel) && IsVisual(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.resolve(Bidi.RTL, Bidi.REORDER_DEFAULT);
                 transform.reorder();
@@ -412,10 +413,12 @@ public class BidiTransform
             }
         },
         LOG_LTR_TO_VIS_RTL {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsLTR(inLevel) && IsLogical(inOrder)
                         && IsRTL(outLevel) && IsVisual(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.shapeArabic(ArabicShaping.TEXT_DIRECTION_LOGICAL, ArabicShaping.TEXT_DIRECTION_LOGICAL);
                 transform.resolve(Bidi.LTR, Bidi.REORDER_DEFAULT);
@@ -424,10 +427,12 @@ public class BidiTransform
             }
         },
         LOG_RTL_TO_VIS_RTL {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsRTL(inLevel) && IsLogical(inOrder)
                         && IsRTL(outLevel) && IsVisual(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.resolve(Bidi.RTL, Bidi.REORDER_DEFAULT);
                 transform.reorder();
@@ -436,10 +441,12 @@ public class BidiTransform
             }
         },
         VIS_LTR_TO_LOG_RTL {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsLTR(inLevel) && IsVisual(inOrder)
                         && IsRTL(outLevel) && IsLogical(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.shapeArabic(ArabicShaping.TEXT_DIRECTION_LOGICAL, ArabicShaping.TEXT_DIRECTION_VISUAL_LTR);
                 transform.resolve(Bidi.RTL, Bidi.REORDER_INVERSE_LIKE_DIRECT);
@@ -447,10 +454,12 @@ public class BidiTransform
             }
         },
         VIS_RTL_TO_LOG_RTL {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsRTL(inLevel) && IsVisual(inOrder)
                         && IsRTL(outLevel) && IsLogical(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.reverse();
                 transform.shapeArabic(ArabicShaping.TEXT_DIRECTION_LOGICAL, ArabicShaping.TEXT_DIRECTION_VISUAL_LTR);
@@ -459,10 +468,12 @@ public class BidiTransform
             }
         },
         VIS_LTR_TO_LOG_LTR {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsLTR(inLevel) && IsVisual(inOrder)
                         && IsLTR(outLevel) && IsLogical(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.resolve(Bidi.LTR, Bidi.REORDER_INVERSE_LIKE_DIRECT);
                 transform.reorder();
@@ -470,10 +481,12 @@ public class BidiTransform
             }
         },
         VIS_RTL_TO_LOG_LTR {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsRTL(inLevel) && IsVisual(inOrder)
                         && IsLTR(outLevel) && IsLogical(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.reverse();
                 transform.resolve(Bidi.LTR, Bidi.REORDER_INVERSE_LIKE_DIRECT);
@@ -482,10 +495,12 @@ public class BidiTransform
             }
         },
         LOG_LTR_TO_LOG_RTL {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsLTR(inLevel) && IsLogical(inOrder)
                         && IsRTL(outLevel) && IsLogical(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.shapeArabic(ArabicShaping.TEXT_DIRECTION_LOGICAL, ArabicShaping.TEXT_DIRECTION_LOGICAL);
                 transform.resolve(Bidi.LTR, Bidi.REORDER_DEFAULT);
@@ -495,10 +510,12 @@ public class BidiTransform
             }
         },
         LOG_RTL_TO_LOG_LTR {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsRTL(inLevel) && IsLogical(inOrder)
                         && IsLTR(outLevel) && IsLogical(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.resolve(Bidi.RTL, Bidi.REORDER_DEFAULT);
                 transform.mirror();
@@ -508,10 +525,12 @@ public class BidiTransform
             }
         },
         VIS_LTR_TO_VIS_RTL {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsLTR(inLevel) && IsVisual(inOrder)
                         && IsRTL(outLevel) && IsVisual(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.resolve(Bidi.LTR, Bidi.REORDER_DEFAULT);
                 transform.mirror();
@@ -520,10 +539,12 @@ public class BidiTransform
             }
         },
         VIS_RTL_TO_VIS_LTR {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsRTL(inLevel) && IsVisual(inOrder)
                         && IsLTR(outLevel) && IsVisual(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.reverse();
                 transform.resolve(Bidi.LTR, Bidi.REORDER_DEFAULT);
@@ -532,10 +553,12 @@ public class BidiTransform
             }
         },
         LOG_LTR_TO_LOG_LTR {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsLTR(inLevel) && IsLogical(inOrder)
                         && IsLTR(outLevel) && IsLogical(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.resolve(Bidi.LTR, Bidi.REORDER_DEFAULT);
                 transform.mirror();
@@ -543,10 +566,12 @@ public class BidiTransform
             }
         },
         LOG_RTL_TO_LOG_RTL {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsRTL(inLevel) && IsLogical(inOrder)
                         && IsRTL(outLevel) && IsLogical(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.resolve(Bidi.RTL, Bidi.REORDER_DEFAULT);
                 transform.mirror();
@@ -554,10 +579,12 @@ public class BidiTransform
             }
         },
         VIS_LTR_TO_VIS_LTR {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsLTR(inLevel) && IsVisual(inOrder)
                         && IsLTR(outLevel) && IsVisual(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.resolve(Bidi.LTR, Bidi.REORDER_DEFAULT);
                 transform.mirror();
@@ -565,10 +592,12 @@ public class BidiTransform
             }
         },
         VIS_RTL_TO_VIS_RTL {
+            @Override
             boolean matches(byte inLevel, Order inOrder, byte outLevel, Order outOrder) {
                 return IsRTL(inLevel) && IsVisual(inOrder)
                         && IsRTL(outLevel) && IsVisual(outOrder);
             }
+            @Override
             void doTransform(BidiTransform transform) {
                 transform.reverse();
                 transform.resolve(Bidi.LTR, Bidi.REORDER_DEFAULT);
