@@ -308,6 +308,13 @@ public class CollationAPITest extends TestFmwk {
         doAssert(!(iterator1.equals(iterator2)), "The first iterator advance failed");
         order2 = iterator2.next();
 
+        // Code coverage for dummy "not designed" hashCode() which does "assert false".
+        try {
+            iterator1.hashCode();  // We don't expect any particular value.
+        } catch (AssertionError ignored) {
+            // Expected to be thrown if assertions are enabled.
+        }
+
         // In ICU 52 and earlier we had iterator1.equals(iterator2)
         // but in ICU 53 this fails because the iterators differ (String vs. CharacterIterator).
         // doAssert((iterator1.equals(iterator2)), "The second iterator advance failed");
