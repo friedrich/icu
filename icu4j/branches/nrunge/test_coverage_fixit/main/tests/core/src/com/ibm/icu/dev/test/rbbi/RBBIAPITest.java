@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
 import com.ibm.icu.util.ULocale;
@@ -472,5 +473,13 @@ public class RBBIAPITest extends com.ibm.icu.dev.test.TestFmwk {
             errln("ERROR:****selected \"" + selected + "\" instead of \"" + expected + "\"");
         else
             logln("****selected \"" + selected + "\"");
+    }
+
+    @Test
+    public void testGetTitleInstance() {
+        BreakIterator bi = BreakIterator.getTitleInstance(new Locale("en", "CA"));
+        TestFmwk.assertNotEquals("Title instance break iterator not correctly instantiated", bi.first(), null);
+        bi.setText("Here is some Text");
+        TestFmwk.assertEquals("Title instance break iterator not correctly instantiated", bi.first(), 0);
     }
 }
