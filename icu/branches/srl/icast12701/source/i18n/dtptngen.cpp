@@ -33,7 +33,6 @@
 #include "cmemory.h"
 #include "cstring.h"
 #include "locbased.h"
-#include "gregoimp.h"
 #include "hash.h"
 #include "uhash.h"
 #include "uresimp.h"
@@ -445,20 +444,23 @@ struct AllowedHourFormatsSink : public ResourceSink {
             if (U_FAILURE(errorCode)) { return; }
             for (int32_t j = 0; formatList.getKeyAndValue(j, key, value); ++j) {
                 if (uprv_strcmp(key, "allowed") == 0) {  // Ignore "preferred" list.
-                    LocalArray<int32_t> list;
+                    LocalMemory<int32_t> list;
                     int32_t length;
                     if (value.getType() == URES_STRING) {
-                        list.adoptInsteadAndCheckErrorCode(
-                            static_cast<int32_t *>(uprv_malloc(2 * sizeof(int32_t))), errorCode);
-                        if (U_FAILURE(errorCode)) { return; }
+                        if (list.allocateInsteadAndReset(2) == NULL) {
+                            errorCode = U_MEMORY_ALLOCATION_ERROR;
+                            return;
+                        }
                         list[0] = getHourFormatFromUnicodeString(value.getUnicodeString(errorCode));
                         length = 1;
-                    } else {
+                    }
+                    else {
                         ResourceArray allowedFormats = value.getArray(errorCode);
                         length = allowedFormats.getSize();
-                        list.adoptInsteadAndCheckErrorCode(
-                            static_cast<int32_t *>(uprv_malloc((length + 1) * sizeof(int32_t))), errorCode);
-                        if (U_FAILURE(errorCode)) { return; }
+                        if (list.allocateInsteadAndReset(length + 1) == NULL) {
+                            errorCode = U_MEMORY_ALLOCATION_ERROR;
+                            return;
+                        }
                         for (int32_t k = 0; k < length; ++k) {
                             allowedFormats.getValue(k, value);
                             list[k] = getHourFormatFromUnicodeString(value.getUnicodeString(errorCode));
@@ -1091,16 +1093,34 @@ DateTimePatternGenerator::setDateTimeFromCalendar(const Locale& locale, UErrorCo
 
     Calendar* fCalendar = Calendar::createInstance(locale, status);
     if (U_FAILURE(status)) { return; }
-    CalendarData calData(locale, fCalendar?fCalendar->getType():NULL, status);
-    UResourceBundle *dateTimePatterns = calData.getByKey(DT_DateTimePatternsTag, status);
+
+    LocalUResourceBundlePointer calData(ures_open(NULL, locale.getBaseName(), &status));
+    ures_getByKey(calData.getAlias(), DT_DateTimeCalendarTag, calData.getAlias(), &status);
+
+    LocalUResourceBundlePointer dateTimePatterns;
+    if (fCalendar != NULL && fCalendar->getType() != NULL && *fCalendar->getType() != '\0'
+            && uprv_strcmp(fCalendar->getType(), DT_DateTimeGregorianTag) != 0) {
+        dateTimePatterns.adoptInstead(ures_getByKeyWithFallback(calData.getAlias(), fCalendar->getType(),
+                                                                NULL, &status));
+        ures_getByKeyWithFallback(dateTimePatterns.getAlias(), DT_DateTimePatternsTag,
+                                  dateTimePatterns.getAlias(), &status);
+    }
+
+    if (dateTimePatterns.isNull() || status == U_MISSING_RESOURCE_ERROR) {
+        status = U_ZERO_ERROR;
+        dateTimePatterns.adoptInstead(ures_getByKeyWithFallback(calData.getAlias(), DT_DateTimeGregorianTag,
+                                                                dateTimePatterns.orphan(), &status));
+        ures_getByKeyWithFallback(dateTimePatterns.getAlias(), DT_DateTimePatternsTag,
+                                  dateTimePatterns.getAlias(), &status);
+    }
     if (U_FAILURE(status)) { return; }
 
-    if (ures_getSize(dateTimePatterns) <= DateFormat::kDateTime)
+    if (ures_getSize(dateTimePatterns.getAlias()) <= DateFormat::kDateTime)
     {
         status = U_INVALID_FORMAT_ERROR;
         return;
     }
-    resStr = ures_getStringByIndex(dateTimePatterns, (int32_t)DateFormat::kDateTime, &resStrLen, &status);
+    resStr = ures_getStringByIndex(dateTimePatterns.getAlias(), (int32_t)DateFormat::kDateTime, &resStrLen, &status);
     setDateTimeFormat(UnicodeString(TRUE, resStr, resStrLen));
 
     delete fCalendar;

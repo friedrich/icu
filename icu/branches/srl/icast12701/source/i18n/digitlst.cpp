@@ -29,6 +29,7 @@
 #include "digitlst.h"
 
 #if !UCONFIG_NO_FORMATTING
+
 #include "unicode/putil.h"
 #include "charstr.h"
 #include "cmemory.h"
@@ -37,11 +38,27 @@
 #include "putilimp.h"
 #include "uassert.h"
 #include "digitinterval.h" 
+#include "ucln_in.h"
+#include "umutex.h"
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
 #include <limits>
+
+#if !defined(U_USE_STRTOD_L)
+# if U_PLATFORM_HAS_WIN32_API
+#   define U_USE_STRTOD_L 1
+# elif defined(U_HAVE_STRTOD_L)
+#   define U_USE_STRTOD_L U_HAVE_STRTOD_L
+# else
+#   define U_USE_STRTOD_L 0
+# endif
+#endif
+
+#if U_USE_STRTOD_L && !U_PLATFORM_HAS_WIN32_API
+#include <xlocale.h>
+#endif
 
 // ***************************************************************************
 // class DigitList
@@ -397,27 +414,6 @@ DigitList::append(char digit)
     internalClear();
 }
 
-char DigitList::getStrtodDecimalSeparator() {
-    // TODO: maybe use andy's pthread once.
-    static char gDecimal = 0;
-    char result;
-    {
-        Mutex mutex;
-        result = gDecimal;;
-        if (result == 0) {
-            // We need to know the decimal separator character that will be used with strtod().
-            // Depends on the C runtime global locale.
-            // Most commonly is '.'
-            // TODO: caching could fail if the global locale is changed on the fly.
-            char rep[MAX_DIGITS];
-            sprintf(rep, "%+1.1f", 1.0);
-            result = rep[2];
-            gDecimal = result;;
-        }
-    }
-    return result;
-}
-
 // -------------------------------------
 
 /**
@@ -430,24 +426,11 @@ char DigitList::getStrtodDecimalSeparator() {
 double
 DigitList::getDouble() const
 {
-    static char gDecimal = 0;
-    char decimalSeparator;
     {
         Mutex mutex;
         if (fHave == kDouble) {
             return fUnion.fDouble;
         }
-        decimalSeparator = gDecimal;
-    }
-
-    if (decimalSeparator == 0) {
-        // We need to know the decimal separator character that will be used with strtod().
-        // Depends on the C runtime global locale.
-        // Most commonly is '.'
-        // TODO: caching could fail if the global locale is changed on the fly.
-        char rep[MAX_DIGITS];
-        sprintf(rep, "%+1.1f", 1.0);
-        decimalSeparator = rep[2];
     }
 
     double tDouble = 0.0;
@@ -484,23 +467,70 @@ DigitList::getDouble() const
             uprv_decNumberToString(this->fDecNumber, s.getAlias());
         }
         U_ASSERT(uprv_strlen(&s[0]) < MAX_DBL_DIGITS+18);
-        
-        if (decimalSeparator != '.') {
-            char *decimalPt = strchr(s.getAlias(), '.');
-            if (decimalPt != NULL) {
-                *decimalPt = decimalSeparator;
-            }
-        }
+
         char *end = NULL;
-        tDouble = uprv_strtod(s.getAlias(), &end);
+        tDouble = decimalStrToDouble(s.getAlias(), &end);
     }
     {
         Mutex mutex;
         DigitList *nonConstThis = const_cast<DigitList *>(this);
         nonConstThis->internalSetDouble(tDouble);
-        gDecimal = decimalSeparator;
     }
     return tDouble;
+}
+
+#if U_USE_STRTOD_L && U_PLATFORM_HAS_WIN32_API
+# define locale_t _locale_t
+# define freelocale _free_locale
+# define strtod_l _strtod_l
+#endif
+
+#if U_USE_STRTOD_L
+static locale_t gCLocale = (locale_t)0;
+#endif
+static icu::UInitOnce gCLocaleInitOnce = U_INITONCE_INITIALIZER;
+
+U_CDECL_BEGIN
+// Cleanup callback func
+static UBool U_CALLCONV digitList_cleanup(void)
+{
+#if U_USE_STRTOD_L
+    if (gCLocale != (locale_t)0) {
+        freelocale(gCLocale);
+    }
+#endif
+    return TRUE;
+}
+// C Locale initialization func
+static void U_CALLCONV initCLocale(void) {
+    ucln_i18n_registerCleanup(UCLN_I18N_DIGITLIST, digitList_cleanup);
+#if U_USE_STRTOD_L
+# if U_PLATFORM_HAS_WIN32_API
+    gCLocale = _create_locale(LC_ALL, "C");
+# else
+    gCLocale = newlocale(LC_ALL_MASK, "C", (locale_t)0);
+# endif
+#endif
+}
+U_CDECL_END
+
+double
+DigitList::decimalStrToDouble(char *decstr, char **end) {
+    umtx_initOnce(gCLocaleInitOnce, &initCLocale);
+#if U_USE_STRTOD_L
+    return strtod_l(decstr, end, gCLocale);
+#else
+    char *decimalPt = strchr(decstr, '.');
+    if (decimalPt) {
+        // We need to know the decimal separator character that will be used with strtod().
+        // Depends on the C runtime global locale.
+        // Most commonly is '.'
+        char rep[MAX_DIGITS];
+        sprintf(rep, "%+1.1f", 1.0);
+        *decimalPt = rep[2];
+    }
+    return uprv_strtod(decstr, end);
+#endif
 }
 
 // -------------------------------------
