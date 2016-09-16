@@ -414,6 +414,7 @@ typedef enum USpoofChecks {
      */
     USPOOF_WHOLE_SCRIPT_CONFUSABLE  =   4,
 
+#ifndef U_HIDE_DRAFT_API
     /**
      * Enable this flag in {@link uspoof_setChecks} to turn on all types of confusables.  You may set
      * the checks to some subset of SINGLE_SCRIPT_CONFUSABLE, MIXED_SCRIPT_CONFUSABLE, or WHOLE_SCRIPT_CONFUSABLE to
@@ -428,6 +429,7 @@ typedef enum USpoofChecks {
      * @provisional This API might change or be removed in a future release.
      */
     USPOOF_CONFUSABLE               =   USPOOF_SINGLE_SCRIPT_CONFUSABLE | USPOOF_MIXED_SCRIPT_CONFUSABLE | USPOOF_WHOLE_SCRIPT_CONFUSABLE,
+#endif /* U_HIDE_DRAFT_API */
 
 #ifndef U_HIDE_DEPRECATED_API
     /**
@@ -1051,6 +1053,7 @@ uspoof_checkUnicodeString(const USpoofChecker *sc,
 #endif
 
 
+#ifndef U_HIDE_DRAFT_API
 /**
  * Check the specified string for possible security issues.
  * The text to be checked will typically be an identifier of some sort.
@@ -1245,6 +1248,7 @@ uspoof_getCheckResultRestrictionLevel(const USpoofCheckResult *checkResult, UErr
  */
 U_DRAFT const USet* U_EXPORT2
 uspoof_getCheckResultNumerics(const USpoofCheckResult *checkResult, UErrorCode *status);
+#endif /* U_HIDE_DRAFT_API */
 
 
 /**
