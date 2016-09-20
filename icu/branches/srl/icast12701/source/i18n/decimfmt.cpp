@@ -1657,7 +1657,7 @@ UBool DecimalFormat::subparse(const UnicodeString& text,
         // if we didn't see a decimal and it is required, check to see if the pattern had one
         if(!sawDecimal && isDecimalPatternMatchRequired()) 
         {
-            if(formatPattern.indexOf(kPatternZeroDigit) != -1)
+            if(formatPattern.indexOf(kPatternDecimalSeparator) != -1)
             {
                 parsePosition.setIndex(oldStart);
                 parsePosition.setErrorIndex(position);
