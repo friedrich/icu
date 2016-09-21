@@ -409,6 +409,46 @@ class U_I18N_API MeasureUnit: public UObject {
     static MeasureUnit *createMilePerGallonImperial(UErrorCode &status);
 #endif  /* U_HIDE_DRAFT_API */
 
+#ifndef U_HIDE_DRAFT_API
+    /**
+     * Returns unit of coordinate: east.
+     * Caller owns returned value and must free it.
+     * @param status ICU error code.
+     * @draft ICU 58
+     */
+    static MeasureUnit *createEast(UErrorCode &status);
+#endif  /* U_HIDE_DRAFT_API */
+
+#ifndef U_HIDE_DRAFT_API
+    /**
+     * Returns unit of coordinate: north.
+     * Caller owns returned value and must free it.
+     * @param status ICU error code.
+     * @draft ICU 58
+     */
+    static MeasureUnit *createNorth(UErrorCode &status);
+#endif  /* U_HIDE_DRAFT_API */
+
+#ifndef U_HIDE_DRAFT_API
+    /**
+     * Returns unit of coordinate: south.
+     * Caller owns returned value and must free it.
+     * @param status ICU error code.
+     * @draft ICU 58
+     */
+    static MeasureUnit *createSouth(UErrorCode &status);
+#endif  /* U_HIDE_DRAFT_API */
+
+#ifndef U_HIDE_DRAFT_API
+    /**
+     * Returns unit of coordinate: west.
+     * Caller owns returned value and must free it.
+     * @param status ICU error code.
+     * @draft ICU 58
+     */
+    static MeasureUnit *createWest(UErrorCode &status);
+#endif  /* U_HIDE_DRAFT_API */
+
     /**
      * Returns unit of digital: bit.
      * Caller owns returned value and must free it.

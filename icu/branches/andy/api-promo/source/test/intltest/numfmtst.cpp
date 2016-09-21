@@ -3932,8 +3932,8 @@ NumberFormatTest::TestCurrencyParsing() {
         {"pa_IN", "1", "USD", "US$\\u00A01.00", "USD\\u00A01.00", "1.00 \\u0a2f\\u0a42.\\u0a10\\u0a38. \\u0a21\\u0a3e\\u0a32\\u0a30"},
         {"es_AR", "1", "USD", "US$\\u00A01,00", "USD\\u00A01,00", "1,00 d\\u00f3lar estadounidense"},
         {"ar_EG", "1", "USD", "\\u0661\\u066b\\u0660\\u0660\\u00a0US$", "\\u0661\\u066b\\u0660\\u0660\\u00a0USD", "\\u0661\\u066b\\u0660\\u0660 \\u062f\\u0648\\u0644\\u0627\\u0631 \\u0623\\u0645\\u0631\\u064a\\u0643\\u064a"},
-        {"fa_CA", "1", "USD", "\\u06f1\\u066b\\u06f0\\u06f0\\u00a0\\u200f$", "\\u06f1\\u066b\\u06f0\\u06f0\\u00a0\\u200fUSD", "\\u06f1\\u066b\\u06f0\\u06f0 \\u062f\\u0644\\u0627\\u0631 \\u0627\\u0645\\u0631\\u06cc\\u06a9\\u0627"},
-        {"he_IL", "1", "USD", "1.00\\u00a0$", "1.00\\u00a0USD", "1.00 \\u05d3\\u05d5\\u05dc\\u05e8 \\u05d0\\u05de\\u05e8\\u05d9\\u05e7\\u05d0\\u05d9"},
+        {"fa_CA", "1", "USD", "\\u06f1\\u066b\\u06f0\\u06f0\\u00a0\\u061c$", "\\u06f1\\u066b\\u06f0\\u06f0\\u00a0\\u061cUSD", "\\u06f1\\u066b\\u06f0\\u06f0 \\u062f\\u0644\\u0627\\u0631 \\u0627\\u0645\\u0631\\u06cc\\u06a9\\u0627"},
+        {"he_IL", "1", "USD", "\\u200f1.00\\u00a0$", "\\u200f1.00\\u00a0USD", "1.00 \\u05d3\\u05d5\\u05dc\\u05e8 \\u05d0\\u05de\\u05e8\\u05d9\\u05e7\\u05d0\\u05d9"},
         {"hr_HR", "1", "USD", "1,00\\u00a0USD", "1,00\\u00a0USD", "1,00 Ameri\\u010dki dolar"},
         {"id_ID", "1", "USD", "US$1,00", "USD1,00", "1,00 Dolar Amerika Serikat"},
         {"it_IT", "1", "USD", "1,00\\u00a0US$", "1,00\\u00a0USD", "1,00 Dollaro Statunitense"},
@@ -4184,10 +4184,10 @@ NumberFormatTest::TestParseCurrencyInUCurr() {
         "Barbadian Dollar1.00",
         "Barbadian dollar1.00",
         "Barbadian dollars1.00",
-        "Belarusian New Ruble (1994\\u20131999)1.00",
+        "Belarusian Ruble (1994\\u20131999)1.00",
         "Belarusian Ruble1.00",
-        "Belarusian new ruble (1994\\u20131999)1.00",
-        "Belarusian new rubles (1994\\u20131999)1.00",
+        "Belarusian ruble (1994\\u20131999)1.00",
+        "Belarusian rubles (1994\\u20131999)1.00",
         "Belarusian ruble1.00",
         "Belarusian rubles1.00",
         "Belgian Franc (convertible)1.00",
@@ -5343,10 +5343,10 @@ NumberFormatTest::TestParseCurrencyInUCurr() {
         "1.00 Barbadian Dollar random",
         "1.00 Barbadian dollar random",
         "1.00 Barbadian dollars random",
-        "1.00 Belarusian New Ruble (1994\\u20131999) random",
+        "1.00 Belarusian Ruble (1994\\u20131999) random",
         "1.00 Belarusian Ruble random",
-        "1.00 Belarusian new ruble (1994\\u20131999) random",
-        "1.00 Belarusian new rubles (1994\\u20131999) random",
+        "1.00 Belarusian ruble (1994\\u20131999) random",
+        "1.00 Belarusian rubles (1994\\u20131999) random",
         "1.00 Belarusian ruble random",
         "1.00 Belarusian rubles random",
         "1.00 Belgian Franc (convertible) random",
@@ -6135,7 +6135,7 @@ NumberFormatTest::TestParseCurrencyInUCurr() {
         "Bangladeshi Tak1.00",
         "Barbadian Dolla1.00",
         "Bds1.00",
-        "Belarusian New Ruble (1994\\u201319991.00",
+        "Belarusian Ruble (1994\\u201319991.00",
         "Belarusian Rubl1.00",
         "Belgian Fran1.00",
         "Belgian Franc (convertible1.00",
@@ -8057,19 +8057,19 @@ void NumberFormatTest::TestAccountingCurrency() {
     UNumberFormatStyle style = UNUM_CURRENCY_ACCOUNTING;
 
     expect(NumberFormat::createInstance("en_US", style, status),
-        (Formattable)1234.5, "$1,234.50", TRUE, status);
+        (Formattable)(double)1234.5, "$1,234.50", TRUE, status);
     expect(NumberFormat::createInstance("en_US", style, status),
-        (Formattable)-1234.5, "($1,234.50)", TRUE, status);
+        (Formattable)(double)-1234.5, "($1,234.50)", TRUE, status);
     expect(NumberFormat::createInstance("en_US", style, status),
-        (Formattable)0, "$0.00", TRUE, status);
+        (Formattable)(double)0, "$0.00", TRUE, status);
     expect(NumberFormat::createInstance("en_US", style, status),
-        (Formattable)-0.2, "($0.20)", TRUE, status);
+        (Formattable)(double)-0.2, "($0.20)", TRUE, status);
     expect(NumberFormat::createInstance("ja_JP", style, status),
-        (Formattable)10000, UnicodeString("\\uFFE510,000").unescape(), TRUE, status);
+        (Formattable)(double)10000, UnicodeString("\\uFFE510,000").unescape(), TRUE, status);
     expect(NumberFormat::createInstance("ja_JP", style, status),
-        (Formattable)-1000.5, UnicodeString("(\\uFFE51,000)").unescape(), FALSE, status);
+        (Formattable)(double)-1000.5, UnicodeString("(\\uFFE51,000)").unescape(), FALSE, status);
     expect(NumberFormat::createInstance("de_DE", style, status),
-        (Formattable)-23456.7, UnicodeString("-23.456,70\\u00A0\\u20AC").unescape(), TRUE, status);
+        (Formattable)(double)-23456.7, UnicodeString("-23.456,70\\u00A0\\u20AC").unescape(), TRUE, status);
 }
 
 // for #5186
@@ -8124,7 +8124,7 @@ void NumberFormatTest::TestCurrencyUsage() {
 
             // test the getter here
             UCurrencyUsage curUsage = fmt->getCurrencyUsage();
-            assertEquals("Test usage getter - standard", curUsage, UCURR_USAGE_STANDARD);
+            assertEquals("Test usage getter - standard", (int32_t)curUsage, (int32_t)UCURR_USAGE_STANDARD);
 
             fmt->setCurrencyUsage(UCURR_USAGE_CASH, &status);
         }else{
@@ -8136,7 +8136,7 @@ void NumberFormatTest::TestCurrencyUsage() {
 
         // must be usage = cash
         UCurrencyUsage curUsage = fmt->getCurrencyUsage();
-        assertEquals("Test usage getter - cash", curUsage, UCURR_USAGE_CASH);
+        assertEquals("Test usage getter - cash", (int32_t)curUsage, (int32_t)UCURR_USAGE_CASH);
 
         UnicodeString cash_currency;
         fmt->format(agent,cash_currency);
@@ -8314,9 +8314,9 @@ void NumberFormatTest::TestFastPathConsistent11524() {
     }
     fmt->setMaximumIntegerDigits(INT32_MIN);
     UnicodeString appendTo;
-    assertEquals("", "0", fmt->format(123, appendTo));
+    assertEquals("", "0", fmt->format((int32_t)123, appendTo));
     appendTo.remove();
-    assertEquals("", "0", fmt->format(12345, appendTo));
+    assertEquals("", "0", fmt->format((int32_t)12345, appendTo));
     delete fmt;
 }
 
@@ -8489,13 +8489,13 @@ void NumberFormatTest::TestCtorApplyPatternDifference() {
     assertEquals(
             "ctor favors precision of currency",
             "$5.00",
-            fmt.format(5, result));
+            fmt.format((double)5, result));
     result.remove();
     fmt.applyPattern(pattern.unescape(), status);
     assertEquals(
             "applyPattern favors precision of pattern",
             "$5",
-            fmt.format(5, result));
+            fmt.format((double)5, result));
 }
 
 void NumberFormatTest::Test11868() {

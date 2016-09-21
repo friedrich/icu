@@ -47,6 +47,8 @@ StringCaseTest::runIndexedTest(int32_t index, UBool exec, const char *&name, cha
 #endif
     TESTCASE_AUTO(TestFullCaseFoldingIterator);
     TESTCASE_AUTO(TestGreekUpper);
+    TESTCASE_AUTO(TestLongUpper);
+    TESTCASE_AUTO(TestMalformedUTF8);
     TESTCASE_AUTO_END;
 }
 
@@ -686,4 +688,72 @@ StringCaseTest::TestGreekUpper() {
     // http://multilingualtypesetting.co.uk/blog/greek-typesetting-tips/
     assertGreekUpper("\\u03C1\\u03C9\\u03BC\\u03AD\\u03B9\\u03BA\\u03B1",
                      "\\u03A1\\u03A9\\u039C\\u0395\\u03AA\\u039A\\u0391");
+}
+
+void
+StringCaseTest::TestLongUpper() {
+    if (quick) {
+        logln("not exhaustive mode: skipping this test");
+        return;
+    }
+    // Ticket #12663, crash with an extremely long string where
+    // U+0390 maps to 0399 0308 0301 so that the result is three times as long
+    // and overflows an int32_t.
+    int32_t length = 0x40000004;  // more than 1G UChars
+    UnicodeString s(length, (UChar32)0x390, length);
+    UnicodeString result;
+    UChar *dest = result.getBuffer(length + 1);
+    if (s.isBogus() || dest == NULL) {
+        logln("Out of memory, unable to run this test on this machine.");
+        return;
+    }
+    IcuTestErrorCode errorCode(*this, "TestLongUpper");
+    int32_t destLength = u_strToUpper(dest, result.getCapacity(),
+                                      s.getBuffer(), s.length(), "", errorCode);
+    result.releaseBuffer(destLength);
+    if (errorCode.reset() != U_INDEX_OUTOFBOUNDS_ERROR) {
+        errln("expected U_INDEX_OUTOFBOUNDS_ERROR, got %s (destLength is undefined, got %ld)",
+              errorCode.errorName(), (long)destLength);
+    }
+}
+
+void StringCaseTest::TestMalformedUTF8() {
+    // ticket #12639
+    IcuTestErrorCode errorCode(*this, "TestMalformedUTF8");
+    LocalUCaseMapPointer csm(ucasemap_open("en", U_TITLECASE_NO_BREAK_ADJUSTMENT, errorCode));
+    if (errorCode.isFailure()) {
+        errln("ucasemap_open(English) failed - %s", errorCode.errorName());
+        return;
+    }
+    char src[1] = { (char)0x85 };  // malformed UTF-8
+    char dest[3] = { 0, 0, 0 };
+    int32_t destLength = ucasemap_utf8ToTitle(csm.getAlias(), dest, 3, src, 1, errorCode);
+    if (errorCode.isFailure() || destLength != 1 || dest[0] != src[0]) {
+        errln("ucasemap_utf8ToTitle(\\x85) failed: %s destLength=%d dest[0]=0x%02x",
+              errorCode.errorName(), (int)destLength, dest[0]);
+    }
+
+    errorCode.reset();
+    dest[0] = 0;
+    destLength = ucasemap_utf8ToLower(csm.getAlias(), dest, 3, src, 1, errorCode);
+    if (errorCode.isFailure() || destLength != 1 || dest[0] != src[0]) {
+        errln("ucasemap_utf8ToLower(\\x85) failed: %s destLength=%d dest[0]=0x%02x",
+              errorCode.errorName(), (int)destLength, dest[0]);
+    }
+
+    errorCode.reset();
+    dest[0] = 0;
+    destLength = ucasemap_utf8ToUpper(csm.getAlias(), dest, 3, src, 1, errorCode);
+    if (errorCode.isFailure() || destLength != 1 || dest[0] != src[0]) {
+        errln("ucasemap_utf8ToUpper(\\x85) failed: %s destLength=%d dest[0]=0x%02x",
+              errorCode.errorName(), (int)destLength, dest[0]);
+    }
+
+    errorCode.reset();
+    dest[0] = 0;
+    destLength = ucasemap_utf8FoldCase(csm.getAlias(), dest, 3, src, 1, errorCode);
+    if (errorCode.isFailure() || destLength != 1 || dest[0] != src[0]) {
+        errln("ucasemap_utf8FoldCase(\\x85) failed: %s destLength=%d dest[0]=0x%02x",
+              errorCode.errorName(), (int)destLength, dest[0]);
+    }
 }

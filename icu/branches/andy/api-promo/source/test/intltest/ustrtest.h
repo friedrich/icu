@@ -110,6 +110,8 @@ public:
     void TestCasing();
     void TestFullCaseFoldingIterator();
     void TestGreekUpper();
+    void TestLongUpper();
+    void TestMalformedUTF8();
 
 private:
     void assertGreekUpper(const char *s, const char *expected);
