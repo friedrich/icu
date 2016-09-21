@@ -1915,6 +1915,7 @@ public:
     return moveFrom(src);
   }
 #endif
+#ifndef U_HIDE_DRAFT_API
   /**
    * Move assignment, might leave src in bogus state.
    * This string will have the same contents and state that the source string had.
@@ -1923,9 +1924,10 @@ public:
    * Can be called explicitly, does not need C++11 support.
    * @param src source string
    * @return *this
-   * @stable ICU 56
+   * @draft ICU 56
    */
   UnicodeString &moveFrom(UnicodeString &src) U_NOEXCEPT;
+#endif /* U_HIDE_DRAFT_API */
 
   /**
    * Swap strings.

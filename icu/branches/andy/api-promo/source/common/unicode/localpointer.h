@@ -242,6 +242,7 @@ public:
         return moveFrom(src);
     }
 #endif
+#ifndef U_HIDE_DRAFT_API
     /**
      * Move assignment, leaves src with isNull().
      * The behavior is undefined if *this and src are the same object.
@@ -249,7 +250,7 @@ public:
      * Can be called explicitly, does not need C++11 support.
      * @param src source smart pointer
      * @return *this
-     * @stable ICU 56
+     * @draft ICU 56
      */
     LocalPointer<T> &moveFrom(LocalPointer<T> &src) U_NOEXCEPT {
         delete LocalPointerBase<T>::ptr;
@@ -257,6 +258,7 @@ public:
         src.ptr=NULL;
         return *this;
     }
+#endif /* U_HIDE_DRAFT_API */
     /**
      * Swap pointers.
      * @param other other smart pointer
@@ -390,6 +392,7 @@ public:
         return moveFrom(src);
     }
 #endif
+#ifndef U_HIDE_DRAFT_API
     /**
      * Move assignment, leaves src with isNull().
      * The behavior is undefined if *this and src are the same object.
@@ -397,7 +400,7 @@ public:
      * Can be called explicitly, does not need C++11 support.
      * @param src source smart pointer
      * @return *this
-     * @stable ICU 56
+     * @draft ICU 56
      */
     LocalArray<T> &moveFrom(LocalArray<T> &src) U_NOEXCEPT {
         delete[] LocalPointerBase<T>::ptr;
@@ -405,6 +408,7 @@ public:
         src.ptr=NULL;
         return *this;
     }
+#endif /* U_HIDE_DRAFT_API */
     /**
      * Swap pointers.
      * @param other other smart pointer
