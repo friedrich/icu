@@ -168,6 +168,10 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
      * @discouraged ICU 58 use {@link #getDigitStrings()} instead.
      */
     public char getZeroDigit() {
+        if (zeroDigit == '\0') {
+            // Required for backwards compatibility for serialization
+            return digits[0];
+        }
         return zeroDigit;
     }
 
