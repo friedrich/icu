@@ -39,21 +39,12 @@ import junitparams.Parameters;
 public class CompatibilityTest extends TestFmwk
 {
     private static final class FileHolder {
-        @SuppressWarnings("unused")
-        String fileName;
         String className;
         String icuVersion;
         byte[] b;
         boolean skip;
 
-//        FileHolder(String className, String fileName, byte[] b) {
-//            this.className = className;
-//            this.fileName = fileName;
-//            this.b = b;
-//        }
-
         FileHolder(String fileName, byte[] b) {
-            this.fileName = fileName;
             this.b = b;
 
             // Replace '\' with '/' to normalize fileName before extracting
@@ -85,8 +76,6 @@ public class CompatibilityTest extends TestFmwk
         }
     }
 
-    //TODO(junit) - requires code to read the serialized classes from a jar
-    //@Ignore
     @Test
     @Parameters(method="generateClassList")
     public void testCompatibility(FileHolder holder) throws ClassNotFoundException, IOException {
