@@ -56,10 +56,15 @@ public class CompatibilityTest extends TestFmwk
             this.fileName = fileName;
             this.b = b;
 
-            int fileBreak = fileName.lastIndexOf('/');
-            this.className = fileName.substring(fileBreak + 1, fileName.lastIndexOf('.'));
-            int finalDirBreak = fileName.lastIndexOf("/ICU");
-            this.icuVersion = fileName.substring(finalDirBreak + 1, fileBreak);
+            // Replace '\' with '/' to normalize fileName before extracting
+            // substrings. This is required if serialization test data is
+            // loaded from Windows file system.
+            String tmpPath = fileName.replaceAll("\\\\", "/");
+
+            int fileBreak = tmpPath.lastIndexOf('/');
+            this.className = fileName.substring(fileBreak + 1, tmpPath.lastIndexOf('.'));
+            int finalDirBreak = tmpPath.lastIndexOf("/ICU");
+            this.icuVersion = tmpPath.substring(finalDirBreak + 1, fileBreak);
             className = className.substring(className.lastIndexOf('/') + 1);
 
             this.skip = skipFile(this.icuVersion, this.className);
