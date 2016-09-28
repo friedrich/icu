@@ -1084,7 +1084,7 @@ ucnv_openAllNames(UErrorCode *pErrorCode) {
     return myEnum;
 }
 
-U_CFUNC uint16_t
+U_CAPI uint16_t
 ucnv_io_countKnownConverters(UErrorCode *pErrorCode) {
     if (haveAliasData(pErrorCode)) {
         return (uint16_t)gMainTable.converterListSize;
