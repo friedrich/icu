@@ -215,9 +215,7 @@ RuleBasedBreakIterator::operator=(const RuleBasedBreakIterator& that) {
     if (this == &that) {
         return *this;
     }
-    fBreakCache->reset();
 
-    fDictionaryCache->reset();    // Delete break cache information
     fBreakType = that.fBreakType;
     if (fLanguageBreakEngines != NULL) {
         delete fLanguageBreakEngines;
@@ -246,6 +244,14 @@ RuleBasedBreakIterator::operator=(const RuleBasedBreakIterator& that) {
     if (that.fData != NULL) {
         fData = that.fData->addReference();
     }
+
+    fState = that.fState;
+    // TODO: both the dictionary and the main cache need to be copied.
+    //       Current position could be within a dictionary range. Trying to continue
+    //       the iteration without the caches present would go to the rules, with
+    //       the assumption that the current position is on a rule boundary.
+    fBreakCache->reset(fState.fPosition, fState.fRuleStatusIndex);
+    fDictionaryCache->reset();
 
     return *this;
 }
@@ -323,6 +329,9 @@ RuleBasedBreakIterator::operator==(const BreakIterator& that) const {
         return FALSE;
     }
 
+    if (this == &that) {
+        return TRUE;
+    }
     const RuleBasedBreakIterator& that2 = (const RuleBasedBreakIterator&) that;
 
     if (!utext_equals(fText, that2.fText)) {
@@ -331,7 +340,9 @@ RuleBasedBreakIterator::operator==(const BreakIterator& that) const {
         return FALSE;
     };
 
-    if (fState.fPosition != that2.fState.fPosition || fState.fRuleStatusIndex != that2.fState.fRuleStatusIndex) {
+    if (!(fState.fPosition == that2.fState.fPosition &&
+            fState.fRuleStatusIndex == that2.fState.fRuleStatusIndex &&
+            fState.fDone == that2.fState.fDone)) {
         return FALSE;
     }
 

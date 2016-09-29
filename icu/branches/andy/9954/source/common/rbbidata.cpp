@@ -79,10 +79,11 @@ void RBBIDataWrapper::init0() {
     fReverseTable = NULL;
     fSafeFwdTable = NULL;
     fSafeRevTable = NULL;
-    fRuleSource = NULL;
+    fRuleSource   = NULL;
     fRuleStatusTable = NULL;
-    fUDataMem = NULL;
-    fRefCount = 0;
+    fTrie         = NULL;
+    fUDataMem     = NULL;
+    fRefCount     = 0;
     fDontFreeData = TRUE;
 }
 
@@ -155,6 +156,7 @@ void RBBIDataWrapper::init(const RBBIDataHeader *data, UErrorCode &status) {
 //-----------------------------------------------------------------------------
 RBBIDataWrapper::~RBBIDataWrapper() {
     U_ASSERT(fRefCount == 0);
+    utrie2_close(fTrie);
     if (fUDataMem) {
         udata_close(fUDataMem);
     } else if (!fDontFreeData) {

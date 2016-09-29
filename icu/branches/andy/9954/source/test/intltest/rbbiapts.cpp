@@ -126,8 +126,8 @@ void RBBIAPITest::TestCloneEquals()
 
 
     logln((UnicodeString)"Testing clone()");
-    RuleBasedBreakIterator* bi1clone=(RuleBasedBreakIterator*)bi1->clone();
-    RuleBasedBreakIterator* bi2clone=(RuleBasedBreakIterator*)bi2->clone();
+    RuleBasedBreakIterator* bi1clone = dynamic_cast<RuleBasedBreakIterator *>(bi1->clone());
+    RuleBasedBreakIterator* bi2clone = dynamic_cast<RuleBasedBreakIterator *>(bi2->clone());
 
     if(*bi1clone != *bi1 || *bi1clone  != *biequal  ||
       *bi1clone == *bi3 || *bi1clone == *bi2)
