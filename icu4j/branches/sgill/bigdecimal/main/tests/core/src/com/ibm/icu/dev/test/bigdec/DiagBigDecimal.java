@@ -13,6 +13,8 @@ package com.ibm.icu.dev.test.bigdec;
 
 import java.math.BigInteger;
 
+import org.junit.Test;
+
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
 import com.ibm.icu.dev.test.TestUtil.JavaVendor;
@@ -150,224 +152,13 @@ public class DiagBigDecimal extends TestFmwk {
             TestUtil.getJavaVendor() == JavaVendor.Android ||
             TestUtil.getJavaVersion() >= 5;
 
-//    /**
-//     * Run the tests in the test suite.
-//     *
-//     * @param isContinue
-//     *            The <code>boolean</code> which determines whether to stop
-//     *            running after a group fails. If 1 (true) then the tests should
-//     *            be run to completion if possible; if 0 (false) then the run
-//     *            will end if a group fails.
-//     * @return an <code>int</code> which is 0 if all tests were successful, >0
-//     *         (the count of failures) if some failures were detected, or <0 if
-//     *         an unexpected Exception was signalled.
-//     */
-//
-//    public int diagrun(boolean isContinue) {
-//        int fails;
-//        int num = 0;
-//        DiagException de = null;
-//        java.lang.RuntimeException e = null;
-//        java.lang.String rest = null;
-//
-//        fails = 0; // count of failures
-//        try {
-//            num = 1;
-//            num: for (; num <= testcount; num++) { // [testcount is constant
-//                                                    // set above]
-//                try {
-//                    dotest(num);
-//                } catch (DiagException $1) {
-//                    de = $1;
-//                    say();
-//                    errln("**** Failed:" + " " + de.getMessage() + " " + "****");
-//                    say();
-//                    fails = fails + de.failcount;
-//                    if ((!isContinue))
-//                        break num;
-//                }
-//            }
-//        } catch (java.lang.RuntimeException $2) {
-//            e = $2; // any other exception is total failure; just show trace and
-//                    // quit
-//            say();
-//            errln("**** Failed: unexpected exception ****");
-//            e.printStackTrace();
-//            return -1;
-//        }/* num */
-//
-//        if (fails == 0)
-//            say("--- All OK ---" + " "
-//                    + right("[" + totalcount + " " + "tests]", 15));
-//        else {
-//            if (isContinue) {
-//                if (fails > 1)
-//                    rest = "tests";
-//                else
-//                    rest = "test";
-//                say("--- All run ---" + " "
-//                        + right("[" + totalcount + " " + "tests,", 14) + " "
-//                        + "failed" + " " + fails + " " + rest + "]");
-//
-//            }
-//        }
-//
-//        return fails;
-//    }
-//
-//    /* Run test by number -- method for development/private switching */
-//
-//    private void dotest(int num) {
-//        {/* select */
-//            switch (num) {
-//            /* -------------------------------------------------------------- */
-//            /* MathContext */
-//            /* -------------------------------------------------------------- */
-//            case 1:
-//                diagmathcontext();
-//                break;
-//
-//            /* -------------------------------------------------------------- */
-//            /* Constructors */
-//            /* -------------------------------------------------------------- */
-//            case 2:
-//                diagconstructors();
-//                break;
-//
-//            /* -------------------------------------------------------------- */
-//            /* Operator methods */
-//            /* -------------------------------------------------------------- */
-//            case 3:
-//                diagabs();
-//                break;
-//            case 4:
-//                diagadd();
-//                break;
-//            case 5:
-//                diagcompareto();
-//                break;
-//            case 6:
-//                diagdivide();
-//                break;
-//            case 7:
-//                diagdivideInteger();
-//                break;
-//            case 8:
-//                diagmax();
-//                break;
-//            case 9:
-//                diagmin();
-//                break;
-//            case 10:
-//                diagmultiply();
-//                break;
-//            case 11:
-//                diagnegate();
-//                break;
-//            case 12:
-//                diagplus();
-//                break;
-//            case 13:
-//                diagpow();
-//                break;
-//            case 14:
-//                diagremainder();
-//                break;
-//            case 15:
-//                diagsubtract();
-//                break;
-//            case 16:
-//                diagmath();
-//                break; // general math
-//
-//            /* -------------------------------------------------------------- */
-//            /* Other methods */
-//            /* -------------------------------------------------------------- */
-//            case 17:
-//                diagbyteValue();
-//                break;
-//            case 18:
-//                diagcomparetoObj();
-//                break;
-//            case 19:
-//                diagdoublevalue();
-//                break;
-//            case 20:
-//                diagequals();
-//                break;
-//            case 21:
-//                diagfloatvalue();
-//                break;
-//            case 22:
-//                diagformat();
-//                break;
-//            case 23:
-//                diaghashcode();
-//                break;
-//            case 24:
-//                diagintvalue();
-//                break;
-//            case 25:
-//                diaglongvalue();
-//                break;
-//            case 26:
-//                diagmovepointleft();
-//                break;
-//            case 27:
-//                diagmovepointright();
-//                break;
-//            case 28:
-//                diagscale();
-//                break;
-//            case 29:
-//                diagsetscale();
-//                break;
-//            case 30:
-//                diagshortvalue();
-//                break;
-//            case 31:
-//                diagsignum();
-//                break;
-//            case 32:
-//                diagtobigdecimal();
-//                break;
-//            case 33:
-//                diagtobiginteger();
-//                break;
-//            case 34:
-//                diagtochararray();
-//                break;
-//            case 35:
-//                diagtostring();
-//                break;
-//            case 36:
-//                diagunscaledvalue();
-//                break;
-//            case 37:
-//                diagvalueof();
-//                break;
-//
-//            /* -------------------------------------------------------------- */
-//            /* Mutation test [must be the last test] */
-//            /* -------------------------------------------------------------- */
-//            case 38:
-//                diagmutation();
-//                break;
-//            // if any more, increase testcount above
-//            default: {
-//                say("*** dotest case not found:" + " " + num + " " + "***");
-//            }
-//            }
-//        }
-//        return;
-//    }
 
     /*--------------------------------------------------------------------*/
     /* Diagnostic group methods */
     /*--------------------------------------------------------------------*/
 
     /** Test constructors (and {@link #toString()} for equalities). */
-    @org.junit.Test
+    @Test
     public void diagconstructors() {
         boolean flag = false;
         java.lang.String num;
@@ -900,7 +691,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Mutation tests (checks that contents of constant objects are unchanged). */
 
-@org.junit.Test
+@Test
     public void diagmutation() {
         /* ---------------------------------------------------------------- */
         /* Final tests -- check constants haven't mutated */
@@ -954,7 +745,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#abs} method. */
 
-    @org.junit.Test
+    @Test
     public void diagabs() {
         boolean flag = false;
         java.lang.ArithmeticException ae = null;
@@ -1009,7 +800,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#add} method. */
 
-    @org.junit.Test
+    @Test
     public void diagadd() {
         boolean flag = false;
         com.ibm.icu.math.BigDecimal alhs;
@@ -1285,7 +1076,7 @@ public class DiagBigDecimal extends TestFmwk {
      * method.
      */
 
-    @org.junit.Test
+    @Test
     public void diagcompareto() {
         boolean flag = false;
         java.lang.ArithmeticException ae = null;
@@ -1340,7 +1131,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#divide} method. */
 
-    @org.junit.Test
+    @Test
     public void diagdivide() {
         boolean flag = false;
         com.ibm.icu.math.MathContext rmcd;
@@ -1669,7 +1460,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#divideInteger} method. */
 
-    @org.junit.Test
+    @Test
     public void diagdivideInteger() {
         boolean flag = false;
         java.lang.ArithmeticException ae = null;
@@ -1751,7 +1542,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#max} method. */
 
-    @org.junit.Test
+    @Test
     public void diagmax() {
         boolean flag = false;
         java.lang.ArithmeticException ae = null;
@@ -1803,7 +1594,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#min} method. */
 
-    @org.junit.Test
+    @Test
     public void diagmin() {
         boolean flag = false;
         com.ibm.icu.math.BigDecimal minx = null;
@@ -1861,7 +1652,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#multiply} method. */
 
-    @org.junit.Test
+    @Test
     public void diagmultiply() {
         boolean flag = false;
         com.ibm.icu.math.BigDecimal l9;
@@ -2110,7 +1901,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#negate} method. */
 
-    @org.junit.Test
+    @Test
     public void diagnegate() {
         boolean flag = false;
         java.lang.ArithmeticException ae = null;
@@ -2160,7 +1951,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#plus} method. */
 
-    @org.junit.Test
+    @Test
     public void diagplus() {
         boolean flag = false;
         com.ibm.icu.math.MathContext mche1;
@@ -2240,7 +2031,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#pow} method. */
 
-    @org.junit.Test
+    @Test
     public void diagpow() {
         boolean flag;
         com.ibm.icu.math.BigDecimal x;
@@ -2498,7 +2289,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#remainder} method. */
 
-    @org.junit.Test
+    @Test
     public void diagremainder() {
         boolean flag = false;
         java.lang.ArithmeticException ae = null;
@@ -2664,7 +2455,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#subtract} method. */
 
-    @org.junit.Test
+    @Test
     public void diagsubtract() {
         boolean flag = false;
         com.ibm.icu.math.BigDecimal alhs;
@@ -2929,7 +2720,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the <code>BigDecimal.byteValue()</code> method. */
 
-    @org.junit.Test
+    @Test
     public void diagbyteValue() {
         boolean flag = false;
         java.lang.String v = null;
@@ -3075,7 +2866,7 @@ public class DiagBigDecimal extends TestFmwk {
      * method.
      */
 
-    @org.junit.Test
+    @Test
     public void diagcomparetoObj() {
 //        boolean flag = false;
 //        com.ibm.icu.math.BigDecimal d;
@@ -3118,7 +2909,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#doubleValue} method. */
 
-    @org.junit.Test
+    @Test
     public void diagdoublevalue() {
         java.lang.String val;
         // 1999.03.07 Infinities no longer errors
@@ -3142,7 +2933,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#equals} method. */
 
-    @org.junit.Test
+    @Test
     public void diagequals() {
         com.ibm.icu.math.BigDecimal d;
         d = new com.ibm.icu.math.BigDecimal(17);
@@ -3157,7 +2948,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#floatValue} method. */
 
-    @org.junit.Test
+    @Test
     public void diagfloatvalue() {
         java.lang.String val;
         // 1999.03.07 Infinities no longer errors
@@ -3185,7 +2976,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#format} method. */
 
-    @org.junit.Test
+    @Test
     public void diagformat() {
         boolean flag = false;
         int eng;
@@ -3421,7 +3212,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#hashCode} method. */
 
-    @org.junit.Test
+    @Test
     public void diaghashcode() {
         java.lang.String hs;
         com.ibm.icu.math.BigDecimal d;
@@ -3440,7 +3231,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#intValue} method. */
 
-    @org.junit.Test
+    @Test
     public void diagintvalue() {
         boolean flag = false;
         java.lang.String v = null;
@@ -3699,7 +3490,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#longValue} method. */
 
-@org.junit.Test
+    @Test
     public void diaglongvalue() {
         boolean flag = false;
         java.lang.String v = null;
@@ -3881,7 +3672,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#movePointLeft} method. */
 
-    @org.junit.Test
+    @Test
     public void diagmovepointleft() {
         TestFmwk.assertTrue("mpl001", ((new com.ibm.icu.math.BigDecimal("-1")).movePointLeft(-10).toString()).equals("-10000000000"));
         TestFmwk.assertTrue("mpl002", ((new com.ibm.icu.math.BigDecimal("-1")).movePointLeft(-5).toString()).equals("-100000"));
@@ -3920,7 +3711,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#movePointRight} method. */
 
-    @org.junit.Test
+    @Test
     public void diagmovepointright() {
         TestFmwk.assertTrue("mpr001", ((new com.ibm.icu.math.BigDecimal("-1")).movePointRight(+10).toString()).equals("-10000000000"));
         TestFmwk.assertTrue("mpr002", ((new com.ibm.icu.math.BigDecimal("-1")).movePointRight(+5).toString()).equals("-100000"));
@@ -3959,7 +3750,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#scale} method. */
 
-    @org.junit.Test
+    @Test
     public void diagscale() {
         TestFmwk.assertTrue("sca001", ((new com.ibm.icu.math.BigDecimal("-1")).scale())==0);
         TestFmwk.assertTrue("sca002", ((new com.ibm.icu.math.BigDecimal("-10")).scale())==0);
@@ -3984,7 +3775,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#setScale} method. */
 
-    @org.junit.Test
+    @Test
     public void diagsetscale() {
         boolean flag = false;
         java.lang.RuntimeException e = null;
@@ -4092,7 +3883,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the <code>BigDecimal.shortValue()</code> method. */
 
-    @org.junit.Test
+    @Test
     public void diagshortvalue() {
         boolean flag = false;
         java.lang.String v = null;
@@ -4203,7 +3994,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#signum} method. */
 
-    @org.junit.Test
+    @Test
     public void diagsignum() {
         // necessarily checks some obscure constructions, too
         TestFmwk.assertTrue("sig001", (-1)==((new com.ibm.icu.math.BigDecimal("-1")).signum()));
@@ -4229,7 +4020,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#toBigDecimal} method. */
 
-    @org.junit.Test
+    @Test
     public void diagtobigdecimal() {
         TestFmwk.assertTrue("tbd001", ((new com.ibm.icu.math.BigDecimal("0")).toBigDecimal().toString()).equals("0"));
         TestFmwk.assertTrue("tbd002", ((new com.ibm.icu.math.BigDecimal("-1")).toBigDecimal().toString()).equals("-1"));
@@ -4251,7 +4042,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#toBigInteger} method. */
 
-    @org.junit.Test
+    @Test
     public void diagtobiginteger() {
         boolean flag = false;
         java.lang.String badstrings[];
@@ -4363,7 +4154,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#toCharArray} method. */
 
-    @org.junit.Test
+    @Test
     public void diagtochararray() {
         java.lang.String str;
         char car[];
@@ -4386,7 +4177,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#toString} method. */
 
-    @org.junit.Test
+    @Test
     public void diagtostring() {
         java.lang.String str;
         char car[];
@@ -4412,7 +4203,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.BigDecimal#unscaledValue} method. */
 
-    @org.junit.Test
+    @Test
     public void diagunscaledvalue() {
         // just like toBigInteger, but scaly bits are preserved [without dots]
         TestFmwk.assertTrue("uns001", ((new com.ibm.icu.math.BigDecimal("-1")).unscaledValue().toString()).equals("-1"));
@@ -4452,7 +4243,7 @@ public class DiagBigDecimal extends TestFmwk {
      * double].
      */
 
-    @org.junit.Test
+    @Test
     public void diagvalueof() {
         boolean flag = false;
         java.lang.NumberFormatException e = null;
@@ -4572,7 +4363,7 @@ public class DiagBigDecimal extends TestFmwk {
 
     /** Test the {@link com.ibm.icu.math.MathContext} class. */
 
-    @org.junit.Test
+    @Test
     public void diagmathcontext() {
         com.ibm.icu.math.MathContext mccon1;
         com.ibm.icu.math.MathContext mccon2;
@@ -4742,7 +4533,7 @@ public class DiagBigDecimal extends TestFmwk {
      * </ol>
      */
 
-    @org.junit.Test
+    @Test
     public void diagmath() {
         com.ibm.icu.math.MathContext def;
         def = com.ibm.icu.math.MathContext.DEFAULT;
