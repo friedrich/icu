@@ -2250,15 +2250,15 @@ private:
 
     /* calculations */
 
+ protected:
     /**
      * Compute the Gregorian calendar year, month, and day of month from
      * the given Julian day.  These values are not stored in fields, but in
      * member variables gregorianXxx.  Also compute the DAY_OF_WEEK and
      * DOW_LOCAL fields.
+     * @internal
      */
     void computeGregorianAndDOWFields(int32_t julianDay, UErrorCode &ec);
-
-protected:
 
     /**
      * Compute the Gregorian calendar year, month, and day of month from the
@@ -2266,10 +2266,9 @@ protected:
      * variables gregorianXxx.  They are used for time zone computations and by
      * subclasses that are Gregorian derivatives.  Subclasses may call this
      * method to perform a Gregorian calendar millis->fields computation.
+     * @internal
      */
     void computeGregorianFields(int32_t julianDay, UErrorCode &ec);
-
-private:
 
     /**
      * Compute the fields WEEK_OF_YEAR, YEAR_WOY, WEEK_OF_MONTH,
@@ -2290,9 +2289,12 @@ private:
      * complexity is not warranted, since the intention of the YEAR_WOY field is
      * to support ISO 8601 notation, so it will typically be used with a
      * proleptic Gregorian calendar, which has no field larger than a year.
+     * @internal
      */
     void computeWeekFields(UErrorCode &ec);
 
+
+private:
 
     /**
      * Ensure that each field is within its valid range by calling {@link

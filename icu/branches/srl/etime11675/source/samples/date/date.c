@@ -53,6 +53,9 @@ static UDate getWhen(const char *millis, const char *seconds, const char *format
 
 UConverter *cnv = NULL;
 
+static UBool eMode = FALSE;
+extern UDateFormat set_emode(UDateFormat *fmt, UErrorCode *status);
+
 /* The version of date */
 #define DATE_VERSION "1.0"
 
@@ -78,7 +81,6 @@ main(int argc,
   char *seconds = NULL;
   char *millis = NULL;
   UDate when;
-
   /* parse the options */
   for(optInd = 1; optInd < argc; ++optInd) {
     arg = argv[optInd];
@@ -94,6 +96,9 @@ main(int argc,
     /* display date in gmt */
     else if(strcmp(arg, "-u") == 0 || strcmp(arg, "--gmt") == 0) {
       tz = GMT_ID;
+    }
+    else if(strcmp(arg, "-E") == 0) {
+      eMode = TRUE;
     }
     /* display date in gmt */
     else if(strcmp(arg, "-f") == 0 || strcmp(arg, "--full") == 0) {
@@ -194,6 +199,7 @@ usage()
   puts("  -r <seconds>      Use <seconds> as the time (Epoch 1970) rather than now.");
   puts("  -R <millis>       Use <millis> as the time (Epoch 1970) rather than now.");
   puts("  -P <string>       Parse <string> as the time, output in millis format.");
+  puts(" -E  ethiopian time mode");
 }
 
 /* Version information */
@@ -269,6 +275,11 @@ date(UDate when,
     charsToUCharsDefault(uFormat,sizeof(uFormat)/sizeof(uFormat[0]),format,-1,status);
     udat_applyPattern(fmt,FALSE,uFormat,-1);
   }
+
+  if(eMode) {
+    fmt = set_emode(fmt, status);
+  }
+  
   len = udat_format(fmt, when, 0, len, 0, status);
   if(*status == U_BUFFER_OVERFLOW_ERROR) {
     *status = U_ZERO_ERROR;

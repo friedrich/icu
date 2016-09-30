@@ -76,3 +76,14 @@ ifneq ($(patsubst %clean,,$(MAKECMDGOALS)),)
 -include $(DEPS)
 endif
 endif
+
+checkcheck: $(TARGET)
+	$(MAKE) check ICUDATE_OPTS=-v
+	$(MAKE) check ICUDATE_OPTS=-f
+	$(MAKE) check ICUDATE_OPTS="-E -f" ; echo
+	$(MAKE) check LC_ALL=en-u-ca-ethiopic ICUDATE_OPTS=-v
+	$(MAKE) check LC_ALL=en-u-ca-ethiopic ICUDATE_OPTS=-f 
+	$(MAKE) check LC_ALL=en-u-ca-ethiopic ICUDATE_OPTS="-E -f" ; echo
+	$(MAKE) check LC_ALL=am-ET-u-ca-ethiopic ICUDATE_OPTS=-v
+	$(MAKE) check LC_ALL=am-ET-u-ca-ethiopic ICUDATE_OPTS=-f
+	$(MAKE) check LC_ALL=am-ET-u-ca-ethiopic ICUDATE_OPTS="-E -f"

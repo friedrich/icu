@@ -36,6 +36,15 @@ public:
     };
 
     /**
+     * Time type
+     * @internal
+     */
+    enum ETimeType {
+      E_WESTERN_TIME,
+      E_ETHIOPIAN_TIME
+    };
+
+    /**
      * Useful constants for EthiopicCalendar.
      * @internal
      */
@@ -122,7 +131,7 @@ public:
      *                 only use Amete Alem for all the time.
      * @internal
      */
-    EthiopicCalendar(const Locale& aLocale, UErrorCode& success, EEraType type = AMETE_MIHRET_ERA);
+    EthiopicCalendar(const Locale& aLocale, UErrorCode& success, EEraType type = AMETE_MIHRET_ERA, ETimeType ttype = E_WESTERN_TIME);
 
     /**
      * Copy Constructor
@@ -163,6 +172,10 @@ public:
      * @internal
      */
     UBool isAmeteAlemEra() const;
+
+    UBool isEthiopianTime() const {
+      return timeType == E_ETHIOPIAN_TIME;
+    }
 
 protected:
     //-------------------------------------------------------------------------
@@ -217,6 +230,7 @@ private:
      *             1        Amete Mihret 1      Amete Alem 5501
      */
     EEraType eraType;
+    ETimeType timeType;
 
 public:
     /**
@@ -264,7 +278,59 @@ public:
      */
     int32_t ethiopicToJD(int32_t year, int32_t month, int32_t day);
 #endif
+ protected:
+    /**
+     * Override for time calc
+     */
+    virtual void computeFields(UErrorCode& ec);
+    virtual void computeTime(UErrorCode& status);
 };
+
+
+#if 0
+/**
+ * @internal
+ */
+class ETimeCalendar : public EthiopicCalendar {
+ private:
+  EthiopicCalendar fDelegate; /* this will keep the 'real' time. Values will be copied from the parent class. */
+  
+ public:
+ ETimeCalendar(const EthiopicCalendar &other, UErrorCode &/*status*/) : EthiopicCalendar(other),fDelegate(other) {}
+
+  virtual ~ETimeCalendar(){}
+
+  virtual Calendar* clone(void) const;
+
+  
+  
+  
+    /**
+     * Override Calendar Returns a unique class ID POLYMORPHICALLY. Pure virtual
+     * override. This method is to implement a simple version of RTTI, since not all C++
+     * compilers support genuine RTTI. Polymorphic operator==() and clone() methods call
+     * this method.
+     *
+     * @return   The class ID for this object. All objects of a given class have the
+     *           same class ID. Objects of other classes have different class IDs.
+     * @internal
+     */
+    virtual UClassID getDynamicClassID(void) const;
+
+   /**
+     * Return the class ID for this class. This is useful only for comparing to a return
+     * value from getDynamicClassID(). For example:
+     *
+     *      Base* polymorphic_pointer = createPolymorphicObject();
+     *      if (polymorphic_pointer->getDynamicClassID() ==
+     *          Derived::getStaticClassID()) ...
+     *
+     * @return   The class ID for all objects of this class.
+     * @internal
+     */
+    U_I18N_API static UClassID U_EXPORT2 getStaticClassID(void);  
+};
+#endif
 
 U_NAMESPACE_END
 #endif /* #if !UCONFIG_NO_FORMATTING */
