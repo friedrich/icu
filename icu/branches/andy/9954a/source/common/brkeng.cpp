@@ -11,9 +11,6 @@
 
 #if !UCONFIG_NO_BREAK_ITERATION
 
-#include "brkeng.h"
-#include "cmemory.h"
-#include "dictbe.h"
 #include "unicode/uchar.h"
 #include "unicode/uniset.h"
 #include "unicode/chariter.h"
@@ -24,8 +21,13 @@
 #include "unicode/uscript.h"
 #include "unicode/ucharstrie.h"
 #include "unicode/bytestrie.h"
+
+#include "brkeng.h"
+#include "cmemory.h"
+#include "dictbe.h"
 #include "charstr.h"
 #include "dictionarydata.h"
+#include "rbbi_dict_cache.h"
 #include "mutex.h"
 #include "uvector.h"
 #include "umutex.h"
@@ -80,23 +82,15 @@ UnhandledEngine::handles(UChar32 c, int32_t breakType) const {
 
 int32_t
 UnhandledEngine::findBreaks( UText *text,
-                                 int32_t startPos,
-                                 int32_t endPos,
-                                 UBool reverse,
-                                 int32_t breakType,
-                                 UStack &/*foundBreaks*/ ) const {
+                             int32_t /* startPos */,
+                             int32_t endPos,
+                             int32_t breakType,
+                             UVector32 &/*foundBreaks*/ ) const {
     if (breakType >= 0 && breakType < UPRV_LENGTHOF(fHandled)) {
         UChar32 c = utext_current32(text); 
-        if (reverse) {
-            while((int32_t)utext_getNativeIndex(text) > startPos && fHandled[breakType]->contains(c)) {
-                c = utext_previous32(text);
-            }
-        }
-        else {
-            while((int32_t)utext_getNativeIndex(text) < endPos && fHandled[breakType]->contains(c)) {
-                utext_next32(text);            // TODO:  recast loop to work with post-increment operations.
-                c = utext_current32(text);
-            }
+        while((int32_t)utext_getNativeIndex(text) < endPos && fHandled[breakType]->contains(c)) {
+            utext_next32(text);            // TODO:  recast loop to work with post-increment operations.
+            c = utext_current32(text);
         }
     }
     return 0;

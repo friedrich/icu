@@ -15,6 +15,7 @@
 #include "unicode/utypes.h"
 #include "unicode/uobject.h"
 #include "rbbirb.h"
+#include "utrie2.h"
 #include "uvector.h"
 
 struct  UNewTrie;
@@ -109,7 +110,7 @@ private:
 
     RangeDescriptor       *fRangeList;      // Head of the linked list of RangeDescriptors
 
-    UNewTrie              *fTrie;           // The mapping TRIE that is the end result of processing
+    UTrie2               *fTrie;           // The mapping TRIE that is the end result of processing
     uint32_t              fTrieSize;        //  the Unicode Sets.
 
     // Groups correspond to character categories -

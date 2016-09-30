@@ -31,22 +31,19 @@
 #include "unicode/schriter.h"
 #include "unicode/uchriter.h"
 
-
-struct UTrie;
-
 U_NAMESPACE_BEGIN
 
 /** @internal */
-struct RBBIDataHeader;
-class  RuleBasedBreakIteratorTables;
 class  BreakIterator;
-class  RBBIDataWrapper;
-class  UStack;
 class  LanguageBreakEngine;
-class  UnhandledEngine;
+struct RBBIDataHeader;
+class  RBBIDataWrapper;
 struct RBBIStateTable;
+class  RuleBasedBreakIteratorTables;
+class  UnhandledEngine;
+class  UStack;
 
-
+class  RBBIDictCache;
 
 
 /**
@@ -96,19 +93,27 @@ private:
      */
     RBBIDataWrapper    *fData;
 
-    /** Index of the Rule {tag} values for the most recent match.
+    /** 
+     *  The iteration state - current position, rule status for the current position,
+     *                        and whether the iterator ran off the end, yielding UBRK_DONE.
+     *                        Current position is pinned to be 0 < position <= text.length.
+     *                        Current position is always set to a boundary.
      *  @internal
     */
-    int32_t             fLastRuleStatusIndex;
+    struct IterationState {
+        int32_t         fPosition;
+        int32_t         fRuleStatusIndex;
+        UBool           fDone;
+        IterationState() : fPosition(0), fRuleStatusIndex(0), fDone(FALSE) {};
+    }                fState;
 
     /**
-     * Rule tag value valid flag.
-     * Some iterator operations don't intrinsically set the correct tag value.
-     * This flag lets us lazily compute the value if we are ever asked for it.
-     * @internal
+     *   Cache of previously determined boundary positions.
      */
-    UBool               fLastStatusIndexValid;
-
+  public:    // TODO: debug, return to private.
+    class BreakCache;
+    BreakCache         *fBreakCache;
+  private:
     /**
      * Counter for the number of characters encountered with the "dictionary"
      *   flag set.
@@ -117,26 +122,10 @@ private:
     uint32_t            fDictionaryCharCount;
 
     /**
-     * When a range of characters is divided up using the dictionary, the break
-     * positions that are discovered are stored here, preventing us from having
-     * to use either the dictionary or the state table again until the iterator
-     * leaves this range of text. Has the most impact for line breaking.
-     * @internal
+     *  Cache of boundary positions within a region of text that has been
+     *  sub-divided by dictionary based breaking.
      */
-    int32_t*            fCachedBreakPositions;
-
-    /**
-     * The number of elements in fCachedBreakPositions
-     * @internal
-     */
-    int32_t             fNumCachedBreakPositions;
-
-    /**
-     * if fCachedBreakPositions is not null, this indicates which item in the
-     * cache the current iteration position refers to
-     * @internal
-     */
-    int32_t             fPositionInCache;
+    RBBIDictCache      *fDictionaryCache;
 
     /**
      *
@@ -180,10 +169,10 @@ private:
     RuleBasedBreakIterator(RBBIDataHeader* data, UErrorCode &status);
 
 
+    /** @internal */
     friend class RBBIRuleBuilder;
     /** @internal */
     friend class BreakIterator;
-
 
 
 public:
@@ -660,7 +649,7 @@ private:
       * Common initialization function, used by constructors and bufferClone.
       * @internal
       */
-    void init();
+    void init(UErrorCode &status);
 
     /**
      * This method backs the iterator back up to a "safe position" in the text.
@@ -693,13 +682,15 @@ private:
      * fCachedBreakPositions as it goes. It may well also look at text outside
      * the range startPos to endPos.
      * If going forward, endPos is the normal Unicode break result, and
-     * if goind in reverse, startPos is the normal Unicode break result
+     * if going in reverse, startPos is the normal Unicode break result
      * @param startPos  The start position of a range of text
      * @param endPos    The end position of a range of text
-     * @param reverse   The call is for the reverse direction
+     * @param firstRuleStatus The rule status index that applies to the break at startPos
+     * @param otherRuleStatus The rule status index that applies to boundaries other than startPos
      * @internal
      */
-    int32_t checkDictionary(int32_t startPos, int32_t endPos, UBool reverse);
+    void checkDictionary(int32_t startPos, int32_t endPos,
+                         int32_t firstRuleStatus, int32_t otherRuleStatus);
 
 
     /**
@@ -710,11 +701,12 @@ private:
      */
     const LanguageBreakEngine *getLanguageBreakEngine(UChar32 c);
 
+  public:
     /**
-     *  @internal
+     *   Debugging function only.
+     *   @internal
      */
-    void makeRuleStatusValid();
-
+     void dumpCache();
 };
 
 //------------------------------------------------------------------------------
