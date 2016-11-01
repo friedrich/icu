@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/brx.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/brx.xml
+ */
 brx{
     Currencies{
         ADP{
@@ -12,7 +21,7 @@ brx{
         }
         AFA{
             "AFA",
-            "अफ़ग़ानी 1927–2002",
+            "अफ़ग़ानी 1927-2002",
         }
         AFN{
             "AFN",
@@ -186,13 +195,9 @@ brx{
             "BYB",
             "बेलारुसी नया रूबल (194–1999)",
         }
-        BYN{
-            "BYN",
-            "बेलारुसी रूबल",
-        }
         BYR{
             "BYR",
-            "बेलारुसी रूबल (2000–2016)",
+            "बेलारुसी रूबल",
         }
         BZD{
             "BZD",
@@ -1075,5 +1080,5 @@ brx{
             "ज़ीम्बाबवेई डॉलर",
         }
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.8.9"}
 }

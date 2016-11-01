@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2006-2011, International Business Machines Corporation and    *
@@ -36,7 +34,6 @@ class CharsetASCII extends CharsetICU {
             super(cs);
         }
 
-        @Override
         protected CoderResult decodeLoop(ByteBuffer source, CharBuffer target, IntBuffer offsets,
                 boolean flush) {
             if (!source.hasRemaining()) {
@@ -63,7 +60,7 @@ class CharsetASCII extends CharsetICU {
                 int sourceOffset = source.arrayOffset();
                 int sourceIndex = oldSource + sourceOffset;
                 int sourceLength = source.limit() - oldSource;
-
+                
                 char[] targetArray = target.array();
                 int targetOffset = target.arrayOffset();
                 int targetIndex = oldTarget + targetOffset;
@@ -141,7 +138,7 @@ class CharsetASCII extends CharsetICU {
              */
             while (source.hasRemaining()) {
                 ch = source.get() & 0xff;
-
+                
                 if ((ch & 0x80) == 0) {
                     if (target.hasRemaining()) {
                         target.put((char)ch);
@@ -156,7 +153,7 @@ class CharsetASCII extends CharsetICU {
                     return decodeMalformedOrUnmappable(ch);
                 }
             }
-
+            
             return CoderResult.UNDERFLOW;
         }
 
@@ -180,13 +177,11 @@ class CharsetASCII extends CharsetICU {
 
         private final static int NEED_TO_WRITE_BOM = 1;
 
-        @Override
         protected void implReset() {
             super.implReset();
             fromUnicodeStatus = NEED_TO_WRITE_BOM;
         }
 
-        @Override
         protected CoderResult encodeLoop(CharBuffer source, ByteBuffer target, IntBuffer offsets,
                 boolean flush) {
             if (!source.hasRemaining()) {
@@ -249,9 +244,9 @@ class CharsetASCII extends CharsetICU {
                     }
                 } else {
                     /* unoptimized loop */
-
+                    
                     cr = encodeLoopCoreUnoptimized(source, target, flush);
-
+                    
                     if (cr == CoderResult.OVERFLOW) {
                         source.position(source.position() - 1); /* rewind by 1 */
                     }
@@ -277,7 +272,7 @@ class CharsetASCII extends CharsetICU {
              * perform ascii conversion from the source array to the target array, making sure each
              * char in the source is within the correct range
              */
-            for (i = oldSource; i < limit && (((ch = sourceArray[i]) & 0xff80) == 0); i++)
+            for (i = oldSource; i < limit && (((ch = (int) sourceArray[i]) & 0xff80) == 0); i++)
                 targetArray[i + offset] = (byte) ch;
 
             /*
@@ -295,14 +290,14 @@ class CharsetASCII extends CharsetICU {
 
         protected CoderResult encodeLoopCoreUnoptimized(CharBuffer source, ByteBuffer target, boolean flush) {
             int ch;
-
+            
             /*
              * perform ascii conversion from the source buffer to the target buffer, making sure
              * each char in the source is within the correct range
              */
             while (source.hasRemaining()) {
-                ch = source.get();
-
+                ch = (int) source.get();
+                
                 if ((ch & 0xff80) == 0) {
                     if (target.hasRemaining()) {
                         target.put((byte) ch);
@@ -317,7 +312,7 @@ class CharsetASCII extends CharsetICU {
                     return encodeMalformedOrUnmappable(source, ch, flush);
                 }
             }
-
+            
             return CoderResult.UNDERFLOW;
         }
 
@@ -334,7 +329,7 @@ class CharsetASCII extends CharsetICU {
         private final CoderResult encodeTrail(CharBuffer source, char lead, boolean flush) {
             /*
              * ASCII doesn't support characters in the BMP, so if handleSurrogates returns null,
-             * we leave fromUChar32 alone (it should store a new codepoint) and call it unmappable.
+             * we leave fromUChar32 alone (it should store a new codepoint) and call it unmappable. 
              */
             CoderResult cr = handleSurrogates(source, lead);
             if (cr != null) {
@@ -347,17 +342,14 @@ class CharsetASCII extends CharsetICU {
 
     }
 
-    @Override
     public CharsetDecoder newDecoder() {
         return new CharsetDecoderASCII(this);
     }
 
-    @Override
     public CharsetEncoder newEncoder() {
         return new CharsetEncoderASCII(this);
     }
-
-    @Override
+    
     void getUnicodeSetImpl( UnicodeSet setFillIn, int which){
         setFillIn.add(0,0x7f);
      }

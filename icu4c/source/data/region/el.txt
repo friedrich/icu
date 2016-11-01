@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/el.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/el.xml
+ */
 el{
     Countries{
         001{"Κόσμος"}
@@ -40,6 +49,7 @@ el{
         AI{"Ανγκουίλα"}
         AL{"Αλβανία"}
         AM{"Αρμενία"}
+        AN{"Ολλανδικές Αντίλλες"}
         AO{"Ανγκόλα"}
         AQ{"Ανταρκτική"}
         AR{"Αργεντινή"}
@@ -271,8 +281,7 @@ el{
         TZ{"Τανζανία"}
         UA{"Ουκρανία"}
         UG{"Ουγκάντα"}
-        UM{"Απομακρυσμένες Νησίδες ΗΠΑ"}
-        UN{"Ηνωμένα Έθνη"}
+        UM{"Απομακρυσμένες Νησίδες Η.Π.Α."}
         US{"Ηνωμένες Πολιτείες"}
         UY{"Ουρουγουάη"}
         UZ{"Ουζμπεκιστάν"}
@@ -293,21 +302,19 @@ el{
         ZW{"Ζιμπάμπουε"}
         ZZ{"Άγνωστη περιοχή"}
     }
-    Countries%short{
-        GB{"ΗΒ"}
-        HK{"Χονγκ Κονγκ"}
-        MO{"Μακάο"}
-        PS{"Παλαιστίνη"}
-        UN{"ΟΗΕ"}
-        US{"ΗΠΑ"}
-    }
     Countries%variant{
         CD{"Κονγκό"}
         CG{"Κονγκό (Δημοκρατία)"}
-        CZ{"Τσεχία"}
         FK{"Νήσοι Φόκλαντ (Νήσοι Μαλβίνας)"}
         MK{"Πρώην Γιουγκοσλαβική Δημοκρατία της Μακεδονίας (ΠΓΔΜ)"}
         TL{"Ανατολικό Τιμόρ"}
     }
-    Version{"2.1.28.79"}
+    CountriesShort{
+        GB{"Η.Β."}
+        HK{"Χονγκ Κονγκ"}
+        MO{"Μακάο"}
+        PS{"Παλαιστίνη"}
+        US{"ΗΠΑ"}
+    }
+    Version{"2.1.8.9"}
 }

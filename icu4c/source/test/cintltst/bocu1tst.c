@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 2002-2015, International Business Machines
+*   Copyright (C) 2002-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -344,7 +342,7 @@ packDiff(int32_t diff) {
     } while(--count>0);
 
     /* add lead byte */
-    result |= (uint32_t)(lead+diff)<<shift;
+    result|=(lead+diff)<<shift;
 
     return result;
 }
@@ -985,7 +983,7 @@ TestBOCU1(void) {
     errorCode=U_ZERO_ERROR;
     bocu1=ucnv_open("BOCU-1", &errorCode);
     if(U_FAILURE(errorCode)) {
-        log_data_err("error: unable to open BOCU-1 converter: %s\n", u_errorName(errorCode));
+        log_err("error: unable to open BOCU-1 converter: %s\n", u_errorName(errorCode));
         return;
     }
 

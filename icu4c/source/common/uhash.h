@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
-*   Copyright (C) 1997-2015, International Business Machines
+*   Copyright (C) 1997-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ******************************************************************************
 *   Date        Name        Description
@@ -18,7 +16,6 @@
 #include "unicode/utypes.h"
 #include "cmemory.h"
 #include "uelement.h"
-#include "unicode/localpointer.h"
 
 /**
  * UHashtable stores key-value pairs and does moderately fast lookup
@@ -60,13 +57,10 @@
  * hashcode.  During iteration an element may be deleted by calling
  * uhash_removeElement(); iteration may safely continue thereafter.
  * The uhash_remove() function may also be safely called in
- * mid-iteration.  If uhash_put() is called during iteration,
- * the iteration is still guaranteed to terminate reasonably, but
- * there is no guarantee that every element will be returned or that
- * some won't be returned more than once.
- *
- * Under no circumstances should the UHashElement returned by
- * uhash_nextElement be modified directly.
+ * mid-iteration.  However, if uhash_put() is called during iteration
+ * then the iteration will be out of sync.  Under no circumstances
+ * should the UHashElement returned by uhash_nextElement be modified
+ * directly.
  *
  * By default, the hashtable grows when necessary, but never shrinks,
  * even if all items are removed.  For most applications this is
@@ -491,13 +485,6 @@ U_CAPI const UHashElement* U_EXPORT2
 uhash_find(const UHashtable *hash, const void* key);
 
 /**
- * \def UHASH_FIRST
- * Constant for use with uhash_nextElement
- * @see uhash_nextElement
- */
-#define UHASH_FIRST (-1)
-
-/**
  * Iterate through the elements of a UHashtable.  The caller must not
  * modify the returned object.  However, uhash_removeElement() may be
  * called during iteration to remove an element from the table.
@@ -505,7 +492,7 @@ uhash_find(const UHashtable *hash, const void* key);
  * called during iteration the iteration will then be out of sync and
  * should be restarted.
  * @param hash The target UHashtable.
- * @param pos This should be set to UHASH_FIRST initially, and left untouched
+ * @param pos This should be set to -1 initially, and left untouched
  * thereafter.
  * @return a hash element, or NULL if no further key-value pairs
  * exist in the table.
@@ -675,25 +662,5 @@ uhash_deleteHashtable(void *obj);
  */
 U_CAPI UBool U_EXPORT2 
 uhash_equals(const UHashtable* hash1, const UHashtable* hash2);
-
-
-#if U_SHOW_CPLUSPLUS_API
-
-U_NAMESPACE_BEGIN
-
-/**
- * \class LocalUHashtablePointer
- * "Smart pointer" class, closes a UHashtable via uhash_close().
- * For most methods see the LocalPointerBase base class.
- *
- * @see LocalPointerBase
- * @see LocalPointer
- * @stable ICU 4.4
- */
-U_DEFINE_LOCAL_OPEN_POINTER(LocalUHashtablePointer, UHashtable, uhash_close);
-
-U_NAMESPACE_END
-
-#endif
 
 #endif

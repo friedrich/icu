@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and
+ * Copyright (C) 1996-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -21,7 +19,6 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingResourceException;
-import java.util.Set;
 
 import com.ibm.icu.util.ICUUncheckedIOException;
 import com.ibm.icu.util.VersionInfo;
@@ -39,7 +36,7 @@ public final class ICUBinary {
         private static final int DATA_FORMAT = 0x436d6e44;
 
         private static final class IsAcceptable implements Authenticate {
-            @Override
+            // @Override when we switch to Java 6
             public boolean isDataVersionAcceptable(byte version[]) {
                 return version[0] == 1;
             }
@@ -50,7 +47,7 @@ public final class ICUBinary {
          * Checks that the ByteBuffer contains a valid, usable ICU .dat package.
          * Moves the buffer position from 0 to after the data header.
          */
-        static boolean validate(ByteBuffer bytes) {
+        private static boolean validate(ByteBuffer bytes) {
             try {
                 readHeader(bytes, DATA_FORMAT, IS_ACCEPTABLE);
             } catch (IOException ignored) {
@@ -89,34 +86,7 @@ public final class ICUBinary {
             return true;
         }
 
-        static ByteBuffer getData(ByteBuffer bytes, CharSequence key) {
-            int index = binarySearch(bytes, key);
-            if (index >= 0) {
-                ByteBuffer data = bytes.duplicate();
-                data.position(getDataOffset(bytes, index));
-                data.limit(getDataOffset(bytes, index + 1));
-                return ICUBinary.sliceWithOrder(data);
-            } else {
-                return null;
-            }
-        }
-
-        static void addBaseNamesInFolder(ByteBuffer bytes, String folder, String suffix, Set<String> names) {
-            // Find the first data item name that starts with the folder name.
-            int index = binarySearch(bytes, folder);
-            if (index < 0) {
-                index = ~index;  // Normal: Otherwise the folder itself is the name of a data item.
-            }
-
-            int base = bytes.position();
-            int count = bytes.getInt(base);
-            StringBuilder sb = new StringBuilder();
-            while (index < count && addBaseName(bytes, index, folder, suffix, sb, names)) {
-                ++index;
-            }
-        }
-
-        private static int binarySearch(ByteBuffer bytes, CharSequence key) {
+        private static ByteBuffer getData(ByteBuffer bytes, CharSequence key) {
             int base = bytes.position();
             int count = bytes.getInt(base);
 
@@ -135,10 +105,13 @@ public final class ICUBinary {
                     start = mid + 1;
                 } else {
                     // We found it!
-                    return mid;
+                    ByteBuffer data = bytes.duplicate();
+                    data.position(getDataOffset(bytes, mid));
+                    data.limit(getDataOffset(bytes, mid + 1));
+                    return ICUBinary.sliceWithOrder(data);
                 }
             }
-            return ~start;  // Not found or table is empty.
+            return null;  // Not found or table is empty.
         }
 
         private static int getNameOffset(ByteBuffer bytes, int index) {
@@ -162,121 +135,35 @@ public final class ICUBinary {
             // The dataOffset follows the nameOffset (skip another 4 bytes).
             return base + bytes.getInt(base + 4 + 4 + index * 8);
         }
-
-        static boolean addBaseName(ByteBuffer bytes, int index,
-                String folder, String suffix, StringBuilder sb, Set<String> names) {
-            int offset = getNameOffset(bytes, index);
-            // Skip "icudt54b/".
-            offset += ICUData.PACKAGE_NAME.length() + 1;
-            if (folder.length() != 0) {
-                // Test name.startsWith(folder + '/').
-                for (int i = 0; i < folder.length(); ++i, ++offset) {
-                    if (bytes.get(offset) != folder.charAt(i)) {
-                        return false;
-                    }
-                }
-                if (bytes.get(offset++) != '/') {
-                    return false;
-                }
-            }
-            // Collect the NUL-terminated name and test for a subfolder, then test for the suffix.
-            sb.setLength(0);
-            byte b;
-            while ((b = bytes.get(offset++)) != 0) {
-                char c = (char) b;
-                if (c == '/') {
-                    return true;  // Skip subfolder contents.
-                }
-                sb.append(c);
-            }
-            int nameLimit = sb.length() - suffix.length();
-            if (sb.lastIndexOf(suffix, nameLimit) >= 0) {
-                names.add(sb.substring(0, nameLimit));
-            }
-            return true;
-        }
     }
 
-    private static abstract class DataFile {
-        protected final String itemPath;
-
-        DataFile(String item) {
-            itemPath = item;
-        }
-        @Override
-        public String toString() {
-            return itemPath;
-        }
-
-        abstract ByteBuffer getData(String requestedPath);
-
+    private static final class DataFile {
+        public final String itemPath;
         /**
-         * @param folder The relative ICU data folder, like "" or "coll".
-         * @param suffix Usually ".res".
-         * @param names File base names relative to the folder are added without the suffix,
-         *        for example "de_CH".
+         * null if a .dat package.
          */
-        abstract void addBaseNamesInFolder(String folder, String suffix, Set<String> names);
-    }
-
-    private static final class SingleDataFile extends DataFile {
-        private final File path;
-
-        SingleDataFile(String item, File path) {
-            super(item);
-            this.path = path;
-        }
-        @Override
-        public String toString() {
-            return path.toString();
-        }
-
-        @Override
-        ByteBuffer getData(String requestedPath) {
-            if (requestedPath.equals(itemPath)) {
-                return mapFile(path);
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        void addBaseNamesInFolder(String folder, String suffix, Set<String> names) {
-            if (itemPath.length() > folder.length() + suffix.length() &&
-                    itemPath.startsWith(folder) &&
-                    itemPath.endsWith(suffix) &&
-                    itemPath.charAt(folder.length()) == '/' &&
-                    itemPath.indexOf('/', folder.length() + 1) < 0) {
-                names.add(itemPath.substring(folder.length() + 1,
-                        itemPath.length() - suffix.length()));
-            }
-        }
-    }
-
-    private static final class PackageDataFile extends DataFile {
+        public final File path;
         /**
          * .dat package bytes, or null if not a .dat package.
          * position() is after the header.
          * Do not modify the position or other state, for thread safety.
          */
-        private final ByteBuffer pkgBytes;
+        public final ByteBuffer pkgBytes;
 
-        PackageDataFile(String item, ByteBuffer bytes) {
-            super(item);
+        public DataFile(String item, File path) {
+            itemPath = item;
+            this.path = path;
+            pkgBytes = null;
+        }
+        public DataFile(String item, ByteBuffer bytes) {
+            itemPath = item;
+            path = null;
             pkgBytes = bytes;
         }
-
-        @Override
-        ByteBuffer getData(String requestedPath) {
-            return DatPackageReader.getData(pkgBytes, requestedPath);
-        }
-
-        @Override
-        void addBaseNamesInFolder(String folder, String suffix, Set<String> names) {
-            DatPackageReader.addBaseNamesInFolder(pkgBytes, folder, suffix, names);
+        public String toString() {
+            return path.toString();
         }
     }
-
     private static final List<DataFile> icuDataFiles = new ArrayList<DataFile>();
 
     static {
@@ -342,10 +229,10 @@ public final class ICUBinary {
             } else if (fileName.endsWith(".dat")) {
                 ByteBuffer pkgBytes = mapFile(file);
                 if (pkgBytes != null && DatPackageReader.validate(pkgBytes)) {
-                    dataFiles.add(new PackageDataFile(itemPath.toString(), pkgBytes));
+                    dataFiles.add(new DataFile(itemPath.toString(), pkgBytes));
                 }
             } else {
-                dataFiles.add(new SingleDataFile(itemPath.toString(), file));
+                dataFiles.add(new DataFile(itemPath.toString(), file));
             }
             itemPath.setLength(folderPathLength);
         }
@@ -367,26 +254,7 @@ public final class ICUBinary {
             } else if (i == key.length()) {
                 return -1;  // key < table key because key is shorter.
             }
-            int diff = key.charAt(i) - c2;
-            if (diff != 0) {
-                return diff;
-            }
-        }
-    }
-
-    static int compareKeys(CharSequence key, byte[] bytes, int offset) {
-        for (int i = 0;; ++i, ++offset) {
-            int c2 = bytes[offset];
-            if (c2 == 0) {
-                if (i == key.length()) {
-                    return 0;
-                } else {
-                    return 1;  // key > table key because key is longer.
-                }
-            } else if (i == key.length()) {
-                return -1;  // key < table key because key is shorter.
-            }
-            int diff = key.charAt(i) - c2;
+            int diff = (int)key.charAt(i) - c2;
             if (diff != 0) {
                 return diff;
             }
@@ -402,13 +270,13 @@ public final class ICUBinary {
     {
         /**
          * Method used in ICUBinary.readHeader() to provide data format
-         * authentication.
+         * authentication. 
          * @param version version of the current data
          * @return true if dataformat is an acceptable version, false otherwise
          */
         public boolean isDataVersionAcceptable(byte version[]);
     }
-
+    
     // public methods --------------------------------------------------------
 
     /**
@@ -484,66 +352,52 @@ public final class ICUBinary {
             return bytes;
         }
         if (loader == null) {
-            loader = ClassLoaderUtil.getClassLoader(ICUData.class);
+            loader = ICUData.class.getClassLoader();
         }
         if (resourceName == null) {
             resourceName = ICUData.ICU_BASE_NAME + '/' + itemPath;
         }
-        ByteBuffer buffer = null;
+        InputStream is = ICUData.getStream(loader, resourceName, required);
+        if (is == null) {
+            return null;
+        }
         try {
-            @SuppressWarnings("resource")  // Closed by getByteBufferFromInputStreamAndCloseStream().
-            InputStream is = ICUData.getStream(loader, resourceName, required);
-            if (is == null) {
-                return null;
-            }
-            buffer = getByteBufferFromInputStreamAndCloseStream(is);
+            return getByteBufferFromInputStream(is);
         } catch (IOException e) {
             throw new ICUUncheckedIOException(e);
         }
-        return buffer;
     }
 
     private static ByteBuffer getDataFromFile(String itemPath) {
         for (DataFile dataFile : icuDataFiles) {
-            ByteBuffer data = dataFile.getData(itemPath);
-            if (data != null) {
-                return data;
+            if (dataFile.pkgBytes != null) {
+                ByteBuffer data = DatPackageReader.getData(dataFile.pkgBytes, itemPath);
+                if (data != null) {
+                    return data;
+                }
+            } else if (itemPath.equals(dataFile.itemPath)) {
+                return mapFile(dataFile.path);
             }
         }
         return null;
     }
 
-    @SuppressWarnings("resource")  // Closing a file closes its channel.
     private static ByteBuffer mapFile(File path) {
         FileInputStream file;
         try {
             file = new FileInputStream(path);
             FileChannel channel = file.getChannel();
-            ByteBuffer bytes = null;
-            try {
-                bytes = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-            } finally {
-                file.close();
-            }
+            ByteBuffer bytes = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            // Close the file and its channel; this seems to keep the ByteBuffer valid.
+            // If not, then we will need to return the pair of (file, bytes).
+            file.close();
             return bytes;
-        } catch (FileNotFoundException ignored) {
+        } catch(FileNotFoundException ignored) {
             System.err.println(ignored);
         } catch (IOException ignored) {
             System.err.println(ignored);
         }
         return null;
-    }
-
-    /**
-     * @param folder The relative ICU data folder, like "" or "coll".
-     * @param suffix Usually ".res".
-     * @param names File base names relative to the folder are added without the suffix,
-     *        for example "de_CH".
-     */
-    public static void addBaseNamesInFileFolder(String folder, String suffix, Set<String> names) {
-        for (DataFile dataFile : icuDataFiles) {
-            dataFile.addBaseNamesInFolder(folder, suffix, names);
-        }
     }
 
     /**
@@ -570,7 +424,7 @@ public final class ICUBinary {
      */
     public static int readHeader(ByteBuffer bytes, int dataFormat, Authenticate authenticate)
             throws IOException {
-        assert bytes != null && bytes.position() == 0;
+        assert bytes.position() == 0;
         byte magic1 = bytes.get(2);
         byte magic2 = bytes.get(3);
         if (magic1 != MAGIC1 || magic2 != MAGIC2) {
@@ -610,7 +464,7 @@ public final class ICUBinary {
 
         bytes.position(headerSize);
         return  // dataVersion
-                (bytes.get(20) << 24) |
+                ((int)bytes.get(20) << 24) |
                 ((bytes.get(21) & 0xff) << 16) |
                 ((bytes.get(22) & 0xff) << 8) |
                 (bytes.get(23) & 0xff);
@@ -651,41 +505,6 @@ public final class ICUBinary {
         }
     }
 
-    public static String getString(ByteBuffer bytes, int length, int additionalSkipLength) {
-        CharSequence cs = bytes.asCharBuffer();
-        String s = cs.subSequence(0, length).toString();
-        skipBytes(bytes, length * 2 + additionalSkipLength);
-        return s;
-    }
-
-    public static char[] getChars(ByteBuffer bytes, int length, int additionalSkipLength) {
-        char[] dest = new char[length];
-        bytes.asCharBuffer().get(dest);
-        skipBytes(bytes, length * 2 + additionalSkipLength);
-        return dest;
-    }
-
-    public static short[] getShorts(ByteBuffer bytes, int length, int additionalSkipLength) {
-        short[] dest = new short[length];
-        bytes.asShortBuffer().get(dest);
-        skipBytes(bytes, length * 2 + additionalSkipLength);
-        return dest;
-    }
-
-    public static int[] getInts(ByteBuffer bytes, int length, int additionalSkipLength) {
-        int[] dest = new int[length];
-        bytes.asIntBuffer().get(dest);
-        skipBytes(bytes, length * 4 + additionalSkipLength);
-        return dest;
-    }
-
-    public static long[] getLongs(ByteBuffer bytes, int length, int additionalSkipLength) {
-        long[] dest = new long[length];
-        bytes.asLongBuffer().get(dest);
-        skipBytes(bytes, length * 8 + additionalSkipLength);
-        return dest;
-    }
-
     /**
      * Same as ByteBuffer.slice() plus preserving the byte order.
      */
@@ -698,51 +517,31 @@ public final class ICUBinary {
      * Reads the entire contents from the stream into a byte array
      * and wraps it into a ByteBuffer. Closes the InputStream at the end.
      */
-    public static ByteBuffer getByteBufferFromInputStreamAndCloseStream(InputStream is) throws IOException {
+    public static ByteBuffer getByteBufferFromInputStream(InputStream is) throws IOException {
         try {
-            // is.available() may return 0, or 1, or the total number of bytes in the stream,
-            // or some other number.
-            // Do not try to use is.available() == 0 to find the end of the stream!
-            byte[] bytes;
             int avail = is.available();
-            if (avail > 32) {
-                // There are more bytes available than just the ICU data header length.
-                // With luck, it is the total number of bytes.
-                bytes = new byte[avail];
-            } else {
-                bytes = new byte[128];  // empty .res files are even smaller
+            byte[] bytes = new byte[avail];
+            readFully(is, bytes, 0, avail);
+            while((avail = is.available()) != 0) {
+                // TODO Java 6 replace new byte[] and arraycopy(): byte[] newBytes = Arrays.copyOf(bytes, bytes.length + avail);
+                byte[] newBytes = new byte[bytes.length + avail];
+                System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
+                readFully(is, newBytes, bytes.length, avail);
+                bytes = newBytes;
             }
-            // Call is.read(...) until one returns a negative value.
-            int length = 0;
-            for(;;) {
-                if (length < bytes.length) {
-                    int numRead = is.read(bytes, length, bytes.length - length);
-                    if (numRead < 0) {
-                        break;  // end of stream
-                    }
-                    length += numRead;
-                } else {
-                    // See if we are at the end of the stream before we grow the array.
-                    int nextByte = is.read();
-                    if (nextByte < 0) {
-                        break;
-                    }
-                    int capacity = 2 * bytes.length;
-                    if (capacity < 128) {
-                        capacity = 128;
-                    } else if (capacity < 0x4000) {
-                        capacity *= 2;  // Grow faster until we reach 16kB.
-                    }
-                    // TODO Java 6 replace new byte[] and arraycopy(): bytes = Arrays.copyOf(bytes, capacity);
-                    byte[] newBytes = new byte[capacity];
-                    System.arraycopy(bytes, 0, newBytes, 0, length);
-                    bytes = newBytes;
-                    bytes[length++] = (byte) nextByte;
-                }
-            }
-            return ByteBuffer.wrap(bytes, 0, length);
+            return ByteBuffer.wrap(bytes);
         } finally {
             is.close();
+        }
+    }
+
+    private static void readFully(InputStream is, byte[] bytes, int offset, int avail)
+            throws IOException {
+        while (avail > 0) {
+            int numRead = is.read(bytes, offset, avail);
+            assert numRead > 0;
+            offset += numRead;
+            avail -= numRead;
         }
     }
 
@@ -767,23 +566,23 @@ public final class ICUBinary {
     }
 
     // private variables -------------------------------------------------
-
+  
     /**
     * Magic numbers to authenticate the data file
     */
     private static final byte MAGIC1 = (byte)0xda;
     private static final byte MAGIC2 = (byte)0x27;
-
+      
     /**
     * File format authentication values
     */
     private static final byte CHAR_SET_ = 0;
     private static final byte CHAR_SIZE_ = 2;
-
+                                                    
     /**
     * Error messages
     */
-    private static final String MAGIC_NUMBER_AUTHENTICATION_FAILED_ =
+    private static final String MAGIC_NUMBER_AUTHENTICATION_FAILED_ = 
                        "ICU data file error: Not an ICU data file";
     private static final String HEADER_AUTHENTICATION_FAILED_ =
         "ICU data file error: Header authentication failed, please check if you have a valid ICU data file";

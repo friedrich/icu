@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/lt.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/lt.xml
+ */
 lt{
-    Version{"2.1.28.79"}
+    Version{"2.1.8.9"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidžanas"}
@@ -302,9 +311,6 @@ lt{
         }
         "America:El_Salvador"{
             ec{"Salvadoras"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelsonas"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +675,6 @@ lt{
         "Asia:Bangkok"{
             ec{"Bankokas"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaulas"}
-        }
         "Asia:Beirut"{
             ec{"Beirutas"}
         }
@@ -684,11 +687,11 @@ lt{
         "Asia:Calcutta"{
             ec{"Kolkata"}
         }
-        "Asia:Chita"{
-            ec{"Čita"}
-        }
         "Asia:Choibalsan"{
             ec{"Čoibalsanas"}
+        }
+        "Asia:Chongqing"{
+            ec{"Čongčingas"}
         }
         "Asia:Colombo"{
             ec{"Kolombas"}
@@ -710,6 +713,9 @@ lt{
         }
         "Asia:Gaza"{
             ec{"Gazos ruožas"}
+        }
+        "Asia:Harbin"{
+            ec{"Harbinas"}
         }
         "Asia:Hebron"{
             ec{"Hebronas"}
@@ -740,6 +746,9 @@ lt{
         }
         "Asia:Karachi"{
             ec{"Karačis"}
+        }
+        "Asia:Kashgar"{
+            ec{"Kašgaras"}
         }
         "Asia:Katmandu"{
             ec{"Katmandu"}
@@ -828,9 +837,6 @@ lt{
         "Asia:Singapore"{
             ec{"Singapūras"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymskas"}
-        }
         "Asia:Taipei"{
             ec{"Taipėjus"}
         }
@@ -848,9 +854,6 @@ lt{
         }
         "Asia:Tokyo"{
             ec{"Tokijas"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomskas"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ulan Batoras"}
@@ -951,9 +954,6 @@ lt{
         "Europe:Andorra"{
             ec{"Andora"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrachanė"}
-        }
         "Europe:Athens"{
             ec{"Atėnai"}
         }
@@ -1011,9 +1011,6 @@ lt{
         }
         "Europe:Kiev"{
             ec{"Kijevas"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirovas"}
         }
         "Europe:Lisbon"{
             ec{"Lisabona"}
@@ -1091,9 +1088,6 @@ lt{
         "Europe:Tirane"{
             ec{"Tirana"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Uljanovskas"}
-        }
         "Europe:Uzhgorod"{
             ec{"Užhorodas"}
         }
@@ -1162,9 +1156,6 @@ lt{
         }
         "Pacific:Auckland"{
             ec{"Oklandas"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Bugenvilis"}
         }
         "Pacific:Chatham"{
             ec{"Čatamas"}
@@ -1795,9 +1786,6 @@ lt{
         }
         "meta:Ponape"{
             ls{"Ponapės laikas"}
-        }
-        "meta:Pyongyang"{
-            ls{"Pchenjano laikas"}
         }
         "meta:Qyzylorda"{
             ld{"Kyzylordos vasaros laikas"}

@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ga.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/ga.xml
+ */
 ga{
-    Version{"2.1.28.79"}
+    Version{"2.1.8.9"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -302,9 +311,6 @@ ga{
         }
         "America:El_Salvador"{
             ec{"An tSalvadóir"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +675,6 @@ ga{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Béiriút"}
         }
@@ -684,11 +687,11 @@ ga{
         "Asia:Calcutta"{
             ec{"Calcúta"}
         }
-        "Asia:Chita"{
-            ec{"Chita"}
-        }
         "Asia:Choibalsan"{
             ec{"Choibalsan"}
+        }
+        "Asia:Chongqing"{
+            ec{"Chongqing"}
         }
         "Asia:Colombo"{
             ec{"Colombo"}
@@ -710,6 +713,9 @@ ga{
         }
         "Asia:Gaza"{
             ec{"Gaza"}
+        }
+        "Asia:Harbin"{
+            ec{"Harbin"}
         }
         "Asia:Hebron"{
             ec{"Heabrón"}
@@ -740,6 +746,9 @@ ga{
         }
         "Asia:Karachi"{
             ec{"Karachi"}
+        }
+        "Asia:Kashgar"{
+            ec{"Kashgar"}
         }
         "Asia:Katmandu"{
             ec{"Kathmandu"}
@@ -828,9 +837,6 @@ ga{
         "Asia:Singapore"{
             ec{"Singeapór"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymsk"}
-        }
         "Asia:Taipei"{
             ec{"Taipei"}
         }
@@ -848,9 +854,6 @@ ga{
         }
         "Asia:Tokyo"{
             ec{"Tóiceo"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ulaanbaatar"}
@@ -951,9 +954,6 @@ ga{
         "Europe:Andorra"{
             ec{"Andóra"}
         }
-        "Europe:Astrakhan"{
-            ec{"An Astracáin"}
-        }
         "Europe:Athens"{
             ec{"An Aithin"}
         }
@@ -1012,9 +1012,6 @@ ga{
         }
         "Europe:Kiev"{
             ec{"Cív"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Liospóin"}
@@ -1093,9 +1090,6 @@ ga{
         "Europe:Tirane"{
             ec{"Tirane"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Ulyanovsk"}
-        }
         "Europe:Uzhgorod"{
             ec{"Uzhgorod"}
         }
@@ -1164,9 +1158,6 @@ ga{
         }
         "Pacific:Auckland"{
             ec{"Auckland"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Bougainville"}
         }
         "Pacific:Chatham"{
             ec{"Chatham"}
@@ -1338,11 +1329,6 @@ ga{
             lg{"Am Anadyr"}
             ls{"Am Caighdeánach Anadyr"}
         }
-        "meta:Apia"{
-            ld{"Am Samhraidh Apia"}
-            lg{"Am Apia"}
-            ls{"Am Caighdeánach Apia"}
-        }
         "meta:Aqtau"{
             ld{"Am Samhraidh Aqtau"}
             lg{"Am Aqtau"}
@@ -1511,9 +1497,6 @@ ga{
             sd{"EEST"}
             sg{"EET"}
             ss{"EET"}
-        }
-        "meta:Europe_Further_Eastern"{
-            ls{"Am Chianoirthear na hEorpa"}
         }
         "meta:Europe_Western"{
             ld{"Am Samhraidh Iarthar na hEorpa"}
@@ -1807,9 +1790,6 @@ ga{
         }
         "meta:Ponape"{
             ls{"Am Phohnpei"}
-        }
-        "meta:Pyongyang"{
-            ls{"Am Pyongyang"}
         }
         "meta:Qyzylorda"{
             ld{"Am Samhraidh Qyzylorda"}

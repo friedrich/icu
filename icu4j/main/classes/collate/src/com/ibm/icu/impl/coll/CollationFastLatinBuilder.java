@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-* Copyright (C) 2013-2015, International Business Machines
+* Copyright (C) 2013-2014, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
 * CollationFastLatinBuilder.java, ported from collationfastlatinbuilder.h/.cpp
@@ -45,7 +43,7 @@ final class CollationFastLatinBuilder {
         if (limit == 0) { return ~0; }
         int start = 0;
         for (;;) {
-            int i = (int)(((long)start + (long)limit) / 2);
+            int i = (start + limit) / 2;
             int cmp = compareInt64AsUnsigned(ce, list[i]);
             if (cmp == 0) {
                 return i;
@@ -129,26 +127,38 @@ final class CollationFastLatinBuilder {
     }
 
     private boolean loadGroups(CollationData data) {
-        headerLength = 1 + NUM_SPECIAL_GROUPS;
-        int r0 = (CollationFastLatin.VERSION << 8) | headerLength;
-        result.append((char)r0);
+        result.append(0);  // reserved for version & headerLength
         // The first few reordering groups should be special groups
         // (space, punct, ..., digit) followed by Latn, then Grek and other scripts.
-        for(int i = 0; i < NUM_SPECIAL_GROUPS; ++i) {
-            lastSpecialPrimaries[i] = data.getLastPrimaryForGroup(Collator.ReorderCodes.FIRST + i);
-            if(lastSpecialPrimaries[i] == 0) {
-                // missing data
-                return false;
+        for(int i = 0;;) {
+            if(i >= data.scripts.length) {
+                throw new AssertionError("no Latn script");
             }
-            result.append(0);  // reserve a slot for this group
-        }
-
-        firstDigitPrimary = data.getFirstPrimaryForGroup(Collator.ReorderCodes.DIGIT);
-        firstLatinPrimary = data.getFirstPrimaryForGroup(UScript.LATIN);
-        lastLatinPrimary = data.getLastPrimaryForGroup(UScript.LATIN);
-        if(firstDigitPrimary == 0 || firstLatinPrimary == 0) {
-            // missing data
-            return false;
+            int head = data.scripts[i];
+            int lastByte = head & 0xff;  // last primary byte in the group
+            int group = data.scripts[i + 2];
+            if(group == Collator.ReorderCodes.DIGIT) {
+                firstDigitPrimary = (long)(head & 0xff00) << 16;
+                headerLength = result.length();
+                int r0 = (CollationFastLatin.VERSION << 8) | headerLength;
+                result.setCharAt(0, (char)r0);
+            } else if(group == UScript.LATIN) {
+                if(firstDigitPrimary == 0) {
+                    throw new AssertionError("no digit group");
+                }
+                firstLatinPrimary = (long)(head & 0xff00) << 16;
+                lastLatinPrimary = ((long)lastByte << 24) | 0xffffff;
+                break;
+            } else if(firstDigitPrimary == 0) {
+                // a group below digits
+                if(lastByte > 0x7f) {
+                    // We only use 7 bits for the last byte of a below-digits group.
+                    // This does not warrant an errorCode, but we do not build a fast Latin table.
+                    return false;
+                }
+                result.append((char)lastByte);
+            }
+            i = i + 2 + data.scripts[i + 1];
         }
         return true;
     }
@@ -163,21 +173,23 @@ final class CollationFastLatinBuilder {
         }
         // Both or neither must be potentially-variable,
         // so that we can test only one and determine if both are variable.
-        long lastVariablePrimary = lastSpecialPrimaries[NUM_SPECIAL_GROUPS - 1];
-        if(p > lastVariablePrimary) {
-            return q > lastVariablePrimary;
-        } else if(q > lastVariablePrimary) {
+        if(p >= firstDigitPrimary) {
+            return q >= firstDigitPrimary;
+        } else if(q >= firstDigitPrimary) {
             return false;
         }
         // Both will be encoded with long mini primaries.
         // They must be in the same special reordering group,
         // so that we can test only one and determine if both are variable.
+        p >>= 24;  // first primary byte
+        q >>= 24;
         assert(p != 0 && q != 0);
-        for(int i = 0;; ++i) {  // will terminate
-            long lastPrimary = lastSpecialPrimaries[i];
-            if(p <= lastPrimary) {
-                return q <= lastPrimary;
-            } else if(q <= lastPrimary) {
+        assert(p <= result.charAt(headerLength - 1));  // the loop will terminate
+        for(int i = 1;; ++i) {
+            long lastByte = result.charAt(i);
+            if(p <= lastByte) {
+                return q <= lastByte;
+            } else if(q <= lastByte) {
                 return false;
             }
         }
@@ -404,8 +416,8 @@ final class CollationFastLatinBuilder {
 
     private void encodeUniqueCEs() {
         miniCEs = new char[uniqueCEs.size()];
-        int group = 0;
-        long lastGroupPrimary = lastSpecialPrimaries[group];
+        int group = 1;
+        long lastGroupByte = result.charAt(group);
         // The lowest unique CE must be at least a secondary CE.
         assert(((int)uniqueCEs.elementAti(0) >>> 16) != 0);
         long prevPrimary = 0;
@@ -419,15 +431,16 @@ final class CollationFastLatinBuilder {
             // (uniqueCEs does not store case bits.)
             long p = ce >>> 32;
             if(p != prevPrimary) {
-                while(p > lastGroupPrimary) {
+                int p1 = (int)(p >> 24);
+                while(p1 > lastGroupByte) {
                     assert(pri <= CollationFastLatin.MAX_LONG);
-                    // Set the group's header entry to the
-                    // last "long primary" in or before the group.
-                    result.setCharAt(1 + group, (char)pri);
-                    if(++group < NUM_SPECIAL_GROUPS) {
-                        lastGroupPrimary = lastSpecialPrimaries[group];
+                    // Add the last "long primary" in or before the group
+                    // into the upper 9 bits of the group entry.
+                    result.setCharAt(group, (char)((pri << 4) | lastGroupByte));
+                    if(++group < headerLength) {  // group is 1-based
+                        lastGroupByte = result.charAt(group);
                     } else {
-                        lastGroupPrimary = 0xffffffffL;
+                        lastGroupByte = 0xff;
                         break;
                     }
                 }
@@ -577,7 +590,7 @@ final class CollationFastLatinBuilder {
                 int miniCE = encodeTwoCEs(cce0, cce1);
                 if(miniCE == CollationFastLatin.BAIL_OUT) {
                     result.append((char)(x | (1 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
-                } else if((miniCE >>> 16) == 0) {  // if ((unsigned)miniCE <= 0xffff)
+                } else if(miniCE <= 0xffff) {
                     result.append((char)(x | (2 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
                     result.append((char)miniCE);
                 } else {
@@ -673,10 +686,6 @@ final class CollationFastLatinBuilder {
         return (ce >>> 32) == Collation.NO_CE_PRIMARY && ce != Collation.NO_CE;
     }
 
-    // space, punct, symbol, currency (not digit)
-    private static final int NUM_SPECIAL_GROUPS =
-            Collator.ReorderCodes.CURRENCY - Collator.ReorderCodes.FIRST + 1;
-
     private static final long CONTRACTION_FLAG = 0x80000000L;
 
     // temporary "buffer"
@@ -690,8 +699,7 @@ final class CollationFastLatinBuilder {
     /** One 16-bit mini CE per unique CE. */
     private char[] miniCEs;
 
-    // These are constant for a given root collator.
-    long[] lastSpecialPrimaries = new long[NUM_SPECIAL_GROUPS];
+    // These are constant for a given list of CollationData.scripts.
     private long firstDigitPrimary;
     private long firstLatinPrimary;
     private long lastLatinPrimary;

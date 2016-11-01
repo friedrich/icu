@@ -1,20 +1,18 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2016, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2014, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 
 package com.ibm.icu.text;
 
+import java.lang.ref.SoftReference;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
-import com.ibm.icu.impl.CacheValue;
 import com.ibm.icu.impl.ICUDebug;
 import com.ibm.icu.util.ICUCloneNotSupportedException;
 import com.ibm.icu.util.ULocale;
@@ -183,7 +181,7 @@ import com.ibm.icu.util.ULocale;
  *     int last = wb.following(pos);
  *     int current = wb.next();
  *     while (current != BreakIterator.DONE) {
- *         for (int p = last; p &lt; current; p++) {
+ *         for (int p = last; p < current; p++) {
  *             if (Character.isLetter(text.charAt(p)))
  *                 return last;
  *         }
@@ -231,7 +229,6 @@ public abstract class BreakIterator implements Cloneable
      * @return The clone.
      * @stable ICU 2.0
      */
-    @Override
     public Object clone()
     {
         try {
@@ -381,66 +378,76 @@ public abstract class BreakIterator implements Cloneable
      */
     public abstract int current();
 
-
-    /**
-     * Tag value for "words" that do not fit into any of other categories.
-     * Includes spaces and most punctuation.
-     * @stable ICU 53
+    
+    /** 
+     * Tag value for "words" that do not fit into any of other categories. 
+     * Includes spaces and most punctuation. 
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_NONE           = 0;
 
     /**
-     * Upper bound for tags for uncategorized words.
-     * @stable ICU 53
+     * Upper bound for tags for uncategorized words. 
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_NONE_LIMIT     = 100;
 
     /**
-     * Tag value for words that appear to be numbers, lower limit.
-     * @stable ICU 53
+     * Tag value for words that appear to be numbers, lower limit. 
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_NUMBER         = 100;
 
-    /**
+    /** 
      * Tag value for words that appear to be numbers, upper limit.
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_NUMBER_LIMIT   = 200;
 
-    /**
+    /** 
      * Tag value for words that contain letters, excluding
-     * hiragana, katakana or ideographic characters, lower limit.
-     * @stable ICU 53
+     * hiragana, katakana or ideographic characters, lower limit. 
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_LETTER         = 200;
 
-    /**
-     * Tag value for words containing letters, upper limit
-     * @stable ICU 53
+    /** 
+     * Tag value for words containing letters, upper limit 
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_LETTER_LIMIT   = 300;
 
-    /**
+    /** 
      * Tag value for words containing kana characters, lower limit
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_KANA           = 300;
 
-    /**
+    /** 
      * Tag value for words containing kana characters, upper limit
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_KANA_LIMIT     = 400;
 
     /**
      * Tag value for words containing ideographic characters, lower limit
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_IDEO           = 400;
 
     /**
      * Tag value for words containing ideographic characters, upper limit
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This is a draft API and might change in a future release of ICU.
      */
     public static final int WORD_IDEO_LIMIT     = 500;
 
@@ -559,7 +566,7 @@ public abstract class BreakIterator implements Cloneable
      */
     private static final int KIND_COUNT = 5;
 
-    private static final CacheValue<?>[] iterCache = new CacheValue<?>[5];
+    private static final SoftReference<?>[] iterCache = new SoftReference<?>[5];
 
     /**
      * Returns a new instance of BreakIterator that locates word boundaries.
@@ -765,11 +772,11 @@ s     */
      * {@icu} Registers a new break iterator of the indicated kind, to use in the given
      * locale.  Clones of the iterator will be returned if a request for a break iterator
      * of the given kind matches or falls back to this locale.
-     *
+     * 
      * <p>Because ICU may choose to cache BreakIterator objects internally, this must
      * be called at application startup, prior to any calls to
      * BreakIterator.getInstance to avoid undefined behavior.
-     *
+     * 
      * @param iter the BreakIterator instance to adopt.
      * @param locale the Locale for which this instance is to be registered
      * @param kind the type of iterator for which this instance is to be registered
@@ -784,11 +791,11 @@ s     */
      * {@icu} Registers a new break iterator of the indicated kind, to use in the given
      * locale.  Clones of the iterator will be returned if a request for a break iterator
      * of the given kind matches or falls back to this locale.
-     *
+     * 
      * <p>Because ICU may choose to cache BreakIterator objects internally, this must
      * be called at application startup, prior to any calls to
      * BreakIterator.getInstance to avoid undefined behavior.
-     *
+     * 
      * @param iter the BreakIterator instance to adopt.
      * @param locale the Locale for which this instance is to be registered
      * @param kind the type of iterator for which this instance is to be registered
@@ -870,7 +877,7 @@ s     */
         BreakIterator result = getShim().createBreakIterator(where, kind);
 
         BreakIteratorCache cache = new BreakIteratorCache(where, result);
-        iterCache[kind] = CacheValue.getInstance(cache);
+        iterCache[kind] = new SoftReference<BreakIteratorCache>(cache);
         if (result instanceof RuleBasedBreakIterator) {
             RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator)result;
             rbbi.setBreakType(kind);

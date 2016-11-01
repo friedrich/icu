@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/br.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/br.xml
+ */
 br{
     Countries{
         001{"Bed"}
@@ -40,6 +49,7 @@ br{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Antilhez Nederlandat"}
         AO{"Angola"}
         AQ{"Antarktika"}
         AR{"Arcʼhantina"}
@@ -62,7 +72,7 @@ br{
         BM{"Bermuda"}
         BN{"Brunei"}
         BO{"Bolivia"}
-        BQ{"Karib Nederlandat"}
+        BQ{"Nederlandat Karib"}
         BR{"Brazil"}
         BS{"Bahamas"}
         BT{"Bhoutan"}
@@ -85,7 +95,7 @@ br{
         CP{"Enez Clipperton"}
         CR{"Costa Rica"}
         CU{"Kuba"}
-        CV{"Kab-Glas"}
+        CV{"Kab Glas"}
         CW{"Curaçao"}
         CX{"Enez Christmas"}
         CY{"Kiprenez"}
@@ -226,13 +236,13 @@ br{
         PY{"Paraguay"}
         QA{"Qatar"}
         QO{"Oseania diabell"}
-        RE{"Ar Reünion"}
+        RE{"Reünion"}
         RO{"Roumania"}
         RS{"Serbia"}
         RU{"Rusia"}
         RW{"Rwanda"}
         SA{"Arabia Saoudat"}
-        SB{"Inizi Salomon"}
+        SB{"Salomon"}
         SC{"Sechelez"}
         SD{"Soudan"}
         SE{"Sveden"}
@@ -292,13 +302,6 @@ br{
         ZW{"Zimbabwe"}
         ZZ{"Rannved dianav"}
     }
-    Countries%short{
-        GB{"RU"}
-        HK{"Hong Kong"}
-        MO{"Macau"}
-        PS{"Palestina"}
-        US{"SU"}
-    }
     Countries%variant{
         CD{"Kongo (RDK)"}
         CG{"Kongo (Republik)"}
@@ -307,5 +310,12 @@ br{
         MK{"Makedonia (RYKM)"}
         TL{"Timor ar Reter"}
     }
-    Version{"2.1.28.76"}
+    CountriesShort{
+        GB{"R.U."}
+        HK{"Hong Kong"}
+        MO{"Macau"}
+        PS{"Palestina"}
+        US{"S.U."}
+    }
+    Version{"2.1.7.39"}
 }

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
-*   Copyright (C) 1997-2016, International Business Machines
+*   Copyright (C) 1997-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ******************************************************************************
 *   Date        Name        Description
@@ -85,7 +83,7 @@ static const int32_t PRIMES[] = {
     1073741789, 2147483647 /*, 4294967291 */
 };
 
-#define PRIMES_LENGTH UPRV_LENGTHOF(PRIMES)
+#define PRIMES_LENGTH (sizeof(PRIMES) / sizeof(PRIMES[0]))
 #define DEFAULT_PRIME_INDEX 3
 
 /* These ratios are tuned to the PRIMES array such that a resize
@@ -577,7 +575,7 @@ uhash_close(UHashtable *hash) {
     }
     if (hash->elements != NULL) {
         if (hash->keyDeleter != NULL || hash->valueDeleter != NULL) {
-            int32_t pos=UHASH_FIRST;
+            int32_t pos=-1;
             UHashElement *e;
             while ((e = (UHashElement*) uhash_nextElement(hash, &pos)) != NULL) {
                 HASH_DELETE_KEY_VALUE(hash, e->key.pointer, e->value.pointer);
@@ -758,7 +756,7 @@ uhash_iremovei(UHashtable *hash,
 
 U_CAPI void U_EXPORT2
 uhash_removeAll(UHashtable *hash) {
-    int32_t pos = UHASH_FIRST;
+    int32_t pos = -1;
     const UHashElement *e;
     U_ASSERT(hash != NULL);
     if (hash->count != 0) {
@@ -887,7 +885,7 @@ uhash_equals(const UHashtable* hash1, const UHashtable* hash2){
         return FALSE;
     }
     
-    pos=UHASH_FIRST;
+    pos=-1;
     for(i=0; i<count1; i++){
         const UHashElement* elem1 = uhash_nextElement(hash1, &pos);
         const UHashTok key1 = elem1->key;

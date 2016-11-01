@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/pa.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/pa.xml
+ */
 pa{
     Currencies{
         AED{
@@ -146,13 +155,9 @@ pa{
             "BWP",
             "ਬੋਟਸਵਾਨਾ ਪੁਲਾ",
         }
-        BYN{
-            "BYN",
-            "ਬੇਲਾਰੂਸੀ ਰੂਬਲ",
-        }
         BYR{
             "BYR",
-            "ਬੇਲਾਰੂਸੀ ਰੂਬਲ (2000–2016)",
+            "ਬੇਲਾਰੂਸੀ ਰੂਬਲ",
         }
         BZD{
             "BZD",
@@ -248,7 +253,7 @@ pa{
         }
         GBP{
             "£",
-            "ਬ੍ਰਿਟਿਸ਼ ਪੌਂਡ",
+            "ਬ੍ਰਿਟਿਸ਼ ਪੌਂਡ ਸਟਰਲਿੰਗ",
         }
         GEL{
             "GEL",
@@ -688,7 +693,7 @@ pa{
         }
         XAF{
             "FCFA",
-            "ਕੇਂਦਰੀ ਅਫ਼ਰੀਕੀ [CFA] ਫ੍ਰੈਂਕ",
+            "ਫ੍ਰੈਂਕ (CFA BEAC)",
         }
         XAG{
             "XAG",
@@ -724,7 +729,7 @@ pa{
         }
         XOF{
             "CFA",
-            "ਪੱਛਮੀ ਅਫ਼ਰੀਕੀ (CFA) ਫ੍ਰੈਂਕ",
+            "ਫ੍ਰੈਂਕ (CFA BCEAO)",
         }
         XPF{
             "CFPF",
@@ -748,104 +753,58 @@ pa{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
         EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RUB{"₽"}
         RUR{"р."}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
         TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         AED{
@@ -992,13 +951,9 @@ pa{
             one{"ਬੋਟਸਵਾਨਾ ਪੁਲਾ"}
             other{"ਬੋਟਸਵਾਨਾ ਪੁਲਾ"}
         }
-        BYN{
+        BYR{
             one{"ਬੇਲਾਰੂਸੀ ਰੂਬਲ"}
             other{"ਬੇਲਾਰੂਸੀ ਰੂਬਲ"}
-        }
-        BYR{
-            one{"ਬੇਲਾਰੂਸੀ ਰੂਬਲ (2000–2016)"}
-            other{"ਬੇਲਾਰੂਸੀ ਰੂਬਲ (2000–2016)"}
         }
         BZD{
             one{"ਬੇਲੀਜ਼ ਡਾਲਰ"}
@@ -1093,8 +1048,8 @@ pa{
             other{"ਫ਼ਾਕਲੈਂਡ ਆਈਲੈਂਡਸ ਪੌਂਡ"}
         }
         GBP{
-            one{"ਬ੍ਰਿਟਿਸ਼ ਪੌਂਡ"}
-            other{"ਬ੍ਰਿਟਿਸ਼ ਪੌਂਡ"}
+            one{"ਬ੍ਰਿਟਿਸ਼ ਪੌਂਡ ਸਟਰਲਿੰਗ"}
+            other{"ਬ੍ਰਿਟਿਸ਼ ਪੌਂਡ ਸਟਰਲਿੰਗ"}
         }
         GEL{
             one{"ਜਾਰਜੀਆਈ ਲਾਰੀ"}
@@ -1529,8 +1484,8 @@ pa{
             other{"ਸਾਮੋਆਈ ਤਾਲਾ"}
         }
         XAF{
-            one{"ਕੇਂਦਰੀ ਅਫ਼ਰੀਕੀ [CFA] ਫ੍ਰੈਂਕ"}
-            other{"ਕੇਂਦਰੀ ਅਫ਼ਰੀਕੀ [CFA] ਫ੍ਰੈਂਕ"}
+            one{"ਫ੍ਰੈਂਕ (CFA BEAC)"}
+            other{"ਫ੍ਰੈਂਕ (CFA BEAC)"}
         }
         XAG{
             one{"ਚਾਂਦੀ ਦਾ ਟਰੌਏ ਔਂਸ"}
@@ -1553,8 +1508,8 @@ pa{
             other{"ਯੂਰਪੀ ਮੁਦਰਾ ਇਕਾਈ"}
         }
         XOF{
-            one{"ਪੱਛਮੀ ਅਫ਼ਰੀਕੀ (CFA) ਫ੍ਰੈਂਕ"}
-            other{"ਪੱਛਮੀ ਅਫ਼ਰੀਕੀ (CFA) ਫ੍ਰੈਂਕ"}
+            one{"ਫ੍ਰੈਂਕ (CFA BCEAO)"}
+            other{"ਫ੍ਰੈਂਕ (CFA BCEAO)"}
         }
         XPF{
             one{"ਫ੍ਰੈਂਕ (CFP)"}
@@ -1581,5 +1536,5 @@ pa{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.8.9"}
 }

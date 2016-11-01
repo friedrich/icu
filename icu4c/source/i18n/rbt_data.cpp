@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
 *   Copyright (C) 1999-2014, International Business Machines
@@ -44,7 +42,7 @@ TransliterationRuleData::TransliterationRuleData(const TransliterationRuleData& 
     UErrorCode status = U_ZERO_ERROR;
     int32_t i = 0;
     variableNames.setValueDeleter(uprv_deleteUObject);
-    int32_t pos = UHASH_FIRST;
+    int32_t pos = -1;
     const UHashElement *e;
     while ((e = other.variableNames.nextElement(pos)) != 0) {
         UnicodeString* value =

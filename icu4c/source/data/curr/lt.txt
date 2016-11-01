@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/lt.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/lt.xml
+ */
 lt{
     Currencies{
         ADP{
@@ -218,13 +227,9 @@ lt{
             "BYB",
             "Baltarusijos naujasis rublis (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Baltarusijos rublis",
-        }
         BYR{
             "BYR",
-            "Baltarusijos rublis (2000–2016)",
+            "Baltarusijos rublis",
         }
         BZD{
             "BZD",
@@ -371,7 +376,7 @@ lt{
             "Etiopijos biras",
         }
         EUR{
-            "€",
+            "EUR",
             "Euras",
         }
         FIM{
@@ -392,7 +397,7 @@ lt{
         }
         GBP{
             "GBP",
-            "Didžiosios Britanijos svaras",
+            "Didžiosios Britanijos svaras sterlingų",
         }
         GEK{
             "GEK",
@@ -1196,103 +1201,59 @@ lt{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"BDT"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"Br"}
+        BYR{"Br"}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
         EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"ILS"}
         INR{"INR"}
-        ISK{"kr"}
         JMD{"$"}
-        JPY{"¥"}
+        JPY{"JPY"}
         KHR{"KHR"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
-        KZT{"₸"}
+        KZT{"KZT"}
         LAK{"LAK"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"MNT"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zl"}
         PYG{"Gs"}
-        RON{"lei"}
-        RUB{"rb"}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
         TWD{"$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"VND"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
     }
     Currencies%variant{
-        GEL{"₾"}
         RUB{"₽"}
         TRY{"TL"}
     }
@@ -1621,17 +1582,11 @@ lt{
             one{"Baltarusijos naujasis rublis (1994–1999)"}
             other{"Baltarusijos naujųjų rublių"}
         }
-        BYN{
+        BYR{
             few{"Baltarusijos rubliai"}
             many{"Baltarusijos rublio"}
             one{"Baltarusijos rublis"}
             other{"Baltarusijos rublių"}
-        }
-        BYR{
-            few{"Baltarusijos rubliai (2000–2016)"}
-            many{"Baltarusijos rublio (2000–2016)"}
-            one{"Baltarusijos rublis (2000–2016)"}
-            other{"Baltarusijos rublių (2000–2016)"}
         }
         BZD{
             few{"Belizo doleriai"}
@@ -1880,10 +1835,10 @@ lt{
             other{"Prancūzijos frankų"}
         }
         GBP{
-            few{"Didžiosios Britanijos svarai"}
-            many{"Didžiosios Britanijos svaro"}
-            one{"Didžiosios Britanijos svaras"}
-            other{"Didžiosios Britanijos svarų"}
+            few{"Didžiosios Britanijos svarai sterlingų"}
+            many{"Didžiosios Britanijos svaro sterlingų"}
+            one{"Didžiosios Britanijos svaras sterlingų"}
+            other{"Didžiosios Britanijos svarų sterlingų"}
         }
         GEK{
             few{"Gruzinų kupon larits"}
@@ -3086,5 +3041,5 @@ lt{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.8.9"}
 }

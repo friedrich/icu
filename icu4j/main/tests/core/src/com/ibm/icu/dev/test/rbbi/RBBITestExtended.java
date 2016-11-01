@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  * Created on May 5, 2004
  *
- * Copyright (C) 2004-2016 International Business Machines Corporation and others.
+ * Copyright (C) 2004-2013 International Business Machines Corporation and others.
  * All Rights Reserved.
  *
  */
@@ -13,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Utility;
@@ -32,6 +28,12 @@ import com.ibm.icu.util.ULocale;
  *
  */
 public class RBBITestExtended extends TestFmwk {
+
+    public static void main(String[] args)throws Exception {
+        new RBBITestExtended().run(args);
+    }
+
+
 public RBBITestExtended() {
     }
 
@@ -47,7 +49,6 @@ static class TestParams {
 }
 
 
-@Test
 public void TestExtended() {
     TestParams     tp = new TestParams();
 
@@ -55,40 +56,33 @@ public void TestExtended() {
     //
     //  Open and read the test data file.
     //
-    StringBuffer testFileBuf = new StringBuffer();
-    InputStream is = null;
+    InputStreamReader isr = null;
+    StringBuffer  testFileBuf = new StringBuffer();
     try {
-        is = RBBITestExtended.class.getResourceAsStream("rbbitst.txt");
+        InputStream is = RBBITestExtended.class.getResourceAsStream("rbbitst.txt");
         if (is == null) {
             errln("Could not open test data file rbbitst.txt");
             return;
         }
-        InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-        try {
-            int c;
-            int count = 0;
-            for (;;) {
-                c = isr.read();
-                if (c < 0) {
-                    break;
-                }
-                count++;
-                if (c == 0xFEFF && count == 1) {
-                    // BOM in the test data file. Discard it.
-                    continue;
-                }
-
-                UTF16.append(testFileBuf, c);
+        isr = new InputStreamReader(is, "UTF-8");
+        int c;
+        int count = 0;
+        for (;;) {
+            c = isr.read();
+            if (c < 0) {
+                break;
             }
-        } finally {
-            isr.close();
+            count++;
+            if (c==0xFEFF && count==1) {
+               // BOM in the test data file.  Discard it.
+               continue;
+            }
+
+            UTF16.append(testFileBuf, c);
         }
+
     } catch (IOException e) {
         errln(e.toString());
-        try {
-            is.close();
-        } catch (IOException ignored) {
-        }
         return;
     }
 
@@ -478,8 +472,8 @@ void executeTest(TestParams t) {
             int line = t.srcLine[bp];
             int rs = t.bi.getRuleStatus();
             if (rs != expectedTagVal) {
-                errln("Incorrect status for reverse break.  Pos = " + bp +
-                      "  File line,col= " + line + ", " + t.srcCol[bp] + "\n" +
+                errln("Incorrect status for reverse break.  Pos=  " + bp +
+                        "File line,col= " + line + ", " + t.srcCol[bp] + "\n" +
                       "          Actual, Expected status = " + rs + ", " + expectedTagVal);
             }
         }

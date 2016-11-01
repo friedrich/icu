@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/dsb.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/dsb.xml
+ */
 dsb{
     Currencies{
         ADP{
@@ -182,13 +191,9 @@ dsb{
             "BYB",
             "běłoruski rubl (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "běłoruski rubl",
-        }
         BYR{
             "BYR",
-            "běłoruski rubl (2000–2016)",
+            "běłoruski rubl",
         }
         BZD{
             "BZD",
@@ -1013,17 +1018,11 @@ dsb{
             other{"běłoruskich rublow (1994–1999)"}
             two{"běłoruskej rubla (1994–1999)"}
         }
-        BYN{
+        BYR{
             few{"běłoruske ruble"}
             one{"běłoruski rubl"}
             other{"běłoruskich rublow"}
             two{"běłoruskej rubla"}
-        }
-        BYR{
-            few{"běłoruske ruble (2000–2016)"}
-            one{"běłoruski rubl (2000–2016)"}
-            other{"běłoruskich rublow (2000–2016)"}
-            two{"běłoruskej rubla (2000–2016)"}
         }
         BZD{
             few{"belizeske dolary"}
@@ -1854,5 +1853,5 @@ dsb{
         other{"{0} {1}"}
         two{"{0} {1}"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.8.9"}
 }

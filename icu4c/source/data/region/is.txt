@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/is.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/is.xml
+ */
 is{
     Countries{
         001{"Heimurinn"}
@@ -40,6 +49,7 @@ is{
         AI{"Angvilla"}
         AL{"Albanía"}
         AM{"Armenía"}
+        AN{"Hollensku Antillur"}
         AO{"Angóla"}
         AQ{"Suðurskautslandið"}
         AR{"Argentína"}
@@ -58,7 +68,7 @@ is{
         BH{"Barein"}
         BI{"Búrúndí"}
         BJ{"Benín"}
-        BL{"Sankti Bartólómeusareyjar"}
+        BL{"Saint Barthélemy"}
         BM{"Bermúdaeyjar"}
         BN{"Brúnei"}
         BO{"Bólivía"}
@@ -107,7 +117,7 @@ is{
         ET{"Eþíópía"}
         EU{"Evrópusambandið"}
         FI{"Finnland"}
-        FJ{"Fídjíeyjar"}
+        FJ{"Fídjieyjar"}
         FK{"Falklandseyjar"}
         FM{"Míkrónesía"}
         FO{"Færeyjar"}
@@ -178,7 +188,7 @@ is{
         MC{"Mónakó"}
         MD{"Moldóva"}
         ME{"Svartfjallaland"}
-        MF{"St. Martin"}
+        MF{"Saint Martin"}
         MG{"Madagaskar"}
         MH{"Marshalleyjar"}
         MK{"Makedónía"}
@@ -249,7 +259,7 @@ is{
         SS{"Suður-Súdan"}
         ST{"Saó Tóme og Prinsípe"}
         SV{"El Salvador"}
-        SX{"Sankti Martin"}
+        SX{"Sint Maarten"}
         SY{"Sýrland"}
         SZ{"Svasíland"}
         TA{"Tristan da Cunha"}
@@ -272,7 +282,6 @@ is{
         UA{"Úkraína"}
         UG{"Úganda"}
         UM{"Smáeyjar Bandaríkjanna"}
-        UN{"Sameinuðu þjóðirnar"}
         US{"Bandaríkin"}
         UY{"Úrúgvæ"}
         UZ{"Úsbekistan"}
@@ -293,14 +302,6 @@ is{
         ZW{"Simbabve"}
         ZZ{"Óþekkt svæði"}
     }
-    Countries%short{
-        GB{"Bretland"}
-        HK{"Hong Kong"}
-        MO{"Makaó"}
-        PS{"Palestína"}
-        UN{"Sameinuðu þjóðirnar"}
-        US{"BNA"}
-    }
     Countries%variant{
         CD{"Kongó (Lýðstjórnarlýðveldið)"}
         CG{"Kongó (Lýðveldið)"}
@@ -308,5 +309,12 @@ is{
         MK{"Makedónía (Fyrrverandi lýðveldi Júgóslavíu)"}
         TL{"Austur-Tímor"}
     }
-    Version{"2.1.29.65"}
+    CountriesShort{
+        GB{"Bretland"}
+        HK{"Hong Kong"}
+        MO{"Makaó"}
+        PS{"Palestína"}
+        US{"BNA"}
+    }
+    Version{"2.1.8.9"}
 }

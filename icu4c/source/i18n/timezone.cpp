@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 1997-2016, International Business Machines Corporation and
+* Copyright (C) 1997-2014, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 *
@@ -429,92 +427,15 @@ TimeZone::createTimeZone(const UnicodeString& ID)
      */
     TimeZone* result = createSystemTimeZone(ID);
 
-    if (result == NULL) {
+    if (result == 0) {
         U_DEBUG_TZ_MSG(("failed to load system time zone with id - falling to custom"));
         result = createCustomTimeZone(ID);
     }
-    if (result == NULL) {
+    if (result == 0) {
         U_DEBUG_TZ_MSG(("failed to load time zone with id - falling to Etc/Unknown(GMT)"));
-        const TimeZone& unknown = getUnknown();
-        if (_UNKNOWN_ZONE == NULL) {                   // Cannot test (&unknown == NULL) because the
-          U_DEBUG_TZ_MSG(("failed to getUnknown()"));  // behavior of NULL references is undefined.
-        } else {
-          result = unknown.clone();
-        }
+        result = getUnknown().clone();
     }
     return result;
-}
-
-// -------------------------------------
-
-TimeZone* U_EXPORT2
-TimeZone::detectHostTimeZone()
-{
-    // We access system timezone data through TPlatformUtilities,
-    // including tzset(), timezone, and tzname[].
-    int32_t rawOffset = 0;
-    const char *hostID;
-
-    // First, try to create a system timezone, based
-    // on the string ID in tzname[0].
-
-    uprv_tzset(); // Initialize tz... system data
-
-    uprv_tzname_clear_cache();
-
-    // Get the timezone ID from the host.  This function should do
-    // any required host-specific remapping; e.g., on Windows this
-    // function maps the Date and Time control panel setting to an
-    // ICU timezone ID.
-    hostID = uprv_tzname(0);
-
-    // Invert sign because UNIX semantics are backwards
-    rawOffset = uprv_timezone() * -U_MILLIS_PER_SECOND;
-
-    TimeZone* hostZone = NULL;
-
-    /* Make sure that the string is NULL terminated to prevent BoundsChecker/Purify warnings. */
-    UnicodeString hostStrID(hostID, -1, US_INV);
-    hostStrID.append((UChar)0);
-    hostStrID.truncate(hostStrID.length()-1);
-    hostZone = createSystemTimeZone(hostStrID);
-
-#if U_PLATFORM_USES_ONLY_WIN32_API
-    // hostID points to a heap-allocated location on Windows.
-    uprv_free(const_cast<char *>(hostID));
-#endif
-
-    int32_t hostIDLen = hostStrID.length();
-    if (hostZone != NULL && rawOffset != hostZone->getRawOffset()
-        && (3 <= hostIDLen && hostIDLen <= 4))
-    {
-        // Uh oh. This probably wasn't a good id.
-        // It was probably an ambiguous abbreviation
-        delete hostZone;
-        hostZone = NULL;
-    }
-
-    // Construct a fixed standard zone with the host's ID
-    // and raw offset.
-    if (hostZone == NULL) {
-        hostZone = new SimpleTimeZone(rawOffset, hostStrID);
-    }
-
-    // If we _still_ don't have a time zone, use GMT.
-    //
-    // Note: This is extremely unlikely situation. If
-    // new SimpleTimeZone(...) above fails, the following
-    // code may also fail.
-    if (hostZone == NULL) {
-        const TimeZone* temptz = TimeZone::getGMT();
-        // If we can't use GMT, get out.
-        if (temptz == NULL) {
-            return NULL;
-        }
-        hostZone = temptz->clone();
-    }
-
-    return hostZone;
 }
 
 // -------------------------------------
@@ -534,6 +455,14 @@ static void U_CALLCONV initDefault()
         return;
     }
     
+    // We access system timezone data through TPlatformUtilities,
+    // including tzset(), timezone, and tzname[].
+    int32_t rawOffset = 0;
+    const char *hostID;
+
+    // First, try to create a system timezone, based
+    // on the string ID in tzname[0].
+
     // NOTE:  this code is safely single threaded, being only
     // run via umtx_initOnce().
     //
@@ -544,10 +473,55 @@ static void U_CALLCONV initDefault()
     // There shouldn't be a problem with this; initOnce does not hold a mutex
     // while the init function is being run.
 
-    // The code detecting the host time zone was separated from this
-    // and implemented as TimeZone::detectHostTimeZone()
+    uprv_tzset(); // Initialize tz... system data
 
-    TimeZone *default_zone = TimeZone::detectHostTimeZone();
+    // Get the timezone ID from the host.  This function should do
+    // any required host-specific remapping; e.g., on Windows this
+    // function maps the Date and Time control panel setting to an
+    // ICU timezone ID.
+    hostID = uprv_tzname(0);
+
+    // Invert sign because UNIX semantics are backwards
+    rawOffset = uprv_timezone() * -U_MILLIS_PER_SECOND;
+
+    TimeZone* default_zone = NULL;
+
+    /* Make sure that the string is NULL terminated to prevent BoundsChecker/Purify warnings. */
+    UnicodeString hostStrID(hostID, -1, US_INV);
+    hostStrID.append((UChar)0);
+    hostStrID.truncate(hostStrID.length()-1);
+    default_zone = createSystemTimeZone(hostStrID);
+
+#if U_PLATFORM_USES_ONLY_WIN32_API
+    // hostID points to a heap-allocated location on Windows.
+    uprv_free(const_cast<char *>(hostID));
+#endif
+
+    int32_t hostIDLen = hostStrID.length();
+    if (default_zone != NULL && rawOffset != default_zone->getRawOffset()
+        && (3 <= hostIDLen && hostIDLen <= 4))
+    {
+        // Uh oh. This probably wasn't a good id.
+        // It was probably an ambiguous abbreviation
+        delete default_zone;
+        default_zone = NULL;
+    }
+
+    // Construct a fixed standard zone with the host's ID
+    // and raw offset.
+    if (default_zone == NULL) {
+        default_zone = new SimpleTimeZone(rawOffset, hostStrID);
+    }
+
+    // If we _still_ don't have a time zone, use GMT.
+    if (default_zone == NULL) {
+        const TimeZone* temptz = TimeZone::getGMT();
+        // If we can't use GMT, get out.
+        if (temptz == NULL) {
+            return;
+        }
+        default_zone = temptz->clone();
+    }
 
     // The only way for DEFAULT_ZONE to be non-null at this point is if the user
     // made a thread-unsafe call to setDefault() or adoptDefault() in another
@@ -1551,6 +1525,7 @@ TimeZone::getCanonicalID(const UnicodeString& id, UnicodeString& canonicalID, UB
     return canonicalID;
 }
 
+#ifndef U_HIDE_DRAFT_API
 UnicodeString&
 TimeZone::getWindowsID(const UnicodeString& id, UnicodeString& winid, UErrorCode& status) {
     winid.remove();
@@ -1691,6 +1666,7 @@ TimeZone::getIDForWindowsID(const UnicodeString& winid, const char* region, Unic
     ures_close(zones);
     return id;
 }
+#endif /* U_HIDE_DRAFT_API */
 
 
 U_NAMESPACE_END

@@ -1,14 +1,27 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/zh_Hans_SG.xml
+// *
+// ***************************************************************************
 zh_Hans_SG{
-    Version{"2.1.27.99"}
+    NumberElements{
+        latn{
+            patterns{
+                currencyFormat{"¤#,##0.00"}
+            }
+        }
+    }
+    Version{"2.1.8.19"}
     calendar{
         buddhist{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "ahh:mm:ssz",
                 "ah:mm:ss",
-                "ah:mm",
+                "ahh:mm",
                 "Gy年M月d日EEEE",
                 "Gy年M月d日",
                 "Gy年M月d日",
@@ -22,10 +35,10 @@ zh_Hans_SG{
         }
         chinese{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "ahh:mm:ssz",
                 "ah:mm:ss",
-                "ah:mm",
+                "ahh:mm",
                 {
                     "U年MMMd日EEEE",
                     "hanidec",
@@ -38,7 +51,7 @@ zh_Hans_SG{
                     "U年MMMd日",
                     "hanidec",
                 }
-                "r/M/d",
+                "U-M-d",
                 "{1} {0}",
                 "{1} {0}",
                 "{1} {0}",
@@ -48,13 +61,13 @@ zh_Hans_SG{
         }
         generic{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "ahh:mm:ssz",
                 "ah:mm:ss",
-                "ah:mm",
-                "Gy年MM月d日EEEE",
-                "Gy年MM月d日",
-                "Gy年MM月d日",
+                "ahh:mm",
+                "Gy年M月d日EEEE",
+                "Gy年M月d日",
+                "Gy年M月d日",
                 "dd/MM/yyGGGGG",
                 "{1} {0}",
                 "{1} {0}",
@@ -107,17 +120,17 @@ zh_Hans_SG{
         }
         gregorian{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "ahh:mm:ssz",
                 "ah:mm:ss",
-                "ah:mm",
+                "ahh:mm",
                 "y年M月d日EEEE",
                 "y年M月d日",
                 "y年M月d日",
                 "dd/MM/yy",
                 "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
+                "{1}{0}",
+                "{1}{0}",
                 "{1} {0}",
                 "{1} {0}",
             }
@@ -170,10 +183,10 @@ zh_Hans_SG{
         }
         islamic{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "ahh:mm:ssz",
                 "ah:mm:ss",
-                "ah:mm",
+                "ahh:mm",
                 "Gy年M月d日EEEE",
                 "Gy年M月d日",
                 "Gy年M月d日",
@@ -187,10 +200,10 @@ zh_Hans_SG{
         }
         japanese{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "ahh:mm:ssz",
                 "ah:mm:ss",
-                "ah:mm",
+                "ahh:mm",
                 "Gy年M月d日EEEE",
                 "Gy年M月d日",
                 "Gy年M月d日",
@@ -208,10 +221,10 @@ zh_Hans_SG{
         }
         roc{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "ahh:mm:ssz",
                 "ah:mm:ss",
-                "ah:mm",
+                "ahh:mm",
                 "Gy年M月d日EEEE",
                 "Gy年M月d日",
                 "Gy年M月d日",

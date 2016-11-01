@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2014, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -42,6 +40,11 @@ abstract class NFSubstitution {
      */
     final DecimalFormat numberFormat;
 
+    /**
+     * Link to the RBNF so that we can access its decimalFormat if need be.
+     */
+    final RuleBasedNumberFormat rbnf;
+
     //-----------------------------------------------------------------------
     // construction
     //-----------------------------------------------------------------------
@@ -72,7 +75,7 @@ abstract class NFSubstitution {
                                                   String description) {
         // if the description is empty, return a NullSubstitution
         if (description.length() == 0) {
-            return null;
+            return new NullSubstitution(pos, ruleSet, formatter, description);
         }
 
         switch (description.charAt(0)) {
@@ -91,25 +94,25 @@ abstract class NFSubstitution {
                      || rule.getBaseValue() == NFRule.MASTER_RULE)
             {
                 // if the rule is a fraction rule, return an IntegralPartSubstitution
-                return new IntegralPartSubstitution(pos, ruleSet, description);
+                return new IntegralPartSubstitution(pos, ruleSet, formatter, description);
             }
             else if (ruleSet.isFractionSet()) {
                 // if the rule set containing the rule is a fraction
                 // rule set, return a NumeratorSubstitution
                 return new NumeratorSubstitution(pos, rule.getBaseValue(),
-                                                 formatter.getDefaultRuleSet(), description);
+                                                 formatter.getDefaultRuleSet(), formatter, description);
             }
             else {
                 // otherwise, return a MultiplierSubstitution
-                return new MultiplierSubstitution(pos, rule, ruleSet,
-                                                  description);
+                return new MultiplierSubstitution(pos, rule.getDivisor(), ruleSet,
+                                                  formatter, description);
             }
 
         case '>':
             if (rule.getBaseValue() == NFRule.NEGATIVE_NUMBER_RULE) {
                 // if the rule is a negative-number rule, return
                 // an AbsoluteValueSubstitution
-                return new AbsoluteValueSubstitution(pos, ruleSet, description);
+                return new AbsoluteValueSubstitution(pos, ruleSet, formatter, description);
             }
             else if (rule.getBaseValue() == NFRule.IMPROPER_FRACTION_RULE
                      || rule.getBaseValue() == NFRule.PROPER_FRACTION_RULE
@@ -117,7 +120,7 @@ abstract class NFSubstitution {
             {
                 // if the rule is a fraction rule, return a
                 // FractionalPartSubstitution
-                return new FractionalPartSubstitution(pos, ruleSet, description);
+                return new FractionalPartSubstitution(pos, ruleSet, formatter, description);
             }
             else if (ruleSet.isFractionSet()) {
                 // if the rule set owning the rule is a fraction rule set,
@@ -131,11 +134,11 @@ abstract class NFSubstitution {
             }
             else {
                 // otherwise, return a ModulusSubstitution
-                return new ModulusSubstitution(pos, rule, rulePredecessor,
-                                               ruleSet, description);
+                return new ModulusSubstitution(pos, rule.getDivisor(), rulePredecessor,
+                                               ruleSet, formatter, description);
             }
         case '=':
-            return new SameValueSubstitution(pos, ruleSet, description);
+            return new SameValueSubstitution(pos, ruleSet, formatter, description);
         default:
             // and if it's anything else, throw an exception
             ///CLOVER:OFF
@@ -153,24 +156,26 @@ abstract class NFSubstitution {
      * @param pos The substitution's position in the owning rule's rule
      * text
      * @param ruleSet The rule set that owns this substitution
+     * @param formatter The RuleBasedNumberFormat that owns this substitution
      * @param description The substitution descriptor (i.e., the text
      * inside the token characters)
      */
     NFSubstitution(int pos,
                    NFRuleSet ruleSet,
+                   RuleBasedNumberFormat formatter,
                    String description) {
         // initialize the substitution's position in its parent rule
         this.pos = pos;
-        int descriptionLen = description.length();
+        this.rbnf = formatter;
 
         // the description should begin and end with the same character.
         // If it doesn't that's a syntax error.  Otherwise,
         // makeSubstitution() was the only thing that needed to know
         // about these characters, so strip them off
-        if (descriptionLen >= 2 && description.charAt(0) == description.charAt(descriptionLen - 1)) {
-            description = description.substring(1, descriptionLen - 1);
+        if (description.length() >= 2 && description.charAt(0) == description.charAt(description.length() - 1)) {
+            description = description.substring(1, description.length() - 1);
         }
-        else if (descriptionLen != 0) {
+        else if (description.length() != 0) {
             throw new IllegalArgumentException("Illegal substitution syntax");
         }
 
@@ -185,7 +190,7 @@ abstract class NFSubstitution {
             // if the description contains a rule set name, that's the rule
             // set we use to format the result: get a reference to the
             // names rule set
-            this.ruleSet = ruleSet.owner.findRuleSet(description);
+            this.ruleSet = formatter.findRuleSet(description);
             this.numberFormat = null;
         }
         else if (description.charAt(0) == '#' || description.charAt(0) == '0') {
@@ -194,8 +199,7 @@ abstract class NFSubstitution {
             // that pattern (then set it to use the DecimalFormatSymbols
             // belonging to our formatter)
             this.ruleSet = null;
-            this.numberFormat = (DecimalFormat) ruleSet.owner.getDecimalFormat().clone();
-            this.numberFormat.applyPattern(description);
+            this.numberFormat = new DecimalFormat(description, formatter.getDecimalFormatSymbols());
         }
         else if (description.charAt(0) == '>') {
             // if the description is ">>>", this substitution bypasses the
@@ -219,7 +223,7 @@ abstract class NFSubstitution {
      * @param radix The radix of the divisor
      * @param exponent The exponent of the divisor
      */
-    public void setDivisor(int radix, short exponent) {
+    public void setDivisor(int radix, int exponent) {
         // a no-op for all substitutions except multiplier and modulus substitutions
     }
 
@@ -288,15 +292,24 @@ abstract class NFSubstitution {
      * rule text begins (this value is added to this substitution's
      * position to determine exactly where to insert the new text)
      */
-    public void doSubstitution(long number, StringBuilder toInsertInto, int position, int recursionCount) {
-        // perform a transformation on the number that is dependent
-        // on the type of substitution this is, then just call its
-        // rule set's format() method to format the result
-        long numberToFormat = transformNumber(number);
-
+    public void doSubstitution(long number, StringBuffer toInsertInto, int position) {
         if (ruleSet != null) {
-            ruleSet.format(numberToFormat, toInsertInto, position + pos, recursionCount);
+            // perform a transformation on the number that is dependent
+            // on the type of substitution this is, then just call its
+            // rule set's format() method to format the result
+            long numberToFormat = transformNumber(number);
+
+            ruleSet.format(numberToFormat, toInsertInto, position + pos);
         } else {
+            // or perform the transformation on the number (preserving
+            // the result's fractional part if the formatter it set
+            // to show it), then use that formatter's format() method
+            // to format the result
+            double numberToFormat = transformNumber((double)number);
+            if (numberFormat.getMaximumFractionDigits() == 0) {
+                numberToFormat = Math.floor(numberToFormat);
+            }
+
             toInsertInto.insert(position + pos, numberFormat.format(numberToFormat));
         }
     }
@@ -311,29 +324,22 @@ abstract class NFSubstitution {
      * rule text begins (this value is added to this substitution's
      * position to determine exactly where to insert the new text)
      */
-    public void doSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount) {
+    public void doSubstitution(double number, StringBuffer toInsertInto, int position) {
         // perform a transformation on the number being formatted that
         // is dependent on the type of substitution this is
         double numberToFormat = transformNumber(number);
 
-        if (Double.isInfinite(numberToFormat)) {
-            // This is probably a minus rule. Combine it with an infinite rule.
-            NFRule infiniteRule = ruleSet.findRule(Double.POSITIVE_INFINITY);
-            infiniteRule.doFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
-            return;
-        }
-
         // if the result is an integer, from here on out we work in integer
         // space (saving time and memory and preserving accuracy)
         if (numberToFormat == Math.floor(numberToFormat) && ruleSet != null) {
-            ruleSet.format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
+            ruleSet.format((long)numberToFormat, toInsertInto, position + pos);
 
             // if the result isn't an integer, then call either our rule set's
             // format() method or our DecimalFormat's format() method to
             // format the result
         } else {
             if (ruleSet != null) {
-                ruleSet.format(numberToFormat, toInsertInto, position + pos, recursionCount);
+                ruleSet.format(numberToFormat, toInsertInto, position + pos);
             } else {
                 toInsertInto.insert(position + this.pos, numberFormat.format(numberToFormat));
             }
@@ -416,7 +422,7 @@ abstract class NFSubstitution {
         if (ruleSet != null) {
             tempResult = ruleSet.parse(text, parsePosition, upperBound);
             if (lenientParse && !ruleSet.isFractionSet() && parsePosition.getIndex() == 0) {
-                tempResult = ruleSet.owner.getDecimalFormat().parse(text, parsePosition);
+                tempResult = rbnf.getDecimalFormat().parse(text, parsePosition);
             }
 
             // ...or use our DecimalFormat to parse the text
@@ -509,6 +515,16 @@ abstract class NFSubstitution {
     abstract char tokenChar();
 
     /**
+     * Returns true if this is a null substitution.  (We didn't do this
+     * with instanceof partially because it causes source files to
+     * proliferate and partially because we have to port this to C++.)
+     * @return true if this object is an instance of NullSubstitution
+     */
+    public boolean isNullSubstitution() {
+        return false;
+    }
+
+    /**
      * Returns true if this is a modulus substitution.  (We didn't do this
      * with instanceof partially because it causes source files to
      * proliferate and partially because we have to port this to C++.)
@@ -516,13 +532,6 @@ abstract class NFSubstitution {
      */
     public boolean isModulusSubstitution() {
         return false;
-    }
-
-
-    public void setDecimalFormatSymbols(DecimalFormatSymbols newSymbols) {
-        if (numberFormat != null) {
-            numberFormat.setDecimalFormatSymbols(newSymbols);
-        }
     }
 }
 
@@ -547,8 +556,9 @@ class SameValueSubstitution extends NFSubstitution {
      */
     SameValueSubstitution(int pos,
                           NFRuleSet ruleSet,
+                          RuleBasedNumberFormat formatter,
                           String description) {
-        super(pos, ruleSet, description);
+        super(pos, ruleSet, formatter, description);
         if (description.equals("==")) {
             throw new IllegalArgumentException("== is not a legal token");
         }
@@ -630,7 +640,7 @@ class MultiplierSubstitution extends NFSubstitution {
     /**
      * The divisor of the rule that owns this substitution.
      */
-    long divisor;
+    double divisor;
 
     //-----------------------------------------------------------------------
     // construction
@@ -641,20 +651,22 @@ class MultiplierSubstitution extends NFSubstitution {
      * constructor to initialize most members, but this substitution
      * also maintains its own copy of its rule's divisor.
      * @param pos The substitution's position in its rule's rule text
-     * @param rule The rule that owns this substitution
+     * @param divisor The owning rule's divisor
      * @param ruleSet The ruleSet this substitution uses to format its result
+     * @param formatter The formatter that owns this substitution
      * @param description The description describing this substitution
      */
     MultiplierSubstitution(int pos,
-                           NFRule rule,
+                           double divisor,
                            NFRuleSet ruleSet,
+                           RuleBasedNumberFormat formatter,
                            String description) {
-        super(pos, ruleSet, description);
+        super(pos, ruleSet, formatter, description);
 
         // the owning rule's divisor affects the behavior of this
         // substitution.  Rather than keeping a back-pointer to the
         // rule, we keep a copy of the divisor
-        this.divisor = rule.getDivisor();
+        this.divisor = divisor;
 
         if (divisor == 0) { // this will cause recursion
             throw new IllegalStateException("Substitution with divisor 0 " + description.substring(0, pos) +
@@ -667,8 +679,8 @@ class MultiplierSubstitution extends NFSubstitution {
      * @param radix The radix of the divisor.
      * @param exponent The exponent of the divisor.
      */
-    public void setDivisor(int radix, short exponent) {
-        divisor = NFRule.power(radix, exponent);
+    public void setDivisor(int radix, int exponent) {
+        divisor = Math.pow(radix, exponent);
 
         if (divisor == 0) {
             throw new IllegalStateException("Substitution with divisor 0");
@@ -685,7 +697,13 @@ class MultiplierSubstitution extends NFSubstitution {
      * @return true if the two substitutions are functionally equal
      */
     public boolean equals(Object that) {
-        return super.equals(that) && divisor == ((MultiplierSubstitution) that).divisor;
+        if (super.equals(that)) {
+            MultiplierSubstitution that2 = (MultiplierSubstitution)that;
+
+            return divisor == that2.divisor;
+        } else {
+            return false;
+        }
     }
     
     //-----------------------------------------------------------------------
@@ -774,13 +792,13 @@ class ModulusSubstitution extends NFSubstitution {
     /**
      * The divisor of the rule owning this substitution
      */
-    long divisor;
+    double divisor;
 
     /**
      * If this is a &gt;&gt;&gt; substitution, the rule to use to format
      * the substitution value.  Otherwise, null.
      */
-    private final NFRule ruleToUse;
+    NFRule ruleToUse;
 
     //-----------------------------------------------------------------------
     // construction
@@ -793,23 +811,24 @@ class ModulusSubstitution extends NFSubstitution {
      * that precedes the rule containing this substitution in the rule
      * set's rule list.
      * @param pos The substitution's position in its rule's rule text
-     * @param rule The rule that owns this substitution
+     * @param divisor The divisor of the rule that owns this substitution
      * @param rulePredecessor The rule that precedes this substitution's
      * rule in its rule set's rule list
+     * @param formatter The RuleBasedNumberFormat owning this substitution
      * @param description The description for this substitution
      */
     ModulusSubstitution(int pos,
-                        NFRule rule,
+                        double divisor,
                         NFRule rulePredecessor,
                         NFRuleSet ruleSet,
-                        String description)
-    {
-        super(pos, ruleSet, description);
+                        RuleBasedNumberFormat formatter,
+                        String description) {
+        super(pos, ruleSet, formatter, description);
 
         // the owning rule's divisor controls the behavior of this
         // substitution: rather than keeping a backpointer to the rule,
         // we keep a copy of the divisor
-        this.divisor = rule.getDivisor();
+        this.divisor = divisor;
 
         if (divisor == 0) { // this will cause recursion
             throw new IllegalStateException("Substitution with bad divisor (" + divisor + ") "+ description.substring(0, pos) +
@@ -834,8 +853,8 @@ class ModulusSubstitution extends NFSubstitution {
      * @param radix The radix of the divisor.
      * @param exponent The exponent of the divisor.
      */
-    public void setDivisor(int radix, short exponent) {
-        divisor = NFRule.power(radix, exponent);
+    public void setDivisor(int radix, int exponent) {
+        divisor = Math.pow(radix, exponent);
 
         if (divisor == 0) { // this will cause recursion
             throw new IllegalStateException("Substitution with bad divisor");
@@ -874,18 +893,18 @@ class ModulusSubstitution extends NFSubstitution {
      * into
      * @param position The position of the rule text in toInsertInto
      */
-    public void doSubstitution(long number, StringBuilder toInsertInto, int position, int recursionCount) {
+    public void doSubstitution(long number, StringBuffer toInsertInto, int position) {
         // if this isn't a >>> substitution, just use the inherited version
         // of this function (which uses either a rule set or a DecimalFormat
         // to format its substitution value)
         if (ruleToUse == null) {
-            super.doSubstitution(number, toInsertInto, position, recursionCount);
+            super.doSubstitution(number, toInsertInto, position);
 
+        // a >>> substitution goes straight to a particular rule to
+        // format the substitution value
         } else {
-            // a >>> substitution goes straight to a particular rule to
-            // format the substitution value
             long numberToFormat = transformNumber(number);
-            ruleToUse.doFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
+            ruleToUse.doFormat(numberToFormat, toInsertInto, position + pos);
         }
     }
 
@@ -897,19 +916,19 @@ class ModulusSubstitution extends NFSubstitution {
      * into
      * @param position The position of the rule text in toInsertInto
      */
-    public void doSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount) {
+    public void doSubstitution(double number, StringBuffer toInsertInto, int position) {
         // if this isn't a >>> substitution, just use the inherited version
         // of this function (which uses either a rule set or a DecimalFormat
         // to format its substitution value)
         if (ruleToUse == null) {
-            super.doSubstitution(number, toInsertInto, position, recursionCount);
+            super.doSubstitution(number, toInsertInto, position);
 
+        // a >>> substitution goes straight to a particular rule to
+        // format the substitution value
         } else {
-            // a >>> substitution goes straight to a particular rule to
-            // format the substitution value
             double numberToFormat = transformNumber(number);
 
-            ruleToUse.doFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
+            ruleToUse.doFormat(numberToFormat, toInsertInto, position + pos);
         }
     }
 
@@ -920,7 +939,7 @@ class ModulusSubstitution extends NFSubstitution {
      * @return "number" mod divisor
      */
     public long transformNumber(long number) {
-        return number % divisor;
+        return (long)Math.floor(number % divisor);
     }
 
     /**
@@ -953,10 +972,10 @@ class ModulusSubstitution extends NFSubstitution {
         if (ruleToUse == null) {
             return super.doParse(text, parsePosition, baseValue, upperBound, lenientParse);
 
+        // but if it IS a >>> substitution, we have to do it here: we
+        // use the specific rule's doParse() method, and then we have to
+        // do some of the other work of NFRuleSet.parse()
         } else {
-            // but if it IS a >>> substitution, we have to do it here: we
-            // use the specific rule's doParse() method, and then we have to
-            // do some of the other work of NFRuleSet.parse()
             Number tempResult = ruleToUse.doParse(text, parsePosition, false, upperBound);
 
             if (parsePosition.getIndex() != 0) {
@@ -985,6 +1004,7 @@ class ModulusSubstitution extends NFSubstitution {
      * @param newRuleValue The result of parsing the substitution
      * @param oldRuleValue The base value of the rule containing the
      * substitution
+     * @return (oldRuleValue - (oldRuleValue % divisor)) + newRuleValue
      */
     public double composeRuleValue(double newRuleValue, double oldRuleValue) {
         return (oldRuleValue - (oldRuleValue % divisor)) + newRuleValue;
@@ -1039,8 +1059,9 @@ class IntegralPartSubstitution extends NFSubstitution {
      */
     IntegralPartSubstitution(int pos,
                              NFRuleSet ruleSet,
+                             RuleBasedNumberFormat formatter,
                              String description) {
-        super(pos, ruleSet, description);
+        super(pos, ruleSet, formatter, description);
     }
 
     //-----------------------------------------------------------------------
@@ -1124,13 +1145,13 @@ class FractionalPartSubstitution extends NFSubstitution {
      * true if this substitution should have the default "by digits"
      * behavior, false otherwise
      */
-    private final boolean byDigits;
+    private boolean byDigits = false;
 
     /**
      * true if we automatically insert spaces to separate names of digits
      * set to false by '>>>' in fraction rules, used by Thai.
      */
-    private final boolean useSpaces;
+    private boolean useSpaces = true;
 
     //-----------------------------------------------------------------------
     // construction
@@ -1143,14 +1164,15 @@ class FractionalPartSubstitution extends NFSubstitution {
      */
     FractionalPartSubstitution(int pos,
                                NFRuleSet ruleSet,
+                               RuleBasedNumberFormat formatter,
                                String description) {
-        super(pos, ruleSet, description);
+        super(pos, ruleSet, formatter, description);
         if (description.equals(">>") || description.equals(">>>") || ruleSet == this.ruleSet) {
             byDigits = true;
-            useSpaces = !description.equals(">>>");
+            if (description.equals(">>>")) {
+              useSpaces = false;
+            }
         } else {
-            byDigits = false;
-            useSpaces = true;
             this.ruleSet.makeIntoFractionRuleSet();
         }
     }
@@ -1169,11 +1191,11 @@ class FractionalPartSubstitution extends NFSubstitution {
      * @param position The position of the owning rule's rule text in
      * toInsertInto
      */
-    public void doSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount) {
+    public void doSubstitution(double number, StringBuffer toInsertInto, int position) {
         if (!byDigits) {
             // if we're not in "byDigits" mode, just use the inherited
             // doSubstitution() routine
-            super.doSubstitution(number, toInsertInto, position, recursionCount);
+            super.doSubstitution(number, toInsertInto, position);
         }
         else {
             // if we're in "byDigits" mode, transform the value into an integer
@@ -1194,7 +1216,7 @@ class FractionalPartSubstitution extends NFSubstitution {
                 } else {
                     pad = true;
                 }
-                ruleSet.format(dl.digits[--dl.count] - '0', toInsertInto, position + pos, recursionCount);
+                ruleSet.format(dl.digits[--dl.count] - '0', toInsertInto, position + pos);
             }
             while (dl.decimalAt < 0) {
                 if (pad && useSpaces) {
@@ -1202,7 +1224,7 @@ class FractionalPartSubstitution extends NFSubstitution {
                 } else {
                     pad = true;
                 }
-                ruleSet.format(0, toInsertInto, position + pos, recursionCount);
+                ruleSet.format(0, toInsertInto, position + pos);
                 ++dl.decimalAt;
             }
         }
@@ -1261,7 +1283,7 @@ class FractionalPartSubstitution extends NFSubstitution {
             // nonmatching text
             String workText = text;
             ParsePosition workPos = new ParsePosition(1);
-            double result;
+            double result = 0;
             int digit;
 
             DigitList dl = new DigitList();
@@ -1269,7 +1291,7 @@ class FractionalPartSubstitution extends NFSubstitution {
                 workPos.setIndex(0);
                 digit = ruleSet.parse(workText, workPos, 10).intValue();
                 if (lenientParse && workPos.getIndex() == 0) {
-                    Number n = ruleSet.owner.getDecimalFormat().parse(workText, workPos);
+                    Number n = rbnf.getDecimalFormat().parse(workText, workPos);
                     if (n != null) {
                         digit = n.intValue();
                     }
@@ -1343,8 +1365,9 @@ class AbsoluteValueSubstitution extends NFSubstitution {
      */
     AbsoluteValueSubstitution(int pos,
                               NFRuleSet ruleSet,
+                              RuleBasedNumberFormat formatter,
                               String description) {
-        super(pos, ruleSet, description);
+        super(pos, ruleSet, formatter, description);
     }
 
     //-----------------------------------------------------------------------
@@ -1426,12 +1449,12 @@ class NumeratorSubstitution extends NFSubstitution {
      * The denominator of the fraction we're finding the numerator for.
      * (The base value of the rule that owns this substitution.)
      */
-    private final double denominator;
+    double denominator;
 
     /**
      * True if we format leading zeros (this is a hack for Hebrew spellout)
      */
-    private final boolean withZeros;
+    boolean withZeros;
 
     //-----------------------------------------------------------------------
     // construction
@@ -1445,8 +1468,9 @@ class NumeratorSubstitution extends NFSubstitution {
     NumeratorSubstitution(int pos,
                           double denominator,
                           NFRuleSet ruleSet,
+                          RuleBasedNumberFormat formatter,
                           String description) {
-        super(pos, ruleSet, fixdesc(description));
+        super(pos, ruleSet, formatter, fixdesc(description));
 
         // this substitution's behavior depends on the rule's base value
         // Rather than keeping a backpointer to the rule, we copy its
@@ -1474,7 +1498,7 @@ class NumeratorSubstitution extends NFSubstitution {
     public boolean equals(Object that) {
         if (super.equals(that)) {
             NumeratorSubstitution that2 = (NumeratorSubstitution)that;
-            return denominator == that2.denominator && withZeros == that2.withZeros;
+            return denominator == that2.denominator;
         } else {
             return false;
         }
@@ -1494,7 +1518,7 @@ class NumeratorSubstitution extends NFSubstitution {
      * rule text begins (this value is added to this substitution's
      * position to determine exactly where to insert the new text)
      */
-    public void doSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount) {
+    public void doSubstitution(double number, StringBuffer toInsertInto, int position) {
         // perform a transformation on the number being formatted that
         // is dependent on the type of substitution this is
         //String s = toInsertInto.toString();
@@ -1506,7 +1530,7 @@ class NumeratorSubstitution extends NFSubstitution {
             int len = toInsertInto.length();
             while ((nf *= 10) < denominator) {
                 toInsertInto.insert(position + pos, ' ');
-                ruleSet.format(0, toInsertInto, position + pos, recursionCount);
+                ruleSet.format(0, toInsertInto, position + pos);
             }
             position += toInsertInto.length() - len;
         }
@@ -1514,14 +1538,14 @@ class NumeratorSubstitution extends NFSubstitution {
         // if the result is an integer, from here on out we work in integer
         // space (saving time and memory and preserving accuracy)
         if (numberToFormat == Math.floor(numberToFormat) && ruleSet != null) {
-            ruleSet.format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
+            ruleSet.format((long)numberToFormat, toInsertInto, position + pos);
 
             // if the result isn't an integer, then call either our rule set's
             // format() method or our DecimalFormat's format() method to
             // format the result
         } else {
             if (ruleSet != null) {
-                ruleSet.format(numberToFormat, toInsertInto, position + pos, recursionCount);
+                ruleSet.format(numberToFormat, toInsertInto, position + pos);
             } else {
                 toInsertInto.insert(position + pos, numberFormat.format(numberToFormat));
             }
@@ -1647,3 +1671,138 @@ class NumeratorSubstitution extends NFSubstitution {
         return '<';
     }
 }
+
+//===================================================================
+// NullSubstitution
+//===================================================================
+
+/**
+ * A substitution which does nothing.  This class exists just to simplify
+ * the logic in some other routines so that they don't have to worry
+ * about how many substitutions a rule has.
+ */
+class NullSubstitution extends NFSubstitution {
+    //-----------------------------------------------------------------------
+    // construction
+    //-----------------------------------------------------------------------
+
+    /**
+     * Constructs a NullSubstitution.  This just delegates to the superclass
+     * constructor, but the only value we really care about is the position.
+     */
+    NullSubstitution(int pos,
+                     NFRuleSet ruleSet,
+                     RuleBasedNumberFormat formatter,
+                     String description) {
+        super(pos, ruleSet, formatter, description);
+    }
+
+    //-----------------------------------------------------------------------
+    // boilerplate
+    //-----------------------------------------------------------------------
+
+    /**
+     * Only checks for class equality
+     */
+    public boolean equals(Object that) {
+        return super.equals(that);
+    }
+    
+    /**
+     * NullSubstitutions don't show up in the textual representation
+     * of a RuleBasedNumberFormat
+     */
+    public String toString() {
+        return "";
+    }
+
+    //-----------------------------------------------------------------------
+    // formatting
+    //-----------------------------------------------------------------------
+
+    /**
+     * Does nothing.
+     */
+    public void doSubstitution(long number, StringBuffer toInsertInto, int position) {
+    }
+
+    /**
+     * Does nothing.
+     */
+    public void doSubstitution(double number, StringBuffer toInsertInto, int position) {
+    }
+
+    /**
+     * Never called.
+     */
+    ///CLOVER:OFF
+    public long transformNumber(long number) {
+        return 0;
+    }
+    ///CLOVER:ON
+
+    /**
+     * Never called.
+     */
+    ///CLOVER:OFF
+    public double transformNumber(double number) {
+        return 0;
+    }
+    ///CLOVER:ON
+
+    //-----------------------------------------------------------------------
+    // parsing
+    //-----------------------------------------------------------------------
+
+    /**
+     * Returns the partial parse result unchanged
+     */
+    public Number doParse(String text, ParsePosition parsePosition, double baseValue,
+                        double upperBound, boolean lenientParse) {
+        if (baseValue == (long)baseValue) {
+            return Long.valueOf((long)baseValue);
+        } else {
+            return new Double(baseValue);
+        }
+    }
+
+    /**
+     * Never called.
+     */
+    ///CLOVER:OFF
+    public double composeRuleValue(double newRuleValue, double oldRuleValue) {
+        return 0;
+    }
+    ///CLOVER:ON
+
+    /**
+     * Never called.
+     */
+    ///CLOVER:OFF
+    public double calcUpperBound(double oldUpperBound) {
+        return 0;
+    }
+    ///CLOVER:ON
+
+    //-----------------------------------------------------------------------
+    // simple accessors
+    //-----------------------------------------------------------------------
+
+    /**
+     * Returns true (this _is_ a NullSubstitution).
+     * @return true
+     */
+    public boolean isNullSubstitution() {
+        return true;
+    }
+
+    /**
+     * Never called.
+     */
+    ///CLOVER:OFF
+    char tokenChar() {
+        return ' ';
+    }
+    ///CLOVER:ON
+}
+

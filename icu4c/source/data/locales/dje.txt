@@ -1,9 +1,21 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/dje.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/dje.xml
+ */
 dje{
     AuxExemplarCharacters{"[v]"}
     ExemplarCharacters{"[a ã b c d e ẽ f g h i j k l m n ɲ ŋ o õ p q r s š t u w x y z ž]"}
     ExemplarCharactersIndex{"[A B C D E F G H I J K L M N Ɲ Ŋ O P Q R S T U W X Y Z]"}
+    LocaleScript{
+        "Latn",
+    }
     NumberElements{
         latn{
             patterns{
@@ -17,7 +29,7 @@ dje{
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.1.6.69"}
     calendar{
         generic{
             DateTimePatterns{
@@ -62,10 +74,6 @@ dje{
         }
         gregorian{
             AmPmMarkers{
-                "Subbaahi",
-                "Zaarikay b",
-            }
-            AmPmMarkersAbbr{
                 "Subbaahi",
                 "Zaarikay b",
             }

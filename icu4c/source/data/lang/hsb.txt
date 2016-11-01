@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/hsb.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/hsb.xml
+ */
 hsb{
     Keys{
         calendar{"protyka"}
@@ -52,7 +61,6 @@ hsb{
         dav{"taita"}
         de{"němčina"}
         de_AT{"awstriska němčina"}
-        de_CH{"šwicarska wysokoněmčina"}
         dje{"zarma"}
         dsb{"delnjoserbšćina"}
         dua{"duala"}
@@ -231,7 +239,7 @@ hsb{
         su{"sundanezišćina"}
         sv{"šwedšćina"}
         sw{"suahelšćina"}
-        sw_CD{"kongoska suahelšćina"}
+        swc{"kongoska suahelšćina"}
         ta{"tamilšćina"}
         te{"telugu"}
         teo{"teso"}
@@ -269,10 +277,10 @@ hsb{
         zh{"chinšćina"}
         zh_Hans{"chinšćina (zjednorjena)"}
         zh_Hant{"chinšćina (tradicionalna)"}
-        zu{"zulušćina"}
+        zu{"zulušćina\u0022"}
         zxx{"žadyn rěčny wobsah"}
     }
-    Languages%short{
+    LanguagesShort{
         en_GB{"jendźelšćina (UK)"}
         en_US{"jendźelšćina (USA)"}
     }
@@ -378,7 +386,7 @@ hsb{
             tibt{"tibetske cyfry"}
         }
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.8.9"}
     codePatterns{
         language{"rěč: {0}"}
         script{"pismo: {0}"}

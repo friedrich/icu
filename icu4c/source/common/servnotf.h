@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /**
  *******************************************************************************
- * Copyright (C) 2001-2014, International Business Machines Corporation and    *
+ * Copyright (C) 2001-2011, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -49,7 +47,7 @@ public:
     }
 
     virtual UnicodeString& debugClass(UnicodeString& result) const {
-      return result.append((UnicodeString)"Key");
+      return result.append("Key");
     }
 #endif
 };

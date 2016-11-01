@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/zh_Hant.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/zh_Hant.xml
+ */
 zh_Hant{
     %%Parent{"root"}
     Currencies{
@@ -219,13 +228,9 @@ zh_Hant{
             "BYB",
             "白俄羅斯新盧布 (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "白俄羅斯盧布",
-        }
         BYR{
             "BYR",
-            "白俄羅斯盧布 (2000–2016)",
+            "白俄羅斯盧布",
         }
         BZD{
             "BZD",
@@ -693,7 +698,7 @@ zh_Hant{
         }
         MUR{
             "MUR",
-            "模里西斯盧比",
+            "模里西斯盧布",
         }
         MVP{
             "MVP",
@@ -769,7 +774,7 @@ zh_Hant{
         }
         OMR{
             "OMR",
-            "阿曼里亞爾",
+            "阿曼里奧",
         }
         PAB{
             "PAB",
@@ -817,7 +822,7 @@ zh_Hant{
         }
         QAR{
             "QAR",
-            "卡達里亞爾",
+            "卡達爾里亞爾",
         }
         RHD{
             "RHD",
@@ -849,7 +854,7 @@ zh_Hant{
         }
         SAR{
             "SAR",
-            "沙烏地里亞爾",
+            "沙烏地里雅",
         }
         SBD{
             "SBD",
@@ -932,7 +937,7 @@ zh_Hant{
             "史瓦濟蘭里朗吉尼",
         }
         THB{
-            "THB",
+            "฿",
             "泰銖",
         }
         TJR{
@@ -976,8 +981,8 @@ zh_Hant{
             "千里達及托巴哥元",
         }
         TWD{
-            "$",
-            "新台幣",
+            "NT$",
+            "新臺幣",
         }
         TZS{
             "TZS",
@@ -1000,7 +1005,7 @@ zh_Hant{
             "烏干達先令",
         }
         USD{
-            "US$",
+            "$",
             "美元",
         }
         USN{
@@ -1141,7 +1146,7 @@ zh_Hant{
         }
         YER{
             "YER",
-            "葉門里亞爾",
+            "葉門里雅",
         }
         YUD{
             "YUD",
@@ -1197,105 +1202,59 @@ zh_Hant{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
         ESP{"₧"}
         EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RON{"L"}
-        RUB{"₽"}
         RUR{"р."}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
-        TWD{"$"}
+        TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         ADP{
@@ -1460,11 +1419,8 @@ zh_Hant{
         BYB{
             other{"白俄羅斯新盧布 (1994–1999)"}
         }
-        BYN{
-            other{"白俄羅斯盧布"}
-        }
         BYR{
-            other{"白俄羅斯盧布 (2000–2016)"}
+            other{"白俄羅斯盧布"}
         }
         BZD{
             other{"貝里斯元"}
@@ -1812,7 +1768,7 @@ zh_Hant{
             other{"馬爾他鎊"}
         }
         MUR{
-            other{"模里西斯盧比"}
+            other{"模里西斯盧布"}
         }
         MVP{
             other{"馬爾地夫盧比"}
@@ -1869,7 +1825,7 @@ zh_Hant{
             other{"紐西蘭幣"}
         }
         OMR{
-            other{"阿曼里亞爾"}
+            other{"阿曼里奧"}
         }
         PAB{
             other{"巴拿馬巴波亞"}
@@ -1905,7 +1861,7 @@ zh_Hant{
             other{"巴拉圭瓜拉尼"}
         }
         QAR{
-            other{"卡達里亞爾"}
+            other{"卡達爾里亞爾"}
         }
         RHD{
             other{"羅德西亞元"}
@@ -1929,7 +1885,7 @@ zh_Hant{
             other{"盧安達法郎"}
         }
         SAR{
-            other{"沙烏地里亞爾"}
+            other{"沙烏地里雅"}
         }
         SBD{
             other{"索羅門群島元"}
@@ -2025,7 +1981,7 @@ zh_Hant{
             other{"千里達及托巴哥元"}
         }
         TWD{
-            other{"新台幣"}
+            other{"新臺幣"}
         }
         TZS{
             other{"坦尚尼亞先令"}
@@ -2142,13 +2098,13 @@ zh_Hant{
             other{"亞洲開發銀行計價單位"}
         }
         XXX{
-            other{"（未知貨幣）"}
+            other{"未知貨幣"}
         }
         YDD{
             other{"葉門第納爾"}
         }
         YER{
-            other{"葉門里亞爾"}
+            other{"葉門里雅"}
         }
         YUD{
             other{"南斯拉夫第納爾硬幣"}
@@ -2193,5 +2149,5 @@ zh_Hant{
     CurrencyUnitPatterns{
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.8.95"}
 }

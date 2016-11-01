@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ******************************************************************************
- * Copyright (C) 2007-2015, International Business Machines Corporation and
+ * Copyright (C) 2007-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  ******************************************************************************
  */
@@ -23,7 +21,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.ibm.icu.impl.ICUData;
-import com.ibm.icu.util.ICUUncheckedIOException;
 
 /**
  * A PeriodFormatterDataService that serves PeriodFormatterData objects based on
@@ -73,16 +70,10 @@ public class ResourceBasedPeriodFormatterDataService extends
         } catch (IOException e) {
             throw new IllegalStateException("IO Error reading " + PATH
                     + "index.txt: " + e.toString());
-        } finally {
-            try {
-                is.close();
-            } catch (IOException ignored) {
-            }
         }
         availableLocales = Collections.unmodifiableList(localeNames);
     }
 
-    @Override
     public PeriodFormatterData get(String localeName) {
         // remove tag info including calendar, we don't use the calendar
         int x = localeName.indexOf('@');
@@ -112,10 +103,10 @@ public class ResourceBasedPeriodFormatterDataService extends
                 if (ln != null) {
                     String name = PATH + "pfd_" + ln + ".xml";
                     try {
-                        InputStreamReader reader = new InputStreamReader(
-                                ICUData.getRequiredStream(getClass(), name), "UTF-8");
-                        DataRecord dr = DataRecord.read(ln, new XMLRecordReader(reader));
-                        reader.close();
+                        InputStream is = ICUData.getRequiredStream(getClass(), name);
+                        DataRecord dr = DataRecord.read(ln,
+                                new XMLRecordReader(new InputStreamReader(
+                                        is, "UTF-8")));
                         if (dr != null) {
                             // debug
                             // if (false && ln.equals("ar_EG")) {
@@ -130,10 +121,8 @@ public class ResourceBasedPeriodFormatterDataService extends
                         }
                     } catch (UnsupportedEncodingException e) {
                         throw new MissingResourceException(
-                                "Unhandled encoding for resource " + name, name, "");
-                    } catch (IOException e) {
-                        throw new ICUUncheckedIOException(
-                                "Failed to close() resource " + name, e);
+                                "Unhandled Encoding for resource " + name,
+                                name, "");
                     }
                 } else {
                     throw new MissingResourceException(
@@ -153,7 +142,6 @@ public class ResourceBasedPeriodFormatterDataService extends
         }
     }
 
-    @Override
     public Collection<String> getAvailableLocales() {
         return availableLocales;
     }

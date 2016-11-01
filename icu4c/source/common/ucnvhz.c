@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*  
 **********************************************************************
-*   Copyright (C) 2000-2015, International Business Machines
+*   Copyright (C) 2000-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 *   file name:  ucnvhz.c
@@ -18,7 +16,7 @@
 
 #include "unicode/utypes.h"
 
-#if !UCONFIG_NO_CONVERSION && !UCONFIG_NO_LEGACY_CONVERSION && !UCONFIG_ONLY_HTML_CONVERSION
+#if !UCONFIG_NO_CONVERSION && !UCONFIG_NO_LEGACY_CONVERSION
 
 #include "cmemory.h"
 #include "unicode/ucnv.h"
@@ -624,8 +622,17 @@ static const UConverterStaticData _HZStaticData={
         { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }, /* reserved */
 
 };
+            
+            
+const UConverterSharedData _HZData={
+    sizeof(UConverterSharedData),
+        ~((uint32_t) 0),
+        NULL, 
+        NULL, 
+        &_HZStaticData, 
+        FALSE, 
+        &_HZImpl, 
+        0
+};
 
-const UConverterSharedData _HZData=
-        UCNV_IMMUTABLE_SHARED_DATA_INITIALIZER(&_HZStaticData, &_HZImpl);
-
-#endif /* #if !UCONFIG_NO_CONVERSION && !UCONFIG_NO_LEGACY_CONVERSION && !UCONFIG_ONLY_HTML_CONVERSION */
+#endif /* #if !UCONFIG_NO_LEGACY_CONVERSION */

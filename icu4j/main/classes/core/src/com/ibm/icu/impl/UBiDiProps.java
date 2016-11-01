@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  *
- *   Copyright (C) 2004-2015, International Business Machines
+ *   Copyright (C) 2004-2014, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *
  *******************************************************************************
@@ -69,23 +67,29 @@ public final class UBiDiProps {
         // read mirrors[]
         count=indexes[IX_MIRROR_LENGTH];
         if(count>0) {
-            mirrors=ICUBinary.getInts(bytes, count, 0);
+            mirrors=new int[count];
+            for(i=0; i<count; ++i) {
+                mirrors[i]=bytes.getInt();
+            }
         }
 
         // read jgArray[]
         count=indexes[IX_JG_LIMIT]-indexes[IX_JG_START];
         jgArray=new byte[count];
-        bytes.get(jgArray);
+        for(i=0; i<count; ++i) {
+            jgArray[i]=bytes.get();
+        }
 
         // read jgArray2[]
         count=indexes[IX_JG_LIMIT2]-indexes[IX_JG_START2];
         jgArray2=new byte[count];
-        bytes.get(jgArray2);
+        for(i=0; i<count; ++i) {
+            jgArray2[i]=bytes.get();
+        }
     }
 
     // implement ICUBinary.Authenticate
     private final static class IsAcceptable implements ICUBinary.Authenticate {
-        @Override
         public boolean isDataVersionAcceptable(byte version[]) {
             return version[0]==2;
         }
@@ -227,12 +231,12 @@ public final class UBiDiProps {
         start=indexes[IX_JG_START];
         limit=indexes[IX_JG_LIMIT];
         if(start<=c && c<limit) {
-            return jgArray[c-start]&0xff;
+            return (int)jgArray[c-start]&0xff;
         }
         start=indexes[IX_JG_START2];
         limit=indexes[IX_JG_LIMIT2];
         if(start<=c && c<limit) {
-            return jgArray2[c-start]&0xff;
+            return (int)jgArray2[c-start]&0xff;
         }
         return UCharacter.JoiningGroup.NO_JOINING_GROUP;
     }

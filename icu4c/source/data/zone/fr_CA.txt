@@ -1,25 +1,22 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fr_CA.xml
+// *
+// ***************************************************************************
 fr_CA{
-    Version{"2.1.27.99"}
+    Version{"2.1.8.19"}
     zoneStrings{
         "Africa:Ndjamena"{
             ec{"Ndjamena"}
-        }
-        "Africa:Tripoli"{
-            ec{"Tripoli [Libye]"}
         }
         "America:Barbados"{
             ec{"Barbade (La)"}
         }
         "America:Cayman"{
             ec{"Îles Caïmans"}
-        }
-        "America:North_Dakota:Beulah"{
-            ec{"Beulah [Dakota du Nord]"}
-        }
-        "America:North_Dakota:Center"{
-            ec{"Center [Dakota du Nord]"}
         }
         "America:North_Dakota:New_Salem"{
             ec{"New Salem, Dakota du Nord"}
@@ -29,6 +26,15 @@ fr_CA{
         }
         "America:St_Thomas"{
             ec{"Saint Thomas"}
+        }
+        "Asia:Baghdad"{
+            ec{"Baghdad"}
+        }
+        "Asia:Dhaka"{
+            ec{"Dacca"}
+        }
+        "Asia:Thimphu"{
+            ec{"Thimphou"}
         }
         "Atlantic:Faeroe"{
             ec{"Îles Féroé"}
@@ -41,6 +47,27 @@ fr_CA{
         }
         "Europe:Vatican"{
             ec{"Vatican"}
+        }
+        "Indian:Chagos"{
+            ec{"Archipel des Chagos"}
+        }
+        "Indian:Christmas"{
+            ec{"Île Christmas"}
+        }
+        "Indian:Cocos"{
+            ec{"Îles Cocos"}
+        }
+        "Indian:Comoro"{
+            ec{"Union des Comores"}
+        }
+        "Indian:Kerguelen"{
+            ec{"Îles Kerguelen"}
+        }
+        "Pacific:Pitcairn"{
+            ec{"Île Pitcairn"}
+        }
+        "Pacific:Wallis"{
+            ec{"Uvéa"}
         }
         "meta:Acre"{
             ld{"heure avancée de l’Acre"}
@@ -395,9 +422,9 @@ fr_CA{
             ls{"heure normale de Novossibirsk"}
         }
         "meta:Omsk"{
-            ld{"heure avancée d’Omsk"}
-            lg{"heure d’Omsk"}
-            ls{"heure normale d’Omsk"}
+            ld{"heure avancée de Omsk"}
+            lg{"heure de Omsk"}
+            ls{"heure normale de Omsk"}
         }
         "meta:Pakistan"{
             ld{"heure avancée du Pakistan"}
@@ -423,9 +450,6 @@ fr_CA{
             ld{"heure avancée de Saint-Pierre-et-Miquelon"}
             lg{"heure de Saint-Pierre-et-Miquelon"}
             ls{"heure normale de Saint-Pierre-et-Miquelon"}
-        }
-        "meta:Reunion"{
-            ls{"heure de la Réunion"}
         }
         "meta:Sakhalin"{
             ld{"heure avancée de Sakhaline"}
@@ -487,7 +511,8 @@ fr_CA{
             lg{"heure d’Ekaterinbourg"}
             ls{"heure normale d’Ekaterinbourg"}
         }
+        regionFormat{"Heure de {0}"}
         regionFormatDaylight{"{0} (heure avancée)"}
-        regionFormatStandard{"{0} (heure normale)"}
+        regionFormatStandard{"{0} (heure légale)"}
     }
 }

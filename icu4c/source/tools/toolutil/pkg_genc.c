@@ -1,7 +1,5 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /******************************************************************************
- *   Copyright (C) 2009-2016, International Business Machines
+ *   Copyright (C) 2009-2014, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *******************************************************************************
  */
@@ -121,22 +119,16 @@ static const struct AssemblyType {
         ".globl %s\n"
         "\t.section .note.GNU-stack,\"\",%%progbits\n"
         "\t.section .rodata\n"
-        "\t.balign 16\n"
-        "#ifdef U_HIDE_DATA_SYMBOL\n"
-        "\t.hidden %s\n"
-        "#endif\n"
+        "\t.balign 16\n" 
         "\t.type %s,%%object\n"
         "%s:\n\n",
 
-        ".long ",".size %s, .-%s\n",HEX_0X
+        ".long ","",HEX_0X
     },
     {"gcc-darwin",
         /*"\t.section __TEXT,__text,regular,pure_instructions\n"
         "\t.section __TEXT,__picsymbolstub1,symbol_stubs,pure_instructions,32\n"*/
         ".globl _%s\n"
-        "#ifdef U_HIDE_DATA_SYMBOL\n"
-        "\t.private_extern _%s\n"
-        "#endif\n"
         "\t.data\n"
         "\t.const\n"
         "\t.balign 16\n"
@@ -234,7 +226,7 @@ U_CAPI UBool U_EXPORT2
 checkAssemblyHeaderName(const char* optAssembly) {
     int32_t idx;
     assemblyHeaderIndex = -1;
-    for (idx = 0; idx < UPRV_LENGTHOF(assemblyHeader); idx++) {
+    for (idx = 0; idx < (int32_t)(sizeof(assemblyHeader)/sizeof(assemblyHeader[0])); idx++) {
         if (uprv_strcmp(optAssembly, assemblyHeader[idx].name) == 0) {
             assemblyHeaderIndex = idx;
             hexType = assemblyHeader[idx].hexType; /* set the hex type */
@@ -250,7 +242,7 @@ U_CAPI void U_EXPORT2
 printAssemblyHeadersToStdErr(void) {
     int32_t idx;
     fprintf(stderr, "%s", assemblyHeader[0].name);
-    for (idx = 1; idx < UPRV_LENGTHOF(assemblyHeader); idx++) {
+    for (idx = 1; idx < (int32_t)(sizeof(assemblyHeader)/sizeof(assemblyHeader[0])); idx++) {
         fprintf(stderr, ", %s", assemblyHeader[idx].name);
     }
     fprintf(stderr,
@@ -272,7 +264,7 @@ writeAssemblyCode(const char *filename, const char *destdir, const char *optEntr
         exit(U_FILE_ACCESS_ERROR);
     }
 
-    getOutFilename(filename, destdir, bufferStr, entry, ".S", optFilename);
+    getOutFilename(filename, destdir, bufferStr, entry, ".s", optFilename);
     out=T_FileStream_open(bufferStr, "w");
     if(out==NULL) {
         fprintf(stderr, "genccode: unable to open output file %s\n", bufferStr);

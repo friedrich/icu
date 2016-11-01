@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  *******************************************************************************
  *
- *   Copyright (C) 1999-2015, International Business Machines
+ *   Copyright (C) 1999-2007, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *
  *******************************************************************************
@@ -36,7 +34,7 @@ public:
 
     virtual ~SimpleFontInstance();
 
-    virtual const void *getFontTable(LETag tableTag, size_t &length) const;
+    virtual const void *getFontTable(LETag tableTag) const;
 
     virtual le_int32 getUnitsPerEM() const;
 

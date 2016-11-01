@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2001-2016, International Business Machines
+*   Copyright (C) 2001-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 */
@@ -15,7 +13,7 @@ package com.ibm.icu.text;
 /**
  * A BidiRun represents a sequence of characters at the same embedding level.
  * The Bidi algorithm decomposes a piece of text into sequences of characters
- * at the same embedding level, each such sequence is called a "run".
+ * at the same embedding level, each such sequence is called a <quote>run</quote>.
  *
  * <p>A BidiRun represents such a run by storing its essential properties,
  * but does not duplicate the characters which form the run.
@@ -148,7 +146,6 @@ public class BidiRun {
      * String to display run
      * @stable ICU 3.8
      */
-    @Override
     public String toString()
     {
         return "BidiRun " + start + " - " + limit + " @ " + level;

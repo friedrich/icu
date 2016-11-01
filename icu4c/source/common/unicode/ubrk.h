@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
-* Copyright (C) 1996-2015, International Business Machines Corporation and others.
+* Copyright (C) 1996-2014, International Business Machines Corporation and others.
 * All Rights Reserved.
 ******************************************************************************
 */
@@ -47,19 +45,9 @@
  * when line-wrapping. The mechanism correctly handles punctuation and
  * hyphenated words.
  * <p>
- * Note: The locale keyword "lb" can be used to modify line break
- * behavior according to the CSS level 3 line-break options, see
- * <http://dev.w3.org/csswg/css-text/#line-breaking>. For example:
- * "ja@lb=strict", "zh@lb=loose".
- * <p>
  * Sentence boundary analysis allows selection with correct
  * interpretation of periods within numbers and abbreviations, and
  * trailing punctuation marks such as quotation marks and parentheses.
- * <p>
- * Note: The locale keyword "ss" can be used to enable use of
- * segmentation suppression data (preventing breaks in English after
- * abbreviations such as "Mr." or "Est.", for example), as follows:
- * "en@ss=standard".
  * <p>
  * Word boundary analysis is used by search and replace functions, as
  * well as within text editing applications that allow the user to
@@ -72,7 +60,7 @@
  * "Extended Grapheme Clusters", which are groupings of codepoints
  * that should be treated as character-like units for many text operations.
  * Please see Unicode Standard Annex #29, Unicode Text Segmentation,
- * http://www.unicode.org/reports/tr29/ for additional information
+ * http://www.unicode.org/reports/tr29/ for additional information 
  * on grapheme clusters and guidelines on their use.
  * <p>
  * Title boundary analysis locates all positions,
@@ -116,12 +104,8 @@ typedef enum UBreakIteratorType {
    * @deprecated ICU 2.8 Use the word break iterator for titlecasing for Unicode 4 and later.
    */
   UBRK_TITLE = 4,
-    /**
-     * One more than the highest normal UBreakIteratorType value.
-     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-     */
-    UBRK_COUNT = 5
-#endif  // U_HIDE_DEPRECATED_API
+#endif /* U_HIDE_DEPRECATED_API */
+  UBRK_COUNT = 5
 } UBreakIteratorType;
 
 /** Value indicating all text boundaries have been returned.
@@ -136,10 +120,7 @@ typedef enum UBreakIteratorType {
  *  word, to allow for further subdivisions of a category in future releases.
  *  Applications should check for tag values falling within the range, rather
  *  than for single individual values.
- *
- * The numeric values of all of these constants are stable (will not change).
- *
- * @stable ICU 2.2
+ *  @stable ICU 2.2
 */
 typedef enum UWordBreak {
     /** Tag value for "words" that do not fit into any of other categories.
@@ -172,10 +153,7 @@ typedef enum UWordBreak {
  *  word, to allow for further subdivisions of a category in future releases.
  *  Applications should check for tag values falling within the range, rather
  *  than for single individual values.
- *
- * The numeric values of all of these constants are stable (will not change).
- *
- * @stable ICU 2.8
+ *  @stable ICU 2.8
 */
 typedef enum ULineBreakTag {
     /** Tag value for soft line breaks, positions at which a line break
@@ -197,10 +175,7 @@ typedef enum ULineBreakTag {
  *  sentence, to allow for further subdivisions of a category in future releases.
  *  Applications should check for tag values falling within the range, rather
  *  than for single individual values.
- *
- * The numeric values of all of these constants are stable (will not change).
- *
- * @stable ICU 2.8
+ *  @stable ICU 2.8
 */
 typedef enum USentenceBreakTag {
     /** Tag value for for sentences  ending with a sentence terminator
@@ -227,9 +202,7 @@ typedef enum USentenceBreakTag {
  * and sentence breaks in text.
  * @param type The type of UBreakIterator to open: one of UBRK_CHARACTER, UBRK_WORD,
  * UBRK_LINE, UBRK_SENTENCE
- * @param locale The locale specifying the text-breaking conventions. Note that
- * locale keys such as "lb" and "ss" may be used to modify text break behavior,
- * see general discussion of BreakIterator C API.
+ * @param locale The locale specifying the text-breaking conventions.
  * @param text The text to be iterated over.
  * @param textLength The number of characters in text, or -1 if null-terminated.
  * @param status A UErrorCode to receive any errors.
@@ -331,11 +304,7 @@ U_NAMESPACE_END
 #endif
 
 /**
- * Sets an existing iterator to point to a new piece of text.
- * The break iterator retains a pointer to the supplied text.
- * The caller must not modify or delete the text while the BreakIterator
- * retains the reference.
- *
+ * Sets an existing iterator to point to a new piece of text
  * @param bi The iterator to use
  * @param text The text to be set
  * @param textLength The length of the text

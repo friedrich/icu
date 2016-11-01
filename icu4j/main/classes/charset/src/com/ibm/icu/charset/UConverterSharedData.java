@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2006-2008, International Business Machines Corporation and    *
@@ -13,6 +11,13 @@ package com.ibm.icu.charset;
  * UConverter.
  */
 final class UConverterSharedData {
+    // uint32_t structSize; /* Size of this structure */
+    // int structSize; /* Size of this structure */
+    /**
+     * used to count number of clients, 0xffffffff for static SharedData
+     */
+    int referenceCounter;
+
     // agljport:todo const void *dataMemory; /* from udata_openChoice() - for cleanup */
     // agljport:todo void *table; /* Unused. This used to be a UConverterTable - Pointer to conversion data - see mbcs below */
 
@@ -21,11 +26,30 @@ final class UConverterSharedData {
      * pointer to the static (non changing)
      * data.
      */
-    final UConverterStaticData staticData;
+    UConverterStaticData staticData;
+
+    // UBool sharedDataCached; /* TRUE: shared data is in cache, don't destroy
+    // on close() if 0 ref. FALSE: shared data isn't in the cache, do attempt to
+    // clean it up if the ref is 0 */
+    
+    /**
+     * TRUE: shared data is in cache, don't destroy
+     * on close() if 0 ref. FALSE: shared data isn't
+     * in the cache, do attempt to clean it up if
+     * the ref is 0
+     */
+    boolean sharedDataCached; 
+
+    /*
+     * UBool staticDataOwned; TRUE if static data owned by shared data & should
+     * be freed with it, NEVER true for udata() loaded statics. This ignored
+     * variable was removed to make space for sharedDataCached.
+     */
 
     // const UConverterImpl *impl; /* vtable-style struct of mostly function pointers */
     // UConverterImpl impl; /* vtable-style struct of mostly function pointers */
     /** initial values of some members of the mutable part of object */
+    long toUnicodeStatus;
 
     /**
      * Shared data structures currently come in two flavors:
@@ -41,10 +65,18 @@ final class UConverterSharedData {
      */
     CharsetMBCS.UConverterMBCSTable mbcs;
 
-    UConverterSharedData(UConverterStaticData staticData_)
-    {
+    UConverterSharedData() {
         mbcs = new CharsetMBCS.UConverterMBCSTable();
+    }
+
+    UConverterSharedData(int referenceCounter_, UConverterStaticData staticData_, boolean sharedDataCached_, long toUnicodeStatus_)
+    {
+        this();
+        referenceCounter = referenceCounter_;
         staticData = staticData_;
+        sharedDataCached = sharedDataCached_;
+        // impl = impl_;
+        toUnicodeStatus = toUnicodeStatus_;
     }
 
     /**
@@ -305,6 +337,7 @@ final class UConverterSharedData {
         return sharedData;
     }
 */
+    UConverterDataReader dataReader = null;
 
     /*
      * returns a converter type from a string

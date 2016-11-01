@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2009-2014, International Business Machines Corporation and
@@ -18,13 +16,13 @@ import com.ibm.icu.util.UResourceBundle;
 public class ICUResourceTableAccess {
     /**
      * Utility to fetch locale display data from resource bundle tables.  Convenience
-     * wrapper for {@link #getTableString(ICUResourceBundle, String, String, String, String)}.
+     * wrapper for {@link #getTableString(ICUResourceBundle, String, String, String)}.
      */
     public static String getTableString(String path, ULocale locale, String tableName,
-            String itemName, String defaultValue) {
+            String itemName) {
         ICUResourceBundle bundle = (ICUResourceBundle) UResourceBundle.
             getBundleInstance(path, locale.getBaseName());
-        return getTableString(bundle, tableName, null, itemName, defaultValue);
+        return getTableString(bundle, tableName, null, itemName);
     }
 
     /**
@@ -32,58 +30,65 @@ public class ICUResourceTableAccess {
      * through the "Fallback" resource if available.
      */
     public static String getTableString(ICUResourceBundle bundle, String tableName,
-            String subtableName, String item, String defaultValue) {
+            String subtableName, String item) {
         String result = null;
         try {
             for (;;) {
-                ICUResourceBundle table = bundle.findWithFallback(tableName);
-                if (table == null) {
-                    return defaultValue;
-                }
-                ICUResourceBundle stable = table;
-                if (subtableName != null) {
-                    stable = table.findWithFallback(subtableName);
-                }
-                if (stable != null) {
-                    result = stable.findStringWithFallback(item);
-                    if (result != null) {
-                        break; // possible real exception
+                // special case currency
+                if ("currency".equals(subtableName)) {
+                    ICUResourceBundle table = bundle.getWithFallback("Currencies");
+                    table = table.getWithFallback(item);
+                    return table.getString(1);
+                } else {
+                    ICUResourceBundle table = bundle.findWithFallback(tableName);
+                    if (table == null) {
+                        return item;
                     }
-                }
-
-                // if we get here, stable was null, or there was no string for the item
-                if (subtableName == null) {
-                    // may be a deprecated code
-                    String currentName = null;
-                    if (tableName.equals("Countries")) {
-                        currentName = LocaleIDs.getCurrentCountryID(item);
-                    } else if (tableName.equals("Languages")) {
-                        currentName = LocaleIDs.getCurrentLanguageID(item);
+                    ICUResourceBundle stable = table;
+                    if (subtableName != null) {
+                        stable = table.findWithFallback(subtableName);
                     }
-                    if (currentName != null) {
-                        result = table.findStringWithFallback(currentName);
+                    if (stable != null) {
+                        result = stable.findStringWithFallback(item);
                         if (result != null) {
                             break; // possible real exception
                         }
                     }
-                }
 
-                // still can't figure it out? try the fallback mechanism
-                String fallbackLocale = table.findStringWithFallback("Fallback"); // again, possible exception
-                if (fallbackLocale == null) {
-                    return defaultValue;
-                }
+                    // if we get here, stable was null, or there was no string for the item
+                    if (subtableName == null) {
+                        // may be a deprecated code
+                        String currentName = null;
+                        if (tableName.equals("Countries")) {
+                            currentName = LocaleIDs.getCurrentCountryID(item);
+                        } else if (tableName.equals("Languages")) {
+                            currentName = LocaleIDs.getCurrentLanguageID(item);
+                        }
+                        if (currentName != null) {
+                            result = table.findStringWithFallback(currentName);
+                            if (result != null) {
+                                break; // possible real exception
+                            }
+                        }
+                    }
 
-                if (fallbackLocale.length() == 0) {
-                    fallbackLocale = "root";
-                }
+                    // still can't figure it out? try the fallback mechanism
+                    String fallbackLocale = table.findStringWithFallback("Fallback"); // again, possible exception
+                    if (fallbackLocale == null) {
+                        return item;
+                    }
 
-                if (fallbackLocale.equals(table.getULocale().getName())) {
-                    return defaultValue;
-                }
+                    if (fallbackLocale.length() == 0) {
+                        fallbackLocale = "root";
+                    }
 
-                bundle = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-                        bundle.getBaseName(), fallbackLocale);
+                    if (fallbackLocale.equals(table.getULocale().getName())) {
+                        return item;
+                    }
+
+                    bundle = (ICUResourceBundle) UResourceBundle.getBundleInstance(
+                            bundle.getBaseName(), fallbackLocale);
+                }
             }
         } catch (Exception e) {
             // If something is seriously wrong, we might call getString on a resource that is
@@ -91,6 +96,6 @@ public class ICUResourceTableAccess {
         }
 
         // If the result is empty return item instead
-        return ((result != null && result.length() > 0) ? result : defaultValue);
+        return ((result != null && result.length() > 0) ? result : item);
     }
 }

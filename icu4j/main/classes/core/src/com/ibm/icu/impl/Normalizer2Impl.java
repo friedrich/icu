@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- *   Copyright (C) 2009-2015, International Business Machines
+ *   Copyright (C) 2009-2014, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *******************************************************************************
  */
@@ -206,7 +204,6 @@ public final class Normalizer2Impl {
         // They assume that the cc or trailCC of their input is 0.
         // Most of them implement Appendable interface methods.
         // @Override when we switch to Java 6
-        @Override
         public ReorderingBuffer append(char c) {
             str.append(c);
             lastCC=0;
@@ -219,7 +216,6 @@ public final class Normalizer2Impl {
             reorderStart=str.length();
         }
         // @Override when we switch to Java 6
-        @Override
         public ReorderingBuffer append(CharSequence s) {
             if(s.length()!=0) {
                 str.append(s);
@@ -229,7 +225,6 @@ public final class Normalizer2Impl {
             return this;
         }
         // @Override when we switch to Java 6
-        @Override
         public ReorderingBuffer append(CharSequence s, int start, int limit) {
             if(start!=limit) {
                 str.append(s, start, limit);
@@ -416,7 +411,6 @@ public final class Normalizer2Impl {
 
     private static final class IsAcceptable implements ICUBinary.Authenticate {
         // @Override when we switch to Java 6
-        @Override
         public boolean isDataVersionAcceptable(byte version[]) {
             return version[0]==2;
         }
@@ -460,15 +454,22 @@ public final class Normalizer2Impl {
             offset=nextOffset;
             nextOffset=inIndexes[IX_SMALL_FCD_OFFSET];
             int numChars=(nextOffset-offset)/2;
+            char[] chars;
             if(numChars!=0) {
-                maybeYesCompositions=ICUBinary.getString(bytes, numChars, 0);
+                chars=new char[numChars];
+                for(int i=0; i<numChars; ++i) {
+                    chars[i]=bytes.getChar();
+                }
+                maybeYesCompositions=new String(chars);
                 extraData=maybeYesCompositions.substring(MIN_NORMAL_MAYBE_YES-minMaybeYes);
             }
 
             // smallFCD: new in formatVersion 2
             offset=nextOffset;
             smallFCD=new byte[0x100];
-            bytes.get(smallFCD);
+            for(int i=0; i<0x100; ++i) {
+                smallFCD[i]=bytes.get();
+            }
 
             // Build tccc180[].
             // gennorm2 enforces lccc=0 for c<MIN_CCC_LCCC_CP=U+0300.
@@ -564,7 +565,6 @@ public final class Normalizer2Impl {
         }
     }
     private static final Trie2.ValueMapper segmentStarterMapper=new Trie2.ValueMapper() {
-        @Override
         public int map(int in) {
             return in&CANON_NOT_SEGMENT_STARTER;
         }
@@ -1834,7 +1834,7 @@ public final class Normalizer2Impl {
             }
             if(key1==(firstUnit&COMP_1_TRAIL_MASK)) {
                 if((firstUnit&COMP_1_TRIPLE)!=0) {
-                    return (compositions.charAt(list+1)<<16)|compositions.charAt(list+2);
+                    return ((int)compositions.charAt(list+1)<<16)|compositions.charAt(list+2);
                 } else {
                     return compositions.charAt(list+1);
                 }
@@ -1879,7 +1879,7 @@ public final class Normalizer2Impl {
                 compositeAndFwd=maybeYesCompositions.charAt(list+1);
                 list+=2;
             } else {
-                compositeAndFwd=((maybeYesCompositions.charAt(list+1)&~COMP_2_TRAIL_MASK)<<16)|
+                compositeAndFwd=(((int)maybeYesCompositions.charAt(list+1)&~COMP_2_TRAIL_MASK)<<16)|
                                 maybeYesCompositions.charAt(list+2);
                 list+=3;
             }

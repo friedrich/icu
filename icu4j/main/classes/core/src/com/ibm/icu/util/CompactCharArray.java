@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2014, International Business Machines Corporation and    *
@@ -97,7 +95,7 @@ public final class CompactCharArray implements Cloneable {
             throw new IllegalArgumentException("Index out of bounds.");
         for (i = 0; i < INDEXCOUNT; ++i) {
             char index = indexArray[i];
-            if (index >= newValues.length+BLOCKCOUNT)
+            if ((index < 0) || (index >= newValues.length+BLOCKCOUNT))
                 throw new IllegalArgumentException("Index out of bounds.");
         }
         indices = indexArray;
@@ -152,7 +150,7 @@ public final class CompactCharArray implements Cloneable {
     {
         if (isCompact)
             expand();
-         values[index] = value;
+         values[(int)index] = value;
         touchBlock(index >> BLOCKSHIFT, value);
     }
 
@@ -331,7 +329,6 @@ public final class CompactCharArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public Object clone()
     {
@@ -354,7 +351,6 @@ public final class CompactCharArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public boolean equals(Object obj) {
         if (obj == null) return false;
@@ -376,7 +372,6 @@ public final class CompactCharArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public int hashCode() {
         int result = 0;

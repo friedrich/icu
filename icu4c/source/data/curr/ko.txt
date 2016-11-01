@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ko.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/ko.xml
+ */
 ko{
     Currencies{
         ADP{
@@ -214,13 +223,9 @@ ko{
             "BYB",
             "벨라루스 신권 루블 (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "벨라루스 루블",
-        }
         BYR{
             "BYR",
-            "벨라루스 루블 (2000–2016)",
+            "벨라루스 루블",
         }
         BZD{
             "BZD",
@@ -360,7 +365,7 @@ ko{
         }
         ETB{
             "ETB",
-            "에티오피아 비르",
+            "이디오피아 비르",
         }
         EUR{
             "€",
@@ -903,7 +908,7 @@ ko{
             "스와질란드 릴랑게니",
         }
         THB{
-            "THB",
+            "฿",
             "태국 바트",
         }
         TJR{
@@ -1024,7 +1029,7 @@ ko{
         }
         XAF{
             "FCFA",
-            "중앙아프리카 CFA 프랑",
+            "CFA 프랑 BEAC",
         }
         XAG{
             "XAG",
@@ -1072,7 +1077,7 @@ ko{
         }
         XOF{
             "CFA",
-            "서아프리카 CFA 프랑",
+            "CFA 프랑 BCEAO",
         }
         XPD{
             "XPD",
@@ -1156,104 +1161,57 @@ ko{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
         EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RON{"L"}
-        RUB{"₽"}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
         TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         AED{
@@ -1325,11 +1283,8 @@ ko{
         BWP{
             other{"보츠와나 폴라"}
         }
-        BYN{
-            other{"벨라루스 루블"}
-        }
         BYR{
-            other{"벨라루스 루블 (2000–2016)"}
+            other{"벨라루스 루블"}
         }
         BZD{
             other{"벨리즈 달러"}
@@ -1386,7 +1341,7 @@ ko{
             other{"에리트리아 나크파"}
         }
         ETB{
-            other{"에티오피아 비르"}
+            other{"이디오피아 비르"}
         }
         EUR{
             other{"유로"}
@@ -1707,19 +1662,19 @@ ko{
             other{"서 사모아 탈라"}
         }
         XAF{
-            other{"중앙아프리카 CFA 프랑"}
+            other{"CFA 프랑 BEAC"}
         }
         XCD{
             other{"동카리브 달러"}
         }
         XOF{
-            other{"서아프리카 CFA 프랑"}
+            other{"CFA 프랑 BCEAO"}
         }
         XPF{
             other{"CFP 프랑"}
         }
         XXX{
-            other{"(알 수 없는 통화단위)"}
+            other{"알 수 없는 통화단위"}
         }
         YER{
             other{"예멘 리알"}
@@ -1734,5 +1689,5 @@ ko{
     CurrencyUnitPatterns{
         other{"{0} {1}"}
     }
-    Version{"2.1.29.22"}
+    Version{"2.1.9.31"}
 }

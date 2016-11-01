@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (c) 2004-2011, International Business Machines
@@ -11,8 +9,6 @@ package com.ibm.icu.dev.test.format;
 
 import java.text.FieldPosition;
 import java.text.ParsePosition;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.SelectFormat;
@@ -26,10 +22,13 @@ public class SelectFormatAPITest extends TestFmwk {
     static final String SIMPLE_PATTERN1 = "feminine {feminineVerbValue1} other{otherVerbValue1}";
     static final String SIMPLE_PATTERN2 = "feminine {feminineVerbValue2} other{otherVerbValue2}";
 
+    public static void main(String[] args) throws Exception {
+        new SelectFormatAPITest().run(args);
+    }
+  
     /**
      * API tests for constructors
      */
-    @Test
     public void TestConstructors() {
         SelectFormat selFmt = new SelectFormat(SIMPLE_PATTERN1);
         assertNotNull("Error: TestConstructors - SelectFormat object constructed "
@@ -39,7 +38,6 @@ public class SelectFormatAPITest extends TestFmwk {
     /**
      * API tests for equals() method
      */
-    @Test
     public void TestEquals() {
         SelectFormat selFmt1 = null;
 
@@ -65,7 +63,6 @@ public class SelectFormatAPITest extends TestFmwk {
     /**
      * API tests for applyPattern() method
      */
-    @Test
     public void TestApplyPatternToPattern() {
         SelectFormat selFmt = null;
         String pattern = "masculine{masculineVerbValue} other{otherVerbValue}";
@@ -89,7 +86,6 @@ public class SelectFormatAPITest extends TestFmwk {
     /**
      * API tests for toString() method
      */
-    @Test
     public void TestToString(){
         SelectFormat selFmt = null;
 
@@ -103,7 +99,6 @@ public class SelectFormatAPITest extends TestFmwk {
     /**
      * API tests for hashCode() method
      */
-    @Test
     public void TestHashCode(){
         //Check hashCode for pattern constructed SelectFormat
         SelectFormat selFmt = new SelectFormat(SIMPLE_PATTERN1);
@@ -118,7 +113,6 @@ public class SelectFormatAPITest extends TestFmwk {
     /**
      * API tests for toPattern() method
      */
-    @Test
     public void TestToPattern(){
         SelectFormat selFmt = new SelectFormat(SIMPLE_PATTERN1);
         assertEquals("Failed in TestToPattern 2 with unexpected output"
@@ -128,7 +122,6 @@ public class SelectFormatAPITest extends TestFmwk {
     /**
      * API tests for format() method
      */
-    @Test
     public void TestFormat(){
         //Check format for pattern constructed object
         SelectFormat selFmt1 = new SelectFormat(SIMPLE_PATTERN1);
@@ -158,7 +151,6 @@ public class SelectFormatAPITest extends TestFmwk {
     /**
      * API tests for parseObject() method
      */
-    @Test
     public void TestParseObject(){
         //Check parseObject
         try {

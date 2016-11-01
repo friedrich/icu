@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/to.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/to.xml
+ */
 to{
-    Version{"2.1.27.98"}
+    Version{"2.1.8.9"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -148,7 +157,7 @@ to{
             ec{"Porto-Novo"}
         }
         "Africa:Sao_Tome"{
-            ec{"Sao Tomé"}
+            ec{"Sao Tome"}
         }
         "Africa:Tripoli"{
             ec{"Tripoli"}
@@ -199,7 +208,7 @@ to{
             ec{"Aruba"}
         }
         "America:Asuncion"{
-            ec{"Asunción"}
+            ec{"Asuncion"}
         }
         "America:Bahia"{
             ec{"Bahia"}
@@ -274,7 +283,7 @@ to{
             ec{"Cuiaba"}
         }
         "America:Curacao"{
-            ec{"Curaçao"}
+            ec{"Curacao"}
         }
         "America:Danmarkshavn"{
             ec{"Danmarkshavn"}
@@ -544,7 +553,7 @@ to{
             ec{"Sitka"}
         }
         "America:St_Barthelemy"{
-            ec{"St. Barthélemy"}
+            ec{"St. Barthelemy"}
         }
         "America:St_Johns"{
             ec{"St. John’s"}
@@ -681,6 +690,9 @@ to{
         "Asia:Choibalsan"{
             ec{"Choibalsan"}
         }
+        "Asia:Chongqing"{
+            ec{"Chongqing"}
+        }
         "Asia:Colombo"{
             ec{"Colombo"}
         }
@@ -701,6 +713,9 @@ to{
         }
         "Asia:Gaza"{
             ec{"Gaza"}
+        }
+        "Asia:Harbin"{
+            ec{"Harbin"}
         }
         "Asia:Hebron"{
             ec{"Hebron"}
@@ -731,6 +746,9 @@ to{
         }
         "Asia:Karachi"{
             ec{"Karachi"}
+        }
+        "Asia:Kashgar"{
+            ec{"Kashgar"}
         }
         "Asia:Katmandu"{
             ec{"Kathmandu"}
@@ -1071,7 +1089,7 @@ to{
             ec{"Tirane"}
         }
         "Europe:Uzhgorod"{
-            ec{"Uzhhorod"}
+            ec{"Uzhgorod"}
         }
         "Europe:Vaduz"{
             ec{"Vaduz"}
@@ -1131,7 +1149,7 @@ to{
             ec{"Mayotte"}
         }
         "Indian:Reunion"{
-            ec{"Réunion"}
+            ec{"Reunion"}
         }
         "Pacific:Apia"{
             ec{"Apia"}
@@ -1248,7 +1266,7 @@ to{
             ec{"ʻUvea"}
         }
         "meta:Acre"{
-            ld{"houa fakaʻakelī taimi liliu"}
+            ld{"houa fakaʻakelī taimi fakaliliu"}
             lg{"houa fakaʻakelī"}
             ls{"houa fakaʻakelī taimi totonu"}
         }
@@ -1895,7 +1913,7 @@ to{
         gmtZeroFormat{"GMT"}
         hourFormat{"+HH:mm;-HH:mm"}
         regionFormat{"Taimi {0}"}
-        regionFormatDaylight{"{0} Taimi liliu"}
+        regionFormatDaylight{"{0} Taimi Liliu"}
         regionFormatStandard{"{0} Taimi totonu"}
     }
 }

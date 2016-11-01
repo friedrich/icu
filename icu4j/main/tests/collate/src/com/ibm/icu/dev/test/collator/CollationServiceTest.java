@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2003-2014, International Business Machines Corporation and    *
@@ -19,15 +17,16 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.Collator.CollatorFactory;
 import com.ibm.icu.util.ULocale;
 
 public class CollationServiceTest extends TestFmwk {
-    @Test
+    public static void main(String[] args) {
+        new CollationServiceTest().run(args);
+    }
+
     public void TestRegister() {
         // register a singleton
         Collator frcol = Collator.getInstance(ULocale.FRANCE);
@@ -122,7 +121,6 @@ public class CollationServiceTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRegisterFactory() {
 
         class CollatorInfo {
@@ -249,10 +247,8 @@ public class CollationServiceTest extends TestFmwk {
     
             ULocale bar_BAR = new ULocale("bar_BAR");
             Collator col = Collator.getInstance(bar_BAR);
-            ULocale valid = col.getLocale(ULocale.VALID_LOCALE);
-            String validName = valid.getName();
-            if(validName.length() != 0 && !validName.equals("root")) {
-                errln("Collation from bar_BAR is really \"" + validName + "\" but should be root");
+            if (!col.getLocale(ULocale.VALID_LOCALE).equals(ULocale.getDefault())) {
+                errln("Collation from bar_BAR is really " + col.getLocale(ULocale.VALID_LOCALE));
             }
         }
 
@@ -336,7 +332,6 @@ public class CollationServiceTest extends TestFmwk {
         "stroke"
     };
 
-    @Test
     public void TestSeparateTrees() {
         String kw[] = Collator.getKeywords();
         if (!assertTrue("getKeywords != null", kw!=null)) return;
@@ -371,7 +366,6 @@ public class CollationServiceTest extends TestFmwk {
         }
     }
     
-    @Test
     public void TestGetFunctionalEquivalent() {
         String kw[] = Collator.getKeywords();
         final String DATA[] = { 
@@ -461,7 +455,6 @@ public class CollationServiceTest extends TestFmwk {
         return false;
     }
 
-    @Test
     public void TestGetKeywordValues(){
         final String[][] PREFERRED = {
             {"und",             "standard", "eor", "search"},

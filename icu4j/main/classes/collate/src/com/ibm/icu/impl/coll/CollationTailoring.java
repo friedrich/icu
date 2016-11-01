@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-* Copyright (C) 2013-2015, International Business Machines
+* Copyright (C) 2013-2014, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
 * CollationTailoring.java, ported from collationtailoring.h/.cpp
@@ -20,7 +18,6 @@ import com.ibm.icu.impl.Normalizer2Impl;
 import com.ibm.icu.impl.Trie2_32;
 import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.util.ULocale;
-import com.ibm.icu.util.UResourceBundle;
 import com.ibm.icu.util.VersionInfo;
 
 /**
@@ -36,7 +33,6 @@ public final class CollationTailoring {
         if(baseSettings != null) {
             assert(baseSettings.readOnly().reorderCodes.length == 0);
             assert(baseSettings.readOnly().reorderTable == null);
-            assert(baseSettings.readOnly().minHighNoReorder == 0);
             settings = baseSettings.clone();
         } else {
             settings = new SharedObject.Reference<CollationSettings>(new CollationSettings());
@@ -49,26 +45,6 @@ public final class CollationTailoring {
             ownedData = new CollationData(nfcImpl);
         }
         data = ownedData;
-    }
-
-    /** Not thread-safe, call only before sharing. */
-    void setRules(String r) {
-        assert rules == null && rulesResource == null;
-        rules = r;
-    }
-    /** Not thread-safe, call only before sharing. */
-    void setRulesResource(UResourceBundle res) {
-        assert rules == null && rulesResource == null;
-        rulesResource = res;
-    }
-    public String getRules() {
-        if (rules != null) {
-            return rules;
-        }
-        if (rulesResource != null) {
-            return rulesResource.getString();
-        }
-        return "";
     }
 
     static VersionInfo makeBaseVersion(VersionInfo ucaVersion) {
@@ -98,10 +74,7 @@ public final class CollationTailoring {
     // data for sorting etc.
     public CollationData data;  // == base data or ownedData
     public SharedObject.Reference<CollationSettings> settings;  // reference-counted
-    // In Java, deserialize the rules string from the resource bundle
-    // only when it is used. (It can be large and is rarely used.)
-    private String rules;
-    private UResourceBundle rulesResource;
+    public String rules = "";
     // The locale is null (C++: bogus) when built from rules or constructed from a binary blob.
     // It can then be set by the service registration code which is thread-safe.
     public ULocale actualLocale = ULocale.ROOT;

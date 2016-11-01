@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/vi.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/vi.xml
+ */
 vi{
-    Version{"2.1.28.79"}
+    Version{"2.1.8.9"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -199,7 +208,7 @@ vi{
             ec{"Aruba"}
         }
         "America:Asuncion"{
-            ec{"Asunción"}
+            ec{"Asuncion"}
         }
         "America:Bahia"{
             ec{"Bahia"}
@@ -302,9 +311,6 @@ vi{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +675,6 @@ vi{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beirut"}
         }
@@ -684,11 +687,11 @@ vi{
         "Asia:Calcutta"{
             ec{"Kolkata"}
         }
-        "Asia:Chita"{
-            ec{"Chita"}
-        }
         "Asia:Choibalsan"{
             ec{"Choibalsan"}
+        }
+        "Asia:Chongqing"{
+            ec{"Trùng Khánh"}
         }
         "Asia:Colombo"{
             ec{"Colombo"}
@@ -710,6 +713,9 @@ vi{
         }
         "Asia:Gaza"{
             ec{"Gaza"}
+        }
+        "Asia:Harbin"{
+            ec{"Cáp Nhĩ Tân"}
         }
         "Asia:Hebron"{
             ec{"Hebron"}
@@ -740,6 +746,9 @@ vi{
         }
         "Asia:Karachi"{
             ec{"Karachi"}
+        }
+        "Asia:Kashgar"{
+            ec{"Khách Thập"}
         }
         "Asia:Katmandu"{
             ec{"Kathmandu"}
@@ -828,9 +837,6 @@ vi{
         "Asia:Singapore"{
             ec{"Singapore"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymsk"}
-        }
         "Asia:Taipei"{
             ec{"Đài Bắc"}
         }
@@ -849,14 +855,11 @@ vi{
         "Asia:Tokyo"{
             ec{"Tokyo"}
         }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"Ulaanbaatar"}
         }
         "Asia:Urumqi"{
-            ec{"Urumqi"}
+            ec{"Ô Lỗ Mộc Tề"}
         }
         "Asia:Ust-Nera"{
             ec{"Ust-Nera"}
@@ -951,9 +954,6 @@ vi{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
-        }
         "Europe:Athens"{
             ec{"Athens"}
         }
@@ -1011,9 +1011,6 @@ vi{
         }
         "Europe:Kiev"{
             ec{"Kiev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lisbon"}
@@ -1091,11 +1088,8 @@ vi{
         "Europe:Tirane"{
             ec{"Tirane"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Ulyanovsk"}
-        }
         "Europe:Uzhgorod"{
-            ec{"Uzhhorod"}
+            ec{"Uzhgorod"}
         }
         "Europe:Vaduz"{
             ec{"Vaduz"}
@@ -1104,7 +1098,7 @@ vi{
             ec{"Vatican"}
         }
         "Europe:Vienna"{
-            ec{"Vienna"}
+            ec{"Viên"}
         }
         "Europe:Vilnius"{
             ec{"Vilnius"}
@@ -1155,16 +1149,13 @@ vi{
             ec{"Mayotte"}
         }
         "Indian:Reunion"{
-            ec{"Réunion"}
+            ec{"Reunion"}
         }
         "Pacific:Apia"{
             ec{"Apia"}
         }
         "Pacific:Auckland"{
             ec{"Auckland"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Bougainville"}
         }
         "Pacific:Chatham"{
             ec{"Chatham"}
@@ -1312,22 +1303,22 @@ vi{
             ls{"Giờ Chuẩn Amazon"}
         }
         "meta:America_Central"{
-            ld{"Giờ mùa hè miền trung"}
+            ld{"Giờ ban ngày miền trung"}
             lg{"Giờ miền trung"}
             ls{"Giờ chuẩn miền trung"}
         }
         "meta:America_Eastern"{
-            ld{"Giờ mùa hè miền đông"}
+            ld{"Giờ ban ngày miền đông"}
             lg{"Giờ miền đông"}
             ls{"Giờ chuẩn miền đông"}
         }
         "meta:America_Mountain"{
-            ld{"Giờ mùa hè miền núi"}
+            ld{"Giờ ban ngày miền núi"}
             lg{"Giờ miền núi"}
             ls{"Giờ chuẩn miền núi"}
         }
         "meta:America_Pacific"{
-            ld{"Giờ Mùa hè Thái Bình Dương"}
+            ld{"Giờ ban ngày Thái Bình Dương"}
             lg{"Giờ Thái Bình Dương"}
             ls{"Giờ chuẩn Thái Bình Dương"}
         }
@@ -1337,7 +1328,7 @@ vi{
             ls{"Giờ Chuẩn Anadyr"}
         }
         "meta:Apia"{
-            ld{"Giờ Mùa Hè Apia"}
+            ld{"Giờ Ban ngày Apia"}
             lg{"Giờ Apia"}
             ls{"Giờ Chuẩn Apia"}
         }
@@ -1535,9 +1526,9 @@ vi{
             ls{"Giờ Gambier"}
         }
         "meta:Georgia"{
-            ld{"Giờ Mùa Hè Gruzia"}
-            lg{"Giờ Gruzia"}
-            ls{"Giờ Chuẩn Gruzia"}
+            ld{"Giờ Mùa Hè Georgia"}
+            lg{"Giờ Georgia"}
+            ls{"Giờ Chuẩn Georgia"}
         }
         "meta:Gilbert_Islands"{
             ls{"Giờ Quần Đảo Gilbert"}
@@ -1784,17 +1775,14 @@ vi{
         }
         "meta:Pierre_Miquelon"{
             ld{"Giờ Mùa Hè Saint Pierre và Miquelon"}
-            lg{"Giờ St. Pierre và Miquelon"}
-            ls{"Giờ Chuẩn St. Pierre và Miquelon"}
+            lg{"Giờ Saint Pierre và Miquelon"}
+            ls{"Giờ Chuẩn Saint Pierre và Miquelon"}
         }
         "meta:Pitcairn"{
             ls{"Giờ Pitcairn"}
         }
         "meta:Ponape"{
             ls{"Giờ Ponape"}
-        }
-        "meta:Pyongyang"{
-            ls{"Giờ Bình Nhưỡng"}
         }
         "meta:Qyzylorda"{
             ld{"Giờ Mùa Hè Qyzylorda"}
@@ -1922,7 +1910,7 @@ vi{
         gmtZeroFormat{"GMT"}
         hourFormat{"+HH:mm;-HH:mm"}
         regionFormat{"Giờ {0}"}
-        regionFormatDaylight{"Giờ mùa hè {0}"}
+        regionFormatDaylight{"Giờ ban ngày {0}"}
         regionFormatStandard{"Giờ chuẩn {0}"}
     }
 }

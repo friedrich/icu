@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ja.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/ja.xml
+ */
 ja{
-    Version{"2.1.28.79"}
+    Version{"2.1.8.9"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"アビジャン"}
@@ -303,9 +312,6 @@ ja{
         "America:El_Salvador"{
             ec{"エルサルバドル"}
         }
-        "America:Fort_Nelson"{
-            ec{"フォートネルソン"}
-        }
         "America:Fortaleza"{
             ec{"フォルタレザ"}
         }
@@ -325,7 +331,7 @@ ja{
             ec{"グレナダ"}
         }
         "America:Guadeloupe"{
-            ec{"グアドループ"}
+            ec{"グアダループ"}
         }
         "America:Guatemala"{
             ec{"グアテマラ"}
@@ -669,9 +675,6 @@ ja{
         "Asia:Bangkok"{
             ec{"バンコク"}
         }
-        "Asia:Barnaul"{
-            ec{"バルナウル"}
-        }
         "Asia:Beirut"{
             ec{"ベイルート"}
         }
@@ -684,11 +687,11 @@ ja{
         "Asia:Calcutta"{
             ec{"コルカタ"}
         }
-        "Asia:Chita"{
-            ec{"チタ"}
-        }
         "Asia:Choibalsan"{
             ec{"チョイバルサン"}
+        }
+        "Asia:Chongqing"{
+            ec{"重慶"}
         }
         "Asia:Colombo"{
             ec{"コロンボ"}
@@ -710,6 +713,9 @@ ja{
         }
         "Asia:Gaza"{
             ec{"ガザ"}
+        }
+        "Asia:Harbin"{
+            ec{"ハルビン"}
         }
         "Asia:Hebron"{
             ec{"ヘブロン"}
@@ -740,6 +746,9 @@ ja{
         }
         "Asia:Karachi"{
             ec{"カラチ"}
+        }
+        "Asia:Kashgar"{
+            ec{"カシュガル"}
         }
         "Asia:Katmandu"{
             ec{"カトマンズ"}
@@ -828,9 +837,6 @@ ja{
         "Asia:Singapore"{
             ec{"シンガポール"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"スレドネコリムスク"}
-        }
         "Asia:Taipei"{
             ec{"台北"}
         }
@@ -848,9 +854,6 @@ ja{
         }
         "Asia:Tokyo"{
             ec{"東京"}
-        }
-        "Asia:Tomsk"{
-            ec{"トムスク"}
         }
         "Asia:Ulaanbaatar"{
             ec{"ウランバートル"}
@@ -951,9 +954,6 @@ ja{
         "Europe:Andorra"{
             ec{"アンドラ"}
         }
-        "Europe:Astrakhan"{
-            ec{"アストラハン"}
-        }
         "Europe:Athens"{
             ec{"アテネ"}
         }
@@ -1011,9 +1011,6 @@ ja{
         }
         "Europe:Kiev"{
             ec{"キエフ"}
-        }
-        "Europe:Kirov"{
-            ec{"キーロフ"}
         }
         "Europe:Lisbon"{
             ec{"リスボン"}
@@ -1091,9 +1088,6 @@ ja{
         "Europe:Tirane"{
             ec{"ティラナ"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"ウリヤノフスク"}
-        }
         "Europe:Uzhgorod"{
             ec{"ウージュホロド"}
         }
@@ -1162,9 +1156,6 @@ ja{
         }
         "Pacific:Auckland"{
             ec{"オークランド"}
-        }
-        "Pacific:Bougainville"{
-            ec{"ブーゲンビル"}
         }
         "Pacific:Chatham"{
             ec{"チャタム"}
@@ -1337,9 +1328,9 @@ ja{
             ls{"アナディリ標準時"}
         }
         "meta:Apia"{
-            ld{"アピア夏時間"}
-            lg{"アピア時間"}
-            ls{"アピア標準時"}
+            ld{"アピーア夏時間"}
+            lg{"アピーア時間"}
+            ls{"アピーア標準時"}
         }
         "meta:Aqtau"{
             ld{"アクタウ夏時間"}
@@ -1538,9 +1529,9 @@ ja{
             ls{"ガンビエ諸島時間"}
         }
         "meta:Georgia"{
-            ld{"ジョージア夏時間"}
-            lg{"ジョージア時間"}
-            ls{"ジョージア標準時"}
+            ld{"グルジア夏時間"}
+            lg{"グルジア時間"}
+            ls{"グルジア標準時"}
         }
         "meta:Gilbert_Islands"{
             ls{"ギルバート諸島時間"}
@@ -1798,9 +1789,6 @@ ja{
         }
         "meta:Ponape"{
             ls{"ポナペ時間"}
-        }
-        "meta:Pyongyang"{
-            ls{"平壌時間"}
         }
         "meta:Qyzylorda"{
             ld{"クズロルダ夏時間"}

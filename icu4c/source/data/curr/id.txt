@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/id.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/id.xml
+ */
 id{
     Currencies{
         ADP{
@@ -214,13 +223,9 @@ id{
             "BYB",
             "Rubel Baru Belarus (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Rubel Belarusia",
-        }
         BYR{
             "BYR",
-            "Rubel Belarusia (2000–2016)",
+            "Rubel Belarusia",
         }
         BZD{
             "BZD",
@@ -260,7 +265,7 @@ id{
         }
         CNY{
             "CN¥",
-            "Yuan Tiongkok",
+            "Yuan China",
         }
         COP{
             "COP",
@@ -384,7 +389,7 @@ id{
         }
         GBP{
             "£",
-            "Pound Inggris",
+            "Pound Sterling Inggris",
         }
         GEK{
             "GEK",
@@ -1180,102 +1185,56 @@ id{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
         EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RUB{"₽"}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
-        TRY{"₺"}
         TTD{"$"}
         TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        TRY{"TL"}
     }
     CurrencyPlurals{
         AED{
@@ -1404,11 +1363,8 @@ id{
         BYB{
             other{"Rubel Baru Belarus (1994–1999)"}
         }
-        BYN{
-            other{"Rubel Belarusia"}
-        }
         BYR{
-            other{"Rubel Belarusia (2000–2016)"}
+            other{"Rubel Belarusia"}
         }
         BZD{
             other{"Dolar Belize"}
@@ -1426,7 +1382,7 @@ id{
             other{"Peso Cile"}
         }
         CNY{
-            other{"Yuan Tiongkok"}
+            other{"Yuan China"}
         }
         COP{
             other{"Peso Kolombia"}
@@ -1480,7 +1436,7 @@ id{
             other{"Pound Kepulauan Falkland"}
         }
         GBP{
-            other{"Pound Inggris"}
+            other{"Pound Sterling Inggris"}
         }
         GEL{
             other{"Lari Georgia"}
@@ -1867,7 +1823,7 @@ id{
             other{"Franc CFP"}
         }
         XXX{
-            other{"(mata uang tidak dikenal)"}
+            other{"Mata Uang Tidak Dikenal"}
         }
         YER{
             other{"Rial Yaman"}
@@ -1906,5 +1862,5 @@ id{
     CurrencyUnitPatterns{
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.8.9"}
 }

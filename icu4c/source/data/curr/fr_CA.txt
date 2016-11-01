@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fr_CA.xml
+// *
+// ***************************************************************************
 fr_CA{
     Currencies{
         ARS{
@@ -9,6 +15,10 @@ fr_CA{
         AUD{
             "$ AU",
             "dollar australien",
+        }
+        AZN{
+            "AZN",
+            "manat azerbaïdjanais",
         }
         BMD{
             "BMD",
@@ -41,6 +51,10 @@ fr_CA{
         COP{
             "COP",
             "peso colombien",
+        }
+        CVE{
+            "CVE",
+            "escudo du Cap-Vert",
         }
         FJD{
             "FJD",
@@ -78,6 +92,10 @@ fr_CA{
             "KRW",
             "won sud-coréen",
         }
+        LAK{
+            "LAK",
+            "kip laotien",
+        }
         LBP{
             "LBP",
             "livre libanaise",
@@ -94,6 +112,14 @@ fr_CA{
             "$ NZ",
             "dollar néo-zélandais",
         }
+        PGK{
+            "PGK",
+            "kina papou-néo-guinéen",
+        }
+        QAR{
+            "QAR",
+            "riyal du Qatar",
+        }
         SBD{
             "SBD",
             "dollar des îles Salomon",
@@ -104,7 +130,11 @@ fr_CA{
         }
         SRD{
             "SRD",
-            "dollar surinamais",
+            "dollar du Suriname",
+        }
+        THB{
+            "THB",
+            "baht thaïlandais",
         }
         TOP{
             "TOP",
@@ -126,6 +156,14 @@ fr_CA{
             "VND",
             "dông vietnamien",
         }
+        VUV{
+            "VUV",
+            "vatu",
+        }
+        WST{
+            "WST",
+            "tala",
+        }
         XAF{
             "XAF",
             "franc CFA (BEAC)",
@@ -138,33 +176,60 @@ fr_CA{
             "XPF",
             "franc CFP",
         }
-        XXX{
-            "XXX",
-            "Devise inconnue",
-        }
-    }
-    Currencies%narrow{
-        GEL{"GEL"}
-        KMF{"CF"}
-        NIO{"C$"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        TRY{"TL"}
     }
     CurrencyPlurals{
+        AZN{
+            one{"manat azerbaïdjanais"}
+            other{"manats azerbaïdjanais"}
+        }
+        CVE{
+            one{"escudo du Cap-Vert"}
+            other{"escudos du Cap-Vert"}
+        }
         FKP{
             one{"livre des Îles Malouines"}
             other{"livres des Îles Malouines"}
+        }
+        GEL{
+            one{"lari géorgien"}
+            other{"laris géorgiens"}
+        }
+        GYD{
+            one{"dollar guyanien"}
+            other{"dollars guyaniens"}
+        }
+        LAK{
+            one{"kip laotien"}
+            other{"kips laotiens"}
+        }
+        PGK{
+            one{"kina papou-néo-guinéen"}
+            other{"kinas papou-néo-guinéens"}
+        }
+        QAR{
+            one{"riyal du Qatar"}
+            other{"riyals du Qatar"}
+        }
+        SRD{
+            one{"dollar du Suriname"}
+            other{"dollars du Suriname"}
         }
         TOP{
             one{"pa’anga"}
             other{"pa’angas"}
         }
+        VUV{
+            one{"vatu"}
+            other{"vatus"}
+        }
+        WST{
+            one{"tala"}
+            other{"talas"}
+        }
         XXX{
-            one{"(devise inconnue)"}
-            other{"(devise inconnue)"}
+            one{"devise inconnue ou non valide"}
+            other{"devise inconnue ou non valide"}
         }
     }
-    Version{"2.1.27.99"}
+    Version{"2.1.8.19"}
 }

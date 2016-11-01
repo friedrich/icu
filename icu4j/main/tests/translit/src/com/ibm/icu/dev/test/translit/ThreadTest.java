@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2014, International Business Machines Corporation and         *
@@ -10,21 +8,21 @@ package com.ibm.icu.dev.test.translit;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
-
-import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.Transliterator;
 
 // Test for ICU Ticket #7201.  With threading bugs in RuleBasedTransliterator, this
 //   test would reliably crash.
 
-public class ThreadTest extends TestFmwk {
+public class ThreadTest extends TransliteratorTest {
+    public static void main(String[] args) throws Exception {
+        new ThreadTest().run(args);
+    }
+    
     private ArrayList<Worker> threads = new ArrayList<Worker>();
     private int iterationCount = 100000;
     
-    @Test
     public void TestThreads()  {
-        if (TestFmwk.getExhaustiveness() >= 9) {
+        if (getInclusion() >= 9) {
             // Exhaustive test.  Run longer.
             iterationCount = 1000000;
         }
@@ -70,7 +68,6 @@ public class ThreadTest extends TestFmwk {
     // this test will fairly reliably take the code path for races in 
     // populating the cache.
     // 
-    @Test
     public void TestAnyTranslit() {
         final Transliterator tx = Transliterator.getInstance("Any-Latin");
         ArrayList<Thread> threads = new ArrayList<Thread>();

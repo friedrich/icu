@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2009-2015, International Business Machines Corporation and
+ * Copyright (C) 2009-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -15,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.ICUBinary;
@@ -35,11 +31,21 @@ public class Trie2Test extends TestFmwk {
        
      // public methods -----------------------------------------------
      
+     public static void main(String arg[]) 
+     {
+         Trie2Test test = new Trie2Test();
+         try {
+             test.run(arg);
+         } catch (Exception e) {
+             test.errln("Error testing trietest");
+         }
+     }
+     
+     
      //
      //  TestAPI.  Check that all API methods can be called, and do at least some minimal
      //            operation correctly.  This is not a full test of correct behavior.
      //
-    @Test
      public void TestTrie2API() {
          // Trie2.createFromSerialized()
          //   This function is well exercised by TestRanges().   
@@ -227,7 +233,6 @@ public class Trie2Test extends TestFmwk {
      }
      
      
-    @Test
      public void TestTrie2WritableAPI() {
          //
          //   Trie2Writable methods.  Check that all functions are present and 
@@ -353,7 +358,6 @@ public class Trie2Test extends TestFmwk {
                 
      }
      
-    @Test
      public void TestCharSequenceIterator() {
          String text = "abc123\ud800\udc01 ";    // Includes a Unicode supplemental character
          String vals = "LLLNNNX?S";
@@ -711,23 +715,14 @@ public class Trie2Test extends TestFmwk {
          String fileName32 = "Trie2Test." + serializedName + ".32.tri2";
          
          InputStream is = Trie2Test.class.getResourceAsStream(fileName16);
-         Trie2 trie16;
-         try {
-             trie16 = Trie2.createFromSerialized(ICUBinary.getByteBufferFromInputStreamAndCloseStream(is));
-         } finally {
-             is.close();
-         }
+         Trie2  trie16 = Trie2.createFromSerialized(ICUBinary.getByteBufferFromInputStream(is));
+         
          trieGettersTest(testName, trie16, checkRanges);
-
          is = Trie2Test.class.getResourceAsStream(fileName32);
-         Trie2 trie32;
-         try {
-             trie32 = Trie2.createFromSerialized(ICUBinary.getByteBufferFromInputStreamAndCloseStream(is));
-         } finally {
-             is.close();
-         }
+         Trie2  trie32 = Trie2.createFromSerialized(ICUBinary.getByteBufferFromInputStream(is));
+         
          trieGettersTest(testName, trie32, checkRanges);
-
+         
          // Run the same tests against locally contructed Tries.
          Trie2Writable trieW = genTrieFromSetRanges(setRanges);
          trieGettersTest(testName, trieW,  checkRanges);
@@ -744,7 +739,6 @@ public class Trie2Test extends TestFmwk {
      }
      
      // Was "TrieTest" in trie2test.c 
-    @Test
      public void TestRanges() throws IOException {
          checkTrieRanges("set1",           "setRanges1",     false, setRanges1,     checkRanges1);         
          checkTrieRanges("set2-overlap",   "setRanges2",     false, setRanges2,     checkRanges2);

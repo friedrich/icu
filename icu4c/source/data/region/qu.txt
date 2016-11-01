@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/qu.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/qu.xml
+ */
 qu{
     Countries{
         AD{"Andorra"}
@@ -15,7 +24,7 @@ qu{
         BD{"Bangladesh"}
         BE{"Bélgica"}
         BG{"Bulgaria"}
-        BH{"Baréin"}
+        BH{"Bahréin"}
         BI{"Burundi"}
         BJ{"Benín"}
         BN{"Brunéi"}
@@ -30,7 +39,7 @@ qu{
         CD{"Congo (RDC)"}
         CG{"Congo"}
         CH{"Suiza"}
-        CI{"Côte d’Ivoire"}
+        CI{"Côte dʼIvoire"}
         CL{"Chile"}
         CM{"Camerún"}
         CN{"China"}
@@ -57,7 +66,7 @@ qu{
         FR{"Francia"}
         GA{"Gabón"}
         GB{"Reino Unido"}
-        GG{"Guernesey"}
+        GG{"Guernsey"}
         GH{"Ghana"}
         GM{"Gambia"}
         GN{"Guinea"}
@@ -65,7 +74,7 @@ qu{
         GR{"Grecia"}
         GT{"Guatemala"}
         GU{"Guam"}
-        GW{"Guinea-Bisáu"}
+        GW{"Guinea-Bissau"}
         GY{"Guyana"}
         HK{"Hong Kong (RAE)"}
         HM{"Islas Heard y McDonald"}
@@ -75,7 +84,7 @@ qu{
         ID{"Indonesia"}
         IL{"Israel"}
         IN{"India"}
-        IQ{"Irak"}
+        IQ{"Iraq"}
         IR{"Irán"}
         IS{"Islandia"}
         IT{"Italia"}
@@ -90,7 +99,7 @@ qu{
         KP{"Corea del Norte"}
         KR{"Corea del Sur"}
         KW{"Kuwait"}
-        KZ{"Kazajistán"}
+        KZ{"Kazajistan"}
         LA{"Laos"}
         LB{"Líbano"}
         LI{"Liechtenstein"}
@@ -166,7 +175,7 @@ qu{
         SY{"Siria"}
         SZ{"Suazilandia"}
         TD{"Chad"}
-        TF{"Territorios Australes Franceses"}
+        TF{"Tierras Australes y Antárticas Francesas"}
         TG{"Togo"}
         TH{"Tailandia"}
         TJ{"Tayikistán"}
@@ -186,12 +195,12 @@ qu{
         VI{"EE.UU. Islas Vírgenes"}
         VN{"Vietnam"}
         VU{"Vanuatu"}
-        WF{"Wallis y Futuna"}
+        WF{"Wallis, Futuna"}
         WS{"Samoa"}
         YE{"Yemen"}
         ZA{"Sudáfrica"}
         ZM{"Zambia"}
         ZW{"Zimbabue"}
     }
-    Version{"2.1.27.98"}
+    Version{"2.1.6.71"}
 }

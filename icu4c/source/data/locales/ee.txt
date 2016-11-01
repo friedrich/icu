@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ee.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/ee.xml
+ */
 ee{
     AuxExemplarCharacters{"[ă â å ä ā æ c ç ĕ ê ë ĭ î ï j ñ ŏ ô ö ø œ q ŭ û ü ÿ]"}
     ExemplarCharacters{
@@ -10,6 +19,9 @@ ee{
     ExemplarCharactersPunctuation{
         "[\\- ‐ – — , ; \\: ! ? . … ' ‘ ’ \u0022 “ ” ( ) \\[ \\] \\{ \\} § @ * / \\& "
         "# † ‡ ′ ″]"
+    }
+    LocaleScript{
+        "Latn",
     }
     MoreInformation{"..."}
     NumberElements{
@@ -75,11 +87,11 @@ ee{
             }
         }
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.8.9"}
     calendar{
         generic{
             DateTimePatterns{
-                "a 'ga' h:mm:ss zzzz",
+                "a h:mm:ss zzzz",
                 "a 'ga' h:mm:ss z",
                 "a 'ga' h:mm:ss",
                 "a 'ga' h:mm",
@@ -173,7 +185,7 @@ ee{
                     h{"a h–h"}
                 }
                 hm{
-                    a{"a 'ga' h:mm – a 'ga' h:mm"}
+                    a{"a 'ga' h:mm - a 'ga' h:mm"}
                     h{"a 'ga' h:mm - 'ga' h:mm"}
                     m{"a 'ga' h:mm – 'ga' h:mm"}
                 }
@@ -185,9 +197,6 @@ ee{
                 hv{
                     a{"a h – a h v"}
                     h{"a 'ga' h–h v"}
-                }
-                y{
-                    y{"G y–y"}
                 }
                 yM{
                     M{"M/y – M/y G"}
@@ -228,16 +237,8 @@ ee{
                 "ŋdi",
                 "ɣetrɔ",
             }
-            AmPmMarkersAbbr{
-                "ŋdi",
-                "ɣetrɔ",
-            }
-            AmPmMarkersNarrow{
-                "ŋ",
-                "ɣ",
-            }
             DateTimePatterns{
-                "a 'ga' h:mm:ss zzzz",
+                "a h:mm:ss zzzz",
                 "a 'ga' h:mm:ss z",
                 "a 'ga' h:mm:ss",
                 "a 'ga' h:mm",
@@ -253,8 +254,6 @@ ee{
             }
             availableFormats{
                 Ed{"E d"}
-                Ehm{"E a 'ga' h:mm"}
-                Ehms{"E a 'ga' h:mm:ss"}
                 Gy{"y G"}
                 GyMMM{"MMM y G"}
                 GyMMMEd{"E, MMM d 'lia' y G"}
@@ -364,40 +363,10 @@ ee{
                     }
                 }
             }
-            dayPeriod{
-                format{
-                    abbreviated{
-                        afternoon1{"ŋdɔ"}
-                        afternoon2{"ɣetrɔ"}
-                        evening1{"fiẽ"}
-                        morning1{"fɔŋli"}
-                        morning2{"ŋdi"}
-                        night1{"zã"}
-                    }
-                    wide{
-                        afternoon1{"ŋdɔ"}
-                        afternoon2{"ɣetrɔ"}
-                        evening1{"fiẽ"}
-                        morning1{"fɔŋli"}
-                        morning2{"ŋdi"}
-                        night1{"zã"}
-                    }
-                }
-                stand-alone{
-                    narrow{
-                        am{"ŋ"}
-                        pm{"ɣ"}
-                    }
-                }
-            }
             eras{
                 abbreviated{
                     "hY",
                     "Yŋ",
-                }
-                abbreviated%variant{
-                    "Bŋ",
-                    "Eŋ",
                 }
                 wide{
                     "Hafi Yesu Va Do ŋgɔ",
@@ -450,7 +419,7 @@ ee{
                     h{"a h–h"}
                 }
                 hm{
-                    a{"a 'ga' h:mm – a 'ga' h:mm"}
+                    a{"a 'ga' h:mm - a 'ga' h:mm"}
                     h{"a 'ga' h:mm - 'ga' h:mm"}
                     m{"a 'ga' h:mm – 'ga' h:mm"}
                 }
@@ -715,51 +684,6 @@ ee{
                 }
             }
         }
-        month-narrow{
-            dn{"ɣleti"}
-        }
-        month-short{
-            dn{"ɣleti"}
-        }
-        quarter{
-            dn{"kɔta"}
-            relativeTime{
-                future{
-                    one{"le kɔta {0} si gbɔ na me"}
-                    other{"le kɔta {0} si gbɔ na me"}
-                }
-                past{
-                    one{"kɔta {0} si va yi me"}
-                    other{"kɔta {0} si va yi me"}
-                }
-            }
-        }
-        quarter-narrow{
-            dn{"kɔta"}
-            relativeTime{
-                future{
-                    one{"le kɔta {0} si gbɔna me"}
-                    other{"le kɔta {0} si gbɔ na me"}
-                }
-                past{
-                    one{"kɔta {0} si va yi me"}
-                    other{"kɔta {0} si va yi me"}
-                }
-            }
-        }
-        quarter-short{
-            dn{"kɔta"}
-            relativeTime{
-                future{
-                    one{"le kɔta {0} si gbɔ na me"}
-                    other{"le kɔta {0} si gbɔ na me"}
-                }
-                past{
-                    one{"kɔta {0} si va yi me"}
-                    other{"kɔta {0} si va yi me"}
-                }
-            }
-        }
         sat{
             relative{
                 "-1"{"memleɖa si va yi"}
@@ -785,9 +709,9 @@ ee{
         }
         sun{
             relative{
-                "-1"{"kɔsiɖagbe si va yi"}
-                "0"{"kɔsiɖa sia gbe"}
-                "1"{"kɔsiɖagbe si gbɔ na"}
+                "-1"{"kɔsiɖa si va yi"}
+                "0"{"kɔsiɖa sia"}
+                "1"{"kɔsiɖa si gbɔ na"}
             }
         }
         thu{
@@ -842,37 +766,11 @@ ee{
             relativeTime{
                 future{
                     one{"le ƒe {0} me"}
-                    other{"le ƒe {0} me"}
+                    other{"le ƒe {0} wo me"}
                 }
                 past{
                     one{"ƒe {0} si va yi"}
                     other{"ƒe {0} si wo va yi"}
-                }
-            }
-        }
-        year-narrow{
-            dn{"ƒe"}
-            relativeTime{
-                future{
-                    one{"le ƒe {0} si gbɔna me"}
-                    other{"le ƒe {0} si gbɔna me"}
-                }
-                past{
-                    one{"ƒe {0} si va yi me"}
-                    other{"ƒe {0} si va yi me"}
-                }
-            }
-        }
-        year-short{
-            dn{"ƒe"}
-            relativeTime{
-                future{
-                    one{"le ƒe {0} me"}
-                    other{"le ƒe {0} me"}
-                }
-                past{
-                    one{"le ƒe {0} si va yi me"}
-                    other{"le ƒe {0} si va yi me"}
                 }
             }
         }
@@ -884,26 +782,6 @@ ee{
         standard{
             2{"{0} kple {1}"}
             end{"{0}, kple {1}"}
-            middle{"{0}, {1}"}
-            start{"{0}, {1}"}
-        }
-        unit{
-            2{"{0} kple {1}"}
-            end{"{0}, kple {1}"}
-            middle{"{0}, {1}"}
-            start{"{0}, {1}"}
-        }
-        unit-narrow{
-            2{"{0} kple {1}"}
-            end{"{0}, kple {1}"}
-            middle{"{0}, {1}"}
-            start{"{0}, {1}"}
-        }
-        unit-short{
-            2{"{0} kple {1}"}
-            end{"{0}, kple {1}"}
-            middle{"{0}, {1}"}
-            start{"{0}, {1}"}
         }
     }
     measurementSystemNames{

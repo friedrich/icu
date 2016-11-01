@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fy.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/fy.xml
+ */
 fy{
     Currencies{
         ADP{
@@ -214,13 +223,9 @@ fy{
             "BYB",
             "Wit-Russyske nieuwe roebel (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Wit-Russyske roebel",
-        }
         BYR{
             "BYR",
-            "Wit-Russyske roebel (2000–2016)",
+            "Wit-Russyske roebel",
         }
         BZD{
             "BZD",
@@ -384,7 +389,7 @@ fy{
         }
         GBP{
             "£",
-            "Brits pûn",
+            "Brits pûn sterling",
         }
         GEK{
             "GEK",
@@ -1388,13 +1393,9 @@ fy{
             one{"Wit-Russyske nieuwe roebel (1994–1999)"}
             other{"Wit-Russyske nieuwe roebel (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"Wit-Russyske roebel"}
             other{"Wit-Russyske roebel"}
-        }
-        BYR{
-            one{"Wit-Russyske roebel (2000–2016)"}
-            other{"Wit-Russyske roebel (2000–2016)"}
         }
         BZD{
             one{"Belizaanske dollar"}
@@ -1557,8 +1558,8 @@ fy{
             other{"Franske franc"}
         }
         GBP{
-            one{"Brits pûn"}
-            other{"Brits pûn"}
+            one{"Brits pûn sterling"}
+            other{"Brits pûn sterling"}
         }
         GEK{
             one{"Georgyske kupon larit"}
@@ -2353,5 +2354,5 @@ fy{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.29.44"}
+    Version{"2.1.7.53"}
 }

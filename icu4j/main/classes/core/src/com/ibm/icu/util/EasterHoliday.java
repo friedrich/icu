@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2014, International Business Machines Corporation and    *
@@ -14,7 +12,7 @@ import java.util.Date;
 /**
  * <b>Note:</b> The Holiday framework is a technology preview.
  * Despite its age, is still draft API, and clients should treat it as such.
- *
+ * 
  * A Holiday subclass which represents holidays that occur
  * a fixed number of days before or after Easter.  Supports both the
  * Western and Orthodox methods for calculating Easter.
@@ -160,19 +158,17 @@ class EasterRule implements DateRule {
     }
 
     /**
-     * Return the first occurrence of this rule on or after the given date
+     * Return the first occurrance of this rule on or after the given date
      */
-    @Override
     public Date firstAfter(Date start)
     {
         return doFirstBetween(start, null);
     }
 
     /**
-     * Return the first occurrence of this rule on or after
+     * Return the first occurrance of this rule on or after
      * the given start date and before the given end date.
      */
-    @Override
     public Date firstBetween(Date start, Date end)
     {
         return doFirstBetween(start, end);
@@ -181,7 +177,6 @@ class EasterRule implements DateRule {
     /**
      * Return true if the given Date is on the same day as Easter
      */
-    @Override
     public boolean isOn(Date date)
     {
         synchronized(calendar) {
@@ -197,7 +192,6 @@ class EasterRule implements DateRule {
     /**
      * Return true if Easter occurs between the two dates given
      */
-    @Override
     public boolean isBetween(Date start, Date end)
     {
         return firstBetween(start, end) != null; // TODO: optimize?
@@ -229,7 +223,7 @@ class EasterRule implements DateRule {
                 //System.out.println("                result  = " + result.toString());
             }
 
-            if (end != null && !result.before(end)) {
+            if (end != null && !end.before(result)) {
                 //System.out.println("Result after end, returning null");
                 return null;
             }

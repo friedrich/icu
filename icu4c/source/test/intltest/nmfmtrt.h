@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2015, International Business Machines Corporation and
+ * Copyright (c) 1997-2009, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -29,7 +27,7 @@ public:
     static UBool verbose;
     static UBool STRING_COMPARE;
     static UBool EXACT_NUMERIC_COMPARE;
-    static UBool DEBUG_VAR;
+    static UBool DEBUG;
     static double MAX_ERROR;
     static double max_numeric_error;
     static double min_numeric_error;

@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/eo.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/eo.xml
+ */
 eo{
     Languages{
         aa{"afara"}
@@ -156,5 +165,5 @@ eo{
         zu{"zulua"}
         zxx{"nelingvaĵo"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.1.6.76"}
 }

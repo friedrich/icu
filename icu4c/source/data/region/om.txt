@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/om.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/om.xml
+ */
 om{
     Countries{
         BR{"Brazil"}
@@ -15,5 +24,5 @@ om{
         RU{"Russia"}
         US{"United States"}
     }
-    Version{"2.1.27.98"}
+    Version{"2.1.6.69"}
 }

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2012-2015, International Business Machines
+* Copyright (C) 2012-2014, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
 * collationdata.cpp
@@ -23,7 +21,6 @@
 #include "collationdata.h"
 #include "uassert.h"
 #include "utrie2.h"
-#include "uvectr32.h"
 
 U_NAMESPACE_BEGIN
 
@@ -117,57 +114,48 @@ CollationData::getSingleCE(UChar32 c, UErrorCode &errorCode) const {
 
 uint32_t
 CollationData::getFirstPrimaryForGroup(int32_t script) const {
-    int32_t index = getScriptIndex(script);
-    return index == 0 ? 0 : (uint32_t)scriptStarts[index] << 16;
+    int32_t index = findScript(script);
+    if(index < 0) {
+        return 0;
+    }
+    uint32_t head = scripts[index];
+    return (head & 0xff00) << 16;
 }
 
 uint32_t
 CollationData::getLastPrimaryForGroup(int32_t script) const {
-    int32_t index = getScriptIndex(script);
-    if(index == 0) {
+    int32_t index = findScript(script);
+    if(index < 0) {
         return 0;
     }
-    uint32_t limit = scriptStarts[index + 1];
-    return (limit << 16) - 1;
+    uint32_t head = scripts[index];
+    uint32_t lastByte = head & 0xff;
+    return ((lastByte + 1) << 24) - 1;
 }
 
 int32_t
 CollationData::getGroupForPrimary(uint32_t p) const {
-    p >>= 16;
-    if(p < scriptStarts[1] || scriptStarts[scriptStartsLength - 1] <= p) {
-        return -1;
-    }
-    int32_t index = 1;
-    while(p >= scriptStarts[index + 1]) { ++index; }
-    for(int32_t i = 0; i < numScripts; ++i) {
-        if(scriptsIndex[i] == index) {
-            return i;
-        }
-    }
-    for(int32_t i = 0; i < MAX_NUM_SPECIAL_REORDER_CODES; ++i) {
-        if(scriptsIndex[numScripts + i] == index) {
-            return UCOL_REORDER_CODE_FIRST + i;
+    p >>= 24;  // Reordering groups are distinguished by primary lead bytes.
+    for(int32_t i = 0; i < scriptsLength; i = i + 2 + scripts[i + 1]) {
+        uint32_t lastByte = scripts[i] & 0xff;
+        if(p <= lastByte) {
+            return scripts[i + 2];
         }
     }
     return -1;
 }
 
 int32_t
-CollationData::getScriptIndex(int32_t script) const {
-    if(script < 0) {
-        return 0;
-    } else if(script < numScripts) {
-        return scriptsIndex[script];
-    } else if(script < UCOL_REORDER_CODE_FIRST) {
-        return 0;
-    } else {
-        script -= UCOL_REORDER_CODE_FIRST;
-        if(script < MAX_NUM_SPECIAL_REORDER_CODES) {
-            return scriptsIndex[numScripts + script];
-        } else {
-            return 0;
+CollationData::findScript(int32_t script) const {
+    if(script < 0 || 0xffff < script) { return -1; }
+    for(int32_t i = 0; i < scriptsLength;) {
+        int32_t limit = i + 2 + scripts[i + 1];
+        for(int32_t j = i + 2; j < limit; ++j) {
+            if(script == scripts[j]) { return i; }
         }
+        i = limit;
     }
+    return -1;
 }
 
 int32_t
@@ -175,114 +163,85 @@ CollationData::getEquivalentScripts(int32_t script,
                                     int32_t dest[], int32_t capacity,
                                     UErrorCode &errorCode) const {
     if(U_FAILURE(errorCode)) { return 0; }
-    int32_t index = getScriptIndex(script);
-    if(index == 0) { return 0; }
-    if(script >= UCOL_REORDER_CODE_FIRST) {
-        // Special groups have no aliases.
-        if(capacity > 0) {
-            dest[0] = script;
-        } else {
-            errorCode = U_BUFFER_OVERFLOW_ERROR;
-        }
-        return 1;
-    }
-
-    int32_t length = 0;
-    for(int32_t i = 0; i < numScripts; ++i) {
-        if(scriptsIndex[i] == index) {
-            if(length < capacity) {
-                dest[length] = i;
-            }
-            ++length;
-        }
-    }
+    int32_t i = findScript(script);
+    if(i < 0) { return 0; }
+    int32_t length = scripts[i + 1];
+    U_ASSERT(length != 0);
     if(length > capacity) {
         errorCode = U_BUFFER_OVERFLOW_ERROR;
+        return length;
+    }
+    i += 2;
+    dest[0] = scripts[i++];
+    for(int32_t j = 1; j < length; ++j) {
+        script = scripts[i++];
+        // Sorted insertion.
+        for(int32_t k = j;; --k) {
+            // Invariant: dest[k] is free to receive either script or dest[k - 1].
+            if(k > 0 && script < dest[k - 1]) {
+                dest[k] = dest[k - 1];
+            } else {
+                dest[k] = script;
+                break;
+            }
+        }
     }
     return length;
 }
 
 void
-CollationData::makeReorderRanges(const int32_t *reorder, int32_t length,
-                                 UVector32 &ranges, UErrorCode &errorCode) const {
-    makeReorderRanges(reorder, length, FALSE, ranges, errorCode);
-}
-
-void
-CollationData::makeReorderRanges(const int32_t *reorder, int32_t length,
-                                 UBool latinMustMove,
-                                 UVector32 &ranges, UErrorCode &errorCode) const {
+CollationData::makeReorderTable(const int32_t *reorder, int32_t length,
+                                uint8_t table[256], UErrorCode &errorCode) const {
     if(U_FAILURE(errorCode)) { return; }
-    ranges.removeAllElements();
-    if(length == 0 || (length == 1 && reorder[0] == USCRIPT_UNKNOWN)) {
-        return;
-    }
 
-    // Maps each script-or-group range to a new lead byte.
-    uint8_t table[MAX_NUM_SCRIPT_RANGES];
-    uprv_memset(table, 0, sizeof(table));
-
-    {
-        // Set "don't care" values for reserved ranges.
-        int32_t index = scriptsIndex[
-                numScripts + REORDER_RESERVED_BEFORE_LATIN - UCOL_REORDER_CODE_FIRST];
-        if(index != 0) {
-            table[index] = 0xff;
-        }
-        index = scriptsIndex[
-                numScripts + REORDER_RESERVED_AFTER_LATIN - UCOL_REORDER_CODE_FIRST];
-        if(index != 0) {
-            table[index] = 0xff;
-        }
-    }
-
+    // Initialize the table.
     // Never reorder special low and high primary lead bytes.
-    U_ASSERT(scriptStartsLength >= 2);
-    U_ASSERT(scriptStarts[0] == 0);
-    int32_t lowStart = scriptStarts[1];
-    U_ASSERT(lowStart == ((Collation::MERGE_SEPARATOR_BYTE + 1) << 8));
-    int32_t highLimit = scriptStarts[scriptStartsLength - 1];
-    U_ASSERT(highLimit == (Collation::TRAIL_WEIGHT_BYTE << 8));
+    int32_t lowByte;
+    for(lowByte = 0; lowByte <= Collation::MERGE_SEPARATOR_BYTE; ++lowByte) {
+        table[lowByte] = lowByte;
+    }
+    // lowByte == 03
+
+    int32_t highByte;
+    for(highByte = 0xff; highByte >= Collation::TRAIL_WEIGHT_BYTE; --highByte) {
+        table[highByte] = highByte;
+    }
+    // highByte == FE
+
+    // Set intermediate bytes to 0 to indicate that they have not been set yet.
+    for(int32_t i = lowByte; i <= highByte; ++i) {
+        table[i] = 0;
+    }
 
     // Get the set of special reorder codes in the input list.
-    // This supports a fixed number of special reorder codes;
+    // This supports up to 32 special reorder codes;
     // it works for data with codes beyond UCOL_REORDER_CODE_LIMIT.
     uint32_t specials = 0;
     for(int32_t i = 0; i < length; ++i) {
         int32_t reorderCode = reorder[i] - UCOL_REORDER_CODE_FIRST;
-        if(0 <= reorderCode && reorderCode < MAX_NUM_SPECIAL_REORDER_CODES) {
+        if(0 <= reorderCode && reorderCode <= 31) {
             specials |= (uint32_t)1 << reorderCode;
         }
     }
 
     // Start the reordering with the special low reorder codes that do not occur in the input.
-    for(int32_t i = 0; i < MAX_NUM_SPECIAL_REORDER_CODES; ++i) {
-        int32_t index = scriptsIndex[numScripts + i];
-        if(index != 0 && (specials & ((uint32_t)1 << i)) == 0) {
-            lowStart = addLowScriptRange(table, index, lowStart);
+    for(int32_t i = 0;; i += 3) {
+        if(scripts[i + 1] != 1) { break; }  // Went beyond special single-code reorder codes.
+        int32_t reorderCode = (int32_t)scripts[i + 2] - UCOL_REORDER_CODE_FIRST;
+        if(reorderCode < 0) { break; }  // Went beyond special reorder codes.
+        if((specials & ((uint32_t)1 << reorderCode)) == 0) {
+            int32_t head = scripts[i];
+            int32_t firstByte = head >> 8;
+            int32_t lastByte = head & 0xff;
+            do { table[firstByte++] = lowByte++; } while(firstByte <= lastByte);
         }
     }
 
-    // Skip the reserved range before Latin if Latin is the first script,
-    // so that we do not move it unnecessarily.
-    int32_t skippedReserved = 0;
-    if(specials == 0 && reorder[0] == USCRIPT_LATIN && !latinMustMove) {
-        int32_t index = scriptsIndex[USCRIPT_LATIN];
-        U_ASSERT(index != 0);
-        int32_t start = scriptStarts[index];
-        U_ASSERT(lowStart <= start);
-        skippedReserved = start - lowStart;
-        lowStart = start;
-    }
-
-    // Reorder according to the input scripts, continuing from the bottom of the primary range.
-    int32_t originalLength = length;  // length will be decremented if "others" is in the list.
-    UBool hasReorderToEnd = FALSE;
+    // Reorder according to the input scripts, continuing from the bottom of the bytes range.
     for(int32_t i = 0; i < length;) {
         int32_t script = reorder[i++];
         if(script == USCRIPT_UNKNOWN) {
             // Put the remaining scripts at the top.
-            hasReorderToEnd = TRUE;
             while(i < length) {
                 script = reorder[--length];
                 if(script == USCRIPT_UNKNOWN ||  // Must occur at most once.
@@ -290,13 +249,16 @@ CollationData::makeReorderRanges(const int32_t *reorder, int32_t length,
                     errorCode = U_ILLEGAL_ARGUMENT_ERROR;
                     return;
                 }
-                int32_t index = getScriptIndex(script);
-                if(index == 0) { continue; }
-                if(table[index] != 0) {  // Duplicate or equivalent script.
+                int32_t index = findScript(script);
+                if(index < 0) { continue; }
+                int32_t head = scripts[index];
+                int32_t firstByte = head >> 8;
+                int32_t lastByte = head & 0xff;
+                if(table[firstByte] != 0) {  // Duplicate or equivalent script.
                     errorCode = U_ILLEGAL_ARGUMENT_ERROR;
                     return;
                 }
-                highLimit = addHighScriptRange(table, index, highLimit);
+                do { table[lastByte--] = highByte--; } while(firstByte <= lastByte);
             }
             break;
         }
@@ -306,83 +268,24 @@ CollationData::makeReorderRanges(const int32_t *reorder, int32_t length,
             errorCode = U_ILLEGAL_ARGUMENT_ERROR;
             return;
         }
-        int32_t index = getScriptIndex(script);
-        if(index == 0) { continue; }
-        if(table[index] != 0) {  // Duplicate or equivalent script.
+        int32_t index = findScript(script);
+        if(index < 0) { continue; }
+        int32_t head = scripts[index];
+        int32_t firstByte = head >> 8;
+        int32_t lastByte = head & 0xff;
+        if(table[firstByte] != 0) {  // Duplicate or equivalent script.
             errorCode = U_ILLEGAL_ARGUMENT_ERROR;
             return;
         }
-        lowStart = addLowScriptRange(table, index, lowStart);
+        do { table[firstByte++] = lowByte++; } while(firstByte <= lastByte);
     }
 
     // Put all remaining scripts into the middle.
-    for(int32_t i = 1; i < scriptStartsLength - 1; ++i) {
-        int32_t leadByte = table[i];
-        if(leadByte != 0) { continue; }
-        int32_t start = scriptStarts[i];
-        if(!hasReorderToEnd && start > lowStart) {
-            // No need to move this script.
-            lowStart = start;
-        }
-        lowStart = addLowScriptRange(table, i, lowStart);
+    // Avoid table[0] which must remain 0.
+    for(int32_t i = 1; i <= 0xff; ++i) {
+        if(table[i] == 0) { table[i] = lowByte++; }
     }
-    if(lowStart > highLimit) {
-        if((lowStart - (skippedReserved & 0xff00)) <= highLimit) {
-            // Try not skipping the before-Latin reserved range.
-            makeReorderRanges(reorder, originalLength, TRUE, ranges, errorCode);
-            return;
-        }
-        // We need more primary lead bytes than available, despite the reserved ranges.
-        errorCode = U_BUFFER_OVERFLOW_ERROR;
-        return;
-    }
-
-    // Turn lead bytes into a list of (limit, offset) pairs.
-    // Encode each pair in one list element:
-    // Upper 16 bits = limit, lower 16 = signed lead byte offset.
-    int32_t offset = 0;
-    for(int32_t i = 1;; ++i) {
-        int32_t nextOffset = offset;
-        while(i < scriptStartsLength - 1) {
-            int32_t newLeadByte = table[i];
-            if(newLeadByte == 0xff) {
-                // "Don't care" lead byte for reserved range, continue with current offset.
-            } else {
-                nextOffset = newLeadByte - (scriptStarts[i] >> 8);
-                if(nextOffset != offset) { break; }
-            }
-            ++i;
-        }
-        if(offset != 0 || i < scriptStartsLength - 1) {
-            ranges.addElement(((int32_t)scriptStarts[i] << 16) | (offset & 0xffff), errorCode);
-        }
-        if(i == scriptStartsLength - 1) { break; }
-        offset = nextOffset;
-    }
-}
-
-int32_t
-CollationData::addLowScriptRange(uint8_t table[], int32_t index, int32_t lowStart) const {
-    int32_t start = scriptStarts[index];
-    if((start & 0xff) < (lowStart & 0xff)) {
-        lowStart += 0x100;
-    }
-    table[index] = (uint8_t)(lowStart >> 8);
-    int32_t limit = scriptStarts[index + 1];
-    lowStart = ((lowStart & 0xff00) + ((limit & 0xff00) - (start & 0xff00))) | (limit & 0xff);
-    return lowStart;
-}
-
-int32_t
-CollationData::addHighScriptRange(uint8_t table[], int32_t index, int32_t highLimit) const {
-    int32_t limit = scriptStarts[index + 1];
-    if((limit & 0xff) > (highLimit & 0xff)) {
-        highLimit -= 0x100;
-    }
-    int32_t start = scriptStarts[index];
-    highLimit = ((highLimit & 0xff00) - ((limit & 0xff00) - (start & 0xff00))) | (start & 0xff);
-    table[index] = (uint8_t)(highLimit >> 8);
-    return highLimit;
+    U_ASSERT(lowByte == highByte + 1);
 }
 
 U_NAMESPACE_END

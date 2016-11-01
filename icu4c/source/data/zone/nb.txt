@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/nb.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/nb.xml
+ */
 nb{
-    Version{"2.1.30.7"}
+    Version{"2.1.8.9"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -302,9 +311,6 @@ nb{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +675,6 @@ nb{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beirut"}
         }
@@ -684,11 +687,11 @@ nb{
         "Asia:Calcutta"{
             ec{"Kolkata"}
         }
-        "Asia:Chita"{
-            ec{"Chita"}
-        }
         "Asia:Choibalsan"{
             ec{"Choybalsan"}
+        }
+        "Asia:Chongqing"{
+            ec{"Chongqing"}
         }
         "Asia:Colombo"{
             ec{"Colombo"}
@@ -710,6 +713,9 @@ nb{
         }
         "Asia:Gaza"{
             ec{"Gaza"}
+        }
+        "Asia:Harbin"{
+            ec{"Harbin"}
         }
         "Asia:Hebron"{
             ec{"Hebron"}
@@ -740,6 +746,9 @@ nb{
         }
         "Asia:Karachi"{
             ec{"Karachi"}
+        }
+        "Asia:Kashgar"{
+            ec{"Kashgar"}
         }
         "Asia:Katmandu"{
             ec{"Katmandu"}
@@ -828,9 +837,6 @@ nb{
         "Asia:Singapore"{
             ec{"Singapore"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymsk"}
-        }
         "Asia:Taipei"{
             ec{"Taipei"}
         }
@@ -848,9 +854,6 @@ nb{
         }
         "Asia:Tokyo"{
             ec{"Tokyo"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ulan Bator"}
@@ -951,9 +954,6 @@ nb{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
-        }
         "Europe:Athens"{
             ec{"Athen"}
         }
@@ -979,7 +979,7 @@ nb{
             ec{"Büsingen"}
         }
         "Europe:Chisinau"{
-            ec{"Chisinau"}
+            ec{"Chișinău"}
         }
         "Europe:Copenhagen"{
             ec{"København"}
@@ -1011,9 +1011,6 @@ nb{
         }
         "Europe:Kiev"{
             ec{"Kiev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lisboa"}
@@ -1091,9 +1088,6 @@ nb{
         "Europe:Tirane"{
             ec{"Tirana"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Uljanovsk"}
-        }
         "Europe:Uzhgorod"{
             ec{"Uzjhorod"}
         }
@@ -1162,9 +1156,6 @@ nb{
         }
         "Pacific:Auckland"{
             ec{"Auckland"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Bougainville"}
         }
         "Pacific:Chatham"{
             ec{"Chatham"}
@@ -1300,9 +1291,6 @@ nb{
             ld{"alaskisk sommertid"}
             lg{"alaskisk tid"}
             ls{"alaskisk normaltid"}
-            sd{"AKDT"}
-            sg{"AKT"}
-            ss{"AKST"}
         }
         "meta:Almaty"{
             ld{"Almaty, sommertid"}
@@ -1318,33 +1306,21 @@ nb{
             ld{"sommertid for det sentrale Nord-Amerika"}
             lg{"tidssone for det sentrale Nord-Amerika"}
             ls{"normaltid for det sentrale Nord-Amerika"}
-            sd{"CDT"}
-            sg{"CT"}
-            ss{"CST"}
         }
         "meta:America_Eastern"{
             ld{"sommertid for den nordamerikanske østkysten"}
             lg{"tidssone for den nordamerikanske østkysten"}
             ls{"normaltid for den nordamerikanske østkysten"}
-            sd{"EDT"}
-            sg{"ET"}
-            ss{"EST"}
         }
         "meta:America_Mountain"{
             ld{"sommertid for Rocky Mountains (USA)"}
             lg{"tidssone for Rocky Mountains (USA)"}
             ls{"normaltid for Rocky Mountains (USA)"}
-            sd{"MDT"}
-            sg{"MT"}
-            ss{"MST"}
         }
         "meta:America_Pacific"{
             ld{"sommertid for den nordamerikanske Stillehavskysten"}
             lg{"tidssone for den nordamerikanske Stillehavskysten"}
             ls{"normaltid for den nordamerikanske Stillehavskysten"}
-            sd{"PDT"}
-            sg{"PT"}
-            ss{"PST"}
         }
         "meta:Anadyr"{
             ld{"Russisk (Anadyr) sommertid"}
@@ -1352,7 +1328,7 @@ nb{
             ls{"Russisk (Anadyr) normaltid"}
         }
         "meta:Apia"{
-            ld{"sommertid for Apia"}
+            ld{"sommetid for Apia"}
             lg{"tidssone for Apia"}
             ls{"normaltid for Apia"}
         }
@@ -1390,9 +1366,6 @@ nb{
             ld{"atlanterhavskystlig sommertid"}
             lg{"atlanterhavskystlig tid"}
             ls{"atlanterhavskystlig standardtid"}
-            sd{"ADT"}
-            sg{"AT"}
-            ss{"AST"}
         }
         "meta:Australia_Central"{
             ld{"sentralaustralsk sommertid"}
@@ -1467,7 +1440,7 @@ nb{
         "meta:China"{
             ld{"kinesisk sommertid"}
             lg{"kinesisk tid"}
-            ls{"kinesisk normaltid"}
+            ls{"kinesisk standardtid"}
         }
         "meta:Choibalsan"{
             ld{"sommertid for Tsjojbalsan"}
@@ -1596,9 +1569,6 @@ nb{
             ld{"sommertid for Hawaii og Aleutene"}
             lg{"tidssone for Hawaii og Aleutene"}
             ls{"normaltid for Hawaii og Aleutene"}
-            sd{"HADT"}
-            sg{"HAT"}
-            ss{"HAST"}
         }
         "meta:Hong_Kong"{
             ld{"sommertid for Hongkong"}
@@ -1827,9 +1797,6 @@ nb{
         "meta:Ponape"{
             ls{"tidssone for Pohnpei"}
         }
-        "meta:Pyongyang"{
-            ls{"tidssone for Pyongyang"}
-        }
         "meta:Qyzylorda"{
             ld{"Qyzylorda, sommertid"}
             lg{"Qyzylorda-tid"}
@@ -1954,7 +1921,7 @@ nb{
         fallbackFormat{"{1} ({0})"}
         gmtFormat{"GMT{0}"}
         gmtZeroFormat{"GMT"}
-        hourFormat{"+HH:mm;-HH:mm"}
+        hourFormat{"+HH.mm;-HH.mm"}
         regionFormat{"tidssone for {0}"}
         regionFormatDaylight{"sommertid – {0}"}
         regionFormatStandard{"normaltid – {0}"}

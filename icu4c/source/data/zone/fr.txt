@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fr.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/fr.xml
+ */
 fr{
-    Version{"2.1.28.79"}
+    Version{"2.1.8.9"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -151,7 +160,7 @@ fr{
             ec{"São Tomé"}
         }
         "Africa:Tripoli"{
-            ec{"Tripoli (Libye)"}
+            ec{"Tripoli [Libye]"}
         }
         "Africa:Tunis"{
             ec{"Tunis"}
@@ -302,9 +311,6 @@ fr{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -472,13 +478,13 @@ fr{
             ec{"Noronha"}
         }
         "America:North_Dakota:Beulah"{
-            ec{"Beulah (Dakota du Nord)"}
+            ec{"Beulah [Dakota du Nord]"}
         }
         "America:North_Dakota:Center"{
-            ec{"Center (Dakota du Nord)"}
+            ec{"Center [Dakota du Nord]"}
         }
         "America:North_Dakota:New_Salem"{
-            ec{"New Salem (Dakota du Nord)"}
+            ec{"New Salem [Dakota du Nord]"}
         }
         "America:Ojinaga"{
             ec{"Ojinaga"}
@@ -553,7 +559,7 @@ fr{
             ec{"Saint-Jean de Terre-Neuve"}
         }
         "America:St_Kitts"{
-            ec{"Saint-Christophe"}
+            ec{"Saint-Kitts"}
         }
         "America:St_Lucia"{
             ec{"Sainte-Lucie"}
@@ -669,9 +675,6 @@ fr{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beyrouth"}
         }
@@ -684,11 +687,11 @@ fr{
         "Asia:Calcutta"{
             ec{"Calcutta"}
         }
-        "Asia:Chita"{
-            ec{"Tchita"}
-        }
         "Asia:Choibalsan"{
             ec{"Tchoïbalsan"}
+        }
+        "Asia:Chongqing"{
+            ec{"Chongqing"}
         }
         "Asia:Colombo"{
             ec{"Colombo"}
@@ -710,6 +713,9 @@ fr{
         }
         "Asia:Gaza"{
             ec{"Gaza"}
+        }
+        "Asia:Harbin"{
+            ec{"Harbin"}
         }
         "Asia:Hebron"{
             ec{"Hébron"}
@@ -740,6 +746,9 @@ fr{
         }
         "Asia:Karachi"{
             ec{"Karachi"}
+        }
+        "Asia:Kashgar"{
+            ec{"Kachgar"}
         }
         "Asia:Katmandu"{
             ec{"Katmandou"}
@@ -828,9 +837,6 @@ fr{
         "Asia:Singapore"{
             ec{"Singapour"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymsk"}
-        }
         "Asia:Taipei"{
             ec{"Taipei"}
         }
@@ -848,9 +854,6 @@ fr{
         }
         "Asia:Tokyo"{
             ec{"Tokyo"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Oulan-Bator"}
@@ -943,16 +946,13 @@ fr{
             ec{"Sydney"}
         }
         "Etc:Unknown"{
-            ec{"ville inconnue"}
+            ec{"zone inconnue"}
         }
         "Europe:Amsterdam"{
             ec{"Amsterdam"}
         }
         "Europe:Andorra"{
             ec{"Andorre"}
-        }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
         }
         "Europe:Athens"{
             ec{"Athènes"}
@@ -1011,9 +1011,6 @@ fr{
         }
         "Europe:Kiev"{
             ec{"Kiev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lisbonne"}
@@ -1091,9 +1088,6 @@ fr{
         "Europe:Tirane"{
             ec{"Tirana"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Oulianovsk"}
-        }
         "Europe:Uzhgorod"{
             ec{"Oujgorod"}
         }
@@ -1162,9 +1156,6 @@ fr{
         }
         "Pacific:Auckland"{
             ec{"Auckland"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Bougainville"}
         }
         "Pacific:Chatham"{
             ec{"Chatham"}
@@ -1434,9 +1425,9 @@ fr{
             ls{"heure des Chamorro"}
         }
         "meta:Chatham"{
-            ld{"heure d’été des îles Chatham"}
+            ld{"heure d’été des Îles Chatham"}
             lg{"heure des îles Chatham"}
-            ls{"heure normale des îles Chatham"}
+            ls{"heure normale des Îles Chatham"}
         }
         "meta:Chile"{
             ld{"heure d’été du Chili"}
@@ -1785,11 +1776,8 @@ fr{
         "meta:Ponape"{
             ls{"heure de l’île de Pohnpei"}
         }
-        "meta:Pyongyang"{
-            ls{"heure de Pyongyang"}
-        }
         "meta:Reunion"{
-            ls{"heure de La Réunion"}
+            ls{"heure de la Réunion"}
         }
         "meta:Rothera"{
             ls{"heure de Rothera"}

@@ -1,9 +1,21 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ak.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/ak.xml
+ */
 ak{
     AuxExemplarCharacters{"[c j q v z]"}
     ExemplarCharacters{"[a b d e ɛ f g h i k l m n o ɔ p r s t u w y]"}
     ExemplarCharactersIndex{"[A B C D E Ɛ F G H I J K L M N O Ɔ P Q R S T U V W X Y Z]"}
+    LocaleScript{
+        "Latn",
+    }
     NumberElements{
         latn{
             patterns{
@@ -15,14 +27,14 @@ ak{
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.1.7.39"}
     calendar{
         generic{
             DateTimePatterns{
-                "h:mm:ss a zzzz",
-                "h:mm:ss a z",
-                "h:mm:ss a",
-                "h:mm a",
+                "HH:mm:ss zzzz",
+                "HH:mm:ss z",
+                "HH:mm:ss",
+                "HH:mm",
                 "EEEE, G y MMMM dd",
                 "G y MMMM d",
                 "G y MMM d",
@@ -63,15 +75,11 @@ ak{
                 "AN",
                 "EW",
             }
-            AmPmMarkersAbbr{
-                "AN",
-                "EW",
-            }
             DateTimePatterns{
-                "h:mm:ss a zzzz",
-                "h:mm:ss a z",
-                "h:mm:ss a",
-                "h:mm a",
+                "HH:mm:ss zzzz",
+                "HH:mm:ss z",
+                "HH:mm:ss",
+                "HH:mm",
                 "EEEE, y MMMM dd",
                 "y MMMM d",
                 "y MMM d",

@@ -1,10 +1,19 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/sk.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/sk.xml
+ */
 sk{
     Currencies{
         ADP{
             "ADP",
-            "andorská peseta",
+            "Andorská peseta",
         }
         AED{
             "AED",
@@ -32,7 +41,7 @@ sk{
         }
         AOK{
             "AOK",
-            "angolská kwanza (1977–1990)",
+            "Angolská kwanza (1977–1990)",
         }
         AON{
             "AON",
@@ -40,15 +49,15 @@ sk{
         }
         AOR{
             "AOR",
-            "angolská kwanza reajustado (1995–1999)",
+            "Angolská kwanza Reajustado (1995–1999)",
         }
         ARA{
             "ARA",
-            "argentínsky austral",
+            "Argentinský austral",
         }
         ARP{
             "ARP",
-            "argentínske peso (1983 – 1985)",
+            "Argentinské peso (1983–1985)",
         }
         ARS{
             "ARS",
@@ -56,7 +65,7 @@ sk{
         }
         ATS{
             "ATS",
-            "rakúsky šiling",
+            "Rakúsky šiling",
         }
         AUD{
             "AUD",
@@ -68,7 +77,7 @@ sk{
         }
         AZM{
             "AZM",
-            "azerbajdžanský manat (1993–2006)",
+            "Azerbajdžanský manat (1993–2006)",
         }
         AZN{
             "AZN",
@@ -76,7 +85,7 @@ sk{
         }
         BAD{
             "BAD",
-            "bosniansko-hercegovinský dinár (1992–1994)",
+            "Bosnianský dinár",
         }
         BAM{
             "BAM",
@@ -92,19 +101,19 @@ sk{
         }
         BEC{
             "BEC",
-            "belgický frank (konvertibilný)",
+            "Belgický frank (konvertibilný)",
         }
         BEF{
             "BEF",
-            "belgický frank",
+            "Belgický frank",
         }
         BEL{
             "BEL",
-            "belgický frank (finančný)",
+            "Belgický frank (finančný)",
         }
         BGL{
             "BGL",
-            "bulharský tvrdý lev",
+            "Bulharský leva",
         }
         BGN{
             "BGN",
@@ -132,23 +141,23 @@ sk{
         }
         BOP{
             "BOP",
-            "bolívijské peso",
+            "Bolivíjske peso",
         }
         BOV{
             "BOV",
-            "bolívijské MVDOL",
+            "Bolivíjske mvdol",
         }
         BRB{
             "BRB",
-            "brazílske cruzeiro novo (1967–1986)",
+            "Bolivíjske Cruzeiro Novo (1967–1986)",
         }
         BRC{
             "BRC",
-            "brazílske cruzado (1986 – 1989)",
+            "Bolivíjske cruzado",
         }
         BRE{
             "BRE",
-            "brazílske cruzeiro (1990 – 1993)",
+            "Bolivíjske cruzeiro (1990–1993)",
         }
         BRL{
             "BRL",
@@ -182,13 +191,9 @@ sk{
             "BYB",
             "Bieloruský nový rubeľ (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "bieloruský rubeľ",
-        }
         BYR{
             "BYR",
-            "bieloruský rubeľ (2000–2016)",
+            "bieloruský rubeľ",
         }
         BZD{
             "BZD",
@@ -1024,103 +1029,58 @@ sk{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
-        EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RON{"lei"}
-        RUB{"₽"}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
         TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
     }
     Currencies%variant{
-        GEL{"₾"}
         RUB{"₽"}
         TRY{"TL"}
     }
@@ -1275,17 +1235,11 @@ sk{
             one{"bieloruský nový rubeľ (1994–1999)"}
             other{"bieloruských nových rubľov (1994–1999)"}
         }
-        BYN{
+        BYR{
             few{"bieloruské ruble"}
             many{"bieloruského rubľa"}
             one{"bieloruský rubeľ"}
             other{"bieloruských rubľov"}
-        }
-        BYR{
-            few{"bieloruské ruble (2000–2016)"}
-            many{"bieloruského rubľa (2000–2016)"}
-            one{"bieloruský rubeľ (2000–2016)"}
-            other{"bieloruských rubľov (2000–2016)"}
         }
         BZD{
             few{"belizské doláre"}
@@ -2188,5 +2142,5 @@ sk{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.8.9"}
 }

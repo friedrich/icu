@@ -1,9 +1,7 @@
 <!--
 /*
-* © 2016 and later: Unicode, Inc. and others.
-* License & terms of use: http://www.unicode.org/copyright.html#License
 *******************************************************************************
-* Copyright (C) 2010,2016, International Business Machines Corporation and    *
+* Copyright (C) 2010-2014, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 */
@@ -271,7 +269,7 @@
     </copy>
 
     <!-- license -->
-    <copy file="${shared.dir}/licenses/LICENSE"
+    <copy file="${shared.dir}/licenses/license.html"
           todir="${eclipse.projects.dir}/plugins/com.ibm.icu/about_files" />
 
     <!-- about -->
@@ -304,6 +302,7 @@
       <fileset dir="${icu4j.core-tests.dir}/src"/>
       <fileset dir="${icu4j.collate-tests.dir}/src"/>
       <fileset dir="${icu4j.translit-tests.dir}/src"/>
+      <fileset dir="${icu4j.testall.dir}/src"/>
     </copy>
 
     <!-- icu test data -->
@@ -328,7 +327,7 @@
     </copy>
 
     <!-- license -->
-    <copy file="${shared.dir}/licenses/LICENSE"
+    <copy file="${shared.dir}/licenses/license.html"
           todir="${eclipse.projects.dir}/plugins/com.ibm.icu.tests/about_files" />
 
     <!-- about -->
@@ -358,7 +357,7 @@
     </copy>
 
     <!-- license -->
-    <copy file="${shared.dir}/licenses/LICENSE"
+    <copy file="${shared.dir}/licenses/license.html"
           todir="${eclipse.projects.dir}/plugins/com.ibm.icu.base/about_files" />
 
     <!-- about -->
@@ -397,7 +396,7 @@
     </copy>
 
     <!-- license -->
-    <copy file="${shared.dir}/licenses/LICENSE"
+    <copy file="${shared.dir}/licenses/license.html"
           todir="${eclipse.projects.dir}/plugins/com.ibm.icu.base.tests/about_files" />
 
     <!-- about -->

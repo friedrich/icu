@@ -1,8 +1,17 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/zh_Hant.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/zh_Hant.xml
+ */
 zh_Hant{
     %%Parent{"root"}
-    Version{"2.1.28.79"}
+    Version{"2.1.8.95"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"阿比讓"}
@@ -303,9 +312,6 @@ zh_Hant{
         }
         "America:El_Salvador"{
             ec{"薩爾瓦多"}
-        }
-        "America:Fort_Nelson"{
-            ec{"納爾遜堡"}
         }
         "America:Fortaleza"{
             ec{"福塔力莎"}
@@ -670,9 +676,6 @@ zh_Hant{
         "Asia:Bangkok"{
             ec{"曼谷"}
         }
-        "Asia:Barnaul"{
-            ec{"巴爾瑙爾"}
-        }
         "Asia:Beirut"{
             ec{"貝魯特"}
         }
@@ -685,11 +688,11 @@ zh_Hant{
         "Asia:Calcutta"{
             ec{"加爾各答"}
         }
-        "Asia:Chita"{
-            ec{"赤塔"}
-        }
         "Asia:Choibalsan"{
             ec{"喬巴山"}
+        }
+        "Asia:Chongqing"{
+            ec{"重慶"}
         }
         "Asia:Colombo"{
             ec{"可倫坡"}
@@ -712,11 +715,14 @@ zh_Hant{
         "Asia:Gaza"{
             ec{"加薩"}
         }
+        "Asia:Harbin"{
+            ec{"哈爾濱"}
+        }
         "Asia:Hebron"{
             ec{"赫布隆"}
         }
         "Asia:Hong_Kong"{
-            ec{"香港"}
+            ec{"中華人民共和國香港特別行政區"}
         }
         "Asia:Hovd"{
             ec{"科布多"}
@@ -742,6 +748,9 @@ zh_Hant{
         "Asia:Karachi"{
             ec{"喀拉蚩"}
         }
+        "Asia:Kashgar"{
+            ec{"喀什米爾"}
+        }
         "Asia:Katmandu"{
             ec{"加德滿都"}
         }
@@ -761,7 +770,7 @@ zh_Hant{
             ec{"科威特"}
         }
         "Asia:Macau"{
-            ec{"澳門"}
+            ec{"中華人民共和國澳門特別行政區"}
         }
         "Asia:Magadan"{
             ec{"馬加丹"}
@@ -773,7 +782,7 @@ zh_Hant{
             ec{"馬尼拉"}
         }
         "Asia:Muscat"{
-            ec{"馬斯開特"}
+            ec{"馬斯喀特"}
         }
         "Asia:Nicosia"{
             ec{"尼古西亞"}
@@ -829,9 +838,6 @@ zh_Hant{
         "Asia:Singapore"{
             ec{"新加坡"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"中科雷姆斯克"}
-        }
         "Asia:Taipei"{
             ec{"台北"}
         }
@@ -849,9 +855,6 @@ zh_Hant{
         }
         "Asia:Tokyo"{
             ec{"東京"}
-        }
-        "Asia:Tomsk"{
-            ec{"托木斯克"}
         }
         "Asia:Ulaanbaatar"{
             ec{"烏蘭巴托"}
@@ -952,9 +955,6 @@ zh_Hant{
         "Europe:Andorra"{
             ec{"安道爾"}
         }
-        "Europe:Astrakhan"{
-            ec{"阿斯特拉罕"}
-        }
         "Europe:Athens"{
             ec{"雅典"}
         }
@@ -1012,9 +1012,6 @@ zh_Hant{
         }
         "Europe:Kiev"{
             ec{"基輔"}
-        }
-        "Europe:Kirov"{
-            ec{"基洛夫"}
         }
         "Europe:Lisbon"{
             ec{"里斯本"}
@@ -1092,9 +1089,6 @@ zh_Hant{
         "Europe:Tirane"{
             ec{"地拉那"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"烏里揚諾夫斯克"}
-        }
         "Europe:Uzhgorod"{
             ec{"烏茲哥洛"}
         }
@@ -1117,7 +1111,7 @@ zh_Hant{
             ec{"華沙"}
         }
         "Europe:Zagreb"{
-            ec{"札格瑞布"}
+            ec{"札格雷布"}
         }
         "Europe:Zaporozhye"{
             ec{"札波羅結"}
@@ -1163,9 +1157,6 @@ zh_Hant{
         }
         "Pacific:Auckland"{
             ec{"奧克蘭"}
-        }
-        "Pacific:Bougainville"{
-            ec{"布干維爾"}
         }
         "Pacific:Chatham"{
             ec{"查坦"}
@@ -1796,9 +1787,6 @@ zh_Hant{
         }
         "meta:Ponape"{
             ls{"波納佩時間"}
-        }
-        "meta:Pyongyang"{
-            ls{"平壤時間"}
         }
         "meta:Qyzylorda"{
             ld{"克孜勒奧爾達夏令時間"}

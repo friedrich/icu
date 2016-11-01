@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1998-2015, International Business Machines Corporation and
+ * Copyright (C) 1998-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -10,14 +8,11 @@ package com.ibm.icu.dev.tool.layout;
 
 import java.util.Date;
 
-import com.ibm.icu.lang.UScript;
 import com.ibm.icu.text.MessageFormat;
 import com.ibm.icu.util.VersionInfo;
 
 public class ScriptIDModuleWriter extends ScriptModuleWriter
 {
-    private static final boolean WITH_STABLE_TAGS = false;
-
     public ScriptIDModuleWriter(ScriptData scriptData, LanguageData languageData)
     {
         super(scriptData, languageData);
@@ -55,7 +50,7 @@ public class ScriptIDModuleWriter extends ScriptModuleWriter
              if(!initialheader){
                  output.println(format.format(args));
                  initialheader = true;
-             }else if(WITH_STABLE_TAGS) {
+             }else{
                  // Unicode API constants are "born stable".
                  format = new MessageFormat(scriptPreambleStable); 
                  output.println(format.format(args));
@@ -72,21 +67,16 @@ public class ScriptIDModuleWriter extends ScriptModuleWriter
                  
                  output.print(script);
                  output.println(",");
-                 if(script == UScript.INHERITED) {
-                     output.println("    qaaiScriptCode = zinhScriptCode,  /* manually added alias, for API stability */");
-                 }
                  script++;
              }
              arrayListIndex++;
         }
         
         if(newScripts){//Processing newly added scripts
-            if(WITH_STABLE_TAGS) {
-                format = new MessageFormat(scriptPreambleStable);
-                Object args[] = { VersionInfo.ICU_VERSION };
-                output.println(format.format(args));
-            }
-
+            format = new MessageFormat(scriptPreambleStable); 
+            Object args[] = { VersionInfo.ICU_VERSION };
+            output.println(format.format(args));
+            
             for (int script = previousTotalScripts+1; script <= totalScript; script += 1) {
                 output.print("    ");
                 output.print(scriptData.getTagLabel(script));
@@ -143,7 +133,7 @@ public class ScriptIDModuleWriter extends ScriptModuleWriter
              if(!initialheader){
                  output.println(format.format(args));
                  initialheader = true;
-             } else if(WITH_STABLE_TAGS) {
+             }else{
                  // Unicode API constants are "born stable".
                  format = new MessageFormat(languagePreambleStable); 
                  output.println(format.format(args));
@@ -166,12 +156,10 @@ public class ScriptIDModuleWriter extends ScriptModuleWriter
         }
         if(newLanguage){
             //Processing newly added languages
-            if(WITH_STABLE_TAGS) {
-                format = new MessageFormat(languagePreambleStable); 
-                Object args[] = { VersionInfo.ICU_VERSION };
-                output.println(format.format(args));
-            }
-
+            format = new MessageFormat(languagePreambleStable); 
+            Object args[] = { VersionInfo.ICU_VERSION };
+            output.println(format.format(args));
+            
             for (int langauge = previousTotalLanguages+1; langauge <= totalLanguage; langauge += 1) {
                 output.print("    ");
                 output.print(languageData.getTagLabel(langauge).toLowerCase());
@@ -202,7 +190,7 @@ public class ScriptIDModuleWriter extends ScriptModuleWriter
     " * Constants for Unicode script values, generated using\n" +
     " * ICU4J''s <code>UScript</code> class.\n" +
     " *\n" +
-    " * @deprecated ICU 54. See '{@link icu::LayoutEngine}'\n" + // was " * @stable ICU {0}\n"
+    " * @stable ICU {0}\n" +
     " */\n" +
     "\n" +
     "enum ScriptCodes '{'";
@@ -221,7 +209,7 @@ public class ScriptIDModuleWriter extends ScriptModuleWriter
     " * this is just a list of languages which the LayoutEngine\n" +
     " * supports.\n" +
     " *\n" +
-    " * @deprecated ICU 54. See '{@link icu::LayoutEngine}'\n" + // was " * @stable ICU {0}\n"
+    " * @stable ICU {0}\n" +
     " */\n" +
     "\n" +
     "enum LanguageCodes '{'";

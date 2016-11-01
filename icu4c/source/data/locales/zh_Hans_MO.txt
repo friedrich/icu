@@ -1,12 +1,26 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/zh_Hans_MO.xml
+// *
+// ***************************************************************************
 zh_Hans_MO{
-    Version{"2.1.27.99"}
+    ExemplarCharactersPunctuation{"[＿ ﹏ \\- — ， 、 ； ： ！ ？ … 。 · ‘ ’ “ ” （ ） ［ ］ 〈 〉 《 》 ﹁ ﹂ ﹃ ﹄ 【 】 〔 〕 / ～]"}
+    NumberElements{
+        latn{
+            patterns{
+                currencyFormat{"¤#,##0.00"}
+            }
+        }
+    }
+    Version{"2.1.8.19"}
     calendar{
         chinese{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "zah:mm:ss",
                 "ah:mm:ss",
                 "ah:mm",
                 {
@@ -21,7 +35,7 @@ zh_Hans_MO{
                     "U年MMMd日",
                     "hanidec",
                 }
-                "r/M/d",
+                "U-M-d",
                 "{1} {0}",
                 "{1} {0}",
                 "{1} {0}",
@@ -31,13 +45,13 @@ zh_Hans_MO{
         }
         generic{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "zah:mm:ss",
                 "ah:mm:ss",
                 "ah:mm",
-                "Gy年MM月d日EEEE",
-                "Gy年MM月d日",
-                "Gy年MM月d日",
+                "Gy年M月d日EEEE",
+                "Gy年M月d日",
+                "Gy年M月d日",
                 "d/M/yyGGGGG",
                 "{1} {0}",
                 "{1} {0}",
@@ -93,8 +107,8 @@ zh_Hans_MO{
         }
         gregorian{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "zah:mm:ss",
                 "ah:mm:ss",
                 "ah:mm",
                 "y年M月d日EEEE",
@@ -102,16 +116,16 @@ zh_Hans_MO{
                 "y年M月d日",
                 "d/M/yy",
                 "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
+                "{1}{0}",
+                "{1}{0}",
                 "{1} {0}",
                 "{1} {0}",
             }
             availableFormats{
-                MEd{"E, d/M"}
+                MEd{"M-dE"}
                 MMMMdd{"M月d日"}
-                MMdd{"dd/MM"}
-                Md{"d/M"}
+                MMdd{"MM-dd"}
+                Md{"M-d"}
                 yMEd{"y年M月d日，E"}
                 yMd{"y年M月d日"}
             }
@@ -158,8 +172,8 @@ zh_Hans_MO{
         }
         islamic{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "zah:mm:ss",
                 "ah:mm:ss",
                 "ah:mm",
                 "Gy年M月d日EEEE",
@@ -175,8 +189,8 @@ zh_Hans_MO{
         }
         roc{
             DateTimePatterns{
-                "zzzz ah:mm:ss",
-                "z ah:mm:ss",
+                "zzzzah:mm:ss",
+                "zah:mm:ss",
                 "ah:mm:ss",
                 "ah:mm",
                 "Gy年M月d日EEEE",
@@ -197,6 +211,9 @@ zh_Hans_MO{
         }
     }
     fields{
+        day{
+            dn{"天"}
+        }
         second{
             relativeTime{
                 future{
