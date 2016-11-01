@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/da.xml
+// *
+// ***************************************************************************
 da{
     Countries{
         001{"Verden"}
@@ -34,12 +40,13 @@ da{
         419{"Latinamerika"}
         AC{"Ascensionøen"}
         AD{"Andorra"}
-        AE{"De Forenede Arabiske Emirater"}
+        AE{"Forenede Arabiske Emirater"}
         AF{"Afghanistan"}
         AG{"Antigua og Barbuda"}
         AI{"Anguilla"}
         AL{"Albanien"}
         AM{"Armenien"}
+        AN{"Hollandske Antiller"}
         AO{"Angola"}
         AQ{"Antarktis"}
         AR{"Argentina"}
@@ -62,7 +69,7 @@ da{
         BM{"Bermuda"}
         BN{"Brunei"}
         BO{"Bolivia"}
-        BQ{"De tidligere Nederlandske Antiller"}
+        BQ{"Nederlandske antiller"}
         BR{"Brasilien"}
         BS{"Bahamas"}
         BT{"Bhutan"}
@@ -73,7 +80,7 @@ da{
         CA{"Canada"}
         CC{"Cocosøerne"}
         CD{"Congo-Kinshasa"}
-        CF{"Den Centralafrikanske Republik"}
+        CF{"Centralafrikanske Republik"}
         CG{"Congo-Brazzaville"}
         CH{"Schweiz"}
         CI{"Elfenbenskysten"}
@@ -126,12 +133,12 @@ da{
         GP{"Guadeloupe"}
         GQ{"Ækvatorialguinea"}
         GR{"Grækenland"}
-        GS{"South Georgia og De Sydlige Sandwichøer"}
+        GS{"South Georgia og South Sandwich Islands"}
         GT{"Guatemala"}
         GU{"Guam"}
         GW{"Guinea-Bissau"}
         GY{"Guyana"}
-        HK{"SAR Hongkong"}
+        HK{"Hongkong SAR"}
         HM{"Heard Island og McDonald Islands"}
         HN{"Honduras"}
         HR{"Kroatien"}
@@ -185,7 +192,7 @@ da{
         ML{"Mali"}
         MM{"Myanmar (Burma)"}
         MN{"Mongoliet"}
-        MO{"SAR Macao"}
+        MO{"Macao SAR"}
         MP{"Nordmarianerne"}
         MQ{"Martinique"}
         MR{"Mauretanien"}
@@ -247,7 +254,7 @@ da{
         SO{"Somalia"}
         SR{"Surinam"}
         SS{"Sydsudan"}
-        ST{"São Tomé og Príncipe"}
+        ST{"Sao Tome og Principe"}
         SV{"El Salvador"}
         SX{"Sint Maarten"}
         SY{"Syrien"}
@@ -272,7 +279,6 @@ da{
         UA{"Ukraine"}
         UG{"Uganda"}
         UM{"Amerikanske oversøiske øer"}
-        UN{"Forenede Nationer"}
         US{"USA"}
         UY{"Uruguay"}
         UZ{"Usbekistan"}
@@ -298,15 +304,14 @@ da{
         HK{"Hongkong"}
         MO{"Macao"}
         PS{"Palæstina"}
-        UN{"FN"}
         US{"USA"}
     }
     Countries%variant{
-        CD{"Den Demokratiske Republik Congo (DRC)"}
+        CD{"Den Demokratiske Republik Congo"}
         CG{"Republikken Congo"}
         FK{"Falklandsøerne (Islas Malvinas)"}
-        MK{"Den tidligere jugoslaviske republik Makedonien"}
+        MK{"Makedonien (Den Tidligere Jugoslaviske Republik Makedonien)"}
         TL{"Østtimor"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
 }

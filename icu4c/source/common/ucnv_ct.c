@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
 *   Copyright (C) 2010-2015, International Business Machines
@@ -631,7 +629,15 @@ static const UConverterStaticData _CompoundTextStaticData = {
     0,
     { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } /* reserved */
 };
-const UConverterSharedData _CompoundTextData =
-        UCNV_IMMUTABLE_SHARED_DATA_INITIALIZER(&_CompoundTextStaticData, &_CompoundTextImpl);
+const UConverterSharedData _CompoundTextData = {
+    sizeof(UConverterSharedData),
+    ~((uint32_t) 0),
+    NULL,
+    NULL,
+    &_CompoundTextStaticData,
+    FALSE,
+    &_CompoundTextImpl,
+    0
+};
 
 #endif /* #if !UCONFIG_NO_LEGACY_CONVERSION */

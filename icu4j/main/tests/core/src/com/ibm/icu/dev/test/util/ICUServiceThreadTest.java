@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2001-2013, International Business Machines Corporation and    *
@@ -24,8 +22,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestLog;
 import com.ibm.icu.impl.ICULocaleService;
@@ -37,6 +33,24 @@ import com.ibm.icu.util.ULocale;
 public class ICUServiceThreadTest extends TestFmwk
 {
     private static final boolean PRINTSTATS = false;
+
+    public static void main(String[] args) throws Exception {
+        ICUServiceThreadTest test = new ICUServiceThreadTest();
+        test.run(args);
+
+        // get
+        // getvisibleids
+        // getdisplayname(locale)
+        // factories
+
+        // registerFactory
+        // unregisterFactory
+
+        // 1) concurrent access
+        // 2) access while factories change
+        // 3) iteration while factories change
+        // 4) concurrent conflicting access
+    }
 
     private static final String[] countries = {
         "ab", "bc", "cd", "de", "ef", "fg", "gh", "ji", "ij", "jk"
@@ -195,8 +209,7 @@ public class ICUServiceThreadTest extends TestFmwk
         protected void iterate() {
             Factory f = new TestFactory(getCLV());
             service.registerFactory(f);
-            //log.logln(f.toString());
-            TestFmwk.logln(f.toString());
+            log.logln(f.toString());
         }
     }
 
@@ -219,8 +232,7 @@ public class ICUServiceThreadTest extends TestFmwk
                 int n = r.nextInt(s);
                 Factory f = (Factory)factories.remove(n);
                 boolean success = service.unregisterFactory(f);
-                //log.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
-                TestFmwk.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
+                log.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
             }
         }
     }
@@ -239,8 +251,7 @@ public class ICUServiceThreadTest extends TestFmwk
             if (n < factories.length) {
                 Factory f = factories[n++];
                 boolean success = service.unregisterFactory(f);
-                //log.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
-                TestFmwk.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
+                log.logln("factory: " + f + (success ? " succeeded." : " *** failed."));
             }
         }
     }
@@ -258,8 +269,7 @@ public class ICUServiceThreadTest extends TestFmwk
             while (--n >= 0 && iter.hasNext()) {
                 String id = (String)iter.next();
                 Object result = service.get(id);
-                //log.logln("iter: " + n + " id: " + id + " result: " + result);
-                TestFmwk.logln("iter: " + n + " id: " + id + " result: " + result);
+                log.logln("iter: " + n + " id: " + id + " result: " + result);
             }
         }
     }
@@ -289,14 +299,10 @@ public class ICUServiceThreadTest extends TestFmwk
 
                 //log.logln(" iter: " + n +
                 String num = Integer.toString(n);
-//                log.logln(" iter: " + num +
-//                        " dname: " + dname +
-//                        " id: " + id +
-//                        " result: " + result);
-                TestFmwk.logln(" iter: " + num +
-                        " dname: " + dname +
-                        " id: " + id +
-                        " result: " + result);
+                log.logln(" iter: " + num +
+                          " dname: " + dname +
+                          " id: " + id +
+                          " result: " + result);
             }
         }
     }
@@ -314,8 +320,7 @@ public class ICUServiceThreadTest extends TestFmwk
             String id = getCLV();
             Object o = service.get(id, actualID);
             if (o != null) {
-                //log.logln(" id: " + id + " actual: " + actualID[0] + " result: " + o);
-                TestFmwk.logln(" id: " + id + " actual: " + actualID[0] + " result: " + o);
+                log.logln(" id: " + id + " actual: " + actualID[0] + " result: " + o);
             }
         }
     }
@@ -336,8 +341,7 @@ public class ICUServiceThreadTest extends TestFmwk
             }
             String id = list[n];
             Object o = service.get(id);
-            //log.logln(" id: " + id + " result: " + o);
-            TestFmwk.logln(" id: " + id + " result: " + o);
+            log.logln(" id: " + id + " result: " + o);
         }
     }
 
@@ -373,7 +377,6 @@ public class ICUServiceThreadTest extends TestFmwk
     private ICUService stableService;
 
     // run multiple get on a stable service
-    @Test
     public void Test00_ConcurrentGet() {
         for(int i = 0; i < 10; ++i) {
             new GetThread("[" + Integer.toString(i) + "]",  stableService(), 0, this).start();
@@ -383,7 +386,6 @@ public class ICUServiceThreadTest extends TestFmwk
     }
 
     // run multiple getVisibleID on a stable service
-    @Test
     public void Test01_ConcurrentGetVisible() {
         for(int i = 0; i < 10; ++i) {
             new GetVisibleThread("[" + Integer.toString(i) + "]",  stableService(), 0, this).start();
@@ -393,7 +395,6 @@ public class ICUServiceThreadTest extends TestFmwk
     }
 
     // run multiple getDisplayName on a stable service
-    @Test
     public void Test02_ConcurrentGetDisplay() {
         String[] localeNames = {
             "en", "es", "de", "fr", "zh", "it", "no", "sv"
@@ -411,7 +412,6 @@ public class ICUServiceThreadTest extends TestFmwk
     }
 
     // run register/unregister on a service
-    @Test
     public void Test03_ConcurrentRegUnreg() {
         ICUService service = new ICULocaleService();
         if (PRINTSTATS) service.stats();    // Enable the stats collection
@@ -425,7 +425,6 @@ public class ICUServiceThreadTest extends TestFmwk
         if (PRINTSTATS) System.out.println(service.stats());
     }
 
-    @Test
     public void Test04_WitheringService() {
         ICUService service = new ICULocaleService();
         if (PRINTSTATS) service.stats();    // Enable the stats collection
@@ -454,7 +453,6 @@ public class ICUServiceThreadTest extends TestFmwk
     // one visible id thread, delay 50ms
     // fifteen get threads, delay 0
     // run for ten seconds
-    @Test
     public void Test05_ConcurrentEverything() {
         ICUService service = new ICULocaleService();
         if (PRINTSTATS) service.stats();    // Enable the stats collection

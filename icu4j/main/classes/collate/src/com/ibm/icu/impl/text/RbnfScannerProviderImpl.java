@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
 * Copyright (C) 2009-2014, International Business Machines Corporation and    *
@@ -180,14 +178,12 @@ public class RbnfScannerProviderImpl implements RbnfLenientScannerProvider {
             int oKey = keyIter.next();
             while (oKey != CollationElementIterator.NULLORDER) {
                 while (oStr != CollationElementIterator.NULLORDER &&
-                       CollationElementIterator.primaryOrder(oStr) == 0) {
+                       CollationElementIterator.primaryOrder(oStr) == 0)
                     oStr = strIter.next();
-                }
 
                 while (oKey != CollationElementIterator.NULLORDER &&
-                       CollationElementIterator.primaryOrder(oKey) == 0) {
+                       CollationElementIterator.primaryOrder(oKey) == 0)
                     oKey = keyIter.next();
-                }
 
                 if (oStr == CollationElementIterator.NULLORDER) {
                     return new int[] { -1, 0 };
@@ -212,7 +208,11 @@ public class RbnfScannerProviderImpl implements RbnfLenientScannerProvider {
                 }
             }
 
-            return new int[] { keyStart, strIter.getOffset() - keyStart };
+            if (oKey == CollationElementIterator.NULLORDER) {
+                return new int[] { keyStart, strIter.getOffset() - keyStart };
+            }
+
+            return new int[] { -1, 0 };
         }
         ///CLOVER:ON
 

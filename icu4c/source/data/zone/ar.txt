@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ar.xml
+// *
+// ***************************************************************************
 ar{
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"أبيدجان"}
@@ -302,9 +308,6 @@ ar{
         }
         "America:El_Salvador"{
             ec{"السلفادور"}
-        }
-        "America:Fort_Nelson"{
-            ec{"فورت نيلسون"}
         }
         "America:Fortaleza"{
             ec{"فورتاليزا"}
@@ -669,9 +672,6 @@ ar{
         "Asia:Bangkok"{
             ec{"بانكوك"}
         }
-        "Asia:Barnaul"{
-            ec{"بارناول"}
-        }
         "Asia:Beirut"{
             ec{"بيروت"}
         }
@@ -683,9 +683,6 @@ ar{
         }
         "Asia:Calcutta"{
             ec{"كالكتا"}
-        }
-        "Asia:Chita"{
-            ec{"تشيتا"}
         }
         "Asia:Choibalsan"{
             ec{"تشوبالسان"}
@@ -828,9 +825,6 @@ ar{
         "Asia:Singapore"{
             ec{"سنغافورة"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"سريدنكوليمسك"}
-        }
         "Asia:Taipei"{
             ec{"تايبيه"}
         }
@@ -848,9 +842,6 @@ ar{
         }
         "Asia:Tokyo"{
             ec{"طوكيو"}
-        }
-        "Asia:Tomsk"{
-            ec{"تومسك"}
         }
         "Asia:Ulaanbaatar"{
             ec{"آلانباتار"}
@@ -951,9 +942,6 @@ ar{
         "Europe:Andorra"{
             ec{"أندورا"}
         }
-        "Europe:Astrakhan"{
-            ec{"أستراخان"}
-        }
         "Europe:Athens"{
             ec{"أثينا"}
         }
@@ -1011,9 +999,6 @@ ar{
         }
         "Europe:Kiev"{
             ec{"كييف"}
-        }
-        "Europe:Kirov"{
-            ec{"كيروف"}
         }
         "Europe:Lisbon"{
             ec{"لشبونة"}
@@ -1091,9 +1076,6 @@ ar{
         "Europe:Tirane"{
             ec{"تيرانا"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"أوليانوفسك"}
-        }
         "Europe:Uzhgorod"{
             ec{"أوزجرود"}
         }
@@ -1162,9 +1144,6 @@ ar{
         }
         "Pacific:Auckland"{
             ec{"أوكلاند"}
-        }
-        "Pacific:Bougainville"{
-            ec{"بوغانفيل"}
         }
         "Pacific:Chatham"{
             ec{"تشاثام"}
@@ -1500,7 +1479,7 @@ ar{
             ls{"توقيت فيجي الرسمي"}
         }
         "meta:French_Guiana"{
-            ls{"توقيت غايانا الفرنسية"}
+            ls{"توقيت غويانا الفرنسية"}
         }
         "meta:French_Southern"{
             ls{"توقيت المقاطعات الفرنسية الجنوبية والأنتارتيكية"}
@@ -1764,9 +1743,6 @@ ar{
         }
         "meta:Ponape"{
             ls{"توقيت بونابي"}
-        }
-        "meta:Pyongyang"{
-            ls{"توقيت بيونغ يانغ"}
         }
         "meta:Reunion"{
             ls{"توقيت ريونيون"}

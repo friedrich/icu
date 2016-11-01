@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and
+ * Copyright (C) 1996-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -14,23 +12,22 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
-* <p>Internal reader class for ICU data file uname.dat containing
-* Unicode codepoint name data.</p>
+* <p>Internal reader class for ICU data file uname.dat containing 
+* Unicode codepoint name data.</p> 
 * <p>This class simply reads unames.icu, authenticates that it is a valid
 * ICU data file and split its contents up into blocks of data for use in
 * <a href=UCharacterName.html>com.ibm.icu.impl.UCharacterName</a>.
-* </p>
-* <p>unames.icu which is in big-endian format is jared together with this
+* </p> 
+* <p>unames.icu which is in big-endian format is jared together with this 
 * package.</p>
 * @author Syn Wee Quek
 * @since release 2.1, February 1st 2002
 */
 
 final class UCharacterNameReader implements ICUBinary.Authenticate
-{
+{      
     // public methods ----------------------------------------------------
-
-    @Override
+    
     public boolean isDataVersionAcceptable(byte version[])
     {
         return version[0] == 1;
@@ -65,31 +62,37 @@ final class UCharacterNameReader implements ICUBinary.Authenticate
         m_groupindex_       = m_byteBuffer_.getInt();
         m_groupstringindex_ = m_byteBuffer_.getInt();
         m_algnamesindex_    = m_byteBuffer_.getInt();
-
+        
         // reading tokens
         int count = m_byteBuffer_.getChar();
-        char token[] = ICUBinary.getChars(m_byteBuffer_, count, 0);
+        char token[] = new char[count];
+        for (char i = 0; i < count; i ++) {
+            token[i] = m_byteBuffer_.getChar();
+        }
         int size = m_groupindex_ - m_tokenstringindex_;
         byte tokenstr[] = new byte[size];
         m_byteBuffer_.get(tokenstr);
         data.setToken(token, tokenstr);
-
+        
         // reading the group information records
         count = m_byteBuffer_.getChar();
         data.setGroupCountSize(count, GROUP_INFO_SIZE_);
         count *= GROUP_INFO_SIZE_;
-        char group[] = ICUBinary.getChars(m_byteBuffer_, count, 0);
-
+        char group[] = new char[count];
+        for (int i = 0; i < count; i ++) {
+            group[i] = m_byteBuffer_.getChar();
+        }
+        
         size = m_algnamesindex_ - m_groupstringindex_;
         byte groupstring[] = new byte[size];
         m_byteBuffer_.get(groupstring);
-
+    
         data.setGroup(group, groupstring);
-
+        
         count = m_byteBuffer_.getInt();
-        UCharacterName.AlgorithmName alg[] =
+        UCharacterName.AlgorithmName alg[] = 
                                  new UCharacterName.AlgorithmName[count];
-
+     
         for (int i = 0; i < count; i ++)
         {
             UCharacterName.AlgorithmName an = readAlg();
@@ -100,7 +103,7 @@ final class UCharacterNameReader implements ICUBinary.Authenticate
         }
         data.setAlgorithm(alg);
     }
-
+    
     /**
     * <p>Checking the file for the correct format.</p>
     * @param dataformatid
@@ -117,7 +120,7 @@ final class UCharacterNameReader implements ICUBinary.Authenticate
                isDataVersionAcceptable(dataformatversion);
     }
     ///CLOVER:ON
-
+    
     // private variables -------------------------------------------------
 
     /**
@@ -136,10 +139,10 @@ final class UCharacterNameReader implements ICUBinary.Authenticate
     private int m_groupindex_;
     private int m_groupstringindex_;
     private int m_algnamesindex_;
-
+      
     /**
     * Size of an algorithmic name information group
-    * start code point size + end code point size + type size + variant size +
+    * start code point size + end code point size + type size + variant size + 
     * size of data size
     */
     private static final int ALG_INFO_SIZE_ = 12;
@@ -150,7 +153,7 @@ final class UCharacterNameReader implements ICUBinary.Authenticate
     private static final int DATA_FORMAT_ID_ = 0x756E616D;
 
     // private methods ---------------------------------------------------
-
+      
     /**
     * Reads an individual record of AlgorithmNames
     * @return an instance of AlgorithNames if read is successful otherwise null
@@ -158,7 +161,7 @@ final class UCharacterNameReader implements ICUBinary.Authenticate
     */
     private UCharacterName.AlgorithmName readAlg() throws IOException
     {
-        UCharacterName.AlgorithmName result =
+        UCharacterName.AlgorithmName result = 
                                        new UCharacterName.AlgorithmName();
         int rangestart = m_byteBuffer_.getInt();
         int rangeend   = m_byteBuffer_.getInt();
@@ -167,16 +170,19 @@ final class UCharacterNameReader implements ICUBinary.Authenticate
         if (!result.setInfo(rangestart, rangeend, type, variant)) {
             return null;
         }
-
+                         
         int size = m_byteBuffer_.getChar();
         if (type == UCharacterName.AlgorithmName.TYPE_1_)
         {
-            char factor[] = ICUBinary.getChars(m_byteBuffer_, variant, 0);
-
+            char factor[] = new char[variant];
+            for (int j = 0; j < variant; j ++) {
+                factor[j] = m_byteBuffer_.getChar();
+            }
+                  
             result.setFactor(factor);
             size -= (variant << 1);
         }
-
+          
         StringBuilder prefix = new StringBuilder();
         char c = (char)(m_byteBuffer_.get() & 0x00FF);
         while (c != 0)
@@ -184,11 +190,11 @@ final class UCharacterNameReader implements ICUBinary.Authenticate
             prefix.append(c);
             c = (char)(m_byteBuffer_.get() & 0x00FF);
         }
-
+        
         result.setPrefix(prefix.toString());
-
+        
         size -= (ALG_INFO_SIZE_ + prefix.length() + 1);
-
+        
         if (size > 0)
         {
             byte string[] = new byte[size];

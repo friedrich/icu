@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/eu.xml
+// *
+// ***************************************************************************
 eu{
     Countries{
         001{"Mundua"}
@@ -40,6 +46,7 @@ eu{
         AI{"Angila"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Holandarren Antillak"}
         AO{"Angola"}
         AQ{"Antartika"}
         AR{"Argentina"}
@@ -178,12 +185,12 @@ eu{
         MC{"Monako"}
         MD{"Moldavia"}
         ME{"Montenegro"}
-        MF{"San Martin"}
+        MF{"Saint Martin"}
         MG{"Madagaskar"}
         MH{"Marshall uharteak"}
         MK{"Mazedonia"}
         ML{"Mali"}
-        MM{"Myanmar (Birmania)"}
+        MM{"Myanmar"}
         MN{"Mongolia"}
         MO{"Macau AEB Txina"}
         MP{"Iparraldeko Mariana uharteak"}
@@ -237,7 +244,7 @@ eu{
         SD{"Sudan"}
         SE{"Suedia"}
         SG{"Singapur"}
-        SH{"Santa Helena"}
+        SH{"Saint Helena"}
         SI{"Eslovenia"}
         SJ{"Svalbard eta Jan Mayen uharteak"}
         SK{"Eslovakia"}
@@ -253,7 +260,7 @@ eu{
         SY{"Siria"}
         SZ{"Swazilandia"}
         TA{"Tristan da Cunha"}
-        TC{"Turk eta Caico uharteak"}
+        TC{"Turk eta Caicos uharteak"}
         TD{"Txad"}
         TF{"Hegoaldeko lurralde frantsesak"}
         TG{"Togo"}
@@ -302,10 +309,9 @@ eu{
     Countries%variant{
         CD{"Kongo (KED)"}
         CG{"Kongo (errepublika)"}
-        CZ{"Txekia"}
         FK{"Falkland uharteak (Malvina uharteak)"}
         MK{"Mazedonia (Mazedoniako Yugoslaviar Errepublika ohia)"}
         TL{"Timor ekialdea"}
     }
-    Version{"2.1.29.20"}
+    Version{"2.1.12.94"}
 }

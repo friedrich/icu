@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ca.xml
+// *
+// ***************************************************************************
 ca{
     AuxExemplarCharacters{"[á ă â å ä ã ā æ ĕ ê ë ē ì ĭ î ī ŀ ñ º ŏ ô ö ø ō œ ù ŭ û ū ÿ]"}
     Ellipsis{
@@ -84,56 +90,6 @@ ca{
                 }
             }
             patternsShort{
-                currencyFormat{
-                    1000{
-                        one{"0m ¤"}
-                        other{"0m ¤"}
-                    }
-                    10000{
-                        one{"00m ¤"}
-                        other{"00m ¤"}
-                    }
-                    100000{
-                        one{"000m ¤"}
-                        other{"000m ¤"}
-                    }
-                    1000000{
-                        one{"0M ¤"}
-                        other{"0M ¤"}
-                    }
-                    10000000{
-                        one{"00 M ¤"}
-                        other{"00 M ¤"}
-                    }
-                    100000000{
-                        one{"000 M ¤"}
-                        other{"000 M ¤"}
-                    }
-                    1000000000{
-                        one{"0000 M ¤"}
-                        other{"0000 M ¤"}
-                    }
-                    10000000000{
-                        one{"00mM ¤"}
-                        other{"00mM ¤"}
-                    }
-                    100000000000{
-                        one{"000mM ¤"}
-                        other{"000mM ¤"}
-                    }
-                    1000000000000{
-                        one{"0B ¤"}
-                        other{"0B ¤"}
-                    }
-                    10000000000000{
-                        one{"00 B ¤"}
-                        other{"00 B ¤"}
-                    }
-                    100000000000000{
-                        one{"000 B ¤"}
-                        other{"000 B ¤"}
-                    }
-                }
                 decimalFormat{
                     1000{
                         one{"0m"}
@@ -203,7 +159,7 @@ ca{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
     calendar{
         buddhist{
             DateTimePatterns{
@@ -456,8 +412,8 @@ ca{
                 "H:mm",
                 "EEEE d MMMM 'de' y G",
                 "d MMMM 'de' y G",
-                "d/M/y G",
-                "d/M/yy GGGGG",
+                "dd/MM/y G",
+                "dd/MM/yy GGGGG",
                 "{1}, {0}",
                 "{1}, {0}",
                 "{1}, {0}",
@@ -465,7 +421,6 @@ ca{
                 "{1}, {0}",
             }
             availableFormats{
-                E{"ccc"}
                 Ed{"E d"}
                 Gy{"y G"}
                 GyMMM{"LLL y G"}
@@ -523,11 +478,11 @@ ca{
                     M{"M–M"}
                 }
                 MEd{
-                    M{"E d/M – E d/M"}
-                    d{"E d/M – E d/M"}
+                    M{"E dd/MM – E dd/MM"}
+                    d{"E dd/MM – E dd/MM"}
                 }
                 MMM{
-                    M{"MMM–MMM"}
+                    M{"LLL–LLL"}
                 }
                 MMMEd{
                     M{"E, d MMM – E, d MMM"}
@@ -538,8 +493,8 @@ ca{
                     d{"d–d MMM"}
                 }
                 Md{
-                    M{"d/M – d/M"}
-                    d{"d/M – d/M"}
+                    M{"dd/MM – dd/MM"}
+                    d{"dd/MM – dd/MM"}
                 }
                 d{
                     d{"d–d"}
@@ -567,26 +522,26 @@ ca{
                     y{"y–y G"}
                 }
                 yM{
-                    M{"M/y – M/y GGGG"}
-                    y{"M/y – M/y GGGG"}
+                    M{"MM/y – MM/y GGGG"}
+                    y{"MM/y – MM/y GGGG"}
                 }
                 yMEd{
-                    M{"E d/M/y – E d/M/y GGGG"}
-                    d{"E d/M/y – E d/M/y GGGG"}
-                    y{"E d/M/y – E d/M/y GGGG"}
+                    M{"E dd/MM/y – E dd/MM/y GGGG"}
+                    d{"E dd/MM/y – E dd/MM/y GGGG"}
+                    y{"E dd/MM/y – E dd/MM/y GGGG"}
                 }
                 yMMM{
                     M{"LLL–LLL y G"}
-                    y{"MMM 'de' y – MMM 'de' y G"}
+                    y{"LLL y – LLL y G"}
                 }
                 yMMMEd{
-                    M{"E d MMM – E d MMM 'de' y G"}
-                    d{"E d MMM – E d MMM 'de' y G"}
-                    y{"E d MMM 'de' y – E d MMM 'de' y G"}
+                    M{"E, d MMM – E, d MMM y G"}
+                    d{"E, d MMM – E, d MMM y G"}
+                    y{"E, d MMM y – E, d MMM y G"}
                 }
                 yMMMM{
-                    M{"MMMM–MMMM 'de' y G"}
-                    y{"MMMM 'de' y – MMMM 'de' y G"}
+                    M{"LLLL–LLLL 'de' y G"}
+                    y{"LLLL 'de' y – LLLL 'de' y G"}
                 }
                 yMMMMEd{
                     M{"E, d MMMM – E, d MMMM 'de' y G"}
@@ -599,14 +554,14 @@ ca{
                     y{"d MMMM 'de' y – d MMMM 'de' y G"}
                 }
                 yMMMd{
-                    M{"d MMM – d MMM 'de' y G"}
-                    d{"d–d MMM 'de' y G"}
-                    y{"d MMM 'de' y – d MMM 'de' y G"}
+                    M{"d MMM – d MMM y G"}
+                    d{"d–d MMM y G"}
+                    y{"d MMM y – d MMM y G"}
                 }
                 yMd{
-                    M{"d/M/y – d/M/y GGGG"}
-                    d{"d/M/y – d/M/y GGGG"}
-                    y{"d/M/y – d/M/y GGGG"}
+                    M{"dd/MM/y – dd/MM/y GGGG"}
+                    d{"dd/MM/y – dd/MM/y GGGG"}
+                    y{"dd/MM/y – dd/MM/y GGGG"}
                 }
             }
         }
@@ -615,13 +570,9 @@ ca{
                 "a. m.",
                 "p. m.",
             }
-            AmPmMarkersAbbr{
-                "a. m.",
-                "p. m.",
-            }
             AmPmMarkersNarrow{
-                "a. m.",
-                "p. m.",
+                "a.m.",
+                "p.m.",
             }
             DateTimePatterns{
                 "H:mm:ss zzzz",
@@ -632,12 +583,14 @@ ca{
                 "d MMMM 'de' y",
                 "d MMM y",
                 "d/M/yy",
+                "{1} , {0}",
+                "{1} 'a les' {0}",
                 "{1}, {0}",
-                "{1} 'a' 'les' {0}",
-                "{1} 'a' 'les' {0}",
-                "{1}, {0}",
+                "{1} , {0}",
                 "{1} {0}",
             }
+            NoonMarker{"migdia"}
+            NoonMarkerNarrow{"md"}
             appendItems{
                 Timezone{"{0} {1}"}
             }
@@ -650,25 +603,19 @@ ca{
                 Ehms{"E h:mm:ss a"}
                 Gy{"y G"}
                 GyMMM{"LLL y G"}
-                GyMMMEd{"E, d MMM 'de' y G"}
+                GyMMMEd{"E, d MMM y G"}
                 GyMMMM{"LLLL 'de' y G"}
                 GyMMMMEd{"E, d MMMM 'de' y G"}
                 GyMMMMd{"d MMMM 'de' y G"}
-                GyMMMd{"d MMM 'de' y G"}
+                GyMMMd{"d MMM y G"}
                 H{"H"}
                 Hm{"HH:mm"}
                 Hms{"HH:mm:ss"}
-                Hmsv{"HH:mm:ss v"}
-                Hmv{"HH:mm v"}
                 M{"L"}
                 MEd{"E d/M"}
                 MMM{"LLL"}
                 MMMEd{"E, d MMM"}
                 MMMMEd{"E, d MMMM"}
-                MMMMW{
-                    one{"'setmana' W MMMM"}
-                    other{"'setmana' W MMMM"}
-                }
                 MMMMd{"d MMMM"}
                 MMMd{"d MMM"}
                 Md{"d/M"}
@@ -676,25 +623,19 @@ ca{
                 h{"h a"}
                 hm{"h:mm a"}
                 hms{"h:mm:ss a"}
-                hmsv{"h:mm:ss a v"}
-                hmv{"h:mm a v"}
                 ms{"mm:ss"}
                 y{"y"}
                 yM{"M/y"}
                 yMEd{"E, d/M/y"}
-                yMMM{"LLL 'de' y"}
+                yMMM{"LLL y"}
                 yMMMEd{"E, d MMM y"}
                 yMMMM{"LLLL 'de' y"}
                 yMMMMEd{"E, d MMMM 'de' y"}
                 yMMMMd{"d MMMM 'de' y"}
-                yMMMd{"d LLL y"}
+                yMMMd{"d MMM y"}
                 yMd{"d/M/y"}
                 yQQQ{"QQQ y"}
                 yQQQQ{"QQQQ y"}
-                yw{
-                    one{"'setmana' w 'de' y"}
-                    other{"'setmana' w 'de' y"}
-                }
             }
             dayNames{
                 format{
@@ -774,72 +715,6 @@ ca{
                     }
                 }
             }
-            dayPeriod{
-                format{
-                    abbreviated{
-                        afternoon1{"migdia"}
-                        afternoon2{"tarda"}
-                        evening1{"vespre"}
-                        midnight{"mitjanit"}
-                        morning1{"matinada"}
-                        morning2{"matí"}
-                        night1{"nit"}
-                    }
-                    narrow{
-                        afternoon1{"md"}
-                        afternoon2{"tarda"}
-                        evening1{"vespre"}
-                        midnight{"mitjanit"}
-                        morning1{"mat."}
-                        morning2{"matí"}
-                        night1{"nit"}
-                    }
-                    wide{
-                        afternoon1{"migdia"}
-                        afternoon2{"tarda"}
-                        evening1{"vespre"}
-                        midnight{"mitjanit"}
-                        morning1{"matinada"}
-                        morning2{"matí"}
-                        night1{"nit"}
-                    }
-                }
-                stand-alone{
-                    abbreviated{
-                        afternoon1{"migdia"}
-                        afternoon2{"tarda"}
-                        am{"a. m."}
-                        evening1{"vespre"}
-                        midnight{"mitjanit"}
-                        morning1{"matinada"}
-                        morning2{"matí"}
-                        night1{"nit"}
-                        pm{"p. m."}
-                    }
-                    narrow{
-                        afternoon1{"migdia"}
-                        afternoon2{"tarda"}
-                        am{"a. m."}
-                        evening1{"vespre"}
-                        midnight{"mitjanit"}
-                        morning1{"matinada"}
-                        morning2{"matí"}
-                        night1{"nit"}
-                        pm{"p. m."}
-                    }
-                    wide{
-                        afternoon1{"migdia"}
-                        afternoon2{"tarda"}
-                        am{"a. m."}
-                        evening1{"vespre"}
-                        midnight{"mitjanit"}
-                        morning1{"matinada"}
-                        morning2{"matí"}
-                        night1{"nit"}
-                        pm{"p. m."}
-                    }
-                }
-            }
             eras{
                 abbreviated{
                     "aC",
@@ -854,8 +729,8 @@ ca{
                     "dC",
                 }
                 narrow%variant{
-                    "AEC",
-                    "EC",
+                    "a. de la n. e.",
+                    "de la n.e.",
                 }
                 wide{
                     "abans de Crist",
@@ -885,8 +760,8 @@ ca{
                     M{"M–M"}
                 }
                 MEd{
-                    M{"E d/M – E d/M"}
-                    d{"E d/M – E d/M"}
+                    M{"E dd/MM – E dd/MM"}
+                    d{"E dd/MM – E dd/MM"}
                 }
                 MMM{
                     M{"LLL – LLL"}
@@ -900,8 +775,8 @@ ca{
                     d{"d–d MMM"}
                 }
                 Md{
-                    M{"d/M – d/M"}
-                    d{"d/M – d/M"}
+                    M{"dd/MM – dd/MM"}
+                    d{"dd/MM – dd/MM"}
                 }
                 d{
                     d{"d–d"}
@@ -929,13 +804,13 @@ ca{
                     y{"y–y"}
                 }
                 yM{
-                    M{"M/y – M/y"}
-                    y{"M/y – M/y"}
+                    M{"MM/y – MM/y"}
+                    y{"MM/y – MM/y"}
                 }
                 yMEd{
-                    M{"E d/M/y – E d/M/y"}
-                    d{"E d/M/y – E d/M/y"}
-                    y{"E d/M/y – E d/M/y"}
+                    M{"E dd/MM/y – E dd/MM/y"}
+                    d{"E dd/MM/y – E dd/MM/y"}
+                    y{"E dd/MM/y – E dd/MM/y"}
                 }
                 yMMM{
                     M{"LLL–LLL y"}
@@ -966,26 +841,26 @@ ca{
                     y{"d MMM y – d MMM y"}
                 }
                 yMd{
-                    M{"d/M/y – d/M/y"}
-                    d{"d/M/y – d/M/y"}
-                    y{"d/M/y – d/M/y"}
+                    M{"dd/MM/y – dd/MM/y"}
+                    d{"dd/MM/y – dd/MM/y"}
+                    y{"dd/MM/y – dd/MM/y"}
                 }
             }
             monthNames{
                 format{
                     abbreviated{
-                        "de gen.",
-                        "de febr.",
-                        "de març",
-                        "d’abr.",
-                        "de maig",
-                        "de juny",
-                        "de jul.",
-                        "d’ag.",
-                        "de set.",
-                        "d’oct.",
-                        "de nov.",
-                        "de des.",
+                        "gen.",
+                        "febr.",
+                        "març",
+                        "abr.",
+                        "maig",
+                        "juny",
+                        "jul.",
+                        "ag.",
+                        "set.",
+                        "oct.",
+                        "nov.",
+                        "des.",
                     }
                     narrow{
                         "GN",
@@ -1122,94 +997,6 @@ ca{
             }
         }
     }
-    characterLabel{
-        activities{"activitats"}
-        african_scripts{"escriptures africanes"}
-        american_scripts{"escriptures americanes"}
-        animal{"animal"}
-        animals_nature{"animals i natura"}
-        arrows{"fletxes"}
-        body{"cos"}
-        box_drawing{"escriptura en quadre"}
-        braille{"braille"}
-        building{"edifici"}
-        bullets_stars{"vinyetes/estrelles"}
-        consonantal_jamo{"jamo consonàntic"}
-        currency_symbols{"símbols de moneda"}
-        dash_connector{"guions/connectors"}
-        digits{"xifres"}
-        dingbats{"pictogrames"}
-        divination_symbols{"símbols astrològics"}
-        downwards_arrows{"fletxes cap avall"}
-        downwards_upwards_arrows{"fletxes avall i amunt"}
-        east_asian_scripts{"escriptures de l’Àsia Oriental"}
-        emoji{"emoji"}
-        european_scripts{"escriptures europees"}
-        female{"femení"}
-        flag{"bandera"}
-        flags{"banderes"}
-        food_drink{"menjar i beure"}
-        format{"format"}
-        format_whitespace{"format i espai en blanc"}
-        full_width_form_variant{"formes variants d’amplada completa"}
-        geometric_shapes{"formes geomètriques"}
-        half_width_form_variant{"formes variants d’amplada reduïda"}
-        han_characters{"caràcters han"}
-        han_radicals{"radicals han"}
-        hanja{"hanja"}
-        hanzi_simplified{"hanzi (simplificat)"}
-        hanzi_traditional{"hanzi (tradicional)"}
-        heart{"cor"}
-        historic_scripts{"escriptures històriques"}
-        ideographic_desc_characters{"caràcters ideogràfics descriptius"}
-        japanese_kana{"kana japonès"}
-        kanbun{"kanbun"}
-        kanji{"kanji"}
-        keycap{"tecla"}
-        leftwards_arrows{"fletxes a l’esquerra"}
-        leftwards_rightwards_arrows{"fletxes a esquerra i dreta"}
-        letterlike_symbols{"símbols fets amb lletres"}
-        limited_use{"ús limitat"}
-        male{"masculí"}
-        math_symbols{"símbols matemàtics"}
-        middle_eastern_scripts{"escriptures de l’Orient Mitjà"}
-        miscellaneous{"miscel·lània"}
-        modern_scripts{"escriptures modernes"}
-        modifier{"modificador"}
-        musical_symbols{"símbols musicals"}
-        nature{"natura"}
-        nonspacing{"sense espai"}
-        numbers{"números"}
-        objects{"objectes"}
-        other{"altres"}
-        paired{"aparellats"}
-        person{"persona"}
-        phonetic_alphabet{"alfabet fonètic"}
-        pictographs{"pictogrames"}
-        place{"lloc"}
-        plant{"planta"}
-        punctuation{"puntuació"}
-        rightwards_arrows{"fletxes a la dreta"}
-        sign_standard_symbols{"signes/símbols estàndard"}
-        small_form_variant{"formes variants petites"}
-        smiley{"emoticona"}
-        smileys_people{"emoticones i gent"}
-        south_asian_scripts{"escriptures de l’Àsia Meridional"}
-        southeast_asian_scripts{"escriptures de l’Àsia Sud-oriental"}
-        spacing{"espaiat"}
-        sport{"esport"}
-        symbols{"símbols"}
-        technical_symbols{"símbols tècnics"}
-        tone_marks{"marques tonals"}
-        travel{"viatge"}
-        travel_places{"viatges i llocs"}
-        upwards_arrows{"fletxes amunt"}
-        variant_forms{"formes variants"}
-        vocalic_jamo{"jamo vocàlic"}
-        weather{"temps"}
-        western_asian_scripts{"escriptures de l’Àsia Sud-occidental"}
-        whitespace{"espai en blanc"}
-    }
     delimiters{
         alternateQuotationEnd{"”"}
         alternateQuotationStart{"“"}
@@ -1239,13 +1026,6 @@ ca{
         }
         day-narrow{
             dn{"dia"}
-            relative{
-                "-1"{"ahir"}
-                "-2"{"abans-d’ahir"}
-                "0"{"avui"}
-                "1"{"demà"}
-                "2"{"demà passat"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} dia"}
@@ -1259,13 +1039,6 @@ ca{
         }
         day-short{
             dn{"dia"}
-            relative{
-                "-1"{"ahir"}
-                "-2"{"abans-d’ahir"}
-                "0"{"avui"}
-                "1"{"demà"}
-                "2"{"demà passat"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} dia"}
@@ -1289,32 +1062,12 @@ ca{
                 "0"{"aquest divendres"}
                 "1"{"divendres que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} divendres"}
-                    other{"d’aquí a {0} divendres"}
-                }
-                past{
-                    one{"fa {0} divendres"}
-                    other{"fa {0} divendres"}
-                }
-            }
         }
         fri-narrow{
             relative{
                 "-1"{"dv. passat"}
                 "0"{"aquest dv."}
                 "1"{"dv. que ve"}
-            }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dv."}
-                    other{"d’aquí a {0} dv."}
-                }
-                past{
-                    one{"fa {0} dv."}
-                    other{"fa {0} dv."}
-                }
             }
         }
         fri-short{
@@ -1323,26 +1076,13 @@ ca{
                 "0"{"aquest dv."}
                 "1"{"dv. que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dv."}
-                    other{"d’aquí a {0} dv."}
-                }
-                past{
-                    one{"fa {0} dv."}
-                    other{"fa {0} dv."}
-                }
-            }
         }
         hour{
             dn{"hora"}
-            relative{
-                "0"{"aquesta hora"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} hora"}
-                    other{"d’aquí a {0} hores"}
+                    other{"d’aquí {0} hores"}
                 }
                 past{
                     one{"fa {0} hora"}
@@ -1352,9 +1092,6 @@ ca{
         }
         hour-narrow{
             dn{"h"}
-            relative{
-                "0"{"aquesta hora"}
-            }
             relativeTime{
                 future{
                     one{"d‘aquí a {0} h"}
@@ -1368,13 +1105,10 @@ ca{
         }
         hour-short{
             dn{"h"}
-            relative{
-                "0"{"aquesta hora"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} h"}
-                    other{"d’aquí a {0} h"}
+                    other{"d’aquí {0} hores"}
                 }
                 past{
                     one{"fa {0} h"}
@@ -1384,9 +1118,6 @@ ca{
         }
         minute{
             dn{"minut"}
-            relative{
-                "0"{"aquest minut"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} minut"}
@@ -1400,9 +1131,6 @@ ca{
         }
         minute-narrow{
             dn{"min"}
-            relative{
-                "0"{"aquest minut"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} min"}
@@ -1416,9 +1144,6 @@ ca{
         }
         minute-short{
             dn{"min"}
-            relative{
-                "0"{"aquest minut"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} min"}
@@ -1436,16 +1161,6 @@ ca{
                 "0"{"aquest dilluns"}
                 "1"{"dilluns que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dilluns"}
-                    other{"d’aquí a {0} dilluns"}
-                }
-                past{
-                    one{"fa {0} dilluns"}
-                    other{"fa {0} dilluns"}
-                }
-            }
         }
         mon-narrow{
             relative{
@@ -1453,32 +1168,12 @@ ca{
                 "0"{"aquest dl."}
                 "1"{"dl. que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dl."}
-                    other{"d’aquí a {0} dl."}
-                }
-                past{
-                    one{"fa {0} dl."}
-                    other{"fa {0} dl."}
-                }
-            }
         }
         mon-short{
             relative{
                 "-1"{"dl. passat"}
                 "0"{"aquest dl."}
                 "1"{"dl. que ve"}
-            }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dl."}
-                    other{"d’aquí a {0} dl."}
-                }
-                past{
-                    one{"fa {0} dl."}
-                    other{"fa {0} dl."}
-                }
             }
         }
         month{
@@ -1501,15 +1196,10 @@ ca{
         }
         month-narrow{
             dn{"mes"}
-            relative{
-                "-1"{"mes passat"}
-                "0"{"aquest mes"}
-                "1"{"mes vinent"}
-            }
             relativeTime{
                 future{
-                    one{"d’aquí a {0} mes"}
-                    other{"d’aquí a {0} mesos"}
+                    one{"en {0} mes"}
+                    other{"en {0} mesos"}
                 }
                 past{
                     one{"fa {0} mes"}
@@ -1519,11 +1209,6 @@ ca{
         }
         month-short{
             dn{"mes"}
-            relative{
-                "-1"{"el mes passat"}
-                "0"{"aquest mes"}
-                "1"{"el mes que ve"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} mes"}
@@ -1537,11 +1222,6 @@ ca{
         }
         quarter{
             dn{"trimestre"}
-            relative{
-                "-1"{"el trimestre passat"}
-                "0"{"aquest trimestre"}
-                "1"{"el trimestre que ve"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} trimestre"}
@@ -1554,16 +1234,11 @@ ca{
             }
         }
         quarter-narrow{
-            dn{"trim."}
-            relative{
-                "-1"{"trim. passat"}
-                "0"{"aquest trim."}
-                "1"{"trim. vinent"}
-            }
+            dn{"T"}
             relativeTime{
                 future{
-                    one{"d’aquí a {0} trim."}
-                    other{"d’aquí a {0} trim."}
+                    one{"en {0} trim."}
+                    other{"en {0} trim."}
                 }
                 past{
                     one{"fa {0} trim."}
@@ -1573,11 +1248,6 @@ ca{
         }
         quarter-short{
             dn{"trim."}
-            relative{
-                "-1"{"el trim. passat"}
-                "0"{"aquest trim."}
-                "1"{"el trim. que ve"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} trim."}
@@ -1595,16 +1265,6 @@ ca{
                 "0"{"aquest dissabte"}
                 "1"{"dissabte que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dissabte"}
-                    other{"d’aquí a {0} dissabtes"}
-                }
-                past{
-                    one{"fa {0} dissabte"}
-                    other{"fa {0} dissabtes"}
-                }
-            }
         }
         sat-narrow{
             relative{
@@ -1612,32 +1272,12 @@ ca{
                 "0"{"aquest ds."}
                 "1"{"ds. que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} ds."}
-                    other{"d’aquí a {0} ds."}
-                }
-                past{
-                    one{"fa {0} ds."}
-                    other{"fa {0} ds."}
-                }
-            }
         }
         sat-short{
             relative{
                 "-1"{"ds. passat"}
                 "0"{"aquest ds."}
                 "1"{"ds. que ve"}
-            }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} ds."}
-                    other{"d’aquí a {0} ds."}
-                }
-                past{
-                    one{"fa {0} ds."}
-                    other{"fa {0} ds."}
-                }
             }
         }
         second{
@@ -1688,32 +1328,12 @@ ca{
                 "0"{"aquest diumenge"}
                 "1"{"diumenge que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} diumenge"}
-                    other{"d’aquí a {0} diumenges"}
-                }
-                past{
-                    one{"fa {0} diumenge"}
-                    other{"fa {0} diumenges"}
-                }
-            }
         }
         sun-narrow{
             relative{
                 "-1"{"dg. passat"}
                 "0"{"aquest dg."}
                 "1"{"dg. que ve"}
-            }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dg."}
-                    other{"d’aquí a {0} dg."}
-                }
-                past{
-                    one{"fa {0} dg."}
-                    other{"fa {0} dg."}
-                }
             }
         }
         sun-short{
@@ -1722,32 +1342,12 @@ ca{
                 "0"{"aquest dg."}
                 "1"{"dg. que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dg."}
-                    other{"d’aquí a {0} dg."}
-                }
-                past{
-                    one{"fa {0} dg."}
-                    other{"fa {0} dg."}
-                }
-            }
         }
         thu{
             relative{
                 "-1"{"dijous passat"}
                 "0"{"aquest dijous"}
                 "1"{"dijous que ve"}
-            }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dijous"}
-                    other{"d’aquí a {0} dijous"}
-                }
-                past{
-                    one{"fa {0} dijous"}
-                    other{"fa {0} dijous"}
-                }
             }
         }
         thu-narrow{
@@ -1756,32 +1356,12 @@ ca{
                 "0"{"aquest dj."}
                 "1"{"dj. que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dj."}
-                    other{"d’aquí a {0} dj."}
-                }
-                past{
-                    one{"fa {0} dj."}
-                    other{"fa {0} dj."}
-                }
-            }
         }
         thu-short{
             relative{
                 "-1"{"dj. passat"}
                 "0"{"aquest dj."}
                 "1"{"dj. que ve"}
-            }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dj."}
-                    other{"d’aquí a {0} dj."}
-                }
-                past{
-                    one{"fa {0} dj."}
-                    other{"fa {0} dj."}
-                }
             }
         }
         tue{
@@ -1790,49 +1370,19 @@ ca{
                 "0"{"aquest dimarts"}
                 "1"{"dimarts que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dimarts"}
-                    other{"d’aquí a {0} dimarts"}
-                }
-                past{
-                    one{"fa {0} dimarts"}
-                    other{"fa {0} dimarts"}
-                }
-            }
         }
         tue-narrow{
             relative{
-                "-1"{"dt. passat"}
-                "0"{"aquest dt."}
-                "1"{"dt. que ve"}
-            }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dt."}
-                    other{"d’aquí a {0} dt."}
-                }
-                past{
-                    one{"fa {0} dt."}
-                    other{"fa {0} dt."}
-                }
+                "-1"{"dm. passat"}
+                "0"{"aquest dm."}
+                "1"{"dm. que ve"}
             }
         }
         tue-short{
             relative{
-                "-1"{"dt. passat"}
-                "0"{"aquest dt."}
-                "1"{"dt. que ve"}
-            }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dt."}
-                    other{"d’aquí a {0} dt."}
-                }
-                past{
-                    one{"fa {0} dt."}
-                    other{"fa {0} dt."}
-                }
+                "-1"{"dm. passat"}
+                "0"{"aquest dm."}
+                "1"{"dm. que ve"}
             }
         }
         wed{
@@ -1841,16 +1391,6 @@ ca{
                 "0"{"aquest dimecres"}
                 "1"{"dimecres que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dimecres"}
-                    other{"d’aquí a {0} dimecres"}
-                }
-                past{
-                    one{"fa {0} dimecres"}
-                    other{"fa {0} dimecres"}
-                }
-            }
         }
         wed-narrow{
             relative{
@@ -1858,32 +1398,12 @@ ca{
                 "0"{"aquest dc."}
                 "1"{"dc. que ve"}
             }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dc."}
-                    other{"d’aquí a {0} dc."}
-                }
-                past{
-                    one{"fa {0} dc."}
-                    other{"fa {0} dc."}
-                }
-            }
         }
         wed-short{
             relative{
                 "-1"{"dc. passat"}
                 "0"{"aquest dc."}
                 "1"{"dc. que ve"}
-            }
-            relativeTime{
-                future{
-                    one{"d’aquí a {0} dc."}
-                    other{"d’aquí a {0} dc."}
-                }
-                past{
-                    one{"fa {0} dc."}
-                    other{"fa {0} dc."}
-                }
             }
         }
         week{
@@ -1893,7 +1413,6 @@ ca{
                 "0"{"aquesta setmana"}
                 "1"{"la setmana que ve"}
             }
-            relativePeriod{"la setmana del {0}"}
             relativeTime{
                 future{
                     one{"d’aquí a {0} setmana"}
@@ -1907,16 +1426,10 @@ ca{
         }
         week-narrow{
             dn{"setm."}
-            relative{
-                "-1"{"setm. passada"}
-                "0"{"aquesta setm."}
-                "1"{"setm. vinent"}
-            }
-            relativePeriod{"la setmana del {0}"}
             relativeTime{
                 future{
-                    one{"d’aquí a {0} setm."}
-                    other{"d’aquí a {0} setm."}
+                    one{"en {0} setm."}
+                    other{"en {0} setm."}
                 }
                 past{
                     one{"fa {0} setm."}
@@ -1926,12 +1439,6 @@ ca{
         }
         week-short{
             dn{"setm."}
-            relative{
-                "-1"{"la setm. passada"}
-                "0"{"aquesta setm."}
-                "1"{"la setm. que ve"}
-            }
-            relativePeriod{"la setmana del {0}"}
             relativeTime{
                 future{
                     one{"d’aquí a {0} setm."}
@@ -1966,15 +1473,10 @@ ca{
         }
         year-narrow{
             dn{"any"}
-            relative{
-                "-1"{"l’any passat"}
-                "0"{"enguany"}
-                "1"{"l’any que ve"}
-            }
             relativeTime{
                 future{
-                    one{"d’aquí a {0} any"}
-                    other{"d’aquí a {0} anys"}
+                    one{"en {0} any"}
+                    other{"en {0} anys"}
                 }
                 past{
                     one{"fa {0} any"}
@@ -1984,11 +1486,6 @@ ca{
         }
         year-short{
             dn{"any"}
-            relative{
-                "-1"{"l’any passat"}
-                "0"{"enguany"}
-                "1"{"l’any que ve"}
-            }
             relativeTime{
                 future{
                     one{"d’aquí a {0} any"}
@@ -2001,17 +1498,11 @@ ca{
             }
         }
         zone{
-            dn{"fus horari"}
+            dn{"zona"}
         }
     }
     listPattern{
         standard{
-            2{"{0} i {1}"}
-            end{"{0} i {1}"}
-            middle{"{0}, {1}"}
-            start{"{0}, {1}"}
-        }
-        standard-short{
             2{"{0} i {1}"}
             end{"{0} i {1}"}
             middle{"{0}, {1}"}
@@ -2037,8 +1528,20 @@ ca{
         }
     }
     measurementSystemNames{
-        UK{"RU"}
-        US{"EUA"}
+        UK{"anglosaxó"}
+        US{"imperial"}
         metric{"mètric"}
+    }
+    transformNames{
+        BGN{"BGN"}
+        Numeric{"Numèric"}
+        Tone{"To"}
+        UNGEGN{"UNGEGN"}
+        x-Accents{"Accents"}
+        x-Fullwidth{"Amplada completa"}
+        x-Halfwidth{"Amplada mitjana"}
+        x-Jamo{"Jamo"}
+        x-Pinyin{"Pinyin"}
+        x-Publishing{"Publicació"}
     }
 }

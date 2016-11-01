@@ -1,7 +1,12 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ar_MA.xml
+// *
+// ***************************************************************************
 ar_MA{
-    AuxExemplarCharacters{"[\u200C\u200D\u200E\u200F پ چ ژ ڜ ڢ ڤ ڥ ٯ ڧ ڨ ک ڭ گ ݣ ی]"}
     NumberElements{
         default{"latn"}
         latn{
@@ -11,24 +16,9 @@ ar_MA{
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.1.12.17"}
     calendar{
         gregorian{
-            DateTimePatterns{
-                "HH:mm:ss zzzz",
-                "HH:mm:ss z",
-                "HH:mm:ss",
-                "HH:mm",
-                "EEEE، d MMMM، y",
-                "d MMMM، y",
-                "dd‏/MM‏/y",
-                "d‏/M‏/y",
-                "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
-            }
             monthNames{
                 format{
                     abbreviated{

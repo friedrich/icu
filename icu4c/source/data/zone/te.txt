@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/te.xml
+// *
+// ***************************************************************************
 te{
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"అబిడ్జాన్"}
@@ -302,9 +308,6 @@ te{
         }
         "America:El_Salvador"{
             ec{"ఎల్ సాల్వడోర్"}
-        }
-        "America:Fort_Nelson"{
-            ec{"ఫోర్ట్ నెల్సన్"}
         }
         "America:Fortaleza"{
             ec{"ఫార్ట్లెజా"}
@@ -669,9 +672,6 @@ te{
         "Asia:Bangkok"{
             ec{"బ్యాంకాక్"}
         }
-        "Asia:Barnaul"{
-            ec{"బార్నాల్"}
-        }
         "Asia:Beirut"{
             ec{"బీరట్"}
         }
@@ -683,9 +683,6 @@ te{
         }
         "Asia:Calcutta"{
             ec{"కోల్‌కతా"}
-        }
-        "Asia:Chita"{
-            ec{"చితా"}
         }
         "Asia:Choibalsan"{
             ec{"చోయిబాల్సన్"}
@@ -828,9 +825,6 @@ te{
         "Asia:Singapore"{
             ec{"సింగపూర్"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"స్రెడ్నెకొలిమ్స్క్"}
-        }
         "Asia:Taipei"{
             ec{"తైపీ"}
         }
@@ -848,9 +842,6 @@ te{
         }
         "Asia:Tokyo"{
             ec{"టోక్యో"}
-        }
-        "Asia:Tomsk"{
-            ec{"టామ్స్క్"}
         }
         "Asia:Ulaanbaatar"{
             ec{"ఉలాన్బాటర్"}
@@ -951,9 +942,6 @@ te{
         "Europe:Andorra"{
             ec{"అండోరా"}
         }
-        "Europe:Astrakhan"{
-            ec{"అస్ట్రఖాన్"}
-        }
         "Europe:Athens"{
             ec{"ఏథెన్స్"}
         }
@@ -1011,9 +999,6 @@ te{
         }
         "Europe:Kiev"{
             ec{"కీవ్"}
-        }
-        "Europe:Kirov"{
-            ec{"కిరోవ్"}
         }
         "Europe:Lisbon"{
             ec{"లిస్బన్"}
@@ -1091,9 +1076,6 @@ te{
         "Europe:Tirane"{
             ec{"టిరేన్"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"ఉల్యనోవ్స్క్"}
-        }
         "Europe:Uzhgorod"{
             ec{"ఉజుగోరోడ్"}
         }
@@ -1162,9 +1144,6 @@ te{
         }
         "Pacific:Auckland"{
             ec{"ఆక్లాండ్"}
-        }
-        "Pacific:Bougainville"{
-            ec{"బొగెయిన్‌విల్లే"}
         }
         "Pacific:Chatham"{
             ec{"ఛతం"}
@@ -1322,9 +1301,9 @@ te{
             ls{"తూర్పు ప్రామాణిక సమయం"}
         }
         "meta:America_Mountain"{
-            ld{"మౌంటెయిన్ పగటి సమయం"}
-            lg{"మౌంటెయిన్ సమయం"}
-            ls{"మౌంటెయిన్ ప్రామాణిక సమయం"}
+            ld{"మౌంటేన్ పగటి సమయం"}
+            lg{"మౌంటేన్ సమయం"}
+            ls{"మౌంటేన్ ప్రామాణిక సమయం"}
         }
         "meta:America_Pacific"{
             ld{"పసిఫిక్ పగటి సమయం"}
@@ -1382,8 +1361,8 @@ te{
             ls{"ఆస్ట్రేలియా మధ్యమ ప్రామాణిక సమయం"}
         }
         "meta:Australia_CentralWestern"{
-            ld{"మధ్యమ ఆస్ట్రేలియన్ పశ్చిమ పగటి సమయం"}
-            lg{"మధ్యమ ఆస్ట్రేలియన్ పశ్చిమ సమయం"}
+            ld{"మధ్యమ ఆస్ట్రేలియా పశ్చిమ పగటి సమయం"}
+            lg{"మధ్యమ ఆస్ట్రేలియా పశ్చిమ సమయం"}
             ls{"మధ్యమ ఆస్ట్రేలియా పశ్చిమ ప్రామాణిక సమయం"}
         }
         "meta:Australia_Eastern"{
@@ -1392,9 +1371,9 @@ te{
             ls{"తూర్పు ఆస్ట్రేలియా ప్రామాణిక సమయం"}
         }
         "meta:Australia_Western"{
-            ld{"పశ్చిమ ఆస్ట్రేలియన్ పగటి సమయం"}
+            ld{"పశ్చిమ ఆస్ట్రేలియా పగటి సమయం"}
             lg{"పశ్చిమ ఆస్ట్రేలియా సమయం"}
-            ls{"పశ్చిమ ఆస్ట్రేలియన్ ప్రామాణిక సమయం"}
+            ls{"పశ్చిమ ఆస్ట్రేలియా ప్రామాణిక సమయం"}
         }
         "meta:Azerbaijan"{
             ld{"అజర్బైజాన్ వేసవి సమయం"}
@@ -1431,7 +1410,7 @@ te{
             ls{"కేప్ వెర్డె ప్రామాణిక సమయం"}
         }
         "meta:Chamorro"{
-            ls{"చామర్రో ప్రామాణిక సమయం"}
+            ls{"చామర్రో సమయం"}
         }
         "meta:Chatham"{
             ld{"చాథమ్ పగటి వెలుతురు సమయం"}
@@ -1793,9 +1772,6 @@ te{
         }
         "meta:Ponape"{
             ls{"పొనేప్ సమయం"}
-        }
-        "meta:Pyongyang"{
-            ls{"ప్యోంగాంగ్ సమయం"}
         }
         "meta:Qyzylorda"{
             ld{"కిజిలోర్డా వేసవి సమయం"}

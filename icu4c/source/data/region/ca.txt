@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ca.xml
+// *
+// ***************************************************************************
 ca{
     Countries{
         001{"Món"}
@@ -32,7 +38,7 @@ ca{
         154{"Europa septentrional"}
         155{"Europa occidental"}
         419{"Amèrica Llatina"}
-        AC{"Illa de l’Ascensió"}
+        AC{"illa de l’Ascensió"}
         AD{"Andorra"}
         AE{"Emirats Àrabs Units"}
         AF{"Afganistan"}
@@ -40,6 +46,7 @@ ca{
         AI{"Anguilla"}
         AL{"Albània"}
         AM{"Armènia"}
+        AN{"Antilles Neerlandeses"}
         AO{"Angola"}
         AQ{"Antàrtida"}
         AR{"Argentina"}
@@ -47,7 +54,7 @@ ca{
         AT{"Àustria"}
         AU{"Austràlia"}
         AW{"Aruba"}
-        AX{"Illes Åland"}
+        AX{"illes Åland"}
         AZ{"Azerbaidjan"}
         BA{"Bòsnia i Hercegovina"}
         BB{"Barbados"}
@@ -68,26 +75,26 @@ ca{
         BT{"Bhutan"}
         BV{"Bouvet"}
         BW{"Botswana"}
-        BY{"Belarús"}
+        BY{"Bielorússia"}
         BZ{"Belize"}
         CA{"Canadà"}
-        CC{"Illes Cocos"}
+        CC{"illes Cocos"}
         CD{"Congo - Kinshasa"}
         CF{"República Centreafricana"}
         CG{"Congo - Brazzaville"}
         CH{"Suïssa"}
         CI{"Costa d’Ivori"}
-        CK{"Illes Cook"}
+        CK{"illes Cook"}
         CL{"Xile"}
         CM{"Camerun"}
         CN{"Xina"}
         CO{"Colòmbia"}
-        CP{"Illa Clipperton"}
+        CP{"illa Clipperton"}
         CR{"Costa Rica"}
         CU{"Cuba"}
         CV{"Cap Verd"}
         CW{"Curaçao"}
-        CX{"Illa Christmas"}
+        CX{"illa Christmas"}
         CY{"Xipre"}
         CZ{"República Txeca"}
         DE{"Alemanya"}
@@ -110,7 +117,7 @@ ca{
         FJ{"Fiji"}
         FK{"Illes Malvines"}
         FM{"Micronèsia"}
-        FO{"Illes Fèroe"}
+        FO{"illes Fèroe"}
         FR{"França"}
         GA{"Gabon"}
         GB{"Regne Unit"}
@@ -126,7 +133,7 @@ ca{
         GP{"Guadeloupe"}
         GQ{"Guinea Equatorial"}
         GR{"Grècia"}
-        GS{"Illes Geòrgia del Sud i Sandwich del Sud"}
+        GS{"illes Geòrgia del Sud i Sandwich del Sud"}
         GT{"Guatemala"}
         GU{"Guam"}
         GW{"Guinea Bissau"}
@@ -137,11 +144,11 @@ ca{
         HR{"Croàcia"}
         HT{"Haití"}
         HU{"Hongria"}
-        IC{"Illes Canàries"}
+        IC{"illes Canàries"}
         ID{"Indonèsia"}
         IE{"Irlanda"}
         IL{"Israel"}
-        IM{"Illa de Man"}
+        IM{"illa de Man"}
         IN{"Índia"}
         IO{"Territori Britànic de l’Oceà Índic"}
         IQ{"Iraq"}
@@ -180,13 +187,13 @@ ca{
         ME{"Montenegro"}
         MF{"Saint Martin"}
         MG{"Madagascar"}
-        MH{"Illes Marshall"}
+        MH{"illes Marshall"}
         MK{"Macedònia"}
         ML{"Mali"}
         MM{"Myanmar (Birmània)"}
         MN{"Mongòlia"}
         MO{"Macau (RAE Xina)"}
-        MP{"Illes Mariannes del Nord"}
+        MP{"illes Mariannes del Nord"}
         MQ{"Martinica"}
         MR{"Mauritània"}
         MS{"Montserrat"}
@@ -218,9 +225,9 @@ ca{
         PK{"Pakistan"}
         PL{"Polònia"}
         PM{"Saint-Pierre-et-Miquelon"}
-        PN{"Illes Pitcairn"}
+        PN{"illes Pitcairn"}
         PR{"Puerto Rico"}
-        PS{"territoris palestins"}
+        PS{"Palestina"}
         PT{"Portugal"}
         PW{"Palau"}
         PY{"Paraguai"}
@@ -232,7 +239,7 @@ ca{
         RU{"Rússia"}
         RW{"Ruanda"}
         SA{"Aràbia Saudita"}
-        SB{"Illes Salomó"}
+        SB{"illes Salomó"}
         SC{"Seychelles"}
         SD{"Sudan"}
         SE{"Suècia"}
@@ -271,8 +278,7 @@ ca{
         TZ{"Tanzània"}
         UA{"Ucraïna"}
         UG{"Uganda"}
-        UM{"Illes Perifèriques Menors dels EUA"}
-        UN{"Nacions Unides"}
+        UM{"illes Perifèriques Menors dels EUA"}
         US{"Estats Units"}
         UY{"Uruguai"}
         UZ{"Uzbekistan"}
@@ -294,19 +300,17 @@ ca{
         ZZ{"Regió desconeguda"}
     }
     Countries%short{
-        GB{"RU"}
+        GB{"GB"}
         HK{"Hong Kong"}
         MO{"Macau"}
         PS{"Palestina"}
-        UN{"ONU"}
         US{"EUA"}
     }
     Countries%variant{
         CD{"Congo (República Democràtica del Congo)"}
         CG{"Congo (República del Congo)"}
-        CZ{"Txèquia"}
         FK{"Illes Malvines (Illes Falkland)"}
         MK{"Macedònia (Antiga República Iugoslava de Macedònia)"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
 }

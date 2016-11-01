@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/to.xml
+// *
+// ***************************************************************************
 to{
     Countries{
         001{"Māmani"}
@@ -40,6 +46,7 @@ to{
         AI{"Anikuila"}
         AL{"ʻAlipania"}
         AM{"ʻĀmenia"}
+        AN{"Anitila fakahōlani"}
         AO{"ʻAngikola"}
         AQ{"ʻAnitātika"}
         AR{"ʻAsenitina"}
@@ -219,7 +226,7 @@ to{
         PL{"Polani"}
         PM{"Sā Piea mo Mikeloni"}
         PN{"ʻOtumotu Pitikeni"}
-        PR{"Puēto Liko"}
+        PR{"Pueto Liko"}
         PS{"Potu Palesitaine"}
         PT{"Potukali"}
         PW{"Palau"}
@@ -252,7 +259,7 @@ to{
         SX{"Sā Mātini (fakahōlani)"}
         SY{"Sīlia"}
         SZ{"Suasilani"}
-        TA{"Tulisitani ta Kunuha"}
+        TA{"Tulisiteni ta Kunuha"}
         TC{"ʻOtumotu Tuki mo Kaikosi"}
         TD{"Sāti"}
         TF{"Potu fonua tonga fakafalanisē"}
@@ -260,7 +267,7 @@ to{
         TH{"Tailani"}
         TJ{"Tasikitani"}
         TK{"Tokelau"}
-        TL{"Timoa hahake"}
+        TL{"Timoa Hahake"}
         TM{"Tūkimenisitani"}
         TN{"Tunīsia"}
         TO{"Tonga"}
@@ -302,8 +309,7 @@ to{
     Countries%variant{
         CD{"Kongo (LTK)"}
         CG{"Kongo (Lipapilika)"}
-        CZ{"Sēkia"}
         MK{"Masetōnia (FYROM)"}
     }
-    Version{"2.1.27.98"}
+    Version{"2.1.12.94"}
 }

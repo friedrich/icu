@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/am.xml
+// *
+// ***************************************************************************
 am{
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"አቢጃን"}
@@ -97,7 +103,7 @@ am{
             ec{"ሌጎስ"}
         }
         "Africa:Libreville"{
-            ec{"ሊበርቪል"}
+            ec{"ሊብርልቪል"}
         }
         "Africa:Lome"{
             ec{"ሎሜ"}
@@ -302,9 +308,6 @@ am{
         }
         "America:El_Salvador"{
             ec{"ኤልሳልቫዶር"}
-        }
-        "America:Fort_Nelson"{
-            ec{"ፎርት ኔልሰን"}
         }
         "America:Fortaleza"{
             ec{"ፎርታሌዛ"}
@@ -669,9 +672,6 @@ am{
         "Asia:Bangkok"{
             ec{"ባንኮክ"}
         }
-        "Asia:Barnaul"{
-            ec{"ባርናኡል"}
-        }
         "Asia:Beirut"{
             ec{"ቤሩት"}
         }
@@ -683,9 +683,6 @@ am{
         }
         "Asia:Calcutta"{
             ec{"ኮልካታ"}
-        }
-        "Asia:Chita"{
-            ec{"ቺታ"}
         }
         "Asia:Choibalsan"{
             ec{"ቾይባልሳን"}
@@ -828,9 +825,6 @@ am{
         "Asia:Singapore"{
             ec{"ሲንጋፖር"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"ስሬድኔስኮልምስክ"}
-        }
         "Asia:Taipei"{
             ec{"ታይፓይ"}
         }
@@ -848,9 +842,6 @@ am{
         }
         "Asia:Tokyo"{
             ec{"ቶኪዮ"}
-        }
-        "Asia:Tomsk"{
-            ec{"ቶምስክ"}
         }
         "Asia:Ulaanbaatar"{
             ec{"ኡላአንባአታር"}
@@ -951,9 +942,6 @@ am{
         "Europe:Andorra"{
             ec{"አንዶራ"}
         }
-        "Europe:Astrakhan"{
-            ec{"አስትራክሃን"}
-        }
         "Europe:Athens"{
             ec{"አቴንስ"}
         }
@@ -1011,9 +999,6 @@ am{
         }
         "Europe:Kiev"{
             ec{"ኪየቭ"}
-        }
-        "Europe:Kirov"{
-            ec{"ኪሮቭ"}
         }
         "Europe:Lisbon"{
             ec{"ሊዝበን"}
@@ -1091,9 +1076,6 @@ am{
         "Europe:Tirane"{
             ec{"ቴራን"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"ኡልያኖቭስክ"}
-        }
         "Europe:Uzhgorod"{
             ec{"ኡዝጎሮድ"}
         }
@@ -1162,9 +1144,6 @@ am{
         }
         "Pacific:Auckland"{
             ec{"ኦክላንድ"}
-        }
-        "Pacific:Bougainville"{
-            ec{"ቦጌይንቪል"}
         }
         "Pacific:Chatham"{
             ec{"ቻታም"}
@@ -1302,9 +1281,9 @@ am{
             ls{"የአማዞን መደበኛ ሰዓት አቆጣጠር"}
         }
         "meta:America_Central"{
-            ld{"የመካከለኛ የቀን ሰዓት አቆጣጠር"}
-            lg{"የመካከለኛ ሰዓት አቆጣጠር"}
-            ls{"የመካከለኛ መደበኛ ሰዓት አቆጣጠር"}
+            ld{"የመካከላዊ የቀን ሰዓት አቆጣጠር"}
+            lg{"መካከለኛ የሰዓት አቆጣጠር"}
+            ls{"የመካከላዊ መደበኛ ሰዓት አቆጣጠር"}
         }
         "meta:America_Eastern"{
             ld{"የምዕራባዊ የቀን ሰዓት አቆጣጠር"}
@@ -1332,14 +1311,14 @@ am{
             ls{"የአፒያ መደበኛ ሰዓት"}
         }
         "meta:Arabian"{
-            ld{"የዓረቢያ የቀን ብርሃን ሰዓት"}
-            lg{"የዓረቢያ ሰዓት"}
-            ls{"የዓረቢያ መደበኛ ሰዓት"}
+            ld{"የአረቢያ የቀን ብርሃን ሰዓት"}
+            lg{"የአረቢያ ሰዓት"}
+            ls{"የአረቢያ መደበኛ ሰዓት"}
         }
         "meta:Argentina"{
             ld{"የአርጀንቲና የበጋ ሰዓት አቆጣጠር"}
             lg{"የአርጀንቲና የሰዓት አቆጣጠር"}
-            ls{"የአርጀንቲና መደበኛ ሰዓት አቆጣጠር"}
+            ls{"የአርጀንቲና መደበኛ ጊዜ"}
         }
         "meta:Argentina_Western"{
             ld{"የአርጀንቲና ምስራቃዊ በጋ ሰዓት አቆጣጠር"}
@@ -1368,7 +1347,7 @@ am{
         }
         "meta:Australia_Eastern"{
             ld{"የአውስትራሊያ ምዕራባዊ የቀን ሰዓት አቆጣጠር"}
-            lg{"የምዕራባዊ አውስትራሊያ የሰዓት አቆጣጠር"}
+            lg{"የምዕራባዊ አውስትራሊያ የሰአት አቆጣጠር"}
             ls{"የአውስትራሊያ ምዕራባዊ መደበኛ የሰዓት አቆጣጠር"}
         }
         "meta:Australia_Western"{
@@ -1400,7 +1379,7 @@ am{
         "meta:Brasilia"{
             ld{"የብራዚላ የበጋ ሰዓት አቆጣጠር"}
             lg{"የብራዚላዊ ሰዓት አቆጣጠር"}
-            ls{"የብራሲሊያ መደበኛ ሰዓት አቆጣጠር"}
+            ls{"የብራሲሊያ መደበኛ ጊዜ"}
         }
         "meta:Brunei"{
             ls{"የብሩኔይ ዳሩሳላም ሰዓት"}
@@ -1597,10 +1576,10 @@ am{
             ls{"የፔትሮፓቭሎስኪ - ካምቻትስኪ ሰዓት አቆጣጠር"}
         }
         "meta:Kazakhstan_Eastern"{
-            ls{"የምስራቅ ካዛኪስታን ሰዓት"}
+            ls{"የምስራቅ ካዛኪስታን ጊዜ"}
         }
         "meta:Kazakhstan_Western"{
-            ls{"የምዕራብ ካዛኪስታን ሰዓት"}
+            ls{"የምዕራብ ካዛኪስታን ጊዜ"}
         }
         "meta:Korea"{
             ld{"የኮሪያ የቀን ብርሃን ሰዓት"}
@@ -1758,9 +1737,6 @@ am{
         }
         "meta:Ponape"{
             ls{"የፖናፔ ሰዓት"}
-        }
-        "meta:Pyongyang"{
-            ls{"የፕዮንግያንግ ሰዓት"}
         }
         "meta:Reunion"{
             ls{"የሬዩኒየን ሰዓት"}

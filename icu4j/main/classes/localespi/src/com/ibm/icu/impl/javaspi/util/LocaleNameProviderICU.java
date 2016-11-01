@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2008-2012, International Business Machines Corporation and    *
@@ -39,8 +37,7 @@ public class LocaleNameProviderICU extends LocaleNameProvider {
         return disp;
     }
 
-    // Not available in Java 6
-    // @Override
+    //@Override
     public String getDisplayScript(String scriptCode, Locale locale) {
         scriptCode = AsciiUtil.toTitleString(scriptCode);
         String disp = LocaleDisplayNames.getInstance(ICULocaleServiceProvider.toULocaleNoSpecialVariant(locale))

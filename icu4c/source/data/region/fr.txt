@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fr.xml
+// *
+// ***************************************************************************
 fr{
     Countries{
         001{"Monde"}
@@ -28,7 +34,7 @@ fr{
         143{"Asie centrale"}
         145{"Asie occidentale"}
         150{"Europe"}
-        151{"Europe de l’Est"}
+        151{"Europe orientale"}
         154{"Europe septentrionale"}
         155{"Europe occidentale"}
         419{"Amérique latine"}
@@ -40,6 +46,7 @@ fr{
         AI{"Anguilla"}
         AL{"Albanie"}
         AM{"Arménie"}
+        AN{"Antilles néerlandaises"}
         AO{"Angola"}
         AQ{"Antarctique"}
         AR{"Argentine"}
@@ -183,7 +190,7 @@ fr{
         MH{"Îles Marshall"}
         MK{"Macédoine"}
         ML{"Mali"}
-        MM{"Myanmar (Birmanie)"}
+        MM{"Myanmar"}
         MN{"Mongolie"}
         MO{"R.A.S. chinoise de Macao"}
         MP{"Îles Mariannes du Nord"}
@@ -259,7 +266,7 @@ fr{
         TG{"Togo"}
         TH{"Thaïlande"}
         TJ{"Tadjikistan"}
-        TK{"Tokélaou"}
+        TK{"Tokelau"}
         TL{"Timor oriental"}
         TM{"Turkménistan"}
         TN{"Tunisie"}
@@ -272,7 +279,6 @@ fr{
         UA{"Ukraine"}
         UG{"Ouganda"}
         UM{"Îles mineures éloignées des États-Unis"}
-        UN{"Nations Unies"}
         US{"États-Unis"}
         UY{"Uruguay"}
         UZ{"Ouzbékistan"}
@@ -298,16 +304,14 @@ fr{
         HK{"Hong Kong"}
         MO{"Macao"}
         PS{"Palestine"}
-        UN{"NU"}
         US{"É.-U."}
     }
     Countries%variant{
         CD{"Congo (RDC)"}
         CG{"République du Congo"}
-        CZ{"Tchéquie"}
         FK{"Îles Falkland"}
         MK{"Macédoine (ARYM)"}
         TL{"Timor-Oriental"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.13.46"}
 }

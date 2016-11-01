@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bs_Cyrl.xml
+// *
+// ***************************************************************************
 bs_Cyrl{
     %%Parent{"root"}
     Keys{
@@ -377,7 +383,7 @@ bs_Cyrl{
         srr{"серер"}
         ss{"свати"}
         st{"сесото"}
-        su{"сундански"}
+        su{"судански"}
         suk{"сукума"}
         sus{"сусу"}
         sux{"сумерски"}
@@ -507,7 +513,6 @@ bs_Cyrl{
         Hung{"старомађарско писмо"}
         Inds{"индушко писмо"}
         Ital{"стари италик"}
-        Jamo{"Џамо"}
         Java{"јаванско писмо"}
         Jpan{"јапанско писмо"}
         Kali{"кајах-ли писмо"}
@@ -560,6 +565,7 @@ bs_Cyrl{
         Sgnw{"знаковно писмо"}
         Shaw{"шавијанско писмо"}
         Sinh{"синхала писмо"}
+        Sund{"суданско писмо"}
         Sylo{"силоти нагри писмо"}
         Syrc{"сиријско писмо"}
         Syre{"сиријско естрангело писмо"}
@@ -625,15 +631,6 @@ bs_Cyrl{
             stroke{"Сортирање по броју црта"}
             traditional{"Традиционално сортирање"}
             unihan{"Редослед сортирања радикалним цртицама"}
-        }
-        d0{
-            fwidth{"пуна ширина"}
-            hwidth{"пола ширине"}
-            npinyin{"Нумеричка"}
-        }
-        m0{
-            bgn{"БГН (BGN)"}
-            ungegn{"УНГЕГН (BGN)"}
         }
         numbers{
             arab{"арапско-индијске цифре"}
@@ -702,7 +699,7 @@ bs_Cyrl{
         TARASK{"Тараскијевичка ортографија"}
         VALENCIA{"Валенцијска"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.12.94"}
     codePatterns{
         language{"{0}"}
         script{"{0}"}

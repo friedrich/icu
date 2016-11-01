@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
 * Copyright (C) 2006-2015, International Business Machines Corporation and
@@ -35,20 +33,19 @@ public final class CharsetProviderICU extends CharsetProvider{
     private static List<Charset> icuCharsets = Collections.<Charset>emptyList();
 
     /**
-     * Default constructor
+     * Default constructor 
      * @stable ICU 3.6
      */
     public CharsetProviderICU() {
     }
 
     /**
-     * Constructs a Charset for the given charset name.
+     * Constructs a Charset for the given charset name. 
      * Implements the abstract method of super class.
      * @param charsetName charset name
      * @return Charset object for the given charset name, null if unsupported
      * @stable ICU 3.6
      */
-    @Override
     public final Charset charsetForName(String charsetName){
         try{
             // extract the options from the charset name
@@ -59,11 +56,11 @@ public final class CharsetProviderICU extends CharsetProvider{
                 charsetName = charsetName.substring(0, charsetName.length() - optionsString.length());
             }
             // get the canonical name
-            String icuCanonicalName = getICUCanonicalName(charsetName);
+            String icuCanonicalName = getICUCanonicalName(charsetName);      
 
             // create the converter object and return it
             if(icuCanonicalName==null || icuCanonicalName.length()==0){
-                // Try the original name, may be something added and not in the alias table.
+                // Try the original name, may be something added and not in the alias table. 
                 // Will get an unsupported encoding exception if it doesn't work.
                 icuCanonicalName = charsetName;
             }
@@ -73,7 +70,7 @@ public final class CharsetProviderICU extends CharsetProvider{
         }
         return null;
     }
-
+    
     /**
      * Constructs a charset for the given ICU conversion table from the specified class path.
      * Example use: <code>cnv = CharsetProviderICU.charsetForName("myConverter", "com/myCompany/myDataPackage");</code>.
@@ -89,7 +86,7 @@ public final class CharsetProviderICU extends CharsetProvider{
     public final Charset charsetForName(String charsetName, String classPath) {
         return charsetForName(charsetName, classPath, null);
     }
-
+    
     /**
      * Constructs a charset for the given ICU conversion table from the specified class path.
      * This function is similar to {@link #charsetForName(String, String)}.
@@ -108,7 +105,7 @@ public final class CharsetProviderICU extends CharsetProvider{
         }
         return cs;
     }
-
+    
     /**
      * Gets the canonical name of the converter as defined by Java
      * @param enc converter name
@@ -144,7 +141,7 @@ public final class CharsetProviderICU extends CharsetProvider{
                     } else {
                         ret = "";
                     }
-
+                    
                 }else{
                     /* unsupported encoding */
                    ret = "";
@@ -153,7 +150,7 @@ public final class CharsetProviderICU extends CharsetProvider{
             return ret;
         }catch(IOException ex){
             throw new UnsupportedCharsetException(enc);
-        }
+        } 
     }
     private static final Charset getCharset(String icuCanonicalName, String optionsString)
             throws IOException {
@@ -175,17 +172,17 @@ public final class CharsetProviderICU extends CharsetProvider{
     @Deprecated
     public static String getJavaCanonicalName(String charsetName){
         /*
-        If a charset listed in the IANA Charset Registry is supported by an implementation
-        of the Java platform then its canonical name must be the name listed in the registry.
-        Many charsets are given more than one name in the registry, in which case the registry
-        identifies one of the names as MIME-preferred. If a charset has more than one registry
-        name then its canonical name must be the MIME-preferred name and the other names in
-        the registry must be valid aliases. If a supported charset is not listed in the IANA
+        If a charset listed in the IANA Charset Registry is supported by an implementation 
+        of the Java platform then its canonical name must be the name listed in the registry. 
+        Many charsets are given more than one name in the registry, in which case the registry 
+        identifies one of the names as MIME-preferred. If a charset has more than one registry 
+        name then its canonical name must be the MIME-preferred name and the other names in 
+        the registry must be valid aliases. If a supported charset is not listed in the IANA 
         registry then its canonical name must begin with one of the strings "X-" or "x-".
         */
         if(charsetName==null ){
             return null;
-        }
+        }  
         try{
             String cName = null;
             /* find out the alias with MIME tag */
@@ -193,8 +190,8 @@ public final class CharsetProviderICU extends CharsetProvider{
             /* find out the alias with IANA tag */
             }else if((cName=UConverterAlias.getStandardName(charsetName, "IANA"))!=null){
             }else {
-                /*
-                    check to see if an alias already exists with x- prefix, if yes then
+                /*  
+                    check to see if an alias already exists with x- prefix, if yes then 
                     make that the canonical name
                 */
                 int aliasNum = UConverterAlias.countAliases(charsetName);
@@ -206,7 +203,7 @@ public final class CharsetProviderICU extends CharsetProvider{
                         break;
                     }
                 }
-                /* last resort just append x- to any of the alias and
+                /* last resort just append x- to any of the alias and 
                 make it the canonical name */
                 if((cName==null || cName.length()==0)){
                     name = UConverterAlias.getStandardName(charsetName, "UTR22");
@@ -222,12 +219,12 @@ public final class CharsetProviderICU extends CharsetProvider{
             }
             return cName;
         }catch (IOException ex){
-
+            
         }
         return null;
      }
 
-    /**
+    /** 
      * Gets the aliases associated with the converter name
      * @param encName converter name
      * @return converter names as elements in an object array
@@ -241,7 +238,7 @@ public final class CharsetProviderICU extends CharsetProvider{
         int i=0;
         int j=0;
         String aliasArray[/*50*/] = new String[50];
-
+    
         if(encName != null){
             aliasNum = UConverterAlias.countAliases(encName);
             for(i=0,j=0;i<aliasNum;i++){
@@ -254,10 +251,10 @@ public final class CharsetProviderICU extends CharsetProvider{
             for(;--j>=0;) {
                 ret[j] = aliasArray[j];
             }
-
+                        
         }
         return (ret);
-
+    
     }
 
     /**
@@ -291,14 +288,13 @@ public final class CharsetProviderICU extends CharsetProvider{
      * @return the Charset iterator
      * @stable ICU 3.6
      */
-    @Override
     public final Iterator<Charset> charsets() {
         loadAvailableICUCharsets();
         return icuCharsets.iterator();
     }
 
     /**
-     * Gets the canonical names of available ICU converters
+     * Gets the canonical names of available ICU converters 
      * @return array of available converter names
      * @internal
      * @deprecated This API is ICU internal only.

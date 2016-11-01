@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ******************************************************************************
- * Copyright (C) 2003-2015, International Business Machines Corporation and
+ * Copyright (C) 2003-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  ******************************************************************************
  *
@@ -42,15 +40,20 @@ public final class StringPrepDataReader implements ICUBinary.Authenticate {
         if(debug) System.out.println("Bytes left in byteBuffer " + byteBuffer.remaining());
     }
 
-    public char[] read(int length) throws IOException{
+    public void read(char[] mappingTable) throws IOException{
         //Read the extra data
-        return ICUBinary.getChars(byteBuffer, length, 0);
+        for(int i=0;i<mappingTable.length;i++){
+            mappingTable[i]=byteBuffer.getChar();
+        }
     }
 
-    @Override
+    public byte[] getDataFormatVersion(){
+        return DATA_FORMAT_VERSION;
+    }
+    
     public boolean isDataVersionAcceptable(byte version[]){
-        return version[0] == DATA_FORMAT_VERSION[0]
-               && version[2] == DATA_FORMAT_VERSION[2]
+        return version[0] == DATA_FORMAT_VERSION[0] 
+               && version[2] == DATA_FORMAT_VERSION[2] 
                && version[3] == DATA_FORMAT_VERSION[3];
     }
     public int[] readIndexes(int length)throws IOException{
@@ -60,7 +63,7 @@ public final class StringPrepDataReader implements ICUBinary.Authenticate {
              indexes[i] = byteBuffer.getInt();
         }
         return indexes;
-    }
+    } 
 
     public byte[] getUnicodeVersion(){
         return ICUBinary.getVersionByteArrayFromCompactInt(unicodeVersion);

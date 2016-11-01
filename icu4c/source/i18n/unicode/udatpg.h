@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
@@ -85,13 +83,7 @@ typedef enum UDateTimePatternField {
     UDATPG_FRACTIONAL_SECOND_FIELD,
     /** @stable ICU 3.8 */
     UDATPG_ZONE_FIELD,
-
-    // Do not conditionalize the following with #ifndef U_HIDE_DEPRECATED_API,
-    // it is needed for layout of DateTimePatternGenerator object.
-    /**
-     * One more than the highest normal UDateTimePatternField value.
-     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-     */
+    /** @stable ICU 3.8 */
     UDATPG_FIELD_COUNT
 } UDateTimePatternField;
 
@@ -128,13 +120,8 @@ typedef enum UDateTimePatternConflict {
     UDATPG_BASE_CONFLICT,
     /** @stable ICU 3.8 */
     UDATPG_CONFLICT,
-#ifndef U_HIDE_DEPRECATED_API
-    /**
-     * One more than the highest normal UDateTimePatternConflict value.
-     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-     */
+    /** @stable ICU 3.8 */
     UDATPG_CONFLICT_COUNT
-#endif  // U_HIDE_DEPRECATED_API
 } UDateTimePatternConflict;
 
 /**
@@ -272,8 +259,7 @@ udatpg_getBestPatternWithOptions(UDateTimePatternGenerator *dtpg,
   * Consecutive calls to this function do not affect each other,
   * but this function cannot be used concurrently on a single generator object.
   *
-  * @param unusedDtpg     a pointer to UDateTimePatternGenerator.
-  *    This parameter is no longer used. Callers may pass NULL.
+  * @param dtpg     a pointer to UDateTimePatternGenerator.
   * @param pattern  input pattern, such as "dd/MMM".
   * @param length   the length of pattern.
   * @param skeleton such as "MMMdd"
@@ -284,7 +270,7 @@ udatpg_getBestPatternWithOptions(UDateTimePatternGenerator *dtpg,
   * @stable ICU 3.8
   */
 U_STABLE int32_t U_EXPORT2
-udatpg_getSkeleton(UDateTimePatternGenerator *unusedDtpg,
+udatpg_getSkeleton(UDateTimePatternGenerator *dtpg,
                    const UChar *pattern, int32_t length,
                    UChar *skeleton, int32_t capacity,
                    UErrorCode *pErrorCode);
@@ -302,8 +288,7 @@ udatpg_getSkeleton(UDateTimePatternGenerator *unusedDtpg,
  * Consecutive calls to this function do not affect each other,
  * but this function cannot be used concurrently on a single generator object.
  *
- * @param unusedDtpg     a pointer to UDateTimePatternGenerator.
- *    This parameter is no longer used. Callers may pass NULL.
+ * @param dtpg     a pointer to UDateTimePatternGenerator.
  * @param pattern  input pattern, such as "dd/MMM".
  * @param length   the length of pattern.
  * @param baseSkeleton such as "Md"
@@ -314,7 +299,7 @@ udatpg_getSkeleton(UDateTimePatternGenerator *unusedDtpg,
  * @stable ICU 3.8
  */
 U_STABLE int32_t U_EXPORT2
-udatpg_getBaseSkeleton(UDateTimePatternGenerator *unusedDtpg,
+udatpg_getBaseSkeleton(UDateTimePatternGenerator *dtpg,
                        const UChar *pattern, int32_t length,
                        UChar *baseSkeleton, int32_t capacity,
                        UErrorCode *pErrorCode);

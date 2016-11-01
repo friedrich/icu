@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/sv.xml
+// *
+// ***************************************************************************
 sv{
-    Version{"2.1.30.7"}
+    Version{"2.1.12.94"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -303,9 +309,6 @@ sv{
         "America:El_Salvador"{
             ec{"El Salvador"}
         }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
-        }
         "America:Fortaleza"{
             ec{"Fortaleza"}
         }
@@ -439,7 +442,7 @@ sv{
             ec{"Metlakatla"}
         }
         "America:Mexico_City"{
-            ec{"Mexiko City"}
+            ec{"Mexico City"}
         }
         "America:Miquelon"{
             ec{"Miquelon"}
@@ -640,7 +643,7 @@ sv{
             ec{"Aden"}
         }
         "Asia:Almaty"{
-            ec{"Almaty"}
+            ec{"Alma-Ata"}
         }
         "Asia:Amman"{
             ec{"Amman"}
@@ -669,9 +672,6 @@ sv{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beirut"}
         }
@@ -683,9 +683,6 @@ sv{
         }
         "Asia:Calcutta"{
             ec{"Kolkata"}
-        }
-        "Asia:Chita"{
-            ec{"Tjita"}
         }
         "Asia:Choibalsan"{
             ec{"Tjojbalsan"}
@@ -828,9 +825,6 @@ sv{
         "Asia:Singapore"{
             ec{"Singapore"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymsk"}
-        }
         "Asia:Taipei"{
             ec{"Taipei"}
         }
@@ -849,11 +843,8 @@ sv{
         "Asia:Tokyo"{
             ec{"Tokyo"}
         }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
-        }
         "Asia:Ulaanbaatar"{
-            ec{"Ulaanbaatar"}
+            ec{"Ulan Bator"}
         }
         "Asia:Urumqi"{
             ec{"Ürümqi"}
@@ -951,9 +942,6 @@ sv{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
-        }
         "Europe:Athens"{
             ec{"Aten"}
         }
@@ -1011,9 +999,6 @@ sv{
         }
         "Europe:Kiev"{
             ec{"Kiev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lissabon"}
@@ -1091,9 +1076,6 @@ sv{
         "Europe:Tirane"{
             ec{"Tirana"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Uljanovsk"}
-        }
         "Europe:Uzhgorod"{
             ec{"Uzjhorod"}
         }
@@ -1163,9 +1145,6 @@ sv{
         "Pacific:Auckland"{
             ec{"Auckland"}
         }
-        "Pacific:Bougainville"{
-            ec{"Bougainville"}
-        }
         "Pacific:Chatham"{
             ec{"Chatham"}
         }
@@ -1201,9 +1180,6 @@ sv{
         }
         "Pacific:Honolulu"{
             ec{"Honolulu"}
-            sd{"Honolulusommartid"}
-            sg{"Honolulutid"}
-            ss{"Honolulunormaltid"}
         }
         "Pacific:Johnston"{
             ec{"Johnstonatollen"}
@@ -1490,9 +1466,9 @@ sv{
             ls{"östtimorisk tid"}
         }
         "meta:Easter"{
-            ld{"Påskön, sommartid"}
-            lg{"Påskötid"}
-            ls{"Påskön, normaltid"}
+            ld{"Påsköns sommartid"}
+            lg{"Påsköns tid"}
+            ls{"Påsköns normaltid"}
         }
         "meta:Ecuador"{
             ls{"ecuadoriansk tid"}
@@ -1525,9 +1501,9 @@ sv{
             ss{"WET"}
         }
         "meta:Falkland"{
-            ld{"Falklandsöarna, sommartid"}
+            ld{"Falklandsöarnas sommartid"}
             lg{"Falklandsöarnas tid"}
-            ls{"Falklandsöarna, normaltid"}
+            ls{"Falklandsöarnas normaltid"}
         }
         "meta:Fiji"{
             ld{"Fiji, sommartid"}
@@ -1702,9 +1678,9 @@ sv{
             ls{"Mawsontid"}
         }
         "meta:Mexico_Northwest"{
-            ld{"nordvästmexikansk sommartid"}
-            lg{"nordvästmexikansk tid"}
-            ls{"nordvästmexikansk normaltid"}
+            ld{"nordvästra Mexiko, sommartid"}
+            lg{"nordvästra Mexiko-tid"}
+            ls{"nordvästra Mexiko, normaltid"}
         }
         "meta:Mexico_Pacific"{
             ld{"mexikansk stillahavstid, sommartid"}
@@ -1808,9 +1784,6 @@ sv{
         }
         "meta:Ponape"{
             ls{"Ponapetid"}
-        }
-        "meta:Pyongyang"{
-            ls{"Pyongyangtid"}
         }
         "meta:Qyzylorda"{
             ld{"Qyzylordasommartid"}

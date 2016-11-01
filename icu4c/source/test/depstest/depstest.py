@@ -1,9 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016 and later: Unicode, Inc. and others.
-# License & terms of use: http://www.unicode.org/copyright.html
-# Copyright (C) 2011-2015, International Business Machines
+# Copyright (C) 2011-2014, International Business Machines
 # Corporation and others. All Rights Reserved.
 #
 # file name: depstest.py
@@ -62,9 +60,7 @@ def _ReadObjFile(root_path, library_name, obj_name):
     # Ignore symbols like '__cxa_pure_virtual',
     # 'vtable for __cxxabiv1::__si_class_type_info' or
     # 'DW.ref.__gxx_personality_v0'.
-    # '__dso_handle' belongs to __cxa_atexit().
-    if (name.startswith("__cxa") or "__cxxabi" in name or "__gxx" in name or
-        name == "__dso_handle"):
+    if name.startswith("__cxa") or "__cxxabi" in name or "__gxx" in name:
       _ignored_symbols.add(name)
       continue
     type = fields[2].strip()

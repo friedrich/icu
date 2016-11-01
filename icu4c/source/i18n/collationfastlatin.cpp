@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 * Copyright (C) 2013-2015, International Business Machines
@@ -19,6 +17,7 @@
 #include "collationdata.h"
 #include "collationfastlatin.h"
 #include "collationsettings.h"
+#include "putilimp.h"  // U_ALIGN_CODE
 #include "uassert.h"
 
 U_NAMESPACE_BEGIN
@@ -120,6 +119,7 @@ CollationFastLatin::compareUTF16(const uint16_t *table, const uint16_t *primarie
     options &= 0xffff;  // needed for CollationSettings::getStrength() to work
 
     // Check for supported characters, fetch mini CEs, and compare primaries.
+    U_ALIGN_CODE(16);
     int32_t leftIndex = 0, rightIndex = 0;
     /**
      * Single mini CE or a pair.
@@ -456,6 +456,7 @@ CollationFastLatin::compareUTF8(const uint16_t *table, const uint16_t *primaries
     options &= 0xffff;  // needed for CollationSettings::getStrength() to work
 
     // Check for supported characters, fetch mini CEs, and compare primaries.
+    U_ALIGN_CODE(16);
     int32_t leftIndex = 0, rightIndex = 0;
     /**
      * Single mini CE or a pair.

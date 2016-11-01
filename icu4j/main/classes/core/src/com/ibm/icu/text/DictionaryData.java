@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2012-2016, International Business Machines Corporation and
+ * Copyright (C) 2012-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -44,7 +42,7 @@ final class DictionaryData {
     private static final int DATA_FORMAT_ID = 0x44696374;
 
     public static DictionaryMatcher loadDictionaryFor(String dictType) throws IOException {
-        ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.getBundleInstance(ICUData.ICU_BRKITR_BASE_NAME);
+        ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BRKITR_BASE_NAME);
         String dictFileName = rb.getStringWithFallback("dictionaries/" + dictType);
         dictFileName = ICUData.ICU_BRKITR_NAME + '/' + dictFileName;
         ByteBuffer bytes = ICUBinary.getRequiredData(dictFileName);
@@ -66,12 +64,20 @@ final class DictionaryData {
         if (trieType == TRIE_TYPE_BYTES) {
             int transform = indexes[IX_TRANSFORM];
             byte[] data = new byte[totalSize];
-            bytes.get(data);
+            int i;
+            for (i = 0; i < data.length; i++) {
+                data[i] = bytes.get();
+            }
+            Assert.assrt(i == totalSize);
             m = new BytesDictionaryMatcher(data, transform);
         } else if (trieType == TRIE_TYPE_UCHARS) {
             Assert.assrt(totalSize % 2 == 0);
-            String data = ICUBinary.getString(bytes, totalSize / 2, totalSize & 1);
-            m = new CharsDictionaryMatcher(data);
+            int num = totalSize / 2;
+            char[] data = new char[totalSize / 2];
+            for (int i = 0; i < num; i++) {
+                data[i] = bytes.getChar();
+            }
+            m = new CharsDictionaryMatcher(new String(data));
         } else {
             m = null;
         }

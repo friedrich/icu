@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-*   Copyright (C) 1997-2016, International Business Machines
+*   Copyright (C) 1997-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 *
@@ -350,14 +348,10 @@ typedef enum {
    *  @deprecated ICU 2.8 
    */
   ULOC_REQUESTED_LOCALE = 2,
+#endif /* U_HIDE_DEPRECATED_API */
 
-    /**
-     * One more than the highest normal ULocDataLocaleType value.
-     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-     */
-    ULOC_DATA_LOCALE_TYPE_LIMIT = 3
-#endif  // U_HIDE_DEPRECATED_API
-} ULocDataLocaleType;
+  ULOC_DATA_LOCALE_TYPE_LIMIT = 3
+} ULocDataLocaleType ;
 
 #ifndef U_HIDE_SYSTEM_API
 /**
@@ -594,8 +588,6 @@ uloc_getDisplayScript(const char* locale,
 
 /**
  * Gets the country name suitable for display for the specified locale.
- * Warning: this is for the region part of a valid locale ID; it cannot just be the region code (like "FR").
- * To get the display name for a region alone, or for other options, use ULocaleDisplayNames instead.
  *
  * @param locale the locale to get the displayable country code with. NULL may be used to specify the default.
  * @param displayLocale Specifies the locale to be used to display the name.  In other words,
@@ -894,6 +886,7 @@ uloc_setKeywordValue(const char* keywordName,
                      char* buffer, int32_t bufferCapacity,
                      UErrorCode* status);
 
+#ifndef U_HIDE_DRAFT_API
 /**
  * Returns whether the locale's script is written right-to-left.
  * If there is no script subtag, then the likely script is used, see uloc_addLikelySubtags().
@@ -906,10 +899,11 @@ uloc_setKeywordValue(const char* keywordName,
  *
  * @param locale input locale ID
  * @return TRUE if the locale's script is written right-to-left
- * @stable ICU 54
+ * @draft ICU 54
  */
-U_STABLE UBool U_EXPORT2
+U_DRAFT UBool U_EXPORT2
 uloc_isRightToLeft(const char *locale);
+#endif  /* U_HIDE_DRAFT_API */
 
 /**
  * enums for the  return value for the character and line orientation
@@ -1157,6 +1151,7 @@ uloc_toLanguageTag(const char* localeID,
                    UBool strict,
                    UErrorCode* err);
 
+#ifndef U_HIDE_DRAFT_API
 /**
  * Converts the specified keyword (legacy key, or BCP 47 Unicode locale
  * extension key) to the equivalent BCP 47 Unicode locale extension key.
@@ -1176,9 +1171,9 @@ uloc_toLanguageTag(const char* localeID,
  *                      mapped to a well-formed BCP 47 Unicode locale extension
  *                      key. 
  * @see uloc_toLegacyKey
- * @stable ICU 54
+ * @draft ICU 54
  */
-U_STABLE const char* U_EXPORT2
+U_DRAFT const char* U_EXPORT2
 uloc_toUnicodeLocaleKey(const char* keyword);
 
 /**
@@ -1207,9 +1202,9 @@ uloc_toUnicodeLocaleKey(const char* keyword);
  *                      or NULL if the locale keyword value cannot be mapped to
  *                      a well-formed BCP 47 Unicode locale extension type.
  * @see uloc_toLegacyType
- * @stable ICU 54
+ * @draft ICU 54
  */
-U_STABLE const char* U_EXPORT2
+U_DRAFT const char* U_EXPORT2
 uloc_toUnicodeLocaleType(const char* keyword, const char* value);
 
 /**
@@ -1222,9 +1217,9 @@ uloc_toUnicodeLocaleType(const char* keyword, const char* value);
  * @return              the well-formed legacy key, or NULL if the specified
  *                      keyword cannot be mapped to a well-formed legacy key.
  * @see toUnicodeLocaleKey
- * @stable ICU 54
+ * @draft ICU 54
  */
-U_STABLE const char* U_EXPORT2
+U_DRAFT const char* U_EXPORT2
 uloc_toLegacyKey(const char* keyword);
 
 /**
@@ -1251,9 +1246,11 @@ uloc_toLegacyKey(const char* keyword);
  *                      keyword value cannot be mapped to a well-formed legacy
  *                      type.
  * @see toUnicodeLocaleType
- * @stable ICU 54
+ * @draft ICU 54
  */
-U_STABLE const char* U_EXPORT2
+U_DRAFT const char* U_EXPORT2
 uloc_toLegacyType(const char* keyword, const char* value);
+
+#endif  /* U_HIDE_DRAFT_API */
 
 #endif /*_ULOC*/

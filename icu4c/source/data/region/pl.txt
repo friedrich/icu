@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/pl.xml
+// *
+// ***************************************************************************
 pl{
     Countries{
         001{"świat"}
@@ -40,6 +46,7 @@ pl{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Antyle Holenderskie"}
         AO{"Angola"}
         AQ{"Antarktyka"}
         AR{"Argentyna"}
@@ -60,7 +67,7 @@ pl{
         BJ{"Benin"}
         BL{"Saint-Barthélemy"}
         BM{"Bermudy"}
-        BN{"Brunei"}
+        BN{"Brunei Darussalam"}
         BO{"Boliwia"}
         BQ{"Niderlandy Karaibskie"}
         BR{"Brazylia"}
@@ -272,7 +279,6 @@ pl{
         UA{"Ukraina"}
         UG{"Uganda"}
         UM{"Dalekie Wyspy Mniejsze Stanów Zjednoczonych"}
-        UN{"Organizacja Narodów Zjednoczonych"}
         US{"Stany Zjednoczone"}
         UY{"Urugwaj"}
         UZ{"Uzbekistan"}
@@ -294,20 +300,17 @@ pl{
         ZZ{"Nieznany region"}
     }
     Countries%short{
-        GB{"Wlk. Bryt."}
+        GB{"GB"}
         HK{"Hongkong"}
         MO{"Makau"}
         PS{"Palestyna"}
-        UN{"ONZ"}
         US{"USA"}
     }
     Countries%variant{
         CG{"Republika Konga"}
         CI{"Wybrzeże Kości Słoniowej"}
-        CZ{"Republika Czeska"}
         FK{"Falklandy (Malwiny)"}
-        MK{"Była Jugosłowiańska Republika Macedonii"}
         TL{"Timor-Leste"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
 }

@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/kea.xml
+// *
+// ***************************************************************************
 kea{
     Currencies{
         AED{
@@ -92,7 +98,7 @@ kea{
             {
                 "#,##0.00 ¤",
                 "$",
-                " ",
+                ",",
             }
         }
         CZK{
@@ -413,7 +419,7 @@ kea{
         }
         STD{
             "STD",
-            "Dobra di Sãu Tume i Prínsipi",
+            "Dobra di Sãu Tume i Prinsipi",
         }
         SYP{
             "SYP",
@@ -485,7 +491,7 @@ kea{
         }
         XAF{
             "FCFA",
-            "Franku CFA (BEAC)",
+            "Franku CFA BEAC",
         }
         XCD{
             "EC$",
@@ -493,7 +499,7 @@ kea{
         }
         XOF{
             "CFA",
-            "Franku CFA (BCEAO)",
+            "Franku CFA BCEAO",
         }
         XPF{
             "CFPF",
@@ -725,10 +731,10 @@ kea{
             other{"Dola merkanu"}
         }
         XAF{
-            other{"Franku CFA (BEAC)"}
+            other{"Franku CFA BEAC"}
         }
         XOF{
-            other{"Franku CFA (BCEAO)"}
+            other{"Franku CFA BCEAO"}
         }
         XXX{
             other{"(mueda diskonxedu)"}
@@ -743,5 +749,5 @@ kea{
     CurrencyUnitPatterns{
         other{"{0} {1}"}
     }
-    Version{"2.1.27.46"}
+    Version{"2.1.10.42"}
 }

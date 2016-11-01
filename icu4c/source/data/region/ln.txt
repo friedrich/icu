@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ln.xml
+// *
+// ***************************************************************************
 ln{
     Countries{
         AD{"Andorɛ"}
@@ -9,6 +15,7 @@ ln{
         AI{"Angiyɛ"}
         AL{"Alibani"}
         AM{"Amɛni"}
+        AN{"Antiyɛ ya Olandɛ"}
         AO{"Angóla"}
         AQ{"Antarctique"}
         AR{"Arizantinɛ"}
@@ -36,7 +43,7 @@ ln{
         BY{"Byelorisi"}
         BZ{"Belizɛ"}
         CA{"Kanada"}
-        CD{"Republíki ya Kongó Demokratíki"}
+        CD{"Repibiki demokratiki ya Kongó"}
         CF{"Repibiki ya Afríka ya Káti"}
         CG{"Kongo"}
         CH{"Swisɛ"}
@@ -234,5 +241,5 @@ ln{
         ZM{"Zambi"}
         ZW{"Zimbabwe"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.7.39"}
 }

@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2007-2008, International Business Machines Corporation and    *
@@ -9,8 +7,6 @@
 package com.ibm.icu.dev.test.timezone;
 
 import java.util.Date;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.DateFormat;
@@ -28,10 +24,14 @@ import com.ibm.icu.util.TimeZone;
  * Testing getOffset APIs using local time
  */
 public class TimeZoneOffsetLocalTest extends TestFmwk {
+
+    public static void main(String[] args) throws Exception {
+        new TimeZoneOffsetLocalTest().run(args);
+    }
+
     /*
      * Testing getOffset APIs around rule transition by local standard/wall time.
      */
-    @Test
     public void TestGetOffsetAroundTransition() {
         final int HOUR = 60*60*1000;
         final int MINUTE = 60*1000;

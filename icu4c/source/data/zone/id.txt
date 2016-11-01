@@ -1,13 +1,19 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/id.xml
+// *
+// ***************************************************************************
 id{
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
         }
         "Africa:Accra"{
-            ec{"Accra"}
+            ec{"Akra"}
         }
         "Africa:Addis_Ababa"{
             ec{"Addis Ababa"}
@@ -49,7 +55,7 @@ id{
             ec{"Ceuta"}
         }
         "Africa:Conakry"{
-            ec{"Conakry"}
+            ec{"Konakri"}
         }
         "Africa:Dakar"{
             ec{"Dakar"}
@@ -58,7 +64,7 @@ id{
             ec{"Dar es Salaam"}
         }
         "Africa:Djibouti"{
-            ec{"Djibouti"}
+            ec{"Jibouti"}
         }
         "Africa:Douala"{
             ec{"Douala"}
@@ -85,7 +91,7 @@ id{
             ec{"Kampala"}
         }
         "Africa:Khartoum"{
-            ec{"Khartoum"}
+            ec{"Khartum"}
         }
         "Africa:Kigali"{
             ec{"Kigali"}
@@ -241,7 +247,7 @@ id{
             ec{"Cancun"}
         }
         "America:Caracas"{
-            ec{"Caracas"}
+            ec{"Karakas"}
         }
         "America:Catamarca"{
             ec{"Catamarca"}
@@ -262,7 +268,7 @@ id{
             ec{"Atikokan"}
         }
         "America:Cordoba"{
-            ec{"Cordoba"}
+            ec{"Kordoba"}
         }
         "America:Costa_Rica"{
             ec{"Kosta Rika"}
@@ -302,9 +308,6 @@ id{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -376,7 +379,7 @@ id{
             ec{"Iqaluit"}
         }
         "America:Jamaica"{
-            ec{"Jamaica"}
+            ec{"Jamaika"}
         }
         "America:Jujuy"{
             ec{"Jujuy"}
@@ -505,7 +508,7 @@ id{
             ec{"Porto Velho"}
         }
         "America:Puerto_Rico"{
-            ec{"Puerto Rico"}
+            ec{"Puerto Riko"}
         }
         "America:Rainy_River"{
             ec{"Rainy River"}
@@ -658,7 +661,7 @@ id{
             ec{"Ashgabat"}
         }
         "Asia:Baghdad"{
-            ec{"Baghdad"}
+            ec{"Bagdad"}
         }
         "Asia:Bahrain"{
             ec{"Bahrain"}
@@ -668,9 +671,6 @@ id{
         }
         "Asia:Bangkok"{
             ec{"Bangkok"}
-        }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
         }
         "Asia:Beirut"{
             ec{"Beirut"}
@@ -683,9 +683,6 @@ id{
         }
         "Asia:Calcutta"{
             ec{"Kolkata"}
-        }
-        "Asia:Chita"{
-            ec{"Chita"}
         }
         "Asia:Choibalsan"{
             ec{"Choibalsan"}
@@ -808,10 +805,10 @@ id{
             ec{"Rangoon"}
         }
         "Asia:Riyadh"{
-            ec{"Riyadh"}
+            ec{"Riyad"}
         }
         "Asia:Saigon"{
-            ec{"Ho Chi Minh"}
+            ec{"Kota Ho Chi Minh"}
         }
         "Asia:Sakhalin"{
             ec{"Sakhalin"}
@@ -827,9 +824,6 @@ id{
         }
         "Asia:Singapore"{
             ec{"Singapura"}
-        }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymsk"}
         }
         "Asia:Taipei"{
             ec{"Taipei"}
@@ -848,9 +842,6 @@ id{
         }
         "Asia:Tokyo"{
             ec{"Tokyo"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ulaanbaatar"}
@@ -951,9 +942,6 @@ id{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
-        }
         "Europe:Athens"{
             ec{"Athena"}
         }
@@ -967,10 +955,10 @@ id{
             ec{"Bratislava"}
         }
         "Europe:Brussels"{
-            ec{"Brussels"}
+            ec{"Brussel"}
         }
         "Europe:Bucharest"{
-            ec{"Bucharest"}
+            ec{"Bukares"}
         }
         "Europe:Budapest"{
             ec{"Budapest"}
@@ -986,7 +974,7 @@ id{
         }
         "Europe:Dublin"{
             ec{"Dublin"}
-            ld{"Waktu Standar Irlandia"}
+            ld{"Musim Panas Irlandia"}
         }
         "Europe:Gibraltar"{
             ec{"Gibraltar"}
@@ -1012,18 +1000,15 @@ id{
         "Europe:Kiev"{
             ec{"Kiev"}
         }
-        "Europe:Kirov"{
-            ec{"Kirov"}
-        }
         "Europe:Lisbon"{
-            ec{"Lisbon"}
+            ec{"Lisboa"}
         }
         "Europe:Ljubljana"{
             ec{"Ljubljana"}
         }
         "Europe:London"{
             ec{"London"}
-            ld{"Waktu Musim Panas Inggris"}
+            ld{"Musim Panas Inggris"}
         }
         "Europe:Luxembourg"{
             ec{"Luksemburg"}
@@ -1090,9 +1075,6 @@ id{
         }
         "Europe:Tirane"{
             ec{"Tirane"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Ulyanovsk"}
         }
         "Europe:Uzhgorod"{
             ec{"Uzhhorod"}
@@ -1162,9 +1144,6 @@ id{
         }
         "Pacific:Auckland"{
             ec{"Auckland"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Bougainville"}
         }
         "Pacific:Chatham"{
             ec{"Chatham"}
@@ -1297,7 +1276,7 @@ id{
             ls{"Waktu Standar Afrika Barat"}
         }
         "meta:Alaska"{
-            ld{"Waktu Musim Panas Alaska"}
+            ld{"Waktu Terang Alaska"}
             lg{"Waktu Alaska"}
             ls{"Waktu Standar Alaska"}
         }
@@ -1312,22 +1291,22 @@ id{
             ls{"Waktu Standar Amazon"}
         }
         "meta:America_Central"{
-            ld{"Waktu Musim Panas Tengah"}
+            ld{"Waktu Terang Hari Tengah"}
             lg{"Waktu Tengah"}
             ls{"Waktu Standar Tengah"}
         }
         "meta:America_Eastern"{
-            ld{"Waktu Musim Panas Timur"}
+            ld{"Waktu Terang Hari Timur"}
             lg{"Waktu Timur"}
             ls{"Waktu Standar Timur"}
         }
         "meta:America_Mountain"{
-            ld{"Waktu Musim Panas Pegunungan"}
+            ld{"Waktu Terang Hari Pegunungan"}
             lg{"Waktu Pegunungan"}
             ls{"Waktu Standar Pegunungan"}
         }
         "meta:America_Pacific"{
-            ld{"Waktu Musim Panas Pasifik"}
+            ld{"Waktu Terang Hari Pasifik"}
             lg{"Waktu Pasifik"}
             ls{"Waktu Standar Pasifik"}
         }
@@ -1352,7 +1331,7 @@ id{
             ls{"Waktu Standar Aqtobe"}
         }
         "meta:Arabian"{
-            ld{"Waktu Musim Panas Arab"}
+            ld{"Waktu Terang Arab"}
             lg{"Waktu Arab"}
             ls{"Waktu Standar Arab"}
         }
@@ -1372,28 +1351,28 @@ id{
             ls{"Waktu Standar Armenia"}
         }
         "meta:Atlantic"{
-            ld{"Waktu Musim Panas Atlantik"}
+            ld{"Waktu Terang Atlantik"}
             lg{"Waktu Atlantik"}
             ls{"Waktu Standar Atlantik"}
         }
         "meta:Australia_Central"{
-            ld{"Waktu Musim Panas Tengah Australia"}
+            ld{"Waktu Terang Tengah Australia"}
             lg{"Waktu Tengah Australia"}
             ls{"Waktu Standar Tengah Australia"}
         }
         "meta:Australia_CentralWestern"{
-            ld{"Waktu Musim Panas Barat Tengah Australia"}
+            ld{"Waktu Terang Barat Tengah Australia"}
             lg{"Waktu Barat Tengah Australia"}
             ls{"Waktu Standar Barat Tengah Australia"}
         }
         "meta:Australia_Eastern"{
-            ld{"Waktu Musim Panas Timur Australia"}
+            ld{"Waktu Terang Timur Australia"}
             lg{"Waktu Timur Australia"}
             ls{"Waktu Standar Timur Australia"}
         }
         "meta:Australia_Western"{
-            ld{"Waktu Musim Panas Barat Australia"}
-            lg{"Waktu Barat Australia"}
+            ld{"Waktu Terang Barat Australia"}
+            lg{"Waktu Australia Barat"}
             ls{"Waktu Standar Barat Australia"}
         }
         "meta:Azerbaijan"{
@@ -1434,10 +1413,10 @@ id{
             ls{"Waktu Casey"}
         }
         "meta:Chamorro"{
-            ls{"Waktu Standar Chamorro"}
+            ls{"Waktu Chamorro"}
         }
         "meta:Chatham"{
-            ld{"Waktu Musim Panas Chatham"}
+            ld{"Waktu Terang Chatham"}
             lg{"Waktu Chatham"}
             ls{"Waktu Standar Chatham"}
         }
@@ -1447,9 +1426,9 @@ id{
             ls{"Waktu Standar Cile"}
         }
         "meta:China"{
-            ld{"Waktu Musim Panas Tiongkok"}
-            lg{"Waktu Tiongkok"}
-            ls{"Waktu Standar Tiongkok"}
+            ld{"Waktu Terang China"}
+            lg{"Waktu China"}
+            ls{"Waktu Standar China"}
         }
         "meta:Choibalsan"{
             ld{"Waktu Musim Panas Choibalsan"}
@@ -1529,7 +1508,7 @@ id{
             ls{"Waktu Wilayah Selatan dan Antarktika Prancis"}
         }
         "meta:GMT"{
-            ls{"Greenwich Mean Time"}
+            ls{"Waktu Rata-rata Greenwich"}
         }
         "meta:Galapagos"{
             ls{"Waktu Galapagos"}
@@ -1559,13 +1538,13 @@ id{
             ls{"Waktu Guam"}
         }
         "meta:Gulf"{
-            ls{"Waktu Standar Teluk"}
+            ls{"Waktu Gulf"}
         }
         "meta:Guyana"{
             ls{"Waktu Guyana"}
         }
         "meta:Hawaii_Aleutian"{
-            ld{"Waktu Musim Panas Hawaii-Aleutian"}
+            ld{"Waktu Terang Hawaii-Aleutian"}
             lg{"Waktu Hawaii-Aleutian"}
             ls{"Waktu Standar Hawaii-Aleutian"}
         }
@@ -1654,7 +1633,7 @@ id{
             ls{"Waktu Kep. Line"}
         }
         "meta:Lord_Howe"{
-            ld{"Waktu Musim Panas Lord Howe"}
+            ld{"Waktu Terang Lord Howe"}
             lg{"Waktu Lord Howe"}
             ls{"Waktu Standar Lord Howe"}
         }
@@ -1726,12 +1705,12 @@ id{
             ls{"Waktu Standar Kaledonia Baru"}
         }
         "meta:New_Zealand"{
-            ld{"Waktu Musim Panas Selandia Baru"}
+            ld{"Waktu Terang Selandia Baru"}
             lg{"Waktu Selandia Baru"}
             ls{"Waktu Standar Selandia Baru"}
         }
         "meta:Newfoundland"{
-            ld{"Waktu Musim Panas Newfoundland"}
+            ld{"Waktu Siang Hari Newfoundland"}
             lg{"Waktu Newfoundland"}
             ls{"Waktu Standar Newfoundland"}
         }
@@ -1798,9 +1777,6 @@ id{
         }
         "meta:Ponape"{
             ls{"Waktu Ponape"}
-        }
-        "meta:Pyongyang"{
-            ls{"Waktu Pyongyang"}
         }
         "meta:Qyzylorda"{
             ld{"Waktu Musim Panas Qyzylorda"}
@@ -1928,7 +1904,7 @@ id{
         gmtZeroFormat{"GMT"}
         hourFormat{"+HH.mm;-HH.mm"}
         regionFormat{"Waktu {0}"}
-        regionFormatDaylight{"Waktu Musim Panas {0}"}
+        regionFormatDaylight{"Waktu Terang {0}"}
         regionFormatStandard{"Waktu Standar {0}"}
     }
 }

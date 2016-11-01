@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/collation/de.xml
+// *
+// ***************************************************************************
 de{
-    Version{"2.1.19.14"}
+    Version{"2.1.6.34"}
     collations{
         phonebook{
             Sequence{
@@ -9,14 +15,11 @@ de{
                 "&OE<<ö<<<Ö"
                 "&UE<<ü<<<Ü"
             }
-            Version{"30.0.2"}
+            Version{"27.0.1"}
         }
         search{
-            Sequence{
-                "[import und-u-co-search]"
-                "[import de-u-co-phonebk]"
-            }
-            Version{"30.0.2"}
+            Sequence{"[import und-u-co-search][import de-u-co-phonebk]"}
+            Version{"27.0.1"}
         }
     }
 }

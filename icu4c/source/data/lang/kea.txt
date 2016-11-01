@@ -1,17 +1,20 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/kea.xml
+// *
+// ***************************************************************************
 kea{
-    Keys{
-        calendar{"Kalendáriu"}
-    }
     Languages{
-        ab{"abkáziu"}
+        ab{"abkaziu"}
         af{"afrikaner"}
         agq{"aghem"}
         ak{"akan"}
-        am{"amáriku"}
-        ar{"árabi"}
-        ar_001{"árabi mudernu"}
+        am{"amariku"}
+        ar{"arabi"}
+        ar_001{"arabi mudernu"}
         arn{"araukanu"}
         as{"asames"}
         asa{"asu"}
@@ -21,7 +24,7 @@ kea{
         be{"bielorusu"}
         bem{"bemba"}
         bez{"bena"}
-        bg{"búlgaru"}
+        bg{"bulgaru"}
         bm{"bambara"}
         bn{"bengali"}
         bo{"tibetanu"}
@@ -29,13 +32,11 @@ kea{
         brx{"bodo"}
         bs{"bosniu"}
         ca{"katalãu"}
-        ce{"txetxenu"}
         cgg{"xiga"}
         chr{"xeroki"}
-        ckb{"kurdu sentral"}
-        co{"kórsiku"}
+        ckb{"kurdu sorani"}
+        co{"córsiku"}
         cs{"txeku"}
-        cv{"txuvaxi"}
         cy{"gales"}
         da{"dinamarkes"}
         dav{"taita"}
@@ -53,7 +54,7 @@ kea{
         en{"ingles"}
         en_AU{"ingles australianu"}
         en_CA{"ingles kanadianu"}
-        en_GB{"ingles britaniku"}
+        en_GB{"ingles britanuku"}
         en_US{"ingles merkanu"}
         eo{"sperantu"}
         es{"spanhol"}
@@ -70,12 +71,12 @@ kea{
         fr{"franses"}
         fr_CA{"franses kanadianu"}
         fr_CH{"franses suisu"}
-        fy{"fríziu osidental"}
+        fy{"frisiu osidental"}
         ga{"irlandes"}
         gag{"gagauz"}
         gl{"galegu"}
         gn{"guarani"}
-        gsw{"alimãu suísu"}
+        gsw{"alimãu di Suisa"}
         gu{"gujarati"}
         guz{"gusii"}
         gv{"manks"}
@@ -88,7 +89,7 @@ kea{
         ht{"aitianu"}
         hu{"úngaru"}
         hy{"arméniu"}
-        id{"indonéziu"}
+        id{"indoneziu"}
         ig{"ibo"}
         ii{"nuosu"}
         is{"islandes"}
@@ -99,46 +100,34 @@ kea{
         jmc{"matxame"}
         jv{"javanes"}
         ka{"jorjianu"}
-        kab{"kabila"}
-        kam{"kamba"}
         kea{"kabuverdianu"}
-        khq{"koira txiini"}
-        ki{"kikuiu"}
         kk{"kazak"}
-        kl{"groenlandes"}
-        kln{"kalenjin"}
         km{"kmer"}
         kn{"kanares"}
-        ko{"korianu"}
-        koi{"komi-permiak"}
-        kok{"konkani"}
+        ko{"kureanu"}
         ks{"kaxmira"}
-        ksf{"bafia"}
         ku{"kurdu"}
-        kw{"kórniku"}
         ky{"kirgiz"}
         la{"latin"}
         lb{"luxemburges"}
-        lg{"luganda"}
         lo{"lausianu"}
         lt{"lituanes"}
         lv{"letãu"}
         mg{"malgaxi"}
         mi{"maori"}
-        mk{"masedóniu"}
+        mk{"masedoniu"}
         ml{"malaialam"}
         mr{"marati"}
-        ms{"maláiu"}
+        ms{"malaiu"}
         mt{"maltes"}
         my{"birmanes"}
         nb{"norueges bokmål"}
         ne{"nepales"}
         nl{"olandes"}
         nl_BE{"flamengu"}
-        nmg{"kuazio"}
         nn{"norueges nynorsk"}
         om{"oromo"}
-        or{"odía"}
+        or{"oriya"}
         pa{"pandjabi"}
         pl{"pulaku"}
         ps{"paxto"}
@@ -149,36 +138,31 @@ kea{
         quc{"kitxe"}
         rm{"romanxi"}
         ro{"rumenu"}
-        ro_MD{"rumenu moldáviku"}
         ru{"rusu"}
         rw{"kiniaruanda"}
-        sa{"sánskritu"}
+        sa{"sanskritu"}
         sd{"sindi"}
-        ses{"koiraboro seni"}
         si{"singales"}
         sk{"slovaku"}
-        sl{"slovéniu"}
-        smn{"inari sami"}
+        sl{"sloveniu"}
         so{"somali"}
         sq{"albanes"}
         sr{"sérviu"}
         su{"sundanes"}
         sv{"sueku"}
         sw{"suaíli"}
-        sw_CD{"suaíli kongoles"}
         ta{"tamil"}
         te{"telugu"}
-        tg{"tadjiki"}
+        tg{"tajik"}
         th{"tailandes"}
         ti{"tigrinia"}
         tk{"turkmenu"}
         to{"tonganes"}
         tr{"turku"}
         tt{"tatar"}
-        tzm{"tamazait di Atlas Sentral"}
         ug{"uigur"}
         uk{"ukranianu"}
-        und{"língua diskonxedu"}
+        und{"lingua diskonxedu"}
         ur{"urdu"}
         uz{"uzbeki"}
         vi{"vietnamita"}
@@ -189,27 +173,26 @@ kea{
         zh_Hans{"xines simplifikadu"}
         zh_Hant{"xines tradisional"}
         zu{"zulu"}
-        zxx{"sen kontiudu linguístiku"}
+        zxx{"sem konteudo linguistiku"}
     }
     Languages%short{
-        az{"azeri"}
         en_GB{"ingles (R.U.)"}
         en_US{"ingles (S.U.)"}
     }
     Scripts{
-        Arab{"arábiku"}
-        Armn{"arméniu"}
+        Arab{"arabiku"}
+        Armn{"armeniu"}
         Beng{"bengali"}
         Bopo{"bopomofo"}
         Brai{"braille"}
-        Cyrl{"siríliku"}
+        Cyrl{"siriliku"}
         Deva{"devanagari"}
-        Ethi{"etiópiku"}
+        Ethi{"etiopiku"}
         Geor{"jorjianu"}
         Grek{"gregu"}
         Gujr{"gujarati"}
         Guru{"gurmuki"}
-        Hang{"hangul"}
+        Hang{"angul"}
         Hani{"han"}
         Hans{"simplifikadu"}
         Hant{"tradisional"}
@@ -219,7 +202,7 @@ kea{
         Kana{"katakana"}
         Khmr{"kmer"}
         Knda{"kanares"}
-        Kore{"korianu"}
+        Kore{"koreanu"}
         Laoo{"lausianu"}
         Latn{"latinu"}
         Mlym{"malaialam"}
@@ -232,7 +215,7 @@ kea{
         Thaa{"taana"}
         Thai{"tailandes"}
         Tibt{"tibetanu"}
-        Zsym{"símbulus"}
+        Zsym{"simbulus"}
         Zxxx{"nãu skritu"}
         Zyyy{"komun"}
         Zzzz{"skrita diskonxedu"}
@@ -243,13 +226,13 @@ kea{
     }
     Types{
         calendar{
-            gregorian{"Kalendáriu Gregorianu"}
+            gregorian{"Kalendariu Gregorianu"}
         }
         numbers{
-            latn{"Númerus Arábikus"}
+            latn{"Numerus Arabikus"}
         }
     }
-    Version{"2.1.27.46"}
+    Version{"2.1.10.42"}
     codePatterns{
         language{"Lingua: {0}"}
         script{"Skrita: {0}"}

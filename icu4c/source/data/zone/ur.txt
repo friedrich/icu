@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ur.xml
+// *
+// ***************************************************************************
 ur{
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"عابدجان"}
@@ -302,9 +308,6 @@ ur{
         }
         "America:El_Salvador"{
             ec{"ال سلواڈور"}
-        }
-        "America:Fort_Nelson"{
-            ec{"فورٹ نیلسن"}
         }
         "America:Fortaleza"{
             ec{"فورٹالیزا"}
@@ -669,9 +672,6 @@ ur{
         "Asia:Bangkok"{
             ec{"بنکاک"}
         }
-        "Asia:Barnaul"{
-            ec{"برنال"}
-        }
         "Asia:Beirut"{
             ec{"بیروت"}
         }
@@ -683,9 +683,6 @@ ur{
         }
         "Asia:Calcutta"{
             ec{"کولکاتا"}
-        }
-        "Asia:Chita"{
-            ec{"چیتا"}
         }
         "Asia:Choibalsan"{
             ec{"چوئبالسان"}
@@ -828,9 +825,6 @@ ur{
         "Asia:Singapore"{
             ec{"سنگاپور"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"سرہدنیکولیمسک"}
-        }
         "Asia:Taipei"{
             ec{"تائپے"}
         }
@@ -848,9 +842,6 @@ ur{
         }
         "Asia:Tokyo"{
             ec{"ٹوکیو"}
-        }
-        "Asia:Tomsk"{
-            ec{"ٹامسک"}
         }
         "Asia:Ulaanbaatar"{
             ec{"اولان باتار"}
@@ -889,7 +880,7 @@ ur{
             ec{"کیپ ورڈی"}
         }
         "Atlantic:Faeroe"{
-            ec{"فارو"}
+            ec{"فروئی"}
         }
         "Atlantic:Madeira"{
             ec{"مڈیئرا"}
@@ -951,9 +942,6 @@ ur{
         "Europe:Andorra"{
             ec{"انڈورا"}
         }
-        "Europe:Astrakhan"{
-            ec{"استراخان"}
-        }
         "Europe:Athens"{
             ec{"ایتھنز"}
         }
@@ -973,7 +961,7 @@ ur{
             ec{"بخارسٹ"}
         }
         "Europe:Budapest"{
-            ec{"بڈاپسٹ"}
+            ec{"بدھاپیسٹ"}
         }
         "Europe:Busingen"{
             ec{"بزنجن"}
@@ -1011,9 +999,6 @@ ur{
         }
         "Europe:Kiev"{
             ec{"کیوو"}
-        }
-        "Europe:Kirov"{
-            ec{"کیروف"}
         }
         "Europe:Lisbon"{
             ec{"لسبن"}
@@ -1091,9 +1076,6 @@ ur{
         "Europe:Tirane"{
             ec{"ٹیرانی"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"الیانوسک"}
-        }
         "Europe:Uzhgorod"{
             ec{"ازگوروڈ"}
         }
@@ -1162,9 +1144,6 @@ ur{
         }
         "Pacific:Auckland"{
             ec{"آکلینڈ"}
-        }
-        "Pacific:Bougainville"{
-            ec{"بوگینولے"}
         }
         "Pacific:Chatham"{
             ec{"چیتھم"}
@@ -1482,7 +1461,7 @@ ur{
             ls{"مشرقی یورپ کا معیاری وقت"}
         }
         "meta:Europe_Further_Eastern"{
-            ls{"بعید مشرقی یورپی وقت"}
+            ls{"مزید مشرقی یورپی وقت"}
         }
         "meta:Europe_Western"{
             ld{"مغربی یورپ کا موسم گرما کا وقت"}
@@ -1758,9 +1737,6 @@ ur{
         }
         "meta:Ponape"{
             ls{"پوناپے ٹائم"}
-        }
-        "meta:Pyongyang"{
-            ls{"پیانگ یانگ وقت"}
         }
         "meta:Reunion"{
             ls{"ری یونین ٹائم"}

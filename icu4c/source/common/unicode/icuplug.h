@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 2009-2015, International Business Machines
+*   Copyright (C) 2009-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -110,10 +108,6 @@
 #include "unicode/utypes.h"
 
 
-#if UCONFIG_ENABLE_PLUGINS
-
-
-
 /* === Basic types === */
 
 #ifndef U_HIDE_INTERNAL_API
@@ -159,11 +153,7 @@ typedef enum {
     UPLUG_REASON_QUERY = 0,     /**< The plugin is being queried for info. **/
     UPLUG_REASON_LOAD = 1,     /**< The plugin is being loaded. **/
     UPLUG_REASON_UNLOAD = 2,   /**< The plugin is being unloaded. **/
-    /**
-     * Number of known reasons.
-     * @internal The numeric value may change over time, see ICU ticket #12420.
-     */
-    UPLUG_REASON_COUNT
+    UPLUG_REASON_COUNT         /**< count of known reasons **/
 } UPlugReason;
 
 
@@ -179,11 +169,7 @@ typedef enum {
     UPLUG_LEVEL_UNKNOWN = 1,     /**< The plugin is waiting to be installed. **/
     UPLUG_LEVEL_LOW     = 2,     /**< The plugin must be called before u_init completes **/
     UPLUG_LEVEL_HIGH    = 3,     /**< The plugin can run at any time. **/
-    /**
-     * Number of known levels.
-     * @internal The numeric value may change over time, see ICU ticket #12420.
-     */
-    UPLUG_LEVEL_COUNT
+    UPLUG_LEVEL_COUNT         /**< count of known reasons **/
 } UPlugLevel;
 
 /**
@@ -382,7 +368,4 @@ U_INTERNAL void U_EXPORT2
 uplug_removePlug(UPlugData *plug, UErrorCode *status);
 #endif  /* U_HIDE_INTERNAL_API */
 
-#endif /* UCONFIG_ENABLE_PLUGINS */
-
-#endif /* _ICUPLUG */
-
+#endif

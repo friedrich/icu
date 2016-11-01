@@ -54,45 +54,6 @@
     <ClCompile Include="usearch.cpp">
       <Filter>collation</Filter>
     </ClCompile>
-    <ClCompile Include="affixpatternparser.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="dayperiodrules.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="decimfmtimpl.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="digitaffix.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="digitaffixesandpadding.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="digitformatter.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="digitgrouping.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="digitinterval.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="pluralaffix.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="precision.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="smallintformatter.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="valueformatter.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
-    <ClCompile Include="visibledigits.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
     <ClCompile Include="astro.cpp">
       <Filter>formatting</Filter>
     </ClCompile>
@@ -210,6 +171,9 @@
     <ClCompile Include="japancal.cpp">
       <Filter>formatting</Filter>
     </ClCompile>
+    <ClCompile Include="locdspnm.cpp">
+      <Filter>formatting</Filter>
+    </ClCompile>
     <ClCompile Include="measfmt.cpp">
       <Filter>formatting</Filter>
     </ClCompile>
@@ -282,9 +246,6 @@
     <ClCompile Include="smpdtfst.cpp">
       <Filter>formatting</Filter>
     </ClCompile>
-    <ClCompile Include="standardplural.cpp">
-      <Filter>formatting</Filter>
-    </ClCompile>
     <ClCompile Include="taiwncal.cpp">
       <Filter>formatting</Filter>
     </ClCompile>
@@ -307,6 +268,9 @@
       <Filter>formatting</Filter>
     </ClCompile>
     <ClCompile Include="ucal.cpp">
+      <Filter>formatting</Filter>
+    </ClCompile>
+    <ClCompile Include="ucurr.cpp">
       <Filter>formatting</Filter>
     </ClCompile>
     <ClCompile Include="udat.cpp">
@@ -501,6 +465,9 @@
     <ClCompile Include="ucsdet.cpp">
       <Filter>charset detect</Filter>
     </ClCompile>
+    <ClCompile Include="identifier_info.cpp">
+      <Filter>spoof</Filter>
+    </ClCompile>
     <ClCompile Include="scriptset.cpp">
       <Filter>spoof</Filter>
     </ClCompile>
@@ -514,6 +481,9 @@
       <Filter>spoof</Filter>
     </ClCompile>
     <ClCompile Include="uspoof_impl.cpp">
+      <Filter>spoof</Filter>
+    </ClCompile>
+    <ClCompile Include="uspoof_wsconf.cpp">
       <Filter>spoof</Filter>
     </ClCompile>
     <ClCompile Include="alphaindex.cpp">
@@ -539,6 +509,9 @@
     </ClCompile>
     <ClCompile Include="uregion.cpp">
       <Filter>formatting</Filter>
+    </ClCompile>
+    <ClCompile Include="filteredbrk.cpp">
+      <Filter>misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -623,50 +596,6 @@
     <ClInclude Include="usrchimp.h">
       <Filter>collation</Filter>
     </ClInclude>
-
-    <ClInclude Include="affixpatternparser.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="decimalformatpatternimpl.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="decimfmtimpl.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="digitaffix.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="digitaffixesandpadding.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="digitformatter.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="digitgrouping.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="digitinterval.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="pluralaffix.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="precision.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="significantdigitinterval.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="smallintformatter.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="valueformatter.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="visibledigits.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-
     <ClInclude Include="astro.h">
       <Filter>formatting</Filter>
     </ClInclude>
@@ -688,9 +617,6 @@
     <ClInclude Include="dangical.h">
       <Filter>formatting</Filter>
     </ClInclude>
-    <ClInclude Include="dayperiodrules.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
     <ClInclude Include="decContext.h">
       <Filter>formatting</Filter>
     </ClInclude>
@@ -707,9 +633,6 @@
       <Filter>formatting</Filter>
     </ClInclude>
     <ClInclude Include="digitlst.h">
-      <Filter>formatting</Filter>
-    </ClInclude>
-    <ClInclude Include="dt_impl.h">
       <Filter>formatting</Filter>
     </ClInclude>
     <ClInclude Include="dtitv_impl.h">
@@ -778,6 +701,9 @@
     <ClInclude Include="shareddateformatsymbols.h">
       <Filter>formatting</Filter>
     </ClInclude>
+    <ClInclude Include="shareddatetimepatterngenerator.h">
+      <Filter>formatting</Filter>
+    </ClInclude>
     <ClInclude Include="sharednumberformat.h">
       <Filter>formatting</Filter>
     </ClInclude>
@@ -787,10 +713,10 @@
     <ClInclude Include="smpdtfst.h">
       <Filter>formatting</Filter>
     </ClInclude>
-    <ClInclude Include="standardplural.h">
+    <ClInclude Include="taiwncal.h">
       <Filter>formatting</Filter>
     </ClInclude>
-    <ClInclude Include="taiwncal.h">
+    <ClInclude Include="ucurrimp.h">
       <Filter>formatting</Filter>
     </ClInclude>
     <ClInclude Include="umsg_imp.h">
@@ -937,6 +863,9 @@
     <ClInclude Include="inputext.h">
       <Filter>charset detect</Filter>
     </ClInclude>
+    <ClInclude Include="identifier_info.h">
+      <Filter>spoof</Filter>
+    </ClInclude>
     <ClInclude Include="scriptset.h">
       <Filter>spoof</Filter>
     </ClInclude>
@@ -944,6 +873,9 @@
       <Filter>spoof</Filter>
     </ClInclude>
     <ClInclude Include="uspoof_impl.h">
+      <Filter>spoof</Filter>
+    </ClInclude>
+    <ClInclude Include="uspoof_wsconf.h">
       <Filter>spoof</Filter>
     </ClInclude>
     <ClInclude Include="tzgnames.h">
@@ -1121,6 +1053,9 @@
     <CustomBuild Include="unicode\gregocal.h">
       <Filter>formatting</Filter>
     </CustomBuild>
+    <CustomBuild Include="unicode\locdspnm.h">
+      <Filter>formatting</Filter>
+    </CustomBuild>
     <CustomBuild Include="unicode\measfmt.h">
       <Filter>formatting</Filter>
     </CustomBuild>
@@ -1184,6 +1119,9 @@
     <CustomBuild Include="unicode\ucal.h">
       <Filter>formatting</Filter>
     </CustomBuild>
+    <CustomBuild Include="unicode\ucurr.h">
+      <Filter>formatting</Filter>
+    </CustomBuild>
     <CustomBuild Include="unicode\udat.h">
       <Filter>formatting</Filter>
     </CustomBuild>
@@ -1193,10 +1131,16 @@
     <CustomBuild Include="unicode\udatpg.h">
       <Filter>formatting</Filter>
     </CustomBuild>
+    <CustomBuild Include="unicode\udisplaycontext.h">
+      <Filter>formatting</Filter>
+    </CustomBuild>
     <CustomBuild Include="unicode\ugender.h">
       <Filter>formatting</Filter>
     </CustomBuild>
     <CustomBuild Include="unicode\ufieldpositer.h">
+      <Filter>formatting</Filter>
+    </CustomBuild>
+    <CustomBuild Include="unicode\uldnames.h">
       <Filter>formatting</Filter>
     </CustomBuild>
     <CustomBuild Include="unicode\ulocdata.h">
@@ -1212,9 +1156,6 @@
       <Filter>formatting</Filter>
     </CustomBuild>
     <CustomBuild Include="unicode\upluralrules.h">
-      <Filter>formatting</Filter>
-    </CustomBuild>
-    <CustomBuild Include="unicode\ureldatefmt.h">
       <Filter>formatting</Filter>
     </CustomBuild>
     <CustomBuild Include="unicode\utmscale.h">
@@ -1271,5 +1212,10 @@
     <CustomBuild Include="unicode\uformattable.h">
       <Filter>formatting</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="unicode\filteredbrk.h">
+      <Filter>misc</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

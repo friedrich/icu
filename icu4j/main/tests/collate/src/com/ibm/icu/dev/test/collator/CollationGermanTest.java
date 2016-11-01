@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and
@@ -16,14 +14,15 @@
  
  import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
  
  public class CollationGermanTest extends TestFmwk{
+    public static void main(String[] args) throws Exception{
+        new CollationGermanTest().run(args);
+    }
+    
     private static char[][] testSourceCases = {
         {0x47, 0x72, 0x00F6, 0x00DF, 0x65},
         {0x61, 0x62, 0x63},
@@ -74,18 +73,15 @@ import com.ibm.icu.text.Collator;
     private Collator myCollation = null;
     
     public CollationGermanTest() {
+
     }
-    
-    @Before
-    public void init() throws Exception {
+    protected void init() throws Exception{
         myCollation = Collator.getInstance(Locale.GERMAN);
         if(myCollation == null) {
             errln("ERROR: in creation of collator of GERMAN locale");
         }
     }
-
     // perform test with strength TERTIARY
-    @Test
     public void TestTertiary(){
         if(myCollation == null ) {
             errln("decoll: cannot start test, collator is null\n");
@@ -103,12 +99,10 @@ import com.ibm.icu.text.Collator;
     
     // perform test with strength SECONDARY
     //This method in icu4c has no implementation.
-    @Test
     public void TestSecondary(){
     }
     
-    // perform test with strength PRIMARY
-    @Test
+     // perform test with strength PRIMARY
     public void TestPrimary(){
         if(myCollation == null ) {
             errln("decoll: cannot start test, collator is null\n");

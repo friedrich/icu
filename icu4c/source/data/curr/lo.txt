@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/lo.xml
+// *
+// ***************************************************************************
 lo{
     Currencies{
         ADP{
@@ -214,13 +220,9 @@ lo{
             "BYB",
             "ຣູໂບ ເບຣາຣຸສ ໃໝ່(1994–1999)",
         }
-        BYN{
-            "BYN",
-            "ເບ​ລາ​ຣຸ​ສ​ຊຽນ ຣູ​ເບິນ",
-        }
         BYR{
             "BYR",
-            "ເບ​ລາ​ຣຸ​ສ​ຊຽນ ຣູ​ເບິນ (2000–2016)",
+            "ເບ​ລາ​ຣຸ​ສ​ຊຽນ ຣູ​ເບິນ",
         }
         BZD{
             "BZD",
@@ -384,7 +386,7 @@ lo{
         }
         GBP{
             "£",
-            "ປອນ ສະ​ເຕີ​ຣິງ (ອັງ​ກິດ)",
+            "ພາວ​ດ໌ ສະ​ເຕີ​ຣິງ (ອັງ​ກິດ)",
         }
         GEK{
             "GEK",
@@ -1004,7 +1006,7 @@ lo{
         }
         UZS{
             "UZS",
-            "ອຸສເບກິສຖານິ ໂຊມ",
+            "ອຸສ​ເບ​ກິ​ສ​ຖານ ໂຊມ",
         }
         VEB{
             "VEB",
@@ -1032,7 +1034,7 @@ lo{
         }
         XAF{
             "FCFA",
-            "ສາທາລະນະລັດອາຟຣິກາກາງ",
+            "ຟຣັງ ເຊຟານ ທະນາຄານລັດອາຟຣິກາກາງ",
         }
         XAG{
             "XAG",
@@ -1104,7 +1106,7 @@ lo{
         }
         XXX{
             "XXX",
-            "ສະກຸນເງິນທີ່ບໍ່ຮູ້ຈັກ",
+            "ສະ​ກຸນ​ເງິນ​ທີ່ບໍ່​ຮູັ​ຈັກ",
         }
         YDD{
             "YDD",
@@ -1168,103 +1170,57 @@ lo{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
         EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RUB{"₽"}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
         TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"ລາຣີ"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         AED{
@@ -1306,9 +1262,6 @@ lo{
         BDT{
             other{"ບັງ​ຄລາ​ເທດ ຕາ​ກາ"}
         }
-        BGN{
-            other{"ເລບ ບູນກາຣີ"}
-        }
         BHD{
             other{"ບາ​ໄຣ​ນິ ດິ​ນາ"}
         }
@@ -1336,11 +1289,8 @@ lo{
         BWP{
             other{"ບອດ​ສະ​ວາ​ນານ ພູ​ລາ"}
         }
-        BYN{
-            other{"ເບ​ລາ​ຣຸ​ສ​ຊຽນ ຣູ​ເບິນ"}
-        }
         BYR{
-            other{"ເບ​ລາ​ຣຸ​ສ​ຊຽນ ຣູ​ເບິນ (2000–2016)"}
+            other{"ເບ​ລາ​ຣຸ​ສ​ຊຽນ ຣູ​ເບິນ"}
         }
         BZD{
             other{"ໂດ​ລ່າ​ເບ​ລິ​ຊ"}
@@ -1409,7 +1359,7 @@ lo{
             other{"ຟອ​ລ໌ກ​ແລນ ໄອ​ແລນ​ສ໌ ພາວ​ດ໌"}
         }
         GBP{
-            other{"ປອນ ສະເຕີຣິງ (ອັງກິດ)"}
+            other{"ພາວ​ດ໌ ສະ​ເຕີ​ຣິງ (ອັງ​ກິດ)"}
         }
         GEL{
             other{"ຈໍ​ຈຽນ ລາ​ຣິ"}
@@ -1440,9 +1390,6 @@ lo{
         }
         HRK{
             other{"ໂຄຣ​ເອ​ທຽນ ຄູ​ນາ"}
-        }
-        HTG{
-            other{"ໄຮ​ຕຽນ ກົວ​ເດ"}
         }
         HUF{
             other{"ຮັງ​ກາ​ຣຽນ ຟໍ​ຣິນ"}
@@ -1603,9 +1550,6 @@ lo{
         PLN{
             other{"ໂປ​ລິ​ຊ ຊະ​ລໍ​ຕີ"}
         }
-        PYG{
-            other{"ກວາຣານີ ປາຣາກວາຍ"}
-        }
         QAR{
             other{"ຄາ​ຕາ​ຣິ ຣຽວ"}
         }
@@ -1684,9 +1628,6 @@ lo{
         TTD{
             other{"ທ​ຣິ​ນິ​ແດດ ແອນ ໂທ​ບາ​ໂກ ໂດ​ລ່າ"}
         }
-        TWD{
-            other{"ນິວ ໄຕ້​ຫວັນ ໂດ​ລ່າ"}
-        }
         TZS{
             other{"ທານ​ຊາ​ນຽນ ຊິວ​ລິງ"}
         }
@@ -1703,7 +1644,7 @@ lo{
             other{"ອູ​ຣຸ​ກົວ​ຢານ ເປ​ໂຊ"}
         }
         UZS{
-            other{"ອຸສເບກິສຖານິ ໂຊມ"}
+            other{"ອຸສ​ເບ​ກິ​ສ​ຖານ ໂຊມ"}
         }
         VEF{
             other{"ເວ​ເນ​ຊູ​ເອ​ລັນ ໂບ​ລິ​ວາ"}
@@ -1717,20 +1658,14 @@ lo{
         WST{
             other{"ຊາ​ໂມນ ທາ​ລາ"}
         }
-        XAF{
-            other{"ຟຣັງ ເຊຟານ ທະນາຄານລັດອາຟຣິກາກາງ"}
-        }
         XCD{
             other{"ອີ​ສ ຄາ​ຣິ​ບຽນ ໂດ​ລ່າ"}
-        }
-        XOF{
-            other{"ຟັງເຊຟານ ອາຟຣິກາຕາເວັນຕົກ"}
         }
         XPF{
             other{"ຊີ​ເອັບ​ພີ ຟຣັງ"}
         }
         XXX{
-            other{"(ສະກຸນເງິນທີ່ບໍ່ຮູ້ຈັກ)"}
+            other{"ສະ​ກຸນ​ເງິນ​ທີ່ບໍ່​ຮູັ​ຈັກ"}
         }
         YER{
             other{"ເຢ​ເມ​ນິ ຣຽວ"}
@@ -1745,5 +1680,5 @@ lo{
     CurrencyUnitPatterns{
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
 }

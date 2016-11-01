@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2015, International Business Machines Corporation and
@@ -39,7 +37,7 @@ public final class ICUBinary {
         private static final int DATA_FORMAT = 0x436d6e44;
 
         private static final class IsAcceptable implements Authenticate {
-            @Override
+            // @Override when we switch to Java 6
             public boolean isDataVersionAcceptable(byte version[]) {
                 return version[0] == 1;
             }
@@ -367,26 +365,7 @@ public final class ICUBinary {
             } else if (i == key.length()) {
                 return -1;  // key < table key because key is shorter.
             }
-            int diff = key.charAt(i) - c2;
-            if (diff != 0) {
-                return diff;
-            }
-        }
-    }
-
-    static int compareKeys(CharSequence key, byte[] bytes, int offset) {
-        for (int i = 0;; ++i, ++offset) {
-            int c2 = bytes[offset];
-            if (c2 == 0) {
-                if (i == key.length()) {
-                    return 0;
-                } else {
-                    return 1;  // key > table key because key is longer.
-                }
-            } else if (i == key.length()) {
-                return -1;  // key < table key because key is shorter.
-            }
-            int diff = key.charAt(i) - c2;
+            int diff = (int)key.charAt(i) - c2;
             if (diff != 0) {
                 return diff;
             }
@@ -402,13 +381,13 @@ public final class ICUBinary {
     {
         /**
          * Method used in ICUBinary.readHeader() to provide data format
-         * authentication.
+         * authentication. 
          * @param version version of the current data
          * @return true if dataformat is an acceptable version, false otherwise
          */
         public boolean isDataVersionAcceptable(byte version[]);
     }
-
+    
     // public methods --------------------------------------------------------
 
     /**
@@ -570,7 +549,7 @@ public final class ICUBinary {
      */
     public static int readHeader(ByteBuffer bytes, int dataFormat, Authenticate authenticate)
             throws IOException {
-        assert bytes != null && bytes.position() == 0;
+        assert bytes.position() == 0;
         byte magic1 = bytes.get(2);
         byte magic2 = bytes.get(3);
         if (magic1 != MAGIC1 || magic2 != MAGIC2) {
@@ -610,7 +589,7 @@ public final class ICUBinary {
 
         bytes.position(headerSize);
         return  // dataVersion
-                (bytes.get(20) << 24) |
+                ((int)bytes.get(20) << 24) |
                 ((bytes.get(21) & 0xff) << 16) |
                 ((bytes.get(22) & 0xff) << 8) |
                 (bytes.get(23) & 0xff);
@@ -649,41 +628,6 @@ public final class ICUBinary {
         if (skipLength > 0) {
             bytes.position(bytes.position() + skipLength);
         }
-    }
-
-    public static String getString(ByteBuffer bytes, int length, int additionalSkipLength) {
-        CharSequence cs = bytes.asCharBuffer();
-        String s = cs.subSequence(0, length).toString();
-        skipBytes(bytes, length * 2 + additionalSkipLength);
-        return s;
-    }
-
-    public static char[] getChars(ByteBuffer bytes, int length, int additionalSkipLength) {
-        char[] dest = new char[length];
-        bytes.asCharBuffer().get(dest);
-        skipBytes(bytes, length * 2 + additionalSkipLength);
-        return dest;
-    }
-
-    public static short[] getShorts(ByteBuffer bytes, int length, int additionalSkipLength) {
-        short[] dest = new short[length];
-        bytes.asShortBuffer().get(dest);
-        skipBytes(bytes, length * 2 + additionalSkipLength);
-        return dest;
-    }
-
-    public static int[] getInts(ByteBuffer bytes, int length, int additionalSkipLength) {
-        int[] dest = new int[length];
-        bytes.asIntBuffer().get(dest);
-        skipBytes(bytes, length * 4 + additionalSkipLength);
-        return dest;
-    }
-
-    public static long[] getLongs(ByteBuffer bytes, int length, int additionalSkipLength) {
-        long[] dest = new long[length];
-        bytes.asLongBuffer().get(dest);
-        skipBytes(bytes, length * 8 + additionalSkipLength);
-        return dest;
     }
 
     /**
@@ -767,23 +711,23 @@ public final class ICUBinary {
     }
 
     // private variables -------------------------------------------------
-
+  
     /**
     * Magic numbers to authenticate the data file
     */
     private static final byte MAGIC1 = (byte)0xda;
     private static final byte MAGIC2 = (byte)0x27;
-
+      
     /**
     * File format authentication values
     */
     private static final byte CHAR_SET_ = 0;
     private static final byte CHAR_SIZE_ = 2;
-
+                                                    
     /**
     * Error messages
     */
-    private static final String MAGIC_NUMBER_AUTHENTICATION_FAILED_ =
+    private static final String MAGIC_NUMBER_AUTHENTICATION_FAILED_ = 
                        "ICU data file error: Not an ICU data file";
     private static final String HEADER_AUTHENTICATION_FAILED_ =
         "ICU data file error: Header authentication failed, please check if you have a valid ICU data file";

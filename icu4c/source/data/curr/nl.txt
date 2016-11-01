@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/nl.xml
+// *
+// ***************************************************************************
 nl{
     Currencies{
         ADP{
@@ -218,13 +224,9 @@ nl{
             "BYB",
             "Wit-Russische nieuwe roebel (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Wit-Russische roebel",
-        }
         BYR{
             "BYR",
-            "Wit-Russische roebel (2000–2016)",
+            "Wit-Russische roebel",
         }
         BZD{
             "BZD",
@@ -268,7 +270,7 @@ nl{
         }
         CNY{
             "CN¥",
-            "Chinese renminbi",
+            "Chinese yuan renminbi",
         }
         COP{
             "COP",
@@ -420,7 +422,7 @@ nl{
         }
         GNF{
             "GNF",
-            "Guinese frank",
+            "Guinese franc",
         }
         GNS{
             "GNS",
@@ -568,7 +570,7 @@ nl{
         }
         KYD{
             "KYD",
-            "Kaaimaneilandse dollar",
+            "Caymaneilandse dollar",
         }
         KZT{
             "KZT",
@@ -1040,7 +1042,7 @@ nl{
         }
         VNN{
             "VNN",
-            "Vietnamese dong (1978–1985)",
+            "Oude Vietnamese dong (1978–1985)",
         }
         VUV{
             "VUV",
@@ -1108,7 +1110,7 @@ nl{
         }
         XPF{
             "XPF",
-            "CFP-frank",
+            "CFP-franc",
         }
         XPT{
             "XPT",
@@ -1196,105 +1198,59 @@ nl{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
         ESP{"₧"}
         EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RUB{"₽"}
         RUR{"р."}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
         TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"ლ"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         ADP{
@@ -1513,13 +1469,9 @@ nl{
             one{"Wit-Russische nieuwe roebel (1994–1999)"}
             other{"Wit-Russische nieuwe roebel (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"Wit-Russische roebel"}
             other{"Wit-Russische roebel"}
-        }
-        BYR{
-            one{"Wit-Russische roebel (2000–2016)"}
-            other{"Wit-Russische roebel (2000–2016)"}
         }
         BZD{
             one{"Belizaanse dollar"}
@@ -1562,8 +1514,8 @@ nl{
             other{"dollar van de Chinese Volksbank"}
         }
         CNY{
-            one{"Chinese yuan"}
-            other{"Chinese yuan"}
+            one{"Chinese renminbi"}
+            other{"Chinese renminbi"}
         }
         COP{
             one{"Colombiaanse peso"}
@@ -1714,8 +1666,8 @@ nl{
             other{"Gambiaanse dalasi"}
         }
         GNF{
-            one{"Guinese frank"}
-            other{"Guinese frank"}
+            one{"Guinese franc"}
+            other{"Guinese franc"}
         }
         GNS{
             one{"Guinese syli"}
@@ -1862,8 +1814,8 @@ nl{
             other{"Koeweitse dinar"}
         }
         KYD{
-            one{"Kaaimaneilandse dollar"}
-            other{"Kaaimaneilandse dollar"}
+            one{"Caymaneilandse dollar"}
+            other{"Caymaneilandse dollar"}
         }
         KZT{
             one{"Kazachse tenge"}
@@ -2334,8 +2286,8 @@ nl{
             other{"Vietnamese dong"}
         }
         VNN{
-            one{"Vietnamese dong (1978–1985)"}
-            other{"Vietnamese dong (1978–1985)"}
+            one{"oude Vietnamese dong (1978–1985)"}
+            other{"oude Vietnamese dong (1978–1985)"}
         }
         VUV{
             one{"Vanuatuaanse vatu"}
@@ -2402,7 +2354,7 @@ nl{
             other{"Troy ounces palladium"}
         }
         XPF{
-            one{"CFP-frank"}
+            one{"CFP-franc"}
             other{"CFP-frank"}
         }
         XPT{
@@ -2494,5 +2446,5 @@ nl{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
 }

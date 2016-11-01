@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2016, Google, International Business Machines Corporation and
+ * Copyright (C) 1996-2014, Google, International Business Machines Corporation and
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -24,12 +22,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import com.ibm.icu.text.CompactDecimalDataCache.Data;
 import com.ibm.icu.text.PluralRules.FixedDecimal;
-import com.ibm.icu.util.Currency;
-import com.ibm.icu.util.CurrencyAmount;
 import com.ibm.icu.util.Output;
 import com.ibm.icu.util.ULocale;
 
@@ -46,11 +41,6 @@ import com.ibm.icu.util.ULocale;
  * setMaximumSignificantDigits), or if a fixed number of digits are set (with setMaximumIntegerDigits or
  * setMaximumFractionDigits), then result may be wider.
  * <p>
- * The "short" style is also capable of formatting currency amounts, such as "$1.2M" instead of "$1,200,000.00" (English) or
- * "5,3 Mio. €" instead of "5.300.000,00 €" (German).  Localized data concerning longer formats is not available yet in
- * the Unicode CLDR. Because of this, attempting to format a currency amount using the "long" style will produce
- * an UnsupportedOperationException.
- *
  * At this time, negative numbers and parsing are not supported, and will produce an UnsupportedOperationException.
  * Resetting the pattern prefixes or suffixes is not supported; the method calls are ignored.
  * <p>
@@ -68,11 +58,8 @@ public class CompactDecimalFormat extends DecimalFormat {
     private static final CompactDecimalDataCache cache = new CompactDecimalDataCache();
 
     private final Map<String, DecimalFormat.Unit[]> units;
-    private final Map<String, DecimalFormat.Unit[]> currencyUnits;
     private final long[] divisor;
-    private final long[] currencyDivisor;
     private final Map<String, Unit> pluralToCurrencyAffixes;
-    private CompactStyle style;
 
     // null if created internally using explicit prefixes and suffixes.
     private final PluralRules pluralRules;
@@ -130,14 +117,10 @@ public class CompactDecimalFormat extends DecimalFormat {
         this.pluralRules = PluralRules.forLocale(locale);
         DecimalFormat format = (DecimalFormat) NumberFormat.getInstance(locale);
         CompactDecimalDataCache.Data data = getData(locale, style);
-        CompactDecimalDataCache.Data currencyData = getCurrencyData(locale);
         this.units = data.units;
         this.divisor = data.divisors;
-        this.currencyUnits = currencyData.units;
-        this.currencyDivisor = currencyData.divisors;
-        this.style = style;
         pluralToCurrencyAffixes = null;
-
+        
 //        DecimalFormat currencyFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(locale);
 //        // TODO fix to use plural-dependent affixes
 //        Unit currency = new Unit(currencyFormat.getPositivePrefix(), currencyFormat.getPositiveSuffix());
@@ -146,7 +129,7 @@ public class CompactDecimalFormat extends DecimalFormat {
 //            pluralToCurrencyAffixes.put(key, currency);
 //        }
 //        // TODO fix to get right symbol for the count
-
+        
         finishInit(style, format.toPattern(), format.getDecimalFormatSymbols());
     }
 
@@ -168,7 +151,7 @@ public class CompactDecimalFormat extends DecimalFormat {
      * @param pluralAffixes
      *            A map from plural categories to affixes.
      * @param currencyAffixes
-     *            A map from plural categories to currency affixes.
+     *            A map from plural categories to currency affixes. 
      * @param debugCreationErrors
      *            A collection of strings for debugging. If null on input, then any errors found will be added to that
      *            collection instead of throwing exceptions.
@@ -176,19 +159,17 @@ public class CompactDecimalFormat extends DecimalFormat {
      * @deprecated This API is ICU internal only.
      */
     @Deprecated
-    public CompactDecimalFormat(String pattern, DecimalFormatSymbols formatSymbols,
+    public CompactDecimalFormat(String pattern, DecimalFormatSymbols formatSymbols, 
             CompactStyle style, PluralRules pluralRules,
-            long[] divisor, Map<String,String[][]> pluralAffixes, Map<String, String[]> currencyAffixes,
+            long[] divisor, Map<String,String[][]> pluralAffixes, Map<String, String[]> currencyAffixes, 
             Collection<String> debugCreationErrors) {
-
+        
         this.pluralRules = pluralRules;
         this.units = otherPluralVariant(pluralAffixes, divisor, debugCreationErrors);
-        this.currencyUnits = otherPluralVariant(pluralAffixes, divisor, debugCreationErrors);
         if (!pluralRules.getKeywords().equals(this.units.keySet())) {
             debugCreationErrors.add("Missmatch in pluralCategories, should be: " + pluralRules.getKeywords() + ", was actually " + this.units.keySet());
         }
         this.divisor = divisor.clone();
-        this.currencyDivisor = divisor.clone();
         if (currencyAffixes == null) {
             pluralToCurrencyAffixes = null;
         } else {
@@ -225,8 +206,8 @@ public class CompactDecimalFormat extends DecimalFormat {
         CompactDecimalFormat other = (CompactDecimalFormat) obj;
         return mapsAreEqual(units, other.units)
                 && Arrays.equals(divisor, other.divisor)
-                && (pluralToCurrencyAffixes == other.pluralToCurrencyAffixes
-                || pluralToCurrencyAffixes != null && pluralToCurrencyAffixes.equals(other.pluralToCurrencyAffixes))
+                && (pluralToCurrencyAffixes == other.pluralToCurrencyAffixes 
+                || pluralToCurrencyAffixes != null && pluralToCurrencyAffixes.equals(other.pluralToCurrencyAffixes)) 
                 && pluralRules.equals(other.pluralRules);
     }
 
@@ -251,7 +232,19 @@ public class CompactDecimalFormat extends DecimalFormat {
      */
     @Override
     public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
-        return format(number, null, toAppendTo, pos);
+        Output<Unit> currencyUnit = new Output<Unit>();
+        Amount amount = toAmount(number, currencyUnit);
+        if (currencyUnit.value != null) {
+            currencyUnit.value.writePrefix(toAppendTo);
+        }
+        Unit unit = amount.getUnit();
+        unit.writePrefix(toAppendTo);
+        super.format(amount.getQty(), toAppendTo, pos);
+        unit.writeSuffix(toAppendTo);
+        if (currencyUnit.value != null) {
+            currencyUnit.value.writeSuffix(toAppendTo);
+        }
+        return toAppendTo;
     }
 
     /**
@@ -264,7 +257,7 @@ public class CompactDecimalFormat extends DecimalFormat {
             throw new IllegalArgumentException();
         }
         Number number = (Number) obj;
-        Amount amount = toAmount(number.doubleValue(), null, null);
+        Amount amount = toAmount(number.doubleValue(), null);
         return super.formatToCharacterIterator(amount.getQty(), amount.getUnit());
     }
 
@@ -303,16 +296,6 @@ public class CompactDecimalFormat extends DecimalFormat {
     public StringBuffer format(com.ibm.icu.math.BigDecimal number, StringBuffer toAppendTo, FieldPosition pos) {
         return format(number.doubleValue(), toAppendTo, pos);
     }
-    /**
-     * {@inheritDoc}
-     * @internal ICU 57 technology preview
-     * @deprecated This API might change or be removed in a future release.
-     */
-    @Override
-    @Deprecated
-    public StringBuffer format(CurrencyAmount currAmt, StringBuffer toAppendTo, FieldPosition pos) {
-        return format(currAmt.getNumber().doubleValue(), currAmt.getCurrency(), toAppendTo, pos);
-    }
 
     /**
      * Parsing is currently unsupported, and throws an UnsupportedOperationException.
@@ -334,82 +317,9 @@ public class CompactDecimalFormat extends DecimalFormat {
     }
 
     /* INTERNALS */
-    private StringBuffer format(double number, Currency curr, StringBuffer toAppendTo, FieldPosition pos) {
-        if (curr != null && style == CompactStyle.LONG) {
-            throw new UnsupportedOperationException("CompactDecimalFormat does not support LONG style for currency.");
-        }
 
-        // Compute the scaled amount, prefix, and suffix appropriate for the number's magnitude.
-        Output<Unit> currencyUnit = new Output<Unit>();
-        Amount amount = toAmount(number, curr, currencyUnit);
-        Unit unit = amount.getUnit();
 
-        // Note that currencyUnit is a remnant.  In almost all cases, it will be null.
-        StringBuffer prefix = new StringBuffer();
-        StringBuffer suffix = new StringBuffer();
-        if (currencyUnit.value != null) {
-            currencyUnit.value.writePrefix(prefix);
-        }
-        unit.writePrefix(prefix);
-        unit.writeSuffix(suffix);
-        if (currencyUnit.value != null) {
-            currencyUnit.value.writeSuffix(suffix);
-        }
-
-        if (curr == null) {
-            // Prevent locking when not formatting a currency number.
-            toAppendTo.append(escape(prefix.toString()));
-            super.format(amount.getQty(), toAppendTo, pos);
-            toAppendTo.append(escape(suffix.toString()));
-
-        } else {
-            // To perform the formatting, we set this DecimalFormat's pattern to have the correct prefix, suffix,
-            // and currency, and then reset it back to what it was before.
-            // This has to be synchronized since this information is held in the state of the DecimalFormat object.
-            synchronized(this) {
-
-                String originalPattern = this.toPattern();
-                Currency originalCurrency = this.getCurrency();
-                StringBuffer newPattern = new StringBuffer();
-
-                // Write prefixes and suffixes to the pattern.  Note that we have to apply it to both halves of a
-                // positive/negative format (separated by ';')
-                int semicolonPos = originalPattern.indexOf(';');
-                newPattern.append(prefix);
-                if (semicolonPos != -1) {
-                    newPattern.append(originalPattern, 0, semicolonPos);
-                    newPattern.append(suffix);
-                    newPattern.append(';');
-                    newPattern.append(prefix);
-                }
-                newPattern.append(originalPattern, semicolonPos + 1, originalPattern.length());
-                newPattern.append(suffix);
-
-                // Overwrite the pattern and currency.
-                setCurrency(curr);
-                applyPattern(newPattern.toString());
-
-                // Actually perform the formatting.
-                super.format(amount.getQty(), toAppendTo, pos);
-
-                // Reset the pattern and currency.
-                setCurrency(originalCurrency);
-                applyPattern(originalPattern);
-            }
-        }
-        return toAppendTo;
-    }
-
-    private static final Pattern UNESCAPE_QUOTE = Pattern.compile("((?<!'))'");
-
-    private static String escape(String string) {
-        if (string.indexOf('\'') >= 0) {
-            return UNESCAPE_QUOTE.matcher(string).replaceAll("$1");
-        }
-        return string;
-    }
-
-    private Amount toAmount(double number, Currency curr, Output<Unit> currencyUnit) {
+    private Amount toAmount(double number, Output<Unit> currencyUnit) {
         // We do this here so that the prefix or suffix we choose is always consistent
         // with the rounding we do. This way, 999999 -> 1M instead of 1000K.
         boolean negative = isNumberNegative(number);
@@ -418,11 +328,7 @@ public class CompactDecimalFormat extends DecimalFormat {
         if (base >= CompactDecimalDataCache.MAX_DIGITS) {
             base = CompactDecimalDataCache.MAX_DIGITS - 1;
         }
-        if (curr != null) {
-            number /= currencyDivisor[base];
-        } else {
-            number /= divisor[base];
-        }
+        number /= divisor[base];
         String pluralVariant = getPluralForm(getFixedDecimal(number, toDigitList(number)));
         if (pluralToCurrencyAffixes != null && currencyUnit != null) {
             currencyUnit.value = pluralToCurrencyAffixes.get(pluralVariant);
@@ -430,11 +336,10 @@ public class CompactDecimalFormat extends DecimalFormat {
         if (negative) {
             number = -number;
         }
-        if ( curr != null ) {
-            return new Amount(number, CompactDecimalDataCache.getUnit(currencyUnits, pluralVariant, base));
-        } else {
-            return new Amount(number, CompactDecimalDataCache.getUnit(units, pluralVariant, base));
-        }
+        return new Amount(
+                number,
+                CompactDecimalDataCache.getUnit(units, pluralVariant, base));
+
     }
 
     private void recordError(Collection<String> creationErrors, String errorMessage) {
@@ -447,7 +352,7 @@ public class CompactDecimalFormat extends DecimalFormat {
     /**
      * Manufacture the unit list from arrays
      */
-    private Map<String, DecimalFormat.Unit[]> otherPluralVariant(Map<String, String[][]> pluralCategoryToPower10ToAffix,
+    private Map<String, DecimalFormat.Unit[]> otherPluralVariant(Map<String, String[][]> pluralCategoryToPower10ToAffix, 
             long[] divisor, Collection<String> debugCreationErrors) {
 
         // check for bad divisors
@@ -477,7 +382,7 @@ public class CompactDecimalFormat extends DecimalFormat {
 
         Map<String, DecimalFormat.Unit[]> result = new HashMap<String, DecimalFormat.Unit[]>();
         Map<String,Integer> seen = new HashMap<String,Integer>();
-
+        
         String[][] defaultPower10ToAffix = pluralCategoryToPower10ToAffix.get("other");
 
         for (Entry<String, String[][]> pluralCategoryAndPower10ToAffix : pluralCategoryToPower10ToAffix.entrySet()) {
@@ -543,17 +448,6 @@ public class CompactDecimalFormat extends DecimalFormat {
         default:
             return bundle.shortData;
         }
-    }
-    /**
-     * Gets the currency data for a particular locale.
-     * Currently only short currency format is supported, since that is
-     * the only form in CLDR.
-     * @param locale The locale.
-     * @return The data which must not be modified.
-     */
-    private Data getCurrencyData(ULocale locale) {
-        CompactDecimalDataCache.DataBundle bundle = cache.get(locale);
-            return bundle.shortCurrencyData;
     }
 
     private static class Amount {

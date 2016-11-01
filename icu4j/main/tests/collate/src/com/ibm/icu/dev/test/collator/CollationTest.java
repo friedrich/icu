@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2001-2015, International Business Machines Corporation and
@@ -16,8 +14,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
@@ -51,6 +47,10 @@ import com.ibm.icu.util.Output;
 import com.ibm.icu.util.ULocale;
 
 public class CollationTest extends TestFmwk {
+    public static void main(String[] args) throws Exception{
+        new CollationTest().run(args);
+    }
+
     public CollationTest() {
     }
 
@@ -134,7 +134,7 @@ public class CollationTest extends TestFmwk {
                         index --;
                     } 
                     if (o != orders[index]) {
-                        TestFmwk.errln("Mismatch at index " + index + ": 0x" 
+                        test.errln("Mismatch at index " + index + ": 0x" 
                             + Utility.hex(orders[index]) + " vs 0x" + Utility.hex(o));
                         break;
                     }
@@ -148,21 +148,21 @@ public class CollationTest extends TestFmwk {
     
         if (index != 0) {
             String msg = "Didn't get back to beginning - index is ";
-            TestFmwk.errln(msg + index);
+            test.errln(msg + index);
     
             iter.reset();
-            TestFmwk.err("next: ");
+            test.err("next: ");
             while ((o = iter.next()) != CollationElementIterator.NULLORDER) {
                 String hexString = "0x" + Utility.hex(o) + " ";
-                TestFmwk.err(hexString);
+                test.err(hexString);
             }
-            TestFmwk.errln("");
-            TestFmwk.err("prev: ");
+            test.errln("");
+            test.err("prev: ");
             while ((o = iter.previous()) != CollationElementIterator.NULLORDER) {
                 String hexString = "0x" + Utility.hex(o) + " ";
-                 TestFmwk.err(hexString);
+                 test.err(hexString);
             }
-            TestFmwk.errln("");
+            test.errln("");
         }
     }
     
@@ -207,6 +207,7 @@ public class CollationTest extends TestFmwk {
                                       RuleBasedCollator myCollation,
                                       String source, String target, int result)
     {
+        boolean printInfo = false;
         int compareResult  = myCollation.compare(source, target);
         if (compareResult != result) {
             
@@ -216,18 +217,27 @@ public class CollationTest extends TestFmwk {
             // would it work to have the 'verbose' flag let you 
             // suppress warnings?  Are there ever some warnings you
             // want to suppress, and others you don't?
-            TestFmwk.errln("Comparing \"" + Utility.hex(source) + "\" with \""
-                    + Utility.hex(target) + "\" expected " + result
-                    + " but got " + compareResult);
+            if(!test.isModularBuild()){
+                test.errln("Comparing \"" + Utility.hex(source) + "\" with \""
+                           + Utility.hex(target) + "\" expected " + result
+                           + " but got " + compareResult);
+            }else{
+                printInfo = true;
+            }
         }
         CollationKey ssk = myCollation.getCollationKey(source);
         CollationKey tsk = myCollation.getCollationKey(target);
         compareResult = ssk.compareTo(tsk);
         if (compareResult != result) {
-            TestFmwk.errln("Comparing CollationKeys of \"" + Utility.hex(source) 
-            + "\" with \"" + Utility.hex(target) 
-            + "\" expected " + result + " but got " 
-            + compareResult);
+            
+            if(!test.isModularBuild()){
+                test.errln("Comparing CollationKeys of \"" + Utility.hex(source) 
+                           + "\" with \"" + Utility.hex(target) 
+                           + "\" expected " + result + " but got " 
+                           + compareResult);
+           }else{
+               printInfo = true;
+           }
         }
         RawCollationKey srsk = new RawCollationKey();
         myCollation.getRawCollationKey(source, srsk);
@@ -235,15 +245,28 @@ public class CollationTest extends TestFmwk {
         myCollation.getRawCollationKey(target, trsk);
         compareResult = ssk.compareTo(tsk);
         if (compareResult != result) {
-            TestFmwk.errln("Comparing RawCollationKeys of \"" 
-                    + Utility.hex(source) 
-                    + "\" with \"" + Utility.hex(target) 
-                    + "\" expected " + result + " but got " 
-                    + compareResult);
+            
+            if(!test.isModularBuild()){
+                test.errln("Comparing RawCollationKeys of \"" 
+                           + Utility.hex(source) 
+                           + "\" with \"" + Utility.hex(target) 
+                           + "\" expected " + result + " but got " 
+                           + compareResult);
+           }else{
+               printInfo = true;
+           }
+        }
+        // hmmm, but here we issue a warning
+        // only difference is, one warning or two, and detailed info or not?
+        // hmmm, does seem preferable to omit detail if we know it is due to missing resource data.
+        // well, if we label the errors as warnings, we can let people know the details, but
+        // also know they may be due to missing resource data.  basically this code is asserting
+        // that the errors are due to missing resource data, which may or may not be true.
+        if (printInfo) {
+            test.warnln("Could not load locale data skipping.");
         }
     }
 
-    @Test
     public void TestMinMax() {
         setRootCollator();
         RuleBasedCollator rbc = (RuleBasedCollator)coll;
@@ -270,7 +293,6 @@ public class CollationTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestImplicits() {
         CollationData cd = CollationRoot.getData();
 
@@ -336,7 +358,6 @@ public class CollationTest extends TestFmwk {
     }
 
     // ICU4C: TestNulTerminated / renamed for ICU4J
-    @Test
     public void TestSubSequence() {
         CollationData data = CollationRoot.getData();
         final String s = "abab"; // { 0x61, 0x62, 0x61, 0x62 }
@@ -369,7 +390,6 @@ public class CollationTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestShortFCDData() {
         UnicodeSet expectedLccc = new UnicodeSet("[:^lccc=0:]");
         expectedLccc.add(0xdc00, 0xdfff);   // add all trail surrogates
@@ -506,7 +526,6 @@ public class CollationTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestFCD() {
         CollationData data = CollationRoot.getData();
 
@@ -596,7 +615,6 @@ public class CollationTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestCollationWeights() {
         CollationWeights cw = new CollationWeights();
 
@@ -824,7 +842,6 @@ public class CollationTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRootElements() {
         CollationData root = CollationRoot.getData();
 
@@ -940,7 +957,6 @@ public class CollationTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestTailoredElements() {
         CollationData root = CollationRoot.getData();
         CollationRootElements rootElements = new CollationRootElements(root.rootElements);
@@ -1645,7 +1661,6 @@ public class CollationTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestDataDriven() {
         nfd = Normalizer2.getNFDInstance();
         fcd = Norm2AllModes.getFCDNormalizer2();

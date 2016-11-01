@@ -1,17 +1,19 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/en_GB.xml
+// *
+// ***************************************************************************
 en_GB{
     %%Parent{"en_001"}
-    Version{"2.1.29.24"}
+    Version{"2.1.11.59"}
     calendar{
         gregorian{
             AmPmMarkers{
-                "am",
-                "pm",
-            }
-            AmPmMarkersAbbr{
-                "am",
-                "pm",
+                "a.m.",
+                "p.m.",
             }
             DateTimePatterns{
                 "HH:mm:ss zzzz",
@@ -28,36 +30,11 @@ en_GB{
                 "{1}, {0}",
                 "{1}, {0}",
             }
-            availableFormats{
-                MEd{"E dd/MM"}
-                MMMEd{"E d MMM"}
-            }
-            dayPeriod{
-                stand-alone{
-                    abbreviated{
-                        am{"am"}
-                        pm{"pm"}
-                    }
-                    wide{
-                        am{"am"}
-                        pm{"pm"}
-                    }
-                }
-            }
-        }
-        islamic{
-            availableFormats{
-                MEd{"E dd/MM"}
-                MMMEd{"E d MMM"}
-            }
         }
     }
-    listPattern{
-        standard{
-            end{"{0} and {1}"}
-        }
-        standard-short{
-            end{"{0} and {1}"}
+    fields{
+        dayperiod{
+            dn{"a.m./p.m."}
         }
     }
 }

@@ -1,7 +1,5 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /******************************************************************************
- *   Copyright (C) 2000-2016, International Business Machines
+ *   Copyright (C) 2000-2015, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *******************************************************************************
  *   file name:  pkgdata.cpp
@@ -58,13 +56,6 @@ U_CDECL_BEGIN
 #include "pkgtypes.h"
 U_CDECL_END
 
-#if U_HAVE_POPEN
-
-using icu::LocalPointerBase;
-
-U_DEFINE_LOCAL_OPEN_POINTER(LocalPipeFilePointer, FILE, pclose);
-
-#endif
 
 static void loadLists(UPKGOptions *o, UErrorCode *status);
 
@@ -276,7 +267,7 @@ main(int argc, char* argv[]) {
     options[MODE].value = "common";
 
     /* read command line options */
-    argc=u_parseArgs(argc, argv, UPRV_LENGTHOF(options), options);
+    argc=u_parseArgs(argc, argv, sizeof(options)/sizeof(options[0]), options);
 
     /* error handling, printing usage message */
     /* I've decided to simply print an error and quit. This tool has too
@@ -334,7 +325,7 @@ main(int argc, char* argv[]) {
             progname);
 
         fprintf(stderr, "\n options:\n");
-        for(i=0;i<UPRV_LENGTHOF(options);i++) {
+        for(i=0;i<(sizeof(options)/sizeof(options[0]));i++) {
             fprintf(stderr, "%-5s -%c %s%-10s  %s\n",
                 (i<1?"[REQ]":""),
                 options[i].shortName,
@@ -344,7 +335,7 @@ main(int argc, char* argv[]) {
         }
 
         fprintf(stderr, "modes: (-m option)\n");
-        for(i=0;i<UPRV_LENGTHOF(modes);i++) {
+        for(i=0;i<(sizeof(modes)/sizeof(modes[0]));i++) {
             fprintf(stderr, "   %-9s ", modes[i].name);
             if (modes[i].alt_name) {
                 fprintf(stderr, "/ %-9s", modes[i].alt_name);
@@ -834,10 +825,6 @@ static int32_t initializePkgDataFlags(UPKGOptions *o) {
                     pkgDataFlags[i][0] = 0;
                 } else {
                     fprintf(stderr,"Error allocating memory for pkgDataFlags.\n");
-                    /* If an error occurs, ensure that the rest of the array is NULL */
-                    for (int32_t n = i + 1; n < PKGDATA_FLAGS_SIZE; n++) {
-                        pkgDataFlags[n] = NULL;
-                    }
                     return -1;
                 }
             }
@@ -859,10 +846,7 @@ static int32_t initializePkgDataFlags(UPKGOptions *o) {
         tmpResult = parseFlagsFile(o->options, pkgDataFlags, currentBufferSize, FLAG_NAMES, (int32_t)PKGDATA_FLAGS_SIZE, &status);
         if (status == U_BUFFER_OVERFLOW_ERROR) {
             for (int32_t i = 0; i < PKGDATA_FLAGS_SIZE; i++) {
-                if (pkgDataFlags[i]) {
-                    uprv_free(pkgDataFlags[i]);
-                    pkgDataFlags[i] = NULL;
-                }
+                uprv_free(pkgDataFlags[i]);
             }
             currentBufferSize = tmpResult;
         } else if (U_FAILURE(status)) {
@@ -2104,7 +2088,7 @@ static void loadLists(UPKGOptions *o, UErrorCode *status)
 /* Try calling icu-config directly to get the option file. */
  static int32_t pkg_getOptionsFromICUConfig(UBool verbose, UOption *option) {
 #if U_HAVE_POPEN
-    LocalPipeFilePointer p;
+    FILE *p = NULL;
     size_t n;
     static char buf[512] = "";
     icu::CharString cmdBuf;
@@ -2123,20 +2107,23 @@ static void loadLists(UPKGOptions *o, UErrorCode *status)
       if(verbose) {
         fprintf(stdout, "# Calling icu-config: %s\n", cmdBuf.data());
       }
-      p.adoptInstead(popen(cmdBuf.data(), "r"));
+      p = popen(cmdBuf.data(), "r");
     }
 
-    if(p.isNull() || (n = fread(buf, 1, UPRV_LENGTHOF(buf)-1, p.getAlias())) <= 0) {
-        if(verbose) {
-            fprintf(stdout, "# Calling icu-config: %s\n", cmd);
-        }
+      if(p == NULL || (n = fread(buf, 1, UPRV_LENGTHOF(buf)-1, p)) <= 0) {
+      if(verbose) {
+        fprintf(stdout, "# Calling icu-config: %s\n", cmd);
+      }
+      pclose(p);
 
-        p.adoptInstead(popen(cmd, "r"));
-        if(p.isNull() || (n = fread(buf, 1, UPRV_LENGTHOF(buf)-1, p.getAlias())) <= 0) {
-            fprintf(stderr, "%s: icu-config: No icu-config found. (fix PATH or use -O option)\n", progname);
-            return -1;
-        }
+      p = popen(cmd, "r");
+      if(p == NULL || (n = fread(buf, 1, UPRV_LENGTHOF(buf)-1, p)) <= 0) {
+          fprintf(stderr, "%s: icu-config: No icu-config found. (fix PATH or use -O option)\n", progname);
+          return -1;
+      }
     }
+
+    pclose(p);
 
     for (int32_t length = strlen(buf) - 1; length >= 0; length--) {
         if (buf[length] == '\n' || buf[length] == ' ') {
@@ -2184,7 +2171,7 @@ static void pkg_createOptMatchArch(char *optMatchArch) {
         T_FileStream_writeLine(stream, code);
         T_FileStream_close(stream);
 
-        char cmd[LARGE_BUFFER_MAX_SIZE];
+        char cmd[SMALL_BUFFER_MAX_SIZE];
         sprintf(cmd, "%s %s -o %s",
             pkgDataFlags[COMPILER],
             source,

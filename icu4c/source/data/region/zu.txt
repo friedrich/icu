@@ -1,8 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/zu.xml
+// *
+// ***************************************************************************
 zu{
     Countries{
-        001{"umhlaba"}
+        001{"Umhlaba"}
         002{"i-Africa"}
         003{"i-North America"}
         005{"i-South America"}
@@ -13,7 +19,7 @@ zu{
         015{"i-Northern Africa"}
         017{"i-Middle Africa"}
         018{"i-Southern Africa"}
-        019{"i-Americas"}
+        019{"Americas"}
         021{"i-Northern America"}
         029{"i-Caribbean"}
         030{"i-Eastern Asia"}
@@ -36,10 +42,11 @@ zu{
         AD{"i-Andorra"}
         AE{"i-United Arab Emirates"}
         AF{"i-Afghanistan"}
-        AG{"i-Antigua ne-Barbuda"}
+        AG{"i-Antigua and Barbuda"}
         AI{"i-Anguilla"}
         AL{"i-Albania"}
         AM{"i-Armenia"}
+        AN{"i-Netherlands Antilles"}
         AO{"i-Angola"}
         AQ{"i-Antarctica"}
         AR{"i-Argentina"}
@@ -67,7 +74,7 @@ zu{
         BS{"i-Bahamas"}
         BT{"i-Bhutan"}
         BV{"i-Bouvet Island"}
-        BW{"iBotswana"}
+        BW{"i-Botswana"}
         BY{"i-Belarus"}
         BZ{"i-Belize"}
         CA{"i-Canada"}
@@ -116,7 +123,7 @@ zu{
         GB{"i-United Kingdom"}
         GD{"i-Grenada"}
         GE{"i-Georgia"}
-        GF{"i-French Guiana"}
+        GF{"isi-French Guiana"}
         GG{"i-Guernsey"}
         GH{"i-Ghana"}
         GI{"i-Gibraltar"}
@@ -140,7 +147,7 @@ zu{
         IC{"i-Canary Islands"}
         ID{"i-Indonesia"}
         IE{"i-Ireland"}
-        IL{"kwa-Israel"}
+        IL{"i-Israel"}
         IM{"i-Isle of Man"}
         IN{"i-India"}
         IO{"i-British Indian Ocean Territory"}
@@ -169,7 +176,7 @@ zu{
         LI{"i-Liechtenstein"}
         LK{"i-Sri Lanka"}
         LR{"i-Liberia"}
-        LS{"iLesotho"}
+        LS{"i-Lesotho"}
         LT{"i-Lithuania"}
         LU{"i-Luxembourg"}
         LV{"i-Latvia"}
@@ -182,7 +189,7 @@ zu{
         MG{"i-Madagascar"}
         MH{"i-Marshall Islands"}
         MK{"i-Macedonia"}
-        ML{"iMali"}
+        ML{"i-Mali"}
         MM{"i-Myanmar (Burma)"}
         MN{"i-Mongolia"}
         MO{"i-Macau SAR China"}
@@ -193,7 +200,7 @@ zu{
         MT{"i-Malta"}
         MU{"i-Mauritius"}
         MV{"i-Maldives"}
-        MW{"iMalawi"}
+        MW{"i-Malawi"}
         MX{"i-Mexico"}
         MY{"i-Malaysia"}
         MZ{"i-Mozambique"}
@@ -237,7 +244,7 @@ zu{
         SD{"i-Sudan"}
         SE{"i-Sweden"}
         SG{"i-Singapore"}
-        SH{"i-St. Helena"}
+        SH{"i-Saint Helena"}
         SI{"i-Slovenia"}
         SJ{"i-Svalbard ne-Jan Mayen"}
         SK{"i-Slovakia"}
@@ -249,11 +256,11 @@ zu{
         SS{"i-South Sudan"}
         ST{"i-São Tomé kanye ne-Príncipe"}
         SV{"i-El Salvador"}
-        SX{"i-Sint Maarten"}
+        SX{"I-Sint Maarten"}
         SY{"i-Syria"}
         SZ{"i-Swaziland"}
         TA{"i-Tristan da Cunha"}
-        TC{"i-Turks ne-Caicos Islands"}
+        TC{"i-Turks and Caicos Islands"}
         TD{"i-Chad"}
         TF{"i-French Southern Territories"}
         TG{"i-Togo"}
@@ -272,7 +279,6 @@ zu{
         UA{"i-Ukraine"}
         UG{"i-Uganda"}
         UM{"i-U.S. Minor Outlying Islands"}
-        UN{"I-United Nations"}
         US{"i-United States"}
         UY{"i-Uruguay"}
         UZ{"i-Uzbekistan"}
@@ -290,25 +296,23 @@ zu{
         YT{"i-Mayotte"}
         ZA{"i-South Africa"}
         ZM{"i-Zambia"}
-        ZW{"iZimbabwe"}
+        ZW{"i-Zimbabwe"}
         ZZ{"iSifunda esingaziwa"}
     }
     Countries%short{
         GB{"i-U.K."}
         HK{"i-Hong Kong"}
         MO{"i-Macau"}
-        PS{"i-Palestine"}
-        UN{"ifulegi"}
+        PS{"i-Phalestine"}
         US{"i-U.S"}
     }
     Countries%variant{
         CD{"i-Congo (DRC)"}
         CG{"i-Congo (Republic)"}
         CI{"i-Ivory Coast"}
-        CZ{"i-Czechia"}
         FK{"i-Falkland Islands (Islas Malvinas)"}
         MK{"i-Macedonia (FYROM)"}
         TL{"i-East Timor"}
     }
-    Version{"2.1.29.22"}
+    Version{"2.1.10.93"}
 }

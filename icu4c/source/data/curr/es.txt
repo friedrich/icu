@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/es.xml
+// *
+// ***************************************************************************
 es{
     Currencies{
         ADP{
@@ -24,7 +30,7 @@ es{
         }
         AMD{
             "AMD",
-            "dram",
+            "dram armenio",
         }
         ANG{
             "ANG",
@@ -186,13 +192,9 @@ es{
             "BYB",
             "nuevo rublo bielorruso (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "rublo bielorruso",
-        }
         BYR{
             "BYR",
-            "rublo bielorruso (2000–2016)",
+            "rublo bielorruso",
         }
         BZD{
             "BZD",
@@ -312,7 +314,7 @@ es{
         }
         ERN{
             "ERN",
-            "nakfa",
+            "nakfa eritreo",
         }
         ESA{
             "ESA",
@@ -712,7 +714,7 @@ es{
         }
         PES{
             "PES",
-            "sol peruano (1863–1965)",
+            "sol peruano",
         }
         PGK{
             "PGK",
@@ -1104,104 +1106,56 @@ es{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"EGP"}
-        EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RON{"L"}
-        RUB{"₽"}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
         TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         ADP{
@@ -1368,13 +1322,9 @@ es{
             one{"nuevo rublo bielorruso"}
             other{"nuevos rublos bielorrusos"}
         }
-        BYN{
+        BYR{
             one{"rublo bielorruso"}
             other{"rublos bielorrusos"}
-        }
-        BYR{
-            one{"rublo bielorruso (2000–2016)"}
-            other{"rublos bielorrusos (2000–2016)"}
         }
         BZD{
             one{"dólar beliceño"}
@@ -1857,8 +1807,8 @@ es{
             other{"nuevos soles peruanos"}
         }
         PES{
-            one{"sol peruano (1863–1965)"}
-            other{"soles peruanos (1863–1965)"}
+            one{"sol peruano"}
+            other{"soles peruanos"}
         }
         PGK{
             one{"kina"}
@@ -2161,7 +2111,7 @@ es{
             other{"platino"}
         }
         XXX{
-            one{"(moneda desconocida)"}
+            one{"(unidad de moneda desconocida)"}
             other{"(moneda desconocida)"}
         }
         YER{
@@ -2189,5 +2139,5 @@ es{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.80"}
+    Version{"2.1.13.21"}
 }

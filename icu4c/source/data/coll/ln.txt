@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/collation/ln.xml
+// *
+// ***************************************************************************
 ln{
-    Version{"2.1.19.14"}
+    Version{"2.0.96.14"}
     collations{
         phonetic{
             Sequence{
@@ -16,14 +22,14 @@ ln{
                 "&S<sh<<<sH<<<Sh<<<SH"
                 "&T<ts<<<tS<<<Ts<<<TS"
             }
-            Version{"30.0.2"}
+            Version{"27.0.1"}
         }
         standard{
             Sequence{
                 "&E<ɛ<<<Ɛ"
                 "&O<<ɔ<<<Ɔ"
             }
-            Version{"30.0.2"}
+            Version{"27.0.1"}
         }
     }
 }

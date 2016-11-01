@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2009-2014, International Business Machines Corporation and
@@ -18,13 +16,13 @@ import com.ibm.icu.util.UResourceBundle;
 public class ICUResourceTableAccess {
     /**
      * Utility to fetch locale display data from resource bundle tables.  Convenience
-     * wrapper for {@link #getTableString(ICUResourceBundle, String, String, String, String)}.
+     * wrapper for {@link #getTableString(ICUResourceBundle, String, String, String)}.
      */
     public static String getTableString(String path, ULocale locale, String tableName,
-            String itemName, String defaultValue) {
+            String itemName) {
         ICUResourceBundle bundle = (ICUResourceBundle) UResourceBundle.
             getBundleInstance(path, locale.getBaseName());
-        return getTableString(bundle, tableName, null, itemName, defaultValue);
+        return getTableString(bundle, tableName, null, itemName);
     }
 
     /**
@@ -32,13 +30,13 @@ public class ICUResourceTableAccess {
      * through the "Fallback" resource if available.
      */
     public static String getTableString(ICUResourceBundle bundle, String tableName,
-            String subtableName, String item, String defaultValue) {
+            String subtableName, String item) {
         String result = null;
         try {
             for (;;) {
                 ICUResourceBundle table = bundle.findWithFallback(tableName);
                 if (table == null) {
-                    return defaultValue;
+                    return item;
                 }
                 ICUResourceBundle stable = table;
                 if (subtableName != null) {
@@ -71,7 +69,7 @@ public class ICUResourceTableAccess {
                 // still can't figure it out? try the fallback mechanism
                 String fallbackLocale = table.findStringWithFallback("Fallback"); // again, possible exception
                 if (fallbackLocale == null) {
-                    return defaultValue;
+                    return item;
                 }
 
                 if (fallbackLocale.length() == 0) {
@@ -79,7 +77,7 @@ public class ICUResourceTableAccess {
                 }
 
                 if (fallbackLocale.equals(table.getULocale().getName())) {
-                    return defaultValue;
+                    return item;
                 }
 
                 bundle = (ICUResourceBundle) UResourceBundle.getBundleInstance(
@@ -91,6 +89,6 @@ public class ICUResourceTableAccess {
         }
 
         // If the result is empty return item instead
-        return ((result != null && result.length() > 0) ? result : defaultValue);
+        return ((result != null && result.length() > 0) ? result : item);
     }
 }

@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bg.xml
+// *
+// ***************************************************************************
 bg{
-    Version{"2.1.30.6"}
+    Version{"2.1.12.94"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Абиджан"}
@@ -302,9 +308,6 @@ bg{
         }
         "America:El_Salvador"{
             ec{"Салвадор"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Форт Нелсън"}
         }
         "America:Fortaleza"{
             ec{"Форталеза"}
@@ -669,9 +672,6 @@ bg{
         "Asia:Bangkok"{
             ec{"Банкок"}
         }
-        "Asia:Barnaul"{
-            ec{"Барнаул"}
-        }
         "Asia:Beirut"{
             ec{"Бейрут"}
         }
@@ -683,9 +683,6 @@ bg{
         }
         "Asia:Calcutta"{
             ec{"Колката"}
-        }
-        "Asia:Chita"{
-            ec{"Чита"}
         }
         "Asia:Choibalsan"{
             ec{"Чойбалсан"}
@@ -828,9 +825,6 @@ bg{
         "Asia:Singapore"{
             ec{"Сингапур"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Среднеколимск"}
-        }
         "Asia:Taipei"{
             ec{"Тайпе"}
         }
@@ -848,9 +842,6 @@ bg{
         }
         "Asia:Tokyo"{
             ec{"Токио"}
-        }
-        "Asia:Tomsk"{
-            ec{"Томск"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Улан Батор"}
@@ -951,9 +942,6 @@ bg{
         "Europe:Andorra"{
             ec{"Андора"}
         }
-        "Europe:Astrakhan"{
-            ec{"Астрахан"}
-        }
         "Europe:Athens"{
             ec{"Атина"}
         }
@@ -1011,9 +999,6 @@ bg{
         }
         "Europe:Kiev"{
             ec{"Киев"}
-        }
-        "Europe:Kirov"{
-            ec{"Киров"}
         }
         "Europe:Lisbon"{
             ec{"Лисабон"}
@@ -1091,9 +1076,6 @@ bg{
         "Europe:Tirane"{
             ec{"Тирана"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Уляновск"}
-        }
         "Europe:Uzhgorod"{
             ec{"Ужгород"}
         }
@@ -1162,9 +1144,6 @@ bg{
         }
         "Pacific:Auckland"{
             ec{"Окланд"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Бугенвил"}
         }
         "Pacific:Chatham"{
             ec{"Чатам"}
@@ -1759,9 +1738,6 @@ bg{
         "meta:Ponape"{
             ls{"Понапе"}
         }
-        "meta:Pyongyang"{
-            ls{"Времето в Пхенян"}
-        }
         "meta:Reunion"{
             ls{"Реюнион"}
         }
@@ -1883,7 +1859,7 @@ bg{
         gmtZeroFormat{"Гринуич"}
         hourFormat{"+HH:mm;-HH:mm"}
         regionFormat{"{0}"}
-        regionFormatDaylight{"{0}, лятно часово време"}
+        regionFormatDaylight{"{0} – лятно часово време"}
         regionFormatStandard{"{0} – стандартно време"}
     }
 }

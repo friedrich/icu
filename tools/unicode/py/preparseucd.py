@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2009-2016 International Business Machines
+# Copyright (c) 2009-2014 International Business Machines
 # Corporation and others. All Rights Reserved.
 #
 #   file name:  preparseucd.py
@@ -47,19 +47,17 @@ _current_year = datetime.date.today().strftime("%Y")
 # Script codes from ISO 15924 http://www.unicode.org/iso15924/codechanges.html
 # that are not yet in the UCD.
 _scripts_only_in_iso15924 = (
-    "Afak", "Blis", "Cirt", "Cyrs",
+    "Afak", "Ahom", "Blis", "Cirt", "Cyrs",
     "Egyd", "Egyh", "Geok",
-    "Hanb", "Hans", "Hant",
-    "Inds", "Jamo", "Jpan", "Jurc", "Kore", "Kpel", "Latf", "Latg", "Loma",
-    "Maya", "Moon", "Nkgb", "Nshu", "Phlv", "Roro",
-    "Sara", "Syre", "Syrj", "Syrn",
-    "Teng", "Visp", "Wole", "Zmth", "Zsye", "Zsym", "Zxxx"
+    "Hans", "Hant", "Hatr", "Hluw", "Hung",
+    "Inds", "Jpan", "Jurc", "Kore", "Kpel", "Latf", "Latg", "Loma",
+    "Maya", "Moon", "Mult", "Nkgb", "Nshu", "Phlv", "Roro",
+    "Sara", "Sgnw", "Syre", "Syrj", "Syrn",
+    "Tang", "Teng", "Visp", "Wole", "Zmth", "Zsym", "Zxxx"
 )
 
 # Properties --------------------------------------------------------------- ***
 
-# Properties that we do not want to store in ppucd.txt.
-# Not a frozenset so that we can add aliases for simpler subsequent testing.
 _ignored_properties = set((
   # Other_Xyz only contribute to Xyz, store only the latter.
   "OAlpha",
@@ -95,16 +93,6 @@ _ignored_properties = set((
   "cjkIRG_USource",
   "cjkIRG_VSource",
   "cjkRSUnicode"
-))
-
-# These properties (short names) map code points to
-# strings or other unusual values (property types String or Miscellaneous)
-# that cannot be block-compressed (or would be confusing).
-_uncompressible_props = frozenset((
-  "bmg", "bpb", "cf", "Conditional_Case_Mappings", "dm", "FC_NFKC",
-  "isc", "lc", "na", "na1", "Name_Alias", "NFKC_CF",
-  # scx is block-compressible.
-  "scf", "slc", "stc", "suc", "tc", "Turkic_Case_Folding", "uc"
 ))
 
 # Dictionary of properties.
@@ -528,11 +516,6 @@ def ParsePropertyAliases(in_file):
   AddBinaryProperty("nfcinert", "NFC_Inert")
   AddBinaryProperty("nfkcinert", "NFKC_Inert")
   AddBinaryProperty("segstart", "Segment_Starter")
-  # http://www.unicode.org/reports/tr51/#Emoji_Properties
-  AddBinaryProperty("Emoji", "Emoji")
-  AddBinaryProperty("Emoji_Presentation", "Emoji_Presentation")
-  AddBinaryProperty("Emoji_Modifier", "Emoji_Modifier")
-  AddBinaryProperty("Emoji_Modifier_Base", "Emoji_Modifier_Base")
   # C/POSIX character classes that do not have Unicode property [value] aliases.
   # See uchar.h.
   AddPOSIXBinaryProperty("alnum")
@@ -666,9 +649,7 @@ def ParseUnicodeData(in_file):
         range_first = -1
         # Remember algorithmic name ranges.
         if "Ideograph" in name:
-          prefix = "CJK UNIFIED IDEOGRAPH-"
-          if c == 0x17000: prefix = "TANGUT IDEOGRAPH-"
-          _alg_names_ranges.append([c, end, "han", prefix])
+          _alg_names_ranges.append([c, end, "han", "CJK UNIFIED IDEOGRAPH-"])
         elif name == "Hangul Syllable":
           _alg_names_ranges.append([c, end, "hangul"])
         name = ""
@@ -699,23 +680,6 @@ def ParseUnicodeData(in_file):
     if (decimal and decimal != nv) or (digit and digit != nv):
       raise SyntaxError("error: numeric values differ at\n  %s\n" % line)
     if nv:
-      # Map improper fractions to proper ones.
-      # U+109F7 MEROITIC CURSIVE FRACTION TWO TWELFTHS
-      # .. U+109FF MEROITIC CURSIVE FRACTION TEN TWELFTHS
-      if nv == "2/12":
-        nv = "1/6"
-      elif nv == "3/12":
-        nv = "1/4"
-      elif nv == "4/12":
-        nv = "1/3"
-      elif nv == "6/12":
-        nv = "1/2"
-      elif nv == "8/12":
-        nv = "2/3"
-      elif nv == "9/12":
-        nv = "3/4"
-      elif nv == "10/12":
-        nv = "5/6"
       props["nv"] = nv
       props["nt"] = "De" if decimal else "Di" if digit else "Nu"
     if fields[9] == "Y": props["Bidi_M"] = True
@@ -809,7 +773,7 @@ def ParseDerivedJoiningGroup(in_file): ParseOneProperty(in_file, "jg")
 def ParseDerivedJoiningType(in_file): ParseOneProperty(in_file, "jt")
 def ParseEastAsianWidth(in_file): ParseOneProperty(in_file, "ea")
 def ParseGraphemeBreakProperty(in_file): ParseOneProperty(in_file, "GCB")
-def ParseIndicPositionalCategory(in_file): ParseOneProperty(in_file, "InPC")
+def ParseIndicMatraCategory(in_file): ParseOneProperty(in_file, "InMC")
 def ParseIndicSyllabicCategory(in_file): ParseOneProperty(in_file, "InSC")
 def ParseLineBreak(in_file): ParseOneProperty(in_file, "lb")
 def ParseScripts(in_file): ParseOneProperty(in_file, "sc")
@@ -860,8 +824,8 @@ def NeedToSetNumericValue(nv, start, end, c_props):
     assert "nt" not in c_props
     return True
   if nv != c_nv:
-    raise ValueError(("UnicodeData.txt has nv=%s for %04lX..%04lX " +
-                     "but DerivedNumericValues.txt has nv=%s") %
+    raise ValueError("UnicodeData.txt has nv=%s for %04lX..%04lX " +
+                     "but DerivedNumericValues.txt has nv=%s" %
                      (c_nv, start, end, nv))
   return False
 
@@ -956,32 +920,31 @@ def CompactBlock(b, i):
   assert b[0] == _starts[i]
   orig_i = i
   # Count the number of occurrences of each property's value in this block.
-  # To minimize the output, count the number of ranges,
-  # not the number of code points.
-  num_ranges_so_far = 0
+  num_cp_so_far = 0
   prop_counters = {}
   while True:
     start = _starts[i]
     if start > b[1]: break
+    num_cp_in_this_range = _starts[i + 1] - start
     props = _props[i]
     for (pname, value) in props.iteritems():
       if pname in prop_counters:
         counter = prop_counters[pname]
       else:
-        counter = {_null_or_defaults[pname]: num_ranges_so_far}
+        counter = {_null_or_defaults[pname]: num_cp_so_far}
         prop_counters[pname] = counter
       if value in counter:
-        counter[value] += 1
+        counter[value] += num_cp_in_this_range
       else:
-        counter[value] = 1
+        counter[value] = num_cp_in_this_range
     # Also count default values for properties that do not occur in a range.
     for pname in prop_counters:
       if pname not in props:
         counter = prop_counters[pname]
         value = _null_or_defaults[pname]
-        counter[value] += 1
-    num_ranges_so_far += 1
-    # Invariant: For each counter, the sum of counts must equal num_ranges_so_far.
+        counter[value] += num_cp_in_this_range
+    num_cp_so_far += num_cp_in_this_range
+    # Invariant: For each counter, the sum of counts must equal num_cp_so_far.
     i += 1
   # For each property that occurs within this block,
   # set the most common value as a block property value.
@@ -997,12 +960,7 @@ def CompactBlock(b, i):
       if count == 1: num_unique += 1
     if max_value != _null_or_defaults[pname]:
       # Avoid picking randomly among several unique values.
-      # Do not compress uncompressible properties,
-      # with an exception for many empty-string values in a block
-      # (NFCK_CF='' for tags and variation selectors).
-      if ((max_count > 1 or num_unique == 1) and
-          ((pname not in _uncompressible_props) or
-            (max_value == '' and max_count >= 12))):
+      if (max_count > 1 or num_unique == 1):
         b_props[pname] = max_value
   # For each range and property, remove the default+block value
   # but set the default value if that property was not set
@@ -1559,10 +1517,9 @@ _files = {
   "DerivedNormalizationProps.txt": (CopyAndStrip, ParseNamedProperties),
   "DerivedNumericValues.txt": (DontCopy, ParseDerivedNumericValues),
   "EastAsianWidth.txt": (DontCopy, ParseEastAsianWidth),
-  "emoji-data.txt": (DontCopy, ParseNamedProperties),
   "GraphemeBreakProperty.txt": (DontCopy, ParseGraphemeBreakProperty),
   "GraphemeBreakTest.txt": (PrependBOM, "testdata"),
-  "IndicPositionalCategory.txt": (DontCopy, ParseIndicPositionalCategory),
+  "IndicMatraCategory.txt": (DontCopy, ParseIndicMatraCategory),
   "IndicSyllabicCategory.txt": (DontCopy, ParseIndicSyllabicCategory),
   "LineBreak.txt": (DontCopy, ParseLineBreak),
   "LineBreakTest.txt": (PrependBOM, "testdata"),

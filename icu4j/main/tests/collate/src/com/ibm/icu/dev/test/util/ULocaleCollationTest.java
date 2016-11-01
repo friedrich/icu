@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  **********************************************************************
  * Copyright (c) 2015, International Business Machines
@@ -22,8 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.DisplayContext;
@@ -34,7 +30,11 @@ import com.ibm.icu.util.IllformedLocaleException;
 import com.ibm.icu.util.ULocale;
 
 public class ULocaleCollationTest extends TestFmwk {
-    @Test
+
+    public static void main(String[] args) throws Exception {
+        new ULocaleCollationTest().run(args);
+    }
+
     public void TestCollator() {
         checkService("ja_JP_YOKOHAMA", new ServiceFacade() {
             public Object create(ULocale req) {
@@ -232,7 +232,6 @@ public class ULocaleCollationTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestNameList() { 
         String[][][] tests = { 
                 /* name in French, name in self, minimized, modified */
@@ -250,8 +249,8 @@ public class ULocaleCollationTest extends TestFmwk {
                 {{"iw", "iw-US", "no", "no-Cyrl", "in", "in-YU"}, 
                     {"Hébreu (États-Unis)", "עברית (ארצות הברית)", "iw_US", "iw_US"}, 
                     {"Hébreu (Israël)", "עברית (ישראל)", "iw", "iw_IL"}, 
-                    {"Indonésien (Indonésie)", "Indonesia (Indonesia)", "in", "in_ID"}, 
-                    {"Indonésien (Serbie)", "Indonesia (Serbia)", "in_YU", "in_YU"}, 
+                    {"Indonésien (Indonésie)", "Bahasa Indonesia (Indonesia)", "in", "in_ID"}, 
+                    {"Indonésien (Serbie)", "Bahasa Indonesia (Serbia)", "in_YU", "in_YU"}, 
                     {"Norvégien (cyrillique)", "Norsk (kyrillisk)", "no_Cyrl", "no_Cyrl"}, 
                     {"Norvégien (latin)", "Norsk (latinsk)", "no", "no_Latn"}, 
                 }, 
@@ -271,7 +270,7 @@ public class ULocaleCollationTest extends TestFmwk {
                 }, 
                 {{"en-gb", "fr", "zh-Hant", "zh-SG", "sr", "sr-Latn"}, 
                     {"Anglais (Royaume-Uni)", "English (United Kingdom)", "en_GB", "en_GB"}, 
-                    {"Chinois (simplifié, Singapour)", "中文（简体，新加坡）", "zh_SG", "zh_Hans_SG"}, 
+                    {"Chinois (simplifié, Singapour)", "中文（简体、新加坡）", "zh_SG", "zh_Hans_SG"}, 
                     {"Chinois (traditionnel, Taïwan)", "中文（繁體，台灣）", "zh_Hant", "zh_Hant_TW"}, 
                     {"Français", "Français", "fr", "fr"}, 
                     {"Serbe (cyrillique)", "Српски (ћирилица)", "sr", "sr_Cyrl"}, 
@@ -320,7 +319,6 @@ public class ULocaleCollationTest extends TestFmwk {
         } 
     } 
 
-    @Test
     public void TestIllformedLocale() {
         ULocale french = ULocale.FRENCH; 
         Collator collator = Collator.getInstance(french); 

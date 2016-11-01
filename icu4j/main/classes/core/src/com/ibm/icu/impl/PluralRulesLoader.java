@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2008-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2008-2014, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.impl;
@@ -20,6 +18,7 @@ import java.util.TreeMap;
 import com.ibm.icu.text.PluralRanges;
 import com.ibm.icu.text.PluralRules;
 import com.ibm.icu.text.PluralRules.PluralType;
+import com.ibm.icu.text.PluralRules.StandardPluralCategories;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
 
@@ -226,7 +225,7 @@ public class PluralRulesLoader extends PluralRules.Factory {
      */
     public UResourceBundle getPluralBundle() throws MissingResourceException {
         return ICUResourceBundle.getBundleInstance(
-                ICUData.ICU_BASE_NAME, "plurals",
+                ICUResourceBundle.ICU_BASE_NAME, "plurals",
                 ICUResourceBundle.ICU_DATA_CLASS_LOADER, true);
     }
 
@@ -487,9 +486,9 @@ public class PluralRulesLoader extends PluralRules.Factory {
                 pr = new PluralRanges();
             } else {
                 pr.add(
-                        StandardPlural.fromString(row[0]),
-                        StandardPlural.fromString(row[1]),
-                        StandardPlural.fromString(row[2]));
+                        StandardPluralCategories.valueOf(row[0]),
+                        StandardPluralCategories.valueOf(row[1]),
+                        StandardPluralCategories.valueOf(row[2]));
             }
         }
         // do last one

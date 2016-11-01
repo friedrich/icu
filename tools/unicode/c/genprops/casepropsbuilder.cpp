@@ -1,7 +1,7 @@
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2004-2016, International Business Machines
+*   Copyright (C) 2004-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -435,20 +435,6 @@ CasePropsBuilder::setProps(const UniProps &props, const UnicodeSet &newValues,
         value|=UCASE_EXCEPTION;
     }
 
-    // Simple case folding falls back to simple lowercasing.
-    // If there is no case folding but there is a lowercase mapping,
-    // then add a case folding mapping to the code point.
-    // For example: Cherokee uppercase syllables since Unicode 8.
-    // (Full case folding falls back to simple case folding,
-    // not to full lowercasing, so we need not also handle it specially
-    // for such cases.)
-    UChar32 scf=props.scf;
-    if(scf<0 && props.slc>=0) {
-        scf=start;
-        hasMapping=TRUE;
-        value|=UCASE_EXCEPTION;
-    }
-
     if(delta<UCASE_MIN_DELTA || UCASE_MAX_DELTA<delta) {
         value|=UCASE_EXCEPTION;
     }
@@ -499,7 +485,6 @@ CasePropsBuilder::setProps(const UniProps &props, const UnicodeSet &newValues,
             errorCode=U_MEMORY_ALLOCATION_ERROR;
             return;
         }
-        newExcProps->props.scf=scf;
         newExcProps->hasConditionalCaseMappings=newValues.contains(PPUCD_CONDITIONAL_CASE_MAPPINGS);
         newExcProps->hasTurkicCaseFolding=newValues.contains(PPUCD_TURKIC_CASE_FOLDING);
         value|=(uint32_t)excPropsCount<<UGENCASE_EXC_SHIFT;
@@ -519,7 +504,7 @@ CasePropsBuilder::setProps(const UniProps &props, const UnicodeSet &newValues,
     if(hasMapping) {
         /* update the case-sensitive set */
         caseSensitive.add(start);
-        if(scf>=0) { caseSensitive.add(scf); }
+        if(props.scf>=0) { caseSensitive.add(props.scf); }
         if(props.slc>=0) { caseSensitive.add(props.slc); }
         if(props.suc>=0) { caseSensitive.add(props.suc); }
         if(props.stc>=0) { caseSensitive.add(props.stc); }
@@ -922,9 +907,10 @@ CasePropsBuilder::makeException(UChar32 c, uint32_t value, ExcProps &ep, UErrorC
         excWord|=U_MASK(UCASE_EXC_LOWER);
     }
     if( p.scf>=0 &&
-            (p.slc>=0 ?
-                p.scf!=p.slc :
-                p.scf!=c)) {
+        (p.slc>=0 ?
+            p.slc!=p.slc :
+            p.slc!=c)
+    ) {
         slots[count]=(uint32_t)p.scf;
         slotBits|=slots[count];
         ++count;
@@ -1053,7 +1039,7 @@ static int32_t indexes[UCASE_IX_TOP]={
     0, 0, 0, 0
 };
 
-static uint8_t trieBlock[100000];
+static uint8_t trieBlock[40000];
 static int32_t trieSize;
 
 void
@@ -1083,20 +1069,15 @@ CasePropsBuilder::build(UErrorCode &errorCode) {
         }
     }
     if(U_FAILURE(errorCode)) {
-        fprintf(stderr, "genprops/case error: unable to set UCASE_SENSITIVE: %s\n",
+        fprintf(stderr, "genprops error: unable to set UCASE_SENSITIVE: %s\n",
                 u_errorName(errorCode));
         return;
     }
 
     utrie2_freeze(pTrie, UTRIE2_16_VALUE_BITS, &errorCode);
-    if(U_FAILURE(errorCode)) {
-        fprintf(stderr, "genprops/case error: utrie2_freeze() failed: %s\n",
-                u_errorName(errorCode));
-        return;
-    }
     trieSize=utrie2_serialize(pTrie, trieBlock, sizeof(trieBlock), &errorCode);
     if(U_FAILURE(errorCode)) {
-        fprintf(stderr, "genprops/case error: utrie2_serialize() failed: %s (length %ld)\n",
+        fprintf(stderr, "genprops error: utrie2_freeze()+utrie2_serialize() failed: %s (length %ld)\n",
                 u_errorName(errorCode), (long)trieSize);
         return;
     }
@@ -1127,7 +1108,9 @@ CasePropsBuilder::writeCSourceFile(const char *path, UErrorCode &errorCode) {
         errorCode=U_FILE_ACCESS_ERROR;
         return;
     }
-    fputs("#ifdef INCLUDED_FROM_UCASE_CPP\n\n", f);
+    fputs("#ifndef INCLUDED_FROM_UCASE_CPP\n"
+          "#   error This file must be #included from ucase.cpp only.\n"
+          "#endif\n\n", f);
     usrc_writeArray(f,
         "static const UVersionInfo ucase_props_dataVersion={",
         dataInfo.dataVersion, 8, 4,
@@ -1160,8 +1143,7 @@ CasePropsBuilder::writeCSourceFile(const char *path, UErrorCode &errorCode) {
         pTrie, "ucase_props_trieIndex", NULL,
         "  },\n");
     usrc_writeArray(f, "  { ", dataInfo.formatVersion, 8, 4, " }\n");
-    fputs("};\n\n"
-          "#endif  // INCLUDED_FROM_UCASE_CPP\n", f);
+    fputs("};\n", f);
     fclose(f);
 }
 

@@ -1,7 +1,7 @@
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2000-2016, International Business Machines
+*   Copyright (C) 2000-2015, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -235,8 +235,6 @@ static const struct {
     { 0x0840, USCRIPT_MANDAIC },
     { 0x078C, USCRIPT_THAANA },
     { 0x07CA, USCRIPT_NKO },
-    { 0x07D8, USCRIPT_NKO },
-    { 0x2D30, USCRIPT_TIFINAGH },
     { 0x2D5E, USCRIPT_TIFINAGH },
     { 0x12A0, USCRIPT_ETHIOPIC },
     { 0x0905, USCRIPT_DEVANAGARI },
@@ -257,23 +255,18 @@ static const struct {
     { 0x11183, USCRIPT_SHARADA },
     { 0x11208, USCRIPT_KHOJKI },
     { 0x112BE, USCRIPT_KHUDAWADI },
-    { 0x1128F, USCRIPT_MULTANI },
     { 0x11315, USCRIPT_GRANTHA },
-    { 0x11412, USCRIPT_NEWA },
     { 0x11484, USCRIPT_TIRHUTA },
     { 0x1158E, USCRIPT_SIDDHAM },
     { 0x1160E, USCRIPT_MODI },
     { 0x11680, USCRIPT_TAKRI },
-    { 0x11717, USCRIPT_AHOM },
     { 0x1B83, USCRIPT_SUNDANESE },
     { 0x11005, USCRIPT_BRAHMI },
     { 0x10A00, USCRIPT_KHAROSHTHI },
-    { 0x11C0E, USCRIPT_BHAIKSUKI },
     { 0x0E17, USCRIPT_THAI },
     { 0x0EA5, USCRIPT_LAO },
     { 0xAA80, USCRIPT_TAI_VIET },
     { 0x0F40, USCRIPT_TIBETAN },
-    { 0x11C72, USCRIPT_MARCHEN },
     { 0x1C00, USCRIPT_LEPCHA },
     { 0xA840, USCRIPT_PHAGS_PA },
     { 0x1900, USCRIPT_LIMBU },
@@ -297,34 +290,28 @@ static const struct {
     { 0x1826, USCRIPT_MONGOLIAN },
     { 0x1C5A, USCRIPT_OL_CHIKI },
     { 0x13C4, USCRIPT_CHEROKEE },
-    { 0x104B5, USCRIPT_OSAGE },
     { 0x14C0, USCRIPT_CANADIAN_ABORIGINAL },
     { 0x168F, USCRIPT_OGHAM },
     { 0x16A0, USCRIPT_RUNIC },
-    { 0x10CA1, USCRIPT_OLD_HUNGARIAN },
     { 0x10C00, USCRIPT_ORKHON },
     { 0xA549, USCRIPT_VAI },
     { 0xA6A0, USCRIPT_BAMUM },
     { 0x16AE6, USCRIPT_BASSA_VAH },
     { 0x1E802, USCRIPT_MENDE },
-    { 0x1E909, USCRIPT_ADLAM, },
     { 0xAC00, USCRIPT_HANGUL },
     { 0x304B, USCRIPT_HIRAGANA },
     { 0x30AB, USCRIPT_KATAKANA },
     { 0x3105, USCRIPT_BOPOMOFO },
     { 0xA288, USCRIPT_YI },
     { 0xA4D0, USCRIPT_LISU },
-    { 0xA4E8, USCRIPT_LISU },
     { 0x16F00, USCRIPT_MIAO },
     { 0x118B4, USCRIPT_WARANG_CITI },
     { 0x11AC0, USCRIPT_PAU_CIN_HAU },
     { 0x16B1C, USCRIPT_PAHAWH_HMONG },
     { 0x10280, USCRIPT_LYCIAN },
     { 0x102A0, USCRIPT_CARIAN },
-    { 0x102B7, USCRIPT_CARIAN },
     { 0x10920, USCRIPT_LYDIAN },
     { 0x10300, USCRIPT_OLD_ITALIC },
-    { 0x10308, USCRIPT_OLD_ITALIC },
     { 0x10330, USCRIPT_GOTHIC },
     { 0x10414, USCRIPT_DESERET },
     { 0x10450, USCRIPT_SHAVIAN },
@@ -342,12 +329,10 @@ static const struct {
     { 0x10B00, USCRIPT_AVESTAN },
     { 0x10873, USCRIPT_PALMYRENE },
     { 0x10896, USCRIPT_NABATAEAN },
-    { 0x108F4, USCRIPT_HATRAN },
     { 0x10840, USCRIPT_IMPERIAL_ARAMAIC },
     { 0x10B40, USCRIPT_INSCRIPTIONAL_PARTHIAN },
     { 0x10B60, USCRIPT_INSCRIPTIONAL_PAHLAVI },
     { 0x10B8F, USCRIPT_PSALTER_PAHLAVI },
-    { 0x10AC1, USCRIPT_MANICHAEAN },
     { 0x10AD8, USCRIPT_MANICHAEAN },
     { 0x10380, USCRIPT_UGARITIC },
     { 0x103A0, USCRIPT_OLD_PERSIAN },
@@ -355,8 +340,6 @@ static const struct {
     { 0x13153, USCRIPT_EGYPTIAN_HIEROGLYPHS },
     { 0x109A0, USCRIPT_MEROITIC_CURSIVE },
     { 0x10980, USCRIPT_MEROITIC_HIEROGLYPHS },
-    { 0x14400, USCRIPT_ANATOLIAN_HIEROGLYPHS },
-    { 0x18229, USCRIPT_TANGUT },
     { 0x5B57, USCRIPT_HAN },
     { 0xFDD0, USCRIPT_UNKNOWN }  // unassigned-implicit primary weights
 };
@@ -639,7 +622,7 @@ static void readAnOption(
 }
 
 static UBool
-readAnElement(char *line,
+readAnElement(FILE *data,
         CollationBaseDataBuilder &builder,
         UnicodeString &prefix, UnicodeString &s,
         int64_t ces[32], int32_t &cesLength,
@@ -647,69 +630,72 @@ readAnElement(char *line,
     if(U_FAILURE(*status)) {
         return FALSE;
     }
-    int32_t lineLength = (int32_t)uprv_strlen(line);
-    while(lineLength>0 && (line[lineLength-1] == '\r' || line[lineLength-1] == '\n')) {
-      line[--lineLength] = 0;
+    char buffer[30000];
+    char *result = fgets(buffer, sizeof(buffer), data);
+    if(result == NULL) {
+        if(feof(data)) {
+            return FALSE;
+        } else {
+            fprintf(stderr, "empty line but no EOF!\n");
+            *status = U_INVALID_FORMAT_ERROR;
+            return FALSE;
+        }
+    }
+    int32_t buflen = (int32_t)uprv_strlen(buffer);
+    while(buflen>0 && (buffer[buflen-1] == '\r' || buffer[buflen-1] == '\n')) {
+      buffer[--buflen] = 0;
     }
 
-    if(lineLength >= 3 && line[0] == (char)0xef &&
-            line[1] == (char)0xbb && line[2] == (char)0xbf) {
-        // U+FEFF UTF-8 signature byte sequence.
-        // Ignore, assuming it is at the start of the file.
-        line += 3;
-        lineLength -= 3;
-    }
-    if(line[0] == 0 || line[0] == '#') {
+    if(buffer[0] == 0 || buffer[0] == '#') {
         return FALSE; // just a comment, skip whole line
     }
 
     // Directives.
-    if(line[0] == '[') {
-        readAnOption(builder, line, status);
+    if(buffer[0] == '[') {
+        readAnOption(builder, buffer, status);
         return FALSE;
     }
 
-    CharString input;
-    char *startCodePoint = line;
+    char *startCodePoint = buffer;
     char *endCodePoint = strchr(startCodePoint, ';');
     if(endCodePoint == NULL) {
-        fprintf(stderr, "error - line with no code point:\n%s\n", line);
+        fprintf(stderr, "error - line with no code point!\n");
         *status = U_INVALID_FORMAT_ERROR; /* No code point - could be an error, but probably only an empty line */
         return FALSE;
+    } else {
+        *endCodePoint = 0;
     }
 
-    char *pipePointer = strchr(line, '|');
+    char *pipePointer = strchr(buffer, '|');
     if (pipePointer != NULL) {
         // Read the prefix string which precedes the actual string.
-        input.append(startCodePoint, (int32_t)(pipePointer - startCodePoint), *status);
+        *pipePointer = 0;
         UChar *prefixChars = prefix.getBuffer(32);
         int32_t prefixSize =
-            u_parseString(input.data(),
+            u_parseString(startCodePoint,
                           prefixChars, prefix.getCapacity(),
                           NULL, status);
         if(U_FAILURE(*status)) {
             prefix.releaseBuffer(0);
-            fprintf(stderr, "error - parsing of prefix \"%s\" failed: %s\n%s\n",
-                    input.data(), line, u_errorName(*status));
+            fprintf(stderr, "error - parsing of prefix \"%s\" failed: %s\n",
+                    startCodePoint, u_errorName(*status));
             *status = U_INVALID_FORMAT_ERROR;
             return FALSE;
         }
         prefix.releaseBuffer(prefixSize);
         startCodePoint = pipePointer + 1;
-        input.clear();
     }
 
     // Read the string which gets the CE(s) assigned.
-    input.append(startCodePoint, (int32_t)(endCodePoint - startCodePoint), *status);
     UChar *uchars = s.getBuffer(32);
     int32_t cSize =
-        u_parseString(input.data(),
+        u_parseString(startCodePoint,
                       uchars, s.getCapacity(),
                       NULL, status);
     if(U_FAILURE(*status)) {
         s.releaseBuffer(0);
-        fprintf(stderr, "error - parsing of code point(s) \"%s\" failed: %s\n%s\n",
-                input.data(), line, u_errorName(*status));
+        fprintf(stderr, "error - parsing of code point(s) \"%s\" failed: %s\n",
+                startCodePoint, u_errorName(*status));
         *status = U_INVALID_FORMAT_ERROR;
         return FALSE;
     }
@@ -729,14 +715,14 @@ readAnElement(char *line,
             break;
         }
         if(cesLength >= 31) {
-            fprintf(stderr, "Error: Too many CEs on line '%s'\n", line);
+            fprintf(stderr, "Error: Too many CEs on line '%s'\n", buffer);
             *status = U_INVALID_FORMAT_ERROR;
             return FALSE;
         }
         ces[cesLength++] = parseCE(builder, pointer, *status);
         if(U_FAILURE(*status)) {
             fprintf(stderr, "Syntax error parsing CE from line '%s' - %s\n",
-                    line, u_errorName(*status));
+                    buffer, u_errorName(*status));
             return FALSE;
         }
     }
@@ -756,11 +742,11 @@ readAnElement(char *line,
                 uint8_t b = (uint8_t)(ce >> (j * 8));
                 if(j <= 1) { b &= 0x3f; }  // tertiary bytes use 6 bits
                 if (b == 1) {
-                    fprintf(stderr, "Warning: invalid UCA weight byte 01 for %s\n", line);
+                    fprintf(stderr, "Warning: invalid UCA weight byte 01 for %s\n", buffer);
                     return FALSE;
                 }
                 if (j == 7 && b == 2) {
-                    fprintf(stderr, "Warning: invalid UCA primary weight lead byte 02 for %s\n", line);
+                    fprintf(stderr, "Warning: invalid UCA primary weight lead byte 02 for %s\n", buffer);
                     return FALSE;
                 }
                 if (j == 7) {
@@ -771,7 +757,7 @@ readAnElement(char *line,
                     // 02 is unusable and 03 is the low compression terminator when the lead byte is compressible.
                     if (isCompressible && (b <= 3 || b == 0xff)) {
                         fprintf(stderr, "Warning: invalid UCA primary second weight byte %02X for %s\n",
-                                b, line);
+                                b, buffer);
                         return FALSE;
                     }
                 }
@@ -794,34 +780,23 @@ parseFractionalUCA(const char *filename,
         *status = U_FILE_ACCESS_ERROR;
         return;
     }
-    int32_t lineNumber = 0;
-    char buffer[30000];
+    uint32_t line = 0;
 
     UChar32 maxCodePoint = 0;
     while(!feof(data)) {
         if(U_FAILURE(*status)) {
             fprintf(stderr, "Something returned an error %i (%s) while processing line %u of %s. Exiting...\n",
-                *status, u_errorName(*status), (int)lineNumber, filename);
+                *status, u_errorName(*status), (int)line, filename);
             exit(*status);
         }
 
-        lineNumber++;
-        char *line = fgets(buffer, sizeof(buffer), data);
-        if(line == NULL) {
-            if(feof(data)) {
-                break;
-            } else {
-                fprintf(stderr, "no more input line and also no EOF!\n");
-                *status = U_INVALID_FORMAT_ERROR;
-                return;
-            }
-        }
+        line++;
 
         UnicodeString prefix;
         UnicodeString s;
         int64_t ces[32];
         int32_t cesLength = 0;
-        if(readAnElement(line, builder, prefix, s, ces, cesLength, status)) {
+        if(readAnElement(data, builder, prefix, s, ces, cesLength, status)) {
             // we have read the line, now do something sensible with the read data!
             uint32_t p = (uint32_t)(ces[0] >> 32);
 
@@ -860,10 +835,9 @@ parseFractionalUCA(const char *filename,
                     if(script < 0) {
                         fprintf(stderr,
                                 "Error: Unknown script for first-primary sample character "
-                                "U+%04X on line %u of %s:\n"
-                                "%s\n"
+                                "U+%04x on line %u of %s\n"
                                 "    (add the character to genuca.cpp sampleCharsToScripts[])\n",
-                                c2, (int)lineNumber, filename, line);
+                                c2, (int)line, filename);
                         exit(U_INVALID_FORMAT_ERROR);
                     }
                     if(script == USCRIPT_UNKNOWN) {
@@ -883,9 +857,8 @@ parseFractionalUCA(const char *filename,
                 if(0xe0000000 <= p && p < 0xf0000000) {
                     fprintf(stderr,
                             "Error: Unexpected mapping to an implicit or trailing primary"
-                            " on line %u of %s:\n"
-                            "%s\n",
-                            (int)lineNumber, filename, line);
+                            " on line %u of %s.\n",
+                            (int)line, filename);
                     exit(U_INVALID_FORMAT_ERROR);
                 }
 
@@ -998,7 +971,7 @@ parseFractionalUCA(const char *filename,
     }
 
     if (beVerbose) {
-        printf("\nLines read: %u\n", (int)lineNumber);
+        printf("\nLines read: %u\n", (int)line);
     }
 
     fclose(data);

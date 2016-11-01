@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/brx.xml
+// *
+// ***************************************************************************
 brx{
     AuxExemplarCharacters{"[\u200C\u200D]"}
     ExemplarCharacters{
@@ -35,7 +41,7 @@ brx{
         }
         native{"deva"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.12.94"}
     calendar{
         generic{
             DateTimePatterns{
@@ -54,10 +60,7 @@ brx{
                 "{1} {0}",
             }
             availableFormats{
-                Gy{"y G"}
-                GyMMM{"MMM, y G"}
-                GyMMMEd{"E, MMM d, y G"}
-                GyMMMd{"MMM d, y G"}
+                GGGGyMMMMEEEEdd{"EEEE,dd MMMM GGGGy"}
                 Hm{"HH:mm"}
                 Hms{"HH:mm:ss"}
                 M{"L"}
@@ -86,10 +89,6 @@ brx{
                 "फुं",
                 "बेलासे",
             }
-            AmPmMarkersAbbr{
-                "फुं",
-                "बेलासे",
-            }
             DateTimePatterns{
                 "h:mm:ss a zzzz",
                 "h:mm:ss a z",
@@ -106,10 +105,7 @@ brx{
                 "{1} {0}",
             }
             availableFormats{
-                Gy{"y G"}
-                GyMMM{"MMM, y G"}
-                GyMMMEd{"E, MMM d, y G"}
-                GyMMMd{"MMM d, y G"}
+                GGGGyMMMMEEEEdd{"EEEE,dd MMMM GGGGy"}
                 Hm{"HH:mm"}
                 Hms{"HH:mm:ss"}
                 M{"L"}

@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2001-2016 International Business Machines Corporation and
+ * Copyright (C) 2001-2015 International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -25,13 +23,13 @@ import com.ibm.icu.util.ULocale;
  * See UAX #24 Unicode Script Property (http://www.unicode.org/reports/tr24/)
  * and http://www.unicode.org/Public/UCD/latest/ucd/PropertyValueAliases.txt .
  *
- * <p>In addition, constants for many ISO 15924 script codes
+ * <p>Starting with ICU 3.6, constants for most ISO 15924 script codes
  * are included, for use with language tags, CLDR data, and similar.
  * Some of those codes are not used in the Unicode Character Database (UCD).
  * For example, there are no characters that have a UCD script property value of
  * Hans or Hant. All Han ideographs have the Hani script property value in Unicode.
  *
- * <p>Private-use codes Qaaa..Qabx are not included, except as used in the UCD or in CLDR.
+ * <p>Private-use codes Qaaa..Qabx are not included.
  *
  * <p>Starting with ICU 55, script codes are only added when their scripts
  * have been or will certainly be encoded in Unicode,
@@ -285,60 +283,60 @@ public final class UScript {
     public static final int TAGBANWA     = 45;  /* Tagb */
     /**
      * Braille
-     * Script in Unicode 4
-     * @stable ICU 2.6
-     *
-     */
+     * Script in Unicode 4 
+     * @stable ICU 2.6 
+     * 
+     */ 
     public static final int BRAILLE      = 46;  /* Brai */
     /**
      * Cypriot
-     * Script in Unicode 4
-     * @stable ICU 2.6
-     *
-     */
-    public static final int CYPRIOT              = 47;  /* Cprt */
+     * Script in Unicode 4 
+     * @stable ICU 2.6 
+     * 
+     */  
+    public static final int CYPRIOT              = 47;  /* Cprt */ 
     /**
      * Limbu
-     * Script in Unicode 4
-     * @stable ICU 2.6
-     *
-     */
-    public static final int LIMBU                = 48;  /* Limb */
+     * Script in Unicode 4 
+     * @stable ICU 2.6 
+     * 
+     */       
+    public static final int LIMBU                = 48;  /* Limb */ 
     /**
      * Linear B
-     * Script in Unicode 4
-     * @stable ICU 2.6
-     *
-     */
-    public static final int LINEAR_B     = 49;  /* Linb */
+     * Script in Unicode 4 
+     * @stable ICU 2.6 
+     * 
+     */ 
+    public static final int LINEAR_B     = 49;  /* Linb */ 
     /**
      * Osmanya
-     * Script in Unicode 4
-     * @stable ICU 2.6
-     *
-     */
-    public static final int OSMANYA              = 50;  /* Osma */
+     * Script in Unicode 4 
+     * @stable ICU 2.6 
+     * 
+     */ 
+    public static final int OSMANYA              = 50;  /* Osma */ 
     /**
      * Shavian
-     * Script in Unicode 4
-     * @stable ICU 2.6
-     *
-     */
-    public static final int SHAVIAN              = 51;  /* Shaw */
+     * Script in Unicode 4 
+     * @stable ICU 2.6 
+     * 
+     */ 
+    public static final int SHAVIAN              = 51;  /* Shaw */ 
     /**
      * Tai Le
-     * Script in Unicode 4
-     * @stable ICU 2.6
-     *
-     */
-    public static final int TAI_LE               = 52;  /* Tale */
+     * Script in Unicode 4 
+     * @stable ICU 2.6 
+     * 
+     */ 
+    public static final int TAI_LE               = 52;  /* Tale */ 
     /**
      * Ugaritic
-     * Script in Unicode 4
-     * @stable ICU 2.6
-     *
-     */
-    public static final int UGARITIC     = 53;  /* Ugar */
+     * Script in Unicode 4 
+     * @stable ICU 2.6 
+     * 
+     */ 
+    public static final int UGARITIC     = 53;  /* Ugar */ 
     /**
      * Script in Unicode 4.0.1
      * @stable ICU 3.0
@@ -611,7 +609,7 @@ public final class UScript {
     /**
      * ISO 15924 script code
      * @stable ICU 3.8
-     */
+     */ 
     public static final int CARIAN                        = 104;/* Cari */
     /**
      * ISO 15924 script code
@@ -649,7 +647,7 @@ public final class UScript {
      */
     public static final int SAURASHTRA                    = 111;/* Saur */
     /**
-     * ISO 15924 script code for Sutton SignWriting
+     * ISO 15924 script code
      * @stable ICU 3.8
      */
     public static final int SIGN_WRITING                  = 112;/* Sgnw */
@@ -956,55 +954,17 @@ public final class UScript {
     public static final int SIDDHAM = 166; /* Sidd */
 
     /**
-     * ISO 15924 script code
-     * @stable ICU 58
-     */
-    public static final int ADLAM = 167; /* Adlm */
-    /**
-     * ISO 15924 script code
-     * @stable ICU 58
-     */
-    public static final int BHAIKSUKI = 168; /* Bhks */
-    /**
-     * ISO 15924 script code
-     * @stable ICU 58
-     */
-    public static final int MARCHEN = 169; /* Marc */
-    /**
-     * ISO 15924 script code
-     * @stable ICU 58
-     */
-    public static final int NEWA = 170; /* Newa */
-    /**
-     * ISO 15924 script code
-     * @stable ICU 58
-     */
-    public static final int OSAGE = 171; /* Osge */
-
-    /**
-     * ISO 15924 script code
-     * @stable ICU 58
-     */
-    public static final int HAN_WITH_BOPOMOFO = 172; /* Hanb */
-    /**
-     * ISO 15924 script code
-     * @stable ICU 58
-     */
-    public static final int JAMO = 173; /* Jamo */
-    /**
-     * ISO 15924 script code
-     * @stable ICU 58
-     */
-    public static final int SYMBOLS_EMOJI = 174; /* Zsye */
-
-    /**
-     * One more than the highest normal UScript code.
-     * The highest value is available via UCharacter.getIntPropertyMaxValue(UProperty.SCRIPT).
+     * <p>One higher than the last script code constant.
+     * This value increases as constants for script codes are added.
      *
-     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
+     * <p>There are constants for Unicode 7 script property values.
+     * There are constants for ISO 15924 script codes assigned on or before 2013-10-12.
+     * There are no constants for private use codes from Qaaa - Qabx
+     * except as used in the UCD.
+     *
+     * @stable ICU 2.4
      */
-    @Deprecated
-    public static final int CODE_LIMIT   = 175;
+    public static final int CODE_LIMIT   = 167;
 
     private static int[] getCodesFromLocale(ULocale locale) {
         // Multi-script languages, equivalent to the LocaleScript data
@@ -1111,7 +1071,8 @@ public final class UScript {
      *
      * @param nameOrAbbr name of the script or ISO 15924 code
      * @return The script code value, or INVALID_CODE if the code cannot be found.
-     * @stable ICU 54
+     * @draft ICU 54
+     * @provisional This API might change or be removed in a future release.
      */
     public static final int getCodeFromName(String nameOrAbbr) {
         int propNum = UCharacter.getPropertyValueEnumNoThrow(UProperty.SCRIPT, nameOrAbbr);
@@ -1150,6 +1111,8 @@ public final class UScript {
      * <p>Some characters are commonly used in multiple scripts.
      * For more information, see UAX #24: http://www.unicode.org/reports/tr24/.
      *
+     * <p>The Script_Extensions property is provisional. It may be modified or removed
+     * in future versions of the Unicode Standard, and thus in ICU.
      * @param c code point
      * @param sc script code
      * @return true if sc is in Script_Extensions(c)
@@ -1191,11 +1154,13 @@ public final class UScript {
      * </ul>
      * In other words, if the return value is non-negative, it is c's single Script code
      * and the set contains exactly this Script code.
-     * If the return value is -n, then the set contains c's n&gt;=2 Script_Extensions script codes.
+     * If the return value is -n, then the set contains c's n>=2 Script_Extensions script codes.
      *
      * <p>Some characters are commonly used in multiple scripts.
      * For more information, see UAX #24: http://www.unicode.org/reports/tr24/.
      *
+     * <p>The Script_Extensions property is provisional. It may be modified or removed
+     * in future versions of the Unicode Standard, and thus in ICU.
      * @param c code point
      * @param set set of script code integers; will be cleared, then bits are set
      *            corresponding to c's Script_Extensions
@@ -1284,12 +1249,12 @@ public final class UScript {
             // tools/trunk/unicode/py/parsescriptmetadata.py
             // or from icu/trunk/source/common/uscript_props.cpp
             0x0040 | RECOMMENDED,  // Zyyy
-            0x0308 | RECOMMENDED,  // Zinh
+            0x0308 | UNKNOWN,  // Zinh
             0x0628 | RECOMMENDED | RTL,  // Arab
             0x0531 | RECOMMENDED | CASED,  // Armn
             0x0995 | RECOMMENDED,  // Beng
             0x3105 | RECOMMENDED | LB_LETTERS,  // Bopo
-            0x13C4 | LIMITED_USE | CASED,  // Cher
+            0x13C4 | LIMITED_USE,  // Cher
             0x03E2 | EXCLUSION | CASED,  // Copt
             0x042F | RECOMMENDED | CASED,  // Cyrl
             0x10414 | EXCLUSION | CASED,  // Dsrt
@@ -1329,7 +1294,7 @@ public final class UScript {
             0x1723 | EXCLUSION,  // Hano
             0x1743 | EXCLUSION,  // Buhd
             0x1763 | EXCLUSION,  // Tagb
-            0x280E | UNKNOWN,  // Brai
+            0x2800 | UNKNOWN,  // Brai
             0x10800 | EXCLUSION | RTL,  // Cprt
             0x1900 | LIMITED_USE,  // Limb
             0x10000 | EXCLUSION,  // Linb
@@ -1359,7 +1324,7 @@ public final class UScript {
             0x5B57 | RECOMMENDED | LB_LETTERS,  // Hans
             0x5B57 | RECOMMENDED | LB_LETTERS,  // Hant
             0x16B1C | EXCLUSION,  // Hmng
-            0x10CA1 | EXCLUSION | RTL | CASED,  // Hung
+            0,
             0,
             0xA984 | LIMITED_USE,  // Java
             0xA90A | LIMITED_USE,  // Kali
@@ -1395,7 +1360,7 @@ public final class UScript {
             0x1C5A | LIMITED_USE,  // Olck
             0xA930 | EXCLUSION,  // Rjng
             0xA882 | LIMITED_USE,  // Saur
-            0x1D850 | EXCLUSION,  // Sgnw
+            0,
             0x1B83 | LIMITED_USE,  // Sund
             0,
             0xABC0 | LIMITED_USE,  // Mtei
@@ -1437,27 +1402,19 @@ public final class UScript {
             0x11183 | EXCLUSION,  // Shrd
             0x110D0 | EXCLUSION,  // Sora
             0x11680 | EXCLUSION,  // Takr
-            0x18229 | EXCLUSION | LB_LETTERS,  // Tang
             0,
-            0x14400 | EXCLUSION,  // Hluw
+            0,
+            0,
             0x11208 | EXCLUSION,  // Khoj
             0x11484 | EXCLUSION,  // Tirh
             0x10537 | EXCLUSION,  // Aghb
             0x11152 | EXCLUSION,  // Mahj
-            0x11717 | EXCLUSION | LB_LETTERS,  // Ahom
-            0x108F4 | EXCLUSION | RTL,  // Hatr
+            0,
+            0,
             0x1160E | EXCLUSION,  // Modi
-            0x1128F | EXCLUSION,  // Mult
+            0,
             0x11AC0 | EXCLUSION,  // Pauc
             0x1158E | EXCLUSION,  // Sidd
-            0x1E909 | LIMITED_USE | RTL | CASED,  // Adlm
-            0x11C0E | EXCLUSION,  // Bhks
-            0x11C72 | EXCLUSION,  // Marc
-            0x11412 | LIMITED_USE,  // Newa
-            0x104B5 | LIMITED_USE | CASED,  // Osge
-            0x5B57 | RECOMMENDED | LB_LETTERS,  // Hanb
-            0x1112 | RECOMMENDED,  // Jamo
-            0,
             // End copy-paste from parsescriptmetadata.py
         };
 

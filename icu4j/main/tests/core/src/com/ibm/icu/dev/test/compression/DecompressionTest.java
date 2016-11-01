@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2010, International Business Machines Corporation and    *
@@ -8,12 +6,14 @@
  */
 package com.ibm.icu.dev.test.compression;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.UnicodeDecompressor;
 
 public class DecompressionTest extends TestFmwk {
+    public static void main(String[] args) throws Exception {
+        new DecompressionTest().run(args);
+    }
+
     /** Print out a segment of a character array, if in verbose mode */
     private void log(char [] chars, int start, int count) {
         log("|");
@@ -73,7 +73,6 @@ public class DecompressionTest extends TestFmwk {
     }
 
 
-    @Test
     public void TestDecompression() throws Exception {
         String result;
 
@@ -124,7 +123,6 @@ public class DecompressionTest extends TestFmwk {
     /* Testing the method
      *      public int decompress(*** 
      */
-    @Test
     public void TestDecompress(){
         char[] charBufferBlank = {};
         char[] charBuffer1 = {'a'};

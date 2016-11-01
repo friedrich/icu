@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2006-2015, International Business Machines Corporation and
+ * Copyright (C) 2006-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  *
@@ -31,25 +29,25 @@ final class UConverterAlias {
 
     static final int NUM_HIDDEN_TAGS = 1;
 
-    static char[] gConverterList = null;
+    static int[] gConverterList = null;
 
-    static char[] gTagList = null;
+    static int[] gTagList = null;
 
-    static char[] gAliasList = null;
+    static int[] gAliasList = null;
 
-    static char[] gUntaggedConvArray = null;
+    static int[] gUntaggedConvArray = null;
 
-    static char[] gTaggedAliasArray = null;
+    static int[] gTaggedAliasArray = null;
 
-    static char[] gTaggedAliasLists = null;
+    static int[] gTaggedAliasLists = null;
 
-    static char[] gOptionTable = null;
+    static int[] gOptionTable = null;
 
     static byte[] gStringTable = null;
 
     static byte[] gNormalizedStringTable = null;
 
-    private static final String GET_STRING(int idx) {
+    static final String GET_STRING(int idx) {
         return extractString(gStringTable, 2 * idx);
     }
 
@@ -136,18 +134,20 @@ final class UConverterAlias {
             if (tableStart < minTocLength) {
                 throw new IOException("Invalid data format.");
             }
-            gConverterList = ICUBinary.getChars(b, tableArray[converterListIndex], 0);
-            gTagList = ICUBinary.getChars(b, tableArray[tagListIndex], 0);
-            gAliasList = ICUBinary.getChars(b, tableArray[aliasListIndex], 0);
-            gUntaggedConvArray = ICUBinary.getChars(b, tableArray[untaggedConvArrayIndex], 0);
-            gTaggedAliasArray = ICUBinary.getChars(b, tableArray[taggedAliasArrayIndex], 0);
-            gTaggedAliasLists = ICUBinary.getChars(b, tableArray[taggedAliasListsIndex], 0);
-            gOptionTable = ICUBinary.getChars(b, tableArray[optionTableIndex], 0);
+            gConverterList = new int[tableArray[converterListIndex]];
+            gTagList= new int[tableArray[tagListIndex]];
+            gAliasList = new int[tableArray[aliasListIndex]];
+            gUntaggedConvArray = new int[tableArray[untaggedConvArrayIndex]];
+            gTaggedAliasArray = new int[tableArray[taggedAliasArrayIndex]];
+            gTaggedAliasLists = new int[tableArray[taggedAliasListsIndex]];
+            gOptionTable = new int[tableArray[optionTableIndex]];
             gStringTable = new byte[tableArray[stringTableIndex]*2];
-            b.get(gStringTable);
             gNormalizedStringTable = new byte[tableArray[normalizedStringTableIndex]*2];
-            b.get(gNormalizedStringTable);
 
+            reader.read(gConverterList, gTagList,
+                    gAliasList, gUntaggedConvArray,
+                    gTaggedAliasArray, gTaggedAliasLists,
+                    gOptionTable, gStringTable, gNormalizedStringTable);
             data =  ByteBuffer.allocate(0); // dummy UDataMemory object in absence
                                         // of memory mapping
 
@@ -445,9 +445,11 @@ final class UConverterAlias {
                 if (listOffset != 0) {
                     //int listCount = gTaggedAliasListsArray[listOffset];
                     /* +1 to skip listCount */
+                    int[] currListArray = gTaggedAliasLists;
                     int currListArrayIndex = listOffset + 1;
 
-                    return GET_STRING(gTaggedAliasLists[currListArrayIndex + n]);
+                    return GET_STRING(currListArray[currListArrayIndex + n]);
+                    
                 }
                 /* else this shouldn't happen. internal program error */
             }
@@ -480,9 +482,10 @@ final class UConverterAlias {
             int listOffset = findTaggedAliasListsOffset(alias, standard);
 
             if (0 < listOffset && listOffset < gTaggedAliasLists.length) {
+                int[] currListArray = gTaggedAliasLists;
                 int currListArrayIndex = listOffset + 1;
-                if (gTaggedAliasLists[0] != 0) {
-                    return GET_STRING(gTaggedAliasLists[currListArrayIndex]);
+                if (currListArray[0] != 0) {
+                    return GET_STRING(currListArray[currListArrayIndex]);
                 }
             }
         }
@@ -683,12 +686,13 @@ final class UConverterAlias {
             int currAlias;
             int listCount = gTaggedAliasLists[listOffset];
             /* +1 to skip listCount */
+            int[] currList = gTaggedAliasLists;
             int currListArrayIndex = listOffset + 1;
             for (currAlias = 0; currAlias < listCount; currAlias++) {
-                if (gTaggedAliasLists[currAlias + currListArrayIndex] != 0
+                if (currList[currAlias + currListArrayIndex] != 0
                         && compareNames(
                                 alias,
-                                GET_STRING(gTaggedAliasLists[currAlias + currListArrayIndex])) == 0) {
+                                GET_STRING(currList[currAlias + currListArrayIndex])) == 0) {
                     return true;
                 }
             }
@@ -700,6 +704,9 @@ final class UConverterAlias {
     static String[] gAvailableConverters = null;
 
     static int gAvailableConverterCount = 0;
+
+    static byte[] gDefaultConverterNameBuffer; // [MAX_CONVERTER_NAME_LENGTH +
+                                                // 1]; /* +1 for NULL */
 
     static String gDefaultConverterName = null;
 
@@ -759,4 +766,53 @@ final class UConverterAlias {
         }
         return null;
     }
+
+    /* default converter name --------------------------------------------------- */
+
+    /*
+     * In order to be really thread-safe, the get function would have to take
+     * a buffer parameter and copy the current string inside a mutex block.
+     * This implementation only tries to be really thread-safe while
+     * setting the name.
+     * It assumes that setting a pointer is atomic.
+     */
+
+    // U_CFUNC const char * getDefaultName()
+//    static final synchronized String getDefaultName() {
+//        /* local variable to be thread-safe */
+//        String name;
+//
+//        //agljport:todo umtx_lock(null);
+//        name = gDefaultConverterName;
+//        //agljport:todo umtx_unlock(null);
+//
+//        if (name == null) {
+//            //UConverter cnv = null;
+//            int length = 0;
+//
+//            name = CharsetICU.getDefaultCharsetName();
+//
+//            /* if the name is there, test it out and get the canonical name with options */
+//            if (name != null) {
+//               // cnv = UConverter.open(name); 
+//               // name = cnv.getName(cnv);
+//                // TODO: fix me
+//            }
+//
+//            if (name == null || name.length() == 0 ||/* cnv == null ||*/
+//                     length >= gDefaultConverterNameBuffer.length) {
+//                /* Panic time, let's use a fallback. */
+//                name = new String("US-ASCII");
+//            }
+//
+//            //length=(int32_t)(strlen(name));
+//
+//            /* Copy the name before we close the converter. */
+//            name = gDefaultConverterName;
+//        }
+//
+//        return name;
+//    }
+
+    //end bld.c
 }

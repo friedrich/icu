@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2009-2014, International Business Machines Corporation and    *
@@ -13,14 +11,17 @@ import static com.ibm.icu.impl.LocaleDisplayNamesImpl.DataTableType.REGION;
 
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.ibm.icu.impl.LocaleDisplayNamesImpl;
 import com.ibm.icu.text.LocaleDisplayNames;
 import com.ibm.icu.text.LocaleDisplayNames.DialectHandling;
 import com.ibm.icu.util.ULocale;
 
 public class TestLocaleNamePackaging extends TestFmwk {
+
+    public static void main(String[] args) {
+        new TestLocaleNamePackaging().run(args);
+    }
+
     public TestLocaleNamePackaging() {
     }
 
@@ -41,7 +42,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
         new Locale("und", "TH")
     };
 
-    @Test
     public void testRegionDisplayNames() {
         String[] expectedWithRegionData = {
             "",
@@ -107,7 +107,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
 
     }
 
-    @Test
     public void testLanguageDisplayNames() {
         String[] expectedWithLanguageData = {
             "",
@@ -174,7 +173,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
     }
 
     // test a 'root' locale, with keywords
-    @Test
     public void testLocaleDisplayNameWithKeywords() {
         String[] expectedWithLanguageData = {
             "root (collation=phonebook)",
@@ -202,7 +200,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
         }
     }
 
-    @Test
     public void testLanguageDisplayNameDoesNotTranslateRoot() {
         // "root" is not a language code-- the fact that we have our data organized this
         // way is immaterial.  "root" remains untranslated whether we have data or not.
@@ -210,7 +207,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
         assertEquals("root", "root", dn.languageDisplayName("root"));
     }
 
-    @Test
     public void testLanguageDisplayNameDoesNotTranslateDialects() {
         // Dialect ids are also not language codes.
         LocaleDisplayNames dn = LocaleDisplayNames.getInstance(ULocale.US,
@@ -225,7 +221,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
         assertEquals("dialect 2", target, dn.localeDisplayName("en_GB"));
     }
     
-    @Test
     public void testLocaleKeywords() {
         LocaleDisplayNames dn = LocaleDisplayNames.getInstance(ULocale.US,
                 DialectHandling.DIALECT_NAMES);

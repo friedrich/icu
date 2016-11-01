@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ne.xml
+// *
+// ***************************************************************************
 ne{
     Currencies{
         AED{
@@ -98,13 +104,9 @@ ne{
             "BWP",
             "बोट्सवानान पुला",
         }
-        BYN{
-            "BYN",
-            "बेलारूसी रूबल",
-        }
         BYR{
             "BYR",
-            "बेलारूसी रूबल (2000–2016)",
+            "बेलारूसी रूबल",
         }
         BZD{
             "BZD",
@@ -643,106 +645,6 @@ ne{
             "जाम्बियाली क्वाचा",
         }
     }
-    Currencies%narrow{
-        AOA{"Kz"}
-        ARS{"$"}
-        AUD{"$"}
-        BAM{"KM"}
-        BBD{"$"}
-        BDT{"৳"}
-        BMD{"$"}
-        BND{"$"}
-        BOB{"Bs"}
-        BRL{"R$"}
-        BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
-        BZD{"$"}
-        CAD{"$"}
-        CLP{"$"}
-        CNY{"¥"}
-        COP{"$"}
-        CRC{"₡"}
-        CUC{"$"}
-        CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
-        DOP{"$"}
-        EGP{"E£"}
-        EUR{"€"}
-        FJD{"$"}
-        FKP{"£"}
-        GBP{"£"}
-        GEL{"₾"}
-        GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
-        GYD{"$"}
-        HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
-        ILS{"₪"}
-        INR{"₹"}
-        ISK{"kr"}
-        JMD{"$"}
-        JPY{"¥"}
-        KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
-        KRW{"₩"}
-        KYD{"$"}
-        KZT{"₸"}
-        LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
-        LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
-        MNT{"₮"}
-        MUR{"Rs"}
-        MXN{"$"}
-        MYR{"RM"}
-        NAD{"$"}
-        NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"रू"}
-        NZD{"$"}
-        PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
-        PYG{"₲"}
-        RUB{"₽"}
-        RWF{"RF"}
-        SBD{"$"}
-        SEK{"kr"}
-        SGD{"$"}
-        SHP{"£"}
-        SRD{"$"}
-        SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
-        TRY{"₺"}
-        TTD{"$"}
-        TWD{"$"}
-        UAH{"₴"}
-        USD{"$"}
-        UYU{"$"}
-        VEF{"Bs"}
-        VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        NPR{"Rs"}
-        TRY{"TL"}
-    }
     CurrencyPlurals{
         AED{
             one{"संयुक्त अरब एमिराट्स डिर्हाम"}
@@ -771,10 +673,6 @@ ne{
         ARS{
             one{"अर्जेन्टिनी पेसो"}
             other{"अर्जेन्टिनी पेसो"}
-        }
-        AUD{
-            one{"अष्ट्रेलियन डलर"}
-            other{"अष्ट्रेलियन डलर"}
         }
         AWG{
             one{"आरूबन फ्लोरिन"}
@@ -836,13 +734,9 @@ ne{
             one{"बोट्सवानान पुला"}
             other{"बोट्सवानान पुला"}
         }
-        BYN{
+        BYR{
             one{"बेलारूसी रूबल"}
             other{"बेलारूसी रूबल"}
-        }
-        BYR{
-            one{"बेलारूसी रूबल (2000–2016)"}
-            other{"बेलारूसी रूबल (2000–2016)"}
         }
         BZD{
             one{"वेलिज डलर"}
@@ -1381,5 +1275,5 @@ ne{
             other{"जाम्बियाली क्वाचा"}
         }
     }
-    Version{"2.1.29.20"}
+    Version{"2.1.12.94"}
 }

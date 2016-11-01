@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  **********************************************************************
- * Copyright (c) 2002-2015, International Business Machines
+ * Copyright (c) 2002-2014, International Business Machines
  * Corporation and others.  All Rights Reserved.
  **********************************************************************
  * Author: Alan Liu
@@ -69,7 +67,6 @@ public final class UPropertyAliases {
 
     private static final class IsAcceptable implements ICUBinary.Authenticate {
         // @Override when we switch to Java 6
-        @Override
         public boolean isDataVersionAcceptable(byte version[]) {
             return version[0]==2;
         }
@@ -94,7 +91,10 @@ public final class UPropertyAliases {
         int offset=inIndexes[IX_VALUE_MAPS_OFFSET];
         int nextOffset=inIndexes[IX_BYTE_TRIES_OFFSET];
         int numInts=(nextOffset-offset)/4;
-        valueMaps=ICUBinary.getInts(bytes, numInts, 0);
+        valueMaps=new int[numInts];
+        for(int i=0; i<numInts; ++i) {
+            valueMaps[i]=bytes.getInt();
+        }
 
         // Read the bytesTries.
         offset=nextOffset;
@@ -187,7 +187,7 @@ public final class UPropertyAliases {
         // Find the end of this name.
         int nameStart=nameGroupsIndex;
         while(0!=nameGroups.charAt(nameGroupsIndex)) {
-            ++nameGroupsIndex;
+            ++nameGroupsIndex;            
         }
         if(nameStart==nameGroupsIndex) {
             return null;  // no name (Property[Value]Aliases.txt has "n/a")

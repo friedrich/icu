@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/pt_PT.xml
+// *
+// ***************************************************************************
 pt_PT{
     Currencies{
         AED{
@@ -101,10 +107,6 @@ pt_PT{
         FKP{
             "FKP",
             "Libra das Ilhas Falkland",
-        }
-        GBP{
-            "£",
-            "Libra esterlina britânica",
         }
         GHS{
             "GHS",
@@ -409,10 +411,6 @@ pt_PT{
             one{"Libra das Ilhas Falkland"}
             other{"Libras das Ilhas Falkland"}
         }
-        GBP{
-            one{"Libra esterlina britânica"}
-            other{"Libras esterlinas britânicas"}
-        }
         GHS{
             one{"Cedi de Gana"}
             other{"Cedis de Gana"}
@@ -642,5 +640,5 @@ pt_PT{
             other{"Kwachas zambianos (1968–2012)"}
         }
     }
-    Version{"2.1.29.54"}
+    Version{"2.1.13.23"}
 }

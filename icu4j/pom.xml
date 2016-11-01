@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <!--
-* © 2016 and later: Unicode, Inc. and others.
-* License & terms of use: http://www.unicode.org/copyright.html#License
 *******************************************************************************
-* Copyright (C) 2010-2016, International Business Machines Corporation and    *
+* Copyright (C) 2010-2015, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 -->
@@ -13,7 +11,7 @@
 
   <groupId>com.ibm.icu</groupId>
   <artifactId>icu4j</artifactId>
-  <version>58-SNAPSHOT</version>
+  <version>55.1</version>
 
   <name>ICU4J</name>
   <description>
@@ -25,7 +23,7 @@
   <licenses>
     <license>
       <name>ICU License</name>
-      <url>http://source.icu-project.org/repos/icu/icu/trunk/LICENSE</url>
+      <url>http://source.icu-project.org/repos/icu/icu/trunk/license.html</url>
       <distribution>repo</distribution>
     </license>
   </licenses>

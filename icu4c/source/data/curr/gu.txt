@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/gu.xml
+// *
+// ***************************************************************************
 gu{
     Currencies{
         AED{
@@ -94,13 +100,9 @@ gu{
             "BWP",
             "બોત્સવાનન પુલા",
         }
-        BYN{
-            "BYN",
-            "બેલારુશિયન રૂબલ",
-        }
         BYR{
             "BYR",
-            "બેલારુશિયન રૂબલ (2000–2016)",
+            "બેલારુશિયન રૂબલ",
         }
         BZD{
             "BZD",
@@ -192,7 +194,7 @@ gu{
         }
         GBP{
             "£",
-            "બ્રિટિશ પાઉન્ડ",
+            "બ્રિટિશ પાઉન્ડ સ્ટર્લિંગ",
         }
         GEL{
             "GEL",
@@ -472,7 +474,7 @@ gu{
         }
         RUB{
             "RUB",
-            "રશિયન રૂબલ",
+            "રશિયન રબલ",
         }
         RWF{
             "RWF",
@@ -608,7 +610,7 @@ gu{
         }
         XAF{
             "FCFA",
-            "મધ્ય આફ્રિકન [CFA] ફ્રેંક",
+            "[CFA] ફ્રેંક [BEAC]",
         }
         XCD{
             "EC$",
@@ -616,7 +618,7 @@ gu{
         }
         XOF{
             "CFA",
-            "પશ્ચિમી આફ્રિકન [CFA] ફ્રેંક",
+            "[CFA] ફ્રેંક [BCEAO]",
         }
         XPF{
             "CFPF",
@@ -644,103 +646,57 @@ gu{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
         EUR{"€"}
         FJD{"$"}
-        FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"રૂ."}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RUB{"₽"}
-        RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
         TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         AED{
@@ -835,13 +791,9 @@ gu{
             one{"બોત્સવાનન પુલા"}
             other{"બોત્સવાનન પુલા"}
         }
-        BYN{
+        BYR{
             one{"બેલારુશિયન રૂબલ"}
             other{"બેલારુશિયન રૂબલ"}
-        }
-        BYR{
-            one{"બેલારુશિયન રૂબલ (2000–2016)"}
-            other{"બેલારુશિયન રૂબલ (2000–2016)"}
         }
         BZD{
             one{"બેલિઝ ડોલર"}
@@ -932,8 +884,8 @@ gu{
             other{"ફૉકલેન્ડ આઇલેંડ્સ પાઉન્ડ"}
         }
         GBP{
-            one{"બ્રિટિશ પાઉન્ડ"}
-            other{"બ્રિટિશ પાઉન્ડ્સ"}
+            one{"બ્રિટિશ પાઉન્ડ સ્ટર્લિંગ"}
+            other{"બ્રિટિશ પાઉન્ડ સ્ટર્લિંગ"}
         }
         GEL{
             one{"જ્યોર્જિઅન લારી"}
@@ -1208,8 +1160,8 @@ gu{
             other{"સર્બિયન દિનાર"}
         }
         RUB{
-            one{"રશિયન રૂબલ"}
-            other{"રશિયન રૂબલ્સ"}
+            one{"રશિયન રબલ"}
+            other{"રશિયન રબલ"}
         }
         RWF{
             one{"રવાંડન ફ્રેંક"}
@@ -1344,16 +1296,16 @@ gu{
             other{"સમોઅન તાલા"}
         }
         XAF{
-            one{"મધ્ય આફ્રિકન [CFA] ફ્રેંક"}
-            other{"મધ્ય આફ્રિકન [CFA] ફ્રેંક્સ"}
+            one{"[CFA] ફ્રેંક [BEAC]"}
+            other{"[CFA] ફ્રેંક [BEAC]"}
         }
         XCD{
             one{"ઇસ્ટ કેરિબિયન ડોલર"}
             other{"ઇસ્ટ કેરિબિયન ડોલર"}
         }
         XOF{
-            one{"પશ્ચિમી આફ્રિકન [CFA] ફ્રેંક"}
-            other{"પશ્ચિમી આફ્રિકન [CFA] ફ્રેંક્સ"}
+            one{"[CFA] ફ્રેંક [BCEAO]"}
+            other{"[CFA] ફ્રેંક [BCEAO]"}
         }
         XPF{
             one{"[CFP] ફ્રેંક"}
@@ -1380,5 +1332,5 @@ gu{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.12.94"}
 }

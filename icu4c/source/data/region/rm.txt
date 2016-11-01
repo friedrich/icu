@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/rm.xml
+// *
+// ***************************************************************************
 rm{
     Countries{
         001{"mund"}
@@ -38,6 +44,7 @@ rm{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Antillas Ollandaisas"}
         AO{"Angola"}
         AQ{"Antarctica"}
         AR{"Argentinia"}
@@ -280,5 +287,5 @@ rm{
         ZW{"Simbabwe"}
         ZZ{"Regiun betg encouschenta u nunvalaivla"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.12.94"}
 }

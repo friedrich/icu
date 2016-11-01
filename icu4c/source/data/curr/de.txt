@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/de.xml
+// *
+// ***************************************************************************
 de{
     Currencies{
         ADP{
@@ -218,13 +224,9 @@ de{
             "BYB",
             "Belarus-Rubel (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Weißrussischer Rubel",
-        }
         BYR{
             "BYR",
-            "Weißrussischer Rubel (2000–2016)",
+            "Weißrussischer Rubel",
         }
         BZD{
             "BZD",
@@ -300,7 +302,7 @@ de{
         }
         CVE{
             "CVE",
-            "Cabo-Verde-Escudo",
+            "Kap-Verde-Escudo",
         }
         CYP{
             "CYP",
@@ -780,7 +782,7 @@ de{
         }
         PEN{
             "PEN",
-            "Peruanischer Sol",
+            "Peruanischer Neuer Sol",
         }
         PES{
             "PES",
@@ -1196,106 +1198,59 @@ de{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
         ARS{"$"}
         AUD{"$"}
-        BAM{"KM"}
         BBD{"$"}
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
         BRL{"R$"}
         BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"Cub$"}
         CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
         DOP{"$"}
-        EGP{"E£"}
         ESP{"₧"}
         EUR{"€"}
         FJD{"$"}
-        FKP{"Fl£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
-        GNF{"F.G."}
-        GTQ{"Q"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
-        KMF{"FC"}
-        KPW{"₩"}
         KRW{"₩"}
         KYD{"$"}
         KZT{"₸"}
         LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
         LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
         MNT{"₮"}
-        MUR{"Rs"}
         MXN{"$"}
-        MYR{"RM"}
         NAD{"$"}
         NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
         PYG{"₲"}
-        RON{"L"}
-        RUB{"₽"}
         RUR{"р."}
-        RWF{"F.Rw"}
         SBD{"$"}
-        SEK{"kr"}
         SGD{"$"}
-        SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
-        SYP{"SYP"}
-        THB{"฿"}
-        TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
         TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
-        VEF{"Bs"}
         VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"K"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         ADP{
@@ -1514,13 +1469,9 @@ de{
             one{"Belarus-Rubel (1994–1999)"}
             other{"Belarus-Rubel (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"Weißrussischer Rubel"}
             other{"Weißrussische Rubel"}
-        }
-        BYR{
-            one{"Weißrussischer Rubel (2000–2016)"}
-            other{"Weißrussische Rubel (2000–2016)"}
         }
         BZD{
             one{"Belize-Dollar"}
@@ -1595,8 +1546,8 @@ de{
             other{"Kubanische Pesos"}
         }
         CVE{
-            one{"Cabo-Verde-Escudo"}
-            other{"Cabo-Verde-Escudos"}
+            one{"Kap-Verde-Escudo"}
+            other{"Kap-Verde-Escudos"}
         }
         CYP{
             one{"Zypern Pfund"}
@@ -2075,8 +2026,8 @@ de{
             other{"Peruanische Inti"}
         }
         PEN{
-            one{"Peruanischer Sol"}
-            other{"Peruanische Sol"}
+            one{"Peruanischer Neuer Sol"}
+            other{"Peruanische Neue Sol"}
         }
         PES{
             one{"Peruanischer Sol (1863–1965)"}
@@ -2495,5 +2446,5 @@ de{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.13.4"}
 }

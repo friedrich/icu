@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ******************************************************************************
  *
- *   Copyright (C) 2009-2015, International Business Machines
+ *   Copyright (C) 2009-2014, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *
  ******************************************************************************
@@ -172,7 +170,7 @@ public final class BMPSet {
                     }
                 } else {
                     // surrogate pair
-                    int supplementary = Character.toCodePoint(c, c2);
+                    int supplementary = UCharacterProperty.getRawSupplementary(c, c2);
                     if (!containsSlow(supplementary, list4kStarts[0x10], list4kStarts[0x11])) {
                         break;
                     }
@@ -211,7 +209,7 @@ public final class BMPSet {
                     }
                 } else {
                     // surrogate pair
-                    int supplementary = Character.toCodePoint(c, c2);
+                    int supplementary = UCharacterProperty.getRawSupplementary(c, c2);
                     if (containsSlow(supplementary, list4kStarts[0x10], list4kStarts[0x11])) {
                         break;
                     }
@@ -268,7 +266,7 @@ public final class BMPSet {
                     }
                 } else {
                     // surrogate pair
-                    int supplementary = Character.toCodePoint(c2, c);
+                    int supplementary = UCharacterProperty.getRawSupplementary(c2, c);
                     if (!containsSlow(supplementary, list4kStarts[0x10], list4kStarts[0x11])) {
                         break;
                     }
@@ -308,7 +306,7 @@ public final class BMPSet {
                     }
                 } else {
                     // surrogate pair
-                    int supplementary = Character.toCodePoint(c2, c);
+                    int supplementary = UCharacterProperty.getRawSupplementary(c2, c);
                     if (containsSlow(supplementary, list4kStarts[0x10], list4kStarts[0x11])) {
                         break;
                     }

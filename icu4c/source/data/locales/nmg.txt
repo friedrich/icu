@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/nmg.xml
+// *
+// ***************************************************************************
 nmg{
     AuxExemplarCharacters{"[q x z]"}
     ExemplarCharacters{
@@ -21,7 +27,7 @@ nmg{
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.1.7.39"}
     calendar{
         generic{
             DateTimePatterns{
@@ -66,10 +72,6 @@ nmg{
         }
         gregorian{
             AmPmMarkers{
-                "maná",
-                "kugú",
-            }
-            AmPmMarkersAbbr{
                 "maná",
                 "kugú",
             }

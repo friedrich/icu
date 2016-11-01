@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2004-2013, International Business Machines Corporation and    *
@@ -10,14 +8,15 @@ package com.ibm.icu.dev.test.format;
 
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.RuleBasedNumberFormat;
 import com.ibm.icu.util.ULocale;
 
 public class RBNFParseTest extends TestFmwk {
-    @Test
+    public static void main(String[] args) {
+        new RBNFParseTest().run(args);
+    }
+
     public void TestParse() {
 
         // these rules make no sense but behave rationally
@@ -123,7 +122,6 @@ public class RBNFParseTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestLenientParse() throws Exception {
         RuleBasedNumberFormat rbnf_en, rbnf_fr;
 

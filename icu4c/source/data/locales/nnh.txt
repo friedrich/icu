@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/nnh.xml
+// *
+// ***************************************************************************
 nnh{
     AuxExemplarCharacters{"[q r x]"}
     ExemplarCharacters{
@@ -27,7 +33,7 @@ nnh{
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.1.6.69"}
     calendar{
         generic{
             DateTimePatterns{
@@ -55,10 +61,6 @@ nnh{
         }
         gregorian{
             AmPmMarkers{
-                "mbaʼámbaʼ",
-                "ncwònzém",
-            }
-            AmPmMarkersAbbr{
                 "mbaʼámbaʼ",
                 "ncwònzém",
             }
@@ -163,7 +165,7 @@ nnh{
                         "saŋ cÿó",
                         "saŋ tsɛ̀ɛ cÿó",
                         "saŋ njÿoláʼ",
-                        "saŋ tyɛ̀b tyɛ̀b mbʉ̀ŋ",
+                        "saŋ tyɛ̀b tyɛ̀b mbʉ̀",
                         "saŋ mbʉ̀ŋ",
                         "saŋ ngwɔ̀ʼ mbÿɛ",
                         "saŋ tàŋa tsetsáʼ",
@@ -177,7 +179,7 @@ nnh{
                         "saŋ cÿó",
                         "saŋ tsɛ̀ɛ cÿó",
                         "saŋ njÿoláʼ",
-                        "saŋ tyɛ̀b tyɛ̀b mbʉ̀ŋ",
+                        "saŋ tyɛ̀b tyɛ̀b mbʉ̀",
                         "saŋ mbʉ̀ŋ",
                         "saŋ ngwɔ̀ʼ mbÿɛ",
                         "saŋ tàŋa tsetsáʼ",
@@ -193,7 +195,7 @@ nnh{
                         "saŋ cÿó",
                         "saŋ tsɛ̀ɛ cÿó",
                         "saŋ njÿoláʼ",
-                        "saŋ tyɛ̀b tyɛ̀b mbʉ̀ŋ",
+                        "saŋ tyɛ̀b tyɛ̀b mbʉ̀",
                         "saŋ mbʉ̀ŋ",
                         "saŋ ngwɔ̀ʼ mbÿɛ",
                         "saŋ tàŋa tsetsáʼ",
@@ -207,7 +209,7 @@ nnh{
                         "saŋ cÿó",
                         "saŋ tsɛ̀ɛ cÿó",
                         "saŋ njÿoláʼ",
-                        "saŋ tyɛ̀b tyɛ̀b mbʉ̀ŋ",
+                        "saŋ tyɛ̀b tyɛ̀b mbʉ̀",
                         "saŋ mbʉ̀ŋ",
                         "saŋ ngwɔ̀ʼ mbÿɛ",
                         "saŋ tàŋa tsetsáʼ",
