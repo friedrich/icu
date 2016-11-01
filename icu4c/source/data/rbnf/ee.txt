@@ -1,17 +1,27 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/rbnf/ee.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/rbnf/ee.xml
+ */
 ee{
     RBNFRules{
         OrdinalRules{
             "%digits-ordinal:",
             "-x: \u2212>>;",
-            "0: =#,##0= lia;",
-            "1: =#,##0= t\u0254;",
-            "2: =#,##0= lia;",
+            "x.x: =#,##0.0=lia;",
+            "0: =#,##0=lia;",
+            "1: =#,##0=t\u0254;",
+            "2: =#,##0=lia;",
         }
         SpelloutRules{
             "%spellout-numbering-year:",
-            "x.x: =0.0=;",
+            "x.x: =#,###0.#=;",
             "0: =%spellout-numbering=;",
             "%spellout-numbering:",
             "0: =%spellout-cardinal=;",
@@ -36,20 +46,19 @@ ee{
             "0: ' kple =%spellout-cardinal=;",
             "100: ' =%spellout-cardinal=;",
             "%%after-hundred-thousands:",
-            "0: ' kpakple =%spellout-cardinal=;",
+            "0: ' gb\u0254viedzesi kple =%spellout-cardinal=;",
             "100: ' =%spellout-cardinal=;",
             "%%after-millions:",
-            "0: ' kpakple =%spellout-cardinal=;",
+            "0: ' t\u0254viedzesi kple =%spellout-cardinal=;",
             "1000: ' kple =%spellout-cardinal=;",
             "100000: ' =%spellout-cardinal=;",
             "%%after-billions:",
-            "0: ' kpakple =%spellout-cardinal=;",
+            "0: ' t\u0254viedzesi kple =%spellout-cardinal=;",
             "1000: ' kple =%spellout-cardinal=;",
-            "100000000: ' kple =%spellout-cardinal=;",
             "100000000000: ' =%spellout-cardinal=;",
             "%%spellout-base:",
             "0: \u0256ekeo;",
-            "1: \u0256ek\u025B;",
+            "1: \u0256ek\u03B5;",
             "2: eve;",
             "3: et\u0254\u0303;",
             "4: ene;",
@@ -65,23 +74,22 @@ ee{
             "1000: akpe <%spellout-cardinal<[>%%after-thousands>];",
             "100000/1000: akpe <%spellout-cardinal<[>%%after-hundred-thousands>];",
             "1000000: mili\u0254n <%spellout-cardinal<[>%%after-millions>];",
-            "1000000000: mili\u0254n akpe <%spellout-cardinal<[>%%after-millions>];",
             "1000000000000: bili\u0254n <%spellout-cardinal<[>%%after-billions>];",
             "1000000000000000000: =#,##0=;",
             "%spellout-cardinal:",
-            "-x: >> xl\u1EBDyimegbee;",
-            "0.x: kak\u025B >>;",
-            "x.x: << kple kak\u025B >>;",
+            "-x: >> xle\u0303yimegbee;",
+            "x.x: << t\u0254t\u0254dzesi >>;",
             "0: \u0256ekeo;",
             "1: \u0256eka;",
             "2: =%%spellout-base=;",
             "%spellout-ordinal:",
-            "-x: >> xl\u1EBDyimegbee;",
+            "-x: >> xle\u0303yimegbee;",
             "x.x: =#,##0.0=lia;",
             "0: \u0256ekeolia;",
             "1: gb\u00E3t\u0254;",
             "2: =%spellout-cardinal=lia;",
+            "1000000000000000000: =#,##0=lia;",
         }
     }
-    Version{"2.1.27.22"}
+    Version{"2.0.73.63"}
 }

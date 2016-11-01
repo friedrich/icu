@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/nn.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/nn.xml
+ */
 nn{
-    Version{"2.1.28.76"}
+    Version{"2.0.78.30"}
     zoneStrings{
         "America:Belem"{
             ec{"Belém"}
@@ -17,6 +26,9 @@ nn{
         }
         "America:North_Dakota:Center"{
             ec{"Center, Nord-Dakota"}
+        }
+        "Antarctica:South_Pole"{
+            ec{"Sørpolen"}
         }
         "Asia:Tashkent"{
             ec{"Tasjkent"}
@@ -102,7 +114,6 @@ nn{
         }
         "meta:GMT"{
             ls{"greenwich middeltid"}
-            ss{"GMT"}
         }
         fallbackFormat{"{1} ({0})"}
         gmtFormat{"GMT{0}"}

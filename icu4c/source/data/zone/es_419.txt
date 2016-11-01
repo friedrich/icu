@@ -1,61 +1,42 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/es_419.xml
+// *
+// ***************************************************************************
 es_419{
-    Version{"2.1.27.99"}
+    Version{"2.0.78.47"}
     zoneStrings{
-        "America:St_Johns"{
-            ec{"San Juan de Terranova"}
+        "America:Coral_Harbour"{
+            ec{"Atikokan"}
         }
-        "America:St_Kitts"{
-            ec{"San Cristóbal"}
+        "America:Indiana:Winamac"{
+            ec{"Winamac, Indiana"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymsk"}
+        "America:Kentucky:Monticello"{
+            ec{"Monticello, Kentucky"}
         }
-        "Etc:Unknown"{
-            ec{"Ciudad desconocida"}
+        "meta:America_Central"{
+            sd{"CDT"}
+            sg{"CT"}
+            ss{"CST"}
         }
-        "Pacific:Wake"{
-            ec{"Isla Wake"}
+        "meta:America_Eastern"{
+            sd{"EDT"}
+            sg{"ET"}
+            ss{"EST"}
         }
-        "meta:Cook"{
-            ld{"hora de verano media de las islas Cook"}
-            lg{"hora de las islas Cook"}
-            ls{"hora estándar de las islas Cook"}
+        "meta:America_Mountain"{
+            sd{"MDT"}
+            sg{"MT"}
+            ss{"MST"}
         }
-        "meta:Europe_Central"{
-            sd{"∅∅∅"}
-            sg{"∅∅∅"}
-            ss{"∅∅∅"}
+        "meta:America_Pacific"{
+            sd{"PDT"}
+            sg{"PT"}
+            ss{"PST"}
         }
-        "meta:Europe_Eastern"{
-            sd{"∅∅∅"}
-            sg{"∅∅∅"}
-            ss{"∅∅∅"}
-        }
-        "meta:Europe_Further_Eastern"{
-            ls{"horario del lejano este de Europa"}
-        }
-        "meta:Europe_Western"{
-            sd{"∅∅∅"}
-            sg{"∅∅∅"}
-            ss{"∅∅∅"}
-        }
-        "meta:GMT"{
-            ss{"∅∅∅"}
-        }
-        "meta:Hawaii_Aleutian"{
-            ld{"hora de verano de Hawái-Aleutianas"}
-            lg{"hora de Hawái-Aleutianas"}
-            ls{"hora estándar de Hawái-Aleutianas"}
-        }
-        "meta:India"{
-            ls{"hora de India"}
-        }
-        "meta:Pyongyang"{
-            ls{"hora de Pionyang"}
-        }
-        regionFormatDaylight{"hora de verano de {0}"}
-        regionFormatStandard{"hora estándar de {0}"}
     }
 }

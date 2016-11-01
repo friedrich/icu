@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bas.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/bas.xml
+ */
 bas{
     Currencies{
         AED{
@@ -216,10 +225,6 @@ bas{
         }
         ZMK{
             "ZMK",
-            "Kwàca sàmbià (1968–2012)",
-        }
-        ZMW{
-            "ZMW",
             "Kwàca sàmbià",
         }
         ZWD{
@@ -227,5 +232,5 @@ bas{
             "Dɔ̀lâr sìmbàbwê",
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.77.46"}
 }

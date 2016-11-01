@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2014, International Business Machines Corporation and
+ * Copyright (c) 1997-2009, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 /********************************************************************************
@@ -19,7 +17,6 @@
 #define _CDATFRMTST
 
 #include "unicode/utypes.h"
-#include "unicode/udat.h"
 
 #if !UCONFIG_NO_FORMATTING
 
@@ -52,13 +49,6 @@
      * test subroutine used by the testing functions
      **/
     static UChar* myNumformat(const UNumberFormat* numfor, double d);
-    static int getCurrentYear(void);
-
-    /**
-     * Test DateFormat override number format API
-     */
-     static void TestOverrideNumberFormat(void);
-
 
 #endif /* #if !UCONFIG_NO_FORMATTING */
 

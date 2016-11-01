@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/nb.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/nb.xml
+ */
 nb{
     Countries{
         001{"verden"}
@@ -8,7 +17,7 @@ nb{
         005{"Sør-Amerika"}
         009{"Oseania"}
         011{"Vest-Afrika"}
-        013{"Mellom-Amerika"}
+        013{"Sentral-Amerika"}
         014{"Øst-Afrika"}
         015{"Nord-Afrika"}
         017{"Sentral-Afrika"}
@@ -40,6 +49,7 @@ nb{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"De nederlandske antiller"}
         AO{"Angola"}
         AQ{"Antarktis"}
         AR{"Argentina"}
@@ -58,9 +68,9 @@ nb{
         BH{"Bahrain"}
         BI{"Burundi"}
         BJ{"Benin"}
-        BL{"Saint-Barthélemy"}
+        BL{"Saint Barthélemy"}
         BM{"Bermuda"}
-        BN{"Brunei"}
+        BN{"Brunei Darussalam"}
         BO{"Bolivia"}
         BQ{"Karibisk Nederland"}
         BR{"Brasil"}
@@ -89,7 +99,7 @@ nb{
         CW{"Curaçao"}
         CX{"Christmasøya"}
         CY{"Kypros"}
-        CZ{"Den tsjekkiske republikk"}
+        CZ{"Tsjekkia"}
         DE{"Tyskland"}
         DG{"Diego Garcia"}
         DJ{"Djibouti"}
@@ -105,7 +115,7 @@ nb{
         ER{"Eritrea"}
         ES{"Spania"}
         ET{"Etiopia"}
-        EU{"EU"}
+        EU{"Den europeiske union"}
         FI{"Finland"}
         FJ{"Fiji"}
         FK{"Falklandsøyene"}
@@ -126,13 +136,13 @@ nb{
         GP{"Guadeloupe"}
         GQ{"Ekvatorial-Guinea"}
         GR{"Hellas"}
-        GS{"Sør-Georgia og Sør-Sandwichøyene"}
+        GS{"Sør-Georgia og de sørlige Sandwich-øyene"}
         GT{"Guatemala"}
         GU{"Guam"}
         GW{"Guinea-Bissau"}
         GY{"Guyana"}
         HK{"Hongkong S.A.R. Kina"}
-        HM{"Heard- og McDonaldøyene"}
+        HM{"Heardøya og McDonaldøyene"}
         HN{"Honduras"}
         HR{"Kroatia"}
         HT{"Haiti"}
@@ -143,7 +153,7 @@ nb{
         IL{"Israel"}
         IM{"Man"}
         IN{"India"}
-        IO{"Det britiske territoriet i Indiahavet"}
+        IO{"Britiske territorier i Indiahavet"}
         IQ{"Irak"}
         IR{"Iran"}
         IS{"Island"}
@@ -157,7 +167,7 @@ nb{
         KH{"Kambodsja"}
         KI{"Kiribati"}
         KM{"Komorene"}
-        KN{"Saint Kitts og Nevis"}
+        KN{"St. Kitts og Nevis"}
         KP{"Nord-Korea"}
         KR{"Sør-Korea"}
         KW{"Kuwait"}
@@ -171,7 +181,7 @@ nb{
         LR{"Liberia"}
         LS{"Lesotho"}
         LT{"Litauen"}
-        LU{"Luxemburg"}
+        LU{"Luxembourg"}
         LV{"Latvia"}
         LY{"Libya"}
         MA{"Marokko"}
@@ -183,7 +193,7 @@ nb{
         MH{"Marshalløyene"}
         MK{"Makedonia"}
         ML{"Mali"}
-        MM{"Myanmar (Burma)"}
+        MM{"Myanmar [Burma]"}
         MN{"Mongolia"}
         MO{"Macao S.A.R. Kina"}
         MP{"Nord-Marianene"}
@@ -225,7 +235,7 @@ nb{
         PW{"Palau"}
         PY{"Paraguay"}
         QA{"Qatar"}
-        QO{"Ytre Oseania"}
+        QO{"avsidesliggende Oceania"}
         RE{"Réunion"}
         RO{"Romania"}
         RS{"Serbia"}
@@ -271,8 +281,7 @@ nb{
         TZ{"Tanzania"}
         UA{"Ukraina"}
         UG{"Uganda"}
-        UM{"USAs ytre øyer"}
-        UN{"FN"}
+        UM{"USAs ytre småøyer"}
         US{"USA"}
         UY{"Uruguay"}
         UZ{"Usbekistan"}
@@ -285,7 +294,6 @@ nb{
         VU{"Vanuatu"}
         WF{"Wallis og Futuna"}
         WS{"Samoa"}
-        XK{"Kosovo"}
         YE{"Jemen"}
         YT{"Mayotte"}
         ZA{"Sør-Afrika"}
@@ -293,20 +301,5 @@ nb{
         ZW{"Zimbabwe"}
         ZZ{"ukjent område"}
     }
-    Countries%short{
-        GB{"Storbritannia"}
-        HK{"Hongkong"}
-        MO{"Macao"}
-        PS{"Palestina"}
-        UN{"FN"}
-        US{"USA"}
-    }
-    Countries%variant{
-        CD{"Den demokratiske republikken Kongo"}
-        CG{"Republikken Kongo"}
-        CZ{"Tsjekkia"}
-        FK{"Falklandsøyene (Islas Malvinas)"}
-        MK{"Den tidligere jugoslaviske republikk Makedonia"}
-    }
-    Version{"2.1.30.7"}
+    Version{"2.0.78.30"}
 }

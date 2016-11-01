@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ********************************************************************************
-*   Copyright (C) 2005-2016, International Business Machines
+*   Copyright (C) 2005-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ********************************************************************************
 *
@@ -88,10 +86,10 @@ static void getNumberFormat(NUMBERFMTW *fmt, int32_t lcid)
     GetLocaleInfoA(lcid, LOCALE_SGROUPING, buf, 10);
     fmt->Grouping = getGrouping(buf);
 
-    fmt->lpDecimalSep = NEW_ARRAY(wchar_t, 6);
+    fmt->lpDecimalSep = NEW_ARRAY(UChar, 6);
     GetLocaleInfoW(lcid, LOCALE_SDECIMAL,  fmt->lpDecimalSep,  6);
 
-    fmt->lpThousandSep = NEW_ARRAY(wchar_t, 6);
+    fmt->lpThousandSep = NEW_ARRAY(UChar, 6);
     GetLocaleInfoW(lcid, LOCALE_STHOUSAND, fmt->lpThousandSep, 6);
 
     GetLocaleInfoW(lcid, LOCALE_RETURN_NUMBER|LOCALE_INEGNUMBER, (LPWSTR) &fmt->NegativeOrder, sizeof(UINT));
@@ -115,16 +113,16 @@ static void getCurrencyFormat(CURRENCYFMTW *fmt, int32_t lcid)
     GetLocaleInfoA(lcid, LOCALE_SMONGROUPING, buf, sizeof(buf));
     fmt->Grouping = getGrouping(buf);
 
-    fmt->lpDecimalSep = NEW_ARRAY(wchar_t, 6);
+    fmt->lpDecimalSep = NEW_ARRAY(UChar, 6);
     GetLocaleInfoW(lcid, LOCALE_SMONDECIMALSEP,  fmt->lpDecimalSep,  6);
 
-    fmt->lpThousandSep = NEW_ARRAY(wchar_t, 6);
+    fmt->lpThousandSep = NEW_ARRAY(UChar, 6);
     GetLocaleInfoW(lcid, LOCALE_SMONTHOUSANDSEP, fmt->lpThousandSep, 6);
 
     GetLocaleInfoW(lcid, LOCALE_RETURN_NUMBER|LOCALE_INEGCURR,  (LPWSTR) &fmt->NegativeOrder, sizeof(UINT));
     GetLocaleInfoW(lcid, LOCALE_RETURN_NUMBER|LOCALE_ICURRENCY, (LPWSTR) &fmt->PositiveOrder, sizeof(UINT));
 
-    fmt->lpCurrencySymbol = NEW_ARRAY(wchar_t, 8);
+    fmt->lpCurrencySymbol = NEW_ARRAY(UChar, 8);
     GetLocaleInfoW(lcid, LOCALE_SCURRENCY, (LPWSTR) fmt->lpCurrencySymbol, 8);
 }
 
@@ -137,20 +135,12 @@ static void freeCurrencyFormat(CURRENCYFMTW *fmt)
     }
 }
 
+// TODO: keep locale too?
 Win32NumberFormat::Win32NumberFormat(const Locale &locale, UBool currency, UErrorCode &status)
-  : NumberFormat(), fCurrency(currency), fFormatInfo(NULL), fFractionDigitsSet(FALSE)
+  : NumberFormat(), fCurrency(currency), fFractionDigitsSet(FALSE), fFormatInfo(NULL)
 {
     if (!U_FAILURE(status)) {
         fLCID = locale.getLCID();
-
-        // Resolve actual locale to be used later
-        UErrorCode tmpsts = U_ZERO_ERROR;
-        char tmpLocID[ULOC_FULLNAME_CAPACITY];
-        int32_t len = uloc_getLocaleForLCID(fLCID, tmpLocID, UPRV_LENGTHOF(tmpLocID) - 1, &tmpsts);
-        if (U_SUCCESS(tmpsts)) {
-            tmpLocID[len] = 0;
-            fLocale = Locale((const char*)tmpLocID);
-        }
 
         fFormatInfo = (FormatInfo*)uprv_malloc(sizeof(FormatInfo));
 
@@ -189,7 +179,6 @@ Win32NumberFormat &Win32NumberFormat::operator=(const Win32NumberFormat &other)
     NumberFormat::operator=(other);
 
     this->fCurrency          = other.fCurrency;
-    this->fLocale            = other.fLocale;
     this->fLCID              = other.fLCID;
     this->fFractionDigitsSet = other.fFractionDigitsSet;
 
@@ -224,10 +213,12 @@ UnicodeString& Win32NumberFormat::format(int64_t number, UnicodeString& appendTo
     return format(getMinimumFractionDigits(), appendTo, L"%I64d", number);
 }
 
+// TODO: cache Locale and NumberFormat? Could keep locale passed to constructor...
 void Win32NumberFormat::parse(const UnicodeString& text, Formattable& result, ParsePosition& parsePosition) const
 {
     UErrorCode status = U_ZERO_ERROR;
-    NumberFormat *nf = fCurrency? NumberFormat::createCurrencyInstance(fLocale, status) : NumberFormat::createInstance(fLocale, status);
+    Locale loc(uprv_convertToPosix(fLCID, &status));
+    NumberFormat *nf = fCurrency? NumberFormat::createCurrencyInstance(loc, status) : NumberFormat::createInstance(loc, status);
 
     nf->parse(text, result, parsePosition);
     delete nf;
@@ -244,7 +235,7 @@ void Win32NumberFormat::setMinimumFractionDigits(int32_t newValue)
     NumberFormat::setMinimumFractionDigits(newValue);
 }
 
-UnicodeString &Win32NumberFormat::format(int32_t numDigits, UnicodeString &appendTo, const wchar_t *fmt, ...) const
+UnicodeString &Win32NumberFormat::format(int32_t numDigits, UnicodeString &appendTo, wchar_t *fmt, ...) const
 {
     wchar_t nStackBuffer[STACK_BUFFER_SIZE];
     wchar_t *nBuffer = nStackBuffer;
@@ -292,8 +283,8 @@ UnicodeString &Win32NumberFormat::format(int32_t numDigits, UnicodeString &appen
         }
     }
 
-    wchar_t stackBuffer[STACK_BUFFER_SIZE];
-    wchar_t *buffer = stackBuffer;
+    UChar stackBuffer[STACK_BUFFER_SIZE];
+    UChar *buffer = stackBuffer;
     FormatInfo formatInfo;
 
     formatInfo = *fFormatInfo;
@@ -316,7 +307,7 @@ UnicodeString &Win32NumberFormat::format(int32_t numDigits, UnicodeString &appen
             if (lastError == ERROR_INSUFFICIENT_BUFFER) {
                 int newLength = GetCurrencyFormatW(fLCID, 0, nBuffer, &formatInfo.currency, NULL, 0);
 
-                buffer = NEW_ARRAY(wchar_t, newLength);
+                buffer = NEW_ARRAY(UChar, newLength);
                 buffer[0] = 0x0000;
                 GetCurrencyFormatW(fLCID, 0, nBuffer,  &formatInfo.currency, buffer, newLength);
             }
@@ -336,14 +327,14 @@ UnicodeString &Win32NumberFormat::format(int32_t numDigits, UnicodeString &appen
             if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
                 int newLength = GetNumberFormatW(fLCID, 0, nBuffer, &formatInfo.number, NULL, 0);
 
-                buffer = NEW_ARRAY(wchar_t, newLength);
+                buffer = NEW_ARRAY(UChar, newLength);
                 buffer[0] = 0x0000;
                 GetNumberFormatW(fLCID, 0, nBuffer, &formatInfo.number, buffer, newLength);
             }
         }
     }
 
-    appendTo.append((UChar *)buffer, (int32_t) wcslen(buffer));
+    appendTo.append(buffer, (int32_t) wcslen(buffer));
 
     if (buffer != stackBuffer) {
         DELETE_ARRAY(buffer);

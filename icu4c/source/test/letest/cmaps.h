@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /***************************************************************************
 *
-*   Copyright (C) 1998-2013, International Business Machines
+*   Copyright (C) 1998-2006, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ************************************************************************/
@@ -12,7 +10,7 @@
 #define __CMAPS_H
 
 #include "layout/LETypes.h"
-//#include "letest.h"
+#include "letest.h"
 #include "sfnt.h"
 
 class CMAPMapper
@@ -80,7 +78,7 @@ inline CMAPMapper::CMAPMapper(const CMAPTable *cmap)
 
 inline CMAPMapper::~CMAPMapper()
 {
-    LE_DELETE_ARRAY(fcmap);
+    DELETE_ARRAY(fcmap);
 }
 
 #endif

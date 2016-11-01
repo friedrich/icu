@@ -1,9 +1,21 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/luo.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/luo.xml
+ */
 luo{
     AuxExemplarCharacters{"[q x z]"}
     ExemplarCharacters{"[a b c d e f g h i j k l m n o p r s t u v w y]"}
     ExemplarCharactersIndex{"[A B C D E F G H I J K L M N O P R S T U V W Y]"}
+    LocaleScript{
+        "Latn",
+    }
     NumberElements{
         latn{
             patterns{
@@ -11,66 +23,22 @@ luo{
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.77.46"}
     calendar{
-        generic{
-            DateTimePatterns{
-                "HH:mm:ss zzzz",
-                "HH:mm:ss z",
-                "HH:mm:ss",
-                "HH:mm",
-                "EEEE, d MMMM y G",
-                "d MMMM y G",
-                "d MMM y G",
-                "dd/MM/y GGGGG",
-                "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
-            }
-            availableFormats{
-                Hm{"HH:mm"}
-                Hms{"HH:mm:ss"}
-                M{"L"}
-                MEd{"E, M/d"}
-                MMM{"LLL"}
-                MMMEd{"E, MMM d"}
-                MMMMEd{"E, MMMM d"}
-                MMMMd{"MMMM d"}
-                MMMd{"MMM d"}
-                Md{"M/d"}
-                d{"d"}
-                hm{"h:mm a"}
-                ms{"mm:ss"}
-                y{"y"}
-                yM{"M/y"}
-                yMEd{"E, M/d/y"}
-                yMMM{"MMM y"}
-                yMMMEd{"E, MMM d, y"}
-                yMMMM{"MMMM y"}
-                yQQQ{"QQQ y"}
-                yQQQQ{"QQQQ y"}
-            }
-        }
         gregorian{
             AmPmMarkers{
                 "OD",
                 "OT",
             }
-            AmPmMarkersAbbr{
-                "OD",
-                "OT",
-            }
             DateTimePatterns{
-                "HH:mm:ss zzzz",
-                "HH:mm:ss z",
-                "HH:mm:ss",
-                "HH:mm",
+                "h:mm:ss a zzzz",
+                "h:mm:ss a z",
+                "h:mm:ss a",
+                "h:mm a",
                 "EEEE, d MMMM y",
                 "d MMMM y",
                 "d MMM y",
-                "dd/MM/y",
+                "dd/MM/yyyy",
                 "{1} {0}",
                 "{1} {0}",
                 "{1} {0}",
@@ -116,7 +84,7 @@ luo{
                         "Wuok Tich",
                         "Tich Ariyo",
                         "Tich Adek",
-                        "Tich Ang’wen",
+                        "Tich Ang'wen",
                         "Tich Abich",
                         "Ngeso",
                     }
@@ -143,6 +111,46 @@ luo{
                     "Ka Kristo osebiro",
                 }
             }
+            fields{
+                day{
+                    dn{"chieng'"}
+                    relative{
+                        "-1"{"nyoro"}
+                        "0"{"kawuono"}
+                        "1"{"kiny"}
+                    }
+                }
+                dayperiod{
+                    dn{"odieochieng'/otieno"}
+                }
+                era{
+                    dn{"ndalo"}
+                }
+                hour{
+                    dn{"saa"}
+                }
+                minute{
+                    dn{"dakika"}
+                }
+                month{
+                    dn{"dwe"}
+                }
+                second{
+                    dn{"nyiriri mar saa"}
+                }
+                week{
+                    dn{"juma"}
+                }
+                weekday{
+                    dn{"ndalo mar juma"}
+                }
+                year{
+                    dn{"higa"}
+                }
+                zone{
+                    dn{"kar saa"}
+                }
+            }
             monthNames{
                 format{
                     abbreviated{
@@ -163,7 +171,7 @@ luo{
                         "Dwe mar Achiel",
                         "Dwe mar Ariyo",
                         "Dwe mar Adek",
-                        "Dwe mar Ang’wen",
+                        "Dwe mar Ang'wen",
                         "Dwe mar Abich",
                         "Dwe mar Auchiel",
                         "Dwe mar Abiriyo",
@@ -214,45 +222,5 @@ luo{
         alternateQuotationStart{"‘"}
         quotationEnd{"”"}
         quotationStart{"“"}
-    }
-    fields{
-        day{
-            dn{"chieng’"}
-            relative{
-                "-1"{"nyoro"}
-                "0"{"kawuono"}
-                "1"{"kiny"}
-            }
-        }
-        dayperiod{
-            dn{"odieochieng’/otieno"}
-        }
-        era{
-            dn{"ndalo"}
-        }
-        hour{
-            dn{"saa"}
-        }
-        minute{
-            dn{"dakika"}
-        }
-        month{
-            dn{"dwe"}
-        }
-        second{
-            dn{"nyiriri mar saa"}
-        }
-        week{
-            dn{"juma"}
-        }
-        weekday{
-            dn{"ndalo mar juma"}
-        }
-        year{
-            dn{"higa"}
-        }
-        zone{
-            dn{"kar saa"}
-        }
     }
 }

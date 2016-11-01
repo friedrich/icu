@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-* Copyright (C) 1999-2014, International Business Machines
+* Copyright (C) 1999-2012, International Business Machines
 * Corporation and others. All Rights Reserved.
 **********************************************************************
 *   Date        Name        Description
@@ -967,11 +965,6 @@ public:
     /**
      * Registers a factory function that creates transliterators of
      * a given ID.
-     *
-     * Because ICU may choose to cache Transliterators internally, this must
-     * be called at application startup, prior to any calls to
-     * Transliterator::createXXX to avoid undefined behavior.
-     *
      * @param id the ID being registered
      * @param factory a function pointer that will be copied and
      * called later when the given ID is passed to createInstance()
@@ -993,10 +986,6 @@ public:
      *
      * After this call the Transliterator class owns the adoptedObj
      * and will delete it.
-     *
-     * Because ICU may choose to cache Transliterators internally, this must
-     * be called at application startup, prior to any calls to
-     * Transliterator::createXXX to avoid undefined behavior.
      *
      * @param adoptedObj an instance of subclass of
      * <code>Transliterator</code> that defines <tt>clone()</tt>
@@ -1028,13 +1017,13 @@ protected:
 
 #ifndef U_HIDE_INTERNAL_API
     /**
+     * @internal
      * @param id the ID being registered
      * @param factory a function pointer that will be copied and
      * called later when the given ID is passed to createInstance()
      * @param context a context pointer that will be stored and
      * later passed to the factory function when an ID matching
      * the registration ID is being instantiated with this factory.
-     * @internal
      */
     static void _registerFactory(const UnicodeString& id,
                                  Factory factory,
@@ -1095,10 +1084,6 @@ public:
      * a system transliterator or a user transliterator or class.
      * Any attempt to construct an unregistered transliterator based
      * on its ID will fail.
-     *
-     * Because ICU may choose to cache Transliterators internally, this should
-     * be called during application shutdown, after all calls to
-     * Transliterator::createXXX to avoid undefined behavior.
      *
      * @param ID the ID of the transliterator or class
      * @return the <code>Object</code> that was registered with
@@ -1335,7 +1320,7 @@ inline Transliterator::Token Transliterator::pointerToken(void* p) {
     t.pointer = p;
     return t;
 }
-#endif  /* U_HIDE_INTERNAL_API */
+#endif
 
 U_NAMESPACE_END
 

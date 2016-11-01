@@ -1,9 +1,18 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/kl.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/kl.xml
+ */
 kl{
     Currencies{
         DKK{
-            "kr.",
+            "kr",
             "DKK",
         }
         EUR{
@@ -17,5 +26,5 @@ kl{
             other{"euro"}
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.78.17"}
 }

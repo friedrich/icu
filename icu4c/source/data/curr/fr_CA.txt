@@ -1,170 +1,83 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fr_CA.xml
+// *
+// ***************************************************************************
 fr_CA{
     Currencies{
-        ARS{
-            "ARS",
-            "peso argentin",
+        AFN{
+            "AFN",
+            "afghani afghan",
         }
-        AUD{
-            "$ AU",
-            "dollar australien",
+        BAM{
+            "BAM",
+            "mark convertible bosniaque",
         }
-        BMD{
-            "BMD",
-            "dollar bermudien",
-        }
-        BND{
-            "BND",
-            "dollar brunéien",
-        }
-        BSD{
-            "BSD",
-            "dollar bahaméen",
-        }
-        BZD{
-            "BZD",
-            "dollar bélizéen",
+        BDT{
+            "BDT",
+            "taka bangladeshi",
         }
         CAD{
             "$",
             "dollar canadien",
         }
-        CLP{
-            "CLP",
-            "peso chilien",
-        }
         CNY{
             "CN¥",
             "yuan renminbi chinois",
         }
-        COP{
-            "COP",
-            "peso colombien",
+        DJF{
+            "DJF",
+            "franc djiboutien",
         }
-        FJD{
-            "FJD",
-            "dollar fidjien",
+        IDR{
+            "IDR",
+            "roupie indonésienne",
         }
-        FKP{
-            "FKP",
-            "livre des Îles Malouines",
+        MMK{
+            "MMK",
+            "kyat myanmarais",
         }
-        GBP{
-            "£",
-            "livre sterling",
+        MNT{
+            "MNT",
+            "tugrik mongol",
         }
-        GIP{
-            "GIP",
-            "livre de Gibraltar",
+        MVR{
+            "MVR",
+            "rufiyaa maldivien",
         }
-        HKD{
-            "$ HK",
-            "dollar de Hong Kong",
+        MYR{
+            "MYR",
+            "ringgit malais",
         }
-        ILS{
-            "ILS",
-            "nouveau shekel israélien",
-        }
-        INR{
-            "INR",
-            "roupie indienne",
-        }
-        JPY{
-            "¥",
-            "yen japonais",
-        }
-        KRW{
-            "KRW",
-            "won sud-coréen",
-        }
-        LBP{
-            "LBP",
-            "livre libanaise",
-        }
-        MXN{
-            "MXN",
-            "peso mexicain",
-        }
-        NAD{
-            "NAD",
-            "dollar namibien",
-        }
-        NZD{
-            "$ NZ",
-            "dollar néo-zélandais",
-        }
-        SBD{
-            "SBD",
-            "dollar des îles Salomon",
-        }
-        SGD{
-            "$ SG",
-            "dollar de Singapour",
-        }
-        SRD{
-            "SRD",
-            "dollar surinamais",
+        PGK{
+            "PGK",
+            "kina papouan-néo-guinéen",
         }
         TOP{
             "TOP",
-            "pa’anga",
+            "pa’anga tongan",
         }
-        TTD{
-            "TTD",
-            "dollar de Trinité-et-Tobago",
+        VUV{
+            "VUV",
+            "vatu vanuatuan",
         }
-        USD{
-            "$ US",
-            "dollar des États-Unis",
-        }
-        UYU{
-            "UYU",
-            "peso uruguayen",
-        }
-        VND{
-            "VND",
-            "dông vietnamien",
-        }
-        XAF{
-            "XAF",
-            "franc CFA (BEAC)",
+        WST{
+            "WST",
+            "tala samoan",
         }
         XOF{
-            "XOF",
+            "F CFA",
             "franc CFA (BCEAO)",
         }
-        XPF{
-            "XPF",
-            "franc CFP",
-        }
-        XXX{
-            "XXX",
-            "Devise inconnue",
-        }
-    }
-    Currencies%narrow{
-        GEL{"GEL"}
-        KMF{"CF"}
-        NIO{"C$"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        TRY{"TL"}
     }
     CurrencyPlurals{
-        FKP{
-            one{"livre des Îles Malouines"}
-            other{"livres des Îles Malouines"}
-        }
-        TOP{
-            one{"pa’anga"}
-            other{"pa’angas"}
-        }
-        XXX{
-            one{"(devise inconnue)"}
-            other{"(devise inconnue)"}
+        GYD{
+            one{"dollar guyanien"}
+            other{"dollars guyaniens"}
         }
     }
-    Version{"2.1.27.99"}
+    Version{"2.0.78.47"}
 }

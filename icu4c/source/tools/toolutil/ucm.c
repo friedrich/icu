@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2003-2013, International Business Machines
+*   Copyright (C) 2003-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -329,7 +327,7 @@ checkBaseExtUnicode(UCMStates *baseStates, UCMTable *base, UCMTable *ext,
                 return result;
             }
 
-            if((0<=mb->f && mb->f<=2) || mb->f==4) {
+            if(0<=mb->f && mb->f<=2) {
                 break;
             }
 
@@ -341,7 +339,7 @@ checkBaseExtUnicode(UCMStates *baseStates, UCMTable *base, UCMTable *ext,
                 return result;
             }
 
-            if((0<=me->f && me->f<=2) || me->f==4) {
+            if(0<=me->f && me->f<=2) {
                 break;
             }
 
@@ -859,8 +857,8 @@ ucm_parseMappingLine(UCMapping *m,
             break;
         } else if(*s=='|') {
             f=(int8_t)(s[1]-'0');
-            if((uint8_t)f>4) {
-                fprintf(stderr, "ucm error: fallback indicator must be |0..|4 - \"%s\"\n", line);
+            if((uint8_t)f>3) {
+                fprintf(stderr, "ucm error: fallback indicator must be |0..|3 - \"%s\"\n", line);
                 return FALSE;
             }
             break;
@@ -969,7 +967,7 @@ ucm_addMapping(UCMTable *table,
             exit(U_MEMORY_ALLOCATION_ERROR);
         }
 
-        uprv_memcpy(table->codePoints+idx, codePoints, (size_t)m->uLen*4);
+        uprv_memcpy(table->codePoints+idx, codePoints, m->uLen*4);
         m->u=idx;
     }
 
@@ -1053,7 +1051,6 @@ ucm_mappingType(UCMStates *baseStates,
     /*
      * Suitable for an ICU conversion base table means:
      * - a 1:1 mapping (1 Unicode code point : 1 byte sequence)
-     * - precision flag 0..3
      * - SBCS: any 1:1 mapping
      *         (the table stores additional bits to distinguish mapping types)
      * - MBCS: not a |2 SUB mapping for <subchar1>
@@ -1073,7 +1070,7 @@ ucm_mappingType(UCMStates *baseStates,
      * makeconv uses a hack for moving mappings only for the fromUnicode table
      * that only works with non-negative values of f.
      */
-    if( m->uLen==1 && count==1 && m->f<=3 &&
+    if( m->uLen==1 && count==1 &&
         (baseStates->maxCharLength==1 ||
             !((m->f==2 && m->bLen==1) ||
               (m->f==1 && bytes[0]==0) ||
@@ -1126,7 +1123,7 @@ ucm_addMappingAuto(UCMFile *ucm, UBool forBase, UCMStates *baseStates,
 
 U_CAPI UBool U_EXPORT2
 ucm_addMappingFromLine(UCMFile *ucm, const char *line, UBool forBase, UCMStates *baseStates) {
-  UCMapping m={ 0, {0}, 0, 0, 0, 0 };
+    UCMapping m={ 0 };
     UChar32 codePoints[UCNV_EXT_MAX_UCHARS];
     uint8_t bytes[UCNV_EXT_MAX_BYTES];
 
@@ -1149,7 +1146,7 @@ ucm_readTable(UCMFile *ucm, FileStream* convFile,
     char line[500];
     char *end;
     UBool isOK;
-
+    
     if(U_FAILURE(*pErrorCode)) {
         return;
     }

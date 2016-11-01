@@ -1,13 +1,11 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2016, International Business Machines Corporation and
+ * Copyright (C) 1996-2012, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.rbbi;
-
+ 
 //Regression testing of RuleBasedBreakIterator
 //
 //  TODO:  These tests should be mostly retired.
@@ -20,17 +18,20 @@ import java.text.CharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
 import com.ibm.icu.util.ULocale;
 
-public class RBBITest extends TestFmwk {
-    public RBBITest() {
+public class RBBITest extends TestFmwk {  
+    
+    public static void main(String[] args) throws Exception {
+        new RBBITest().run(args);
     }
 
+    public RBBITest() {
+    }
+  
     private static final String halfNA = "\u0928\u094d\u200d"; /*
                                                                 * halfform NA = devanigiri NA + virama(supresses
                                                                 * inherent vowel)+ zero width joiner
@@ -39,7 +40,6 @@ public class RBBITest extends TestFmwk {
     // tests default rules based character iteration.
     // Builds a new iterator from the source rules in the default (prebuilt) iterator.
     //
-    @Test
     public void TestDefaultRuleBasedCharacterIteration() {
         RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator) BreakIterator.getCharacterInstance();
         logln("Testing the RBBI for character iteration by using default rules");
@@ -122,7 +122,6 @@ public class RBBITest extends TestFmwk {
 
     }
 
-    @Test
     public void TestDefaultRuleBasedWordIteration() {
         logln("Testing the RBBI for word iteration using default rules");
         RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator) BreakIterator.getWordInstance();
@@ -176,7 +175,6 @@ public class RBBITest extends TestFmwk {
 //    private static final String kParagraphSeparator = "\u2029";
     private static final String kLineSeparator      = "\u2028";
 
-    @Test
     public void TestDefaultRuleBasedSentenceIteration() {
         logln("Testing the RBBI for sentence iteration using default rules");
         RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator) BreakIterator.getSentenceInstance();
@@ -208,7 +206,6 @@ public class RBBITest extends TestFmwk {
         generalIteratorTest(sentIterDefault, sentdata);
     }
 
-    @Test
     public void TestDefaultRuleBasedLineIteration() {
         logln("Testing the RBBI for line iteration using default rules");
         RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator) RuleBasedBreakIterator.getLineInstance();
@@ -255,7 +252,7 @@ public class RBBITest extends TestFmwk {
         generalIteratorTest(lineIterDefault, linedata);
 
     }
-
+ 
     // =========================================================================
     // general test subroutines
     // =========================================================================
@@ -279,15 +276,12 @@ public class RBBITest extends TestFmwk {
         List<String> previousResults = _testLastAndPrevious(rbbi, text);
 
         logln("comparing forward and backward...");
-        //TODO(junit) - needs to be rewritten
-        //int errs = getErrorCount();
+        int errs = getErrorCount();
         compareFragmentLists("forward iteration", "backward iteration", nextResults, previousResults);
-        //if (getErrorCount() == errs) {
-        logln("comparing expected and actual...");
-        compareFragmentLists("expected result", "actual result", expectedResult, nextResults);
+        if (getErrorCount() == errs) {
             logln("comparing expected and actual...");
             compareFragmentLists("expected result", "actual result", expectedResult, nextResults);
-        //}
+        }
 
         int[] boundaries = new int[expectedResult.size() + 3];
         boundaries[0] = RuleBasedBreakIterator.DONE;
@@ -513,31 +507,30 @@ public class RBBITest extends TestFmwk {
                 out.append(c);
             else {
                 out.append("\\u");
-                temp = Integer.toHexString(c);
+                temp = Integer.toHexString((int)c);
                 out.append(zeros.substring(0, 4 - temp.length()));
                 out.append(temp);
             }
         }
          logln(out.toString());
     }
-
-    @Test
+   
    public void TestThaiDictionaryBreakIterator() {
        int position;
        int index;
        int result[] = { 1, 2, 5, 10, 11, 12, 11, 10, 5, 2, 1, 0 };
-       char ctext[] = {
+       char ctext[] = { 
                0x0041, 0x0020,
                0x0E01, 0x0E32, 0x0E23, 0x0E17, 0x0E14, 0x0E25, 0x0E2D, 0x0E07,
                0x0020, 0x0041
                };
        String text = new String(ctext);
-
+       
        ULocale locale = ULocale.createCanonical("th");
        BreakIterator b = BreakIterator.getWordInstance(locale);
-
+       
        b.setText(text);
-
+       
        index = 0;
        // Test forward iteration
        while ((position = b.next())!= BreakIterator.DONE) {
@@ -545,18 +538,18 @@ public class RBBITest extends TestFmwk {
                errln("Error with ThaiDictionaryBreakIterator forward iteration test at " + position + ".\nShould have been " + result[index-1]);
            }
        }
-
+       
        // Test backward iteration
        while ((position = b.previous())!= BreakIterator.DONE) {
            if (position != result[index++]) {
                errln("Error with ThaiDictionaryBreakIterator backward iteration test at " + position + ".\nShould have been " + result[index-1]);
            }
        }
-
+       
        //Test invalid sequence and spaces
        char text2[] = {
-               0x0E01, 0x0E39, 0x0020, 0x0E01, 0x0E34, 0x0E19, 0x0E01, 0x0E38, 0x0E49, 0x0E07, 0x0020, 0x0E1B,
-               0x0E34, 0x0E49, 0x0E48, 0x0E07, 0x0E2D, 0x0E22, 0x0E39, 0x0E48, 0x0E43, 0x0E19,
+               0x0E01, 0x0E39, 0x0020, 0x0E01, 0x0E34, 0x0E19, 0x0E01, 0x0E38, 0x0E49, 0x0E07, 0x0020, 0x0E1B, 
+               0x0E34, 0x0E49, 0x0E48, 0x0E07, 0x0E2D, 0x0E22, 0x0E39, 0x0E48, 0x0E43, 0x0E19, 
                0x0E16, 0x0E49, 0x0E33
        };
        int expectedWordResult[] = {
@@ -573,7 +566,7 @@ public class RBBITest extends TestFmwk {
                errln("Incorrect break given by thai word break iterator. Expected: " + expectedWordResult[index-1] + " Got: " + position);
            }
        }
-
+      
        brk = BreakIterator.getLineInstance(new ULocale("th"));
        brk.setText(new String(text2));
        position = index = 0;
@@ -594,10 +587,7 @@ public class RBBITest extends TestFmwk {
            errln("Error: Since getRuleStatusVec is not supported in DictionaryBasedBreakIterator, it should return 1 and fillInArray[0] == 0.");
        }
    }
-
-
-   // TODO: Move these test cases to rbbitst.txt if they aren't there already, then remove this test. It is redundant.
-    @Test
+  
     public void TestTailoredBreaks() {
         class TBItem {
             private int     type;
@@ -629,7 +619,6 @@ public class RBBITest extends TestFmwk {
                 }
                 return buildString.toString();
             }
-    @Test
             public void doTest() {
                 BreakIterator brkIter;
                 switch( type ) {
@@ -669,6 +658,10 @@ public class RBBITest extends TestFmwk {
                 }
             }
         }
+        // KIND_WORD "en_US_POSIX"
+        final String posxWordText     = "Can't have breaks in xx:yy or struct.field for CS-types.";
+        final int[]  posxWordTOffsets = { 5, 6, 10, 11, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30, 36, 37, 42, 43, 46, 47, 49, 50, 55, 56 };
+        final int[]  posxWordROffsets = { 5, 6, 10, 11, 17, 18, 20, 21,         26, 27, 29, 30,         42, 43, 46, 47, 49, 50, 55, 56 };
         // KIND_SENTENCE "el"
         final String elSentText     = "\u0391\u03B2, \u03B3\u03B4; \u0395 \u03B6\u03B7\u037E \u0398 \u03B9\u03BA. " +
                                       "\u039B\u03BC \u03BD\u03BE! \u039F\u03C0, \u03A1\u03C2? \u03A3";
@@ -685,8 +678,10 @@ public class RBBITest extends TestFmwk {
         //final int[]  thCharROffsets = { 1,    3, 5, 6, 7, 8, 9,     11,
         //                                12, 13, 15,     17, 19, 20, 22,     24,     26, 27, 28,
         //                                29,     32, 33, 35, 37, 38,     40, 41 };
-
+        
         final TBItem[] tests = {
+            new TBItem( BreakIterator.KIND_WORD,      new ULocale("en_US_POSIX"), posxWordText, posxWordTOffsets ),
+            new TBItem( BreakIterator.KIND_WORD,      ULocale.ROOT,               posxWordText, posxWordROffsets ),
             new TBItem( BreakIterator.KIND_SENTENCE,  new ULocale("el"),          elSentText,   elSentTOffsets   ),
             new TBItem( BreakIterator.KIND_SENTENCE,  ULocale.ROOT,               elSentText,   elSentROffsets   ),
             new TBItem( BreakIterator.KIND_CHARACTER, new ULocale("th"),          thCharText,   thCharTOffsets   ),
@@ -698,9 +693,8 @@ public class RBBITest extends TestFmwk {
     }
 
     /* Tests the method public Object clone() */
-    @Test
     public void TestClone() {
-        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
+        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator();
         try {
             rbbi.setText((CharacterIterator) null);
             if (((RuleBasedBreakIterator) rbbi.clone()).getText() != null)
@@ -714,10 +708,9 @@ public class RBBITest extends TestFmwk {
     /*
      * Tests the method public boolean equals(Object that)
      */
-    @Test
     public void TestEquals() {
-        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
-        RuleBasedBreakIterator rbbi1 = new RuleBasedBreakIterator(".;");
+        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
+        RuleBasedBreakIterator rbbi1 = new RuleBasedBreakIterator("");
 
         // TODO: Tests when "if (fRData != other.fRData && (fRData == null || other.fRData == null))" is true
 
@@ -749,26 +742,36 @@ public class RBBITest extends TestFmwk {
     }
 
     /*
+     * Tests the method public void dump()
+     */
+    public void TestDump() {
+        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator();
+        try {
+            rbbi.dump();
+            errln("RuleBasedBreakIterator.dump() was suppose to return "
+                    + "an exception for a blank RuleBasedBreakIterator object.");
+        } catch (Exception e) {
+        }
+    }
+    
+    /*
      * Tests the method public int first()
      */
-    @Test
     public void TestFirst() {
-        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
+        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "if (fText == null)" is true
         rbbi.setText((CharacterIterator) null);
-        assertEquals("RuleBasedBreakIterator.first()", BreakIterator.DONE, rbbi.first());
-
-        rbbi.setText("abc");
-        assertEquals("RuleBasedBreakIterator.first()", 0, rbbi.first());
-        assertEquals("RuleBasedBreakIterator.next()", 1, rbbi.next());
+        if (rbbi.first() != BreakIterator.DONE) {
+            errln("RuleBasedBreakIterator.first() was suppose to return "
+                    + "BreakIterator.DONE when the object has a null fText.");
+        }
     }
-
+    
     /*
      * Tests the method public int last()
      */
-    @Test
     public void TestLast() {
-        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
+        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "if (fText == null)" is true
         rbbi.setText((CharacterIterator) null);
         if (rbbi.last() != BreakIterator.DONE) {
@@ -776,13 +779,12 @@ public class RBBITest extends TestFmwk {
                     + "BreakIterator.DONE when the object has a null fText.");
         }
     }
-
+    
     /*
      * Tests the method public int following(int offset)
      */
-    @Test
     public void TestFollowing() {
-        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
+        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "else if (offset < fText.getBeginIndex())" is true
         rbbi.setText("dummy");
         if (rbbi.following(-1) != 0) {
@@ -790,20 +792,19 @@ public class RBBITest extends TestFmwk {
                     + "0 when the object has a fText of dummy.");
         }
     }
-
+    
     /*
      * Tests the method public int preceding(int offset)
      */
-    @Test
     public void TestPreceding() {
-        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
+        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "if (fText == null || offset > fText.getEndIndex())" is true
         rbbi.setText((CharacterIterator)null);
         if (rbbi.preceding(-1) != BreakIterator.DONE) {
             errln("RuleBasedBreakIterator.preceding(-1) was suppose to return "
                     + "0 when the object has a fText of null.");
         }
-
+        
         // Tests when "else if (offset < fText.getBeginIndex())" is true
         rbbi.setText("dummy");
         if (rbbi.preceding(-1) != 0) {
@@ -811,11 +812,10 @@ public class RBBITest extends TestFmwk {
                     + "0 when the object has a fText of dummy.");
         }
     }
-
+    
     /* Tests the method public int current() */
-    @Test
     public void TestCurrent(){
-        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
+        RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator("");
         // Tests when "(fText != null) ? fText.getIndex() : BreakIterator.DONE" is true and false
         rbbi.setText((CharacterIterator)null);
         if(rbbi.current() != BreakIterator.DONE){
@@ -828,29 +828,4 @@ public class RBBITest extends TestFmwk {
                     + "0 when the object has a fText of dummy.");
         }
     }
-
-    @Test
-    public void TestBug7547() {
-        try {
-            new RuleBasedBreakIterator("");
-            fail("TestBug7547: RuleBasedBreakIterator constructor failed to throw an exception with empty rules.");
-        }
-        catch (IllegalArgumentException e) {
-            // expected exception with empty rules.
-        }
-        catch (Exception e) {
-            fail("TestBug7547: Unexpected exception while creating RuleBasedBreakIterator: " + e);
-        }
-    }
-
-    @Test
-    public void TestBug12797() {
-        String rules = "!!chain; !!forward; $v=b c; a b; $v; !!reverse; .*;";
-        RuleBasedBreakIterator bi = new RuleBasedBreakIterator(rules);
-
-        bi.setText("abc");
-        bi.first();
-        assertEquals("Rule chaining test", 3,  bi.next());
-         }
-    }
-
+}

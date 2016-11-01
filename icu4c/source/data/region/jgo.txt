@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/jgo.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/jgo.xml
+ */
 jgo{
     Countries{
         001{"Mbí"}
@@ -14,10 +23,10 @@ jgo{
         BJ{"Mbɛnɛ̂ŋ"}
         BO{"Mbɔlivî"}
         BR{"Mbɛlazîl"}
-        BW{"Mbɔtswána"}
+        BW{"Mbɔtswɑ́nɑ"}
         CA{"Kanadâ"}
-        CD{"Kɔ́ŋgɔ-Kinshása"}
-        CG{"Kɔ́ŋgɔ-Mbɛlazavîl"}
+        CD{"Kɔ́ŋɡɔ-Kinshɑ́sɑ"}
+        CG{"Kɔ́ŋɡɔ-Mbɛlɑzɑvîl"}
         CH{"Sẅísɛ"}
         CI{"Kɔ́t Ndivwâ"}
         CL{"Cíllɛ"}
@@ -30,34 +39,34 @@ jgo{
         DZ{"Aljɛlî"}
         EC{"Ɛkwandɔ̂"}
         EG{"Ɛjíptɛ"}
-        ER{"Ɛlitɛlɛ́ya"}
+        ER{"Ɛlitɛlɛ́yɑ"}
         ES{"Ɛspániya"}
         ET{"Ɛtiyɔpî"}
         FR{"Fɛlánci"}
-        GA{"Ŋgabɔ̂ŋ"}
+        GA{"Ŋɡɑbɔ̂ŋ"}
         GH{"Ŋgána"}
         GM{"Ŋgambî"}
         GN{"Ŋginɛ̂"}
-        GQ{"Ŋginɛ̂ Ɛkwatɔliyâl"}
+        GQ{"Ŋɡinɛ̂ Ɛkwɑtɔliyɑ̂l"}
         GR{"Ŋgɛlɛ̂k"}
         GW{"Ŋginɛ̂ Mbisáwu"}
-        IL{"Islayɛ̂l"}
+        IL{"Islɑyɛ̂l"}
         IN{"Ándɛ"}
-        IQ{"Ilâk"}
+        IQ{"Ilɑ̂k"}
         IT{"Italî"}
         JP{"Japɔ̂n"}
-        KE{"Kɛ́nya"}
+        KE{"Kɛ́nyɑ"}
         KM{"Kɔmɔ́lɔshi"}
         LR{"Libɛrî"}
         LS{"Lɛsɔ́tɔ"}
         LY{"Libî"}
         MA{"Mɔlɔ̂k"}
-        MG{"Mándaŋgasɛkâ"}
+        MG{"Mɑ́ndɑŋɡɑsɛkɑ̂"}
         ML{"Malî"}
         MR{"Mɔlitanî"}
-        MW{"Maláwi"}
+        MW{"Mɑlɑ́wi"}
         MX{"Mɛksîk"}
-        MZ{"Mɔzambîk"}
+        MZ{"Mɔzɑmbîk"}
         NA{"Namimbî"}
         NE{"Nijɛ̂"}
         NG{"Ninjɛliyâ"}
@@ -66,24 +75,24 @@ jgo{
         RE{"Lɛ́uniyɔ̂n"}
         RS{"Sɛlɛbî"}
         RU{"Lusî"}
-        RW{"Luwánda"}
+        RW{"Luwɑ́ndɑ"}
         SC{"Pɛsɛ́shɛl"}
         SD{"Sundân"}
         SL{"Siyɛ́la Lɛɔ̂n"}
         SN{"Sɛnɛgâl"}
-        SO{"Sɔmalî"}
-        ST{"Sáwɔŋ Tɔmɛ́ nɛ́ Pɛlínsipɛ"}
-        SZ{"Swazilân"}
-        TD{"Cât"}
+        SO{"Sɔmɑlî"}
+        ST{"Sɑ́wɔŋ Tɔmɛ́ nɛ́ Pɛlínsipɛ"}
+        SZ{"Swɑzilɑ̂n"}
+        TD{"Cɑ̂t"}
         TG{"Tɔ́ŋgɔ"}
         TN{"Tunizî"}
-        TZ{"Tanzanî"}
-        UG{"Uŋgánda"}
+        TZ{"Tɑnzɑnî"}
+        UG{"Uŋɡɑ́ndɑ"}
         VE{"Vɛnɛzwɛ́la"}
-        YT{"Mayɔ̂t"}
-        ZM{"Zambî"}
-        ZW{"Zimbámbwɛ"}
+        YT{"Mɑyɔ̂t"}
+        ZM{"Zɑmbî"}
+        ZW{"Zimbɑ́mbwɛ"}
         ZZ{"ŋgɔŋ yi pɛ́ ká kɛ́ jʉɔ"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.77.53"}
 }

@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2008-2014, International Business Machines Corporation and    *
+ * Copyright (C) 2008-2012, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -209,7 +207,7 @@ public class TimeZoneJDK extends com.ibm.icu.util.TimeZone {
     }
 
     // Freezable stuffs
-    private volatile transient boolean fIsFrozen = false;
+    private transient boolean fIsFrozen = false;
 
     @Override
     public boolean isFrozen() {
@@ -226,7 +224,7 @@ public class TimeZoneJDK extends com.ibm.icu.util.TimeZone {
     public com.ibm.icu.util.TimeZone cloneAsThawed() {
         TimeZoneJDK tz = (TimeZoneJDK)super.cloneAsThawed();
         tz.fJdkTz = (TimeZone)fJdkTz.clone();
-        tz.fJdkCal = null;  // To be instantiated when necessary
+        tz.fJdkCal = (java.util.GregorianCalendar)fJdkCal.clone();
         tz.fIsFrozen = false;
         return tz;
     }

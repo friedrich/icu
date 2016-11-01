@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *   Copyright (C) 2011-2012, International Business Machines
@@ -142,6 +140,10 @@ public:
                                    int32_t desiredCapacityHint,
                                    UChar *scratch, int32_t scratchCapacity,
                                    int32_t *resultCapacity);
+
+private:
+    // No ICU "poor man's RTTI" for this class nor its subclasses.
+    virtual UClassID getDynamicClassID() const;
 };
 
 /**

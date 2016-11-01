@@ -1,21 +1,14 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
- *******************************************************************************
- *   Copyright (C) 2009-2016, International Business Machines
- *   Corporation and others.  All Rights Reserved.
- *******************************************************************************
- */
-
+*******************************************************************************
+*   Copyright (C) 2009-2012, International Business Machines
+*   Corporation and others.  All Rights Reserved.
+*******************************************************************************
+*/
 package com.ibm.icu.text;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 
-import com.ibm.icu.impl.ICUBinary;
 import com.ibm.icu.impl.Norm2AllModes;
-import com.ibm.icu.util.ICUUncheckedIOException;
 
 /**
  * Unicode normalization functionality for standard Unicode normalization or
@@ -117,7 +110,8 @@ public abstract class Normalizer2 {
      * Same as getInstance(null, "nfc", Mode.COMPOSE).
      * Returns an unmodifiable singleton instance.
      * @return the requested Normalizer2, if successful
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public static Normalizer2 getNFCInstance() {
         return Norm2AllModes.getNFCInstance().comp;
@@ -128,7 +122,8 @@ public abstract class Normalizer2 {
      * Same as getInstance(null, "nfc", Mode.DECOMPOSE).
      * Returns an unmodifiable singleton instance.
      * @return the requested Normalizer2, if successful
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public static Normalizer2 getNFDInstance() {
         return Norm2AllModes.getNFCInstance().decomp;
@@ -139,7 +134,8 @@ public abstract class Normalizer2 {
      * Same as getInstance(null, "nfkc", Mode.COMPOSE).
      * Returns an unmodifiable singleton instance.
      * @return the requested Normalizer2, if successful
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public static Normalizer2 getNFKCInstance() {
         return Norm2AllModes.getNFKCInstance().comp;
@@ -150,7 +146,8 @@ public abstract class Normalizer2 {
      * Same as getInstance(null, "nfkc", Mode.DECOMPOSE).
      * Returns an unmodifiable singleton instance.
      * @return the requested Normalizer2, if successful
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public static Normalizer2 getNFKDInstance() {
         return Norm2AllModes.getNFKCInstance().decomp;
@@ -161,7 +158,8 @@ public abstract class Normalizer2 {
      * Same as getInstance(null, "nfkc_cf", Mode.COMPOSE).
      * Returns an unmodifiable singleton instance.
      * @return the requested Normalizer2, if successful
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public static Normalizer2 getNFKCCasefoldInstance() {
         return Norm2AllModes.getNFKC_CFInstance().comp;
@@ -182,7 +180,6 @@ public abstract class Normalizer2 {
      * name as the key.
      * If you know or expect the data to be cached already, you can use data!=null
      * for non-ICU data as well.
-     * <p>Any {@link java.io.IOException} is wrapped into a {@link com.ibm.icu.util.ICUUncheckedIOException}.
      * @param data the binary, big-endian normalization (.nrm file) data, or null for ICU data
      * @param name "nfc" or "nfkc" or "nfkc_cf" or name of custom data file
      * @param mode normalization mode (compose or decompose etc.)
@@ -190,16 +187,7 @@ public abstract class Normalizer2 {
      * @stable ICU 4.4
      */
     public static Normalizer2 getInstance(InputStream data, String name, Mode mode) {
-        // TODO: If callers really use this API, then we should add an overload that takes a ByteBuffer.
-        ByteBuffer bytes = null;
-        if (data != null) {
-            try {
-                bytes = ICUBinary.getByteBufferFromInputStreamAndCloseStream(data);
-            } catch (IOException e) {
-                throw new ICUUncheckedIOException(e);
-            }
-        }
-        Norm2AllModes all2Modes=Norm2AllModes.getInstance(bytes, name);
+        Norm2AllModes all2Modes=Norm2AllModes.getInstance(data, name);
         switch(mode) {
         case COMPOSE: return all2Modes.comp;
         case DECOMPOSE: return all2Modes.decomp;
@@ -244,9 +232,6 @@ public abstract class Normalizer2 {
      * Writes the normalized form of the source string to the destination Appendable
      * and returns the destination Appendable.
      * The source and destination strings must be different objects.
-     *
-     * <p>Any {@link java.io.IOException} is wrapped into a {@link com.ibm.icu.util.ICUUncheckedIOException}.
-     *
      * @param src source string
      * @param dest destination Appendable; gets normalized src appended
      * @return dest
@@ -311,12 +296,13 @@ public abstract class Normalizer2 {
      * The default implementation returns null.
      * @param c code point
      * @return c's raw decomposition mapping, if any; otherwise null
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public String getRawDecomposition(int c) { return null; }
 
     /**
-     * Performs pairwise composition of a &amp; b and returns the composite if there is one.
+     * Performs pairwise composition of a & b and returns the composite if there is one.
      *
      * <p>Returns a composite code point c only if c has a two-way mapping to a+b.
      * In standard Unicode normalization, this means that
@@ -328,7 +314,8 @@ public abstract class Normalizer2 {
      * @param a A (normalization starter) code point.
      * @param b Another code point.
      * @return The non-negative composite code point if there is one; otherwise a negative value.
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public int composePair(int a, int b) { return -1; }
 
@@ -338,7 +325,8 @@ public abstract class Normalizer2 {
      * but all standard implementations return the Unicode Canonical_Combining_Class value.
      * @param c code point
      * @return c's combining class
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public int getCombiningClass(int c) { return 0; }
 
@@ -441,7 +429,6 @@ public abstract class Normalizer2 {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected Normalizer2() {
     }
 }

@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2003-2013, International Business Machines
+*   Copyright (C) 2003-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -120,7 +118,6 @@ testData(TestIDNA& test) {
     
     /* first copy misc directory */
     saveBasename = basename;
-    (void)saveBasename;    // Suppress set but not used warning.
     uprv_strcpy(basename,SPREP_DIR);
     basename = basename + uprv_strlen(SPREP_DIR);
     *basename++=U_FILE_SEP_CHAR;

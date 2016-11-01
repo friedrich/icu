@@ -1,46 +1,55 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/lo.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/lo.xml
+ */
 lo{
-    Version{"2.1.28.79"}
+    Version{"2.0.78.39"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"ອາບິດແຈນ"}
         }
         "Africa:Accra"{
-            ec{"ອັກຄຣາ"}
+            ec{"ອັກກາ"}
         }
         "Africa:Addis_Ababa"{
-            ec{"ແອດດິສ ອະບາບາ"}
+            ec{"ແອດດິດອາບາບາ"}
         }
         "Africa:Algiers"{
-            ec{"ແອວເຈຍ"}
+            ec{"ແອເຈຍ"}
         }
         "Africa:Asmera"{
-            ec{"ອັສມາຣາ"}
+            ec{"ອາສມາລາ"}
         }
         "Africa:Bamako"{
             ec{"ບາມາໂກ"}
         }
         "Africa:Bangui"{
-            ec{"ບັງກຸຍ"}
+            ec{"ບັງກີ"}
         }
         "Africa:Banjul"{
             ec{"ບານຈູ"}
         }
         "Africa:Bissau"{
-            ec{"ບິສເຊົາ"}
+            ec{"ບິດເຊົາ"}
         }
         "Africa:Blantyre"{
-            ec{"ແບລນໄທຣ໌"}
+            ec{"ແບນໄທສ"}
         }
         "Africa:Brazzaville"{
-            ec{"ບຣາຊາວິວ"}
+            ec{"ບາຊາວິດ"}
         }
         "Africa:Bujumbura"{
-            ec{"ບູຈູມບູຣາ"}
+            ec{"ບູຈູມບູລາ"}
         }
         "Africa:Cairo"{
-            ec{"ໄຄໂຣ"}
+            ec{"ໄຄໂລ"}
         }
         "Africa:Casablanca"{
             ec{"ຄາຊາບລັງກາ"}
@@ -49,10 +58,10 @@ lo{
             ec{"ຊີວຕາ"}
         }
         "Africa:Conakry"{
-            ec{"ໂຄນາຄຣີ"}
+            ec{"ໂກນາກີ"}
         }
         "Africa:Dakar"{
-            ec{"ດາກາ"}
+            ec{"ດາກາສ"}
         }
         "Africa:Dar_es_Salaam"{
             ec{"ດາເອສສະລາມ"}
@@ -64,22 +73,19 @@ lo{
             ec{"ດູອາລາ"}
         }
         "Africa:El_Aaiun"{
-            ec{"ເອວ ອາຢູນ"}
+            ec{"ເອວອີອຸງ"}
         }
         "Africa:Freetown"{
-            ec{"ຟຣີທາວ"}
+            ec{"ຟີທາວ"}
         }
         "Africa:Gaborone"{
-            ec{"ກາບໍໂຣນ"}
+            ec{"ກາໂບລອນ"}
         }
         "Africa:Harare"{
-            ec{"ຮາຣາເຣ"}
+            ec{"ຮາລາເລ້"}
         }
         "Africa:Johannesburg"{
             ec{"ໂຈຮັນເນດສເບີກ"}
-        }
-        "Africa:Juba"{
-            ec{"ຈູບາ"}
         }
         "Africa:Kampala"{
             ec{"ຄຳປາລາ"}
@@ -94,22 +100,22 @@ lo{
             ec{"ກິນຊາຊາ"}
         }
         "Africa:Lagos"{
-            ec{"ລາໂກສ"}
+            ec{"ລາໂກດສ"}
         }
         "Africa:Libreville"{
-            ec{"ລິເບຼີວິວ"}
+            ec{"ລີເບີເລີວີວ"}
         }
         "Africa:Lome"{
-            ec{"ໂລເມ"}
+            ec{"ລຳ"}
         }
         "Africa:Luanda"{
-            ec{"ລວນດາ"}
+            ec{"ແລມດາ"}
         }
         "Africa:Lubumbashi"{
             ec{"ລູບຳບາຊິ"}
         }
         "Africa:Lusaka"{
-            ec{"ລູຊາກາ"}
+            ec{"ລູຊາກ້າ"}
         }
         "Africa:Malabo"{
             ec{"ມາລາໂບ"}
@@ -118,7 +124,7 @@ lo{
             ec{"ມາປູໂຕ"}
         }
         "Africa:Maseru"{
-            ec{"ມາເຊຣູ"}
+            ec{"ມາເຊໂລ"}
         }
         "Africa:Mbabane"{
             ec{"ອຳບາບາເນ"}
@@ -127,16 +133,16 @@ lo{
             ec{"ໂມກາດີຊູ"}
         }
         "Africa:Monrovia"{
-            ec{"ມອນໂຣເວຍ"}
+            ec{"ມອນໂລເວຍ"}
         }
         "Africa:Nairobi"{
-            ec{"ໄນໂຣບີ"}
+            ec{"ໄນໂລບີ"}
         }
         "Africa:Ndjamena"{
             ec{"ເອນຈາເມນ່າ"}
         }
         "Africa:Niamey"{
-            ec{"ນີອາເມ"}
+            ec{"ນີອາມີ້"}
         }
         "Africa:Nouakchott"{
             ec{"ນູແອກຊອດ"}
@@ -151,10 +157,10 @@ lo{
             ec{"ຊາວໂຕເມ"}
         }
         "Africa:Tripoli"{
-            ec{"ທຣິໂພລິ"}
+            ec{"ຕີໂປລີ"}
         }
         "Africa:Tunis"{
-            ec{"ຕູນິສ"}
+            ec{"ຕູນິດ"}
         }
         "Africa:Windhoek"{
             ec{"ວີນຮູດ"}
@@ -169,25 +175,25 @@ lo{
             ec{"ແອນກິນລາ"}
         }
         "America:Antigua"{
-            ec{"ແອນທິກົວ"}
+            ec{"ແອນຕີກາ"}
         }
         "America:Araguaina"{
-            ec{"ອາຣາກົວນາ"}
+            ec{"ອາລາກົວນາ"}
         }
         "America:Argentina:La_Rioja"{
-            ec{"ລາ ຣິໂອຈາ"}
+            ec{"ເລ ຣີໂອຈາ"}
         }
         "America:Argentina:Rio_Gallegos"{
-            ec{"ຣິໂກ ແກວເລກອສ"}
+            ec{"ຣີໂອ ການເລກອດ"}
         }
         "America:Argentina:Salta"{
             ec{"ຊານຕາ"}
         }
         "America:Argentina:San_Juan"{
-            ec{"ແຊນຮວນ"}
+            ec{"ແຊນຈືນ"}
         }
         "America:Argentina:San_Luis"{
-            ec{"ແຊນລຸຍສ໌"}
+            ec{"ແຊນລຸຍ"}
         }
         "America:Argentina:Tucuman"{
             ec{"ຕູຄູແມນ"}
@@ -199,64 +205,61 @@ lo{
             ec{"ອາຣູບາ"}
         }
         "America:Asuncion"{
-            ec{"ອະຊຸນຊິອອງ"}
+            ec{"ອາຊຸນຊີອອນ"}
         }
         "America:Bahia"{
-            ec{"ບາເຢຍ"}
-        }
-        "America:Bahia_Banderas"{
-            ec{"ບາເຮຍ ແບນເດີຣາສ"}
+            ec{"ບີເຍຍ"}
         }
         "America:Barbados"{
             ec{"ບາເບດອສ"}
         }
         "America:Belem"{
-            ec{"ບີເລມ"}
+            ec{"ບີແລນ"}
         }
         "America:Belize"{
-            ec{"ເບລີຊ"}
+            ec{"ເບຊິນ"}
         }
         "America:Blanc-Sablon"{
             ec{"ບລານ-ຊາບລອນ"}
         }
         "America:Boa_Vista"{
-            ec{"ບົວ ວິສຕາ"}
+            ec{"ບົວວີສຕາ"}
         }
         "America:Bogota"{
-            ec{"ໂບໂກຕາ"}
+            ec{"ໂບໂກຕ້າ"}
         }
         "America:Boise"{
-            ec{"ບອຍຊ໌"}
+            ec{"ບອຍຊີ"}
         }
         "America:Buenos_Aires"{
-            ec{"ບົວໂນສ ໄອເຣສ"}
+            ec{"ເບີນອດແອ"}
         }
         "America:Cambridge_Bay"{
-            ec{"ແຄມບຣິດ ເບ"}
+            ec{"ອ່າວແຄມບຣິດ"}
         }
         "America:Campo_Grande"{
-            ec{"ກັງປູຣັງຈີ"}
+            ec{"ກຳໂປກັນດີ"}
         }
         "America:Cancun"{
             ec{"ແຄນກຸນ"}
         }
         "America:Caracas"{
-            ec{"ຄາຣາກັສ"}
+            ec{"ກາລາກາດສ"}
         }
         "America:Catamarca"{
-            ec{"ຄາຕາມາກາ"}
+            ec{"ກາຕາມາກາ"}
         }
         "America:Cayenne"{
-            ec{"ຄາເຢນ"}
+            ec{"ກາເຢນ"}
         }
         "America:Cayman"{
-            ec{"ເຄແມນ"}
+            ec{"ຄາຍແມນ"}
         }
         "America:Chicago"{
-            ec{"ຊິຄາໂກ"}
+            ec{"ຊີຄາໂກ"}
         }
         "America:Chihuahua"{
-            ec{"ຊິວາວາ"}
+            ec{"ຊີຫົວຫົວ"}
         }
         "America:Coral_Harbour"{
             ec{"ອາທິໂຄຄານ"}
@@ -267,17 +270,14 @@ lo{
         "America:Costa_Rica"{
             ec{"ຄອສຕາຣິກາ"}
         }
-        "America:Creston"{
-            ec{"ເຄຣສຕັນ"}
-        }
         "America:Cuiaba"{
-            ec{"ກຸຢາບາ"}
+            ec{"ກຸຍບາ"}
         }
         "America:Curacao"{
-            ec{"ກືຣາເຊົາ"}
+            ec{"ເຄີລາຄາວ"}
         }
         "America:Danmarkshavn"{
-            ec{"ເດນມາກແຊນ"}
+            ec{"ດານນາຊາວ"}
         }
         "America:Dawson"{
             ec{"ດໍສັນ"}
@@ -295,31 +295,28 @@ lo{
             ec{"ໂດມິນິກາ"}
         }
         "America:Edmonton"{
-            ec{"ເອດມອນຕອນ"}
+            ec{"ເອດມັນຕັນ"}
         }
         "America:Eirunepe"{
-            ec{"ເອຣຸເນປີ"}
+            ec{"ເອລູເນປີ"}
         }
         "America:El_Salvador"{
-            ec{"ເອວ ຊາວາດໍ"}
-        }
-        "America:Fort_Nelson"{
-            ec{"ຟອດ ເນວສັນ"}
+            ec{"ເອວຊັນວາເດີ"}
         }
         "America:Fortaleza"{
             ec{"ຟໍຕາເລຊາ"}
         }
         "America:Glace_Bay"{
-            ec{"ເກລດເບ"}
+            ec{"ເກລັກເບ"}
         }
         "America:Godthab"{
-            ec{"ນູກ"}
+            ec{"ກອດແທບ"}
         }
         "America:Goose_Bay"{
             ec{"ກູສເບ"}
         }
         "America:Grand_Turk"{
-            ec{"ແກຣນ ເທີກ"}
+            ec{"ແກຣນທັກ"}
         }
         "America:Grenada"{
             ec{"ເກຣນາດາ"}
@@ -331,40 +328,40 @@ lo{
             ec{"ກົວເຕມາລາ"}
         }
         "America:Guayaquil"{
-            ec{"ກົວຢາກິລ"}
+            ec{"ກົວຢາກິ"}
         }
         "America:Guyana"{
             ec{"ກູຢານາ"}
         }
         "America:Halifax"{
-            ec{"ຮາລິແຟັກ"}
+            ec{"ຫາລີແຟັກ"}
         }
         "America:Havana"{
             ec{"ຮາວານາ"}
         }
         "America:Hermosillo"{
-            ec{"ເອໂມຊິໂຢ"}
+            ec{"ຮີໂມຊິນໂລ"}
         }
         "America:Indiana:Knox"{
-            ec{"ນ໋ອກ, ອິນເດຍນາ"}
+            ec{"ນ໋ອກ, ອິນດີແອນາ"}
         }
         "America:Indiana:Marengo"{
-            ec{"ມາເຣນໂກ, ອິນເດຍນາ"}
+            ec{"ມາເຣນໂກ, ອິນດີເອນາ"}
         }
         "America:Indiana:Petersburg"{
-            ec{"ປີເຕີສເປີກ, ອິນເດຍນາ"}
+            ec{"ປີເຕີເບີກ, ອິນດີເອນາ"}
         }
         "America:Indiana:Tell_City"{
-            ec{"ເທວ ຊິຕີ, ອິນເດຍນາ"}
+            ec{"ເທວຊິຕີ, ອິນດີເອນາ"}
         }
         "America:Indiana:Vevay"{
-            ec{"ວີເວ, ອິນເດຍນາ"}
+            ec{"ວີເວ, ອິນດີເອນາ"}
         }
         "America:Indiana:Vincennes"{
-            ec{"ວິນເຊນເນສ, ອິນເດຍນາ"}
+            ec{"ວິນເຊນເນັດ, ອິນດີເອນາ"}
         }
         "America:Indiana:Winamac"{
-            ec{"ວິນາແມັກ, ອິນເດຍນາ"}
+            ec{"ວິນນາແມັກ, ອິນດີເອນາ"}
         }
         "America:Indianapolis"{
             ec{"ອິນດີເອນາໂພລິສ"}
@@ -387,9 +384,6 @@ lo{
         "America:Kentucky:Monticello"{
             ec{"ມອນຕີເຊວໂລ, ເຄນທັກກີ"}
         }
-        "America:Kralendijk"{
-            ec{"ຄຣາເລນດິກ"}
-        }
         "America:La_Paz"{
             ec{"ລາປາສ"}
         }
@@ -397,13 +391,13 @@ lo{
             ec{"ລີມາ"}
         }
         "America:Los_Angeles"{
-            ec{"ລອສ ແອນເຈລີສ"}
+            ec{"ລອສແອນເຈີລິດ"}
         }
         "America:Louisville"{
-            ec{"ຫລຸຍວິວ"}
+            ec{"ລຸຍວິນເລ"}
         }
         "America:Lower_Princes"{
-            ec{"ໂລເວີ ພຣິນຊ໌ ຄວດເຕີ"}
+            ec{"ໂລເວີແປຣນໂກຕາ"}
         }
         "America:Maceio"{
             ec{"ມາເຊໂອ"}
@@ -412,16 +406,13 @@ lo{
             ec{"ມານາກົວ"}
         }
         "America:Manaus"{
-            ec{"ມາເນົາສ໌"}
+            ec{"ມານົວ"}
         }
         "America:Marigot"{
             ec{"ມາຣີໂກດ"}
         }
         "America:Martinique"{
             ec{"ມາທີນິກ"}
-        }
-        "America:Matamoros"{
-            ec{"ມາຕາໂມຣອສ"}
         }
         "America:Mazatlan"{
             ec{"ມາຊາດລານ"}
@@ -430,19 +421,16 @@ lo{
             ec{"ເມັນໂດຊ່າ"}
         }
         "America:Menominee"{
-            ec{"ເມໂນມິນີ"}
+            ec{"ມີໂນມີນີ"}
         }
         "America:Merida"{
-            ec{"ເມີຣິດາ"}
-        }
-        "America:Metlakatla"{
-            ec{"ເມັດລາກັດລາ"}
+            ec{"ມີຣິດາ"}
         }
         "America:Mexico_City"{
-            ec{"ເມັກຊິໂກ ຊິຕີ"}
+            ec{"ແມັກຊິໂກ ຊີຕີ"}
         }
         "America:Miquelon"{
-            ec{"ມິກົວລອນ"}
+            ec{"ມີກົວລອນ"}
         }
         "America:Moncton"{
             ec{"ມອນຕັນ"}
@@ -451,7 +439,10 @@ lo{
             ec{"ມອນເຕີເຣຍ"}
         }
         "America:Montevideo"{
-            ec{"ມອນເຕວິເດໂອ"}
+            ec{"ມອນເຕດີເວໂອ"}
+        }
+        "America:Montreal"{
+            ec{"ມອນທຣຽວ"}
         }
         "America:Montserrat"{
             ec{"ມອນເຊີຣັດ"}
@@ -469,67 +460,61 @@ lo{
             ec{"ນອມ"}
         }
         "America:Noronha"{
-            ec{"ນໍຣອນຮາ"}
+            ec{"ນໍລອນຮາ"}
         }
         "America:North_Dakota:Beulah"{
-            ec{"ເບີລາ, ນອດ ດາໂກຕາ"}
+            ec{"ເບີລາ, ດາໂກຕາເໜືອ"}
         }
         "America:North_Dakota:Center"{
-            ec{"ເຊັນເຈີ, ນອດ ດາໂກຕາ"}
+            ec{"ສູນກາງ, ດາໂກດາເໝືອ"}
         }
         "America:North_Dakota:New_Salem"{
-            ec{"ນິວ ຊາເລມ, ນອດ ດາໂກຕາ"}
-        }
-        "America:Ojinaga"{
-            ec{"ໂອຈິນາກາ"}
+            ec{"ນີວສາເລັມ, ດາໂກຕາເໜືອ"}
         }
         "America:Panama"{
-            ec{"ພານາມາ"}
+            ec{"ປານາມາ"}
         }
         "America:Pangnirtung"{
-            ec{"ແພງເນີດທັງ"}
+            ec{"ພາງນີທັງ"}
         }
         "America:Paramaribo"{
-            ec{"ພາຣາມາຣິໂບ"}
+            ec{"ປາລາມາລີໂບ"}
         }
         "America:Phoenix"{
-            ec{"ຟິນິກ"}
+            ec{"ໂພນິກ"}
         }
         "America:Port-au-Prince"{
-            ec{"ປໍໂຕແປຣງ"}
+            ec{"ພອດອັນແປຣນ"}
         }
         "America:Port_of_Spain"{
-            ec{"ພອດອອບສະເປນ"}
+            ec{"ພອດຂອງສະເປນ"}
         }
         "America:Porto_Velho"{
-            ec{"ປໍຕູ ເວວຢູ"}
+            ec{"ປໍໂຕເວໂຢ"}
         }
         "America:Puerto_Rico"{
             ec{"ເປີໂທຣິໂກ"}
         }
         "America:Rainy_River"{
-            ec{"ເຣນນີ ຣິເວີ"}
+            ec{"ເຣນນີ ຣີເວີ"}
         }
         "America:Rankin_Inlet"{
-            ec{"ແຣນກິນ ອິນເລັດ"}
+            ec{"ແຣນກິນອິນເລັດ"}
         }
         "America:Recife"{
-            ec{"ເຣຊິເຟ"}
+            ec{"ເລຊີເຟ"}
         }
         "America:Regina"{
-            ec{"ເຣຈິນາ"}
+            ec{"ຣີຈີນາ"}
         }
         "America:Resolute"{
             ec{"ເຣໂຊລຸດ"}
         }
         "America:Rio_Branco"{
-            ec{"ຣິໂອ ບຣັນໂກ"}
-        }
-        "America:Santa_Isabel"{
-            ec{"ຊານຕາ ອິດຊາເບວ"}
+            ec{"ລີໂອບັງໂກ"}
         }
         "America:Santarem"{
-            ec{"ຊັນຕາເຣມ"}
+            ec{"ຊັນຕາເລມ"}
         }
         "America:Santiago"{
             ec{"ຊັນຕີອາໂກ"}
@@ -538,34 +523,34 @@ lo{
             ec{"ຊານໂຕໂດມິນໂກ"}
         }
         "America:Sao_Paulo"{
-            ec{"ເຊົາ ເປົາໂລ"}
+            ec{"ຊາວໂປໂລ"}
         }
         "America:Scoresbysund"{
-            ec{"ອິໂຕຄໍທົວມິດ"}
+            ec{"ສະກໍເຣນໄບຊັນ"}
         }
-        "America:Sitka"{
-            ec{"ຊິດກາ"}
+        "America:Shiprock"{
+            ec{"ຊີພຣອກ"}
         }
         "America:St_Barthelemy"{
-            ec{"ເຊນບາເທເລມີ"}
+            ec{"ຊຽນບາທີລີມີ"}
         }
         "America:St_Johns"{
-            ec{"ເຊນ ຈອນ"}
+            ec{"ເຊນຈອນ"}
         }
         "America:St_Kitts"{
-            ec{"ເຊນ ຄິດສ໌"}
+            ec{"ຊຽນຄີສ"}
         }
         "America:St_Lucia"{
-            ec{"ເຊນ ລູເຊຍ"}
+            ec{"ຊຽນລູເຊຍ"}
         }
         "America:St_Thomas"{
-            ec{"ເຊນ ໂທມັສ"}
+            ec{"ຊຽນໂທມັສ"}
         }
         "America:St_Vincent"{
-            ec{"ເຊນ ວິນເຊນ"}
+            ec{"ຊຽນວິນເຊນ"}
         }
         "America:Swift_Current"{
-            ec{"ສະວິວ ເຄີເຣນ"}
+            ec{"ສະວິດເຄີເຣນ"}
         }
         "America:Tegucigalpa"{
             ec{"ເຕກູຊີການປາ"}
@@ -589,7 +574,7 @@ lo{
             ec{"ແວນຄູເວີ"}
         }
         "America:Whitehorse"{
-            ec{"ໄວທ໌ຮອສ"}
+            ec{"ໄວຫອກສ"}
         }
         "America:Winnipeg"{
             ec{"ວິນນີເພກ"}
@@ -598,7 +583,7 @@ lo{
             ec{"ຢາຄູຕັດ"}
         }
         "America:Yellowknife"{
-            ec{"ເຢໂລໄນຟ໌"}
+            ec{"ເຢນໂລໄນ"}
         }
         "Antarctica:Casey"{
             ec{"ເຄຊີ"}
@@ -608,9 +593,6 @@ lo{
         }
         "Antarctica:DumontDUrville"{
             ec{"ດູມອນດີຍູວີວສ໌"}
-        }
-        "Antarctica:Macquarie"{
-            ec{"ແມັກຄົວຣີ"}
         }
         "Antarctica:Mawson"{
             ec{"ເມົາຊັນ"}
@@ -624,11 +606,11 @@ lo{
         "Antarctica:Rothera"{
             ec{"ໂຣເທຣາ"}
         }
+        "Antarctica:South_Pole"{
+            ec{"ຂົ້ວໂລກໃຕ້"}
+        }
         "Antarctica:Syowa"{
             ec{"ເຊຍວາ"}
-        }
-        "Antarctica:Troll"{
-            ec{"ໂທຣລ໌"}
         }
         "Antarctica:Vostok"{
             ec{"ວໍສະຕອກ"}
@@ -655,13 +637,13 @@ lo{
             ec{"ອັດໂທບີ"}
         }
         "Asia:Ashgabat"{
-            ec{"ອາດຊ໌ກາບັດ"}
+            ec{"ອາດກາບັດ"}
         }
         "Asia:Baghdad"{
             ec{"ແບກແດດ"}
         }
         "Asia:Bahrain"{
-            ec{"ບາເຣນ"}
+            ec{"ບາເຫເຣນ"}
         }
         "Asia:Baku"{
             ec{"ບາກູ"}
@@ -669,41 +651,38 @@ lo{
         "Asia:Bangkok"{
             ec{"ບາງກອກ"}
         }
-        "Asia:Barnaul"{
-            ec{"ບານົວ"}
-        }
         "Asia:Beirut"{
             ec{"ເບຣຸດ"}
         }
         "Asia:Bishkek"{
-            ec{"ບິດຊ໌ເຄກ"}
+            ec{"ບິດເຄກ"}
         }
         "Asia:Brunei"{
             ec{"ບຣູໄນ"}
         }
         "Asia:Calcutta"{
-            ec{"ໂຄກາຕາ"}
-        }
-        "Asia:Chita"{
-            ec{"ຊີຕ່າ"}
+            ec{"ໂກຣກາຕາ"}
         }
         "Asia:Choibalsan"{
-            ec{"ຊອຍບອລຊານ"}
+            ec{"ຊອຍບາຣຊານ"}
+        }
+        "Asia:Chongqing"{
+            ec{"ຈົງຊິ່ງ"}
         }
         "Asia:Colombo"{
             ec{"ໂຄລຳໂບ"}
         }
         "Asia:Damascus"{
-            ec{"ດາມາສຄັສ"}
+            ec{"ດາມັດກັດ"}
         }
         "Asia:Dhaka"{
-            ec{"ດາຫ໌ກາ"}
+            ec{"ດາກາ"}
         }
         "Asia:Dili"{
             ec{"ດີລີ"}
         }
         "Asia:Dubai"{
-            ec{"ດູໄບ"}
+            ec{"ດູໃບ"}
         }
         "Asia:Dushanbe"{
             ec{"ດູຊານເບ"}
@@ -711,8 +690,8 @@ lo{
         "Asia:Gaza"{
             ec{"ກາຊາ"}
         }
-        "Asia:Hebron"{
-            ec{"ເຮບຣອນ"}
+        "Asia:Harbin"{
+            ec{"ຮາຣ໌ບິນ"}
         }
         "Asia:Hong_Kong"{
             ec{"ຮ່ອງກົງ"}
@@ -721,19 +700,19 @@ lo{
             ec{"ຮອບ"}
         }
         "Asia:Irkutsk"{
-            ec{"ອີຄຸສຄ໌"}
+            ec{"ອີຄຸດສ"}
         }
         "Asia:Jakarta"{
-            ec{"ຈາກາຕາ"}
+            ec{"ຈາກາຣ໌ຕາ"}
         }
         "Asia:Jayapura"{
-            ec{"ຈາຢາປູຣະ"}
+            ec{"ຈາຍາປູຣະ"}
         }
         "Asia:Jerusalem"{
-            ec{"ເຢຣູຊາເລມ"}
+            ec{"ເຍຣູສະແລັມ"}
         }
         "Asia:Kabul"{
-            ec{"ຄາບູ"}
+            ec{"ກາບູຣ"}
         }
         "Asia:Kamchatka"{
             ec{"ຄາມຊາດກາ"}
@@ -741,17 +720,17 @@ lo{
         "Asia:Karachi"{
             ec{"ກາຣາຈີ"}
         }
-        "Asia:Katmandu"{
-            ec{"ຄັດມັນດູ"}
+        "Asia:Kashgar"{
+            ec{"ຄາດຣ໌ກາ"}
         }
-        "Asia:Khandyga"{
-            ec{"ແຄນດີກາ"}
+        "Asia:Katmandu"{
+            ec{"ກາດສ໌ມັນດູ"}
         }
         "Asia:Krasnoyarsk"{
-            ec{"ຄຣັສໂນຢາສຄ໌"}
+            ec{"ຄາດສນໍຢາດສ"}
         }
         "Asia:Kuala_Lumpur"{
-            ec{"ກົວລາລຳເປີ"}
+            ec{"ກູລາລຳເປີ"}
         }
         "Asia:Kuching"{
             ec{"ກູຊີງ"}
@@ -766,25 +745,22 @@ lo{
             ec{"ມາກາແດນ"}
         }
         "Asia:Makassar"{
-            ec{"ມາກາສຊາ"}
+            ec{"ມາກາດຣ໌ຊາ"}
         }
         "Asia:Manila"{
             ec{"ມານີລາ"}
         }
         "Asia:Muscat"{
-            ec{"ມາສຄັດ"}
+            ec{"ມາດກັດ"}
         }
         "Asia:Nicosia"{
             ec{"ນິໂຄເຊຍ"}
         }
-        "Asia:Novokuznetsk"{
-            ec{"ໂນໂວຄຸສເນັດ"}
-        }
         "Asia:Novosibirsk"{
-            ec{"ໂນໂວຊີບີສຄ໌"}
+            ec{"ໂນໂວຊີບີລາດສ"}
         }
         "Asia:Omsk"{
-            ec{"ອອມສຄ໌"}
+            ec{"ໂອມາດສ"}
         }
         "Asia:Oral"{
             ec{"ອໍຣໍ"}
@@ -799,37 +775,34 @@ lo{
             ec{"ປຽງຢາງ"}
         }
         "Asia:Qatar"{
-            ec{"ກາຕາຣ໌"}
+            ec{"ກາຕາຣ"}
         }
         "Asia:Qyzylorda"{
             ec{"ໄຄຊີລໍດາ"}
         }
         "Asia:Rangoon"{
-            ec{"ຢາງກອນ"}
+            ec{"ຍາງກຸ້ງ"}
         }
         "Asia:Riyadh"{
             ec{"ຣີຢາດ"}
         }
         "Asia:Saigon"{
-            ec{"ໂຮຈິມິນ"}
+            ec{"ໂຮ່ຈີມິງ"}
         }
         "Asia:Sakhalin"{
             ec{"ຊາຄາລິນ"}
         }
         "Asia:Samarkand"{
-            ec{"ຊາມາແຄນ"}
+            ec{"ສາມາກກາດ"}
         }
         "Asia:Seoul"{
-            ec{"ໂຊລ໌"}
+            ec{"ໂຊຣ"}
         }
         "Asia:Shanghai"{
             ec{"ຊ່ຽງໄຮ້"}
         }
         "Asia:Singapore"{
             ec{"ສິງກະໂປ"}
-        }
-        "Asia:Srednekolymsk"{
-            ec{"ສຣິລເນັກໂກລີດ"}
         }
         "Asia:Taipei"{
             ec{"ໄທເປ"}
@@ -838,10 +811,10 @@ lo{
             ec{"ທາດສ໌ເຄນ"}
         }
         "Asia:Tbilisi"{
-            ec{"ທິບີລີຊີ"}
+            ec{"ທີບີລີຊີ"}
         }
         "Asia:Tehran"{
-            ec{"ເຕຣານ"}
+            ec{"ເຕຫະຣານ"}
         }
         "Asia:Thimphu"{
             ec{"ທິມພູ"}
@@ -849,38 +822,32 @@ lo{
         "Asia:Tokyo"{
             ec{"ໂຕກຽວ"}
         }
-        "Asia:Tomsk"{
-            ec{"ທອມສກ໌"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"ອູລານບາຕາຣ໌"}
         }
         "Asia:Urumqi"{
             ec{"ອູຣຸມຊີ"}
         }
-        "Asia:Ust-Nera"{
-            ec{"ອຸສ ເນຣາ"}
-        }
         "Asia:Vientiane"{
             ec{"ວຽງຈັນ"}
         }
         "Asia:Vladivostok"{
-            ec{"ວີລາດິໂວສຕອກ"}
+            ec{"ວາດີໂວຕອກ"}
         }
         "Asia:Yakutsk"{
-            ec{"ຢາຄຸທຊ໌"}
+            ec{"ຢາຄູທາດສ"}
         }
         "Asia:Yekaterinburg"{
-            ec{"ເຢຄາເຕີຣິນເບີກ"}
+            ec{"ຢີຄາເຕີລີນແບກ"}
         }
         "Asia:Yerevan"{
             ec{"ເຍເຣວານ"}
         }
         "Atlantic:Azores"{
-            ec{"ອາຊໍເຣສ"}
+            ec{"ອາຊໍເຣດ"}
         }
         "Atlantic:Bermuda"{
-            ec{"ເບີມິວດາ"}
+            ec{"ເບີມູດາ"}
         }
         "Atlantic:Canary"{
             ec{"ຄານາຣີ"}
@@ -889,40 +856,40 @@ lo{
             ec{"ເຄບເວີດ"}
         }
         "Atlantic:Faeroe"{
-            ec{"ແຟໂຣ"}
+            ec{"ເຟໂລ"}
         }
         "Atlantic:Madeira"{
             ec{"ມາເດຣາ"}
         }
         "Atlantic:Reykjavik"{
-            ec{"ເຣກຢາວິກ"}
+            ec{"ເລດຢາວິກ"}
         }
         "Atlantic:South_Georgia"{
             ec{"ເຊົາຈໍເຈຍ"}
         }
         "Atlantic:St_Helena"{
-            ec{"ເຊນ ເຮເລນາ"}
+            ec{"ເຊນເຮລີນ່າ"}
         }
         "Atlantic:Stanley"{
-            ec{"ສະແຕນເລ"}
+            ec{"ສະແຕນລີ"}
         }
         "Australia:Adelaide"{
             ec{"ເອດີແລດ"}
         }
         "Australia:Brisbane"{
-            ec{"ບຣິສເບນ"}
+            ec{"ບຣິດເບນ"}
         }
         "Australia:Broken_Hill"{
-            ec{"ໂບຣກເຄນ ຮິວ"}
+            ec{"ໂບເຄນຮີວ"}
         }
         "Australia:Currie"{
             ec{"ກູຣີ"}
         }
         "Australia:Darwin"{
-            ec{"ດາວິນ"}
+            ec{"ດາຣວິນ"}
         }
         "Australia:Eucla"{
-            ec{"ຢູຄລາ"}
+            ec{"ຍູລາ"}
         }
         "Australia:Hobart"{
             ec{"ໂຮບາດ"}
@@ -934,7 +901,7 @@ lo{
             ec{"ໂລດໂຮວີ"}
         }
         "Australia:Melbourne"{
-            ec{"ເມວເບິນ"}
+            ec{"ເມວເບິຣນ"}
         }
         "Australia:Perth"{
             ec{"ເພີດ"}
@@ -943,135 +910,126 @@ lo{
             ec{"ຊິດນີ"}
         }
         "Etc:Unknown"{
-            ec{"ບໍ່ຮູ້ຊື່ເມືອງ"}
+            ec{"ບໍ່ຮູ້ຈັກ"}
         }
         "Europe:Amsterdam"{
-            ec{"ອາມສເຕີດຳ"}
+            ec{"ອຳເຕີດຳ"}
         }
         "Europe:Andorra"{
-            ec{"ອິນດໍຣາ"}
-        }
-        "Europe:Astrakhan"{
-            ec{"ອາສຕຣາຄານ"}
+            ec{"ອັນໂດລາ"}
         }
         "Europe:Athens"{
-            ec{"ເອເທນສ໌"}
+            ec{"ເອເທນ"}
         }
         "Europe:Belgrade"{
             ec{"ເບວເກຣດ"}
         }
         "Europe:Berlin"{
-            ec{"ເບີລິນ"}
+            ec{"ເບີລີນ"}
         }
         "Europe:Bratislava"{
-            ec{"ບຣາທິສລາວາ"}
+            ec{"ບຮາຕີສລາວາ"}
         }
         "Europe:Brussels"{
-            ec{"ບຣັສເຊວ"}
+            ec{"ບາສເຊວ"}
         }
         "Europe:Bucharest"{
-            ec{"ບູຄາເຣສຕ໌"}
+            ec{"ບູຊາເລດສ"}
         }
         "Europe:Budapest"{
-            ec{"ບູດາເປສຕ໌"}
-        }
-        "Europe:Busingen"{
-            ec{"ບັດຊິນເກນ"}
+            ec{"ບູດາເປດສ"}
         }
         "Europe:Chisinau"{
             ec{"ຄີຊີເນົາ"}
         }
         "Europe:Copenhagen"{
-            ec{"ໂຄເປນເຮເກນ"}
+            ec{"ໂກເປນຮາເກັນ"}
         }
         "Europe:Dublin"{
-            ec{"ດັບບລິນ"}
-            ld{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ໄອ​ຣິ​ຊ"}
+            ec{"ດັບລິນ"}
+            ld{"ເວລາລະດູຮ້ອນໄອແລນ"}
         }
         "Europe:Gibraltar"{
-            ec{"ກິບຣອລທາ"}
+            ec{"ຢີບຣໍຕາຣ"}
         }
         "Europe:Guernsey"{
             ec{"ເກີນຊີ"}
         }
         "Europe:Helsinki"{
-            ec{"ເຮວຊິນກິ"}
+            ec{"ຮໍຊິນກິ"}
         }
         "Europe:Isle_of_Man"{
             ec{"ເກາະແມນ"}
         }
         "Europe:Istanbul"{
-            ec{"ອິສຕັນບູລ໌"}
+            ec{"ອິດຕານບູ"}
         }
         "Europe:Jersey"{
             ec{"ເຈີຊີ"}
         }
         "Europe:Kaliningrad"{
-            ec{"ຄາລິນິນກຣາດ"}
+            ec{"ກາລີນິງກາດສ"}
         }
         "Europe:Kiev"{
-            ec{"ຂຽບ"}
-        }
-        "Europe:Kirov"{
-            ec{"ກິໂຣບ"}
+            ec{"ເຄຍ"}
         }
         "Europe:Lisbon"{
-            ec{"ລິສບອນ"}
+            ec{"ຣິດບອນ"}
         }
         "Europe:Ljubljana"{
             ec{"ລູບລີຍານາ"}
         }
         "Europe:London"{
             ec{"ລອນດອນ"}
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ອັງ​ກິດ"}
+            ld{"ເວລາລະດູຮ້ອນອັງກິດ"}
         }
         "Europe:Luxembourg"{
-            ec{"ລັກເຊັມເບີກ"}
+            ec{"ລັກແຊມເບີກ"}
         }
         "Europe:Madrid"{
             ec{"ມາດຣິດ"}
         }
         "Europe:Malta"{
-            ec{"ມອລຕາ"}
+            ec{"ມໍຕາ"}
         }
         "Europe:Mariehamn"{
-            ec{"ມາຣີແຮມນ໌"}
+            ec{"ມາລີຮາມ"}
         }
         "Europe:Minsk"{
-            ec{"ມິນສກ໌"}
+            ec{"ມີນາດສ"}
         }
         "Europe:Monaco"{
             ec{"ໂມນາໂຄ"}
         }
         "Europe:Moscow"{
-            ec{"ມອສໂຄ"}
+            ec{"ມອດສໂກ"}
         }
         "Europe:Oslo"{
-            ec{"ອອສໂລ"}
+            ec{"ອໍໂລ"}
         }
         "Europe:Paris"{
-            ec{"ປາຣີສ"}
+            ec{"ປາຮີດ"}
         }
         "Europe:Podgorica"{
             ec{"ພອດກໍຣີກາ"}
         }
         "Europe:Prague"{
-            ec{"ປຣາກ"}
+            ec{"ປາກີ"}
         }
         "Europe:Riga"{
-            ec{"ຣິກາ"}
+            ec{"ລີກາ"}
         }
         "Europe:Rome"{
             ec{"ໂຣມ"}
         }
         "Europe:Samara"{
-            ec{"ຊາມາຣາ"}
+            ec{"ຊາມາລາ"}
         }
         "Europe:San_Marino"{
             ec{"ຊານມາຣີໂນ"}
         }
         "Europe:Sarajevo"{
-            ec{"ຊາຣາເຢໂວ"}
+            ec{"ສາຣາເຍໂວ"}
         }
         "Europe:Simferopol"{
             ec{"ຊີມເຟໂລໂປ"}
@@ -1086,16 +1044,13 @@ lo{
             ec{"ສະຕອກໂຮມ"}
         }
         "Europe:Tallinn"{
-            ec{"ທາລລິນນ໌"}
+            ec{"ທໍລິນ"}
         }
         "Europe:Tirane"{
-            ec{"ທິຣານ"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"ອູລີອານອບສຄ໌"}
+            ec{"ຕີລານີ"}
         }
         "Europe:Uzhgorod"{
-            ec{"ອັສຊ໌ກໍໂຣດ"}
+            ec{"ອາສໂກລອດດ"}
         }
         "Europe:Vaduz"{
             ec{"ວາດາຊ"}
@@ -1107,37 +1062,37 @@ lo{
             ec{"ວຽນນາ"}
         }
         "Europe:Vilnius"{
-            ec{"ວິລນິອຸສ"}
+            ec{"ວີນີອຸດ"}
         }
         "Europe:Volgograd"{
-            ec{"ວອລໂກກຣາດ"}
+            ec{"ວໍໂກກາດສ"}
         }
         "Europe:Warsaw"{
-            ec{"ວໍຊໍ"}
+            ec{"ວອດຊາວ"}
         }
         "Europe:Zagreb"{
-            ec{"ຊາເກຣບ"}
+            ec{"ຊາແກັບ"}
         }
         "Europe:Zaporozhye"{
-            ec{"ຊາໂປໂຣຊີ"}
+            ec{"ຊາໂປໂລຊີ"}
         }
         "Europe:Zurich"{
             ec{"ຊູຣິກ"}
         }
         "Indian:Antananarivo"{
-            ec{"ອັນຕານານາຣິໂວ"}
+            ec{"ອັນຕານານາລີໂວ"}
         }
         "Indian:Chagos"{
-            ec{"ຊາໂກສ"}
+            ec{"ຊາກັດ"}
         }
         "Indian:Christmas"{
             ec{"ຄຣິດສະມາດ"}
         }
         "Indian:Cocos"{
-            ec{"ໂຄໂຄສ"}
+            ec{"ໂຄໂຄດ"}
         }
         "Indian:Comoro"{
-            ec{"ໂຄໂມໂຣ"}
+            ec{"ໂຄໂມໂລ້"}
         }
         "Indian:Kerguelen"{
             ec{"ແກເກີເລນ"}
@@ -1146,25 +1101,22 @@ lo{
             ec{"ມາເຮ"}
         }
         "Indian:Maldives"{
-            ec{"ມັລດີບ"}
+            ec{"ມໍດີເວດສ໌"}
         }
         "Indian:Mauritius"{
-            ec{"ເມົາຣິທຽສ"}
+            ec{"ມູເລຕຽດ"}
         }
         "Indian:Mayotte"{
-            ec{"ມາຢັອດເຕ"}
+            ec{"ມາໂຢເຕ"}
         }
         "Indian:Reunion"{
-            ec{"ເຣອູນິຢົງ"}
+            ec{"ລຸຍນີອອນ"}
         }
         "Pacific:Apia"{
             ec{"ເອປີອາ"}
         }
         "Pacific:Auckland"{
             ec{"ອັກແລນ"}
-        }
-        "Pacific:Bougainville"{
-            ec{"ເວລາຕາມເຂດບູນກຽນວິວ"}
         }
         "Pacific:Chatham"{
             ec{"ແຊແທມ"}
@@ -1188,19 +1140,19 @@ lo{
             ec{"ຟູນະຟູຕິ"}
         }
         "Pacific:Galapagos"{
-            ec{"ກາລາປາກອສ"}
+            ec{"ກາລາປາໂກດສ"}
         }
         "Pacific:Gambier"{
             ec{"ແກມເບຍ"}
         }
         "Pacific:Guadalcanal"{
-            ec{"ກົວດັລຄະແນລ"}
+            ec{"ກົວດັດຄານັດ"}
         }
         "Pacific:Guam"{
-            ec{"ກວມ"}
+            ec{"ກຣວມ"}
         }
         "Pacific:Honolulu"{
-            ec{"ໂຮໂນລູລູ"}
+            ec{"ໂຫໂນລູລູ"}
         }
         "Pacific:Johnston"{
             ec{"ຈອນສະໂຕນ"}
@@ -1218,7 +1170,7 @@ lo{
             ec{"ມາຈູໂຣ"}
         }
         "Pacific:Marquesas"{
-            ec{"ມາຄິວຊາສ"}
+            ec{"ມາຄິວຊັດ"}
         }
         "Pacific:Midway"{
             ec{"ມິດເວ"}
@@ -1230,7 +1182,7 @@ lo{
             ec{"ນີອູເອ"}
         }
         "Pacific:Norfolk"{
-            ec{"ນໍຟອລ໌ກ"}
+            ec{"ນໍຟຣອກ"}
         }
         "Pacific:Noumea"{
             ec{"ນູເມອາ"}
@@ -1242,13 +1194,13 @@ lo{
             ec{"ປາເລົາ"}
         }
         "Pacific:Pitcairn"{
-            ec{"ພິດແຄນ"}
+            ec{"ພິດເຄຣນ"}
         }
         "Pacific:Ponape"{
-            ec{"ປົນເປີຍ"}
+            ec{"ໂປນາເປ"}
         }
         "Pacific:Port_Moresby"{
-            ec{"ພອດ ມໍເຣສບີ"}
+            ec{"ພອດມໍສບີ"}
         }
         "Pacific:Rarotonga"{
             ec{"ຣາໂຣຕອງກາ"}
@@ -1283,23 +1235,33 @@ lo{
             ls{"ເວລາ ອັຟການິສຖານ"}
         }
         "meta:Africa_Central"{
-            ls{"ເວ​ລາ​ອາ​ຟຣິ​ກາ​ກາງ"}
+            ls{"ເວລາອາຟຣິລິກາກາງ"}
         }
         "meta:Africa_Eastern"{
-            ls{"ເວ​ລາ​ອາ​ຟຣິ​ກາ​ຕາ​ເວັນ​ອອກ"}
+            ls{"ເວລາອາຟຣິລິກາຕາເວັນອອກ"}
         }
         "meta:Africa_Southern"{
-            ls{"ເວ​ລາ​ອາ​ຟຣິ​ກາ​ໃຕ້"}
+            ls{"ເວລາອາຟຣິລິກາໃຕ້"}
         }
         "meta:Africa_Western"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ອາ​ຟຣິ​ກາ​ຕາ​ເວັນ​ຕົກ"}
-            lg{"ເວ​ລາ​ອາ​ຟຣິ​ກາ​ຕາ​ເວັນ​ຕົກ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ອາ​ຟຣິ​ກາ​ຕາ​ເວັນ​ຕົກ"}
+            ld{"ເວລາລະດູຮ້ອນອາຟຣິລິກາຕາເວັນຕົກ"}
+            lg{"ເວລາອາຟຣິລິກາຕາເວັນຕົກ"}
+            ls{"ເວລາມາດຕະຖານອາຟຣິລິກາຕາເວັນຕົກ"}
+        }
+        "meta:Aktyubinsk"{
+            ld{"ເວລາລະດູຮ້ອນອັກທຸຍບິງ"}
+            lg{"ເວລາອັກທຸຍບິງ"}
+            ls{"ເວລາມາດຕະຖານອັກທຸຍບິງ"}
         }
         "meta:Alaska"{
-            ld{"ເວລາກາງເວັນອະແລສກາ"}
+            ld{"ເວລາຕອນທ່ຽງຂອງອະແລສກາ"}
             lg{"ເວລາອະແລສກາ"}
             ls{"ເວລາມາດຕະຖານອະແລສກາ"}
+        }
+        "meta:Alaska_Hawaii"{
+            ld{"ເວລາຕອນທ່ຽງຂອງອະແລສກາ-ຮາວາຍ"}
+            lg{"ເວລາອະແລສກາ-ຮາວາຍ"}
+            ls{"ເວລາມາດຕະຖານອະແລສກາ-ຮາວາຍ"}
         }
         "meta:Almaty"{
             ld{"ເວລາລະດູຮ້ອນອໍມາຕີ"}
@@ -1307,34 +1269,29 @@ lo{
             ls{"ເວລາມາດຕະຖານອໍມາຕີ"}
         }
         "meta:Amazon"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນອາ​ເມ​ຊອນ"}
-            lg{"ເວລາຕາມເຂດອາເມຊອນ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານອາ​ເມ​ຊອນ"}
+            ld{"ເວລາລະດູຮ້ອນອາມາໂຊນ"}
+            lg{"ເວລາອາມາໂຊນ"}
+            ls{"ເວລາມາດຕະຖານອາມາໂຊນ"}
         }
         "meta:America_Central"{
-            ld{"ເວລາກາງເວັນກາງ"}
-            lg{"ເວລາກາງ"}
-            ls{"ເວລາມາດຕະຖານກາງ"}
+            ld{"ເວລາຕອນທ່ຽງຂອງອາເມລິກາເໝືອ"}
+            lg{"ເວລາຕອນທ່ຽງ"}
+            ls{"ເວລາມາດຕະຖານ"}
         }
         "meta:America_Eastern"{
-            ld{"ເວລາກາງເວັນຕາເວັນອອກ"}
+            ld{"ເວລາຕອນທ່ຽງທາງຕາເວັນອອກ"}
             lg{"ເວລາຕາເວັນອອກ"}
             ls{"ເວລາມາດຕະຖານຕາເວັນອອກ"}
         }
         "meta:America_Mountain"{
-            ld{"ເວລາກາງເວັນແຖບພູເຂົາ"}
+            ld{"ເວລາຕອນທ່ຽງແຖວພູເຂົາ"}
             lg{"ເວລາແຖບພູເຂົາ"}
-            ls{"ເວລາມາດຕະຖານແຖບພູເຂົາ"}
+            ls{"ເວລາມາດຕະຖານແຖບພູເຂົົາ"}
         }
         "meta:America_Pacific"{
-            ld{"ເວລາກາງເວັນແປຊິຟິກ"}
-            lg{"ເວລາແປຊິຟິກ"}
-            ls{"ເວລາມາດຕະຖານແປຊິຟິກ"}
-        }
-        "meta:Apia"{
-            ld{"ເວລາກາງເວັນອາເພຍ"}
-            lg{"ເວລາເອເພຍ"}
-            ls{"ເວລາມາດຕະຖານເອເພຍ"}
+            ld{"ເວລາຕອນທ່ຽງຂອງປາຊີຟິກ"}
+            lg{"ເວລາປາຊີຟິກ"}
+            ls{"ເວລາມາດຕະຖານຂອງປາຊີຟິກ"}
         }
         "meta:Aqtau"{
             ld{"ເວລາລະດູຮ້ອນອັດຕາອູ"}
@@ -1347,49 +1304,54 @@ lo{
             ls{"ເວລາມາດຕະຖານອັດໂຕເບ"}
         }
         "meta:Arabian"{
-            ld{"ເວລາກາງເວັນອາຣາບຽນ"}
-            lg{"ເວ​ລາ​ອາ​ຣາ​ບຽນ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານອາ​ຣາ​ບຽນ"}
+            ld{"ເວລາກາງເວັນອາລາບຽນ"}
+            lg{"ເວລາອາລາບຽນ"}
+            ls{"ເວລາມາດຕະຖານອາລາບຽນ"}
         }
         "meta:Argentina"{
-            ld{"​ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ອາ​ເຈນ​ທິ​ນາ"}
-            lg{"ເວ​ລາ​ອາ​ເຈ​ທິ​ນາ"}
-            ls{"​ເວ​ລາ​ມາດ​ຕະ​ຖານອາ​ເຈນ​ທິ​ນາ"}
+            ld{"ເວລາລະດູຮ້ອນອາເຈນຕີນາ"}
+            lg{"ເວລາອາເຈນຕີນາ"}
+            ls{"ເວລາມາດຕະຖານອາເຈນຕີນາ"}
         }
         "meta:Argentina_Western"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນເວ​ສ​ເທິນອາ​ເຈນ​ທິ​ນາ"}
-            lg{"ເວ​ລາ​ເວ​ສ​ເທິນອາ​ເຈນ​ທິ​ນາ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານເວ​ສ​ເທິນອາ​ເຈນ​ທິ​ນາ"}
+            ld{"ເວລາລະດູຮ້ອນທາງຕາເວັນຕົກຂອງອາເຈນຕີນາ"}
+            lg{"ເວລາຕາເວັນຕົກຂອງອາເຈນຕີນາ"}
+            ls{"ເວລາມາດຕະຖານຕາເວັນຕົກຂອງອາເຈນຕີນາ"}
         }
         "meta:Armenia"{
             ld{"ເວລາລະດູຮ້ອນອາເມເນຍ"}
             lg{"ເວລາອາເມເນຍ"}
             ls{"ເວລາມາດຕະຖານອາເມເນຍ"}
         }
+        "meta:Ashkhabad"{
+            ld{"ເວລາລະດູຮ້ອນອາກກາບັດ"}
+            lg{"ເວລາອາກກາບັດ"}
+            ls{"ເວລາມາດຕະຖານອາກກາບັດ"}
+        }
         "meta:Atlantic"{
-            ld{"ເວລາກາງເວັນຂອງອາແລນຕິກ"}
+            ld{"ເວລາຕອນທ່ຽງຂອງອາແລນຕິກ"}
             lg{"ເວລາຂອງອາແລນຕິກ"}
             ls{"ເວລາມາດຕະຖານຂອງອາແລນຕິກ"}
         }
         "meta:Australia_Central"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່ຽງ​ອອສ​ເຕຣ​ເລຍ​ກາງ"}
-            lg{"ເວ​ລາອອ​ສ​ເຕຣ​ເລຍ​ກາງ"}
-            ls{"ເວ​ລາມາດ​ຕະ​ຖານອອ​ສ​ເຕຣ​ເລຍ​ກ​າງ"}
+            ld{"ເວລາກາງເວັນ ອົດສະຕາລີກາງ"}
+            lg{"ເວລາ ອົດສະຕາລີກາງ"}
+            ls{"ເວລາມາດຕະຖານ ອົດສະຕາລີກາງ"}
         }
         "meta:Australia_CentralWestern"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່ຽງ​ອອສ​ເຕຣ​ລຽນ​ກາງ​ຕາ​ເວັນ​ຕົກ"}
-            lg{"ເວ​ລາອອສ​ເຕຣ​ລຽນ​ກາງ​ຕາ​ເວັນ​ຕົກ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານອອສ​ເຕຣ​ລຽນ​ກາງ​ຕາ​ເວັນ​ຕົກ"}
+            ld{"ເວລາກາງເວັນ ຕາເວັນຕົກຕອນກາງຂອງອົດສະຕາລີ"}
+            lg{"ເວລາ ຕາເວັນຕົກຕອນກາງຂອງອົດສະຕາລີ"}
+            ls{"ເວລາມາດຕະຖານ ຕາເວັນຕົກຕອນກາງຂອງອົດສະຕາລີ"}
         }
         "meta:Australia_Eastern"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່ຽງ​ອອສ​ເຕຣ​ລຽນ​ຕາ​ເວັນ​ອອກ"}
-            lg{"ເວ​ລາອອສ​ເຕຣ​ລຽນ​ຕາ​ເວັນ​ອອກ"}
-            ls{"ເວ​ລາ​ມາດຕະຖານ​​​ອອສ​ເຕຣ​ລຽນ​ຕາ​ເວັນ​ອອກ"}
+            ld{"ເວລາກາງເວັນ ອົດສະຕາລີຕາເວັນອອກ"}
+            lg{"ເວລາອົດສະຕາລີຕາເວັນອອກ"}
+            ls{"ເວລາມາດຕະຖານອົດສະຕາລີຕາເວັນອອກ"}
         }
         "meta:Australia_Western"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່ຽງ​ອອສ​ເຕຣ​ລຽນ​ຕາ​ເວັນ​ຕົກ"}
-            lg{"ເວ​ລາ​ອອສ​ເຕຣ​ເລຍ​ຕາ​ເວັນ​ຕົກ"}
-            ls{"ເວ​ລາ​ມາ​ດ​ຕະ​ຖານອອສ​ເຕຣ​ລຽນ​ຕາ​ເວັນ​ຕົກ"}
+            ld{"ເວລາກາງເວັນອົດສະຕາລີຕາເວັນຕົກ"}
+            lg{"ເວລາອົດສະຕາລີຕາເວັນຕົກ"}
+            ls{"ເວລາມາດຕະຖານ ອົດສະຕາລີຕາເວັນຕົກ"}
         }
         "meta:Azerbaijan"{
             ld{"ເວລາລະດູຮ້ອນອັສເຊີໄບຈັນ"}
@@ -1397,62 +1359,75 @@ lo{
             ls{"ເວລາມາດຕະຖານອັສເຊີໄບຈັນ"}
         }
         "meta:Azores"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນອາ​ໂຊ​ເຣ​ສ"}
-            lg{"ເວ​ລາ​ອາ​ໂຊ​ເຣ​ສ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານອາ​ໂຊ​ເຣ​ສ"}
+            ld{"ເວລາລະດູຮ້ອນອາໂຊເລສ"}
+            lg{"ເວລາອາໂຊເລສ"}
+            ls{"ເວລາມາດຕະຖານອາໂຊເລສ"}
         }
         "meta:Bangladesh"{
             ld{"ເວລາ ລະດູຮ້ອນ ບັງກະລາເທດ"}
             lg{"ເວລາ ບັງກະລາເທດ"}
             ls{"ເວລາມາດຕະຖານ ບັງກະລາເທດ"}
         }
+        "meta:Bering"{
+            ld{"ເວລາຕອນທ່ຽງຂອງເບຈິງ"}
+            lg{"ເວລາຂອງເບຈິງ"}
+            ls{"ເວລາມາດຕະຖານຂອງເບຈິງ"}
+        }
         "meta:Bhutan"{
-            ls{"ເວ​ລາ​ພູ​ຖານ"}
+            ls{"ເວລາ ບູຖານ"}
         }
         "meta:Bolivia"{
-            ls{"ເວ​ລາ​ໂບ​ລິ​ເວຍ"}
+            ls{"ເວລາໂບລີເວີຍ"}
+        }
+        "meta:Borneo"{
+            ld{"ເວລາລະດູຮ້ອນບໍນຽວ"}
+            lg{"ເວລາບໍນຽວ"}
+            ls{"ເວລາມາດຕະຖານບໍນຽວ"}
         }
         "meta:Brasilia"{
-            ld{"ເວລາຕາມເຂດລະດູຮ້ອນຕາມເຂດບຣາຊີເລຍ"}
-            lg{"ເວລາຕາມເຂດບຣາຊິເລຍ"}
+            ld{"ເວລາລະດູຮ້ອນເບຣຊີເລຍ"}
+            lg{"ເວລາເບຣຊີເລຍ"}
             ls{"ເວລາມາດຕາຖານເບຣຊີເລຍ"}
         }
         "meta:Brunei"{
-            ls{"​ເວ​ລາບຣູ​ໄນດາ​ຣຸສ​ຊາ​ລາມ"}
+            ls{"ເວລາບຼູນາຍດາລູຊາແລັມ"}
         }
         "meta:Cape_Verde"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ເຄບ​ເວີດ"}
-            lg{"ເວ​ລາ​ເຄບ​ເວີດ"}
-            ls{"​ເວ​ລາ​ມາດ​ຕະ​ຖານ​ເຄບ​ເວີດ"}
+            ld{"ເວລາລະດູຮ້ອນຂອງເຄບເວິຣດ"}
+            lg{"ເວລາເຄບເວິຣດ"}
+            ls{"ເວລາມາດຕະຖານເຄບເວິຣດ"}
         }
         "meta:Casey"{
             ls{"ເວລາເຄຊີ"}
         }
         "meta:Chamorro"{
-            ls{"ເວ​ລາ​ຈາ​ໂມ​ໂຣ"}
+            ls{"ເວລາຊາມໍໂລ"}
+        }
+        "meta:Changbai"{
+            ls{"ເວລາຊ່າງໄປ"}
         }
         "meta:Chatham"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່ຽງ​ຊາ​ທາມ"}
-            lg{"ເວ​ລາ​ຊາ​ທາມ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ຊາ​ທາມ"}
+            ld{"ເວລາກາງເວັນ ຊາທາມ"}
+            lg{"ເວລາ ຊາທາມ"}
+            ls{"ເວລາມາດຕະຖານ ຊາທາມ"}
         }
         "meta:Chile"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນຊິ​ລີ"}
-            lg{"ເວ​ລາ​ຊິ​ລີ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານຊິ​ລີ"}
+            ld{"ເວລາລະດູຮ້ອນຊີລີ"}
+            lg{"ເວລາຊີລີ"}
+            ls{"ເວລາມາດຕາຖານຊີລີ"}
         }
         "meta:China"{
-            ld{"​ເວ​ລາ​ຕອນ​ທ່ຽງ​ຈີນ"}
-            lg{"ເວ​ລາ​ຈີນ"}
+            ld{"ເວລາກາງເວັນ ຈີນ"}
+            lg{"ເວລາຂອງຈີນ"}
             ls{"ເວລາມາດຕະຖານຈີນ"}
         }
         "meta:Choibalsan"{
-            ld{"ເວລາລະ​ດູ​ຮ້ອນໂຊຍບາຊັນ"}
-            lg{"ເວ​ລາ​ໂຊຍ​ບາ​ຊັນ"}
+            ld{"ເວລາລະດູຮ້ອນ ໂຊຍບາຊັນ"}
+            lg{"ເວລາ ໂຊຍບາຊັນ"}
             ls{"ເວລາມາດຕະຖານໂຊຍບາຊັນ"}
         }
         "meta:Christmas"{
-            ls{"ເວ​ລາ​ເກາະ​ຄ​ຣິສ​ມາສ"}
+            ls{"ເວລາເກາະຄຣິສມາດ"}
         }
         "meta:Cocos"{
             ls{"ເວລາຫມູ່ເກາະໂກໂກສ"}
@@ -1463,14 +1438,17 @@ lo{
             ls{"ເວລາມາດຕະຖານໂຄລຳເບຍ"}
         }
         "meta:Cook"{
-            ld{"ເວ​ລາ​ເຄິ່ງ​ລະ​ດູ​ຮ້ອນ​ໝູ່​ເກາະ​ຄຸກ"}
+            ld{"ເວລາເຄີ່ງລະດູຮ້ອນຫມູ່ເກາະຄຸກ"}
             lg{"ເວລາຫມູ່ເກາະຄຸກ"}
             ls{"ເວລາມາດຕະຖານຫມູ່ເກາະຄຸກ"}
         }
         "meta:Cuba"{
-            ld{"ເວລາກາງເວັນຄິວບາ"}
+            ld{"ເວລາຕອນທ່ຽງຂອງຄິວບາ"}
             lg{"ເວລາຄິວບາ"}
             ls{"ເວລາມາດຕະຖານຂອງຄິວບາ"}
+        }
+        "meta:Dacca"{
+            ls{"ເວລາດາຄາ"}
         }
         "meta:Davis"{
             ls{"ເວລາເດວິດ"}
@@ -1478,39 +1456,44 @@ lo{
         "meta:DumontDUrville"{
             ls{"ເວລາດູມອງດູວິລ"}
         }
+        "meta:Dushanbe"{
+            ld{"ເວລາລະດູຮ້ອນດູຊານເບ"}
+            lg{"ເວລາດູຊານເບ"}
+            ls{"ເວລາມາດຕະຖານດູຊານເບ"}
+        }
+        "meta:Dutch_Guiana"{
+            ls{"ເວລາຂອງດັດກີອານາ"}
+        }
         "meta:East_Timor"{
             ls{"ເວລາຕີມໍຕາເວັນອອກ"}
         }
         "meta:Easter"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນເກາະ​ອີ​ສ​ເຕີ"}
-            lg{"ເວ​ລາ​ເກາະ​ອີ​ສ​ເຕີ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານເກາະ​ອີ​ສ​ເຕີ"}
+            ld{"ເວລາລະດູຮ້ອນຂອງເກາະອີແລນ"}
+            lg{"ເວລາເກາະອີແລນ"}
+            ls{"ເວລາມາດຕະຖານເກາະອີແລນ"}
         }
         "meta:Ecuador"{
-            ls{"ເວ​ລາ​ເອ​ກົວ​ດໍ"}
+            ls{"ເວລາເອວາດໍ"}
         }
         "meta:Europe_Central"{
-            ld{"​ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ຢູ​ໂຣບ​ກາງ"}
-            lg{"ເວ​ລາ​ຢູ​ໂຣບ​ກາງ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ຢູ​ໂຣບກາງ"}
+            ld{"ເວລາລະດູຮ້ອນເອີຣົບກາງ"}
+            lg{"ເວລາເອີຣົບກາງ"}
+            ls{"ເວລາມາດຕະຖານເອີຮົບກາງ"}
         }
         "meta:Europe_Eastern"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນຢູ​ໂຣບ​ຕາ​ເວັນ​ອອກ"}
-            lg{"ເວ​ລາ​ຢູ​ໂຣບ​ຕາ​ເວັນ​ອອກ"}
-            ls{"ເວ​ລາ​ມາ​ດ​ຕະ​ຖານ​ຢູ​ໂຣບ​ຕາ​ເວັນ​ອອກ"}
-        }
-        "meta:Europe_Further_Eastern"{
-            ls{"ເວ​ລາ​​ຢູ​ໂຣ​ປຽນ​ຕາ​ເວັນ​ອອກ​ໄກ"}
+            ld{"ເວລາລະດູຮ້ອນເອີຣົບຕາເວັນອອກ"}
+            lg{"ເວລາເອີຣົບຕາເວັນອອກ"}
+            ls{"ເວລາມາດຕະຖານເອີຣົບຕາເວັນອອກ"}
         }
         "meta:Europe_Western"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນຢູ​ໂຣບ​ຕາ​ເວັນ​ຕົກ"}
-            lg{"ເວ​ລາ​ຢູ​ໂຣບ​ຕາ​ເວັນ​ຕົກ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານຢູ​ໂຣບ​ຕາ​ເວັນ​ຕົກ"}
+            ld{"ເວລາລະດູຮ້ອນເອີຣົບຕາເວັນຕົກ"}
+            lg{"ເວລາເອີຣົບຕາເວັນຕົກ"}
+            ls{"ເວລາມາດຕະຖານເອີຣົບຕາເວັນຕົກ"}
         }
         "meta:Falkland"{
-            ld{"​ເວ​ລາ​ລະ​ດູ​ຮ້ອນໝູ່​ເກາະ​ຟອ​ລ໌ກ​ແລນ"}
-            lg{"​ເວ​ລາ​ໝູ່​ເກາະ​ຟອ​ລ໌ກ​ແລນ"}
-            ls{"​ເວ​ລາ​ມາດ​ຕະ​ຖານໝູ່​ເກາະ​ຟອ​ລ໌ກ​ແລນ"}
+            ld{"ເວລາລະດູຮ້ອນຟອກແລນ"}
+            lg{"ເວລາຟອກແລນ"}
+            ls{"ເວລາມາດຕະຖານຟອກແລນ"}
         }
         "meta:Fiji"{
             ld{"ເວລາລະດູຮ້ອນຟິຈິ"}
@@ -1518,16 +1501,21 @@ lo{
             ls{"ເວລາມາດຕະຖານຟິຈິ"}
         }
         "meta:French_Guiana"{
-            ls{"ເວ​ລາ​ເຟ​ຣນ​ຊ໌​ເກຍ​ນາ"}
+            ls{"ເວລາກີອານາຝຮັ່ງ"}
         }
         "meta:French_Southern"{
-            ls{"ເວລາຝຣັ່ງຕອນໃຕ້ ແລະ ແອນຕາກຕິກ"}
+            ls{"ເວລາຝຣັ່ງຕອນໃຕ້ແລະແອນຕາກຕິກ"}
+        }
+        "meta:Frunze"{
+            ld{"ເວລາລະດູຮ້ອນຝຸນ"}
+            lg{"ເວລາຝຸນ"}
+            ls{"ເວລາມາດຕະຖານຝຸນ"}
         }
         "meta:GMT"{
-            ls{"ເວ​ລາກຣີນ​ວິ​ຊ"}
+            ls{"ເວລາກຣີນີສ"}
         }
         "meta:Galapagos"{
-            ls{"ເວ​ລາ​ກາ​ລາ​ປາ​ກອ​ສ"}
+            ls{"ເວລາກາລາປາໂກ"}
         }
         "meta:Gambier"{
             ls{"ເວລາແກມເບຍ"}
@@ -1540,21 +1528,26 @@ lo{
         "meta:Gilbert_Islands"{
             ls{"ເວລາຫມູ່ເກາະກິລເບີດ"}
         }
+        "meta:Greenland_Central"{
+            ld{"ເວລາລະດູຮ້ອນກຮີນແລນກາງ"}
+            lg{"ເວລາກຮີນແລນກາງ"}
+            ls{"ເວລາມາດຕະຖານກຮີນແລນກາງ"}
+        }
         "meta:Greenland_Eastern"{
-            ld{"ເວລາລະດູຮ້ອນກຣີນແລນຕາເວັນອອກ"}
-            lg{"ເວລາຕາເວັນອອກຂອງກຣີນແລນ"}
-            ls{"ເວລາມາດຕະຖານຕາເວັນອອກກຣີນແລນ"}
+            ld{"ເວລາລະດູຮ້ອນກຮີນແລນຕາເວັນອອກ"}
+            lg{"ເວລາຕາເວັນອອກຂອງກຮີນແລນ"}
+            ls{"ເວລາມາດຕະຖານຕາເວັນອອກກຮີນແລນ"}
         }
         "meta:Greenland_Western"{
-            ld{"ເວລາຕອນທ່ຽງກຣີນແລນຕາເວັນຕົກ"}
-            lg{"ເວລາກຣີນແລນຕາເວັນຕົກ"}
-            ls{"ເວລາມາດຕະຖານກຣີນແລນຕາເວັນຕົກ"}
+            ld{"ເວລາຕອນທ່ຽງກຮີນແລນຕາເວັນຕົກ"}
+            lg{"ເວລາກຮີນແລນຕາເວັນຕົກ"}
+            ls{"ເວລາມາດຕະຖານກຮີນແລນຕາເວັນຕົກ"}
         }
         "meta:Guam"{
             ls{"ເວລາກວມ"}
         }
         "meta:Gulf"{
-            ls{"ເວ​ລາ​ກູ​ລ​໌ຟ"}
+            ls{"ເວລາກຣູ"}
         }
         "meta:Guyana"{
             ls{"ເວລາກາຍອານາ"}
@@ -1565,14 +1558,14 @@ lo{
             ls{"ເວລາມາດຕະຖານຮາວາຍ-ເອລູທຽນ"}
         }
         "meta:Hong_Kong"{
-            ld{"​ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ຮອງ​ກົງ"}
-            lg{"ເວ​ລາ​ຮອງ​ກົງ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ຮອງ​ກົງ"}
+            ld{"ເວລາລະດູຮ້ອນ ຮົງກົງ"}
+            lg{"ເວລາ ຮົງກົງ"}
+            ls{"ເວລາມາດຕະຖານຮົງກົງ"}
         }
         "meta:Hovd"{
-            ld{"​ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ຮອບ​ດ໌"}
-            lg{"ເວ​ລາ​ຮອບ​ດ໌"}
-            ls{"​ເວ​ລາ​ມາດ​ຕະ​ຖານ​ຮອບ​ດ໌"}
+            ld{"ເວລາລະດູຮ້ອນ ຮອຟ"}
+            lg{"ເວລາ ຮອຟ"}
+            ls{"ເວລາມາດຕະຖານ ຮອຟ"}
         }
         "meta:India"{
             ls{"ເວລາ ອິນເດຍ"}
@@ -1584,66 +1577,83 @@ lo{
             ls{"ເວລາອິນດູຈີນ"}
         }
         "meta:Indonesia_Central"{
-            ls{"ເວ​ລາ​ອິນ​ໂດ​ເນ​ເຊຍ​ກາງ"}
+            ls{"ເວລາອິນໂດເນເຊັຍກາງ"}
         }
         "meta:Indonesia_Eastern"{
-            ls{"ເວ​ລາ​ອິນ​ໂດ​ເນ​ເຊຍ​ຕາ​ເວັນ​ອອກ"}
+            ls{"ເວລາອິນໂດເນເຊັຍຕາເວັນອອກ"}
         }
         "meta:Indonesia_Western"{
-            ls{"ເວ​ລາ​ອິນ​ໂດ​ເນ​ເຊຍ​ຕາ​ເວັນ​ຕົກ"}
+            ls{"ເວລາອິນໂດເນເຊັຍຕາເວັນຕົກ"}
         }
         "meta:Iran"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່ຽງ​ອີ​ຣາ​ນ"}
-            lg{"ເວ​ລາ​ອີ​ຣານ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານອີ​ຣານ"}
+            ld{"ເວລາກາງເວັນ ອີຣານ"}
+            lg{"ເວລາ ອີຣານ"}
+            ls{"ເວລາມາດຕະຖານ ອີີຣານ"}
         }
         "meta:Irkutsk"{
-            ld{"ເວ​ລາລະ​ດູ​ຮ້ອນອີ​ຄຸດ​ສ​ຄ໌"}
-            lg{"ເວ​ລ​າອີ​ຄຸດ​ສ​ຄ໌"}
-            ls{"ເວ​ລາມາດ​ຕະ​ຖານອີ​ຄຸດ​ສ​ຄ໌"}
+            ld{"ເວລາລະດູຮ້ອນອີຣກຣູດ"}
+            lg{"ເວລາອີຣກຣູດ"}
+            ls{"ເວລາມາດຕະຖານອີຣກຣູດ"}
         }
         "meta:Israel"{
-            ld{"ເວລາກາງເວັນອິສຣາເອວ"}
-            lg{"ເວ​ລາ​ອິ​ສ​ຣາ​ເອວ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານອິ​ສ​ຣາ​ເອວ"}
+            ld{"ເວລາກາງເວັນອິດສະລາແອນ"}
+            lg{"ເວລາອິດສະລາແອນ"}
+            ls{"ເວລາມາດຕະຖານອິດສະລາແອນ"}
         }
         "meta:Japan"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່ຽງ​ຍີ່​ປຸ່ນ"}
-            lg{"ເວ​ລາ​ຍີ່​ປຸ່ນ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ຍີ່​ປຸ່ນ"}
+            ld{"ເວລາກາງເວັນ ຍີ່ປູ່ນ"}
+            lg{"ເວລາ ຍີ່ປຸ່ນ"}
+            ls{"ເວລາມາດຕະຖານຂອງຍີ່ປຸ່ນ"}
+        }
+        "meta:Karachi"{
+            ls{"ເວລາກາລາຈິ"}
+        }
+        "meta:Kashgar"{
+            ls{"ເວລາຄັດກາ"}
         }
         "meta:Kazakhstan_Eastern"{
-            ls{"ເວ​ລາ​ຄາ​ຊັກ​ສ​ຖານ​ຕາ​ເວັນ​ອອກ"}
+            ls{"ເວລາກາຊັກສະຖານຕາເວັນອອກ"}
         }
         "meta:Kazakhstan_Western"{
-            ls{"ເວ​ລາ​ຄາ​ຊັກ​ສ​ຖານ​ຕາ​ເວັນ​ຕົກ"}
+            ls{"ເວລາກາຊັກສະຖານຕາເວັນຕົກ"}
+        }
+        "meta:Kizilorda"{
+            ld{"ເວລາລະດູຮ້ອນຄີຊີລໍດາ"}
+            lg{"ເວລາຄີຊີລໍດາ"}
+            ls{"ເວລາມາດຕະຖານຄີຊີລໍດາ"}
         }
         "meta:Korea"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່ຽງ​ເກົາ​ຫລີ"}
+            ld{"ເວລາກາງເວັນ ເກົາຫຼີ"}
             lg{"ເວລາເກົາຫຼີ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ເກົາ​ຫລີ"}
+            ls{"ເວລາ ມາດຕະຖານ ເກົາຫຼີ"}
         }
         "meta:Kosrae"{
             ls{"ເວລາຄອສແຣ"}
         }
         "meta:Krasnoyarsk"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນຄຣັສ​ໂນ​ຢາ​ສ​ຄ໌"}
-            lg{"ເວ​ລາ​ຄຣັສ​ໂນ​ຢາ​ສ​ຄ໌"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານຄຣັສ​ໂນ​ຢາ​ສ​ຄ໌"}
+            ld{"ເວລາລະດູຮ້ອນຄຣາສໂນຢາດສ"}
+            lg{"ເວລາຄຣາສໂນຢາດສ"}
+            ls{"ເວລາມາດຕະຖານຄຣາສໂນຢາດສ"}
+        }
+        "meta:Kwajalein"{
+            ls{"ເວລາຄວາຈາເລນ"}
         }
         "meta:Kyrgystan"{
-            ls{"ເວລາເຄຍກິສຖານ"}
+            ls{"ເວລາຄຣີກິສຖານ"}
         }
         "meta:Lanka"{
             ls{"ເວລາລັງກາ"}
         }
         "meta:Line_Islands"{
-            ls{"ເວ​ລາ​ໝູ່​ເກາະ​ລາຍ"}
+            ls{"ເວລາຫມູ່ເກາະໄລນ໌"}
+        }
+        "meta:Long_Shu"{
+            ls{"ເວລາລອງຊູ"}
         }
         "meta:Lord_Howe"{
-            ld{"​ເວ​ລ​ສາ​ຕອນ​​ທ່ຽງ​ລອດ​ເຮົາ​"}
-            lg{"ເວ​ລາ​ລອດ​ເຮົາ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ລອດ​ເຮົາ"}
+            ld{"ເວລາກາງເວັນ ລອດໂຮ"}
+            lg{"ເວລາ ລອດໂຮ"}
+            ls{"ເວລາ ມາດຕະຖານລອດໂຮ"}
         }
         "meta:Macau"{
             ld{"ເວລາລະດູຮ້ອນມາເກົາ"}
@@ -1651,15 +1661,18 @@ lo{
             ls{"ເວລາມາດຕະຖານມາເກົາ"}
         }
         "meta:Macquarie"{
-            ls{"ເວ​ລາ​ເກາະ​ແມັກ​ຄົວ​ຣີ"}
+            ls{"ເວລາແມັກຄໍຣີ"}
         }
         "meta:Magadan"{
             ld{"ເວລາລະດູຮ້ອນເມັກກາເດນ"}
             lg{"ເວລາເມັກກາເດນ"}
             ls{"ເວລາມາດຕະຖານເມັກກາເດນ"}
         }
+        "meta:Malaya"{
+            ls{"ເວລາມາລາຢາ"}
+        }
         "meta:Malaysia"{
-            ls{"ເວ​ລາ​ມາ​ເລ​ເຊຍ"}
+            ls{"ເວລາມາເລເຊັຍ"}
         }
         "meta:Maldives"{
             ls{"ເວລາມັນດີຟ"}
@@ -1668,25 +1681,15 @@ lo{
             ls{"ເວລາມາເຄີຊັສ"}
         }
         "meta:Marshall_Islands"{
-            ls{"ເວ​ລາ​ໝູ່​ເກາະ​ມາ​ແຊວ"}
+            ls{"ເວລາຫມູ່ເກາະມາແຊລ໌"}
         }
         "meta:Mauritius"{
-            ld{"​ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ເມົາ​ຣິ​ທຽ​ສ"}
-            lg{"ເວ​ລາ​ເມົາ​ຣິ​ທຽ​ສ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານເມົາ​ຣິ​ທຽ​ສ"}
+            ld{"ເວລາລະດູຮ້ອນຂອງມໍຣິເຊຍ"}
+            lg{"ເວລາມໍຣິເຊຍ"}
+            ls{"ເວລາມາດຕະຖານມໍຣິເຊຍ"}
         }
         "meta:Mawson"{
             ls{"ເວລາມໍສັນ"}
-        }
-        "meta:Mexico_Northwest"{
-            ld{"ເວລາກາງເວັນເມັກຊິກັນນອດເວສ"}
-            lg{"​ເວ​ລາ​ນອດ​ເວ​ສ​ເມັກ​ຊິ​ໂກ"}
-            ls{"​ເວ​ລາ​ມາດ​ຕະ​ຖານນອດ​ເວ​ສ​ເມັກ​ຊິ​ໂກ"}
-        }
-        "meta:Mexico_Pacific"{
-            ld{"ເວລາກາງເວັນແປຊິຟິກເມັກຊິກັນ"}
-            lg{"ເວລາແປຊິຟິກເມັກຊິກັນ"}
-            ls{"ເວລາມາດຕະຖານແປຊິຟິກເມັກຊິກັນ"}
         }
         "meta:Mongolia"{
             ld{"ເວລາລະດູຮ້ອນອູລານບາເຕີ"}
@@ -1694,18 +1697,18 @@ lo{
             ls{"ເວລາມາດຕະຖານ ອູລານບາເຕີ"}
         }
         "meta:Moscow"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນມອ​ສ​ໂຄ"}
-            lg{"ເວ​ລາ​ມອ​ສ​ໂຄ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານມອ​ສ​ໂຄ"}
+            ld{"ເວລາລະດູຮ້ອນໂມ້ສໂກ"}
+            lg{"ເວລາໂມ້ສໂກ"}
+            ls{"ເວລາມາດຕະຖານໂມ້ສໂກ"}
         }
         "meta:Myanmar"{
             ls{"ເວລາມຽນມາ"}
         }
         "meta:Nauru"{
-            ls{"ເວ​ລາ​ນາ​ອູ​ຣຸ"}
+            ls{"ເວລານາອຸລຸ"}
         }
         "meta:Nepal"{
-            ls{"​ເວ​ລາ​ເນ​ປານ"}
+            ls{"ເວລາ ເນປານ"}
         }
         "meta:New_Caledonia"{
             ld{"ເວລາລະດູຮ້ອນນິວແຄລິໂດເນຍ"}
@@ -1713,20 +1716,20 @@ lo{
             ls{"ເວລາມາດຕະຖານນິວແຄລິໂດເນຍ"}
         }
         "meta:New_Zealand"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່ຽງ​ນິວ​ຊີ​ແລນ"}
-            lg{"ເວ​ລາ​ນິວ​ຊີ​ແລນ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານນິວ​ຊີ​ແລນ"}
+            ld{"ເວລາກາງເວັນ ນິວຊີແລນ"}
+            lg{"ເວລາ ນິວຊີແລນ"}
+            ls{"ເວລາມາດຕະຖານ ນິວຊີແລນ"}
         }
         "meta:Newfoundland"{
-            ld{"ເວລາກາງເວັນນິວຟາວແລນ"}
-            lg{"ເວ​ລາ​ນິວ​ຟາວ​ແລນ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ນິວ​ຟາວ​ແລນ"}
+            ld{"ເວລາຕອນທ່ຽງນິວຟັນແລນ"}
+            lg{"ເວລານິວຟັນແລນ"}
+            ls{"ເວລາມາດຕະຖານນິວຟັນແລນ"}
         }
         "meta:Niue"{
             ls{"ເວລານິອູເອ"}
         }
         "meta:Norfolk"{
-            ls{"ເວ​ລາ​ເກາະ​ນໍ​ຟອ​ລ໌ກ"}
+            ls{"ເວລາ ເກາະ ນອກຟອກ"}
         }
         "meta:Noronha"{
             ld{"ເວລາລະດູຮ້ອນເຟນັນໂດເດໂນຮອນຮາ"}
@@ -1737,19 +1740,19 @@ lo{
             ls{"ເວລາຫມູ່ເກາະມາເຣຍນາເຫນືອ"}
         }
         "meta:Novosibirsk"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນໂນ​ໂບ​ຊິ​ບິ​ສ​ຄ໌"}
-            lg{"ເວ​ລາ​ໂນ​ໂບ​ຊິ​ບິ​ສ​ຄ໌"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານໂນ​ໂບ​ຊິ​ບິ​ສ​ຄ໌"}
+            ld{"ເວລາລະດູຮ້ອນໂນໂວຊີບຣິສ"}
+            lg{"ເວລາໂນໂວຊີບຣິສ"}
+            ls{"ເວລາມາດຕະຖານໂນໂວຊີບຣິສ"}
         }
         "meta:Omsk"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນອອມ​ສ​ຄ໌"}
-            lg{"​ເວ​ລາອອມ​ສ​ຄ໌"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານອອມ​ສ​ຄ໌"}
+            ld{"ເວລາລະດູຮ້ອນໂອ້ມສ"}
+            lg{"ເວລາໂອ້ມສ"}
+            ls{"ເວລາມາດຕະຖານໂອ້ມສ"}
         }
         "meta:Pakistan"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ປາ​ກີ​ສ​ຖານ"}
-            lg{"ເວ​ລາ​ປາ​ກີສຖານ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ປາ​ກີສຖານ"}
+            ld{"ເວລາລະດູຮ້ອນ ປາກິສຖານ"}
+            lg{"ເວລາປາກິສຖານ"}
+            ls{"ເວລາມາດຕະຖານປາກິສຖານ"}
         }
         "meta:Palau"{
             ls{"ເວລາປາເລົາ"}
@@ -1758,27 +1761,27 @@ lo{
             ls{"ເວລາປາປົວກິນີ"}
         }
         "meta:Paraguay"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ປາ​ຣາ​ກວຍ"}
-            lg{"ເວ​ລາ​ປາ​ຣາ​ກວຍ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ປາ​ຣາ​ກວຍ"}
+            ld{"ເວລາລະດູຮ້ອນປາຮາກວາຍ"}
+            lg{"ເວລາປາຮາກວາຍ"}
+            ls{"ເວລາມາດຕະຖານປາຮາກວາຍ"}
         }
         "meta:Peru"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ເປ​ຣູ"}
-            lg{"ເວ​ລາ​ເປ​ຣູ"}
-            ls{"ເວ​ລາ​​ມາ​ດ​ຕະ​ຖານເປ​ຣູ"}
+            ld{"ເວລາລະດູຮ້ອນຂອງເປຮູ"}
+            lg{"ເວລາເປຮູ"}
+            ls{"ເວລາມາດຕະຖານເປຮູ"}
         }
         "meta:Philippines"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ຟິ​ລິບ​ປິນ"}
-            lg{"​ເວ​ລາ​ຟິ​ລິບ​ປິນ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ຟິ​ລິບ​ປິນ"}
+            ld{"ເວລາຟີລີປີນຍາມຮ້ອນ"}
+            lg{"ເວລາຟີລີປິນ"}
+            ls{"ເວລາມາດຕະຖານຟີລີປີນ"}
         }
         "meta:Phoenix_Islands"{
             ls{"ເວລາຫມູ່ເກາະຟີນິກ"}
         }
         "meta:Pierre_Miquelon"{
-            ld{"​ເວ​ລາຕອນ​ທ່ຽງເຊນ​ປີ​ແອ ແລະ​ມິ​ກົວ​ລອນ"}
-            lg{"​ເວ​ລາເຊນ​ປີ​ແອ ແລະ​ມິ​ກົວ​ລອນ"}
-            ls{"​ເວ​ລາມາດ​ຕະ​ຖານເຊນ​ປີ​ແອ ແລະ​ມິ​ກົວ​ລອນ"}
+            ld{"ເວລາຕອນທ່ຽງປີແຍຮແລະມີເກີລົງ"}
+            lg{"ເວລາປີແຍຮແລະມີເກີລົງ"}
+            ls{"ເວລາມາດຕະຖານປີແຍຮແລະມີເກີລົງ"}
         }
         "meta:Pitcairn"{
             ls{"ເວລາພິດແຄຣ໌ນ"}
@@ -1786,35 +1789,40 @@ lo{
         "meta:Ponape"{
             ls{"ເວລາໂປເນບ"}
         }
-        "meta:Pyongyang"{
-            ls{"ເວລາປຽງຢາງ"}
-        }
         "meta:Qyzylorda"{
             ld{"ເວລາລະດູຮ້ອນຄີວລໍດາ"}
             lg{"ເວລາຄີວລໍດາ"}
             ls{"ເວລາມາດຕະຖານຄີວລໍດາ"}
         }
         "meta:Reunion"{
-            ls{"ເວ​ລາ​ເຣ​ອູ​ນິ​ຢົງ"}
+            ls{"ເວລາເຮອູເນຍ"}
         }
         "meta:Rothera"{
             ls{"ເວລາ ໂຣທີຕາ"}
         }
         "meta:Sakhalin"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນຊາ​ຮາ​ລິນ"}
-            lg{"ເວ​ລາ​ຊາ​ຮາ​ລິນ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານຊາ​ຮາ​ລິນ"}
+            ld{"ເວລາລະດູຮ້ອນສາຄາລິງ"}
+            lg{"ເວລາສາຄາລິງ"}
+            ls{"ເວລາມາດຕະຖານສາຄາລິງ"}
+        }
+        "meta:Samarkand"{
+            ld{"ເວລາລະດູຮ້ອນສະມາກການ"}
+            lg{"ເວລາສະມາກການ"}
+            ls{"ເວລາມາດຕະຖານສະມາກການ"}
         }
         "meta:Samoa"{
-            ld{"ເວລາລະດູຮ້ອນຊາມົວ"}
-            lg{"ເວລາຊາມົວ"}
-            ls{"ເວລາມາດຕະຖານຊາມົວ"}
+            ls{"ເວລາຊາມົວ"}
         }
         "meta:Seychelles"{
-            ls{"ເວ​ລາ​ເຊ​ເຊ​ລ​ສ໌"}
+            ls{"ເວລາເຊເຊວ"}
+        }
+        "meta:Shevchenko"{
+            ld{"ເວລາລະດູຮ້ອນເຊບເຊນໂກ"}
+            lg{"ເວລາເຊບເຊນໂກ"}
+            ls{"ເວລາມາດຕະຖານເຊບເຊນໂກ"}
         }
         "meta:Singapore"{
-            ls{"ເວ​ລາ​ສິງ​ກະ​ໂປ"}
+            ls{"ເວລາສີງກະໂປ"}
         }
         "meta:Solomon"{
             ls{"ເວລາຫມູ່ເກາະໂຊໂລມອນ"}
@@ -1823,7 +1831,7 @@ lo{
             ls{"ເວລາຈໍເຈຍໃຕ້"}
         }
         "meta:Suriname"{
-            ls{"ເວ​ລາ​ຊຸ​ຣິ​ນາມ"}
+            ls{"ເວລາຊູຮິນາເມ"}
         }
         "meta:Syowa"{
             ls{"ເວລາ ໂຊວາ"}
@@ -1832,12 +1840,17 @@ lo{
             ls{"ເວລາທາຮິຕິ"}
         }
         "meta:Taipei"{
-            ld{"ເວ​ລາ​ຕອນ​ທ່​ຽງ​ໄທ​ເປ"}
-            lg{"ເວ​ລາ​ໄທ​ເປ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ໄທ​ເປ"}
+            ld{"ເວລາກາງເວັນ ໄທເປ"}
+            lg{"ເວລາ ໄທເປ"}
+            ls{"ເວລາມາດຕະຖານ ໄທເປ"}
         }
         "meta:Tajikistan"{
             ls{"ເວລາທາຈິກິສຖານ"}
+        }
+        "meta:Tashkent"{
+            ld{"ເວລາລະດູຮ້ອນທາສເກັນ"}
+            lg{"ເວລາທາສເກັນ"}
+            ls{"ເວລາມາດຕະຖານທາສເກັນ"}
         }
         "meta:Tokelau"{
             ls{"ເວລາໂຕເກເລົາ"}
@@ -1851,17 +1864,25 @@ lo{
             ls{"ເວລາຊຸກ"}
         }
         "meta:Turkmenistan"{
-            ld{"ເວລາລະດູຮ້ອນຕວກເມນິສຖານ"}
+            ld{"ເວລາລະດູຮ້ອນ ຕວກເມນິສຖານ"}
             lg{"ເວລາຕວກເມນິສຖານ"}
             ls{"ເວລາມາດຕະຖານຕວກເມນິສຖານ"}
         }
         "meta:Tuvalu"{
             ls{"ເວລາຕູວາລູ"}
         }
+        "meta:Uralsk"{
+            ld{"ເວລາລະດູຮ້ອນອູລາສ"}
+            lg{"ເວລາອູລາສ"}
+            ls{"ເວລາມາດຕະຖານອູລາສ"}
+        }
         "meta:Uruguay"{
-            ld{"ເວ​ລາ​ລະ​ດູ​ຮ້ອນ​ອູ​ຣູ​ກວຍ"}
-            lg{"​ເວ​ລາ​ອູ​ຣູ​ກວຍ"}
-            ls{"ເວ​ລາ​ມາດ​ຕະ​ຖານ​ອູ​ຣູ​ກວຍ"}
+            ld{"ເວລາລະດູຮ້ອນອຸກູໄວ"}
+            lg{"ເວລາອຸກູໄວ"}
+            ls{"ເວລາມາດຕະຖານອຸກູໄວ"}
+        }
+        "meta:Urumqi"{
+            ls{"ເວລາອຸລຳຊີ"}
         }
         "meta:Uzbekistan"{
             ld{"ເວລາລະດູຮ້ອນອຸສເບກິດສະຖານ"}
@@ -1874,7 +1895,7 @@ lo{
             ls{"ເວລາມາດຕະຖານວານູອາຕູ"}
         }
         "meta:Venezuela"{
-            ls{"ເວ​ລາ​ເວ​ເນ​ຊູ​ເອ​ລາ"}
+            ls{"ເວລາເວເນຊູລາ"}
         }
         "meta:Vladivostok"{
             ld{"ເວລາລະດູຮ້ອນລາດີໂວສຕົກ"}
@@ -1893,7 +1914,7 @@ lo{
             ls{"ເວລາເກາະເວກ"}
         }
         "meta:Wallis"{
-            ls{"ເວລາວາລລິສ ແລະ ຟູຕູນາ"}
+            ls{"ເວລາວາລລີສແລະຟຸຕູນາ"}
         }
         "meta:Yakutsk"{
             ld{"ເວລາລະດູຮ້ອນຢາກູດສ"}
@@ -1905,12 +1926,16 @@ lo{
             lg{"ເວລາເຢກາເຕລິນເບີກ"}
             ls{"ເວລາມາດຕະຖານເຢກາເຕລິນເບີກ"}
         }
+        "meta:Yukon"{
+            ld{"ເວລາຕອນທ່ຽງຂອງຍູຄອນ"}
+            lg{"ເວລາຂອງຍູຄອນ"}
+            ls{"ເວລາມາດຕະຖານຍູຄອນ"}
+        }
         fallbackFormat{"{1} ({0})"}
+        fallbackRegionFormat{"{1} ({0})"}
         gmtFormat{"GMT{0}"}
         gmtZeroFormat{"GMT"}
         hourFormat{"+HH:mm;-HH:mm"}
         regionFormat{"ເວລາ {0}"}
-        regionFormatDaylight{"ເວລາກາງເວັນ {0}"}
-        regionFormatStandard{"ເວລາມາດຕະຖານ {0}"}
     }
 }

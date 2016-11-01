@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/rbnf/nl.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/rbnf/nl.xml
+ */
 nl{
     RBNFRules{
         OrdinalRules{
@@ -13,25 +22,25 @@ nl{
             "1: =%spellout-numbering=;",
             "%spellout-numbering-year:",
             "-x: min >>;",
-            "x.x: =0.0=;",
+            "x.x: =#,###0.#=;",
             "0: =%spellout-numbering=;",
-            "1100/100: <<>%%2d-year>;",
+            "1100/100: <<\u00AD>%%2d-year>;",
             "2000: =%spellout-numbering=;",
-            "2100/100: <<>%%2d-year>;",
+            "2100/100: <<\u00AD>%%2d-year>;",
             "3000: =%spellout-numbering=;",
-            "3100/100: <<>%%2d-year>;",
+            "3100/100: <<\u00AD>%%2d-year>;",
             "4000: =%spellout-numbering=;",
-            "4100/100: <<>%%2d-year>;",
+            "4100/100: <<\u00AD>%%2d-year>;",
             "5000: =%spellout-numbering=;",
-            "5100/100: <<>%%2d-year>;",
+            "5100/100: <<\u00AD>%%2d-year>;",
             "6000: =%spellout-numbering=;",
-            "6100/100: <<>%%2d-year>;",
+            "6100/100: <<\u00AD>%%2d-year>;",
             "7000: =%spellout-numbering=;",
-            "7100/100: <<>%%2d-year>;",
+            "7100/100: <<\u00AD>%%2d-year>;",
             "8000: =%spellout-numbering=;",
-            "8100/100: <<>%%2d-year>;",
+            "8100/100: <<\u00AD>%%2d-year>;",
             "9000: =%spellout-numbering=;",
-            "9100/100: <<>%%2d-year>;",
+            "9100/100: <<\u00AD>%%2d-year>;",
             "10000: =%spellout-numbering=;",
             "%spellout-numbering:",
             "0: =%spellout-cardinal=;",
@@ -106,5 +115,5 @@ nl{
             "1000000000000000000: =#,##0=.;",
         }
     }
-    Version{"2.1.27.22"}
+    Version{"2.0.74.58"}
 }

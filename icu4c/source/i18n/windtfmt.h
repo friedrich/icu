@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ********************************************************************************
-*   Copyright (C) 2005-2015, International Business Machines
+*   Copyright (C) 2005-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ********************************************************************************
 *
@@ -54,7 +52,7 @@ public:
 
     UnicodeString &format(Calendar &cal, UnicodeString &appendTo, FieldPosition &pos) const;
 
-    using DateFormat::format;
+    UnicodeString& format(UDate date, UnicodeString& appendTo) const;
 
     void parse(const UnicodeString& text, Calendar& cal, ParsePosition& pos) const;
 
@@ -123,11 +121,15 @@ private:
     UnicodeString *fDateTimeMsg;
     DateFormat::EStyle fTimeStyle;
     DateFormat::EStyle fDateStyle;
-    Locale fLocale;
+    const Locale *fLocale;
     int32_t fLCID;
     UnicodeString fZoneID;
     TIME_ZONE_INFORMATION *fTZI;
 };
+
+inline UnicodeString &Win32DateFormat::format(UDate date, UnicodeString& appendTo) const {
+    return DateFormat::format(date, appendTo);
+}
 
 U_NAMESPACE_END
 

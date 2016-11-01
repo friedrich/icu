@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-* Copyright (c) 2004-2014, International Business Machines
+* Copyright (c) 2004-2012, International Business Machines
 * Corporation and others.  All Rights Reserved.
 **********************************************************************
 * Author: Alan Liu
@@ -10,6 +8,8 @@
 * Since: ICU 3.0
 **********************************************************************
 */
+#include "utypeinfo.h"  // for 'typeid' to work
+
 #include "unicode/utypes.h"
 
 #if !UCONFIG_NO_FORMATTING
@@ -24,9 +24,6 @@ CurrencyUnit::CurrencyUnit(const UChar* _isoCode, UErrorCode& ec) {
     if (U_SUCCESS(ec)) {
         if (_isoCode && u_strlen(_isoCode)==3) {
             u_strcpy(isoCode, _isoCode);
-            char simpleIsoCode[4];
-            u_UCharsToChars(isoCode, simpleIsoCode, 4);
-            initCurrency(simpleIsoCode);
         } else {
             ec = U_ILLEGAL_ARGUMENT_ERROR;
         }
@@ -35,15 +32,13 @@ CurrencyUnit::CurrencyUnit(const UChar* _isoCode, UErrorCode& ec) {
 
 CurrencyUnit::CurrencyUnit(const CurrencyUnit& other) :
     MeasureUnit(other) {
-    u_strcpy(isoCode, other.isoCode);
+    *this = other;
 }
 
 CurrencyUnit& CurrencyUnit::operator=(const CurrencyUnit& other) {
-    if (this == &other) {
-        return *this;
+    if (this != &other) {
+        u_strcpy(isoCode, other.isoCode);
     }
-    MeasureUnit::operator=(other);
-    u_strcpy(isoCode, other.isoCode);
     return *this;
 }
 
@@ -54,6 +49,12 @@ UObject* CurrencyUnit::clone() const {
 CurrencyUnit::~CurrencyUnit() {
 }
     
+UBool CurrencyUnit::operator==(const UObject& other) const {
+    const CurrencyUnit& c = (const CurrencyUnit&) other;
+    return typeid(*this) == typeid(other) &&
+        u_strcmp(isoCode, c.isoCode) == 0;    
+}
+
 UOBJECT_DEFINE_RTTI_IMPLEMENTATION(CurrencyUnit)
 
 U_NAMESPACE_END

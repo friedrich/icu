@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ******************************************************************************
- * Copyright (C) 2005-2016, International Business Machines Corporation and    *
+ * Copyright (C) 2005-2011, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                               *
  ******************************************************************************
 */
@@ -141,7 +139,7 @@ package com.ibm.icu.util;
  * </p>
  * 
  * <pre>
- *  public class A implements Freezable&lt;A&gt; {
+ *  public class A implements Freezable<A> {
  *   ...
  *   public final boolean isFrozen() {return true;}
  *   public final A freeze() {return this;}
@@ -160,7 +158,7 @@ package com.ibm.icu.util;
  * </p>
  * 
  * <pre>
- * protected volatile boolean frozen; // WARNING: must be volatile
+ * protected boolean immutable;
  * </pre>
  * 
  * <p>
@@ -173,7 +171,7 @@ package com.ibm.icu.util;
  * };
  * 
  * public A freeze() {
- *      frozen = true;  // WARNING: must be final statement before return
+ *      frozen = true;
  *      return this;
  * }
  * </pre>
@@ -247,8 +245,7 @@ package com.ibm.icu.util;
  * fields frozen, and set the frozen flag. Any subsequent getter/setter will
  * work properly. Here is an example:
  * </p>
- * <p><b>Warning!</b> The 'frozen' boolean MUST be volatile, and must be set as the last statement
- * in the method.</p>
+ * 
  * <pre>
  * public A freeze() {
  *      if (!frozen) {

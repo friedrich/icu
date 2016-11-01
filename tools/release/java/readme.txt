@@ -1,6 +1,4 @@
-# Copyright (C) 2016 and later: Unicode, Inc. and others.
-# License & terms of use: http://www.unicode.org/copyright.html
-# Copyright (C) 2009-2013 IBM and Others. All Rights Reserved
+# Copyright (C) 2009-2011 IBM and Others. All Rights Reserved
 
 API Change Report:
 
@@ -14,12 +12,11 @@ Requirements:
      but an older Doxygen may work for the API Change Report.
   - Java JDK 1.5+
   - Apache Ant
-  - Note: if you have trouble with null output, put xalan.jar and xercesImpl.jar from <http://xalan.apache.org/xalan-j/downloads.html#latest-release> into ./lib/
 
 To use the utility:
  1. Put both old and new ICU source trees on your system
  2. Run "configure" in both old and new (you can use any mixture of in-source and out-of-source builds). Doxygen must be found during the configure phase, but you do not need to build the standard API docs.
- 3. create a Makefile.local in this readme's directory (tools/trunk/release/java/) 
+ 3. create a Makefile.local in this readme's directory (tools/release/java/) 
             with just these two lines:
 			OLD_ICU=/xsrl/E/icu-1.0
 			NEW_ICU=/xsrl/E/icu-6.8

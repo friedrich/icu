@@ -1,19 +1,28 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/rbnf/ko.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/rbnf/ko.xml
+ */
 ko{
     RBNFRules{
         SpelloutRules{
             "%spellout-numbering-year:",
-            "x.x: =0.0=;",
+            "x.x: =#,###0.#=;",
             "0: =%spellout-numbering=;",
             "%spellout-numbering:",
-            "0.x: <%spellout-cardinal-sinokorean<\uC810>>>;",
-            "x.x: <<\uC810>>>;",
+            "0.x: =%spellout-cardinal-sinokorean=;",
+            "x.x: <<\uC810 >%%spellout-fraction>;",
             "0: \uACF5;",
             "1: =%spellout-cardinal-sinokorean=;",
             "%spellout-cardinal-sinokorean:",
             "-x: \uB9C8\uC774\uB108\uC2A4 >>;",
-            "x.x: <<\uC810>>>;",
+            "x.x: <<\uC810 >%%spellout-fraction>;",
             "0: \uC601;",
             "1: \uC77C;",
             "2: \uC774;",
@@ -35,10 +44,10 @@ ko{
             "100000000: <<\uC5B5[ >>];",
             "1000000000000: <<\uC870[ >>];",
             "10000000000000000: <<\uACBD[ >>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%spellout-cardinal-native-attributive:",
             "-x: \uB9C8\uC774\uB108\uC2A4 >>;",
-            "x.x: =%spellout-cardinal-sinokorean=;",
+            "x.x: <<\uC810 >%%spellout-fraction>;",
             "0: \uC601;",
             "1: \uD55C;",
             "2: \uB450;",
@@ -68,10 +77,10 @@ ko{
             "100000000: <%spellout-cardinal-sinokorean<\uC5B5[ >>];",
             "1000000000000: <%spellout-cardinal-sinokorean<\uC870[ >>];",
             "10000000000000000: <%spellout-cardinal-sinokorean<\uACBD[ >>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%spellout-cardinal-native:",
             "-x: \uB9C8\uC774\uB108\uC2A4 >>;",
-            "x.x: =%spellout-cardinal-sinokorean=;",
+            "x.x: <<\uC810 >%%spellout-fraction>;",
             "0: \uC601;",
             "1: \uD558\uB098;",
             "2: \uB458;",
@@ -94,7 +103,7 @@ ko{
             "100: =%spellout-cardinal-sinokorean=;",
             "%spellout-cardinal-financial:",
             "-x: \uB9C8\uC774\uB108\uC2A4 >>;",
-            "x.x: =%spellout-cardinal-sinokorean=;",
+            "x.x: <<\uC810 >%%spellout-fraction>;",
             "0: \uC601;",
             "1: \uC77C;",
             "2: \uC774;",
@@ -112,10 +121,10 @@ ko{
             "100000000: <<\uC5B5[>>];",
             "1000000000000: <<\uC870[>>];",
             "10000000000000000: <<\uACBD[>>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%spellout-ordinal-sinokorean-count:",
             "-x: \uB9C8\uC774\uB108\uC2A4 >>;",
-            "x.x: =#,##0.#=;",
+            "x.x: =#,###0.#=;",
             "0: =%%spellout-ordinal-native-count-smaller= \uBC88\uC9F8;",
             "10: =%%spellout-ordinal-sinokorean-count-smaller= \uBC88\uC9F8;",
             "%%spellout-ordinal-sinokorean-count-smaller:",
@@ -163,7 +172,7 @@ ko{
             "10000000000000000: <<\uACBD[ >>];",
             "%spellout-ordinal-native-count:",
             "-x: \uB9C8\uC774\uB108\uC2A4 >>;",
-            "x.x: =#,##0.#=;",
+            "x.x: =#,###0.#=;",
             "0: =%%spellout-ordinal-native-count-smaller= \uBC88\uC9F8;",
             "%%spellout-ordinal-native-count-smaller:",
             "0: \uC601;",
@@ -190,13 +199,13 @@ ko{
             "100000000: <%spellout-cardinal-sinokorean<\uC5B5[ >>];",
             "1000000000000: <%spellout-cardinal-sinokorean<\uC870[ >>];",
             "10000000000000000: <%spellout-cardinal-sinokorean<\uACBD[ >>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%spellout-ordinal-sinokorean:",
             "0: =%spellout-ordinal-native=;",
             "50: =%spellout-cardinal-sinokorean=\uC9F8;",
             "100: =%%spellout-ordinal-sinokorean-count-larger=\uC9F8;",
             "%spellout-ordinal-native:",
-            "x.x: =#,##0.#=;",
+            "x.x: =#,###0.#=;",
             "-x: \uB9C8\uC774\uB108\uC2A4 >>;",
             "0: =%%spellout-ordinal-native-priv=\uC9F8;",
             "%%spellout-ordinal-native-priv:",
@@ -234,12 +243,35 @@ ko{
             "100000000: <%spellout-cardinal-sinokorean<\uC5B5[ >%%spellout-ordinal-native-smaller-x02>];",
             "1000000000000: <%spellout-cardinal-sinokorean<\uC870[ >%%spellout-ordinal-native-smaller-x02>];",
             "10000000000000000: <%spellout-cardinal-sinokorean<\uACBD[ >%%spellout-ordinal-native-smaller-x02>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%%spellout-ordinal-native-smaller-x02:",
             "0: =%%spellout-ordinal-native-smaller=;",
             "2: \uB458;",
             "3: =%%spellout-ordinal-native-smaller=;",
+            "%%spellout-fraction:",
+            "10: <%%spellout-fraction-digits<<;",
+            "100: <%%spellout-fraction-digits<<;",
+            "1000: <%%spellout-fraction-digits<<;",
+            "10000: <%%spellout-fraction-digits<<;",
+            "100000: <%%spellout-fraction-digits<<;",
+            "1000000: <%%spellout-fraction-digits<<;",
+            "10000000: <%%spellout-fraction-digits<<;",
+            "100000000: <%%spellout-fraction-digits<<;",
+            "1000000000: <%%spellout-fraction-digits<<;",
+            "10000000000: <0<;",
+            "%%spellout-fraction-digits:",
+            "0: \uC601;",
+            "1: \uC77C;",
+            "2: \uC774;",
+            "3: \uC0BC;",
+            "4: \uC0AC;",
+            "5: \uC624;",
+            "6: \uC721;",
+            "7: \uCE60;",
+            "8: \uD314;",
+            "9: \uAD6C;",
+            "10: <<>>;",
         }
     }
-    Version{"2.1.27.22"}
+    Version{"2.0.76.31"}
 }

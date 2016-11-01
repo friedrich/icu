@@ -1,15 +1,24 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/rbnf/zh.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/rbnf/zh.xml
+ */
 zh{
     RBNFRules{
         OrdinalRules{
             "%digits-ordinal:",
-            "-x: \u7B2C\u2212>#,##0>;",
-            "0: \u7B2C=#,##0=;",
+            "-x: \u7B2C\u2212>#,###0>;",
+            "0: \u7B2C=#,###0=;",
         }
         SpelloutRules{
             "%spellout-numbering-year:",
-            "x.x: =0.0=;",
+            "x.x: =#,###0.#=;",
             "0: =%spellout-numbering=;",
             "1000: =%%spellout-numbering-year-digits=;",
             "10000: =%spellout-numbering=;",
@@ -18,21 +27,6 @@ zh{
             "10: <<>>>;",
             "100: <<>>>;",
             "1000: <<>>>;",
-            "%spellout-numbering-days:",
-            "-x: \u8D1F>>;",
-            "x.x: =#,##0.#=;",
-            "0: \u3007;",
-            "1: \u521D=%spellout-numbering=;",
-            "11: =%spellout-numbering=;",
-            "21: =%%numbering-days=;",
-            "%%numbering-days:",
-            "0: =%spellout-numbering=;",
-            "21: \u5EFF>>;",
-            "30: <<\u5341;",
-            "31: \u4E17>>;",
-            "40: <<\u5341;",
-            "41: \u534C>>;",
-            "50: =%spellout-numbering=;",
             "%spellout-numbering:",
             "-x: \u8D1F>>;",
             "x.x: <<\u70B9>>>;",
@@ -54,7 +48,7 @@ zh{
             "100000000: <<\u4EBF[>%%number5>];",
             "1000000000000: <<\u5146[>%%number8>];",
             "10000000000000000: <<\u4EAC[>%%number13>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%%number2:",
             "1: \u3007=%spellout-numbering=;",
             "10: \u4E00=%spellout-numbering=;",
@@ -101,11 +95,11 @@ zh{
             "20: <<\u62FE[>>];",
             "100: <<\u4F70[>%%financialnumber2>];",
             "1000: <<\u4EDF[>%%financialnumber3>];",
-            "10000: <<\u4E07[>%%financialnumber4>];",
+            "10000: <<\u842C[>%%financialnumber4>];",
             "100000000: <<\u4EBF[>%%financialnumber5>];",
             "1000000000000: <<\u5146[>%%financialnumber8>];",
             "10000000000000000: <<\u4EAC[>%%financialnumber13>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%%financialnumber2:",
             "1: \u96F6=%spellout-cardinal-financial=;",
             "10: \u58F9=%spellout-cardinal-financial=;",
@@ -137,7 +131,7 @@ zh{
             "1000000000000: =%spellout-cardinal-financial=;",
             "%spellout-cardinal:",
             "-x: \u8D1F>>;",
-            "x.x: <<\u70B9>>>;",
+            "x.x: <<\u70B9>%%spellout-fraction>;",
             "0: \u96F6;",
             "1: \u4E00;",
             "2: \u4E8C;",
@@ -155,7 +149,7 @@ zh{
             "100000000: <<\u4EBF[>%%cardinal5>];",
             "1000000000000: <<\u5146[>%%cardinal8>];",
             "10000000000000000: <<\u4EAC[>%%cardinal13>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%%cardinal2:",
             "1: \u96F6=%spellout-numbering=;",
             "10: \u4E00=%spellout-numbering=;",
@@ -187,7 +181,7 @@ zh{
             "1000000000000: =%spellout-cardinal=;",
             "%spellout-cardinal-alternate2:",
             "-x: \u8D1F>>;",
-            "x.x: =%spellout-cardinal=;",
+            "x.x: <<\u70B9>%%spellout-fraction>;",
             "0: \u96F6;",
             "1: \u4E00;",
             "2: \u4E24;",
@@ -205,7 +199,7 @@ zh{
             "100000000: <<\u4EBF[>%%cardinal-alternate2-5>];",
             "1000000000000: <<\u5146[>%%cardinal-alternate2-8>];",
             "10000000000000000: <<\u4EAC[>%%cardinal-alternate2-13>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%%cardinal-alternate2-2:",
             "1: \u96F6=%spellout-numbering=;",
             "10: \u4E00=%spellout-numbering=;",
@@ -235,10 +229,24 @@ zh{
             "10: \u96F6\u4E00=%spellout-cardinal-alternate2=;",
             "20: \u96F6=%spellout-cardinal-alternate2=;",
             "1000000000000: =%spellout-cardinal-alternate2=;",
+            "%%spellout-fraction:",
+            "10: <%%spellout-fraction-digits<;",
+            "100: <%%spellout-fraction-digits<;",
+            "1000: <%%spellout-fraction-digits<;",
+            "10000: <%%spellout-fraction-digits<;",
+            "100000: <%%spellout-fraction-digits<;",
+            "1000000: <%%spellout-fraction-digits<;",
+            "10000000: <%%spellout-fraction-digits<;",
+            "100000000: <%%spellout-fraction-digits<;",
+            "1000000000: <%%spellout-fraction-digits<;",
+            "10000000000: <0<;",
+            "%%spellout-fraction-digits:",
+            "0: =%spellout-numbering=;",
+            "10: <<>>;",
             "%spellout-ordinal:",
-            "x.x: =#,##0.#=;",
+            "x.x: =#,###0.#=;",
             "0: \u7B2C=%spellout-numbering=;",
         }
     }
-    Version{"2.1.27.22"}
+    Version{"2.0.76.62"}
 }

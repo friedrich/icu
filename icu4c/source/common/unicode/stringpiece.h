@@ -1,6 +1,4 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
-// Copyright (C) 2009-2013, International Business Machines
+// Copyright (C) 2009-2012, International Business Machines
 // Corporation and others. All Rights Reserved.
 //
 // Copyright 2001 and onwards Google Inc.
@@ -42,9 +40,9 @@ U_NAMESPACE_BEGIN
  * in a "const char*" or a "string" wherever a "StringPiece" is
  * expected.
  *
- * Functions or methods may use StringPiece parameters to accept either a
- * "const char*" or a "string" value that will be implicitly converted to a
- * StringPiece.
+ * Functions or methods may use const StringPiece& parameters to accept either
+ * a "const char*" or a "string" value that will be implicitly converted to
+ * a StringPiece.
  *
  * Systematic usage of StringPiece is encouraged as it will reduce unnecessary
  * conversions from "const char*" to "string" and back again.
@@ -185,7 +183,7 @@ class U_COMMON_API StringPiece : public UMemory {
    * Maximum integer, used as a default value for substring methods.
    * @stable ICU 4.2
    */
-  static const int32_t npos; // = 0x7fffffff;
+  static const int32_t npos = 0x7fffffff;
 
   /**
    * Returns a substring of this StringPiece.

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ********************************************************************************
-*   Copyright (C) 2005-2016, International Business Machines
+*   Copyright (C) 2005-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ********************************************************************************
 *
@@ -21,7 +19,7 @@
 #include "unicode/format.h"
 #include "unicode/fmtable.h"
 #include "unicode/datefmt.h"
-#include "unicode/simpleformatter.h"
+#include "unicode/msgfmt.h"
 #include "unicode/calendar.h"
 #include "unicode/gregocal.h"
 #include "unicode/locid.h"
@@ -47,6 +45,8 @@ U_NAMESPACE_BEGIN
 
 UOBJECT_DEFINE_RTTI_IMPLEMENTATION(Win32DateFormat)
 
+#define ARRAY_SIZE(array) (sizeof array / sizeof array[0])
+
 #define NEW_ARRAY(type,count) (type *) uprv_malloc((count) * sizeof(type))
 #define DELETE_ARRAY(array) uprv_free((void *) (array))
 
@@ -70,7 +70,7 @@ UnicodeString* Win32DateFormat::getTimeDateFormat(const Calendar *cal, const Loc
 
     if (U_FAILURE(status)) {
         static const UChar defaultPattern[] = {0x007B, 0x0031, 0x007D, 0x0020, 0x007B, 0x0030, 0x007D, 0x0000}; // "{1} {0}"
-        return new UnicodeString(defaultPattern, UPRV_LENGTHOF(defaultPattern));
+        return new UnicodeString(defaultPattern, ARRAY_SIZE(defaultPattern));
     }
 
     int32_t resStrLen = 0;
@@ -94,7 +94,7 @@ UnicodeString* Win32DateFormat::getTimeDateFormat(const Calendar *cal, const Loc
 
 // TODO: Range-check timeStyle, dateStyle
 Win32DateFormat::Win32DateFormat(DateFormat::EStyle timeStyle, DateFormat::EStyle dateStyle, const Locale &locale, UErrorCode &status)
-  : DateFormat(), fDateTimeMsg(NULL), fTimeStyle(timeStyle), fDateStyle(dateStyle), fLocale(locale), fZoneID()
+  : DateFormat(), fDateTimeMsg(NULL), fTimeStyle(timeStyle), fDateStyle(dateStyle), fLocale(&locale), fZoneID()
 {
     if (U_SUCCESS(status)) {
         fLCID = locale.getLCID();
@@ -124,10 +124,9 @@ Win32DateFormat &Win32DateFormat::operator=(const Win32DateFormat &other)
 
 //    delete fCalendar;
 
-    this->fDateTimeMsg = other.fDateTimeMsg == NULL ? NULL : new UnicodeString(*other.fDateTimeMsg);
+    this->fDateTimeMsg = other.fDateTimeMsg;
     this->fTimeStyle   = other.fTimeStyle;
     this->fDateStyle   = other.fDateStyle;
-    this->fLocale      = other.fLocale;
     this->fLCID        = other.fLCID;
 //    this->fCalendar    = other.fCalendar->clone();
     this->fZoneID      = other.fZoneID;
@@ -167,18 +166,22 @@ UnicodeString &Win32DateFormat::format(Calendar &cal, UnicodeString &appendTo, F
 
 
     if (fDateStyle != DateFormat::kNone && fTimeStyle != DateFormat::kNone) {
-        UnicodeString date;
-        UnicodeString time;
+        UnicodeString *date = new UnicodeString();
+        UnicodeString *time = new UnicodeString();
         UnicodeString *pattern = fDateTimeMsg;
+        Formattable timeDateArray[2];
 
-        formatDate(&st_local, date);
-        formatTime(&st_local, time);
+        formatDate(&st_local, *date);
+        formatTime(&st_local, *time);
+
+        timeDateArray[0].adoptString(time);
+        timeDateArray[1].adoptString(date);
 
         if (strcmp(fCalendar->getType(), cal.getType()) != 0) {
-            pattern = getTimeDateFormat(&cal, &fLocale, status);
+            pattern = getTimeDateFormat(&cal, fLocale, status);
         }
 
-        SimpleFormatter(*pattern, 2, 2, status).format(time, date, appendTo, status);
+        MessageFormat::format(*pattern, timeDateArray, 2, appendTo, status);
     } else if (fDateStyle != DateFormat::kNone) {
         formatDate(&st_local, appendTo);
     } else if (fTimeStyle != DateFormat::kNone) {
@@ -200,7 +203,7 @@ void Win32DateFormat::adoptCalendar(Calendar *newCalendar)
 
         if (fDateStyle != DateFormat::kNone && fTimeStyle != DateFormat::kNone) {
             delete fDateTimeMsg;
-            fDateTimeMsg = getTimeDateFormat(newCalendar, &fLocale, status);
+            fDateTimeMsg = getTimeDateFormat(newCalendar, fLocale, status);
         }
     }
 
@@ -232,8 +235,8 @@ static const DWORD dfFlags[] = {DATE_LONGDATE, DATE_LONGDATE, DATE_SHORTDATE, DA
 void Win32DateFormat::formatDate(const SYSTEMTIME *st, UnicodeString &appendTo) const
 {
     int result;
-    wchar_t stackBuffer[STACK_BUFFER_SIZE];
-    wchar_t *buffer = stackBuffer;
+    UChar stackBuffer[STACK_BUFFER_SIZE];
+    UChar *buffer = stackBuffer;
 
     result = GetDateFormatW(fLCID, dfFlags[fDateStyle - kDateOffset], st, NULL, buffer, STACK_BUFFER_SIZE);
 
@@ -241,12 +244,12 @@ void Win32DateFormat::formatDate(const SYSTEMTIME *st, UnicodeString &appendTo) 
         if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
             int newLength = GetDateFormatW(fLCID, dfFlags[fDateStyle - kDateOffset], st, NULL, NULL, 0);
 
-            buffer = NEW_ARRAY(wchar_t, newLength);
+            buffer = NEW_ARRAY(UChar, newLength);
             GetDateFormatW(fLCID, dfFlags[fDateStyle - kDateOffset], st, NULL, buffer, newLength);
         }
     }
 
-    appendTo.append((const UChar *)buffer, (int32_t) wcslen(buffer));
+    appendTo.append(buffer, (int32_t) wcslen(buffer));
 
     if (buffer != stackBuffer) {
         DELETE_ARRAY(buffer);
@@ -258,8 +261,8 @@ static const DWORD tfFlags[] = {0, 0, 0, TIME_NOSECONDS};
 void Win32DateFormat::formatTime(const SYSTEMTIME *st, UnicodeString &appendTo) const
 {
     int result;
-    wchar_t stackBuffer[STACK_BUFFER_SIZE];
-    wchar_t *buffer = stackBuffer;
+    UChar stackBuffer[STACK_BUFFER_SIZE];
+    UChar *buffer = stackBuffer;
 
     result = GetTimeFormatW(fLCID, tfFlags[fTimeStyle], st, NULL, buffer, STACK_BUFFER_SIZE);
 
@@ -267,12 +270,12 @@ void Win32DateFormat::formatTime(const SYSTEMTIME *st, UnicodeString &appendTo) 
         if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
             int newLength = GetTimeFormatW(fLCID, tfFlags[fTimeStyle], st, NULL, NULL, 0);
 
-            buffer = NEW_ARRAY(wchar_t, newLength);
+            buffer = NEW_ARRAY(UChar, newLength);
             GetDateFormatW(fLCID, tfFlags[fTimeStyle], st, NULL, buffer, newLength);
         }
     }
 
-    appendTo.append((const UChar *)buffer, (int32_t) wcslen(buffer));
+    appendTo.append(buffer, (int32_t) wcslen(buffer));
 
     if (buffer != stackBuffer) {
         DELETE_ARRAY(buffer);

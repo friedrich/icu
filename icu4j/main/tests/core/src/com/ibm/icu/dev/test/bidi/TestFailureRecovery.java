@@ -1,15 +1,11 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2007-2013, International Business Machines
+*   Copyright (C) 2007, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 */
 
 package com.ibm.icu.dev.test.bidi;
-
-import org.junit.Test;
 
 import com.ibm.icu.text.Bidi;
 
@@ -19,22 +15,19 @@ import com.ibm.icu.text.Bidi;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestFailureRecovery extends BidiFmwk {
+public class TestFailureRecovery extends BidiTest {
 
-    @Test
     public void testFailureRecovery()
     {
         logln("\nEntering TestFailureRecovery\n");
         Bidi bidi = new Bidi();
-        // Skip the following test since there are no invalid values
-        // between MAX_EXPLICIT_LEVEL+1 and LEVEL_DEFAULT_LTR
-        //try {
-        //    bidi.setPara("abc", (byte)(Bidi.LEVEL_DEFAULT_LTR - 1), null);
-        //    errln("Bidi.setPara did not fail when passed too big para level");
-        //} catch (IllegalArgumentException e) {
-        //    logln("OK: Got exception for bidi.setPara(..., Bidi.LEVEL_DEFAULT_LTR - 1, ...)"
-        //            + " as expected: " + e.getMessage());
-        //}
+        try {
+            bidi.setPara("abc", (byte)(Bidi.LEVEL_DEFAULT_LTR - 1), null);
+            errln("Bidi.setPara did not fail when passed too big para level");
+        } catch (IllegalArgumentException e) {
+            logln("OK: Got exception for bidi.setPara(..., Bidi.LEVEL_DEFAULT_LTR - 1, ...)"
+                    + " as expected: " + e.getMessage());
+        }
         try {
             bidi.setPara("abc", (byte)(-1), null);
             errln("Bidi.setPara did not fail when passed negative para level");
@@ -120,5 +113,15 @@ public class TestFailureRecovery extends BidiFmwk {
         }
 
         logln("\nExiting TestFailureRecovery\n");
+    }
+
+
+    public static void main(String[] args) {
+        try {
+            new TestFailureRecovery().run(args);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

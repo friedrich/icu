@@ -1,48 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/en_AU.xml
+// *
+// ***************************************************************************
 en_AU{
-    %%Parent{"en_001"}
-    NumberElements{
-        latn{
-            symbols{
-                exponential{"e"}
-            }
-        }
-    }
-    Version{"2.1.30.50"}
+    %%Parent{"en_GB"}
+    Version{"2.0.78.47"}
     calendar{
-        generic{
-            availableFormats{
-                yMEd{"E, dd/MM/y"}
-                yMd{"dd/MM/y"}
-            }
-            intervalFormats{
-                MEd{
-                    M{"E, d/M – E, d/M"}
-                    d{"E, d/M – E, d/M"}
-                }
-                MMMEd{
-                    M{"E, d MMM – E, d MMM"}
-                    d{"E, d MMM – E, d MMM"}
-                }
-                yMMMEd{
-                    d{"E, d MMM – E, d MMM y G"}
-                }
-            }
-        }
         gregorian{
-            AmPmMarkers{
-                "am",
-                "pm",
-            }
-            AmPmMarkersAbbr{
-                "am",
-                "pm",
-            }
-            AmPmMarkersNarrow{
-                "am",
-                "pm",
-            }
             DateTimePatterns{
                 "h:mm:ss a zzzz",
                 "h:mm:ss a z",
@@ -50,166 +18,94 @@ en_AU{
                 "h:mm a",
                 "EEEE, d MMMM y",
                 "d MMMM y",
-                "d MMM y",
-                "d/M/yy",
-                "{1}, {0}",
-                "{1} 'at' {0}",
-                "{1} 'at' {0}",
-                "{1}, {0}",
-                "{1}, {0}",
+                "dd/MM/yyyy",
+                "d/MM/yy",
+                "{1} {0}",
+                "{1} {0}",
+                "{1} {0}",
+                "{1} {0}",
+                "{1} {0}",
             }
-            dayNames{
-                format{
-                    abbreviated{
-                        "Sun.",
-                        "Mon.",
-                        "Tue.",
-                        "Wed.",
-                        "Thu.",
-                        "Fri.",
-                        "Sat.",
-                    }
-                    narrow{
-                        "Su.",
-                        "M.",
-                        "Tu.",
-                        "W.",
-                        "Th.",
-                        "F.",
-                        "Sa.",
-                    }
-                    short{
-                        "Su.",
-                        "Mon.",
-                        "Tu.",
-                        "Wed.",
-                        "Th.",
-                        "Fri.",
-                        "Sat.",
-                    }
-                }
-                stand-alone{
-                    narrow{
-                        "Su.",
-                        "M.",
-                        "Tu.",
-                        "W.",
-                        "Th.",
-                        "F.",
-                        "Sa.",
-                    }
-                    short{
-                        "Su.",
-                        "Mon.",
-                        "Tu.",
-                        "Wed.",
-                        "Th.",
-                        "Fri.",
-                        "Sat.",
-                    }
-                }
+            availableFormats{
+                MEd{"E, d/M"}
+                MMMEd{"E, d MMM"}
+                yMEd{"E, d/M/y"}
+                yMd{"d/M/y"}
             }
-            dayPeriod{
-                format{
-                    abbreviated{
-                        afternoon1{"afternoon"}
-                        evening1{"evening"}
-                        midnight{"midnight"}
-                        morning1{"morning"}
-                        night1{"night"}
-                        noon{"midday"}
-                    }
-                    narrow{
-                        afternoon1{"afternoon"}
-                        evening1{"evening"}
-                        midnight{"midnight"}
-                        morning1{"morning"}
-                        night1{"night"}
-                        noon{"midday"}
-                    }
-                    wide{
-                        afternoon1{"in the afternoon"}
-                        evening1{"in the evening"}
-                        midnight{"midnight"}
-                        morning1{"in the morning"}
-                        night1{"at night"}
-                        noon{"midday"}
-                    }
+            intervalFormats{
+                M{
+                    M{"M-M"}
                 }
-                stand-alone{
-                    abbreviated{
-                        noon{"midday"}
-                    }
-                    narrow{
-                        am{"am"}
-                        noon{"midday"}
-                        pm{"pm"}
-                    }
-                    wide{
-                        am{"am"}
-                        noon{"midday"}
-                        pm{"pm"}
-                    }
+                MEd{
+                    M{"E, d/MM - E, d/MM"}
+                    d{"E, d/MM - E, d/MM"}
+                }
+                MMM{
+                    M{"MMM-MMM"}
+                }
+                MMMEd{
+                    M{"E, d MMM - E, d MMM"}
+                    d{"E, d - E, d MMM"}
+                }
+                MMMd{
+                    M{"d MMM - d MMM"}
+                    d{"d-d MMM"}
+                }
+                Md{
+                    M{"d/MM - d/MM"}
+                    d{"d/MM - d/MM"}
+                }
+                d{
+                    d{"d-d"}
+                }
+                fallback{"{0} - {1}"}
+                h{
+                    a{"h a - h a"}
+                    h{"h-h a"}
+                }
+                hm{
+                    a{"h:mm a - h:mm a"}
+                    h{"h:mm-h:mm a"}
+                    m{"h:mm-h:mm a"}
+                }
+                hmv{
+                    a{"h:mm a - h:mm a v"}
+                    h{"h:mm-h:mm a v"}
+                    m{"h:mm-h:mm a v"}
+                }
+                hv{
+                    a{"h a - h a v"}
+                    h{"h-h a v"}
+                }
+                yM{
+                    M{"MM/yy - MM/yy"}
+                    y{"MM/yy - MM/yy"}
+                }
+                yMEd{
+                    M{"E, d/MM/yy - E, d/MM/yy"}
+                    d{"E, d/MM/yy - E, d/MM/yy"}
+                    y{"E, d/MM/yy - E, d/MM/yy"}
+                }
+                yMMM{
+                    M{"MMM-MMM y"}
+                    y{"MMM y - MMM y"}
+                }
+                yMMMEd{
+                    M{"E, d MMM - E, d MMM y"}
+                    d{"E, d - E, d MMM y"}
+                    y{"E, d MMM y - E, d MMM y"}
+                }
+                yMMMd{
+                    M{"d MMM - d MMM y"}
+                    d{"d-d MMM y"}
+                    y{"d MMM y - d MMM y"}
+                }
+                yMd{
+                    M{"d/MM/yy - d/MM/yy"}
+                    d{"d/MM/yy - d/MM/yy"}
+                    y{"d/MM/yy - d/MM/yy"}
                 }
             }
-            monthNames{
-                format{
-                    abbreviated{
-                        "Jan.",
-                        "Feb.",
-                        "Mar.",
-                        "Apr.",
-                        "May",
-                        "Jun.",
-                        "Jul.",
-                        "Aug.",
-                        "Sep.",
-                        "Oct.",
-                        "Nov.",
-                        "Dec.",
-                    }
-                }
-                stand-alone{
-                    abbreviated{
-                        "Jan.",
-                        "Feb.",
-                        "Mar.",
-                        "Apr.",
-                        "May",
-                        "Jun.",
-                        "Jul.",
-                        "Aug.",
-                        "Sep.",
-                        "Oct.",
-                        "Nov.",
-                        "Dec.",
-                    }
-                }
-            }
-        }
-    }
-    characterLabel{
-        nonspacing{"Non-spacing"}
-    }
-    fields{
-        hour-short{
-            dn{"h"}
-        }
-        quarter-narrow{
-            relativeTime{
-                past{
-                    one{"in {0} qtr. ago"}
-                    other{"{0} qtrs. ago"}
-                }
-            }
-        }
-    }
-    listPattern{
-        standard{
-            end{"{0} and {1}"}
-        }
-        standard-short{
-            end{"{0} and {1}"}
         }
     }
 }

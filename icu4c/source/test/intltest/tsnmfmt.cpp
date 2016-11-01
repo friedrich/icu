@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /***********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2012, International Business Machines Corporation
+ * Copyright (c) 1997-2011, International Business Machines Corporation
  * and others. All Rights Reserved.
  ***********************************************************************/
 
@@ -371,7 +369,7 @@ IntlTestNumberFormat::tryIt(int32_t aNumber)
     fFormat->format(number, stringNum, status);
     if (U_FAILURE(status))
     {
-        errln(UnicodeString("**** FAIL: Formatting ") + aNumber);
+        errln("**** FAIL: Formatting " + aNumber);
         return;
     }
     fFormat->parse(stringNum, number, status);

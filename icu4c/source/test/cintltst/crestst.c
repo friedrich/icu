@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2010, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 /*******************************************************************************
@@ -20,7 +18,6 @@
 #include "unicode/utypes.h"
 #include "cintltst.h"
 #include "unicode/ustring.h"
-#include "cmemory.h"
 #include "cstring.h"
 #include "filestrm.h"
 #include <stdlib.h>
@@ -30,6 +27,10 @@
 #include "unicode/ures.h"
 #include "crestst.h"
 #include "unicode/ctest.h"
+
+#include "ucol_imp.h" /* collation */
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 static void TestOpenDirect(void);
 static void TestFallback(void);
@@ -80,7 +81,7 @@ static struct
   { "ne",           U_USING_DEFAULT_WARNING,  e_Root,    { TRUE, FALSE, FALSE }, { TRUE, FALSE, FALSE } }
 };
 
-static int32_t bundles_count = UPRV_LENGTHOF(param);
+static int32_t bundles_count = sizeof(param) / sizeof(param[0]);
 
 
 
@@ -437,7 +438,6 @@ static void TestFallback()
 
     /* clear it out..  just do some calls to get the gears turning */
     junk = ures_getStringByKey(fr_FR, "LocaleID", &resultLen, &status);
-    (void)junk;    /* Suppress set but not used warning. */
     status = U_ZERO_ERROR;
     junk = ures_getStringByKey(fr_FR, "LocaleString", &resultLen, &status);
     status = U_ZERO_ERROR;
@@ -445,10 +445,10 @@ static void TestFallback()
     status = U_ZERO_ERROR;
 
     /* OK first one. This should be a Default value. */
-    subResource = ures_getByKey(fr_FR, "layout", NULL, &status);
+    subResource = ures_getByKey(fr_FR, "MeasurementSystem", NULL, &status);
     if(status != U_USING_DEFAULT_WARNING)
     {
-        log_data_err("Expected U_USING_DEFAULT_ERROR when trying to get layout from fr_FR, got %s\n",
+        log_data_err("Expected U_USING_DEFAULT_ERROR when trying to get CurrencyMap from fr_FR, got %s\n",
             u_errorName(status));
     }
     ures_close(subResource);
@@ -715,7 +715,7 @@ TestTable32(void) {
     }
 
     /* search for some items by key */
-    for(i=0; i<UPRV_LENGTHOF(testcases); ++i) {
+    for(i=0; i<LENGTHOF(testcases); ++i) {
         item=ures_getByKey(res, testcases[i].key, item, &errorCode);
         if(U_FAILURE(errorCode)) {
             log_err("unable to find the key \"%s\" in testdata/testtable32.res - %s\n",
@@ -929,7 +929,7 @@ static void TestGetSize(void) {
         return;
     }
     
-    for(i = 0; i < UPRV_LENGTHOF(test); i++) {
+    for(i = 0; i < sizeof(test)/sizeof(test[0]); i++) {
         res = ures_getByKey(rb, test[i].key, res, &status);
         if(U_FAILURE(status))
         {
@@ -980,7 +980,7 @@ static void TestGetLocaleByType(void) {
         return;
     }
     
-    for(i = 0; i < UPRV_LENGTHOF(test); i++) {
+    for(i = 0; i < sizeof(test)/sizeof(test[0]); i++) {
         rb = ures_open(testdatapath, test[i].requestedLocale, &status);
         if(U_FAILURE(status))
         {
@@ -997,12 +997,11 @@ static void TestGetLocaleByType(void) {
             status = U_ZERO_ERROR;
             continue;
         }
-
+        
         locale = ures_getLocaleByType(res, ULOC_REQUESTED_LOCALE, &status);
-        if(U_SUCCESS(status) && locale != NULL) {
+        if(locale) {
             log_err("Requested locale should return NULL\n");
         }
-        status = U_ZERO_ERROR;
         locale = ures_getLocaleByType(res, ULOC_VALID_LOCALE, &status);
         if(!locale || strcmp(locale, test[i].validLocale) != 0) {
             log_err("Expected valid locale to be %s. Got %s\n", test[i].requestedLocale, locale);
@@ -1015,3 +1014,4 @@ static void TestGetLocaleByType(void) {
     }
     ures_close(res);
 }
+

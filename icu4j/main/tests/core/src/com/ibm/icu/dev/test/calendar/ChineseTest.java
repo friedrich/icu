@@ -1,15 +1,11 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*********************************************************************
- * Copyright (C) 2000-2016, International Business Machines Corporation and
+ * Copyright (C) 2000-2012, International Business Machines Corporation and
  * others. All Rights Reserved.
  *********************************************************************
  */
 package com.ibm.icu.dev.test.calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import org.junit.Test;
 
 import com.ibm.icu.text.ChineseDateFormat;
 import com.ibm.icu.text.DateFormat;
@@ -63,11 +59,15 @@ import com.ibm.icu.util.ULocale;
  * Tue May 22 2096 = 4733-04*-01, Year 53, Cycle 79
  * Sun Mar 22 2099 = 4736-02*-01, Year 56, Cycle 79
  */
-public class ChineseTest extends CalendarTestFmwk {
+public class ChineseTest extends CalendarTest {
+
+    public static void main(String args[]) throws Exception {
+        new ChineseTest().run(args);
+    }
+
     /**
      * Test basic mapping to and from Gregorian.
      */
-    @Test
     public void TestMapping() {
 
         final int[] DATA = {
@@ -150,7 +150,6 @@ public class ChineseTest extends CalendarTestFmwk {
      * month zero.  This was a problem with some of the astronomical
      * new moon determinations.
      */
-    @Test
     public void TestZeroDOM() {
         ChineseCalendar cal = new ChineseCalendar();
         GregorianCalendar greg = new GregorianCalendar(1989, Calendar.SEPTEMBER, 1);
@@ -172,7 +171,6 @@ public class ChineseTest extends CalendarTestFmwk {
     /**
      * Test minimum and maximum functions.
      */
-    @Test
     public void TestLimits() {
         // The number of days and the start date can be adjusted
         // arbitrarily to either speed up the test or make it more
@@ -192,7 +190,6 @@ public class ChineseTest extends CalendarTestFmwk {
     /**
      * Run through several standard tests from Dershowitz & Reingold.
      */
-    @Test
     public void TestJulianDayMapping() {
 
         final TestCase[] tests = {
@@ -260,7 +257,6 @@ public class ChineseTest extends CalendarTestFmwk {
      * associated calendar, as per ICU ticket #9043. This test should be timebombed
      * until that ticket is addressed.
      */
-    @Test
     public void TestFormat() {
         ChineseCalendar cal = new ChineseCalendar();
         DateFormat fmt = DateFormat.getDateTimeInstance(cal,
@@ -282,6 +278,8 @@ public class ChineseTest extends CalendarTestFmwk {
                 Date e = fmt.parse(s);
                 if (e.equals(DATA[i])) {
                     logln("Ok: " + DATA[i] + " -> " + s + " -> " + e);
+                } else if (isICUVersionBefore(51, 0, 1)) { // until ticket #9043 fixes the ambiguous era problem
+                    logln("Ambiguous parse fails: " + DATA[i] + " -> " + s + " -> " + e);
                 } else {
                     errln("FAIL: " + DATA[i] + " -> " + s + " -> " + e);
                 }
@@ -295,7 +293,6 @@ public class ChineseTest extends CalendarTestFmwk {
     /**
      * Make sure IS_LEAP_MONTH participates in field resolution.
      */
-    @Test
     public void TestResolution() {
         ChineseCalendar cal = new ChineseCalendar();
         DateFormat fmt = DateFormat.getDateInstance(cal, DateFormat.DEFAULT);
@@ -390,7 +387,6 @@ public class ChineseTest extends CalendarTestFmwk {
     /**
      * Test the behavior of fields that are out of range.
      */
-    @Test
     public void TestOutOfRange() {
         int[] DATA = new int[] {
             // Input       Output
@@ -431,7 +427,6 @@ public class ChineseTest extends CalendarTestFmwk {
      * Test the behavior of ChineseCalendar.add().  The only real
      * nastiness with roll is the MONTH field around leap months.
      */
-    @Test
     public void TestAdd() {
         int[][] tests = new int[][] {
             // MONTHS ARE 1-BASED HERE
@@ -457,7 +452,6 @@ public class ChineseTest extends CalendarTestFmwk {
      * Test the behavior of ChineseCalendar.roll().  The only real
      * nastiness with roll is the MONTH field around leap months.
      */
-    @Test
     public void TestRoll() {
         int[][] tests = new int[][] {
             // MONTHS ARE 1-BASED HERE
@@ -546,7 +540,6 @@ public class ChineseTest extends CalendarTestFmwk {
 //        }
 //    }
 
-    @Test
     public void TestCoverage() {
         // Coverage for constructors
         {
@@ -660,7 +653,6 @@ public class ChineseTest extends CalendarTestFmwk {
             logln("Chinese calendar time: " + time2 + " result: " + str2);
         }
     }
-    @Test
     public void TestScratch(){
         String[] strMonths = {"Januari", "Pebruari", "Maret", "April", "Mei", "Juni",
                 "Juli", "Agustus", "September", "Oktober", "Nopember", "Desember"};
@@ -683,7 +675,6 @@ public class ChineseTest extends CalendarTestFmwk {
         logln(locInd.toString());
     }
 
-    @Test
     public void TestInitWithCurrentTime() {
         // jb4555
         // if the chinese calendar current millis isn't called, the default year is wrong.
@@ -712,7 +703,6 @@ public class ChineseTest extends CalendarTestFmwk {
         assertEquals("chinese and gregorian date should match", target, result);
     }
 
-    @Test
     public void Test6510() 
     { 
         Calendar gregorianCalendar; 
@@ -725,10 +715,6 @@ public class ChineseTest extends CalendarTestFmwk {
  
         // lunar to gregorian 
         chineseCalendar = new ChineseCalendar(77, 26, Calendar.JANUARY, 0, 6, 0, 0, 0); 
-        // coverage
-        assertEquals("equivalent ChineseCalendar() constructors", chineseCalendar,
-                new ChineseCalendar(77, 26, Calendar.JANUARY, 0, 6));
-
         gregorianCalendar = Calendar.getInstance(Locale.US); 
         gregorianCalendar.setTime(chineseCalendar.getTime()); 
  

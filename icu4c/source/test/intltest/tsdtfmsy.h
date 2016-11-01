@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2013, International Business Machines Corporation and
+ * Copyright (c) 1997-2005, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -34,9 +32,6 @@ private:
 
     void TestGetWeekdays2(void);
     void TestGetEraNames(void);
-    void TestGetSetSpecificItems(void);
-
-    UBool UnicodeStringsArePrefixes(int32_t count, int32_t prefixLen, const UnicodeString *prefixArray, const UnicodeString *baseArray);
 };
 
 #endif /* #if !UCONFIG_NO_FORMATTING */

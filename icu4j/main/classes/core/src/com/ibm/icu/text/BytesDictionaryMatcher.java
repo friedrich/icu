@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2014, International Business Machines Corporation and         *
+ * Copyright (C) 2012, International Business Machines Corporation and         *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -17,7 +15,7 @@ import com.ibm.icu.util.BytesTrie.Result;
 class BytesDictionaryMatcher extends DictionaryMatcher {
     private final byte[] characters;
     private final int transform;
-
+    
     public BytesDictionaryMatcher(byte[] chars, int transform) {
         characters = chars;
         Assert.assrt((transform & DictionaryData.TRANSFORM_TYPE_MASK) == DictionaryData.TRANSFORM_TYPE_OFFSET);
@@ -26,9 +24,9 @@ class BytesDictionaryMatcher extends DictionaryMatcher {
         // than adding a "transform type" variable
         this.transform = transform;
     }
-
+    
     private int transform(int c) {
-        if (c == 0x200D) {
+        if (c == 0x200D) { 
             return 0xFF;
         } else if (c == 0x200C) {
             return 0xFE;
@@ -41,14 +39,10 @@ class BytesDictionaryMatcher extends DictionaryMatcher {
         return delta;
     }
 
-    @Override
     public int matches(CharacterIterator text_, int maxLength, int[] lengths, int[] count_, int limit, int[] values) {
         UCharacterIterator text = UCharacterIterator.getInstance(text_);
         BytesTrie bt = new BytesTrie(characters, 0);
         int c = text.nextCodePoint();
-        if (c == UCharacterIterator.DONE) {
-            return 0;
-        }
         Result result = bt.first(transform(c));
         // TODO: should numChars count Character.charCount() ?
         int numChars = 1;
@@ -74,9 +68,6 @@ class BytesDictionaryMatcher extends DictionaryMatcher {
             }
 
             c = text.nextCodePoint();
-            if (c == UCharacterIterator.DONE) {
-                break;
-            }
             ++numChars;
             result = bt.next(transform(c));
         }
@@ -84,7 +75,6 @@ class BytesDictionaryMatcher extends DictionaryMatcher {
         return numChars;
     }
 
-    @Override
     public int getType() {
         return DictionaryData.TRIE_TYPE_BYTES;
     }

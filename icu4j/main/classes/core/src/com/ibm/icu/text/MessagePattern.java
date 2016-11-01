@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2010-2016, International Business Machines
+*   Copyright (C) 2010-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 *   created on: 2010aug21
@@ -17,7 +15,6 @@ import java.util.Locale;
 import com.ibm.icu.impl.ICUConfig;
 import com.ibm.icu.impl.PatternProps;
 import com.ibm.icu.util.Freezable;
-import com.ibm.icu.util.ICUCloneNotSupportedException;
 
 //Note: Minimize ICU dependencies, only use a very small part of the ICU core.
 //In particular, do not depend on *Format classes.
@@ -65,14 +62,13 @@ import com.ibm.icu.util.ICUCloneNotSupportedException;
  *   <li>Literal output text is not represented directly by "parts" but accessed
  *       between parts of a message, from one part's getLimit() to the next part's getIndex().
  *   <li><code>ARG_START.CHOICE</code> stands for an ARG_START Part with ArgType CHOICE.
- *   <li>In the choiceStyle, the ARG_SELECTOR has the '&lt;', the '#' or
+ *   <li>In the choiceStyle, the ARG_SELECTOR has the '<', the '#' or
  *       the less-than-or-equal-to sign (U+2264).
  *   <li>In the pluralStyle, the first, optional numeric Part has the "offset:" value.
  *       The optional numeric Part between each (ARG_SELECTOR, message) pair
  *       is the value of an explicit-number selector like "=2",
  *       otherwise the selector is a non-numeric identifier.
  *   <li>The REPLACE_NUMBER Part can occur only in an immediate sub-message of the pluralStyle.
- * </ul>
  * <p>
  * This class is not intended for public subclassing.
  *
@@ -90,7 +86,7 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
      * <p>
      * The following table shows examples of desired MessageFormat.format() output
      * with the pattern strings that yield that output.
-     *
+     * <p>
      * <table>
      *   <tr>
      *     <th>Desired output</th>
@@ -133,7 +129,7 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
          * a double apostrophe pattern character.
          * A single apostrophe always starts quoted literal text.
          * <p>
-         * This is the behavior of ICU 4.6 and earlier, and of {@link java.text.MessageFormat}.
+         * This is the behavior of ICU 4.6 and earlier, and of the JDK.
          * @stable ICU 4.8
          */
         DOUBLE_REQUIRED
@@ -483,7 +479,7 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
      * @stable ICU 4.8
      */
     public boolean partSubstringMatches(Part part, String s) {
-        return part.length == s.length() && msg.regionMatches(part.index, s, 0, part.length);
+        return msg.regionMatches(part.index, s, 0, part.length);
     }
 
     /**
@@ -531,7 +527,7 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
      * Returns the index of the ARG|MSG_LIMIT part corresponding to the ARG|MSG_START at start.
      * @param start The index of some Part data (0..countParts()-1);
      *        this Part should be of Type ARG_START or MSG_START.
-     * @return The first i&gt;start where getPart(i).getType()==ARG|MSG_LIMIT at the same nesting level,
+     * @return The first i>start where getPart(i).getType()==ARG|MSG_LIMIT at the same nesting level,
      *         or start itself if getPartType(msgStart)!=ARG|MSG_START.
      * @throws IndexOutOfBoundsException if start is outside the (0..countParts()-1) range
      * @stable ICU 4.8
@@ -841,14 +837,16 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
         /**
          * The argument is an ordinal-number PluralFormat
          * with the same style parts sequence and semantics as {@link ArgType#PLURAL}.
-         * @stable ICU 50
+         * @draft ICU 50
+         * @provisional This API might change or be removed in a future release.
          */
         SELECTORDINAL;
 
         /**
          * @return true if the argument type has a plural style part sequence and semantics,
          * for example {@link ArgType#PLURAL} and {@link ArgType#SELECTORDINAL}.
-         * @stable ICU 50
+         * @draft ICU 50
+         * @provisional This API might change or be removed in a future release.
          */
         public boolean hasPluralStyle() {
             return this == PLURAL || this == SELECTORDINAL;
@@ -874,14 +872,13 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
      * @return a copy of this object.
      * @stable ICU 4.8
      */
-    @Override
     @SuppressWarnings("unchecked")
     public MessagePattern cloneAsThawed() {
         MessagePattern newMsg;
         try {
             newMsg=(MessagePattern)super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new ICUCloneNotSupportedException(e);
+            throw new RuntimeException(e);
         }
         newMsg.parts=(ArrayList<Part>)parts.clone();
         if(numericValues!=null) {
@@ -893,10 +890,9 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
 
     /**
      * Freezes this object, making it immutable and thread-safe.
-     * @return this
+     * @return this 
      * @stable ICU 4.8
      */
-    @Override
     public MessagePattern freeze() {
         frozen=true;
         return this;
@@ -907,7 +903,6 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
      * @return true if this object is frozen.
      * @stable ICU 4.8
      */
-    @Override
     public boolean isFrozen() {
         return frozen;
     }
@@ -941,7 +936,7 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
             char c=msg.charAt(index++);
             if(c=='\'') {
                 if(index==msg.length()) {
-                    // The apostrophe is the last character in the pattern.
+                    // The apostrophe is the last character in the pattern. 
                     // Add a Part for auto-quoting.
                     addPart(Part.Type.INSERT_CHAR, index, 0, '\'');  // value=char to be inserted
                     needsAutoQuoting=true;
@@ -1609,7 +1604,7 @@ public final class MessagePattern implements Cloneable, Freezable<MessagePattern
     private boolean hasArgNames;
     private boolean hasArgNumbers;
     private boolean needsAutoQuoting;
-    private volatile boolean frozen;
+    private boolean frozen;
 
     private static final ApostropheMode defaultAposMode=
         ApostropheMode.valueOf(

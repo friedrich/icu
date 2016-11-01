@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2012, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -14,7 +12,6 @@
 #include "unicode/udat.h"
 #include "unicode/uscript.h"
 #include "unicode/ulocdata.h"
-#include "cmemory.h"
 #include "cstring.h"
 #include "locmap.h"
 #include "uresimp.h"
@@ -41,7 +38,7 @@ createFlattenSet(USet *origSet, UErrorCode *status) {
     for (idx = 0; idx < origItemCount; idx++) {
         graphmeSize = uset_getItem(origSet, idx,
             &start, &end,
-            graphme, UPRV_LENGTHOF(graphme),
+            graphme, (int32_t)(sizeof(graphme)/sizeof(graphme[0])),
             status);
         if (U_FAILURE(*status)) {
             log_err("ERROR: uset_getItem returned %s\n", u_errorName(*status));
@@ -86,7 +83,6 @@ TestKeyInRootRecursive(UResourceBundle *root, const char *rootName,
 
         errorCode = U_ZERO_ERROR;
         currentBundleKey = ures_getKey(currentBundle);
-        (void)currentBundleKey;    /* Suppress set but not used warning. */
         subBundle = ures_getNextResource(currentBundle, NULL, &errorCode);
         if (U_FAILURE(errorCode)) {
             log_err("Can't open a resource for lnocale %s. Error: %s\n", locale, u_errorName(errorCode));
@@ -318,7 +314,6 @@ TestKeyInRootRecursive(UResourceBundle *root, const char *rootName,
                                 locale);
                     }
                 }
-                (void)sameArray;    /* Suppress set but not used warning. */
 /*                if (sameArray && strcmp(rootName, "root") == 0) {
                     log_err("Arrays are the same with key \"%s\" in \"%s\" from root for locale \"%s\"\n",
                             subBundleKey,
@@ -456,7 +451,6 @@ testLCID(UResourceBundle *currentBundle,
     UErrorCode status = U_ZERO_ERROR;
     uint32_t expectedLCID;
     char lcidStringC[64] = {0};
-    int32_t len;
 
     expectedLCID = uloc_getLCID(localeName);
     if (expectedLCID == 0) {
@@ -466,12 +460,11 @@ testLCID(UResourceBundle *currentBundle,
     }
 
     status = U_ZERO_ERROR;
-    len = uprv_convertToPosix(expectedLCID, lcidStringC, UPRV_LENGTHOF(lcidStringC) - 1, &status);
+    uprv_strcpy(lcidStringC, uprv_convertToPosix(expectedLCID, &status));
     if (U_FAILURE(status)) {
         log_err("ERROR:   %.4x does not have a POSIX mapping due to %s\n",
             expectedLCID, u_errorName(status));
     }
-    lcidStringC[len] = 0;
 
     if(strcmp(localeName, lcidStringC) != 0) {
         char langName[1024];
@@ -493,12 +486,6 @@ testLCID(UResourceBundle *currentBundle,
 #if !UCONFIG_NO_FILE_IO && !UCONFIG_NO_LEGACY_CONVERSION
 static void
 TestLocaleStructure(void) {
-    // This test checks the locale structure against a key file located
-    // at source/test/testdata/structLocale.txt. When adding new data to
-    // a locale file such as en.txt, the structLocale.txt file must be changed
-    // too to include the the template of the new data. Otherwise this test
-    // will fail!
-
     UResourceBundle *root, *currentLocale;
     int32_t locCount = uloc_countAvailable();
     int32_t locIndex;
@@ -742,17 +729,15 @@ TestConsistentCountryInfo(void) {
 
 static int32_t
 findStringSetMismatch(const char *currLoc, const UChar *string, int32_t langSize,
-                      USet * mergedExemplarSet,
+                      const UChar *exemplarCharacters, int32_t exemplarLen,
                       UBool ignoreNumbers, UChar* badCharPtr) {
     UErrorCode errorCode = U_ZERO_ERROR;
-    USet *exemplarSet;
+    USet *origSet = uset_openPatternOptions(exemplarCharacters, exemplarLen, USET_CASE_INSENSITIVE, &errorCode);
+    USet *exemplarSet = createFlattenSet(origSet, &errorCode);
     int32_t strIdx;
-    if (mergedExemplarSet == NULL) {
-        return -1;
-    }
-    exemplarSet = createFlattenSet(mergedExemplarSet, &errorCode);
+    uset_close(origSet);
     if (U_FAILURE(errorCode)) {
-        log_err("%s: error createFlattenSet returned %s\n", currLoc, u_errorName(errorCode));
+        log_err("%s: error uset_openPattern returned %s\n", currLoc, u_errorName(errorCode));
         return -1;
     }
 
@@ -886,6 +871,8 @@ static void VerifyTranslation(void) {
     int32_t locCount = uloc_countAvailable();
     int32_t locIndex;
     UErrorCode errorCode = U_ZERO_ERROR;
+    int32_t exemplarLen;
+    const UChar *exemplarCharacters;
     const char *currLoc;
     UScriptCode scripts[USCRIPT_CODE_LIMIT];
     int32_t numScripts;
@@ -903,7 +890,6 @@ static void VerifyTranslation(void) {
         return;
     }
     for (locIndex = 0; locIndex < locCount; locIndex++) {
-        USet * mergedExemplarSet = NULL;
         errorCode=U_ZERO_ERROR;
         currLoc = uloc_getAvailable(locIndex);
         currentLocale = ures_open(NULL, currLoc, &errorCode);
@@ -921,58 +907,42 @@ static void VerifyTranslation(void) {
             ures_close(currentLocale);
             continue;
         }
-        {
-            UErrorCode exemplarStatus = U_ZERO_ERROR;
-            ULocaleData * uld = ulocdata_open(currLoc, &exemplarStatus);
-            if (U_SUCCESS(exemplarStatus)) {
-                USet * exemplarSet = ulocdata_getExemplarSet(uld, NULL, USET_ADD_CASE_MAPPINGS, ULOCDATA_ES_STANDARD, &exemplarStatus);
-                if (U_SUCCESS(exemplarStatus)) {
-                    mergedExemplarSet = uset_cloneAsThawed(exemplarSet);
-                    uset_close(exemplarSet);
-                    exemplarSet = ulocdata_getExemplarSet(uld, NULL, USET_ADD_CASE_MAPPINGS, ULOCDATA_ES_AUXILIARY, &exemplarStatus);
-                    if (U_SUCCESS(exemplarStatus)) {
-                        uset_addAll(mergedExemplarSet, exemplarSet);
-                        uset_close(exemplarSet);
-                    }
-                    exemplarStatus = U_ZERO_ERROR;
-                    exemplarSet = ulocdata_getExemplarSet(uld, NULL, 0, ULOCDATA_ES_PUNCTUATION, &exemplarStatus);
-                    if (U_SUCCESS(exemplarStatus)) {
-                        uset_addAll(mergedExemplarSet, exemplarSet);
-                        uset_close(exemplarSet);
-                    }
-                } else {
-                    log_err("error ulocdata_getExemplarSet (main) for locale %s returned %s\n", currLoc, u_errorName(errorCode));
-                }
-                ulocdata_close(uld);
-            } else {
-                log_err("error ulocdata_open for locale %s returned %s\n", currLoc, u_errorName(errorCode));
-            }
+        exemplarCharacters = ures_getStringByKey(currentLocale, "ExemplarCharacters", &exemplarLen, &errorCode);
+        if (U_FAILURE(errorCode)) {
+            log_err("error ures_getStringByKey returned %s\n", u_errorName(errorCode));
         }
-        if (mergedExemplarSet == NULL /*|| (getTestOption(QUICK_OPTION) && uset_size() > 2048)*/) {
+        else if (getTestOption(QUICK_OPTION) && exemplarLen > 2048) {
             log_verbose("skipping test for %s\n", currLoc);
         }
-        //else if (uprv_strncmp(currLoc,"bem",3) == 0 || uprv_strncmp(currLoc,"mgo",3) == 0 || uprv_strncmp(currLoc,"nl",2) == 0) {
-        //    log_verbose("skipping test for %s, some month and country names known to use aux exemplars\n", currLoc);
-        //}
+        else if (uprv_strncmp(currLoc,"bem",3) == 0 || uprv_strncmp(currLoc,"mgo",3) == 0 || uprv_strncmp(currLoc,"nl",2) == 0) {
+            log_verbose("skipping test for %s, some month and country names known to use aux exemplars\n", currLoc);
+        }
         else {
             UChar langBuffer[128];
             int32_t langSize;
             int32_t strIdx;
             UChar badChar;
-            langSize = uloc_getDisplayLanguage(currLoc, currLoc, langBuffer, UPRV_LENGTHOF(langBuffer), &errorCode);
+            langSize = uloc_getDisplayLanguage(currLoc, currLoc, langBuffer, sizeof(langBuffer)/sizeof(langBuffer[0]), &errorCode);
             if (U_FAILURE(errorCode)) {
                 log_err("error uloc_getDisplayLanguage returned %s\n", u_errorName(errorCode));
             }
             else {
-                strIdx = findStringSetMismatch(currLoc, langBuffer, langSize, mergedExemplarSet, FALSE, &badChar);
+                strIdx = findStringSetMismatch(currLoc, langBuffer, langSize, exemplarCharacters, exemplarLen, FALSE, &badChar);
                 if (strIdx >= 0) {
                     log_err("getDisplayLanguage(%s) at index %d returned characters not in the exemplar characters: %04X.\n",
                         currLoc, strIdx, badChar);
                 }
             }
-            langSize = uloc_getDisplayCountry(currLoc, currLoc, langBuffer, UPRV_LENGTHOF(langBuffer), &errorCode);
+            langSize = uloc_getDisplayCountry(currLoc, currLoc, langBuffer, sizeof(langBuffer)/sizeof(langBuffer[0]), &errorCode);
             if (U_FAILURE(errorCode)) {
                 log_err("error uloc_getDisplayCountry returned %s\n", u_errorName(errorCode));
+            }
+            else if (uprv_strstr(currLoc, "ti_") != currLoc || isICUVersionAtLeast(51, 0, 0)) { /* TODO: restore DisplayCountry test for ti_* when cldrbug 3058 is fixed) */
+              strIdx = findStringSetMismatch(currLoc, langBuffer, langSize, exemplarCharacters, exemplarLen, FALSE, &badChar);
+                if (strIdx >= 0) {
+                    log_err("getDisplayCountry(%s) at index %d returned characters not in the exemplar characters: %04X.\n",
+                        currLoc, strIdx, badChar);
+                }
             }
             {
                 UResourceBundle* cal = ures_getByKey(currentLocale, "calendar", NULL, &errorCode);
@@ -991,10 +961,6 @@ static void VerifyTranslation(void) {
                     end = ures_getSize(resArray);
                 }
 
-                if ((uprv_strncmp(currLoc,"lrc",3) == 0 || uprv_strncmp(currLoc,"mzn",3) == 0) && 
-                        log_knownIssue("cldrbug:8899", "lrc and mzn locales don't have translated day names")) {
-                    end = 0;
-                }
 
                 for (idx = 0; idx < end; idx++) {
                     const UChar *fromBundleStr = ures_getStringByIndex(resArray, idx, &langSize, &errorCode);
@@ -1002,8 +968,8 @@ static void VerifyTranslation(void) {
                         log_err("error ures_getStringByIndex(%d) returned %s\n", idx, u_errorName(errorCode));
                         continue;
                     }
-                    strIdx = findStringSetMismatch(currLoc, fromBundleStr, langSize, mergedExemplarSet, TRUE, &badChar);
-                    if ( strIdx >= 0 ) { 
+                    strIdx = findStringSetMismatch(currLoc, fromBundleStr, langSize, exemplarCharacters, exemplarLen, TRUE, &badChar);
+                    if (strIdx >= 0) {
                         log_err("getDayNames(%s, %d) at index %d returned characters not in the exemplar characters: %04X.\n",
                             currLoc, idx, strIdx, badChar);
                     }
@@ -1031,7 +997,7 @@ static void VerifyTranslation(void) {
                         log_err("error ures_getStringByIndex(%d) returned %s\n", idx, u_errorName(errorCode));
                         continue;
                     }
-                    strIdx = findStringSetMismatch(currLoc, fromBundleStr, langSize, mergedExemplarSet, TRUE, &badChar);
+                    strIdx = findStringSetMismatch(currLoc, fromBundleStr, langSize, exemplarCharacters, exemplarLen, TRUE, &badChar);
                     if (strIdx >= 0) {
                         log_err("getMonthNames(%s, %d) at index %d returned characters not in the exemplar characters: %04X.\n",
                             currLoc, idx, strIdx, badChar);
@@ -1044,10 +1010,7 @@ static void VerifyTranslation(void) {
                 ures_close(cal);
             }
             errorCode = U_ZERO_ERROR;
-            numScripts = uscript_getCode(currLoc, scripts, UPRV_LENGTHOF(scripts), &errorCode);
-            if (strcmp(currLoc, "yi") == 0 && numScripts > 0 && log_knownIssue("11217", "Fix result of uscript_getCode for yi: USCRIPT_YI -> USCRIPT_HEBREW")) {
-                scripts[0] = USCRIPT_HEBREW;
-            }
+            numScripts = uscript_getCode(currLoc, scripts, sizeof(scripts)/sizeof(scripts[0]), &errorCode);
             if (numScripts == 0) {
                 log_err("uscript_getCode(%s) doesn't work.\n", currLoc);
             }else if(scripts[0] == USCRIPT_COMMON){
@@ -1075,52 +1038,20 @@ static void VerifyTranslation(void) {
                    log_err("ulocdata_getPaperSize did not return expected data for locale %s \n", currLoc);
                }
            }
-            /* test that the MeasurementSystem API works */
+            /* test that the MeasurementSystem works API works */
            {
-               char fullLoc[ULOC_FULLNAME_CAPACITY];
-               UMeasurementSystem measurementSystem;
-               int32_t height = 0, width = 0;
-
-               uloc_addLikelySubtags(currLoc, fullLoc, ULOC_FULLNAME_CAPACITY, &errorCode);
-
-               errorCode = U_ZERO_ERROR;
-               measurementSystem = ulocdata_getMeasurementSystem(currLoc, &errorCode);
-               if (U_FAILURE(errorCode)) {
+               UMeasurementSystem measurementSystem = ulocdata_getMeasurementSystem(currLoc, &errorCode);
+               if(U_FAILURE(errorCode)){
                    log_err("ulocdata_getMeasurementSystem failed for locale %s with error: %s \n", currLoc, u_errorName(errorCode));
-               } else {
-                   if ( strstr(fullLoc, "_US")!=NULL || strstr(fullLoc, "_MM")!=NULL || strstr(fullLoc, "_LR")!=NULL ) {
-                       if(measurementSystem != UMS_US){
-                            log_err("ulocdata_getMeasurementSystem did not return expected data for locale %s \n", currLoc);
-                       }
-                   } else if ( strstr(fullLoc, "_GB")!=NULL ) {
-                       if(measurementSystem != UMS_UK){
-                            log_err("ulocdata_getMeasurementSystem did not return expected data for locale %s \n", currLoc);
-                       }
-                   } else if (measurementSystem != UMS_SI) {
-                       log_err("ulocdata_getMeasurementSystem did not return expected data for locale %s \n", currLoc);
-                   }
                }
-               
-               errorCode = U_ZERO_ERROR;
-               ulocdata_getPaperSize(currLoc, &height, &width, &errorCode);
-               if (U_FAILURE(errorCode)) {
-                   log_err("ulocdata_getPaperSize failed for locale %s with error: %s \n", currLoc, u_errorName(errorCode));
-               } else {
-                   if ( strstr(fullLoc, "_US")!=NULL || strstr(fullLoc, "_BZ")!=NULL || strstr(fullLoc, "_CA")!=NULL || strstr(fullLoc, "_CL")!=NULL ||
-                        strstr(fullLoc, "_CO")!=NULL || strstr(fullLoc, "_CR")!=NULL || strstr(fullLoc, "_GT")!=NULL || strstr(fullLoc, "_MX")!=NULL ||
-                        strstr(fullLoc, "_NI")!=NULL || strstr(fullLoc, "_PA")!=NULL || strstr(fullLoc, "_PH")!=NULL || strstr(fullLoc, "_PR")!=NULL ||
-                        strstr(fullLoc, "_SV")!=NULL || strstr(fullLoc, "_VE")!=NULL ) {
-                       if (height != 279 || width != 216) {
-                            log_err("ulocdata_getPaperSize did not return expected data for locale %s \n", currLoc);
-                       }
-                   } else if (height != 297 || width != 210) {
-                       log_err("ulocdata_getPaperSize did not return expected data for locale %s \n", currLoc);
+               if(strstr(currLoc, "_US")!=NULL || strstr(currLoc, "_MM")!=NULL || strstr(currLoc, "_LR")!=NULL){
+                   if(measurementSystem != UMS_US){
+                        log_err("ulocdata_getMeasurementSystem did not return expected data for locale %s \n", currLoc);
                    }
+               }else if(measurementSystem != UMS_SI){
+                   log_err("ulocdata_getMeasurementSystem did not return expected data for locale %s \n", currLoc);
                }
            }
-        }
-        if (mergedExemplarSet != NULL) {
-            uset_close(mergedExemplarSet);
         }
         ures_close(currentLocale);
     }
@@ -1181,9 +1112,6 @@ static void TestExemplarSet(void){
                 log_err("ExemplarSet contains unassigned characters for locale : %s\n", locale);
             }
             codeLen = uscript_getCode(locale, code, 8, &ec);
-            if (strcmp(locale, "yi") == 0 && codeLen > 0 && log_knownIssue("11217", "Fix result of uscript_getCode for yi: USCRIPT_YI -> USCRIPT_HEBREW")) {
-                code[0] = USCRIPT_HEBREW;
-            }
             if (!assertSuccess("uscript_getCode", &ec)) goto END;
 
             for (j=0; j<MAX_SCRIPTS_PER_LOCALE; ++j) {
@@ -1207,7 +1135,7 @@ static void TestExemplarSet(void){
             itemCount = uset_getItemCount(exemplarSet);
             for (m=0; m<itemCount && !existsInScript; ++m) {
                 strLen = uset_getItem(exemplarSet, m, &start, &end, ubuf,
-                                      UPRV_LENGTHOF(ubuf), &ec);
+                                      sizeof(ubuf)/sizeof(ubuf[0]), &ec);
                 /* failure here might mean str[] needs to be larger */
                 if (!assertSuccess("uset_getItem", &ec)) goto END;
                 if (strLen == 0) {
@@ -1252,58 +1180,26 @@ static void TestExemplarSet(void){
     }
 }
 
-enum { kUBufMax = 32 };
 static void TestLocaleDisplayPattern(void){
-    UErrorCode status;
-    UChar pattern[kUBufMax] = {0,};
-    UChar separator[kUBufMax] = {0,};
-    ULocaleData *uld;
-    static const UChar enExpectPat[] = { 0x007B,0x0030,0x007D,0x0020,0x0028,0x007B,0x0031,0x007D,0x0029,0 }; /* "{0} ({1})" */
-    static const UChar enExpectSep[] = { 0x002C,0x0020,0 }; /* ", " */
-    static const UChar zhExpectPat[] = { 0x007B,0x0030,0x007D,0xFF08,0x007B,0x0031,0x007D,0xFF09,0 };
-    static const UChar zhExpectSep[] = { 0xFF0C,0 };
+    UErrorCode status = U_ZERO_ERROR;
+    UChar pattern[32] = {0,};
+    UChar separator[32] = {0,};
+    ULocaleData *uld = ulocdata_open(uloc_getDefault(), &status);
 
-    status = U_ZERO_ERROR;
-    uld = ulocdata_open("en", &status);
     if(U_FAILURE(status)){
-        log_data_err("ulocdata_open en error %s", u_errorName(status));
-    } else {
-        ulocdata_getLocaleDisplayPattern(uld, pattern, kUBufMax, &status);
-        if (U_FAILURE(status)){
-            log_err("ulocdata_getLocaleDisplayPattern en error %s", u_errorName(status));
-        } else if (u_strcmp(pattern, enExpectPat) != 0) {
-             log_err("ulocdata_getLocaleDisplayPattern en returns unexpected pattern");
-        }
-        status = U_ZERO_ERROR;
-        ulocdata_getLocaleSeparator(uld, separator, kUBufMax, &status);
-        if (U_FAILURE(status)){
-            log_err("ulocdata_getLocaleSeparator en error %s", u_errorName(status));
-        } else if (u_strcmp(separator, enExpectSep) != 0) {
-             log_err("ulocdata_getLocaleSeparator en returns unexpected string ");
-        }
-        ulocdata_close(uld);
+        log_data_err("ulocdata_open error");
+        return;
     }
-
+    ulocdata_getLocaleDisplayPattern(uld, pattern, 32, &status);
+    if (U_FAILURE(status)){
+        log_err("ulocdata_getLocaleDisplayPattern error!");
+    }
     status = U_ZERO_ERROR;
-    uld = ulocdata_open("zh", &status);
-    if(U_FAILURE(status)){
-        log_data_err("ulocdata_open zh error %s", u_errorName(status));
-    } else {
-        ulocdata_getLocaleDisplayPattern(uld, pattern, kUBufMax, &status);
-        if (U_FAILURE(status)){
-            log_err("ulocdata_getLocaleDisplayPattern zh error %s", u_errorName(status));
-        } else if (u_strcmp(pattern, zhExpectPat) != 0) {
-             log_err("ulocdata_getLocaleDisplayPattern zh returns unexpected pattern");
-        }
-        status = U_ZERO_ERROR;
-        ulocdata_getLocaleSeparator(uld, separator, kUBufMax, &status);
-        if (U_FAILURE(status)){
-            log_err("ulocdata_getLocaleSeparator zh error %s", u_errorName(status));
-        } else if (u_strcmp(separator, zhExpectSep) != 0) {
-             log_err("ulocdata_getLocaleSeparator zh returns unexpected string ");
-        }
-        ulocdata_close(uld);
+    ulocdata_getLocaleSeparator(uld, separator, 32, &status);
+    if (U_FAILURE(status)){
+        log_err("ulocdata_getLocaleSeparator error!");
     }
+    ulocdata_close(uld);
 }
 
 static void TestCoverage(void){

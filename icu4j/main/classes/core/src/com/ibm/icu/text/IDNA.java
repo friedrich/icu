@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2003-2016, International Business Machines Corporation and    *
+ * Copyright (C) 2003-2012, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -26,7 +24,7 @@ import com.ibm.icu.impl.UTS46;
  * The non-static methods implement UTS #46 and IDNA2008.
  * IDNA2008 is implemented according to UTS #46, see getUTS46Instance().
  * <p>
- * IDNA2003 is obsolete. The static methods implement IDNA2003. They are all deprecated.
+ * The static methods implement IDNA2003.
  * <p>
  * IDNA2003 API Overview:
  * <p>
@@ -65,9 +63,8 @@ public abstract class IDNA {
      * For use in static worker and factory methods.
      * <p>This option is ignored by the UTS46 implementation.
      * (UTS #46 disallows unassigned code points.)
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static final int ALLOW_UNASSIGNED = 1;
     /** 
      * Option to check whether the input conforms to the STD3 ASCII rules,
@@ -118,7 +115,8 @@ public abstract class IDNA {
      * (The CONTEXTO check is new in IDNA2008.)
      * <p>This is for use by registries for IDNA2008 conformance.
      * UTS #46 does not require the CONTEXTO check.
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public static final int CHECK_CONTEXTO = 0x40;
 
@@ -274,7 +272,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static void resetInfo(Info info) {
         info.reset();
     }
@@ -282,7 +279,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static boolean hasCertainErrors(Info info, EnumSet<Error> errors) {
         return !info.errors.isEmpty() && !Collections.disjoint(info.errors, errors);
     }
@@ -290,7 +286,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static boolean hasCertainLabelErrors(Info info, EnumSet<Error> errors) {
         return !info.labelErrors.isEmpty() && !Collections.disjoint(info.labelErrors, errors);
     }
@@ -298,7 +293,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static void addLabelError(Info info, Error error) {
         info.labelErrors.add(error);
     }
@@ -306,7 +300,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static void promoteAndResetLabelErrors(Info info) {
         if(!info.labelErrors.isEmpty()) {
             info.errors.addAll(info.labelErrors);
@@ -317,7 +310,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static void addError(Info info, Error error) {
         info.errors.add(error);
     }
@@ -325,7 +317,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static void setTransitionalDifferent(Info info) {
         info.isTransDiff=true;
     }
@@ -333,7 +324,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static void setBiDi(Info info) {
         info.isBiDi=true;
     }
@@ -341,7 +331,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static boolean isBiDi(Info info) {
         return info.isBiDi;
     }
@@ -349,7 +338,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static void setNotOkBiDi(Info info) {
         info.isOkBiDi=false;
     }
@@ -357,7 +345,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected static boolean isOkBiDi(Info info) {
         return info.isOkBiDi;
     }
@@ -448,13 +435,15 @@ public abstract class IDNA {
          * A label does not meet the IDNA CONTEXTO requirements for punctuation characters.
          * Some punctuation characters "Would otherwise have been DISALLOWED"
          * but are allowed in certain contexts. (RFC 5892)
-         * @stable ICU 49
+         * @draft ICU 49
+         * @provisional This API might change or be removed in a future release.
          */
         CONTEXTO_PUNCTUATION,
         /**
          * A label does not meet the IDNA CONTEXTO requirements for digits.
          * Arabic-Indic Digits (U+066x) must not be mixed with Extended Arabic-Indic Digits (U+06Fx).
-         * @stable ICU 49
+         * @draft ICU 49
+         * @provisional This API might change or be removed in a future release.
          */
         CONTEXTO_DIGITS
     }
@@ -464,7 +453,6 @@ public abstract class IDNA {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected IDNA() {
     }
 
@@ -493,9 +481,8 @@ public abstract class IDNA {
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
      * @throws StringPrepParseException When an error occurs for parsing a string.
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
-     */
-    @Deprecated
+     * @stable ICU 2.8
+     */    
     public static StringBuffer convertToASCII(String src, int options)
         throws StringPrepParseException{
         UCharacterIterator iter = UCharacterIterator.getInstance(src);
@@ -524,9 +511,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertToASCII(StringBuffer src, int options)
         throws StringPrepParseException{
         UCharacterIterator iter = UCharacterIterator.getInstance(src);
@@ -555,9 +541,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertToASCII(UCharacterIterator src, int options)
                 throws StringPrepParseException{
         return IDNA2003.convertToASCII(src, options);
@@ -590,9 +575,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertIDNToASCII(UCharacterIterator src, int options)
             throws StringPrepParseException{
         return convertIDNToASCII(src.getText(), options);          
@@ -625,9 +609,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertIDNToASCII(StringBuffer src, int options)
             throws StringPrepParseException{
             return convertIDNToASCII(src.toString(), options);          
@@ -660,9 +643,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertIDNToASCII(String src,int options)
             throws StringPrepParseException{
         return IDNA2003.convertIDNToASCII(src, options);
@@ -691,9 +673,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertToUnicode(String src, int options)
            throws StringPrepParseException{
         UCharacterIterator iter = UCharacterIterator.getInstance(src);
@@ -722,9 +703,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertToUnicode(StringBuffer src, int options)
            throws StringPrepParseException{
         UCharacterIterator iter = UCharacterIterator.getInstance(src);
@@ -753,9 +733,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertToUnicode(UCharacterIterator src, int options)
            throws StringPrepParseException{
         return IDNA2003.convertToUnicode(src, options);
@@ -785,9 +764,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertIDNToUnicode(UCharacterIterator src, int options)
         throws StringPrepParseException{
         return convertIDNToUnicode(src.getText(), options);
@@ -817,9 +795,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertIDNToUnicode(StringBuffer src, int options)
         throws StringPrepParseException{
         return convertIDNToUnicode(src.toString(), options);
@@ -849,9 +826,8 @@ public abstract class IDNA {
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
      * @return StringBuffer the converted String
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static StringBuffer convertIDNToUnicode(String src, int options)
             throws StringPrepParseException{
         return IDNA2003.convertIDNToUnicode(src, options);
@@ -881,10 +857,9 @@ public abstract class IDNA {
      *  - IDNA.USE_STD3_RULES      Use STD3 ASCII rules for host name syntax restrictions
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
-     * @return 0 if the strings are equal, &gt; 0 if s1 &gt; s2 and &lt; 0 if s1 &lt; s2
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @return 0 if the strings are equal, > 0 if s1 > s2 and < 0 if s1 < s2
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static int compare(StringBuffer s1, StringBuffer s2, int options)
         throws StringPrepParseException{
         if(s1==null || s2 == null){
@@ -917,10 +892,9 @@ public abstract class IDNA {
      *  - IDNA.USE_STD3_RULES      Use STD3 ASCII rules for host name syntax restrictions
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
-     * @return 0 if the strings are equal, &gt; 0 if s1 &gt; s2 and &lt; 0 if s1 &lt; s2
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @return 0 if the strings are equal, > 0 if s1 > s2 and < 0 if s1 < s2
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static int compare(String s1, String s2, int options) throws StringPrepParseException{
         if(s1==null || s2 == null){
             throw new IllegalArgumentException("One of the source buffers is null");
@@ -951,10 +925,9 @@ public abstract class IDNA {
      *  - IDNA.USE_STD3_RULES       Use STD3 ASCII rules for host name syntax restrictions
      *                              If this option is set and the input does not satisfy STD3 rules,  
      *                              the operation will fail with ParseException
-     * @return 0 if the strings are equal, &gt; 0 if i1 &gt; i2 and &lt; 0 if i1 &lt; i2
-     * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
+     * @return 0 if the strings are equal, > 0 if i1 > i2 and < 0 if i1 < i2
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static int compare(UCharacterIterator s1, UCharacterIterator s2, int options)
         throws StringPrepParseException{
         if(s1==null || s2 == null){

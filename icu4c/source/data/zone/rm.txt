@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/rm.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/rm.xml
+ */
 rm{
-    Version{"2.1.28.76"}
+    Version{"2.0.78.47"}
     zoneStrings{
         "Africa:Addis_Ababa"{
             ec{"Addis Abeba"}
@@ -180,6 +189,9 @@ rm{
         "Antarctica:McMurdo"{
             ec{"Mac Murdo"}
         }
+        "Antarctica:South_Pole"{
+            ec{"Pol dal Sid"}
+        }
         "Antarctica:Syowa"{
             ec{"Showa"}
         }
@@ -212,6 +224,9 @@ rm{
         }
         "Asia:Karachi"{
             ec{"Karatschi"}
+        }
+        "Asia:Kashgar"{
+            ec{"Kaschgar"}
         }
         "Asia:Krasnoyarsk"{
             ec{"Krasnojarsk"}
@@ -286,7 +301,7 @@ rm{
             ec{"Georgia dal Sid"}
         }
         "Atlantic:St_Helena"{
-            ec{"Sontg’elena"}
+            ec{"Sontg'elena"}
         }
         "Atlantic:Stanley"{
             ec{"Port Stanley"}

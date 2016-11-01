@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2010, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -18,14 +16,13 @@ class RemoveTransliterator extends Transliterator {
     /**
      * ID for this transliterator.
      */
-    private static final String _ID = "Any-Remove";
+    private static String _ID = "Any-Remove";
 
     /**
      * System registration hook.
      */
     static void register() {
         Transliterator.registerFactory(_ID, new Transliterator.Factory() {
-            @Override
             public Transliterator getInstance(String ID) {
                 return new RemoveTransliterator();
             }
@@ -43,7 +40,6 @@ class RemoveTransliterator extends Transliterator {
     /**
      * Implements {@link Transliterator#handleTransliterate}.
      */
-    @Override
     protected void handleTransliterate(Replaceable text,
                                        Position index, boolean incremental) {
         // Our caller (filteredTransliterate) has already narrowed us

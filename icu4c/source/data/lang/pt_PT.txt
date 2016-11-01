@@ -1,233 +1,243 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/pt_PT.xml
+// *
+// ***************************************************************************
 pt_PT{
     Keys{
-        cf{"Formato monetário"}
-        colBackwards{"Ordenação de acentos invertida"}
-        colCaseLevel{"Ordenação sensível a maiúsculas e minúsculas"}
-        colNormalization{"Ordenação normalizada"}
-        colNumeric{"Ordenação numérica"}
-        colStrength{"Força da ordenação"}
-        hc{"Ciclo horário (12 vs. 24)"}
-        ms{"Sistema de medida"}
-        x{"Utilização privada"}
+        colAlternate{"Ignorar Ordenação de Símbolos"}
+        colBackwards{"Ordenação de Acentos Invertida"}
+        colCaseFirst{"Disposição de Maiúsculas/Minúsculas"}
+        colCaseLevel{"Ordenação Sensível a Maiúsculas e Minúsculas"}
+        colHiraganaQuaternary{"Ordenação Kana"}
+        colNormalization{"Ordenação Normalizada"}
+        colNumeric{"Ordenação Numérica"}
+        colStrength{"Força da Ordenação"}
+        timezone{"Fuso Horário"}
+        va{"Variante Local"}
+        variableTop{"Ordenar Como Símbolos"}
+        x{"Utilização Privada"}
     }
     Languages{
-        af{"africanês"}
-        ang{"inglês antigo"}
-        ar_001{"árabe moderno padrão"}
-        arn{"mapuche"}
+        af{"afrikaans"}
+        agq{"aghem"}
+        art{"idioma artifical"}
+        asa{"asu"}
+        bai{"bamileke Languages"}
         bax{"bamun"}
         bbj{"ghomala"}
-        bua{"buriat"}
+        bez{"bena"}
+        bfd{"bafut"}
+        bkm{"kom"}
+        bss{"akoose"}
+        bug{"buginese"}
+        bum{"bulu"}
+        byv{"medumba"}
+        cay{"cayuga"}
+        ce{"chechene"}
+        cel{"idioma céltico"}
+        cgg{"chiga"}
         chn{"jargão chinook"}
-        ckb{"sorani curdo"}
-        crs{"francês crioulo seselwa"}
+        co{"corso"}
+        cpe{"crioulo ou pidgin do inglês"}
+        cpf{"crioulo ou pidgin do francês"}
+        cpp{"crioulo ou pidgin do português"}
         cs{"checo"}
-        cv{"chuvash"}
-        de_AT{"alemão austríaco"}
-        de_CH{"alto alemão suíço"}
+        cus{"idioma cuchita"}
+        dav{"taita"}
+        dje{"zarma"}
+        dra{"idioma dravítico"}
+        dyo{"jola-fonyi"}
+        dyu{"diula"}
+        dzg{"dazaga"}
         ee{"ewe"}
         egy{"egípcio clássico"}
-        en_AU{"inglês australiano"}
-        en_CA{"inglês canadiano"}
-        en_GB{"inglês britânico"}
-        en_US{"inglês americano"}
-        es_419{"espanhol latino-americano"}
-        es_ES{"espanhol europeu"}
+        enm{"inglês medieval"}
         et{"estónio"}
-        fr_CA{"francês canadiano"}
-        fr_CH{"francês suíço"}
-        fro{"francês antigo"}
+        fiu{"idioma ugro-finês"}
+        frm{"francês medieval"}
         frs{"frísio oriental"}
         fy{"frísico ocidental"}
-        goh{"alemão alto antigo"}
+        gmh{"alemão medieval alto"}
         grc{"grego clássico"}
-        gsw{"alemão suíço"}
+        guz{"gusii"}
         ha{"haúça"}
         hi{"hindi"}
+        hsb{"sorbiano superior"}
         hy{"arménio"}
+        ibb{"ibibio"}
         ig{"igbo"}
-        kbd{"cabardiano"}
-        kea{"crioulo cabo-verdiano"}
+        ik{"inupiaq"}
+        jmc{"machame"}
+        kbl{"kanembu"}
+        kde{"makonde"}
+        kg{"conguês"}
+        khi{"khoisan"}
+        khq{"koyra chiini"}
+        kkj{"kako"}
+        kln{"kalenjin"}
         kn{"canarim"}
+        ks{"caxemirense"}
+        ksb{"shambala"}
+        ksf{"bafia"}
+        lag{"langi"}
         lez{"lezghiano"}
         lg{"ganda"}
-        lrc{"luri do norte"}
-        luo{"luo"}
+        luy{"luyia"}
+        maf{"mafa"}
+        mde{"maba"}
+        mer{"meru"}
+        mga{"irlandês, medieval"}
+        mgh{"makhuwa-meetto"}
         mk{"macedónio"}
-        moh{"mohawk"}
+        mua{"mundang"}
+        mye{"myene"}
+        nah{"nauatle"}
+        naq{"nama"}
         nb{"norueguês bokmål"}
-        nds{"baixo-alemão"}
-        nds_NL{"baixo-saxão"}
+        nds{"baixo alemão"}
+        nic{"nigeriano - cordofano"}
+        nmg{"kwasio"}
         nn{"norueguês nynorsk"}
-        non{"nórdico antigo"}
-        oc{"occitano"}
+        nnh{"ngiemboon"}
+        non{"norse, old"}
+        nus{"nuer"}
+        oc{"provençal"}
         os{"ossético"}
-        pag{"língua pangasinesa"}
-        peo{"persa antigo"}
         pl{"polaco"}
-        pon{"língua pohnpeica"}
-        pro{"provençal antigo"}
+        pra{"idioma prácito"}
+        pro{"provençal, arcaico"}
         ps{"pastó"}
-        pt_BR{"português do Brasil"}
-        pt_PT{"português europeu"}
-        raj{"rajastanês"}
+        rom{"romanês"}
         root{"root"}
-        rw{"kinyarwanda"}
         sah{"sakha"}
-        se{"sami do norte"}
-        sga{"irlandês antigo"}
+        sai{"idioma indígeno sul-americano"}
+        sal{"salishan languages"}
+        saq{"samburu"}
+        sba{"ngambay"}
+        sbp{"sangu"}
+        see{"seneca"}
+        seh{"sena"}
+        ses{"koyraboro senni"}
+        sgn{"linguages de sinais"}
+        shi{"tachelhit"}
         shu{"árabe do Chade"}
-        smn{"inari sami"}
-        ti{"tigrínia"}
-        tk{"turcomano"}
+        ssa{"idioma nilo-sariano"}
+        ssy{"saho"}
+        swb{"língua comoriana"}
+        swc{"suaili do Congo"}
+        tai{"idioma tailândes"}
+        teo{"teso"}
+        tg{"tajique"}
+        ti{"tigre"}
         to{"tonga"}
-        vai{"vai"}
+        tog{"toganês"}
+        trv{"taroko"}
+        twq{"tasawaq"}
+        tyv{"tuviniano"}
+        tzm{"tamazight de Marrocos Central"}
+        und{"idioma desconhecido"}
+        vun{"vunjo"}
+        wen{"idioma sórbio"}
         xog{"soga"}
-        yo{"ioruba"}
-    }
-    Languages%short{
-        en_GB{"inglês (RU)"}
+        yav{"yangben"}
+        ybb{"yemba"}
     }
     Scripts{
         Armn{"arménio"}
+        Blis{"símbolos Bliss"}
         Egyd{"egípcio demótico"}
         Egyh{"egípcio hierático"}
-        Gujr{"guzerate"}
         Inds{"indus"}
+        Lina{"linear A"}
+        Linb{"linear B"}
         Sylo{"siloti nagri"}
         Tale{"tai le"}
         Telu{"telugu"}
-        Zsye{"emoji"}
-        Zsym{"símbolos"}
+        Xsux{"cuneiforme sumero-acadiano"}
         Zxxx{"não escrito"}
+    }
+    Scripts%stand-alone{
+        Hans{"han simplificado"}
+        Hant{"han tradicional"}
     }
     Types{
         calendar{
-            buddhist{"Calendário budista"}
-            chinese{"Calendário chinês"}
-            coptic{"Calendário copta"}
-            dangi{"Calendário dangi"}
-            ethiopic{"Calendário etíope"}
+            coptic{"Calendário Copta"}
+            ethiopic{"Calendário Etíope"}
             ethiopic-amete-alem{"Calendário Etíope Amete Alem"}
-            gregorian{"Calendário gregoriano"}
-            hebrew{"Calendário hebraico"}
-            islamic{"Calendário islâmico"}
-            japanese{"Calendário japonês"}
-            persian{"Calendário persa"}
-        }
-        cf{
-            account{"Formato monetário contabilístico"}
-            standard{"Formato monetário padrão"}
-        }
-        colAlternate{
-            non-ignorable{"Ordenar símbolos"}
-            shifted{"Ordenar símbolos ignorados"}
-        }
-        colBackwards{
-            no{"Ordenar acentos normalmente"}
-            yes{"Ordenar acentos inversamente"}
-        }
-        colCaseFirst{
-            lower{"Ordenar por minúsculas"}
-            no{"Ordenar disposição de tipo de letra normal"}
-            upper{"Ordenar por maiúsculas"}
-        }
-        colCaseLevel{
-            no{"Ordenar insensível a maiúsculas/minúsculas"}
-            yes{"Ordenar sensível a maiúsculas/minúsculas"}
-        }
-        colNormalization{
-            no{"Ordenar sem normalização"}
-            yes{"Ordenar Unicode normalizado"}
-        }
-        colNumeric{
-            no{"Ordenar dígitos individualmente"}
-            yes{"Ordenar dígitos numericamente"}
-        }
-        colStrength{
-            identical{"Ordenar tudo"}
-            primary{"Ordenar apenas letras básicas"}
-            quaternary{"Ordenar acentos/tipo de letra/largura/kana"}
-            secondary{"Ordenar acentos"}
-            tertiary{"Ordenar acentos/tipo de letra/largura"}
+            islamic-civil{"Calendário Islâmico/Civil"}
+            persian{"Calendário Persa"}
         }
         collation{
-            dictionary{"Ordenação do dicionário"}
-            ducet{"Ordenação unicode predefinida"}
-            phonebook{"Ordem da lista telefónica"}
-            phonetic{"Sequência de ordenação fonética"}
-            reformed{"Reforma da ordenação"}
-            standard{"Ordenação padrão"}
+            dictionary{"Ordenação do Dicionário"}
+            phonebook{"Ordem da Lista Telefónica"}
+            phonetic{"Sequência de Ordenação Fonética"}
+            pinyin{"Ordem do Chinês Simplificado Pinyin"}
+            reformed{"Reforma da Ordenação"}
+            searchjl{"Pesquisar Por Consoante Inicial Hangul"}
             stroke{"Ordem por traços"}
             traditional{"Ordem tradicional"}
             unihan{"Ordem por radical e traços"}
         }
-        d0{
-            fwidth{"Largura completa"}
-            hwidth{"Meia largura"}
-        }
-        lb{
-            loose{"Estilo flexível de quebra de linha"}
-            normal{"Estilo padrão de quebra de linha"}
-            strict{"Estilo estrito de quebra de linha"}
-        }
-        ms{
-            uksystem{"Sistema de medida imperial"}
-            ussystem{"Sistema de medida americano"}
-        }
         numbers{
-            armn{"Numeração arménia"}
-            armnlow{"Numeração arménia minúscula"}
-            beng{"Algarismos bengalis"}
-            deva{"Algarismos devanágaris"}
-            ethi{"Numeração etíope"}
-            finance{"Algarismos financeiros"}
-            fullwide{"Algarismos de largura completa"}
-            geor{"Numeração georgiana"}
-            grek{"Numeração grega"}
-            greklow{"Numeração grega minúscula"}
-            gujr{"Algarismos de guzerate"}
-            guru{"Algarismos de gurmukhi"}
-            hanidec{"Numeração decimal chinesa"}
-            hans{"Numeração em chinês simplificado"}
-            hansfin{"Numeração financeira em chinês simplificado"}
-            hant{"Numeração em chinês tradicional"}
-            hantfin{"Numeração financeira em chinês tradicional"}
-            hebr{"Numeração hebraica"}
-            jpan{"Numeração japonesa"}
-            jpanfin{"Numeração financeira japonesa"}
-            khmr{"Algarismos de cmer"}
-            knda{"Algarismos de canarim"}
-            mlym{"Algarismos de malaiala"}
-            mymr{"Algarismos birmaneses"}
-            orya{"Algarismos de odia"}
-            roman{"Numeração romana"}
-            romanlow{"Numeração romana minúscula"}
-            taml{"Numeração tâmil"}
-            tamldec{"Algarismos de tâmil"}
-            telu{"Algarismos de telugu"}
-            traditional{"Algarismos tradicionais"}
+            armn{"Algarismos Arménios"}
+            armnlow{"Numeração Arménia Minúscula"}
+            beng{"Algarismos Bengalis"}
+            deva{"Algarismos Devanágaris"}
+            ethi{"Numeração Etíope"}
+            finance{"Algarismos Financeiros"}
+            fullwide{"Algarismos de Largura Completa"}
+            geor{"Numeração Georgiana"}
+            grek{"Numeração Grega"}
+            greklow{"Numeração Grega Minúscula"}
+            gujr{"Algarismos de Guzerate"}
+            hanidec{"Numeração Decimal Chinesa"}
+            hans{"Numeração Chinês Simplificado"}
+            hansfin{"Numeração Financeira Chinês Simplificado"}
+            hant{"Numeração Chinês Tradicional"}
+            hantfin{"Numeração Financeira Chinês Tradicional"}
+            hebr{"Numeração Hebraica"}
+            jpan{"Numeração Japonesa"}
+            jpanfin{"Numeração Financeira Japonesa"}
+            khmr{"Algarismo Khmer"}
+            knda{"Algarismos de Canarim"}
+            laoo{"Algarismos de Laos"}
+            latn{"Algarismos Ocidentais"}
+            mlym{"Algarismos Malaiala"}
+            mong{"Algarismos Mongóis"}
+            mymr{"Algarismos de Mianmar"}
+            native{"Dígitos Nativos"}
+            orya{"Algarismos Oriá"}
+            roman{"Numeração Romana"}
+            romanlow{"Numeração Romana Minúscula"}
+            taml{"Numeração Tâmil"}
+            telu{"Algarismos de Telugu"}
+            thai{"Algarismos Tailandeses"}
+            tibt{"Algarismos Tibetanos"}
+            traditional{"Algarismos Tradicionais"}
+            vaii{"Dígitos Vai"}
         }
     }
     Variants{
         AREVELA{"arménio oriental"}
         AREVMDA{"arménio ocidental"}
+        BISKE{"dialecto san giorgio/bila"}
+        BOONT{"buntlingue"}
+        LIPAW{"dialecto lipovaz de Resian"}
         MONOTON{"monotónico"}
+        NEDIS{"dialecto natisone"}
+        NJIVA{"dialecto gniva/njiva"}
+        OSOJS{"dialecto oseacco/osojane"}
+        PINYIN{"Romanização pinyin"}
         POLYTON{"politónico"}
+        SOLBA{"dialecto stolvizza/solbica"}
+        WADEGILE{"Romanização Wade-Giles"}
     }
-    Version{"2.1.29.54"}
-    characterLabelPattern{
-        all{"{0} – tudo"}
-        compatibility{"{0} – compatibilidade"}
-        enclosed{"{0} – incluso"}
-        extended{"{0} – estendido"}
-        historic{"{0} – histórico"}
-        miscellaneous{"{0} – diversos"}
-        other{"{0} – outro"}
-        scripts{"{0} – escritas"}
-    }
+    Version{"2.0.78.47"}
     codePatterns{
         script{"Escrita: {0}"}
     }

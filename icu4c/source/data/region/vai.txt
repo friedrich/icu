@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/vai.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/vai.xml
+ */
 vai{
     Countries{
         AD{"ꕉꖆꕟ"}
@@ -9,6 +18,7 @@ vai{
         AI{"ꕉꕄꕞ"}
         AL{"ꕉꔷꕑꕇꕩ"}
         AM{"ꕉꕆꕯ"}
+        AN{"ꘉꕜ ꖨꕮꕊ ꕉꘋꔳꔷ"}
         AO{"ꕉꖐꕞ"}
         AR{"ꕉꘀꘋꔳꕯ"}
         AS{"ꕶꕱ ꕢꕹꕎ"}
@@ -226,5 +236,5 @@ vai{
         ZM{"ꕤꔭꕩ"}
         ZW{"ꔽꕓꖜꔃ"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.78.30"}
 }

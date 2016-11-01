@@ -1,7 +1,5 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
  /*
-*   Copyright (C) 1996-2016, International Business Machines
+*   Copyright (C) 1996-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 */
 
@@ -28,7 +26,7 @@ import com.ibm.icu.impl.Grego;
  * @see      Calendar
  * @see      GregorianCalendar
  * @see      TimeZone
- * @author   Deborah Goldsmith, Mark Davis, Chen-Lieh Huang, Alan Liu
+ * @author   David Goldsmith, Mark Davis, Chen-Lieh Huang, Alan Liu
  * @stable ICU 2.0
  */
 public class SimpleTimeZone extends BasicTimeZone {
@@ -662,7 +660,6 @@ public class SimpleTimeZone extends BasicTimeZone {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public int getOffset(int era, int year, int month, int day,
                               int dayOfWeek, int millis,
                               int monthLength)  {
@@ -791,8 +788,6 @@ public class SimpleTimeZone extends BasicTimeZone {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
-    @Deprecated
     public void getOffsetFromLocal(long date,
             int nonExistingTimeOpt, int duplicatedTimeOpt, int[] offsets) {
         offsets[0] = getRawOffset();
@@ -963,9 +958,9 @@ public class SimpleTimeZone extends BasicTimeZone {
 
     /**
      * {@inheritDoc}
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
-    @Override
     public boolean observesDaylightTime() {
         return useDaylight;
     }
@@ -1414,22 +1409,22 @@ public class SimpleTimeZone extends BasicTimeZone {
     }
 
     // Freezable stuffs
-    private volatile transient boolean isFrozen = false;
+    private transient boolean isFrozen = false;
 
     /**
      * {@inheritDoc}
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
-    @Override
     public boolean isFrozen() {
         return isFrozen;
     }
 
     /**
      * {@inheritDoc}
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
-    @Override
     public TimeZone freeze() {
         isFrozen = true;
         return this;
@@ -1437,9 +1432,9 @@ public class SimpleTimeZone extends BasicTimeZone {
 
     /**
      * {@inheritDoc}
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
-    @Override
     public TimeZone cloneAsThawed() {
         SimpleTimeZone tz = (SimpleTimeZone)super.cloneAsThawed();
         tz.isFrozen = false;

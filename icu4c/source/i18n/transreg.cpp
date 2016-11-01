@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-*   Copyright (c) 2001-2014, International Business Machines
+*   Copyright (c) 2001-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 *   Date        Name        Description
@@ -730,7 +728,7 @@ int32_t TransliteratorRegistry::countAvailableSources(void) const {
 
 UnicodeString& TransliteratorRegistry::getAvailableSource(int32_t index,
                                                           UnicodeString& result) const {
-    int32_t pos = UHASH_FIRST;
+    int32_t pos = -1;
     const UHashElement *e = 0;
     while (index-- >= 0) {
         e = specDAG.nextElement(pos);
@@ -759,7 +757,7 @@ UnicodeString& TransliteratorRegistry::getAvailableTarget(int32_t index,
         result.truncate(0); // invalid source
         return result;
     }
-    int32_t pos = UHASH_FIRST;
+    int32_t pos = -1;
     const UHashElement *e = 0;
     while (index-- >= 0) {
         e = targets->nextElement(pos);

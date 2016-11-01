@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-*   Copyright (C) 2000-2016, International Business Machines
+*   Copyright (C) 2000-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 *   Date        Name        Description
@@ -451,8 +449,7 @@ UBool RTTest::isCamel(const UnicodeString& a) {
             break;
         case U_TITLECASE_LETTER:
             if (haveLower) return TRUE;
-            // fall through, since second letter is lower.
-            U_FALLTHROUGH;
+            // drop through, since second letter is lower.
         case U_LOWERCASE_LETTER:
             haveLower = TRUE;
             break;
@@ -1130,9 +1127,19 @@ void TransliteratorRoundTripTest::TestHan() {
 
 
 void TransliteratorRoundTripTest::TestGreek() {
-    logKnownIssue( "cldrbug:1911");
-    // It is left in its current state as a regression test.
 
+    // CLDR bug #1911: This test should be moved into CLDR.
+    // It is left in its current state as a regression test.
+    
+//    if (isICUVersionAtLeast(ICU_39)) {
+//        // We temporarily filter against Unicode 4.1, but we only do this
+//        // before version 3.4.
+//        errln("FAIL: TestGreek needs to be updated to remove delete the [:Age=4.0:] filter ");
+//        return;
+//    } else {
+//        logln("Warning: TestGreek needs to be updated to remove delete the section marked [:Age=4.0:] filter");
+//    }
+    
     RTTest test("Latin-Greek");
     LegalGreek *legal = new LegalGreek(TRUE);
 
@@ -1155,8 +1162,18 @@ void TransliteratorRoundTripTest::TestGreek() {
 
 
 void TransliteratorRoundTripTest::TestGreekUNGEGN() {
-    logKnownIssue( "cldrbug:1911");
+
+    // CLDR bug #1911: This test should be moved into CLDR.
     // It is left in its current state as a regression test.
+
+//    if (isICUVersionAtLeast(ICU_39)) {
+//        // We temporarily filter against Unicode 4.1, but we only do this
+//        // before version 3.4.
+//        errln("FAIL: TestGreek needs to be updated to remove delete the [:Age=4.0:] filter ");
+//        return;
+//    } else {
+//        logln("Warning: TestGreek needs to be updated to remove delete the section marked [:Age=4.0:] filter");
+//    }
 
     RTTest test("Latin-Greek/UNGEGN");
     LegalGreek *legal = new LegalGreek(FALSE);
@@ -1177,8 +1194,18 @@ void TransliteratorRoundTripTest::TestGreekUNGEGN() {
 }
 
 void TransliteratorRoundTripTest::Testel() {
-    logKnownIssue( "cldrbug:1911");
+    
+    // CLDR bug #1911: This test should be moved into CLDR.
     // It is left in its current state as a regression test.
+
+//    if (isICUVersionAtLeast(ICU_39)) {
+//        // We temporarily filter against Unicode 4.1, but we only do this
+//        // before version 3.4.
+//        errln("FAIL: TestGreek needs to be updated to remove delete the [:Age=4.0:] filter ");
+//        return;
+//    } else {
+//        logln("Warning: TestGreek needs to be updated to remove delete the section marked [:Age=4.0:] filter");
+//    }
 
     RTTest test("Latin-el");
     LegalGreek *legal = new LegalGreek(FALSE);
@@ -1239,9 +1266,16 @@ UBool LegalHebrew::is(const UnicodeString& sourceString)const{
     return TRUE;
 }
 void TransliteratorRoundTripTest::TestHebrew() {
-    logKnownIssue( "cldrbug:1911");
+    // CLDR bug #1911: This test should be moved into CLDR.
     // It is left in its current state as a regression test.
-
+//    if (isICUVersionAtLeast(ICU_39)) {
+//        // We temporarily filter against Unicode 4.1, but we only do this
+//        // before version 3.4.
+//        errln("FAIL: TestHebrew needs to be updated to remove delete the [:Age=4.0:] filter ");
+//        return;
+//    } else {
+//        logln("Warning: TestHebrew needs to be updated to remove delete the section marked [:Age=4.0:] filter");
+//    }
     //long start = System.currentTimeMillis();
     UErrorCode error = U_ZERO_ERROR;
     LegalHebrew* legal = new LegalHebrew(error);
@@ -1357,9 +1391,16 @@ void TransliteratorRoundTripTest::TestDevanagariLatin() {
     }
     RTTest test("Latin-Devanagari");
     Legal *legal = new LegalIndic();
-    logKnownIssue( "cldrbug:1911");
+    // CLDR bug #1911: This test should be moved into CLDR.
     // It is left in its current state as a regression test.
-
+//    if (isICUVersionAtLeast(ICU_39)) {
+//        // We temporarily filter against Unicode 4.1, but we only do this
+//        // before version 3.4.
+//        errln("FAIL: TestDevanagariLatin needs to be updated to remove delete the [:Age=4.1:] filter ");
+//        return;
+//    } else {
+//        logln("Warning: TestDevanagariLatin needs to be updated to remove delete the section marked [:Age=4.1:] filter");
+//    }
     test.test(UnicodeString(latinForIndic, ""), 
         UnicodeString("[[[:Devanagari:][\\u094d][\\u0964\\u0965]]&[:Age=4.1:]-[\\u0970]]", ""), "[\\u0965\\u0904]", this, quick, 
             legal, 50);
@@ -1622,26 +1663,33 @@ void TransliteratorRoundTripTest::TestDebug(const char* name,const char fromSet[
 
 void TransliteratorRoundTripTest::TestInterIndic() {
     //TestDebug("Latin-Gurmukhi", latinForIndic, "[:Gurmukhi:]","[\\u0965\\u0a02\\u0a72\\u0a73\\u0a74]",TRUE);
-    int32_t num = UPRV_LENGTHOF(interIndicArray)/INTER_INDIC_ARRAY_WIDTH;
+    int32_t num = (int32_t)(sizeof(interIndicArray)/(INTER_INDIC_ARRAY_WIDTH*sizeof(char*)));
     if(quick){
         logln("Testing only 5 of %i. Skipping rest (use -e for exhaustive)",num);
         num = 5;
     }
+    // CLDR bug #1911: This test should be moved into CLDR.
+    // It is left in its current state as a regression test.
+//    if (isICUVersionAtLeast(ICU_39)) {
+//        // We temporarily filter against Unicode 4.1, but we only do this
+//        // before version 3.4.
+//        errln("FAIL: TestInterIndic needs to be updated to remove delete the [:Age=4.1:] filter ");
+//        return;
+//    } else {
+//        logln("Warning: TestInterIndic needs to be updated to remove delete the section marked [:Age=4.1:] filter");
+//    }
     for(int i = 0; i < num;i++){
         RTTest test(interIndicArray[i*INTER_INDIC_ARRAY_WIDTH + 0]);
         Legal *legal = new LegalIndic();
         logln(UnicodeString("Stress testing ") + interIndicArray[i*INTER_INDIC_ARRAY_WIDTH + 0]);
-      if( !logKnownIssue( "cldrbug:1911" ) ) {
-        /* "full test" */
-        // CLDR bug #1911: This test should be moved into CLDR.
+        /* Uncomment lines below  when transliterator is fixed */
+        /*
         test.test(  interIndicArray[i*INTER_INDIC_ARRAY_WIDTH + 1], 
                     interIndicArray[i*INTER_INDIC_ARRAY_WIDTH + 2], 
                     interIndicArray[i*INTER_INDIC_ARRAY_WIDTH + 3], // roundtrip exclusions 
                     this, quick, legal, 50);
-      } else {
-        // It is left in its current state as a regression test.
-        // CLDR should test, and remove the age filter.
-          /* regression test - ""temporary"" until CLDR#1911 is fixed */
+        */
+        /* comment lines below  when transliterator is fixed */
         // start
         UnicodeString source("[");
         source.append(interIndicArray[i*INTER_INDIC_ARRAY_WIDTH + 1]);
@@ -1649,13 +1697,12 @@ void TransliteratorRoundTripTest::TestInterIndic() {
         UnicodeString target("[");
         target.append(interIndicArray[i*INTER_INDIC_ARRAY_WIDTH + 2]);
         target.append(" & [:Age=4.1:]]");
-        test.test(  source,
-                    target,
+        test.test(  source, 
+                    target, 
                     interIndicArray[i*INTER_INDIC_ARRAY_WIDTH + 3], // roundtrip exclusions 
                     this, quick, legal, 50);
         // end
         delete legal;
-      }
     }
 }
 

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 1997-2015, International Business Machines Corporation and others.
+* Copyright (C) 1997-2012, International Business Machines Corporation and others.
 * All Rights Reserved.
 *******************************************************************************
 */
@@ -29,22 +27,18 @@
 #else
 #define U_HAVE_RBNF 1
 
+#include "unicode/coll.h"
 #include "unicode/dcfmtsym.h"
 #include "unicode/fmtable.h"
 #include "unicode/locid.h"
 #include "unicode/numfmt.h"
 #include "unicode/unistr.h"
 #include "unicode/strenum.h"
-#include "unicode/brkiter.h"
-#include "unicode/upluralrules.h"
 
 U_NAMESPACE_BEGIN
 
-class NFRule;
 class NFRuleSet;
 class LocalizationInfo;
-class PluralFormat;
-class RuleBasedCollator;
 
 /**
  * Tags for the predefined rulesets.
@@ -56,14 +50,12 @@ enum URBNFRuleSetTag {
     URBNF_ORDINAL,
     URBNF_DURATION,
     URBNF_NUMBERING_SYSTEM,
-#ifndef U_HIDE_DEPRECATED_API
-    /**
-     * One more than the highest normal URBNFRuleSetTag value.
-     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-     */
     URBNF_COUNT
-#endif  // U_HIDE_DEPRECATED_API
 };
+
+#if UCONFIG_NO_COLLATION
+class Collator;
+#endif
 
 /**
  * The RuleBasedNumberFormat class formats numbers according to a set of rules. This number formatter is
@@ -273,46 +265,16 @@ enum URBNFRuleSetTag {
  *   </tr>
  *   <tr>
  *     <td>x.x:</td>
- *     <td>The rule is an <em>improper fraction rule</em>. If the full stop in
- *     the middle of the rule name is replaced with the decimal point
- *     that is used in the language or DecimalFormatSymbols, then that rule will
- *     have precedence when formatting and parsing this rule. For example, some
- *     languages use the comma, and can thus be written as x,x instead. For example,
- *     you can use "x.x: &lt;&lt; point &gt;&gt;;x,x: &lt;&lt; comma &gt;&gt;;" to
- *     handle the decimal point that matches the language's natural spelling of
- *     the punctuation of either the full stop or comma.</td>
+ *     <td>The rule is an <em>improper fraction rule.</em></td>
  *   </tr>
  *   <tr>
  *     <td>0.x:</td>
- *     <td>The rule is a <em>proper fraction rule</em>. If the full stop in
- *     the middle of the rule name is replaced with the decimal point
- *     that is used in the language or DecimalFormatSymbols, then that rule will
- *     have precedence when formatting and parsing this rule. For example, some
- *     languages use the comma, and can thus be written as 0,x instead. For example,
- *     you can use "0.x: point &gt;&gt;;0,x: comma &gt;&gt;;" to
- *     handle the decimal point that matches the language's natural spelling of
- *     the punctuation of either the full stop or comma.</td>
+ *     <td>The rule is a <em>proper fraction rule.</em></td>
  *   </tr>
  *   <tr>
  *     <td>x.0:</td>
- *     <td>The rule is a <em>master rule</em>. If the full stop in
- *     the middle of the rule name is replaced with the decimal point
- *     that is used in the language or DecimalFormatSymbols, then that rule will
- *     have precedence when formatting and parsing this rule. For example, some
- *     languages use the comma, and can thus be written as x,0 instead. For example,
- *     you can use "x.0: &lt;&lt; point;x,0: &lt;&lt; comma;" to
- *     handle the decimal point that matches the language's natural spelling of
- *     the punctuation of either the full stop or comma.</td>
+ *     <td>The rule is a <em>master rule.</em></td>
  *   </tr>
- *   <tr>
- *     <td>Inf:</td>
- *     <td>The rule for infinity.</td>
- *   </tr>
- *   <tr>
- *     <td>NaN:</td>
- *     <td>The rule for an IEEE 754 NaN (not a number).</td>
- *   </tr>
- *   <tr>
  *   <tr>
  *     <td><em>nothing</em></td>
  *     <td>If the rule's rule descriptor is left out, the base value is one plus the
@@ -469,24 +431,6 @@ enum URBNFRuleSetTag {
  *     <td>in rule in fraction rule set</td>
  *     <td>Omit the optional text if multiplying the number by the rule's base value yields 1.</td>
  *   </tr>
- *   <tr>
- *     <td width="37">$(cardinal,<i>plural syntax</i>)$</td>
- *     <td width="23"></td>
- *     <td width="165" valign="top">in all rule sets</td>
- *     <td>This provides the ability to choose a word based on the number divided by the radix to the power of the
- *     exponent of the base value for the specified locale, which is normally equivalent to the &lt;&lt; value.
- *     This uses the cardinal plural rules from PluralFormat. All strings used in the plural format are treated
- *     as the same base value for parsing.</td>
- *   </tr>
- *   <tr>
- *     <td width="37">$(ordinal,<i>plural syntax</i>)$</td>
- *     <td width="23"></td>
- *     <td width="165" valign="top">in all rule sets</td>
- *     <td>This provides the ability to choose a word based on the number divided by the radix to the power of the
- *     exponent of the base value for the specified locale, which is normally equivalent to the &lt;&lt; value.
- *     This uses the ordinal plural rules from PluralFormat. All strings used in the plural format are treated
- *     as the same base value for parsing.</td>
- *   </tr>
  * </table>
  *
  * <p>The substitution descriptor (i.e., the text between the token characters) may take one
@@ -554,8 +498,6 @@ enum URBNFRuleSetTag {
  * @author Richard Gillam
  * @see NumberFormat
  * @see DecimalFormat
- * @see PluralFormat
- * @see PluralRules
  * @stable ICU 2.0
  */
 class U_I18N_API RuleBasedNumberFormat : public NumberFormat {
@@ -658,7 +600,7 @@ public:
    * locale.  There are four legal values: URBNF_SPELLOUT, which creates a formatter that
    * spells out a value in words in the desired language, URBNF_ORDINAL, which attaches
    * an ordinal suffix from the desired language to the end of a number (e.g. "123rd"),
-   * URBNF_DURATION, which formats a duration in seconds as hours, minutes, and seconds always rounding down,
+   * URBNF_DURATION, which formats a duration in seconds as hours, minutes, and seconds,
    * and URBNF_NUMBERING_SYSTEM, which is used to invoke rules for alternate numbering
    * systems such as the Hebrew numbering system, or for Roman Numerals, etc.
    * @param locale The locale for the formatter.
@@ -866,7 +808,50 @@ public:
                                 FieldPosition& pos,
                                 UErrorCode& status) const;
 
-  using NumberFormat::parse;
+  /**
+   * Formats the specified number using the default ruleset.
+   * @param obj The number to format.
+   * @param toAppendTo the string that will hold the (appended) result
+   * @param pos the fieldposition
+   * @param status the status
+   * @return A textual representation of the number.
+   * @stable ICU 2.0
+   */
+  virtual UnicodeString& format(const Formattable& obj,
+                                UnicodeString& toAppendTo,
+                                FieldPosition& pos,
+                                UErrorCode& status) const;
+  /**
+   * Redeclared Format method.
+   * @param obj    the object to be formatted.
+   * @param result Output param which will receive the formatted string.
+   * @param status Output param set to success/failure code
+   * @return       A reference to 'result'.
+   * @stable ICU 2.0
+   */
+  UnicodeString& format(const Formattable& obj,
+                        UnicodeString& result,
+                        UErrorCode& status) const;
+
+  /**
+   * Redeclared NumberFormat method.
+   * @param number    the double value to be formatted.
+   * @param output    Output param which will receive the formatted string.
+   * @return          A reference to 'output'.
+   * @stable ICU 2.0
+   */
+   UnicodeString& format(double number,
+                         UnicodeString& output) const;
+
+  /**
+   * Redeclared NumberFormat method.
+   * @param number    the long value to be formatted.
+   * @param output    Output param which will receive the formatted string.
+   * @return          A reference to 'output'.
+   * @stable ICU 2.0
+   */
+   UnicodeString& format(int32_t number,
+                         UnicodeString& output) const;
 
   /**
    * Parses the specfied string, beginning at the specified position, according
@@ -885,6 +870,18 @@ public:
   virtual void parse(const UnicodeString& text,
                      Formattable& result,
                      ParsePosition& parsePosition) const;
+
+
+  /**
+   * Redeclared Format method.
+   * @param text   The string to parse
+   * @param result the result of the parse, either a double or a long.
+   * @param status Output param set to failure code when a problem occurs.
+   * @stable ICU 2.0
+   */
+  virtual inline void parse(const UnicodeString& text,
+                      Formattable& result,
+                      UErrorCode& status) const;
 
 #if !UCONFIG_NO_COLLATION
 
@@ -952,18 +949,6 @@ public:
    */
   virtual UnicodeString getDefaultRuleSetName() const;
 
-  /**
-   * Set a particular UDisplayContext value in the formatter, such as
-   * UDISPCTX_CAPITALIZATION_FOR_STANDALONE. Note: For getContext, see
-   * NumberFormat.
-   * @param value The UDisplayContext value to set.
-   * @param status Input/output status. If at entry this indicates a failure
-   *               status, the function will do nothing; otherwise this will be
-   *               updated with any new status from the function. 
-   * @stable ICU 53
-   */
-  virtual void setContext(UDisplayContext value, UErrorCode& status);
-
 public:
     /**
      * ICU "poor man's RTTI", returns a UClassID for this class.
@@ -985,7 +970,7 @@ public:
      * symbolsToAdopt; the client must not delete it.
      *
      * @param symbolsToAdopt DecimalFormatSymbols to be adopted.
-     * @stable ICU 49
+     * @draft ICU 49
      */
     virtual void adoptDecimalFormatSymbols(DecimalFormatSymbols* symbolsToAdopt);
 
@@ -996,7 +981,7 @@ public:
      * deleting it.
      *
      * @param symbols DecimalFormatSymbols.
-     * @stable ICU 49
+     * @draft ICU 49
      */
     virtual void setDecimalFormatSymbols(const DecimalFormatSymbols& symbols);
 
@@ -1009,7 +994,6 @@ private:
               const Locale& locale, UParseError& perror, UErrorCode& status);
 
     void init(const UnicodeString& rules, LocalizationInfo* localizations, UParseError& perror, UErrorCode& status);
-    void initCapitalizationContextInfo(const Locale& thelocale);
     void dispose();
     void stripWhitespace(UnicodeString& src);
     void initDefaultRuleSet();
@@ -1019,19 +1003,11 @@ private:
     /* friend access */
     friend class NFSubstitution;
     friend class NFRule;
-    friend class NFRuleSet;
     friend class FractionalPartSubstitution;
 
     inline NFRuleSet * getDefaultRuleSet() const;
-    const RuleBasedCollator * getCollator() const;
-    DecimalFormatSymbols * initializeDecimalFormatSymbols(UErrorCode &status);
-    const DecimalFormatSymbols * getDecimalFormatSymbols() const;
-    NFRule * initializeDefaultInfinityRule(UErrorCode &status);
-    const NFRule * getDefaultInfinityRule() const;
-    NFRule * initializeDefaultNaNRule(UErrorCode &status);
-    const NFRule * getDefaultNaNRule() const;
-    PluralFormat *createPluralFormat(UPluralType pluralType, const UnicodeString &pattern, UErrorCode& status) const;
-    UnicodeString& adjustForCapitalizationContext(int32_t startPos, UnicodeString& currentResult) const;
+    Collator * getCollator() const;
+    DecimalFormatSymbols * getDecimalFormatSymbols() const;
 
 private:
     NFRuleSet **ruleSets;
@@ -1039,21 +1015,45 @@ private:
     int32_t numRuleSets;
     NFRuleSet *defaultRuleSet;
     Locale locale;
-    RuleBasedCollator* collator;
+    Collator* collator;
     DecimalFormatSymbols* decimalFormatSymbols;
-    NFRule *defaultInfinityRule;
-    NFRule *defaultNaNRule;
     UBool lenient;
     UnicodeString* lenientParseRules;
     LocalizationInfo* localizations;
-    UnicodeString originalDescription;
-    UBool capitalizationInfoSet;
-    UBool capitalizationForUIListMenu;
-    UBool capitalizationForStandAlone;
-    BreakIterator* capitalizationBrkIter;
 };
 
 // ---------------
+
+inline UnicodeString&
+RuleBasedNumberFormat::format(const Formattable& obj,
+                              UnicodeString& result,
+                              UErrorCode& status) const
+{
+    // Don't use Format:: - use immediate base class only,
+    // in case immediate base modifies behavior later.
+    // dlf - the above comment is bogus, if there were a reason to modify
+    // it, it would be virtual, and there's no reason because it is
+    // a one-line macro in NumberFormat anyway, just like this one.
+    return NumberFormat::format(obj, result, status);
+}
+
+inline UnicodeString&
+RuleBasedNumberFormat::format(double number, UnicodeString& output) const {
+    FieldPosition pos(0);
+    return format(number, output, pos);
+}
+
+inline UnicodeString&
+RuleBasedNumberFormat::format(int32_t number, UnicodeString& output) const {
+    FieldPosition pos(0);
+    return format(number, output, pos);
+}
+
+inline void
+RuleBasedNumberFormat::parse(const UnicodeString& text, Formattable& result, UErrorCode& status) const
+{
+    NumberFormat::parse(text, result, status);
+}
 
 #if !UCONFIG_NO_COLLATION
 

@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2005-2010, International Business Machines Corporation and    *
@@ -10,8 +8,6 @@ package com.ibm.icu.dev.test.calendar;
 
 import java.util.Date;
 import java.util.Locale;
-
-import org.junit.Test;
 
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.text.DateFormat;
@@ -26,8 +22,12 @@ import com.ibm.icu.util.ULocale;
 /**
  * Tests for the <code>CopticCalendar</code> class.
  */
-public class CopticTest extends CalendarTestFmwk 
+public class CopticTest extends CalendarTest 
 {
+    public static void main(String args[]) throws Exception {
+        new CopticTest().run(args);
+    }
+
     /** Constants to save typing. */
     public static final int TOUT      = CopticCalendar.TOUT;
     public static final int BABA      = CopticCalendar.BABA;
@@ -91,7 +91,6 @@ public class CopticTest extends CalendarTestFmwk
     /** A huge list of test cases to make sure that computeTime and computeFields
      * work properly for a wide range of data in the civil calendar.
      */
-    @Test
     public void TestCases()
     {
         final TestCase[] tests = {
@@ -141,7 +140,6 @@ public class CopticTest extends CalendarTestFmwk
     }
 
     // basic sanity check that the conversion algorithm round-trips
-    @Test
     public void TestCopticToJD() {
         CopticCalendar cal = new CopticCalendar();
         cal.clear();
@@ -171,7 +169,6 @@ public class CopticTest extends CalendarTestFmwk
 
     // basic check to see that we print out eras ok
     // eventually should modify to use locale strings and formatter appropriate to coptic calendar
-    @Test
     public void TestEraStart() {
         SimpleDateFormat fmt = new SimpleDateFormat("EEE MMM dd, yyyy GG");
         SimpleDateFormat copticFmt = new SimpleDateFormat("EEE MMM dd, yyyy GG");
@@ -187,7 +184,6 @@ public class CopticTest extends CalendarTestFmwk
         assertEquals("Gregorian Date", "Thu Aug 30, 0283 AD", fmt.format(cal.getTime()));
     }
 
-    @Test
     public void TestBasic() {
         CopticCalendar cal = new CopticCalendar();
         cal.clear();
@@ -207,7 +203,6 @@ public class CopticTest extends CalendarTestFmwk
     /**
      * Test limits of the Coptic calendar
      */
-    @Test
     public void TestLimits() {
         Calendar cal = Calendar.getInstance();
         cal.set(2007, Calendar.JANUARY, 1);
@@ -220,7 +215,6 @@ public class CopticTest extends CalendarTestFmwk
      * Test for track ticket 6379 - proper reporting of
      * maximum month lengths
      */
-    @Test
     public void Test6379()
     {
         CopticCalendar copticCal = new CopticCalendar();
@@ -245,7 +239,6 @@ public class CopticTest extends CalendarTestFmwk
         }
     }    
 
-    @Test
     public void TestCoverage() {
 
         {
@@ -339,7 +332,6 @@ public class CopticTest extends CalendarTestFmwk
         }
     }
 
-    @Test
     public void TestYear() {
         // Gregorian Calendar
         Calendar gCal= new GregorianCalendar();
@@ -370,7 +362,6 @@ public class CopticTest extends CalendarTestFmwk
               " + 2 months = " + eDF.format(eFuture));
     }
 
-    @Test
     public void TestAddSet() {
         class TestAddSetItem {
             private int startYear;

@@ -1,24 +1,31 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/lt.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/lt.xml
+ */
 lt{
     Keys{
         calendar{"kalendorius"}
-        cf{"valiutos formatas"}
         colAlternate{"Rikiavimas nepaisant simbolių"}
         colBackwards{"Atvirkštinis rikiavimas"}
         colCaseFirst{"Didžiųjų / mažųjų raidžių tvarka"}
         colCaseLevel{"Rikiavimas skiriant didžiąsias ir mažąsias raides"}
+        colHiraganaQuaternary{"Rikiavimas pagal kanos ženklus"}
         colNormalization{"Normalizuotas rikiavimas"}
         colNumeric{"Skaitinis rikiavimas"}
         colStrength{"Rikiavimo intensyvumas"}
-        collation{"rikiavimas"}
+        collation{"lyginimas"}
         currency{"valiuta"}
-        hc{"valandų ciklas (12 ir 24)"}
-        lb{"teksto laužymo stilius"}
-        ms{"matų sistema"}
         numbers{"skaičiai"}
         timezone{"Laiko juosta"}
         va{"Lokalės variantas"}
+        variableTop{"Rikiavimas simbolių principu"}
         x{"Naudoti privačiai"}
     }
     Languages{
@@ -29,75 +36,69 @@ lt{
         ada{"adangmų"}
         ady{"adygėjų"}
         ae{"avestų"}
-        aeb{"Tuniso arabų"}
         af{"afrikanų"}
+        afa{"afroazijos kalba"}
         afh{"afrihili"}
         agq{"aghemų"}
         ain{"ainų"}
         ak{"akanų"}
         akk{"akadianų"}
-        akz{"alabamiečių"}
         ale{"aleutų"}
-        aln{"albanų kalbos gegų tarmė"}
+        alg{"algonkuanų kalba"}
         alt{"pietų Altajaus"}
         am{"amharų"}
         an{"aragonesų"}
         ang{"senoji anglų"}
         anp{"angikų"}
+        apa{"apačių kalba"}
         ar{"arabų"}
-        ar_001{"šiuolaikinė standartinė arabų"}
         arc{"aramaikų"}
-        arn{"mapudungunų"}
-        aro{"araonų"}
+        arn{"araukanų"}
         arp{"arapahų"}
-        arq{"Alžyro arabų"}
+        art{"dirbtinė kalba"}
         arw{"aravakų"}
-        ary{"Maroko arabų"}
-        arz{"Egipto arabų"}
         as{"asamų"}
         asa{"asu"}
-        ase{"Amerikos ženklų kalba"}
         ast{"asturianų"}
+        ath{"athapaskanų kalba"}
+        aus{"australų kalba"}
         av{"avarikų"}
-        avk{"kotava"}
         awa{"avadhi"}
         ay{"aimarų"}
         az{"azerbaidžaniečių"}
         ba{"baškirų"}
+        bad{"bandų"}
+        bai{"bamilekų kalba"}
         bal{"baluči"}
-        ban{"baliečių"}
-        bar{"bavarų"}
+        ban{"balinezų"}
         bas{"basų"}
+        bat{"baltų kalba"}
         bax{"bamunų"}
-        bbc{"batak toba"}
         bbj{"ghomalų"}
         be{"baltarusių"}
         bej{"bėjų"}
-        bem{"bembų"}
-        bew{"betavi"}
+        bem{"bemba"}
+        ber{"berberų"}
         bez{"benų"}
         bfd{"bafutų"}
-        bfq{"badaga"}
         bg{"bulgarų"}
-        bgn{"vakarų beludžių"}
+        bh{"biharų"}
         bho{"baučpuri"}
         bi{"bislama"}
         bik{"bikolų"}
         bin{"bini"}
-        bjn{"bandžarų"}
         bkm{"komų"}
-        bla{"siksikų"}
+        bla{"siksika"}
         bm{"bambarų"}
         bn{"bengalų"}
+        bnt{"bantų"}
         bo{"tibetiečių"}
-        bpy{"bišnuprijos"}
-        bqi{"bakhtiari"}
         br{"bretonų"}
         bra{"brajų"}
-        brh{"brahujų"}
         brx{"bodo"}
         bs{"bosnių"}
         bss{"akūsų"}
+        btk{"batakų"}
         bua{"buriatų"}
         bug{"buginezų"}
         bum{"bulu"}
@@ -105,60 +106,67 @@ lt{
         byv{"medumbų"}
         ca{"katalonų"}
         cad{"kado"}
+        cai{"Centrinės Amerikos indėnų kalba"}
         car{"karibų"}
+        cau{"kaukaziečių kalba"}
         cay{"kaijūgų"}
         cch{"atsamų"}
         ce{"čečėnų"}
-        ceb{"sebuanų"}
+        ceb{"cebuanų"}
+        cel{"keltų kalba"}
         cgg{"čigų"}
         ch{"čamorų"}
-        chb{"čibčų"}
+        chb{"čibča"}
         chg{"čagatų"}
         chk{"čukesų"}
-        chm{"marių"}
+        chm{"mari"}
         chn{"činuk žargonas"}
         cho{"čoktau"}
         chp{"čipvėjų"}
         chr{"čerokių"}
         chy{"čajenų"}
         ckb{"soranių kurdų"}
+        cmc{"čamikų kalba"}
         co{"korsikiečių"}
         cop{"koptų"}
-        cps{"capiznon"}
+        cpe{"kreolų arba pidžinų kalba pagal anglų"}
+        cpf{"kreolų arba pidžinų kalba pagal prancūzų"}
+        cpp{"kreolų arba pidžinų kalba pagal portugalų"}
         cr{"kry"}
         crh{"Krymo turkų"}
-        crs{"Seišelių kreolų ir prancūzų"}
+        crp{"kreolų arba pidžinų kalba"}
         cs{"čekų"}
         csb{"kašubų"}
         cu{"bažnytinė slavų"}
+        cus{"kušitik kalba"}
         cv{"čiuvašų"}
         cy{"valų"}
         da{"danų"}
         dak{"dakotų"}
         dar{"dargva"}
         dav{"taitų"}
+        day{"bidayuh kalba"}
         de{"vokiečių"}
         de_AT{"Austrijos vokiečių"}
-        de_CH{"Šveicarijos aukštutinė vokiečių"}
+        de_CH{"aukštoji Šveicarijos vokiečių"}
         del{"delavero"}
         den{"slave"}
         dgr{"dogribų"}
         din{"dinkų"}
         dje{"zarmų"}
         doi{"dogri"}
-        dsb{"žemutinių sorbų"}
-        dtp{"centrinio Dusuno"}
+        dra{"dravidų kalba"}
+        dsb{"Žemutinės Serbijos"}
         dua{"dualų"}
         dum{"Vidurio Vokietijos"}
-        dv{"divehų"}
+        dv{"divehi"}
         dyo{"džiola-foni"}
         dyu{"dyulų"}
-        dz{"botijų"}
+        dz{"svazilando"}
         dzg{"dazagų"}
-        ebu{"embu"}
-        ee{"evių"}
+        ebu{"ebu"}
+        ee{"eve"}
         efi{"efik"}
-        egl{"italų kalbos Emilijos tarmė"}
         egy{"senovės egiptiečių"}
         eka{"ekajuk"}
         el{"graikų"}
@@ -166,56 +174,47 @@ lt{
         en{"anglų"}
         en_AU{"Australijos anglų"}
         en_CA{"Kanados anglų"}
-        en_GB{"Didžiosios Britanijos anglų"}
-        en_US{"Jungtinių Valstijų anglų"}
+        en_GB{"anglų (britų)"}
+        en_US{"anglų (amerikiečių)"}
         enm{"Vidurio Anglijos"}
         eo{"esperanto"}
         es{"ispanų"}
         es_419{"Lotynų Amerikos ispanų"}
         es_ES{"Europos ispanų"}
-        es_MX{"Meksikos ispanų"}
-        esu{"centrinės Aliaskos jupikų"}
         et{"estų"}
         eu{"baskų"}
         ewo{"evondo"}
-        ext{"ispanų kalbos Ekstremadūros tarmė"}
         fa{"persų"}
-        fan{"fangų"}
+        fan{"fang"}
         fat{"fanti"}
         ff{"fulahų"}
         fi{"suomių"}
-        fil{"filipiniečių"}
-        fit{"suomių kalbos Tornedalio tarmė"}
+        fil{"tagalų"}
+        fiu{"finougrų kalba"}
         fj{"fidžių"}
         fo{"farerų"}
         fon{"fon"}
         fr{"prancūzų"}
         fr_CA{"Kanados prancūzų"}
         fr_CH{"Šveicarijos prancūzų"}
-        frc{"kadžunų prancūzų"}
         frm{"Vidurio Prancūzijos"}
         fro{"senoji prancūzų"}
-        frp{"arpitano"}
         frr{"šiaurinių fryzų"}
         frs{"rytų fryzų"}
-        fur{"friulių"}
+        fur{"frulan"}
         fy{"vakarų fryzų"}
         ga{"airių"}
         gaa{"ga"}
-        gag{"gagaūzų"}
-        gan{"kinų kalbos dziangsi tarmė"}
         gay{"gajo"}
         gba{"gbaja"}
-        gbz{"zoroastrų dari"}
         gd{"škotų (gėlų)"}
+        gem{"germanų kalba"}
         gez{"gyz"}
         gil{"kiribati"}
         gl{"galisų"}
-        glk{"gilaki"}
         gmh{"Vidurio Aukštosios Vokietijos"}
         gn{"gvaranių"}
-        goh{"senoji Aukštosios Vokietijos"}
-        gom{"Goa konkanių"}
+        goh{"Senoji Aukštosios Vokietijos"}
         gon{"gondi"}
         gor{"gorontalo"}
         got{"gotų"}
@@ -223,76 +222,71 @@ lt{
         grc{"senovės graikų"}
         gsw{"Šveicarijos vokiečių"}
         gu{"gudžaratų"}
-        guc{"vajų"}
-        gur{"frafra"}
         guz{"gusi"}
-        gv{"meniečių"}
+        gv{"manks"}
         gwi{"gvičino"}
         ha{"hausų"}
         hai{"haido"}
-        hak{"kinų kalbos hakų tarmė"}
-        haw{"havajiečių"}
+        haw{"havajų"}
         he{"hebrajų"}
         hi{"hindi"}
-        hif{"Fidžio hindi"}
-        hil{"hiligainonų"}
+        hil{"hiligainon"}
+        him{"himačali"}
         hit{"hititų"}
         hmn{"hmong"}
         ho{"hiri motu"}
         hr{"kroatų"}
-        hsb{"aukštutinių sorbų"}
-        hsn{"kinų kalbos hunano tarmė"}
-        ht{"Haičio"}
+        hsb{"viršutinė sorbian"}
+        ht{"haičio"}
         hu{"vengrų"}
         hup{"hupa"}
         hy{"armėnų"}
-        hz{"hererų"}
-        ia{"tarpinė"}
+        hz{"herero"}
+        ia{"interlingva"}
         iba{"iban"}
-        ibb{"ibibijų"}
-        id{"indoneziečių"}
+        ibb{"ibibio"}
+        id{"indonieziečių"}
         ie{"interkalba"}
         ig{"igbų"}
         ii{"sičuan ji"}
-        ik{"inupiakų"}
-        ilo{"ilokų"}
+        ijo{"ijo"}
+        ik{"inupiak"}
+        ilo{"iloko"}
+        inc{"indų kalba"}
+        ine{"indoeuropiečių kalba"}
         inh{"ingušų"}
         io{"ido"}
+        ira{"iraniečių kalba"}
+        iro{"irako kalba"}
         is{"islandų"}
         it{"italų"}
         iu{"inukitut"}
-        izh{"ingrų"}
         ja{"japonų"}
-        jam{"Jamaikos kreolų anglų"}
         jbo{"loiban"}
-        jgo{"ngombų"}
-        jmc{"mačamų"}
+        jmc{"machamų"}
         jpr{"judėjų persų"}
         jrb{"judėjų arabų"}
-        jut{"danų kalbos jutų tarmė"}
         jv{"javiečių"}
         ka{"gruzinų"}
         kaa{"karakalpakų"}
-        kab{"kebailų"}
-        kac{"kačinų"}
+        kab{"kabilo"}
+        kac{"kačin"}
         kaj{"ju"}
-        kam{"kembų"}
-        kaw{"kavių"}
+        kam{"kamba"}
+        kar{"karenų"}
+        kaw{"kavi"}
         kbd{"kabardinų"}
         kbl{"kanembų"}
         kcg{"tyap"}
         kde{"makondų"}
         kea{"Žaliojo Kyšulio kreolų"}
-        ken{"kenyang"}
         kfo{"koro"}
         kg{"Kongo"}
-        kgp{"kaingang"}
         kha{"kasi"}
+        khi{"koisan kalba"}
         kho{"kotanezų"}
-        khq{"kojra čini"}
-        khw{"khovarų"}
-        ki{"kikujų"}
-        kiu{"kirmanjki"}
+        khq{"koyra čini"}
+        ki{"kikui"}
         kj{"kuaniama"}
         kk{"kazachų"}
         kkj{"kako"}
@@ -302,18 +296,16 @@ lt{
         kmb{"kimbundu"}
         kn{"kanadų"}
         ko{"korėjiečių"}
-        koi{"komių-permių"}
-        kok{"konkanių"}
+        kok{"kankani"}
         kos{"kosreanų"}
-        kpe{"kpelių"}
-        kr{"kanurių"}
+        kpe{"kpele"}
+        kr{"kanuri"}
         krc{"karačiajų balkarijos"}
-        kri{"krio"}
-        krj{"kinaray-a"}
         krl{"karelų"}
+        kro{"kru kalba"}
         kru{"kuruk"}
         ks{"kašmyrų"}
-        ksb{"šambalų"}
+        ksb{"sambalų"}
         ksf{"bafų"}
         ksh{"kolognų"}
         ku{"kurdų"}
@@ -329,86 +321,80 @@ lt{
         lam{"lamba"}
         lb{"liuksemburgiečių"}
         lez{"lezginų"}
-        lfn{"naujoji frankų kalba"}
         lg{"ganda"}
-        li{"limburgiečių"}
-        lij{"ligūrų"}
-        liv{"lyvių"}
-        lkt{"lakotų"}
-        lmo{"lombardų"}
-        ln{"ngalų"}
+        li{"limburgiš"}
+        ln{"lingala"}
         lo{"laosiečių"}
-        lol{"mongų"}
-        loz{"lozių"}
-        lrc{"šiaurės luri"}
+        lol{"mongo"}
+        loz{"lozi"}
         lt{"lietuvių"}
-        ltg{"latgalių"}
         lu{"luba katanga"}
         lua{"luba lulua"}
         lui{"luiseno"}
-        lun{"Lundos"}
+        lun{"lunda"}
         luo{"luo"}
-        lus{"mizo"}
-        luy{"luja"}
+        lus{"lušai"}
+        luy{"luyia"}
         lv{"latvių"}
-        lzh{"klasikinė kinų"}
-        lzz{"laz"}
         mad{"madurezų"}
         maf{"mafų"}
         mag{"magahi"}
         mai{"maithili"}
-        mak{"Makasaro"}
-        man{"mandingų"}
+        mak{"makasaro"}
+        man{"mandingo"}
+        map{"austronezų"}
         mas{"masajų"}
         mde{"mabų"}
         mdf{"mokša"}
-        mdr{"mandarų"}
+        mdr{"mandar"}
         men{"mende"}
         mer{"merų"}
         mfe{"morisijų"}
         mg{"malagasų"}
         mga{"Vidurio Airijos"}
-        mgh{"makua-maeto"}
-        mgo{"meta"}
+        mgh{"makhuva-maeto"}
         mh{"Maršalo Salų"}
         mi{"maorių"}
-        mic{"mikmakų"}
-        min{"minangkabau"}
+        mic{"mikmak"}
+        min{"minankabu"}
+        mis{"įvairios kalbos"}
         mk{"makedonų"}
+        mkh{"mon khmer kalba"}
         ml{"malajalių"}
         mn{"mongolų"}
         mnc{"manču"}
-        mni{"manipurių"}
+        mni{"manipuri"}
+        mno{"manobo kalba"}
+        mo{"moldavų"}
         moh{"mohok"}
         mos{"mosi"}
         mr{"maratų"}
-        mrj{"vakarų mari"}
         ms{"malajiečių"}
         mt{"maltiečių"}
         mua{"mundangų"}
         mul{"kelios kalbos"}
+        mun{"munda kalba"}
         mus{"krykų"}
         mwl{"mirandezų"}
         mwr{"marvari"}
-        mwv{"mentavai"}
         my{"birmiečių"}
         mye{"mjenų"}
+        myn{"majanų"}
         myv{"erzyjų"}
-        mzn{"mazenderanių"}
         na{"naurų"}
-        nan{"kinų kalbos pietų minų tarmė"}
+        nah{"nahuatlų"}
+        nai{"Šiaurės Amerikos indėnų kalba"}
         nap{"neapoliečių"}
-        naq{"nama"}
-        nb{"norvegų bukmolas"}
+        naq{"namų"}
+        nb{"Norvegijos būkmolų"}
         nd{"šiaurės ndebelų"}
         nds{"Žemutinės Vokietijos"}
-        nds_NL{"Žemutinės Saksonijos (Nyderlandai)"}
-        ne{"nepaliečių"}
+        ne{"nepalų"}
         new{"nevari"}
         ng{"ndongų"}
         nia{"nias"}
-        niu{"niujiečių"}
-        njo{"ao naga"}
+        nic{"Nigerio kordofanų kalba"}
+        niu{"niuenų"}
         nl{"olandų"}
         nl_BE{"flamandų"}
         nmg{"kvasių"}
@@ -416,141 +402,131 @@ lt{
         nnh{"ngiembūnų"}
         no{"norvegų"}
         nog{"nogų"}
-        non{"senoji norsų"}
-        nov{"novial"}
+        non{"norsu"}
         nqo{"enko"}
         nr{"pietų ndebele"}
-        nso{"šiaurės Soto"}
+        nso{"šiaurės sothų"}
+        nub{"nubijos kalba"}
         nus{"nuerų"}
         nv{"navajų"}
         nwc{"klasikinė nevari"}
-        ny{"nianjų"}
+        ny{"nianja"}
         nym{"niamvezi"}
-        nyn{"niankolų"}
-        nyo{"niorų"}
+        nyn{"niankole"}
+        nyo{"nioro"}
         nzi{"nzima"}
         oc{"očitarų"}
         oj{"ojibva"}
         om{"oromų"}
-        or{"odijų"}
+        or{"orijų"}
         os{"osetinų"}
         osa{"osage"}
         ota{"osmanų turkų"}
+        oto{"otomanų kalba"}
         pa{"pendžabų"}
-        pag{"pangasinanų"}
-        pal{"vidurinė persų kalba"}
-        pam{"pampangų"}
-        pap{"papiamento"}
-        pau{"palauliečių"}
-        pcd{"pikardų"}
-        pcm{"Nigerijos pidžinų"}
-        pdc{"Pensilvanijos vokiečių"}
-        pdt{"vokiečių kalbos žemaičių tarmė"}
+        paa{"papuasų kalba"}
+        pag{"pangasinan"}
+        pal{"pahlavi"}
+        pam{"pampanga"}
+        pap{"papiemento"}
+        pau{"palau"}
         peo{"senoji persų"}
-        pfl{"vokiečių kalbos Pfalco tarmė"}
+        phi{"filipinų kalba"}
         phn{"finikiečių"}
         pi{"pali"}
         pl{"lenkų"}
-        pms{"italų kalbos Pjemonto tarmė"}
-        pnt{"Ponto"}
-        pon{"Ponapės"}
-        prg{"prūsų"}
+        pon{"ponapean"}
+        pra{"prakritų"}
         pro{"senovės provansalų"}
         ps{"puštūnų"}
         pt{"portugalų"}
         pt_BR{"Brazilijos portugalų"}
         pt_PT{"Europos portugalų"}
         qu{"kečujų"}
-        quc{"kičių"}
-        qug{"Čimboraso aukštumų kečujų"}
-        raj{"Radžastano"}
+        raj{"radžastano"}
         rap{"rapanui"}
-        rar{"rarotonganų"}
-        rgn{"italų kalbos Romanijos tarmė"}
-        rif{"rifų"}
+        rar{"rarotongan"}
         rm{"retoromanų"}
         rn{"rundi"}
         ro{"rumunų"}
-        ro_MD{"moldavų"}
+        roa{"romanų kalba"}
         rof{"rombo"}
         rom{"romų"}
         root{"rūt"}
-        rtm{"rotumanų"}
         ru{"rusų"}
-        rue{"rusinų"}
-        rug{"Rovianos"}
         rup{"aromanių"}
-        rw{"kinjaruandų"}
-        rwk{"rua"}
-        sa{"sanskritas"}
-        sad{"sandavių"}
+        rw{"kinjarvanda"}
+        rwk{"rwa"}
+        sa{"sanskrito"}
+        sad{"sandavi"}
         sah{"jakutų"}
+        sai{"Pietų Amerikos indėnų kalba"}
+        sal{"sališan kalba"}
         sam{"samarėjų aramių"}
-        saq{"sambūrų"}
+        saq{"samburų"}
         sas{"sasak"}
-        sat{"santalių"}
-        saz{"sauraštrų"}
+        sat{"santali"}
         sba{"ngambajų"}
         sbp{"sangų"}
         sc{"sardiniečių"}
         scn{"siciliečių"}
         sco{"škotų"}
         sd{"sindų"}
-        sdc{"sasaresų sardinų"}
-        sdh{"pietų kurdų"}
-        se{"šiaurės samių"}
+        se{"šiaurinių samių"}
         see{"senecų"}
         seh{"senų"}
-        sei{"seri"}
         sel{"selkup"}
-        ses{"kojraboro seni"}
+        sem{"samitų kalba"}
+        ses{"koyraboro seni"}
         sg{"sango"}
         sga{"senoji airių"}
-        sgs{"žemaičių"}
+        sgn{"ženklų kalba"}
         sh{"serbų-kroatų"}
         shi{"tachelhitų"}
         shn{"šan"}
         shu{"chadian arabų"}
         si{"sinhalų"}
-        sid{"sidamų"}
+        sid{"sidamo"}
+        sio{"siouan kalba"}
+        sit{"sino tibeto kalba"}
         sk{"slovakų"}
         sl{"slovėnų"}
-        sli{"sileziečių žemaičių"}
-        sly{"selajarų"}
-        sm{"Samoa"}
-        sma{"pietų samių"}
-        smj{"Liuleo samių"}
-        smn{"Inario samių"}
-        sms{"Skolto samių"}
-        sn{"šonų"}
+        sla{"slavų kalba"}
+        sm{"samoa"}
+        sma{"pietų sami"}
+        smi{"samių kalba"}
+        smj{"lule sami"}
+        smn{"inari sami"}
+        sms{"skolt sami"}
+        sn{"šona"}
         snk{"soninke"}
-        so{"somaliečių"}
+        so{"somalių"}
         sog{"sogdien"}
+        son{"songhai"}
         sq{"albanų"}
         sr{"serbų"}
         srn{"sranan tongo"}
         srr{"sererų"}
-        ss{"svatų"}
+        ss{"svati"}
+        ssa{"Nilo Sacharos kalba"}
         ssy{"saho"}
-        st{"pietų Soto"}
-        stq{"Saterlendo fryzų"}
+        st{"pietų sesuto"}
         su{"sundų"}
         suk{"sukuma"}
         sus{"susu"}
         sux{"šumerų"}
         sv{"švedų"}
-        sw{"suahilių"}
-        sw_CD{"Kongo suahilių"}
-        swb{"komorų"}
-        syc{"klasikinė sirų"}
+        sw{"svahilių"}
+        swb{"Comorian"}
+        swc{"Kongo svahili"}
+        syc{"klasikinė siriečių"}
         syr{"sirų"}
-        szl{"sileziečių"}
         ta{"tamilų"}
-        tcy{"tulų"}
+        tai{"tajų kalba"}
         te{"telugų"}
         tem{"timne"}
         teo{"teso"}
-        ter{"Tereno"}
+        ter{"tereno"}
         tet{"tetum"}
         tg{"tadžikų"}
         th{"tajų"}
@@ -558,62 +534,53 @@ lt{
         tig{"tigre"}
         tiv{"tiv"}
         tk{"turkmėnų"}
-        tkl{"Tokelau"}
-        tkr{"tsakurų"}
+        tkl{"tokelau"}
         tl{"tagalogų"}
         tlh{"klingonų"}
-        tli{"tlingitų"}
-        tly{"talyšų"}
+        tli{"tlingit"}
         tmh{"tamašek"}
-        tn{"tsvanų"}
+        tn{"tsvana"}
         to{"tonganų"}
-        tog{"niasa tongų"}
-        tpi{"Papua pidžinų"}
+        tog{"niasa tongos"}
+        tpi{"tok pisin"}
         tr{"turkų"}
-        tru{"turoyo"}
-        trv{"Taroko"}
-        ts{"tsongų"}
-        tsd{"tsakonų"}
+        trv{"taroko"}
+        ts{"tsonga"}
         tsi{"tsimšian"}
         tt{"totorių"}
-        ttt{"musulmonų tatų"}
         tum{"tumbukų"}
-        tvl{"Tuvalu"}
+        tup{"tupi kalba"}
+        tut{"altaikų kalba"}
+        tvl{"tuvalu"}
         tw{"tvi"}
         twq{"tasavakų"}
         ty{"taitiečių"}
         tyv{"tuvių"}
-        tzm{"Centrinio Maroko tamazitų"}
+        tzm{"Centrinio Maroko tamazightų"}
         udm{"udmurtų"}
         ug{"uigūrų"}
-        uga{"ugaritų"}
+        uga{"ugaritic"}
         uk{"ukrainiečių"}
         umb{"umbundu"}
         und{"nežinoma kalba"}
         ur{"urdų"}
         uz{"uzbekų"}
         vai{"vai"}
-        ve{"vendų"}
-        vec{"venetų"}
-        vep{"vepsų"}
+        ve{"venda"}
         vi{"vietnamiečių"}
-        vls{"vakarų flamandų"}
-        vmf{"pagrindinė frankonų"}
-        vo{"volapiuko"}
-        vot{"Votik"}
-        vro{"veru"}
+        vo{"volapiuk"}
+        vot{"votik"}
         vun{"vunjo"}
         wa{"valonų"}
         wae{"valserų"}
+        wak{"vakašan kalba"}
         wal{"valamo"}
         war{"varai"}
-        was{"Vašo"}
-        wbp{"valrpiri"}
+        was{"vašo"}
+        wen{"sorbų kalba"}
         wo{"volofų"}
-        wuu{"kinų kalbos vu tarmė"}
         xal{"kalmukų"}
         xh{"kosų"}
-        xmf{"megrelų"}
         xog{"sogų"}
         yao{"jao"}
         yap{"japezų"}
@@ -621,37 +588,29 @@ lt{
         ybb{"jembų"}
         yi{"jidiš"}
         yo{"jorubų"}
-        yrl{"njengatu"}
+        ypk{"jupik kalba"}
         yue{"kinų kalbos Kantono tarmė"}
         za{"chuang"}
         zap{"zapotekų"}
-        zbl{"BLISS simbolių"}
-        zea{"zelandų"}
+        zbl{"„Bliss“ simbolių"}
         zen{"zenaga"}
-        zgh{"standartinė Maroko tamazigtų"}
         zh{"kinų"}
-        zh_Hans{"supaprastintoji kinų"}
+        zh_Hans{"supaprastina kinų"}
         zh_Hant{"tradicinė kinų"}
+        znd{"zande"}
         zu{"zulų"}
-        zun{"Zuni"}
+        zun{"zuni"}
         zxx{"nėra kalbinio turinio"}
         zza{"zaza"}
     }
-    Languages%short{
+    LanguagesShort{
         az{"azeri"}
-        en_GB{"anglų (JK)"}
-        en_US{"anglų (JAV)"}
     }
     Scripts{
-        Afak{"Afaka"}
-        Aghb{"Kaukazo Albanijos"}
         Arab{"arabų"}
         Armi{"imperinė aramaikų"}
         Armn{"armėnų"}
         Avst{"avestano"}
-        Bali{"Baliečių"}
-        Bamu{"Bamum"}
-        Bass{"Bassa Vah"}
         Batk{"batak"}
         Beng{"bengalų"}
         Blis{"„Bliss“ simboliai"}
@@ -672,21 +631,17 @@ lt{
         Cyrs{"senoji bažnytinė slavų kirilica"}
         Deva{"devanagari"}
         Dsrt{"deseretas"}
-        Dupl{"Duplojė stenografija"}
         Egyd{"Egipto liaudies"}
         Egyh{"Egipto žynių"}
         Egyp{"egipto hieroglifai"}
-        Elba{"Elbasano"}
         Ethi{"etiopų"}
         Geok{"gruzinų kutsuri"}
         Geor{"gruzinų"}
         Glag{"glagolitik"}
         Goth{"gotų"}
-        Gran{"Granta"}
         Grek{"graikų"}
         Gujr{"gudžaratų"}
         Guru{"gurmuki"}
-        Hanb{"hanbų"}
         Hang{"hangul"}
         Hani{"han"}
         Hano{"hanuno"}
@@ -694,27 +649,22 @@ lt{
         Hant{"tradiciniai"}
         Hebr{"hebrajų"}
         Hira{"hiragana"}
-        Hluw{"Anatolijaus hieroglifai"}
         Hmng{"pahav hmong"}
         Hrkt{"katakana / hiragana"}
         Hung{"senasis vengrų"}
         Inds{"indus"}
         Ital{"senasis italų"}
-        Jamo{"Jamo simboliai"}
         Java{"javiečių"}
         Jpan{"japonų"}
-        Jurc{"Jurchen"}
         Kali{"kajah li"}
         Kana{"katakana"}
         Khar{"karošti"}
         Khmr{"khmerų"}
-        Khoj{"Khojki"}
-        Knda{"kanadų"}
+        Knda{"kanadiečių"}
         Kore{"korėjiečių"}
-        Kpel{"Kpelų"}
         Kthi{"kaithi"}
         Lana{"lana"}
-        Laoo{"laosiečių"}
+        Laoo{"lao"}
         Latf{"fraktur lotynų"}
         Latg{"gėlų lotynų"}
         Latn{"lotynų"}
@@ -722,36 +672,23 @@ lt{
         Limb{"limbu"}
         Lina{"linijiniai A"}
         Linb{"linijiniai B"}
-        Lisu{"Fraser"}
-        Loma{"Loma"}
         Lyci{"lician"}
         Lydi{"lidian"}
-        Mahj{"Mahadžani"}
         Mand{"mandėjų"}
         Mani{"maničų"}
         Maya{"malų hieroglifai"}
-        Mend{"Mende"}
-        Merc{"Merojitų rankraštinis"}
         Mero{"meroitik"}
         Mlym{"malajalių"}
-        Modi{"Modi"}
         Mong{"mongolų"}
         Moon{"mūn"}
-        Mroo{"Mro"}
         Mtei{"meitei majek"}
         Mymr{"birmiečių"}
-        Narb{"Senasis šiaurės arabų"}
-        Nbat{"Nabatėjų"}
-        Nkgb{"Naxi Geba"}
         Nkoo{"enko"}
-        Nshu{"Nüshu"}
         Ogam{"ogham"}
         Olck{"ol čiki"}
         Orkh{"orkon"}
         Orya{"orijų"}
         Osma{"osmanų"}
-        Palm{"Palmiros"}
-        Pauc{"Pau Cin Hau"}
         Perm{"senieji permės"}
         Phag{"pagsa pa"}
         Phli{"rašytiniai pahlavi"}
@@ -765,15 +702,10 @@ lt{
         Runr{"runų"}
         Samr{"samariečių"}
         Sara{"sarati"}
-        Sarb{"senoji pietų Arabijos"}
         Saur{"sauraštra"}
         Sgnw{"ženklų raštas"}
         Shaw{"šavių"}
-        Shrd{"Šarados"}
-        Sidd{"Siddham"}
-        Sind{"Khudawadi"}
         Sinh{"sinhalų"}
-        Sora{"Sora Sompeng"}
         Sund{"sundų"}
         Sylo{"syloti nagri"}
         Syrc{"sirų"}
@@ -781,11 +713,9 @@ lt{
         Syrj{"vakarų sirų"}
         Syrn{"rytų sirų"}
         Tagb{"tagbanva"}
-        Takr{"Takri"}
         Tale{"tai le"}
         Talu{"naujasis Tailando lue"}
         Taml{"tamilų"}
-        Tang{"Tangut"}
         Tavt{"tai vet"}
         Telu{"telugų"}
         Teng{"tengvar"}
@@ -794,18 +724,14 @@ lt{
         Thaa{"hana"}
         Thai{"tajų"}
         Tibt{"tibetiečių"}
-        Tirh{"Tirhuta"}
         Ugar{"ugaritik"}
         Vaii{"vai"}
         Visp{"matoma kalba"}
-        Wara{"Varang Kshiti"}
-        Wole{"Woleai"}
         Xpeo{"senieji persų"}
         Xsux{"Šumero Akado dantiraštis"}
         Yiii{"ji"}
         Zinh{"paveldėtas"}
         Zmth{"matematiniai simboliai"}
-        Zsye{"jaustukai"}
         Zsym{"simbolių"}
         Zxxx{"neparašyta"}
         Zyyy{"bendri"}
@@ -815,112 +741,36 @@ lt{
         Hans{"supaprastinti han"}
         Hant{"tradiciniai han"}
     }
-    Scripts%variant{
-        Arab{"persų-arabų"}
-    }
     Types{
         calendar{
             buddhist{"budistų kalendorius"}
             chinese{"kinų kalendorius"}
             coptic{"koptų kalendorius"}
-            dangi{"dangi kalendorius"}
             ethiopic{"Etiopijos kalendorius"}
             ethiopic-amete-alem{"Etiopijos „Amete Alem“ kalendorius"}
             gregorian{"Grigaliaus kalendorius"}
             hebrew{"hebrajų kalendorius"}
             indian{"nacionalinis indų kalendorius"}
             islamic{"islamo kalendorius"}
-            islamic-civil{"Islamo kalendorius (lentelinis, pilietinė era)"}
-            islamic-rgsa{"Islamo kalendorius (Saudo Arabija)"}
-            islamic-tbla{"Islamo kalendorius (lentelinis, astronominė era)"}
-            islamic-umalqura{"Islamo kalendorius (Umm al-Qura)"}
-            iso8601{"ISO 8601 kalendorius"}
+            islamic-civil{"pilietinis islamo kalendorius"}
             japanese{"japonų kalendorius"}
             persian{"persų kalendorius"}
             roc{"Kinijos Respublikos kalendorius"}
         }
-        cf{
-            account{"apskaitos valiutos formatas"}
-            standard{"standartinis valiutos formatas"}
-        }
-        colAlternate{
-            non-ignorable{"Rikiuoti simbolius"}
-            shifted{"Rikiuoti nepaisant simbolių"}
-        }
-        colBackwards{
-            no{"Rikiuoti diakritinius ženklus įprastai"}
-            yes{"Rikiuoti diakritinius ženklus atvirkščiai"}
-        }
-        colCaseFirst{
-            lower{"Rikiuoti suteikiant pirmumą mažosioms raidėms"}
-            no{"Rikiuoti įprasta didžiųjų ir mažųjų raidžių tvarka"}
-            upper{"Rikiuoti suteikiant pirmumą didžiosioms raidėms"}
-        }
-        colCaseLevel{
-            no{"Rikiuoti neskiriant didžiųjų ir mažųjų raidžių"}
-            yes{"Rikiuoti skiriant didžiąsias ir mažąsias raides"}
-        }
-        colNormalization{
-            no{"Rikiuoti nenormalizuojant"}
-            yes{"Rikiuoti normalizuojant unikodą"}
-        }
-        colNumeric{
-            no{"Rikiuoti skaitmenis atskirai"}
-            yes{"Rikiuoti skaitmenis pagal skaičius"}
-        }
-        colStrength{
-            identical{"Rikiuoti viską"}
-            primary{"Rikiuoti tik pagal pamatines raides"}
-            quaternary{
-                "Rikiuoti pagal didžiąsias ir mažąsias raides / plotį / diakritinius "
-                "/ kanos ženklus"
-            }
-            secondary{"Rikiuoti diakritinius ženklus"}
-            tertiary{
-                "Rikiuoti pagal diakritinius ženklus / didžiąsias ir mažąsias raides "
-                "/ plotį"
-            }
-        }
         collation{
             big5han{"įprasta kiniška rūšiavimo tvarka - Big5"}
             dictionary{"žodyno rūšiavimo tvarka"}
-            ducet{"numatytasis unikodo rikiavimas"}
+            direct{"tiesioginis"}
+            ducet{"numatytojo unikodo rūšiavimo tvarka"}
             gb2312han{"supaprastinta kiniška rūšiavimo tvarka - GB2312"}
             phonebook{"telefonų knygos rūšiavimo tvarka"}
             phonetic{"Fonetinė rikiavimo tvarka"}
             pinyin{"supaprastinta kiniškų hieroglifų rūšiavimo tvarka"}
             reformed{"reformuota rūšiavimo tvarka"}
-            search{"bendroji paieška"}
-            standard{"standartinis rikiavimas"}
+            search{"bendro tikslo paieška"}
             stroke{"Įprasta kiniško požymio rūšiavimo tvarka"}
             traditional{"įprasta rūšiavimo tvarka"}
             unihan{"Šaknies ženklų ir brūkšnių rūšiavimo tvarka"}
-            zhuyin{"Zhuyin rikiavimo tvarka"}
-        }
-        d0{
-            fwidth{"Viso pločio"}
-            hwidth{"Vidutinio pločio"}
-            npinyin{"Skaitinis"}
-        }
-        hc{
-            h11{"12 valandų sistema (0–11)"}
-            h12{"12 valandų sistema (1–12)"}
-            h23{"24 valandų sistema (0–23)"}
-            h24{"24 valandų sistema (1–24)"}
-        }
-        lb{
-            loose{"laisvas teksto laužymo stilius"}
-            normal{"įprastas teksto laužymo stilius"}
-            strict{"griežtas teksto laužymo stilius"}
-        }
-        m0{
-            bgn{"BGN simboliai"}
-            ungegn{"UNGEGN simboliai"}
-        }
-        ms{
-            metric{"metrinė sistema"}
-            uksystem{"angliška matų sistema"}
-            ussystem{"amerikietiška matų sistema"}
         }
         numbers{
             arab{"arabų-indų skaitmenys"}
@@ -929,8 +779,6 @@ lt{
             armnlow{"armėnų skaitmenys mažosiomis raidėmis"}
             bali{"bali skaitmenys"}
             beng{"bengalų skaitmenys"}
-            brah{"Brahmi skaitmenys"}
-            cakm{"Čakmų skaitmenys"}
             cham{"cham skaitmenys"}
             deva{"devanagari skaitmenys"}
             ethi{"Etiopijos skaitmenys"}
@@ -942,41 +790,25 @@ lt{
             gujr{"gudžaratų skaitmenys"}
             guru{"gurmuki skaitmenys"}
             hanidec{"kinų dešimtainiai skaitmenys"}
-            hans{"supaprastintos kinų k. skaitmenys"}
-            hansfin{"supaprastintos kinų k. finans. skaitmenys"}
-            hant{"tradicinės kinų k. skaitmenys"}
-            hantfin{"tradicinės kinų k. finans. skaitmenys"}
+            hans{"supaprastintos kinų skaitmenys"}
+            hansfin{"supaprastintos kinų finans. skaitmenys"}
+            hant{"tradicinės kinų skaitmenys"}
+            hantfin{"tradicinės kinų finans. skaitmenys"}
             hebr{"hebrajų skaitmenys"}
             java{"javiečių skaitmenys"}
             jpan{"japonų skaitmenys"}
             jpanfin{"japonų finans. skaitmenys"}
-            kali{"Kayah Li skaitmenys"}
             khmr{"khmerų skaitmenys"}
             knda{"kanadų skaitmenys"}
-            lana{"Tai Tham Hora skaitmenys"}
-            lanatham{"Tai Tham Tham skaitmenys"}
             laoo{"laosiečių skaitmenys"}
             latn{"lotyniški skaitmenys"}
-            lepc{"Lepcha skaitmenys"}
-            limb{"Limbu skaitmenys"}
             mlym{"malajalių skaitmenys"}
             mong{"mongolų skaitmenys"}
-            mtei{"Meetei Mayek skaitmenys"}
-            mymr{"mianmariečių skaitmenys"}
-            mymrshan{"Myanmar Shan skaitmenys"}
+            mymr{"Mianmariečių k. skaitmenys"}
             native{"Vietiniai skaitmenys"}
-            nkoo{"N’Ko skaitmenys"}
-            olck{"Ol Chiki skaitmenys"}
-            orya{"orijų skaitmenys"}
-            osma{"Osmanų skaitmenys"}
+            orya{"Oriya skaitmenys"}
             roman{"romėniški skaitmenys"}
             romanlow{"romėniški skaitmenys mažosiomis raidėmis"}
-            saur{"Sauraštrų skaitmenys"}
-            shrd{"Šaradų skaitmenys"}
-            sora{"Sora Sompeng skaitmenys"}
-            sund{"Sudaniečių skaitmenys"}
-            takr{"Takri skaitmenys"}
-            talu{"Naujieji Tai Lue skaitmenys"}
             taml{"tradicinės tamilų skaitmenys"}
             tamldec{"tamilų skaitmenys"}
             telu{"telugų skaitmenys"}
@@ -1020,24 +852,7 @@ lt{
         VALENCIA{"Valenciečiai"}
         WADEGILE{"Wade-Giles Romanization"}
     }
-    Version{"2.1.28.79"}
-    characterLabelPattern{
-        all{"{0} – visi"}
-        category-list{"{0}: {1}"}
-        compatibility{"{0} – suderinamumas"}
-        enclosed{"{0} – pridedamas"}
-        extended{"{0} – išplėstas"}
-        historic{"{0} – istorinis"}
-        miscellaneous{"{0} – įvairus"}
-        other{"{0} – kitas"}
-        scripts{"raštai – {0}"}
-        strokes{
-            few{"{0} brūkšniai"}
-            many{"{0} brūkšnio"}
-            one{"{0} brūkšnys"}
-            other{"{0} brūkšnių"}
-        }
-    }
+    Version{"2.0.78.38"}
     codePatterns{
         language{"Kalba: {0}"}
         script{"Rašmenys: {0}"}
@@ -1046,6 +861,6 @@ lt{
     localeDisplayPattern{
         keyTypePattern{"{0}: {1}"}
         pattern{"{0} ({1})"}
-        separator{"{0}, {1}"}
+        separator{","}
     }
 }

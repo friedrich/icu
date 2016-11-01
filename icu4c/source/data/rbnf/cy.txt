@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/rbnf/cy.xml
+// *
+// ***************************************************************************
 /**
- * ICU <specials> source: <path>/xml/rbnf/cy.xml
+ *  ICU <specials> source: <path>/xml/rbnf/cy.xml
  */
 cy{
     RBNFRules{
@@ -9,13 +15,13 @@ cy{
             "%%lenient-parse:",
             "& ' ' , ',' ;",
             "%spellout-numbering-year:",
-            "x.x: =0.0=;",
+            "x.x: =#,###0.#=;",
             "0: =%spellout-numbering=;",
             "%spellout-numbering:",
             "0: =%spellout-cardinal-masculine=;",
             "%spellout-cardinal-masculine:",
-            "-x: minws >>;",
-            "x.x: << pwynt >>;",
+            "-x: m\u00EDneas >>;",
+            "x.x: << pointe >>;",
             "0: dim;",
             "1: un;",
             "2: dau;",
@@ -37,8 +43,8 @@ cy{
             "1000000000000000: <%spellout-cardinal-masculine-before-consonant< kwadriliwn[ >>];",
             "1000000000000000000: =#,##0=;",
             "%spellout-cardinal-masculine-before-consonant:",
-            "-x: minws >>;",
-            "x.x: << pwynt >>;",
+            "-x: m\u00EDneas >>;",
+            "x.x: << pointe >>;",
             "0: dim;",
             "1: un;",
             "2: dau;",
@@ -60,8 +66,8 @@ cy{
             "1000000000000000: <%spellout-cardinal-masculine-before-consonant< kwadriliwn[ >>];",
             "1000000000000000000: =#,##0=;",
             "%spellout-cardinal-feminine:",
-            "-x: minws >>;",
-            "x.x: << pwynt >>;",
+            "-x: m\u00EDneas >>;",
+            "x.x: << pointe >>;",
             "0: dim;",
             "1: un;",
             "2: dwy;",
@@ -83,8 +89,8 @@ cy{
             "1000000000000000: <%spellout-cardinal-masculine-before-consonant< kwadriliwn[ >>];",
             "1000000000000000000: =#,##0=;",
             "%spellout-cardinal-feminine-before-consonant:",
-            "-x: minws >>;",
-            "x.x: << pwynt >>;",
+            "-x: m\u00EDneas >>;",
+            "x.x: << pointe >>;",
             "0: dim;",
             "1: un;",
             "2: dwy;",
@@ -107,5 +113,5 @@ cy{
             "1000000000000000000: =#,##0=;",
         }
     }
-    Version{"2.1.27.22"}
+    Version{"2.0.73.63"}
 }

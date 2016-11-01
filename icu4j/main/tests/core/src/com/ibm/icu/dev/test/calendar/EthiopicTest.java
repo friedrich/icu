@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2005-2010, International Business Machines Corporation and    *
@@ -10,8 +8,6 @@ package com.ibm.icu.dev.test.calendar;
 
 import java.util.Date;
 import java.util.Locale;
-
-import org.junit.Test;
 
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.text.DateFormat;
@@ -25,8 +21,12 @@ import com.ibm.icu.util.ULocale;
 /**
  * Tests for the <code>EthiopicCalendar</code> class.
  */
-public class EthiopicTest extends CalendarTestFmwk 
+public class EthiopicTest extends CalendarTest 
 {
+    public static void main(String args[]) throws Exception {
+        new EthiopicTest().run(args);
+    }
+
     /** Constants to save typing. */
     public static final int MESKEREM = EthiopicCalendar.MESKEREM;
     public static final int TEKEMT   = EthiopicCalendar.TEKEMT;
@@ -43,8 +43,7 @@ public class EthiopicTest extends CalendarTestFmwk
     public static final int PAGUMEN  = EthiopicCalendar.PAGUMEN;
 
     /* DY[20050507]  I don't know what this is for yet: 
-    @Test
-    public void TestRoll() {
+       public void TestRoll() {
        int[][] tests = new int[][] {
        //       input                roll by          output
        //  year  month     day     field amount    year  month     day
@@ -116,7 +115,6 @@ public class EthiopicTest extends CalendarTestFmwk
     /** A huge list of test cases to make sure that computeTime and computeFields
      * work properly for a wide range of data in the civil calendar.
      */
-    @Test
     public void TestCases()
     {
         final TestCase[] tests = {
@@ -231,7 +229,6 @@ public class EthiopicTest extends CalendarTestFmwk
 
     // basic check to see that we print out eras ok
     // eventually should modify to use locale strings and formatter appropriate to coptic calendar
-    @Test
     public void TestEraStart() {
         SimpleDateFormat fmt = new SimpleDateFormat("EEE MMM dd, yyyy GG");
         fmt.setCalendar(new EthiopicCalendar());
@@ -256,7 +253,6 @@ public class EthiopicTest extends CalendarTestFmwk
         assertEquals("Gregorian Date", "Tue Aug 28, 0007 AD", fmt.format(gc));
     }
 
-    @Test
     public void TestBasic() {
         EthiopicCalendar cal = new EthiopicCalendar();
         cal.clear();
@@ -273,7 +269,6 @@ public class EthiopicTest extends CalendarTestFmwk
               cal.get(DATE));
     }
     
-    @Test
     public void TestJD(){
         int jd = EthiopicCalendar.EthiopicToJD(1567,8,9);
         EthiopicCalendar cal = new EthiopicCalendar();
@@ -291,7 +286,6 @@ public class EthiopicTest extends CalendarTestFmwk
     /**
      * Test limits of the Coptic calendar
      */
-    @Test
     public void TestLimits() {
         Calendar cal = Calendar.getInstance();
         cal.set(2007, Calendar.JANUARY, 1);
@@ -301,7 +295,6 @@ public class EthiopicTest extends CalendarTestFmwk
     }
 
     
-    @Test
     public void TestCoverage() {
 
         {
@@ -427,7 +420,6 @@ public class EthiopicTest extends CalendarTestFmwk
         return alemawiCalendar;
     }
 
-    @Test
     public void TestAddSet() {
         class TestAddSetItem {
             private int startYear;

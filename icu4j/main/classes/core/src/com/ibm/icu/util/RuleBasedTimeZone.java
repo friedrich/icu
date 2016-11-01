@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2007-2014, International Business Machines Corporation and    *
+ * Copyright (C) 2007-2012, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -121,7 +119,6 @@ public class RuleBasedTimeZone extends BasicTimeZone {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     public void getOffsetFromLocal(long date,
             int nonExistingTimeOpt, int duplicatedTimeOpt, int[] offsets) {
@@ -194,7 +191,8 @@ public class RuleBasedTimeZone extends BasicTimeZone {
 
     /**
      * {@inheritDoc}
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     @Override
     public boolean observesDaylightTime() {
@@ -349,7 +347,7 @@ public class RuleBasedTimeZone extends BasicTimeZone {
             return null;
         }
         boolean isFinal = false;
-        TimeZoneTransition result;
+        TimeZoneTransition result = null;
         TimeZoneTransition tzt = historicTransitions.get(0);
         long tt = tzt.getTime();
         if (tt > base || (inclusive && tt == base)) {
@@ -394,16 +392,18 @@ public class RuleBasedTimeZone extends BasicTimeZone {
                 result = prev;
             }
         }
-        // For now, this implementation ignore transitions with only zone name changes.
-        TimeZoneRule from = result.getFrom();
-        TimeZoneRule to = result.getTo();
-        if (from.getRawOffset() == to.getRawOffset()
-                && from.getDSTSavings() == to.getDSTSavings()) {
-            // No offset changes.  Try next one if not final
-            if (isFinal) {
-                return null;
-            } else {
-                result = getNextTransition(result.getTime(), false /* always exclusive */);
+        if (result != null) {
+            // For now, this implementation ignore transitions with only zone name changes.
+            TimeZoneRule from = result.getFrom();
+            TimeZoneRule to = result.getTo();
+            if (from.getRawOffset() == to.getRawOffset()
+                    && from.getDSTSavings() == to.getDSTSavings()) {
+                // No offset changes.  Try next one if not final
+                if (isFinal) {
+                    return null;
+                } else {
+                    result = getNextTransition(result.getTime(), false /* always exclusive */);
+                }
             }
         }
         return result;
@@ -420,7 +420,7 @@ public class RuleBasedTimeZone extends BasicTimeZone {
         if (historicTransitions == null) {
             return null;
         }
-        TimeZoneTransition result;
+        TimeZoneTransition result = null;
         TimeZoneTransition tzt = historicTransitions.get(0);
         long tt = tzt.getTime();
         if (inclusive && tt == base) {
@@ -462,13 +462,15 @@ public class RuleBasedTimeZone extends BasicTimeZone {
                 result = tzt;                
             }
         }
-        // For now, this implementation ignore transitions with only zone name changes.
-        TimeZoneRule from = result.getFrom();
-        TimeZoneRule to = result.getTo();
-        if (from.getRawOffset() == to.getRawOffset()
-                && from.getDSTSavings() == to.getDSTSavings()) {
-            // No offset changes.  Try previous one
-            result = getPreviousTransition(result.getTime(), false /* always exclusive */);
+        if (result != null) {
+            // For now, this implementation ignore transitions with only zone name changes.
+            TimeZoneRule from = result.getFrom();
+            TimeZoneRule to = result.getTo();
+            if (from.getRawOffset() == to.getRawOffset()
+                    && from.getDSTSavings() == to.getDSTSavings()) {
+                // No offset changes.  Try previous one
+                result = getPreviousTransition(result.getTime(), false /* always exclusive */);
+            }
         }
         return result;
     }
@@ -758,11 +760,12 @@ public class RuleBasedTimeZone extends BasicTimeZone {
     }
 
     // Freezable stuffs
-    private volatile transient boolean isFrozen = false;
+    private transient boolean isFrozen = false;
 
     /**
      * {@inheritDoc}
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public boolean isFrozen() {
         return isFrozen;
@@ -770,7 +773,8 @@ public class RuleBasedTimeZone extends BasicTimeZone {
 
     /**
      * {@inheritDoc}
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public TimeZone freeze() {
         complete();
@@ -780,7 +784,8 @@ public class RuleBasedTimeZone extends BasicTimeZone {
 
     /**
      * {@inheritDoc}
-     * @stable ICU 49
+     * @draft ICU 49
+     * @provisional This API might change or be removed in a future release.
      */
     public TimeZone cloneAsThawed() {
         RuleBasedTimeZone tz = (RuleBasedTimeZone)super.cloneAsThawed();

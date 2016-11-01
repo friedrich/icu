@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ******************************************************************************
- * Copyright (C) 2003-2013, International Business Machines Corporation and   *
+ * Copyright (C) 2003-2010, International Business Machines Corporation and   *
  * others. All Rights Reserved.                                               *
  ******************************************************************************
  */
@@ -360,7 +358,7 @@ public final class XLIFF2ICUConverter {
             }
             while (++suffix < lang.length ()) {
                 c = lang.charAt(suffix);
-                if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'))){
+                if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))){
                     break;
                 }
             }
@@ -562,7 +560,7 @@ public final class XLIFF2ICUConverter {
                 }
                 if(!isXmlLang(name)){
                     System.err.println("The attribute "+ lang + "=\""+ name +
-                                       "\" of <file> element is invalid.");
+                                       "\" of <file> element does not satisfy RFC 1766 conditions.");
                     System.exit(-1);
                 }
                 return name;

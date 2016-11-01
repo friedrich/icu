@@ -1,27 +1,24 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2002-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2002-2012, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
-
 package com.ibm.icu.text;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
 import com.ibm.icu.impl.Assert;
-import com.ibm.icu.impl.ICUBinary;
 import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICULocaleService;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.ICUService;
 import com.ibm.icu.impl.ICUService.Factory;
 import com.ibm.icu.util.ULocale;
+import com.ibm.icu.util.UResourceBundle;
 
 /**
  * @author Ram
@@ -33,13 +30,11 @@ import com.ibm.icu.util.ULocale;
  */
 final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim {
 
-    @Override
     public Object registerInstance(BreakIterator iter, ULocale locale, int kind) {
         iter.setText(new java.text.StringCharacterIterator(""));
         return service.registerObject(iter, locale, kind);
     }
 
-    @Override
     public boolean unregister(Object key) {
         if (service.isDefault()) {
             return false;
@@ -47,7 +42,6 @@ final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim 
         return service.unregisterFactory((Factory)key);
     }
 
-    @Override
     public Locale[] getAvailableLocales() {
         if (service == null) {
             return ICUResourceBundle.getAvailableLocales();
@@ -56,7 +50,6 @@ final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim 
         }
     }
 
-    @Override
     public ULocale[] getAvailableULocales() {
         if (service == null) {
             return ICUResourceBundle.getAvailableULocales();
@@ -65,7 +58,6 @@ final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim 
         }
     }
 
-    @Override
     public BreakIterator createBreakIterator(ULocale locale, int kind) {
     // TODO: convert to ULocale when service switches over
         if (service.isDefault()) {
@@ -82,7 +74,6 @@ final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim 
             super("BreakIterator");
 
             class RBBreakIteratorFactory extends ICUResourceBundleFactory {
-                @Override
                 protected Object handleCreate(ULocale loc, int kind, ICUService srvc) {
                     return createBreakInstance(loc, kind);
                 }
@@ -90,19 +81,6 @@ final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim 
             registerFactory(new RBBreakIteratorFactory());
 
             markDefault();
-        }
-
-        /**
-         * createBreakInstance() returns an appropriate BreakIterator for any locale.
-         * It falls back to root if there is no specific data.
-         *
-         * <p>Without this override, the service code would fall back to the default locale
-         * which is not desirable for an algorithm with a good Unicode default,
-         * like break iteration.
-         */
-        @Override
-        public String validateFallbackLocale() {
-            return "";
         }
     }
     static final ICULocaleService service = new BFService();
@@ -121,27 +99,17 @@ final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim 
     private static BreakIterator createBreakInstance(ULocale locale, int kind) {
 
         RuleBasedBreakIterator    iter = null;
-        ICUResourceBundle rb           = ICUResourceBundle.
-                getBundleInstance(ICUData.ICU_BRKITR_BASE_NAME, locale,
-                        ICUResourceBundle.OpenType.LOCALE_ROOT);
-
+        ICUResourceBundle rb           = (ICUResourceBundle)UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BRKITR_BASE_NAME, locale);
+        
         //
         //  Get the binary rules.
-        //
-        ByteBuffer bytes = null;
-        String typeKeyExt = null;
-        if (kind == BreakIterator.KIND_LINE) {
-            String lbKeyValue = locale.getKeywordValue("lb");
-            if ( lbKeyValue != null && (lbKeyValue.equals("strict") || lbKeyValue.equals("normal") || lbKeyValue.equals("loose")) ) {
-                typeKeyExt = "_" + lbKeyValue;
-            }
-        }
-
+        // 
+        InputStream      ruleStream = null;
         try {
-            String         typeKey       = (typeKeyExt == null)? KIND_NAMES[kind]: KIND_NAMES[kind] + typeKeyExt;
+            String         typeKey       = KIND_NAMES[kind];
             String         brkfname      = rb.getStringWithFallback("boundaries/" + typeKey);
-            String         rulesFileName = ICUData.ICU_BRKITR_NAME+ '/' + brkfname;
-                           bytes         = ICUBinary.getData(rulesFileName);
+            String         rulesFileName = ICUResourceBundle.ICU_BUNDLE +ICUResourceBundle.ICU_BRKITR_NAME+ "/" + brkfname;
+                           ruleStream    = ICUData.getStream(rulesFileName);
         }
         catch (Exception e) {
             throw new MissingResourceException(e.toString(),"","");
@@ -151,7 +119,7 @@ final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim 
         // Create a normal RuleBasedBreakIterator.
         //
         try {
-            iter = RuleBasedBreakIterator.getInstanceFromCompiledRules(bytes);
+            iter = RuleBasedBreakIterator.getInstanceFromCompiledRules(ruleStream);
         }
         catch (IOException e) {
             // Shouldn't be possible to get here.
@@ -162,16 +130,7 @@ final class BreakIteratorFactory extends BreakIterator.BreakIteratorServiceShim 
         ULocale uloc = ULocale.forLocale(rb.getLocale());
         iter.setLocale(uloc, uloc);
         iter.setBreakType(kind);
-
-        // filtered break
-        if (kind == BreakIterator.KIND_SENTENCE) {
-            final String ssKeyword = locale.getKeywordValue("ss");
-            if (ssKeyword != null && ssKeyword.equals("standard")) {
-                final ULocale base = new ULocale(locale.getBaseName());
-                return FilteredBreakIteratorBuilder.createInstance(base).build(iter);
-            }
-        }
-
+        
         return iter;
 
     }

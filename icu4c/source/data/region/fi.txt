@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fi.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/fi.xml
+ */
 fi{
     Countries{
         001{"maailma"}
@@ -40,6 +49,7 @@ fi{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Alankomaiden Antillit"}
         AO{"Angola"}
         AQ{"Antarktis"}
         AR{"Argentiina"}
@@ -71,7 +81,7 @@ fi{
         BY{"Valko-Venäjä"}
         BZ{"Belize"}
         CA{"Kanada"}
-        CC{"Kookossaaret (Keelingsaaret)"}
+        CC{"Kookossaaret [Keelingsaaret]"}
         CD{"Kongon demokraattinen tasavalta"}
         CF{"Keski-Afrikan tasavalta"}
         CG{"Kongon tasavalta"}
@@ -113,7 +123,7 @@ fi{
         FO{"Färsaaret"}
         FR{"Ranska"}
         GA{"Gabon"}
-        GB{"Iso-Britannia"}
+        GB{"Britannia"}
         GD{"Grenada"}
         GE{"Georgia"}
         GF{"Ranskan Guayana"}
@@ -132,7 +142,7 @@ fi{
         GW{"Guinea-Bissau"}
         GY{"Guyana"}
         HK{"Hongkong – Kiinan e.h.a."}
-        HM{"Heard ja McDonaldinsaaret"}
+        HM{"Heard- ja McDonaldinsaaret"}
         HN{"Honduras"}
         HR{"Kroatia"}
         HT{"Haiti"}
@@ -183,7 +193,7 @@ fi{
         MH{"Marshallinsaaret"}
         MK{"Makedonia"}
         ML{"Mali"}
-        MM{"Myanmar (Burma)"}
+        MM{"Myanmar [Burma]"}
         MN{"Mongolia"}
         MO{"Macao – Kiinan e.h.a."}
         MP{"Pohjois-Mariaanit"}
@@ -220,7 +230,7 @@ fi{
         PM{"Saint-Pierre ja Miquelon"}
         PN{"Pitcairn"}
         PR{"Puerto Rico"}
-        PS{"Palestiinalaisalueet"}
+        PS{"Palestiina"}
         PT{"Portugali"}
         PW{"Palau"}
         PY{"Paraguay"}
@@ -245,7 +255,7 @@ fi{
         SM{"San Marino"}
         SN{"Senegal"}
         SO{"Somalia"}
-        SR{"Suriname"}
+        SR{"Surinam"}
         SS{"Etelä-Sudan"}
         ST{"São Tomé ja Príncipe"}
         SV{"El Salvador"}
@@ -255,7 +265,7 @@ fi{
         TA{"Tristan da Cunha"}
         TC{"Turks- ja Caicossaaret"}
         TD{"Tšad"}
-        TF{"Ranskan eteläiset alueet"}
+        TF{"Ranskan ulkopuoliset eteläiset alueet"}
         TG{"Togo"}
         TH{"Thaimaa"}
         TJ{"Tadžikistan"}
@@ -271,8 +281,7 @@ fi{
         TZ{"Tansania"}
         UA{"Ukraina"}
         UG{"Uganda"}
-        UM{"Yhdysvaltain erillissaaret"}
-        UN{"Yhdistyneet kansakunnat"}
+        UM{"Yhdysvaltain pienet erillissaaret"}
         US{"Yhdysvallat"}
         UY{"Uruguay"}
         UZ{"Uzbekistan"}
@@ -285,7 +294,6 @@ fi{
         VU{"Vanuatu"}
         WF{"Wallis ja Futuna"}
         WS{"Samoa"}
-        XK{"Kosovo"}
         YE{"Jemen"}
         YT{"Mayotte"}
         ZA{"Etelä-Afrikka"}
@@ -293,22 +301,5 @@ fi{
         ZW{"Zimbabwe"}
         ZZ{"tuntematon alue"}
     }
-    Countries%short{
-        GB{"Britannia"}
-        HK{"Hongkong"}
-        MO{"Macao"}
-        PS{"Palestiina"}
-        UN{"YK"}
-        US{"USA"}
-    }
-    Countries%variant{
-        CD{"Kongo-Kinshasa"}
-        CG{"Kongo-Brazzaville"}
-        CI{"Côte d’Ivoire"}
-        CZ{"Tšekinmaa"}
-        FK{"Falklandinsaaret (Malvinassaaret)"}
-        MK{"EJT Makedonia"}
-        TL{"Timor-Leste"}
-    }
-    Version{"2.1.29.88"}
+    Version{"2.0.78.39"}
 }

@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/guz.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/guz.xml
+ */
 guz{
     Countries{
         AD{"Andora"}
@@ -9,6 +18,7 @@ guz{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Antili za Uholanzi"}
         AO{"Angola"}
         AR{"Ajentina"}
         AS{"Samoa ya Marekani"}
@@ -227,5 +237,5 @@ guz{
         ZM{"Zambia"}
         ZW{"Zimbabwe"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.77.46"}
 }

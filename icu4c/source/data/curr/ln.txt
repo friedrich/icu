@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ln.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/ln.xml
+ */
 ln{
     Currencies{
         AED{
@@ -31,7 +40,7 @@ ln{
             "Dolarɛ ya Kanadá",
         }
         CDF{
-            "FC",
+            "CDF",
             "Falánga ya Kongó",
         }
         CHF{
@@ -216,10 +225,6 @@ ln{
         }
         ZMK{
             "ZMK",
-            "Kwasha ya Zambi (1968–2012)",
-        }
-        ZMW{
-            "ZMW",
             "Kwasha ya Zambi",
         }
         ZWD{
@@ -227,5 +232,5 @@ ln{
             "Dolarɛ ya Zimbabwɛ",
         }
     }
-    Version{"2.1.28.76"}
+    Version{"2.0.77.46"}
 }

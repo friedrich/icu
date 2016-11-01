@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/rbnf/sv.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/rbnf/sv.xml
+ */
 sv{
     RBNFRules{
         OrdinalRules{
@@ -23,14 +32,14 @@ sv{
             "%digits-ordinal-reale:",
             "0: =%digits-ordinal-feminine=;",
             "%digits-ordinal:",
-            "0: =%digits-ordinal-feminine=;",
+            "0: =%digits-ordinal-masculine=;",
         }
         SpelloutRules{
             "%%lenient-parse:",
             "&[last primary ignorable ] << ' ' << ',' << '-' << '\u00AD';",
             "%spellout-numbering-year:",
             "-x: minus >>;",
-            "x.x: =0.0=;",
+            "x.x: =#,###0.#=;",
             "0: =%spellout-numbering=;",
             "1100/100: <<\u00ADhundra[\u00AD>>];",
             "10000: =%spellout-numbering=;",
@@ -230,5 +239,5 @@ sv{
             "0: =%spellout-ordinal-neuter=;",
         }
     }
-    Version{"2.1.27.22"}
+    Version{"2.0.77.34"}
 }

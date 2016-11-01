@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2007-2014 IBM and Others. All Rights Reserved.
+# Copyright (C) 2007-2012 IBM and Others. All Rights Reserved.
 # All rights reserved.
 #
 
 from setuptools import setup, find_packages
 
 PACKAGE = 'IcuCodeTools'
-VERSION = '0.0.2'
+VERSION = '0.0.1'
 
 setup(
     name=PACKAGE, version=VERSION,
@@ -30,9 +30,6 @@ setup(
             'icucodetools.review = icucodetools.review',
             'icucodetools.tktlist = icucodetools.tktlist',
             'icucodetools.dcut = icucodetools.dcut'
-        ],
-        'console_scripts': [
-            'traccheck = icucodetools.traccheck:run'
         ]
     }
 )

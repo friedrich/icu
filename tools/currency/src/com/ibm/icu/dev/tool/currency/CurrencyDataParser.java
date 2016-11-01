@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2012-2013, International Business Machines Corporation and    *
+ * Copyright (C) 2012, International Business Machines Corporation and         *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -49,29 +47,14 @@ public class CurrencyDataParser {
 
     private static class Handler extends DefaultHandler {
         private enum ElementType {
-            ENTITY("CtryNm"),
-            CURRENCY("CcyNm"),
-            ALPHABETIC_CODE("Ccy"),
-            NUMERIC_CODE("CcyNbr"),
-            MINOR_UNIT("CcyMnrUnts"),
-            WITHDRAWAL_DATE("WthdrwlDt"),
-            REMARK("Remark"),   // obsolete
-            OTHER("Other");     // place holder
-
-            private String elemName;
-
-            ElementType(String elemName) {
-                this.elemName = elemName;
-            }
-
-            public static ElementType forName(String name) {
-                for (ElementType type : values()) {
-                    if (type.elemName.equals(name)) {
-                        return type;
-                    }
-                }
-                return OTHER;
-            }
+            ENTITY,
+            CURRENCY,
+            ALPHABETIC_CODE,
+            NUMERIC_CODE,
+            MINOR_UNIT,
+            WITHDRAWAL_DATE,
+            REMARK,
+            OTHER
         };
 
         Collection<CurrencyDataEntry> isoCurrencies = new LinkedList<CurrencyDataEntry>();
@@ -83,7 +66,7 @@ public class CurrencyDataParser {
 
         public Handler(boolean historic) {
             this.historic = historic;
-            currElemName = historic ? "HstrcCcyNtry" : "CcyNtry";
+            currElemName = historic ? "ISO_CURRENCY_HISTORIC" : "ISO_CURRENCY";
         }
 
         public Collection<CurrencyDataEntry> getParsedISOCurrencies() {
@@ -96,7 +79,7 @@ public class CurrencyDataParser {
                 elem = ElementType.OTHER;
             } else {
                 try {
-                    elem = ElementType.forName(qName);
+                    elem = ElementType.valueOf(qName);
                 } catch (IllegalArgumentException e) {
                     elem = ElementType.OTHER;
                 }

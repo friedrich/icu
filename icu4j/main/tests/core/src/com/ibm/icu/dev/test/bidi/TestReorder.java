@@ -1,15 +1,11 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2001-2013, International Business Machines
+*   Copyright (C) 2001-2007, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 */
 
 package com.ibm.icu.dev.test.bidi;
-
-import org.junit.Test;
 
 import com.ibm.icu.text.Bidi;
 
@@ -20,7 +16,7 @@ import com.ibm.icu.text.Bidi;
  * ported from C by Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestReorder extends BidiFmwk {
+public class TestReorder extends BidiTest {
 
     private static final String[] logicalOrder = {
         "del(KC)add(K.C.&)",
@@ -40,8 +36,8 @@ public class TestReorder extends BidiFmwk {
     private static final String[] visualOrder = {
         "del(CK)add(&.C.K)",
         "del(TVDQ) add(LDVB)",
-        "del(QP)add(S.R.)&.U(T",        /* updated for Unicode 6.3 matching brackets */
-        "del(VL)add(V.L.) &.V.L",       /* updated for Unicode 6.3 matching brackets */
+        "del(QP)add(&.U(T(.S.R",
+        "del(VL)add(&.V.L (.V.L",
         "day  0  RVRHDPD  R dayabbr",
         "day  1  ADHDPHPD  H dayabbr",
         "day  2   ADNELBPD  L dayabbr",
@@ -55,8 +51,8 @@ public class TestReorder extends BidiFmwk {
     private static final String[] visualOrder1 = {
         ")K.C.&(dda)KC(led",
         ")BVDL(dda )QDVT(led",
-        "T(U.&).R.S(dda)PQ(led",        /* updated for Unicode 6.3 matching brackets */
-        "L.V.& ).L.V(dda)LV(led",       /* updated for Unicode 6.3 matching brackets */
+        "R.S.(T(U.&(dda)PQ(led",
+        "L.V.( L.V.&(dda)LV(led",
         "rbbayad R  DPDHRVR  0  yad",
         "rbbayad H  DPHPDHDA  1  yad",
         "rbbayad L  DPBLENDA   2  yad",
@@ -112,7 +108,6 @@ public class TestReorder extends BidiFmwk {
         "hello ZYXW"
     };
 
-    @Test
     public void testReorder() {
         Bidi bidi = new Bidi();
         int testNumber;
@@ -252,4 +247,15 @@ public class TestReorder extends BidiFmwk {
 
         logln("\nExiting TestReorder\n");
     }
+
+
+    public static void main(String[] args) {
+        try {
+            new TestReorder().run(args);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
 }

@@ -1,16 +1,25 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/rbnf/zh_Hant.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/rbnf/zh_Hant.xml
+ */
 zh_Hant{
     %%Parent{"root"}
     RBNFRules{
         OrdinalRules{
             "%digits-ordinal:",
-            "-x: \u7B2C\u2212>#,##0>;",
-            "0: \u7B2C=#,##0=;",
+            "-x: \u7B2C\u2212>#,###0>;",
+            "0: \u7B2C=#,###0=;",
         }
         SpelloutRules{
             "%spellout-numbering-year:",
-            "x.x: =0.0=;",
+            "x.x: =#,###0.#=;",
             "0: =%spellout-numbering=;",
             "1000: =%spellout-numbering=;",
             "1001: =%%spellout-numbering-year-digits=;",
@@ -57,7 +66,7 @@ zh_Hant{
             "100000000: <%spellout-cardinal<\u5104[>%%cardinal5>];",
             "1000000000000: <%spellout-cardinal<\u5146[>%%cardinal8>];",
             "10000000000000000: <%spellout-cardinal<\u4EAC[>%%cardinal13>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%spellout-cardinal-financial:",
             "-x: \u8CA0>>;",
             "x.x: <<\u9EDE>>>;",
@@ -79,7 +88,7 @@ zh_Hant{
             "100000000: <<\u5104[>%%financialnumber5>];",
             "1000000000000: <<\u5146[>%%financialnumber8>];",
             "10000000000000000: <<\u4EAC[>%%financialnumber13>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%%financialnumber2:",
             "1: \u96F6=%spellout-cardinal-financial=;",
             "10: \u58F9=%spellout-cardinal-financial=;",
@@ -111,7 +120,7 @@ zh_Hant{
             "1000000000000: =%spellout-cardinal-financial=;",
             "%spellout-cardinal:",
             "-x: \u8CA0>>;",
-            "x.x: <<\u9EDE>>>;",
+            "x.x: <<\u9EDE>%%spellout-fraction>;",
             "0: \u96F6;",
             "1: \u4E00;",
             "2: \u4E8C;",
@@ -129,7 +138,7 @@ zh_Hant{
             "100000000: <<\u5104[>%%cardinal5>];",
             "1000000000000: <<\u5146[>%%cardinal8>];",
             "10000000000000000: <<\u4EAC[>%%cardinal13>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%%cardinal2:",
             "1: \u96F6=%spellout-numbering=;",
             "10: \u4E00=%spellout-numbering=;",
@@ -161,7 +170,7 @@ zh_Hant{
             "1000000000000: =%spellout-cardinal=;",
             "%spellout-cardinal-alternate2:",
             "-x: \u8CA0>>;",
-            "x.x: =%spellout-cardinal=;",
+            "x.x: <<\u9EDE>%%spellout-fraction>;",
             "0: \u96F6;",
             "1: \u4E00;",
             "2: \u5169;",
@@ -179,7 +188,7 @@ zh_Hant{
             "100000000: <<\u5104[>%%cardinal-alternate2-5>];",
             "1000000000000: <<\u5146[>%%cardinal-alternate2-8>];",
             "10000000000000000: <<\u4EAC[>%%cardinal-alternate2-13>];",
-            "1000000000000000000: =#,##0=;",
+            "1000000000000000000: =#,###0=;",
             "%%cardinal-alternate2-2:",
             "1: \u96F6=%spellout-numbering=;",
             "10: \u4E00=%spellout-numbering=;",
@@ -209,10 +218,24 @@ zh_Hant{
             "10: \u96F6\u4E00=%spellout-cardinal-alternate2=;",
             "20: \u96F6=%spellout-cardinal-alternate2=;",
             "1000000000000: =%spellout-cardinal-alternate2=;",
+            "%%spellout-fraction:",
+            "10: <%%spellout-fraction-digits<;",
+            "100: <%%spellout-fraction-digits<;",
+            "1000: <%%spellout-fraction-digits<;",
+            "10000: <%%spellout-fraction-digits<;",
+            "100000: <%%spellout-fraction-digits<;",
+            "1000000: <%%spellout-fraction-digits<;",
+            "10000000: <%%spellout-fraction-digits<;",
+            "100000000: <%%spellout-fraction-digits<;",
+            "1000000000: <%%spellout-fraction-digits<;",
+            "10000000000: <0<;",
+            "%%spellout-fraction-digits:",
+            "0: =%spellout-numbering=;",
+            "10: <<>>;",
             "%spellout-ordinal:",
-            "x.x: =#,##0.#=;",
+            "x.x: =#,###0.#=;",
             "0: \u7B2C=%spellout-numbering=;",
         }
     }
-    Version{"2.1.27.22"}
+    Version{"2.0.76.62"}
 }

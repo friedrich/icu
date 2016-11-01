@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 
  *******************************************************************************
@@ -10,18 +8,10 @@
 
 package com.ibm.icu.dev.test.stringprep;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 /**
  * @author limaoyu
  */
 public class TestInputDataStructure {
-    
-    // TODO(junit): not running before - added empty test to keep failures away
-    @Ignore
-    @Test
-    public void dummyTest() {}
     
     private String desc = null;
 

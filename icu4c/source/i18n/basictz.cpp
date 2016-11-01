@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2007-2013, International Business Machines Corporation and
+* Copyright (C) 2007-2010, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 */
@@ -36,8 +34,8 @@ BasicTimeZone::~BasicTimeZone() {
 }
 
 UBool
-BasicTimeZone::hasEquivalentTransitions(const BasicTimeZone& tz, UDate start, UDate end,
-                                        UBool ignoreDstAmount, UErrorCode& status) const {
+BasicTimeZone::hasEquivalentTransitions(/*const*/ BasicTimeZone& tz, UDate start, UDate end,
+                                        UBool ignoreDstAmount, UErrorCode& status) /*const*/ {
     if (U_FAILURE(status)) {
         return FALSE;
     }
@@ -130,7 +128,7 @@ BasicTimeZone::hasEquivalentTransitions(const BasicTimeZone& tz, UDate start, UD
 
 void
 BasicTimeZone::getSimpleRulesNear(UDate date, InitialTimeZoneRule*& initial,
-        AnnualTimeZoneRule*& std, AnnualTimeZoneRule*& dst, UErrorCode& status) const {
+        AnnualTimeZoneRule*& std, AnnualTimeZoneRule*& dst, UErrorCode& status) /*const*/ {
     initial = NULL;
     std = NULL;
     dst = NULL;
@@ -287,7 +285,7 @@ BasicTimeZone::getSimpleRulesNear(UDate date, InitialTimeZoneRule*& initial,
 
 void
 BasicTimeZone::getTimeZoneRulesAfter(UDate start, InitialTimeZoneRule*& initial,
-                                     UVector*& transitionRules, UErrorCode& status) const {
+                                     UVector*& transitionRules, UErrorCode& status) /*const*/ {
     if (U_FAILURE(status)) {
         return;
     }
@@ -548,7 +546,7 @@ error:
 
 void
 BasicTimeZone::getOffsetFromLocal(UDate /*date*/, int32_t /*nonExistingTimeOpt*/, int32_t /*duplicatedTimeOpt*/,
-                            int32_t& /*rawOffset*/, int32_t& /*dstOffset*/, UErrorCode& status) const {
+                            int32_t& /*rawOffset*/, int32_t& /*dstOffset*/, UErrorCode& status) /*const*/ {
     if (U_FAILURE(status)) {
         return;
     }

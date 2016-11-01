@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/kab.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/kab.xml
+ */
 kab{
     Currencies{
         AED{
@@ -72,7 +81,7 @@ kab{
         }
         GBP{
             "£",
-            "Apund Aglizi",
+            "Apund Sterling Aglizi",
         }
         GHC{
             "GHC",
@@ -212,10 +221,6 @@ kab{
         }
         ZMK{
             "ZMK",
-            "Akwaca Azambi (1968–2012)",
-        }
-        ZMW{
-            "ZMW",
             "Akwaca Azambi",
         }
         ZWD{
@@ -223,5 +228,5 @@ kab{
             "Adular Azimbabwi",
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.78.30"}
 }

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ********************************************************************************
-*   Copyright (C) 2005-2016, International Business Machines
+*   Copyright (C) 2005-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ********************************************************************************
 *
@@ -17,7 +15,6 @@
 
 #if !UCONFIG_NO_FORMATTING
 
-#include "cmemory.h"
 #include "winutil.h"
 #include "locmap.h"
 #include "unicode/uloc.h"
@@ -38,8 +35,7 @@ static int32_t lcidMax = 0;
 
 BOOL CALLBACK EnumLocalesProc(LPSTR lpLocaleString)
 {
-    char localeID[ULOC_FULLNAME_CAPACITY];
-	int32_t localeIDLen;
+    const char* localeID = NULL;
     UErrorCode status = U_ZERO_ERROR;
 
     if (lcidCount >= lcidMax) {
@@ -56,14 +52,11 @@ BOOL CALLBACK EnumLocalesProc(LPSTR lpLocaleString)
 
     sscanf(lpLocaleString, "%8x", &lcidRecords[lcidCount].lcid);
 
-    localeIDLen = uprv_convertToPosix(lcidRecords[lcidCount].lcid, localeID, UPRV_LENGTHOF(localeID), &status);
-    if (U_SUCCESS(status)) {
-        lcidRecords[lcidCount].localeID = new char[localeIDLen + 1];
-        memcpy(lcidRecords[lcidCount].localeID, localeID, localeIDLen);
-        lcidRecords[lcidCount].localeID[localeIDLen] = 0;
-    } else {
-        lcidRecords[lcidCount].localeID = NULL;
-    }
+    localeID = uprv_convertToPosix(lcidRecords[lcidCount].lcid, &status);
+
+    lcidRecords[lcidCount].localeID = new char[strlen(localeID)];
+
+    strcpy(lcidRecords[lcidCount].localeID, localeID);
 
     lcidCount += 1;
 

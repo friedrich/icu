@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/seh.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/seh.xml
+ */
 seh{
     Currencies{
         AED{
@@ -72,11 +81,11 @@ seh{
         }
         GBP{
             "£",
-            "Libra britânica",
+            "Libra esterlina britânica",
         }
         GHC{
             "GHC",
-            "Cedi de Gana (1979–2007)",
+            "Cedi de Gana (1979-2007)",
         }
         GMD{
             "GMD",
@@ -200,7 +209,7 @@ seh{
         }
         UGX{
             "UGX",
-            "Xelim ugandense (1966–1987)",
+            "Xelim ugandense (1966-1987)",
         }
         USD{
             "US$",
@@ -220,10 +229,6 @@ seh{
         }
         ZMK{
             "ZMK",
-            "Cuacha zambiano (1968–2012)",
-        }
-        ZMW{
-            "ZMW",
             "Cuacha zambiano",
         }
         ZWD{
@@ -231,5 +236,5 @@ seh{
             "Dólar do Zimbábue",
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.77.46"}
 }

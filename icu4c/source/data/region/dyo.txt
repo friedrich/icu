@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/dyo.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/dyo.xml
+ */
 dyo{
     Countries{
         AD{"Andorra"}
@@ -92,12 +101,12 @@ dyo{
         KE{"Keniya"}
         KH{"Kamboj"}
         KM{"Komor"}
-        LC{"Saŋ Lusia"}
+        LC{"Tansani"}
         LK{"Siri Lanka"}
         LR{"Liberia"}
         MG{"Madagaskaar"}
         ML{"Mali"}
-        NF{"Ecinkey yati Noorfok"}
+        NF{"San Marin"}
         SA{"Abari Saudi"}
         SD{"Sudan"}
         SG{"Singapur"}
@@ -111,5 +120,5 @@ dyo{
         TG{"Togo"}
         TH{"Tailand"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.77.46"}
 }

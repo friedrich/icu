@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2013, International Business Machines Corporation and
+ * Copyright (c) 1997-2012, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -34,7 +32,6 @@ private:
     void pluralFormatExtendedTest();
     void pluralFormatExtendedParseTest();
     void ordinalFormatTest();
-    void TestDecimals();
     void numberFormatTest(PluralFormat* plFmt, 
                           NumberFormat *numFmt, 
                           int32_t start, 

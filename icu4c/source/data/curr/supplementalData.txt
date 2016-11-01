@@ -1,14 +1,20 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/supplementalData.xml
+// *
+// ***************************************************************************
 supplementalData:table(nofallback){
     CurrencyMap{
-        AC{
+        150{
             {
                 from:intvector{
-                    44,
-                    323838976,
+                    213,
+                    320765952,
                 }
-                id{"SHP"}
+                id{"EUR"}
             }
         }
         AD{
@@ -149,6 +155,15 @@ supplementalData:table(nofallback){
                     161,
                     -2079101953,
                 }
+            }
+        }
+        AN{
+            {
+                from:intvector{
+                    -218,
+                    763670528,
+                }
+                id{"ANG"}
             }
         }
         AO{
@@ -506,26 +521,10 @@ supplementalData:table(nofallback){
                 }
             }
             {
-                from:intvector{
-                    0,
-                    0,
-                }
                 id{"BEL"}
-                to:intvector{
-                    148,
-                    1026440191,
-                }
             }
             {
-                from:intvector{
-                    0,
-                    0,
-                }
                 id{"BEC"}
-                to:intvector{
-                    148,
-                    1026440191,
-                }
             }
         }
         BF{
@@ -689,26 +688,6 @@ supplementalData:table(nofallback){
                 id{"BOV"}
             }
         }
-        BQ{
-            {
-                from:intvector{
-                    301,
-                    1054843904,
-                }
-                id{"USD"}
-            }
-            {
-                from:intvector{
-                    299,
-                    -1821388800,
-                }
-                id{"ANG"}
-                to:intvector{
-                    301,
-                    1141243903,
-                }
-            }
-        }
         BR{
             {
                 from:intvector{
@@ -854,21 +833,10 @@ supplementalData:table(nofallback){
         BY{
             {
                 from:intvector{
-                    341,
-                    -1547615232,
-                }
-                id{"BYN"}
-            }
-            {
-                from:intvector{
                     220,
                     1791994880,
                 }
                 id{"BYR"}
-                to:intvector{
-                    345,
-                    1551482879,
-                }
             }
             {
                 from:intvector{
@@ -1054,15 +1022,7 @@ supplementalData:table(nofallback){
                 id{"CNY"}
             }
             {
-                from:intvector{
-                    66,
-                    528958464,
-                }
                 id{"CNX"}
-                to:intvector{
-                    213,
-                    320765951,
-                }
             }
         }
         CO{
@@ -1075,11 +1035,6 @@ supplementalData:table(nofallback){
             }
             {
                 id{"COU"}
-            }
-        }
-        CP{
-            {
-                id{"XXX"}
             }
         }
         CR{
@@ -1129,17 +1084,17 @@ supplementalData:table(nofallback){
         CU{
             {
                 from:intvector{
-                    -816,
-                    1864513536,
-                }
-                id{"CUP"}
-            }
-            {
-                from:intvector{
                     176,
                     1468155904,
                 }
                 id{"CUC"}
+            }
+            {
+                from:intvector{
+                    -816,
+                    1864513536,
+                }
+                id{"CUP"}
             }
             {
                 from:intvector{
@@ -1171,15 +1126,6 @@ supplementalData:table(nofallback){
                     40,
                     2038108159,
                 }
-            }
-        }
-        CW{
-            {
-                from:intvector{
-                    299,
-                    -1821388800,
-                }
-                id{"ANG"}
             }
         }
         CX{
@@ -1264,15 +1210,6 @@ supplementalData:table(nofallback){
                 }
             }
         }
-        DG{
-            {
-                from:intvector{
-                    -31,
-                    -2046981120,
-                }
-                id{"USD"}
-            }
-        }
         DJ{
             {
                 from:intvector{
@@ -1329,15 +1266,6 @@ supplementalData:table(nofallback){
                 id{"DZD"}
             }
         }
-        EA{
-            {
-                from:intvector{
-                    213,
-                    320765952,
-                }
-                id{"EUR"}
-            }
-        }
         EC{
             {
                 from:intvector{
@@ -1358,15 +1286,7 @@ supplementalData:table(nofallback){
                 }
             }
             {
-                from:intvector{
-                    171,
-                    -619174912,
-                }
                 id{"ECV"}
-                to:intvector{
-                    220,
-                    -1725372417,
-                }
             }
         }
         EE{
@@ -1458,26 +1378,10 @@ supplementalData:table(nofallback){
                 }
             }
             {
-                from:intvector{
-                    58,
-                    -942270464,
-                }
                 id{"ESA"}
-                to:intvector{
-                    88,
-                    734077951,
-                }
             }
             {
-                from:intvector{
-                    36,
-                    -1147389952,
-                }
                 id{"ESB"}
-                to:intvector{
-                    183,
-                    -1355582465,
-                }
             }
         }
         ET{
@@ -1496,17 +1400,6 @@ supplementalData:table(nofallback){
                     320765952,
                 }
                 id{"EUR"}
-            }
-            {
-                from:intvector{
-                    66,
-                    528958464,
-                }
-                id{"XEU"}
-                to:intvector{
-                    213,
-                    320765951,
-                }
             }
         }
         FI{
@@ -1982,15 +1875,6 @@ supplementalData:table(nofallback){
                 id{"HUF"}
             }
         }
-        IC{
-            {
-                from:intvector{
-                    213,
-                    320765952,
-                }
-                id{"EUR"}
-            }
-        }
         ID{
             {
                 from:intvector{
@@ -2087,6 +1971,13 @@ supplementalData:table(nofallback){
                     -2046981120,
                 }
                 id{"USD"}
+            }
+            {
+                from:intvector{
+                    -31,
+                    -2046981120,
+                }
+                id{"GBP"}
             }
         }
         IQ{
@@ -2443,21 +2334,10 @@ supplementalData:table(nofallback){
         LT{
             {
                 from:intvector{
-                    330,
-                    -1563774976,
-                }
-                id{"EUR"}
-            }
-            {
-                from:intvector{
                     172,
                     -2062942208,
                 }
                 id{"LTL"}
-                to:intvector{
-                    330,
-                    -1563774977,
-                }
             }
             {
                 from:intvector{
@@ -2502,46 +2382,19 @@ supplementalData:table(nofallback){
                 }
             }
             {
-                from:intvector{
-                    0,
-                    0,
-                }
                 id{"LUC"}
-                to:intvector{
-                    148,
-                    1026440191,
-                }
             }
             {
-                from:intvector{
-                    0,
-                    0,
-                }
                 id{"LUL"}
-                to:intvector{
-                    148,
-                    1026440191,
-                }
             }
         }
         LV{
-            {
-                from:intvector{
-                    323,
-                    1259963392,
-                }
-                id{"EUR"}
-            }
             {
                 from:intvector{
                     172,
                     -1803742208,
                 }
                 id{"LVL"}
-                to:intvector{
-                    323,
-                    1259963391,
-                }
             }
             {
                 from:intvector{
@@ -2921,6 +2774,17 @@ supplementalData:table(nofallback){
                 }
                 id{"MVR"}
             }
+            {
+                from:intvector{
+                    -169,
+                    3073024,
+                }
+                id{"MVP"}
+                to:intvector{
+                    84,
+                    2102747135,
+                }
+            }
         }
         MW{
             {
@@ -3008,6 +2872,10 @@ supplementalData:table(nofallback){
                     -1022325760,
                 }
                 id{"ZAR"}
+                to:intvector{
+                    169,
+                    83326975,
+                }
             }
         }
         NC{
@@ -3339,17 +3207,17 @@ supplementalData:table(nofallback){
         PS{
             {
                 from:intvector{
-                    115,
-                    718760960,
-                }
-                id{"ILS"}
-            }
-            {
-                from:intvector{
                     191,
                     -550520832,
                 }
                 id{"JOD"}
+            }
+            {
+                from:intvector{
+                    115,
+                    718760960,
+                }
+                id{"ILS"}
             }
             {
                 from:intvector{
@@ -3861,15 +3729,6 @@ supplementalData:table(nofallback){
                 }
             }
         }
-        SX{
-            {
-                from:intvector{
-                    299,
-                    -1821388800,
-                }
-                id{"ANG"}
-            }
-        }
         SY{
             {
                 from:intvector{
@@ -3886,15 +3745,6 @@ supplementalData:table(nofallback){
                     1628711936,
                 }
                 id{"SZL"}
-            }
-        }
-        TA{
-            {
-                from:intvector{
-                    -235,
-                    424514560,
-                }
-                id{"GBP"}
             }
         }
         TC{
@@ -4248,11 +4098,6 @@ supplementalData:table(nofallback){
             }
             {
                 id{"USS"}
-                tender{"false"}
-                to:intvector{
-                    324,
-                    -2145971201,
-                }
             }
         }
         UY{
@@ -4412,37 +4257,6 @@ supplementalData:table(nofallback){
                 id{"WST"}
             }
         }
-        XK{
-            {
-                from:intvector{
-                    235,
-                    525885440,
-                }
-                id{"EUR"}
-            }
-            {
-                from:intvector{
-                    217,
-                    -158870528,
-                }
-                id{"DEM"}
-                to:intvector{
-                    236,
-                    2106118143,
-                }
-            }
-            {
-                from:intvector{
-                    176,
-                    -839611392,
-                }
-                id{"YUM"}
-                to:intvector{
-                    218,
-                    -1861837825,
-                }
-            }
-        }
         YD{
             {
                 from:intvector{
@@ -4540,35 +4354,16 @@ supplementalData:table(nofallback){
                 id{"ZAR"}
             }
             {
-                from:intvector{
-                    115,
-                    459560960,
-                }
                 id{"ZAL"}
-                to:intvector{
-                    185,
-                    570250239,
-                }
             }
         }
         ZM{
-            {
-                from:intvector{
-                    315,
-                    -211265536,
-                }
-                id{"ZMW"}
-            }
             {
                 from:intvector{
                     -15,
                     -1732857856,
                 }
                 id{"ZMK"}
-                to:intvector{
-                    315,
-                    -124865537,
-                }
             }
         }
         ZR{
@@ -4671,23 +4466,13 @@ supplementalData:table(nofallback){
                 id{"XDR"}
             }
             {
-                from:intvector{
-                    -294,
-                    416385024,
-                }
+                id{"XEU"}
+            }
+            {
                 id{"XFO"}
-                to:intvector{
-                    244,
-                    1269579775,
-                }
             }
             {
                 id{"XFU"}
-                tender{"false"}
-                to:intvector{
-                    322,
-                    -1418436609,
-                }
             }
             {
                 id{"XPD"}
@@ -4697,11 +4482,6 @@ supplementalData:table(nofallback){
             }
             {
                 id{"XRE"}
-                tender{"false"}
-                to:intvector{
-                    219,
-                    -886405121,
-                }
             }
             {
                 id{"XSU"}
@@ -4721,402 +4501,248 @@ supplementalData:table(nofallback){
         ADP:intvector{
             0,
             0,
-            0,
-            0,
         }
         AFN:intvector{
-            0,
-            0,
             0,
             0,
         }
         ALL:intvector{
             0,
             0,
-            0,
-            0,
         }
         AMD:intvector{
-            0,
-            0,
             0,
             0,
         }
         BHD:intvector{
             3,
             0,
-            3,
-            0,
         }
         BIF:intvector{
             0,
-            0,
-            0,
-            0,
-        }
-        BYN:intvector{
-            2,
-            0,
-            2,
             0,
         }
         BYR:intvector{
             0,
             0,
-            0,
-            0,
-        }
-        CAD:intvector{
-            2,
-            0,
-            2,
-            5,
         }
         CHF:intvector{
-            2,
-            0,
             2,
             5,
         }
         CLF:intvector{
-            4,
             0,
-            4,
             0,
         }
         CLP:intvector{
-            0,
-            0,
             0,
             0,
         }
         COP:intvector{
             0,
             0,
-            0,
-            0,
         }
         CRC:intvector{
-            2,
-            0,
-            0,
-            0,
-        }
-        CZK:intvector{
-            2,
-            0,
             0,
             0,
         }
         DEFAULT:intvector{
             2,
             0,
-            2,
-            0,
         }
         DJF:intvector{
-            0,
-            0,
             0,
             0,
         }
         ESP:intvector{
             0,
             0,
-            0,
-            0,
         }
         GNF:intvector{
-            0,
-            0,
             0,
             0,
         }
         GYD:intvector{
             0,
             0,
-            0,
-            0,
         }
         HUF:intvector{
-            2,
-            0,
             0,
             0,
         }
         IDR:intvector{
             0,
             0,
-            0,
-            0,
         }
         IQD:intvector{
-            0,
-            0,
             0,
             0,
         }
         IRR:intvector{
             0,
             0,
-            0,
-            0,
         }
         ISK:intvector{
-            0,
-            0,
             0,
             0,
         }
         ITL:intvector{
             0,
             0,
-            0,
-            0,
         }
         JOD:intvector{
-            3,
-            0,
             3,
             0,
         }
         JPY:intvector{
             0,
             0,
-            0,
-            0,
         }
         KMF:intvector{
-            0,
-            0,
             0,
             0,
         }
         KPW:intvector{
             0,
             0,
-            0,
-            0,
         }
         KRW:intvector{
-            0,
-            0,
             0,
             0,
         }
         KWD:intvector{
             3,
             0,
-            3,
-            0,
         }
         LAK:intvector{
-            0,
-            0,
             0,
             0,
         }
         LBP:intvector{
             0,
             0,
-            0,
-            0,
         }
         LUF:intvector{
-            0,
-            0,
             0,
             0,
         }
         LYD:intvector{
             3,
             0,
-            3,
-            0,
         }
         MGA:intvector{
-            0,
-            0,
             0,
             0,
         }
         MGF:intvector{
             0,
             0,
-            0,
-            0,
         }
         MMK:intvector{
-            0,
-            0,
             0,
             0,
         }
         MNT:intvector{
             0,
             0,
-            0,
-            0,
         }
         MRO:intvector{
-            0,
-            0,
             0,
             0,
         }
         MUR:intvector{
             0,
             0,
-            0,
-            0,
         }
         OMR:intvector{
-            3,
-            0,
             3,
             0,
         }
         PKR:intvector{
             0,
             0,
-            0,
-            0,
         }
         PYG:intvector{
-            0,
-            0,
             0,
             0,
         }
         RSD:intvector{
             0,
             0,
-            0,
-            0,
         }
         RWF:intvector{
-            0,
-            0,
             0,
             0,
         }
         SLL:intvector{
             0,
             0,
-            0,
-            0,
         }
         SOS:intvector{
-            0,
-            0,
             0,
             0,
         }
         STD:intvector{
             0,
             0,
-            0,
-            0,
         }
         SYP:intvector{
-            0,
-            0,
             0,
             0,
         }
         TMM:intvector{
             0,
             0,
-            0,
-            0,
         }
         TND:intvector{
-            3,
-            0,
             3,
             0,
         }
         TRL:intvector{
             0,
             0,
-            0,
-            0,
-        }
-        TWD:intvector{
-            2,
-            0,
-            0,
-            0,
         }
         TZS:intvector{
-            0,
-            0,
             0,
             0,
         }
         UGX:intvector{
             0,
             0,
-            0,
-            0,
-        }
-        UYI:intvector{
-            0,
-            0,
-            0,
-            0,
         }
         UZS:intvector{
-            0,
-            0,
             0,
             0,
         }
         VND:intvector{
             0,
             0,
-            0,
-            0,
         }
         VUV:intvector{
-            0,
-            0,
             0,
             0,
         }
         XAF:intvector{
             0,
             0,
-            0,
-            0,
         }
         XOF:intvector{
-            0,
-            0,
             0,
             0,
         }
         XPF:intvector{
             0,
             0,
-            0,
-            0,
         }
         YER:intvector{
-            0,
-            0,
             0,
             0,
         }
         ZMK:intvector{
             0,
             0,
-            0,
-            0,
         }
         ZWD:intvector{
-            0,
-            0,
             0,
             0,
         }

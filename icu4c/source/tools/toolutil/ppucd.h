@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-*   Copyright (C) 2011-2013, International Business Machines
+*   Copyright (C) 2011-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 *   file name:  ppucd.h
@@ -50,7 +48,7 @@ struct U_TOOLUTIL_API UniProps {
     UBool binProps[UCHAR_BINARY_LIMIT];
     int32_t intProps[UCHAR_INT_LIMIT-UCHAR_INT_START];
     UVersionInfo age;
-    UChar32 bmg, bpb;
+    UChar32 bmg;
     UChar32 scf, slc, stc, suc;
     int32_t digitValue;
     const char *numericValue;

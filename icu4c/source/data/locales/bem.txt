@@ -1,67 +1,32 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bem.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/bem.xml
+ */
 bem{
     AuxExemplarCharacters{"[d h q r v x z]"}
     ExemplarCharacters{"[a b c e f g i j k l m n o p s {sh} t u w y]"}
     ExemplarCharactersIndex{"[A B C E F G I J K L M N O P S {SH} T U W Y]"}
+    LocaleScript{
+        "Latn",
+    }
     NumberElements{
         latn{
             patterns{
-                accountingFormat{"¤#,##0.00;(¤#,##0.00)"}
-                currencyFormat{"¤#,##0.00"}
+                currencyFormat{"¤#,##0.00;(¤#,##0.00)"}
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.77.46"}
     calendar{
-        generic{
-            DateTimePatterns{
-                "h:mm:ss a zzzz",
-                "h:mm:ss a z",
-                "h:mm:ss a",
-                "h:mm a",
-                "EEEE, d MMMM y G",
-                "d MMMM y G",
-                "d MMM y G",
-                "dd/MM/y GGGGG",
-                "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
-                "{1} {0}",
-            }
-            availableFormats{
-                Hm{"HH:mm"}
-                Hms{"HH:mm:ss"}
-                M{"L"}
-                MEd{"E, M/d"}
-                MMM{"LLL"}
-                MMMEd{"E, MMM d"}
-                MMMMEd{"E, MMMM d"}
-                MMMMd{"MMMM d"}
-                MMMd{"MMM d"}
-                Md{"M/d"}
-                d{"d"}
-                hm{"h:mm a"}
-                ms{"mm:ss"}
-                y{"y"}
-                yM{"M/y"}
-                yMEd{"E, M/d/y"}
-                yMMM{"MMM y"}
-                yMMMEd{"E, MMM d, y"}
-                yMMMM{"MMMM y"}
-                yMMMd{"d MMM y"}
-                yMd{"d/M/y"}
-                yQQQ{"QQQ y"}
-                yQQQQ{"QQQQ y"}
-            }
-        }
         gregorian{
             AmPmMarkers{
-                "uluchelo",
-                "akasuba",
-            }
-            AmPmMarkersAbbr{
                 "uluchelo",
                 "akasuba",
             }
@@ -73,7 +38,7 @@ bem{
                 "EEEE, d MMMM y",
                 "d MMMM y",
                 "d MMM y",
-                "dd/MM/y",
+                "dd/MM/yyyy",
                 "{1} {0}",
                 "{1} {0}",
                 "{1} {0}",
@@ -126,6 +91,38 @@ bem{
                 wide{
                     "Before Yesu",
                     "After Yesu",
+                }
+            }
+            fields{
+                day{
+                    dn{"Ubushiku"}
+                    relative{
+                        "0"{"Lelo"}
+                    }
+                }
+                dayperiod{
+                    dn{"Akasuba"}
+                }
+                era{
+                    dn{"Inkulo"}
+                }
+                hour{
+                    dn{"Insa"}
+                }
+                minute{
+                    dn{"Mineti"}
+                }
+                month{
+                    dn{"Umweshi"}
+                }
+                second{
+                    dn{"Sekondi"}
+                }
+                week{
+                    dn{"Umulungu"}
+                }
+                year{
+                    dn{"Umwaka"}
                 }
             }
             monthNames{
@@ -183,39 +180,5 @@ bem{
         alternateQuotationStart{"‘"}
         quotationEnd{"”"}
         quotationStart{"“"}
-    }
-    fields{
-        day{
-            dn{"Ubushiku"}
-            relative{
-                "-1"{"yesterday"}
-                "0"{"Lelo"}
-                "1"{"tomorrow"}
-            }
-        }
-        dayperiod{
-            dn{"Akasuba"}
-        }
-        era{
-            dn{"Inkulo"}
-        }
-        hour{
-            dn{"Insa"}
-        }
-        minute{
-            dn{"Mineti"}
-        }
-        month{
-            dn{"Umweshi"}
-        }
-        second{
-            dn{"Sekondi"}
-        }
-        week{
-            dn{"Umulungu"}
-        }
-        year{
-            dn{"Umwaka"}
-        }
     }
 }

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 2002-2014, International Business Machines Corporation and
+ * Copyright (c) 2002-2012, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -17,8 +15,6 @@
 #if !UCONFIG_NO_COLLATION
 
 #include "ucaconf.h"
-#include "unicode/sortkey.h"
-#include "unicode/tblcoll.h"
 #include "unicode/ustring.h"
 #include "cmemory.h"
 #include "cstring.h"
@@ -73,8 +69,8 @@ void UCAConformanceTest::runIndexedTest( int32_t index, UBool exec, const char* 
 void UCAConformanceTest::initRbUCA() 
 {
     if(!rbUCA) {
+        UnicodeString ucarules;
         if (UCA) {
-            UnicodeString ucarules;
             UCA->getRules(UCOL_FULL_RULES, ucarules);
             rbUCA = new RuleBasedCollator(ucarules, status);
             if (U_FAILURE(status)) {
@@ -146,7 +142,7 @@ void UCAConformanceTest::openTestFile(const char *type)
                     "INFO: Working with the stub file.\n"
                     "If you need the full conformance test, please\n"
                     "download the appropriate data files from:\n"
-                    "http://unicode.org/cldr/trac/browser/trunk/common/uca");
+                    "http://source.icu-project.org/repos/icu/tools/trunk/unicodetools/com/ibm/text/data/");
             }
         }
     }
@@ -157,11 +153,22 @@ static const uint32_t FROM_RULES = 2;
 
 static UBool
 skipLineBecauseOfBug(const UChar *s, int32_t length, uint32_t flags) {
-    // Add temporary exceptions here if there are ICU bugs, until we can fix them.
-    // For examples see the ICU 52 version of this file.
-    (void)s;
-    (void)length;
-    (void)flags;
+    // TODO: Fix ICU ticket #8052
+    if(length >= 3 &&
+            (s[0] == 0xfb2 || s[0] == 0xfb3) &&
+            s[1] == 0x334 &&
+            (s[2] == 0xf73 || s[2] == 0xf75 || s[2] == 0xf81)) {
+        return TRUE;
+    }
+    // TODO: Fix ICU ticket #9361
+    if((flags & IS_SHIFTED) != 0 && length >= 2 && s[0] == 0xfffe) {
+        return TRUE;
+    }
+    // TODO: Fix tailoring builder, ICU ticket #9593.
+    UChar c;
+    if((flags & FROM_RULES) != 0 && length >= 2 && ((c = s[1]) == 0xedc || c == 0xedd)) {
+        return TRUE;
+    }
     return FALSE;
 }
 
@@ -182,9 +189,6 @@ void UCAConformanceTest::testConformance(const Collator *coll)
     if(coll == rbUCA) {
         skipFlags |= FROM_RULES;
     }
-
-    logln("-prop:ucaconfnosortkeys=1 turns off getSortKey() in UCAConformanceTest");
-    UBool withSortKeys = getProperty("ucaconfnosortkeys") == NULL;
 
     int32_t line = 0;
 
@@ -222,27 +226,22 @@ void UCAConformanceTest::testConformance(const Collator *coll)
             continue;
         }
 
-        int32_t resLen = withSortKeys ? coll->getSortKey(buffer, buflen, newSk, 1024) : 0;
+        int32_t resLen = coll->getSortKey(buffer, buflen, newSk, 1024);
 
         if(oldSk != NULL) {
-            UBool ok=TRUE;
-            int32_t skres = withSortKeys ? strcmp((char *)oldSk, (char *)newSk) : 0;
+            int32_t skres = strcmp((char *)oldSk, (char *)newSk);
             int32_t cmpres = coll->compare(oldB, oldBlen, buffer, buflen, status);
             int32_t cmpres2 = coll->compare(buffer, buflen, oldB, oldBlen, status);
 
             if(cmpres != -cmpres2) {
-                errln("Compare result not symmetrical on line %i: "
-                      "previous vs. current (%d) / current vs. previous (%d)",
-                      line, cmpres, cmpres2);
-                ok = FALSE;
+                errln("Compare result not symmetrical on line %i", line);
             }
 
-            // TODO: Compare with normalization turned off if the input passes the FCD test.
-
-            if(withSortKeys && cmpres != normalizeResult(skres)) {
+            if(cmpres != normalizeResult(skres)) {
                 errln("Difference between coll->compare (%d) and sortkey compare (%d) on line %i",
                       cmpres, skres, line);
-                ok = FALSE;
+                errln("  Previous data line %s", oldLineB);
+                errln("  Current data line  %s", lineB);
             }
 
             int32_t res = cmpres;
@@ -256,19 +255,13 @@ void UCAConformanceTest::testConformance(const Collator *coll)
             }
             if(res > 0) {
                 errln("Line %i is not greater or equal than previous line", line);
-                ok = FALSE;
-            }
-
-            if(!ok) {
                 errln("  Previous data line %s", oldLineB);
                 errln("  Current data line  %s", lineB);
-                if(withSortKeys) {
-                    UnicodeString oldS, newS;
-                    prettify(CollationKey(oldSk, oldLen), oldS);
-                    prettify(CollationKey(newSk, resLen), newS);
-                    errln("  Previous key: "+oldS);
-                    errln("  Current key:  "+newS);
-                }
+                UnicodeString oldS, newS;
+                prettify(CollationKey(oldSk, oldLen), oldS);
+                prettify(CollationKey(newSk, resLen), newS);
+                errln("  Previous key: "+oldS);
+                errln("  Current key:  "+newS);
             }
         }
 
@@ -311,7 +304,6 @@ void UCAConformanceTest::TestTableShifted(/* par */) {
 }
 
 void UCAConformanceTest::TestRulesNonIgnorable(/* par */) {
-    if(logKnownIssue("cldrbug:6745", "UCARules.txt has problems")) { return; }
     initRbUCA();
 
     if(U_SUCCESS(status)) {

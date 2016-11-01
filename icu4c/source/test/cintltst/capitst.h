@@ -1,7 +1,5 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
- * Copyright (c) 1997-2013 International Business Machines 
+ * Copyright (c) 1997-2009 International Business Machines 
  * Corporation and others. All Rights Reserved.
  ********************************************************************/
 /********************************************************************************
@@ -131,12 +129,6 @@
      * Test getKeywordValuesForLocale API
      */
     static void TestGetKeywordValuesForLocale(void);
-
-    /**
-     * test strcoll with null arg
-     */
-    static void TestStrcollNull(void);
-
 #endif /* #if !UCONFIG_NO_COLLATION */
 
 #endif

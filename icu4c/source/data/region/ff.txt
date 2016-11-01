@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ff.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/ff.xml
+ */
 ff{
     Countries{
         AD{"Anndoora"}
@@ -9,6 +18,7 @@ ff{
         AI{"Anngiyaa"}
         AL{"Albanii"}
         AM{"Armenii"}
+        AN{"Antiiye Nederlanndeeje"}
         AO{"Anngolaa"}
         AR{"Arjantiin"}
         AS{"Samowa Amerik"}
@@ -90,7 +100,7 @@ ff{
         HU{"Onngiri"}
         ID{"Enndonesii"}
         IE{"Irlannda"}
-        IL{"Israa’iila"}
+        IL{"Israa'iila"}
         IN{"Enndo"}
         IO{"Keeriindi britaani to maayo enndo"}
         IQ{"Iraak"}
@@ -227,5 +237,5 @@ ff{
         ZM{"Sammbi"}
         ZW{"Simbaabuwe"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.78.30"}
 }

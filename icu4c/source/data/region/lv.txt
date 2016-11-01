@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2012 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/lv.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/lv.xml
+ */
 lv{
     Countries{
         001{"pasaule"}
@@ -14,7 +23,7 @@ lv{
         017{"Vidusāfrika"}
         018{"Dienvidāfrika"}
         019{"Amerika"}
-        021{"Amerikas ziemeļu daļa"}
+        021{"Ziemeļamerika — ASV, Kanāda un Grenlande"}
         029{"Karību jūras reģions"}
         030{"Austrumāzija"}
         034{"Dienvidāzija"}
@@ -40,10 +49,11 @@ lv{
         AI{"Angilja"}
         AL{"Albānija"}
         AM{"Armēnija"}
+        AN{"Nīderlandes Antiļas"}
         AO{"Angola"}
         AQ{"Antarktika"}
         AR{"Argentīna"}
-        AS{"ASV Samoa"}
+        AS{"Amerikāņu Samoa"}
         AT{"Austrija"}
         AU{"Austrālija"}
         AW{"Aruba"}
@@ -56,7 +66,7 @@ lv{
         BF{"Burkinafaso"}
         BG{"Bulgārija"}
         BH{"Bahreina"}
-        BI{"Burundija"}
+        BI{"Burundi"}
         BJ{"Benina"}
         BL{"Senbartelmī"}
         BM{"Bermudu salas"}
@@ -71,10 +81,10 @@ lv{
         BY{"Baltkrievija"}
         BZ{"Beliza"}
         CA{"Kanāda"}
-        CC{"Kokosu (Kīlinga) salas"}
-        CD{"Kongo (Kinšasa)"}
+        CC{"Kokosu jeb Kīlinga salas"}
+        CD{"Kongo-Kinšasa"}
         CF{"Centrālāfrikas Republika"}
-        CG{"Kongo (Brazavila)"}
+        CG{"Kongo - Brazavila"}
         CH{"Šveice"}
         CI{"Kotdivuāra"}
         CK{"Kuka salas"}
@@ -89,13 +99,13 @@ lv{
         CW{"Kirasao"}
         CX{"Ziemsvētku sala"}
         CY{"Kipra"}
-        CZ{"Čehijas Republika"}
+        CZ{"Čehija"}
         DE{"Vācija"}
         DG{"Djego Garsijas atols"}
         DJ{"Džibutija"}
         DK{"Dānija"}
         DM{"Dominika"}
-        DO{"Dominikāna"}
+        DO{"Dominikānas Republika"}
         DZ{"Alžīrija"}
         EA{"Seūta un Melilja"}
         EC{"Ekvadora"}
@@ -110,13 +120,13 @@ lv{
         FJ{"Fidži"}
         FK{"Folklenda salas"}
         FM{"Mikronēzija"}
-        FO{"Fēru salas"}
+        FO{"Fēru Salas"}
         FR{"Francija"}
         GA{"Gabona"}
         GB{"Lielbritānija"}
         GD{"Grenāda"}
         GE{"Gruzija"}
-        GF{"Francijas Gviāna"}
+        GF{"Franču Gviāna"}
         GG{"Gērnsija"}
         GH{"Gana"}
         GI{"Gibraltārs"}
@@ -132,7 +142,7 @@ lv{
         GW{"Gvineja-Bisava"}
         GY{"Gajāna"}
         HK{"Ķīnas īpašās pārvaldes apgabals Honkonga"}
-        HM{"Hērda sala un Makdonalda salas"}
+        HM{"Hērda un Makdonalda salas"}
         HN{"Hondurasa"}
         HR{"Horvātija"}
         HT{"Haiti"}
@@ -183,7 +193,7 @@ lv{
         MH{"Māršala salas"}
         MK{"Maķedonija"}
         ML{"Mali"}
-        MM{"Mjanma (Birma)"}
+        MM{"Mjanma [Birma]"}
         MN{"Mongolija"}
         MO{"Ķīnas īpašās pārvaldes apgabals Makao"}
         MP{"Ziemeļu Marianas salas"}
@@ -212,13 +222,13 @@ lv{
         OM{"Omāna"}
         PA{"Panama"}
         PE{"Peru"}
-        PF{"Francijas Polinēzija"}
+        PF{"Franču Polinēzija"}
         PG{"Papua-Jaungvineja"}
         PH{"Filipīnas"}
         PK{"Pakistāna"}
         PL{"Polija"}
         PM{"Senpjēra un Mikelona"}
-        PN{"Pitkērnas salas"}
+        PN{"Pitkērna"}
         PR{"Puertoriko"}
         PS{"Palestīna"}
         PT{"Portugāle"}
@@ -233,11 +243,11 @@ lv{
         RW{"Ruanda"}
         SA{"Saūda Arābija"}
         SB{"Zālamana salas"}
-        SC{"Seišelu salas"}
+        SC{"Seišeļu salas"}
         SD{"Sudāna"}
         SE{"Zviedrija"}
         SG{"Singapūra"}
-        SH{"Sv.Helēnas sala"}
+        SH{"Sv. Helēnas sala"}
         SI{"Slovēnija"}
         SJ{"Svalbāra un Jana Majena sala"}
         SK{"Slovākija"}
@@ -255,7 +265,7 @@ lv{
         TA{"Tristana da Kuņas salas"}
         TC{"Tērksas un Kaikosas salas"}
         TD{"Čada"}
-        TF{"Francijas Dienvidjūru teritorija"}
+        TF{"Franču dienvidu teritorijas"}
         TG{"Togo"}
         TH{"Taizeme"}
         TJ{"Tadžikistāna"}
@@ -272,7 +282,6 @@ lv{
         UA{"Ukraina"}
         UG{"Uganda"}
         UM{"ASV Mazās Aizjūras salas"}
-        UN{"Apvienoto Nāciju Organizācija"}
         US{"Amerikas Savienotās Valstis"}
         UY{"Urugvaja"}
         UZ{"Uzbekistāna"}
@@ -283,9 +292,8 @@ lv{
         VI{"ASV Virdžīnas"}
         VN{"Vjetnama"}
         VU{"Vanuatu"}
-        WF{"Volisa un Futunas salas"}
+        WF{"Volisa un Futuna"}
         WS{"Samoa"}
-        XK{"Kosova"}
         YE{"Jemena"}
         YT{"Majota"}
         ZA{"Dienvidāfrikas Republika"}
@@ -293,21 +301,5 @@ lv{
         ZW{"Zimbabve"}
         ZZ{"nezināms reģions"}
     }
-    Countries%short{
-        GB{"Lielbritānija"}
-        HK{"Honkonga"}
-        MO{"Makao"}
-        PS{"Palestīna"}
-        UN{"ANO"}
-        US{"ASV"}
-    }
-    Countries%variant{
-        CD{"Kongo Demokrātiskā Republika"}
-        CG{"Kongo (Republika)"}
-        CI{"Ziloņkaula krasts"}
-        CZ{"Čehija"}
-        FK{"Folklenda (Malvinu) salas"}
-        MK{"bijusī Dienvidslāvijas Maķedonijas Republika"}
-    }
-    Version{"2.1.28.79"}
+    Version{"2.0.78.39"}
 }

@@ -1,12 +1,6 @@
-/*************************************************************************
+/**************************************************************************
 *
-*   Copyright (C) 2016 and later: Unicode, Inc. and others.
-*   License & terms of use: http://www.unicode.org/copyright.html#License
-*
-**************************************************************************
-**************************************************************************
-*
-*   Copyright (C) 2000-2016, International Business Machines
+*   Copyright (C) 2000-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ***************************************************************************
@@ -39,7 +33,6 @@
 #include <string.h>
 #include <stdlib.h>  /* malloc */
 
-#include "cmemory.h"
 #include "unicode/utypes.h"   /* Basic ICU data types */
 #include "unicode/ucnv.h"     /* C   Converter API    */
 #include "unicode/ustring.h"  /* some more string fcns*/
@@ -793,7 +786,8 @@ UBool convsample_21_didSubstitute(const char *source)
          debugCtx1->subContext, flagCtx, debugCtx2, debugCtx2->subCallback);
 #endif
 
-  cloneCnv = ucnv_safeClone(conv, NULL, NULL, &status);
+  cloneLen = 1; /* but passing in null so it will clone */
+  cloneCnv = ucnv_safeClone(conv,  NULL,  &cloneLen, &status);
 
   U_ASSERT(status);
 
@@ -1093,7 +1087,7 @@ void convsample_50() {
     conv = ucnv_open(encoding, &err);
     // do the conversion
     ucnv_toUnicode(conv,
-                   &target, output + UPRV_LENGTHOF(output),
+                   &target, output + sizeof(output)/U_SIZEOF_UCHAR,
                    &source, input + sizeof(input),
                    NULL, TRUE, &err);
     out = output;
