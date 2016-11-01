@@ -1,7 +1,5 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
- * Copyright (c) 2011-2014, International Business Machines Corporation
+ * Copyright (c) 2011-2013, International Business Machines Corporation
  * and others. All Rights Reserved.
  ********************************************************************/
 /* C API TEST FOR PLURAL RULES */
@@ -50,7 +48,7 @@ static const PluralRulesTestItem testItems[] = {
     { "ru", 0.5, "other" },
     { "ru",   1, "one" },
     { "ru", 1.5, "other" },
-    { "ru",   2, "few" },
+    { "ru",   2, "other" },
     { "ru",   5, "many" },
     { "ru",  10, "many" },
     { "ru",  11, "many" },

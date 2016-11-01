@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2011, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -236,6 +234,54 @@ final class DigitList {
     }
 
     /**
+     * Return a <code>BigDecimal</code> representing the value stored in this
+     * <code>DigitList</code>.
+     * [bnf]
+     * @param isPositive determines the sign of the returned result
+     * @return the value of this object as a <code>BigDecimal</code>
+     */
+    ///CLOVER:OFF
+    // The method is in a protected class and is not called by anything
+    public java.math.BigDecimal getBigDecimal(boolean isPositive) {
+        if (isZero()) {
+            return java.math.BigDecimal.valueOf(0);
+        }
+        // if exponential notion is negative,
+        // we prefer to use BigDecimal constructor with scale,
+        // because it works better when extremely small value
+        // is used.  See #5698.
+        long scale = (long)count - (long)decimalAt;
+        if (scale > 0) {
+            int numDigits = count;
+            if (scale > (long)Integer.MAX_VALUE) {
+                // try to reduce the scale
+                long numShift = scale - (long)Integer.MAX_VALUE;
+                if (numShift < count) {
+                    numDigits -= numShift;
+                } else {
+                    // fallback to 0
+                    return new java.math.BigDecimal(0);
+                }
+            }
+            StringBuilder significantDigits = new StringBuilder(numDigits + 1);
+            if (!isPositive) {
+                significantDigits.append('-');
+            }
+            for (int i = 0; i < numDigits; i++) {
+                significantDigits.append((char)digits[i]);
+            }
+            BigInteger unscaledVal = new BigInteger(significantDigits.toString());
+            return new java.math.BigDecimal(unscaledVal, (int)scale);
+        } else {
+            // We should be able to use a negative scale value for a positive exponential
+            // value on JDK1.5.  But it is not supported by older JDK.  So, for now,
+            // we always use BigDecimal constructor which takes String.
+            return new java.math.BigDecimal(getStringRep(isPositive));
+        }
+    }
+    ///CLOVER:ON
+
+    /**
      * Return an <code>ICU BigDecimal</code> representing the value stored in this
      * <code>DigitList</code>.
      * [bnf]
@@ -364,8 +410,6 @@ final class DigitList {
         // Generate a representation of the form DDDDD, DDDDD.DDDDD, or
         // DDDDDE+/-DDDDD.
         String rep = Double.toString(source);
-
-        didRound = false;
 
         set(rep, MAX_LONG_DIGITS);
 
@@ -508,12 +552,10 @@ final class DigitList {
                         digits[0] = (byte) '1';
                         ++decimalAt;
                         maximumDigits = 0; // Adjust the count
-                        didRound = true;
                         break;
                     }
 
                     ++digits[maximumDigits];
-                    didRound = true;
                     if (digits[maximumDigits] <= '9') break;
                     // digits[maximumDigits] = '0'; // Unnecessary since we'll truncate this
                 }
@@ -529,18 +571,6 @@ final class DigitList {
         }
     }
 
-    // Value to indicate that rounding was done. 
-    private boolean didRound = false;
-    
-    /**
-     * Indicates if last digit set was rounded or not.
-     * true indicates it was rounded.
-     * false indicates rounding has not been done.
-     */
-    public boolean wasRounded() {
-        return didRound;
-    }
-    
     /**
      * Utility routine to set the value of the digit list from a long
      */
@@ -566,8 +596,6 @@ final class DigitList {
         // which is outside the legal range of a long, but which can
         // be represented by DigitList.
         // [NEW] Faster implementation
-        didRound = false;
-        
         if (source <= 0) {
             if (source == Long.MIN_VALUE) {
                 decimalAt = count = MAX_LONG_DIGITS;
@@ -606,8 +634,7 @@ final class DigitList {
         String stringDigits = source.toString();
 
         count = decimalAt = stringDigits.length();
-        didRound = false;
-        
+
         // Don't copy trailing zeros
         while (count > 1 && stringDigits.charAt(count - 1) == '0') --count;
 
@@ -687,8 +714,6 @@ final class DigitList {
 //|                ++first;
 //|            }
 //|        }
-
-        didRound = false;
 
         // The maxDigits here could also be Integer.MAX_VALUE
         set(stringDigits, stringDigits.length());
@@ -794,6 +819,11 @@ final class DigitList {
 //
 //    private static final double LOG10 = Math.log(10.0);
 
+    // (The following boilerplate methods are currently not called,
+    // and cannot be called by tests since this class is
+    // package-private.  The methods may be useful in the future, so
+    // we do not delete them.  2003-06-11 ICU 2.6 Alan)
+    ///CLOVER:OFF
     /**
      * equality test between two digit lists.
      */
@@ -833,4 +863,5 @@ final class DigitList {
         buf.append(decimalAt);
         return buf.toString();
     }
+    ///CLOVER:ON
 }

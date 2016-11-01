@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2013-2015, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2013, International Business Machines Corporation and         *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.text;
@@ -11,6 +9,7 @@ package com.ibm.icu.text;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -22,6 +21,7 @@ import java.util.TreeSet;
 
 import com.ibm.icu.text.PluralRules.FixedDecimal;
 import com.ibm.icu.text.PluralRules.KeywordStatus;
+import com.ibm.icu.text.PluralRules.StandardPluralCategories;
 import com.ibm.icu.util.Output;
 
 /**
@@ -31,7 +31,6 @@ import com.ibm.icu.util.Output;
  * @internal
  * @deprecated This API is ICU internal only.
  */
-@Deprecated
 public class PluralSamples {
 
     private PluralRules pluralRules;
@@ -41,7 +40,6 @@ public class PluralSamples {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public final Map<String, Boolean> _keyLimitedMap;
     private final Map<String, Set<FixedDecimal>> _keyFractionSamplesMap;
     private final Set<FixedDecimal> _fractionSamples;
@@ -50,7 +48,6 @@ public class PluralSamples {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PluralSamples(PluralRules pluralRules) {
         this.pluralRules = pluralRules;
         Set<String> keywords = pluralRules.getKeywords();
@@ -237,11 +234,21 @@ public class PluralSamples {
         return 37;
     }
 
+    @SuppressWarnings("unused")
+    private static final Comparator<String> KEYWORD_COMPARATOR = new Comparator<String> () {
+        public int compare(String arg0, String arg1) {
+            StandardPluralCategories a = StandardPluralCategories.forString(arg0);
+            StandardPluralCategories b = StandardPluralCategories.forString(arg1);
+            return a == null 
+                    ? (b == null ? arg0.compareTo(arg1) : -1)
+                            : (b == null ? 1 : a.compareTo(b));
+        }
+    };
+
     /**
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public KeywordStatus getStatus(String keyword, int offset, Set<Double> explicits, Output<Double> uniqueValue) {
         if (uniqueValue != null) {
             uniqueValue.value = null;

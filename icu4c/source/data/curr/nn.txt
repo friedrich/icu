@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/nn.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/nn.xml
+ */
 nn{
     Currencies{
         ADP{
@@ -186,13 +195,9 @@ nn{
             "BYB",
             "kviterussisk ny rubel (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "kviterussisk rubel",
-        }
         BYR{
             "BYR",
-            "kviterussisk rubel (2000–2016)",
+            "kviterussisk rubel",
         }
         BZD{
             "BZD",
@@ -348,7 +353,7 @@ nn{
         }
         GBP{
             "£",
-            "britisk pund",
+            "britisk pund sterling",
         }
         GEK{
             "GEK",
@@ -851,7 +856,7 @@ nn{
             "swazilandsk lilangeni",
         }
         THB{
-            "THB",
+            "฿",
             "thailandsk baht",
         }
         TJR{
@@ -1100,13 +1105,9 @@ nn{
             one{"kviterussisk ny rubel (BYB)"}
             other{"kviterussiske nye rublar (BYB)"}
         }
-        BYN{
+        BYR{
             one{"kviterussisk rubel"}
             other{"kviterussiske rublar"}
-        }
-        BYR{
-            one{"kviterussisk rubel (2000–2016)"}
-            other{"kviterussiske rublar (2000–2016)"}
         }
         BZD{
             one{"belizisk dollar"}
@@ -1921,5 +1922,5 @@ nn{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.0.92.87"}
 }

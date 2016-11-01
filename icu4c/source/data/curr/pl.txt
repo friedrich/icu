@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/pl.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/pl.xml
+ */
 pl{
     Currencies{
         ADP{
@@ -194,13 +203,9 @@ pl{
             "BYB",
             "rubel białoruski (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "rubel białoruski",
-        }
         BYR{
             "BYR",
-            "rubel białoruski (2000–2016)",
+            "rubel białoruski",
         }
         BZD{
             "BZD",
@@ -328,7 +333,7 @@ pl{
         }
         FJD{
             "FJD",
-            "dolar fidżyjski",
+            "dolar fidżi",
         }
         FKP{
             "FKP",
@@ -612,7 +617,7 @@ pl{
         }
         MWK{
             "MWK",
-            "kwacha malawijska",
+            "kwacha malawska",
         }
         MXN{
             "MXN",
@@ -732,7 +737,7 @@ pl{
         }
         RON{
             "RON",
-            "lej rumuński",
+            "leja rumuńska",
         }
         RSD{
             "RSD",
@@ -860,7 +865,7 @@ pl{
         }
         TOP{
             "TOP",
-            "pa’anga tongijska",
+            "pa'anga tongijska",
         }
         TPE{
             "TPE",
@@ -932,11 +937,11 @@ pl{
         }
         VUV{
             "VUV",
-            "vatu wanuackie",
+            "vatu Vanuatu",
         }
         WST{
             "WST",
-            "tala samoańskie",
+            "tala samoańska",
         }
         XAF{
             "FCFA",
@@ -1054,105 +1059,6 @@ pl{
             "ZWR",
             "dolar Zimbabwe (2008)",
         }
-    }
-    Currencies%narrow{
-        AOA{"Kz"}
-        ARS{"$"}
-        AUD{"$"}
-        BAM{"KM"}
-        BBD{"$"}
-        BDT{"৳"}
-        BMD{"$"}
-        BND{"$"}
-        BOB{"Bs"}
-        BRL{"R$"}
-        BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
-        BZD{"$"}
-        CAD{"$"}
-        CLP{"$"}
-        CNY{"¥"}
-        COP{"$"}
-        CRC{"₡"}
-        CUC{"$"}
-        CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
-        DOP{"$"}
-        EGP{"E£"}
-        EUR{"€"}
-        FJD{"$"}
-        FKP{"£"}
-        GBP{"£"}
-        GEL{"₾"}
-        GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
-        GYD{"$"}
-        HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
-        ILS{"₪"}
-        INR{"₹"}
-        ISK{"kr"}
-        JMD{"$"}
-        JPY{"¥"}
-        KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
-        KRW{"₩"}
-        KYD{"$"}
-        KZT{"₸"}
-        LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
-        LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
-        MNT{"₮"}
-        MUR{"Rs"}
-        MXN{"$"}
-        MYR{"RM"}
-        NAD{"$"}
-        NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
-        NZD{"$"}
-        PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
-        PYG{"₲"}
-        RUB{"₽"}
-        RWF{"RF"}
-        SBD{"$"}
-        SEK{"kr"}
-        SGD{"$"}
-        SHP{"£"}
-        SRD{"$"}
-        SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
-        TRY{"₺"}
-        TTD{"$"}
-        TWD{"NT$"}
-        UAH{"₴"}
-        USD{"$"}
-        UYU{"$"}
-        VEF{"Bs"}
-        VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         ADP{
@@ -1276,16 +1182,16 @@ pl{
             other{"frank belgijski (zamienny)"}
         }
         BGL{
-            few{"lewy bułgarskie wymienne"}
-            many{"lewów bułgarskich wymiennych"}
+            few{"lewa bułgarskie wymienne"}
+            many{"lewa bułgarskich wymiennych"}
             one{"lew bułgarski wymienny"}
-            other{"lewa bułgarskiego wymiennego"}
+            other{"lewa bułgarskich wymiennych"}
         }
         BGM{
-            few{"lewy bułgarskie socjalistyczne"}
-            many{"lewów bułgarskich socjalistycznych"}
+            few{"lew bułgarski socjalistyczny"}
+            many{"lew bułgarski socjalistyczny"}
             one{"lew bułgarski socjalistyczny"}
-            other{"lewa bułgarskiego socjalistycznego"}
+            other{"lew bułgarski socjalistyczny"}
         }
         BGN{
             few{"lewy bułgarskie"}
@@ -1294,16 +1200,16 @@ pl{
             other{"lewa bułgarskiego"}
         }
         BGO{
-            few{"lewy bułgarskie (1879–1952)"}
-            many{"lewów bułgarskich (1879–1952)"}
+            few{"lew bułgarski (1879–1952)"}
+            many{"lew bułgarski (1879–1952)"}
             one{"lew bułgarski (1879–1952)"}
-            other{"lewa bułgarskiego (1879–1952)"}
+            other{"lew bułgarski (1879–1952)"}
         }
         BHD{
             few{"dinary bahrańskie"}
             many{"dinarów bahrańskich"}
             one{"dinar bahrański"}
-            other{"dinara bahrańskiego"}
+            other{"dinara barhańskiego"}
         }
         BIF{
             few{"franki burundyjskie"}
@@ -1353,17 +1259,11 @@ pl{
             one{"pula botswańska"}
             other{"puli botswańskiej"}
         }
-        BYN{
+        BYR{
             few{"ruble białoruskie"}
             many{"rubli białoruskich"}
             one{"rubel białoruski"}
             other{"rubla białoruskiego"}
-        }
-        BYR{
-            few{"ruble białoruskie (2000–2016)"}
-            many{"rubli białoruskich (2000–2016)"}
-            one{"rubel białoruski (2000–2016)"}
-            other{"rubla białoruskiego (2000–2016)"}
         }
         BZD{
             few{"dolary belizeńskie"}
@@ -1822,10 +1722,10 @@ pl{
             other{"rupii malediwskiej"}
         }
         MWK{
-            few{"kwacha malawijskie"}
-            many{"kwacha malawijskich"}
-            one{"kwacha malawijska"}
-            other{"kwacha malawijskiej"}
+            few{"kwacha malawskie"}
+            many{"kwacha malawskich"}
+            one{"kwacha malawska"}
+            other{"kwacha malawskiej"}
         }
         MXN{
             few{"pesos meksykańskie"}
@@ -1840,10 +1740,10 @@ pl{
             other{"ringgita malezyjskiego"}
         }
         MZN{
-            few{"meticale mozambickie"}
-            many{"meticali mozambickich"}
-            one{"metical mozambicki"}
-            other{"meticala mozambickiego"}
+            few{"meticale mozambijskie"}
+            many{"meticali mozambijskich"}
+            one{"metical mozambijski"}
+            other{"meticala mozambijskiego"}
         }
         NAD{
             few{"dolary namibijskie"}
@@ -2122,10 +2022,10 @@ pl{
             other{"dinara tunezyjskiego"}
         }
         TOP{
-            few{"pa’anga tongijskie"}
-            many{"pa’anga tongijskich"}
-            one{"pa’anga tongijska"}
-            other{"pa’anga tongijskiej"}
+            few{"pa'anga tongijskie"}
+            many{"pa'anga tongijskich"}
+            one{"pa'anga tongijska"}
+            other{"pa'anga tongijskiej"}
         }
         TRL{
             few{"liry tureckie (1922–2005)"}
@@ -2212,10 +2112,10 @@ pl{
             other{"donga wietnamskiego"}
         }
         VUV{
-            few{"vatu wanuackie"}
-            many{"vatu wanuackich"}
-            one{"vatu wanuackie"}
-            other{"vatu wanuackiego"}
+            few{"vatu vanuatuańskie"}
+            many{"vatu vanuatuańskich"}
+            one{"vatu vanuatuańskie"}
+            other{"vatu vanuatuańskiego"}
         }
         WST{
             few{"tala samoańskie"}
@@ -2284,5 +2184,5 @@ pl{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.0.92.87"}
 }

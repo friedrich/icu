@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
-* Copyright (C) 2006-2015, International Business Machines Corporation and
-* others. All Rights Reserved.
+* Copyright (C) 2006, International Business Machines Corporation and         *
+* others. All Rights Reserved.                                                *
 *******************************************************************************
 *
 *******************************************************************************
@@ -16,12 +14,8 @@ public class InvalidFormatException extends Exception {
     static final long serialVersionUID = 8883328905089345791L;
     
     public InvalidFormatException(){}
-
-    public InvalidFormatException(Throwable cause) {
-        super(cause);
-    }
-
-    public InvalidFormatException(String message) {
+    
+    public InvalidFormatException(String message){
         super(message);
     }
 }

@@ -1,14 +1,11 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2009, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
 #include "unicode/utypes.h"
 
-#include "cmemory.h"
 #include "cstring.h"
 #include "unicode/unistr.h"
 #include "unicode/uniset.h"
@@ -24,6 +21,7 @@
 
 static const UChar kErrorUChars[] = { 0x45, 0x52, 0x52, 0x4f, 0x52, 0 };
 static const int32_t kErrorLength = 5;
+static const int32_t kERROR_COUNT = -1234567;
 
 //***************************************************************************************
 
@@ -110,7 +108,7 @@ param[] =
     { "ne",         NULL,   U_USING_DEFAULT_WARNING,  e_Root,      { TRUE, FALSE, FALSE }, { TRUE, FALSE, FALSE } }
 };
 
-static const int32_t bundles_count = UPRV_LENGTHOF(param);
+static const int32_t bundles_count = sizeof(param) / sizeof(param[0]);
 
 //***************************************************************************************
 
@@ -174,7 +172,7 @@ ResourceBundleTest::~ResourceBundleTest()
 {
     if (param[5].locale) {
         int idx;
-        for (idx = 0; idx < UPRV_LENGTHOF(param); idx++) {
+        for (idx = 0; idx < (int)(sizeof(param)/sizeof(param[0])); idx++) {
             delete param[idx].locale;
             param[idx].locale = NULL;
         }
@@ -552,7 +550,7 @@ ResourceBundleTest::TestGetSize(void)
         return;
     }
     
-    for(i = 0; i < UPRV_LENGTHOF(test); i++) {
+    for(i = 0; i < (int32_t)(sizeof(test)/sizeof(test[0])); i++) {
         ResourceBundle res = rb.get(test[i].key, status);
         if(U_FAILURE(status))
         {
@@ -599,7 +597,7 @@ ResourceBundleTest::TestGetLocaleByType(void)
         return;
     }
     
-    for(i = 0; i < UPRV_LENGTHOF(test); i++) {
+    for(i = 0; i < (int32_t)(sizeof(test)/sizeof(test[0])); i++) {
         ResourceBundle rb(testdatapath, test[i].requestedLocale, status);
         if(U_FAILURE(status))
         {
@@ -615,12 +613,11 @@ ResourceBundleTest::TestGetLocaleByType(void)
             status = U_ZERO_ERROR;
             continue;
         }
-
+        
         locale = res.getLocale(ULOC_REQUESTED_LOCALE, status);
-        if(U_SUCCESS(status) && locale != Locale::getDefault()) {
+        if(locale != Locale::getDefault()) {
             err("Expected requested locale to be %s. Got %s\n", test[i].requestedLocale, locale.getName());
         }
-        status = U_ZERO_ERROR;
         locale = res.getLocale(ULOC_VALID_LOCALE, status);
         if(strcmp(locale.getName(), test[i].validLocale) != 0) {
             err("Expected valid locale to be %s. Got %s\n", test[i].requestedLocale, locale.getName());
@@ -631,3 +628,6 @@ ResourceBundleTest::TestGetLocaleByType(void)
         }
     }
 }
+
+//eof
+

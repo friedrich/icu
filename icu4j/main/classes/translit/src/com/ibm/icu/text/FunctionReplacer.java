@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 **********************************************************************
 *   Copyright (c) 2002-2010, International Business Machines Corporation
@@ -46,7 +44,6 @@ class FunctionReplacer implements UnicodeReplacer {
     /**
      * UnicodeReplacer API
      */
-    @Override
     public int replace(Replaceable text,
                        int start,
                        int limit,
@@ -65,7 +62,6 @@ class FunctionReplacer implements UnicodeReplacer {
     /**
      * UnicodeReplacer API
      */
-    @Override
     public String toReplacerPattern(boolean escapeUnprintable) {
         StringBuilder rule = new StringBuilder("&");
         rule.append(translit.getID());
@@ -80,7 +76,6 @@ class FunctionReplacer implements UnicodeReplacer {
      * into the given set.
      * @param toUnionTo the set into which to union the output characters
      */
-    @Override
     public void addReplacementSetTo(UnicodeSet toUnionTo) {
         toUnionTo.addAll(translit.getTargetSet());
     }

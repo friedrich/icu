@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 **********************************************************************
-* Copyright (c) 2004-2015, International Business Machines
+* Copyright (c) 2004-2011, International Business Machines
 * Corporation and others.  All Rights Reserved.
 **********************************************************************
 * Author: Alan Liu
@@ -24,8 +22,6 @@ import com.ibm.icu.text.UTF16;
  * in the source test.  Furthermore, they may be delimited by
  * either single or double quotes (opening and closing quotes must
  * match).  Escapes are processed using standard ICU unescaping.
- *
- * <p>2015-sep-03 TODO: Only used in com.ibm.icu.dev.test.format, move there.
  */
 public class TokenIterator {
 

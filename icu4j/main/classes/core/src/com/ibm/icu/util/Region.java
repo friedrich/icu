@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2011-2016, International Business Machines Corporation
- * All Rights Reserved.
+ * Copyright (C) 2011-2013, International Business Machines Corporation        *
+ * All Rights Reserved.                                                        *
  *******************************************************************************
  */
 package com.ibm.icu.util;
@@ -17,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 
 /**
@@ -156,31 +153,21 @@ public class Region implements Comparable<Region> {
         availableRegions = new ArrayList<Set<Region>>(RegionType.values().length);
 
 
-        UResourceBundle metadataAlias = null;
+        UResourceBundle regionCodes = null;
         UResourceBundle territoryAlias = null;
         UResourceBundle codeMappings = null;
-        UResourceBundle idValidity = null;
-        UResourceBundle regionList = null;
-        UResourceBundle regionRegular = null;
-        UResourceBundle regionMacro = null;
-        UResourceBundle regionUnknown = null;
         UResourceBundle worldContainment = null;
         UResourceBundle territoryContainment = null;
         UResourceBundle groupingContainment = null;
 
-        UResourceBundle metadata = UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME,"metadata",ICUResourceBundle.ICU_DATA_CLASS_LOADER);
-        metadataAlias = metadata.get("alias");
-        territoryAlias = metadataAlias.get("territory");
+        UResourceBundle rb = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME,"metadata",ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+        regionCodes = rb.get("regionCodes");
+        territoryAlias = rb.get("territoryAlias");
 
-        UResourceBundle supplementalData = UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME,"supplementalData", ICUResourceBundle.ICU_DATA_CLASS_LOADER);
-        codeMappings = supplementalData.get("codeMappings");
-        idValidity = supplementalData.get("idValidity");
-        regionList = idValidity.get("region");
-        regionRegular = regionList.get("regular");
-        regionMacro = regionList.get("macroregion");
-        regionUnknown = regionList.get("unknown");
+        UResourceBundle rb2 = UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME,"supplementalData", ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+        codeMappings = rb2.get("codeMappings");
 
-        territoryContainment = supplementalData.get("territoryContainment");
+        territoryContainment = rb2.get("territoryContainment");
         worldContainment = territoryContainment.get("001");
         groupingContainment = territoryContainment.get("grouping");
 
@@ -188,36 +175,13 @@ public class Region implements Comparable<Region> {
         List<String> continents = Arrays.asList(continentsArr);
         String[] groupingArr = groupingContainment.getStringArray();
         List<String> groupings = Arrays.asList(groupingArr);
-        List<String> regionCodes = new ArrayList<String>();
-
-        List<String> allRegions = new ArrayList<String>();
-        allRegions.addAll(Arrays.asList(regionRegular.getStringArray()));
-        allRegions.addAll(Arrays.asList(regionMacro.getStringArray()));
-        allRegions.add(regionUnknown.getString());
-        
-        for ( String r : allRegions ) {
-            int rangeMarkerLocation = r.indexOf("~");
-            if ( rangeMarkerLocation > 0 ) {
-                StringBuilder regionName = new StringBuilder(r);
-                char endRange = regionName.charAt(rangeMarkerLocation+1);
-                regionName.setLength(rangeMarkerLocation);
-                char lastChar = regionName.charAt(rangeMarkerLocation-1);
-                while ( lastChar <= endRange ) {
-                    String newRegion = regionName.toString();
-                    regionCodes.add(newRegion);
-                    lastChar++;
-                    regionName.setCharAt(rangeMarkerLocation-1,lastChar);
-                }
-            } else {
-                regionCodes.add(r);
-            }
-        }
-
-        regions = new ArrayList<Region>(regionCodes.size());
 
         // First process the region codes and create the master array of regions.
-        for ( String id : regionCodes) {
+        int regionCodeSize = regionCodes.getSize();
+        regions = new ArrayList<Region>(regionCodeSize);
+        for ( int i = 0 ; i < regionCodeSize ; i++ ) {
             Region r = new Region();
+            String id = regionCodes.getString(i);
             r.id = id;
             r.type = RegionType.TERRITORY; // Only temporary - figure out the real type later once the aliases are known.
             regionIDMap.put(id, r);
@@ -236,7 +200,7 @@ public class Region implements Comparable<Region> {
         for ( int i = 0 ; i < territoryAlias.getSize(); i++ ) {
             UResourceBundle res = territoryAlias.get(i);
             String aliasFrom = res.getKey();
-            String aliasTo = res.get("replacement").getString();
+            String aliasTo = res.getString();
 
             if ( regionIDMap.containsKey(aliasTo) && !regionIDMap.containsKey(aliasFrom) ) { // This is just an alias from some string to a region
                 regionAliases.put(aliasFrom, regionIDMap.get(aliasTo));
@@ -323,11 +287,8 @@ public class Region implements Comparable<Region> {
         for ( int i = 0 ; i < territoryContainment.getSize(); i++ ) {
             UResourceBundle mapping = territoryContainment.get(i);
             String parent = mapping.getKey();
-            if (parent.equals("containedGroupings") || parent.equals("deprecated")) {
-                continue; // handle new pseudo-parent types added in ICU data per cldrbug 7808; for now just skip.
-                // #11232 is to do something useful with these.
-            }
             Region parentRegion = regionIDMap.get(parent);
+
             for ( int j = 0 ; j < mapping.getSize(); j++ ) {
                 String child = mapping.getString(j);
                 Region childRegion = regionIDMap.get(child);

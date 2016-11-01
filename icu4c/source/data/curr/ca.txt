@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ca.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/ca.xml
+ */
 ca{
     Currencies{
         ADP{
@@ -8,7 +17,7 @@ ca{
         }
         AED{
             "AED",
-            "dírham de la UEA",
+            "dirhem dels Emirats Àrabs Units",
         }
         AFA{
             "AFA",
@@ -80,7 +89,7 @@ ca{
         }
         AWG{
             "AWG",
-            "florí d’Aruba",
+            "florí d'Aruba",
         }
         AZM{
             "AZM",
@@ -156,7 +165,7 @@ ca{
         }
         BOB{
             "BOB",
-            "bolivià",
+            "boliviano bolivià",
         }
         BOL{
             "BOL",
@@ -218,20 +227,16 @@ ca{
             "BYB",
             "nou ruble bielorús (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "ruble bielorús",
-        }
         BYR{
             "BYR",
-            "ruble bielorús (2000–2016)",
+            "ruble bielorús",
         }
         BZD{
             "BZD",
             "dòlar de Belize",
         }
         CAD{
-            "CAD",
+            "CA$",
             "dòlar canadenc",
         }
         CDF{
@@ -308,7 +313,7 @@ ca{
         }
         DDM{
             "DDM",
-            "marc de l’Alemanya Oriental",
+            "marc de l'Alemanya Oriental",
         }
         DEM{
             "DEM",
@@ -693,7 +698,7 @@ ca{
         }
         MUR{
             "MUR",
-            "rupia mauriciana",
+            "rupia de Maurici",
         }
         MVR{
             "MVR",
@@ -813,7 +818,7 @@ ca{
         }
         QAR{
             "QAR",
-            "rial de Qatar",
+            "riyal de Qatar",
         }
         RHD{
             "RHD",
@@ -841,7 +846,7 @@ ca{
         }
         RWF{
             "RWF",
-            "franc de Ruanda",
+            "franc rwandès",
         }
         SAR{
             "SAR",
@@ -996,7 +1001,7 @@ ca{
             "xíling ugandès",
         }
         USD{
-            "USD",
+            "$",
             "dòlar dels Estats Units",
         }
         USN{
@@ -1096,7 +1101,7 @@ ca{
             "franc UIC francès",
         }
         XOF{
-            "CFA",
+            "XOF",
             "franc CFA BCEAO",
         }
         XPD{
@@ -1184,113 +1189,14 @@ ca{
             "dòlar zimbabuès (2008)",
         }
     }
-    Currencies%narrow{
-        AOA{"Kz"}
-        ARS{"$"}
-        AUD{"$"}
-        BAM{"KM"}
-        BBD{"$"}
-        BDT{"৳"}
-        BMD{"$"}
-        BND{"$"}
-        BOB{"Bs"}
-        BRL{"R$"}
-        BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
-        BZD{"$"}
-        CAD{"$"}
-        CLP{"$"}
-        CNY{"¥"}
-        COP{"$"}
-        CRC{"₡"}
-        CUC{"$"}
-        CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
-        DOP{"$"}
-        EGP{"E£"}
-        EUR{"€"}
-        FJD{"$"}
-        FKP{"£"}
-        GBP{"£"}
-        GEL{"₾"}
-        GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
-        GYD{"$"}
-        HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
-        ILS{"₪"}
-        INR{"₹"}
-        ISK{"kr"}
-        JMD{"$"}
-        JPY{"¥"}
-        KHR{"៛"}
-        KMF{"CF"}
-        KPW{"₩"}
-        KRW{"₩"}
-        KYD{"$"}
-        KZT{"₸"}
-        LAK{"₭"}
-        LBP{"L£"}
-        LKR{"Rs"}
-        LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
-        MNT{"₮"}
-        MUR{"Rs"}
-        MXN{"$"}
-        MYR{"RM"}
-        NAD{"$"}
-        NGN{"₦"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
-        NZD{"$"}
-        PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
-        PYG{"₲"}
-        RUB{"₽"}
-        RWF{"RF"}
-        SBD{"$"}
-        SEK{"kr"}
-        SGD{"$"}
-        SHP{"£"}
-        SRD{"$"}
-        SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
-        TRY{"₺"}
-        TTD{"$"}
-        TWD{"$"}
-        UAH{"₴"}
-        USD{"$"}
-        UYU{"$"}
-        VEF{"VEF"}
-        VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"TL"}
-    }
     CurrencyPlurals{
         ADP{
             one{"pesseta andorrana"}
             other{"pessetes andorranes"}
         }
         AED{
-            one{"dírham de la UEA"}
-            other{"dírhams de la UEA"}
+            one{"dirhem dels Emirats Àrabs Units"}
+            other{"dirhems dels Emirats Àrabs Units"}
         }
         AFA{
             one{"afgani afganès (1927–2002)"}
@@ -1361,8 +1267,8 @@ ca{
             other{"dòlars australians"}
         }
         AWG{
-            one{"florí d’Aruba"}
-            other{"florins d’Aruba"}
+            one{"florí d'Aruba"}
+            other{"florins d'Aruba"}
         }
         AZM{
             one{"manat azerbaidjanès (1993–2006)"}
@@ -1437,8 +1343,8 @@ ca{
             other{"dòlars de Brunei"}
         }
         BOB{
-            one{"bolivià"}
-            other{"bolivians"}
+            one{"boliviano bolivià"}
+            other{"bolivianos bolivians"}
         }
         BOL{
             one{"boliviano bolivià (1863–1963)"}
@@ -1466,7 +1372,7 @@ ca{
         }
         BRL{
             one{"real brasiler"}
-            other{"reals brasilers"}
+            other{"reais brasilers"}
         }
         BRN{
             one{"cruzado novo brasiler"}
@@ -1500,13 +1406,9 @@ ca{
             one{"nou ruble bielorús (1994–1999)"}
             other{"nous rubles bielorussos (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"ruble bielorús"}
             other{"rubles bielorussos"}
-        }
-        BYR{
-            one{"ruble bielorús (2000–2016)"}
-            other{"rubles bielorussos (2000–2016)"}
         }
         BZD{
             one{"dòlar de Belize"}
@@ -1593,8 +1495,8 @@ ca{
             other{"corones txeques"}
         }
         DDM{
-            one{"marc de l’Alemanya Oriental"}
-            other{"marcs de l’Alemanya Oriental"}
+            one{"marc de l'Alemanya Oriental"}
+            other{"marcs de l'Alemanya Oriental"}
         }
         DEM{
             one{"marc alemany"}
@@ -1973,8 +1875,8 @@ ca{
             other{"lliures malteses"}
         }
         MUR{
-            one{"rupia mauriciana"}
-            other{"rupies mauricianes"}
+            one{"rupia de Maurici"}
+            other{"rupies de Maurici"}
         }
         MVR{
             one{"rupia de les Maldives"}
@@ -2093,8 +1995,8 @@ ca{
             other{"guaranís paraguaians"}
         }
         QAR{
-            one{"rial de Qatar"}
-            other{"rials qatarians"}
+            one{"riyal de Qatar"}
+            other{"rials de Qatar"}
         }
         RHD{
             one{"dòlar rhodesià"}
@@ -2121,8 +2023,8 @@ ca{
             other{"rubles russos (1991–1998)"}
         }
         RWF{
-            one{"franc de Ruanda"}
-            other{"francs de Ruanda"}
+            one{"franc rwandès"}
+            other{"francs rwandesos"}
         }
         SAR{
             one{"rial saudita"}
@@ -2469,5 +2371,5 @@ ca{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.0.92.87"}
 }

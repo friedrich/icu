@@ -1,16 +1,13 @@
 <!--
 /*
-* © 2016 and later: Unicode, Inc. and others.
-* License & terms of use: http://www.unicode.org/copyright.html#License
 *******************************************************************************
-* Copyright (C) 2010,2016, International Business Machines Corporation and    *
+* Copyright (C) 2010-2012, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 */
 -->
 
 <project name="icu4j-eclipse" default="build" basedir=".">
-  <property file="build-local.properties"/>
   <property file="build.properties"/>
 
   <property name="out.dir" value="out"/>
@@ -30,7 +27,7 @@
   </target>
 
   <target name="build"
-          depends="checkProps,initEnv,icuProjectFiles,icuTestsProjectFiles,icuBaseProjectFiles,icuBaseTestsProjectFiles"
+          depends="initEnv,icuProjectFiles,icuTestsProjectFiles,icuBaseProjectFiles,icuBaseTestsProjectFiles"
           description="Build icu4j plug-ins">
 
     <!-- copy OSGi jar file to baseLocation -->
@@ -53,36 +50,6 @@
 
   </target>
 
-  <target name="initEclipseHome"
-          if="env.ECLIPSE_HOME"
-          unless="eclipse.home"
-          description="Initialize the property eclipse.home from the environment variable ECLIPSE_HOME">
-    <property name="eclipse.home" value="${env.ECLIPSE_HOME}"/>
-  </target>
-
-  <target name="checkProps" depends="initEclipseHome">
-      <fail message="Eclipse home (eclipse.home or env.ECLIPSE_HOME) is not set">
-        <condition>
-          <or>
-            <equals arg1="${eclipse.home}" arg2=""/>
-            <not>
-              <isset property="eclipse.home"/>
-            </not>
-          </or>
-        </condition>
-      </fail>
-      <fail message="Java runtime jar path (java.rt) is not set">
-        <condition>
-          <or>
-            <equals arg1="${java.rt}" arg2=""/>
-            <not>
-              <isset property="java.rt"/>
-            </not>
-          </or>
-        </condition>
-      </fail>
-  </target>
-
   <target name="initPluginVersion">
     <tstamp>
       <format property="build.date" pattern="yyyyMMdd"/>
@@ -91,26 +58,24 @@
   </target>
 
   <target name="initEnv"
-          depends="checkProps,initEclipseLauncher,initEclipseOSGiJar,initEclipsePDE"
+          depends="initEclipseHome,initEclipseLauncher,initEclipseOSGiJar,initEclipsePDE"
           description="Initialize eclipse PDE build environment">
     <echo message="[PDE build configuration properties]"/>
-    <echo message="    Ant version:     ${ant.version}"/>
     <echo message="    Eclipse home:    ${eclipse.home}"/>
     <echo message="    Launcher jar:    ${eclipse.launcher}"/>
     <echo message="    OSGi bundle jar: ${eclipse.osgi.jar}"/>
     <echo message="    Base OS:         ${eclipse.baseos}"/>
     <echo message="    Base WS:         ${eclipse.basews}"/>
     <echo message="    Base ARCH:       ${eclipse.basearch}"/>
-    <echo message="    java.rt:         ${java.rt}"/>
-      
-    <!-- try and detect use of backslashes  -->
-    <condition property="java-rt-has-noSlashes">
-        <matches pattern="/" string="${java.rt}"/>
-    </condition>      
-    <fail message="java.rt variable has no slashes!" unless="java-rt-has-noSlashes"/>
-
   </target>
-    
+
+  <target name="initEclipseHome"
+          if="env.ECLIPSE_HOME"
+          unless="eclipse.home"
+          description="Initialize the property eclipse.home from the environment variable ECLIPSE_HOME">
+    <property name="eclipse.home" value="${env.ECLIPSE_HOME}"/>
+  </target>
+
   <target name="initEclipseLauncher"
           if="eclipse.home"
           description="Locate org.eclipse.equinox.launcher jar file for eclipse 3.3 and beyond">
@@ -167,7 +132,6 @@
             <filter token="BASE_OS" value="${eclipse.baseos}"/>
             <filter token="BASE_WS" value="${eclipse.basews}"/>
             <filter token="BASE_ARCH" value="${eclipse.basearch}"/>
-            <filter token="JAVA_RT" value="${java.rt}"/>
           </filterset>
       </copy>
 
@@ -271,7 +235,7 @@
     </copy>
 
     <!-- license -->
-    <copy file="${shared.dir}/licenses/LICENSE"
+    <copy file="${shared.dir}/licenses/license.html"
           todir="${eclipse.projects.dir}/plugins/com.ibm.icu/about_files" />
 
     <!-- about -->
@@ -328,7 +292,7 @@
     </copy>
 
     <!-- license -->
-    <copy file="${shared.dir}/licenses/LICENSE"
+    <copy file="${shared.dir}/licenses/license.html"
           todir="${eclipse.projects.dir}/plugins/com.ibm.icu.tests/about_files" />
 
     <!-- about -->
@@ -358,7 +322,7 @@
     </copy>
 
     <!-- license -->
-    <copy file="${shared.dir}/licenses/LICENSE"
+    <copy file="${shared.dir}/licenses/license.html"
           todir="${eclipse.projects.dir}/plugins/com.ibm.icu.base/about_files" />
 
     <!-- about -->
@@ -397,7 +361,7 @@
     </copy>
 
     <!-- license -->
-    <copy file="${shared.dir}/licenses/LICENSE"
+    <copy file="${shared.dir}/licenses/license.html"
           todir="${eclipse.projects.dir}/plugins/com.ibm.icu.base.tests/about_files" />
 
     <!-- about -->

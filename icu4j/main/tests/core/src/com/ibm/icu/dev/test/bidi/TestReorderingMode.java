@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
 *   Copyright (C) 2001-2010, International Business Machines
@@ -11,8 +9,6 @@ package com.ibm.icu.dev.test.bidi;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-
 import com.ibm.icu.text.Bidi;
 
 /**
@@ -21,7 +17,7 @@ import com.ibm.icu.text.Bidi;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestReorderingMode extends BidiFmwk {
+public class TestReorderingMode extends BidiTest {
 
     static final String[] textIn = {
     /* (0) 123 */
@@ -199,7 +195,6 @@ public class TestReorderingMode extends BidiFmwk {
     static final int OPTIONS_COUNT = options.length;
     static final int LEVELS_COUNT = paraLevels.length;
 
-    @Test
     public void testReorderingMode() {
 
         String src, dest;
@@ -704,4 +699,15 @@ public class TestReorderingMode extends BidiFmwk {
         }
         return testOK;
     }
+
+
+    public static void main(String[] args) {
+        try {
+            new TestReorderingMode().run(args);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
 }

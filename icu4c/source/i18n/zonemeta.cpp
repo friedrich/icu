@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2007-2014, International Business Machines Corporation and
+* Copyright (C) 2007-2013, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 */
@@ -237,7 +235,8 @@ ZoneMeta::getCanonicalCLDRID(const UnicodeString &tzid, UErrorCode& status) {
         return NULL;
     }
 
-    if (tzid.isBogus() || tzid.length() > ZID_KEY_MAX) {
+    int32_t len = tzid.length();
+    if (len > ZID_KEY_MAX) {
         status = U_ILLEGAL_ARGUMENT_ERROR;
         return NULL;
     }
@@ -269,7 +268,10 @@ ZoneMeta::getCanonicalCLDRID(const UnicodeString &tzid, UErrorCode& status) {
     // If not, resolve CLDR canonical ID with resource data
     UBool isInputCanonical = FALSE;
     char id[ZID_KEY_MAX + 1];
-    tzid.extract(0, 0x7fffffff, id, UPRV_LENGTHOF(id), US_INV);
+    const UChar* idChars = tzid.getBuffer();
+
+    u_UCharsToChars(idChars,id,len);
+    id[len] = (char) 0; // Make sure it is null terminated.
 
     // replace '/' with ':'
     char *p = id;
@@ -307,7 +309,7 @@ ZoneMeta::getCanonicalCLDRID(const UnicodeString &tzid, UErrorCode& status) {
             if (derefer == NULL) {
                 status = U_ILLEGAL_ARGUMENT_ERROR;
             } else {
-                int32_t len = u_strlen(derefer);
+                len = u_strlen(derefer);
                 u_UCharsToChars(derefer,id,len);
                 id[len] = (char) 0; // Make sure it is null terminated.
 
@@ -715,7 +717,7 @@ ZoneMeta::getZoneIdByMetazone(const UnicodeString &mzid, const UnicodeString &re
     char keyBuf[ZID_KEY_MAX + 1];
     int32_t keyLen = 0;
 
-    if (mzid.isBogus() || mzid.length() > ZID_KEY_MAX) {
+    if (mzid.length() > ZID_KEY_MAX) {
         result.setToBogus();
         return result;
     }

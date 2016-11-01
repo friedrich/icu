@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/af.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/af.xml
+ */
 af{
     Countries{
         001{"Wêreld"}
@@ -15,7 +24,7 @@ af{
         018{"Suider-Afrika"}
         019{"Amerikas"}
         021{"Noordelike Amerika"}
-        029{"Karibies"}
+        029{"Karibbies"}
         030{"Oos-Asië"}
         034{"Suid-Asië"}
         035{"Suidoos-Asië"}
@@ -40,6 +49,7 @@ af{
         AI{"Anguilla"}
         AL{"Albanië"}
         AM{"Armenië"}
+        AN{"Nederlands-Antille"}
         AO{"Angola"}
         AQ{"Antarktika"}
         AR{"Argentinië"}
@@ -66,15 +76,15 @@ af{
         BR{"Brasilië"}
         BS{"Bahamas"}
         BT{"Bhoetan"}
-        BV{"Bouvet-eiland"}
+        BV{"Bouveteiland"}
         BW{"Botswana"}
-        BY{"Belarus"}
+        BY{"Wit-Rusland"}
         BZ{"Belize"}
         CA{"Kanada"}
-        CC{"Kokos-eilande"}
+        CC{"Cocos- (Keeling) eilande"}
         CD{"Demokratiese Republiek van die Kongo"}
         CF{"Sentraal-Afrikaanse Republiek"}
-        CG{"Kongo - Brazzaville"}
+        CG{"Kongo"}
         CH{"Switserland"}
         CI{"Ivoorkus"}
         CK{"Cookeilande"}
@@ -131,19 +141,19 @@ af{
         GU{"Guam"}
         GW{"Guinee-Bissau"}
         GY{"Guyana"}
-        HK{"Hongkong SAS Sjina"}
+        HK{"Hongkong"}
         HM{"Heard- en McDonaldeilande"}
         HN{"Honduras"}
         HR{"Kroasië"}
         HT{"Haïti"}
         HU{"Hongarye"}
-        IC{"Kanariese Eilande"}
+        IC{"Kanarie-eilande"}
         ID{"Indonesië"}
         IE{"Ierland"}
         IL{"Israel"}
         IM{"Eiland Man"}
         IN{"Indië"}
-        IO{"Brits-Indiese Oseaangebied"}
+        IO{"Britse Indiese Oseaangebied"}
         IQ{"Irak"}
         IR{"Iran"}
         IS{"Ysland"}
@@ -157,15 +167,15 @@ af{
         KH{"Kambodja"}
         KI{"Kiribati"}
         KM{"Comore"}
-        KN{"St. Kitts en Nevis"}
+        KN{"Sint Kitts en Nevis"}
         KP{"Noord-Korea"}
         KR{"Suid-Korea"}
         KW{"Koeweit"}
         KY{"Kaaimanseilande"}
-        KZ{"Kazakstan"}
+        KZ{"Kasakstan"}
         LA{"Laos"}
         LB{"Libanon"}
-        LC{"St. Lucia"}
+        LC{"Sint Lucia"}
         LI{"Liechtenstein"}
         LK{"Sri Lanka"}
         LR{"Liberië"}
@@ -176,17 +186,17 @@ af{
         LY{"Libië"}
         MA{"Marokko"}
         MC{"Monaco"}
-        MD{"Moldowa"}
+        MD{"Moldova"}
         ME{"Montenegro"}
-        MF{"St. Martin"}
+        MF{"Sint Martin"}
         MG{"Madagaskar"}
         MH{"Marshalleilande"}
         MK{"Macedonië"}
         ML{"Mali"}
-        MM{"Mianmar (Birma)"}
+        MM{"Mianmar"}
         MN{"Mongolië"}
-        MO{"Macau SAS Sjina"}
-        MP{"Noord-Mariane-eilande"}
+        MO{"Macau SAR China"}
+        MP{"Noordelike Mariana-eilande"}
         MQ{"Martinique"}
         MR{"Mauritanië"}
         MS{"Montserrat"}
@@ -217,10 +227,10 @@ af{
         PH{"Filippyne"}
         PK{"Pakistan"}
         PL{"Pole"}
-        PM{"St. Pierre en Miquelon"}
+        PM{"Sint Pierre en Miquelon"}
         PN{"Pitcairneilande"}
         PR{"Puerto Rico"}
-        PS{"Palestynse gebiede"}
+        PS{"Palestina"}
         PT{"Portugal"}
         PW{"Palau"}
         PY{"Paraguay"}
@@ -232,7 +242,7 @@ af{
         RU{"Rusland"}
         RW{"Rwanda"}
         SA{"Saoedi-Arabië"}
-        SB{"Salomonseilande"}
+        SB{"Solomoneilande"}
         SC{"Seychelle"}
         SD{"Soedan"}
         SE{"Swede"}
@@ -247,7 +257,7 @@ af{
         SO{"Somalië"}
         SR{"Suriname"}
         SS{"Suid-Soedan"}
-        ST{"São Tomé en Príncipe"}
+        ST{"Sao Tome en Principe"}
         SV{"El Salvador"}
         SX{"Sint Maarten"}
         SY{"Sirië"}
@@ -272,12 +282,11 @@ af{
         UA{"Oekraïne"}
         UG{"Uganda"}
         UM{"VS klein omliggende eilande"}
-        UN{"verenigde nasies"}
         US{"Verenigde State van Amerika"}
         UY{"Uruguay"}
         UZ{"Oesbekistan"}
         VA{"Vatikaanstad"}
-        VC{"St. Vincent en die Grenadine"}
+        VC{"Sint Vincent en die Grenadine"}
         VE{"Venezuela"}
         VG{"Britse Maagde-eilande"}
         VI{"Amerikaanse Maagde-eilande"}
@@ -293,20 +302,12 @@ af{
         ZW{"Zimbabwe"}
         ZZ{"Onbekende gebied"}
     }
-    Countries%short{
+    CountriesShort{
         GB{"VK"}
         HK{"Hongkong"}
         MO{"Macau"}
         PS{"Palestina"}
-        UN{"VN"}
         US{"VSA"}
     }
-    Countries%variant{
-        CD{"Kongo (DRK)"}
-        CG{"Kongo (Republiek die)"}
-        CZ{"Tjeggië"}
-        FK{"Falklandeilande (Malvinas)"}
-        MK{"Macedonië (VJRM)"}
-    }
-    Version{"2.1.29.44"}
+    Version{"2.0.92.87"}
 }

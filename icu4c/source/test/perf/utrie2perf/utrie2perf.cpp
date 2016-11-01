@@ -1,12 +1,8 @@
 /*  
- ***********************************************************************
- * Copyright (C) 2016 and later: Unicode, Inc. and others.
- * License & terms of use: http://www.unicode.org/copyright.html#License
- ***********************************************************************
- ***********************************************************************
- *   Copyright (C) 2002-2014, International Business Machines
+ **********************************************************************
+ *   Copyright (C) 2002-2008, International Business Machines
  *   Corporation and others.  All Rights Reserved.
- ***********************************************************************
+ **********************************************************************
  *  file name:  utrie2perf.cpp
  *  encoding:   US-ASCII
  *  tab size:   8 (not used)
@@ -24,6 +20,8 @@
 #include "unicode/unorm.h"
 #include "unicode/uperf.h"
 #include "uoptions.h"
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 #if 0
 // Left over from when icu/branches/markus/utf8 could use both old UTrie

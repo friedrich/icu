@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2005-2016, International Business Machines Corporation and
+ * Copyright (C) 2005-2012, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -11,9 +9,6 @@ package com.ibm.icu.util;
 
 import java.util.Date;
 import java.util.Locale;
-
-import com.ibm.icu.impl.CalendarUtil;
-import com.ibm.icu.util.ULocale.Category;
 
 /**
  * Implement the Ethiopic calendar system.
@@ -31,79 +26,79 @@ public final class EthiopicCalendar extends CECalendar
     private static final long serialVersionUID = -2438495771339315608L;
 
     /** 
-     * Constant for መስከረም, the 1st month of the Ethiopic year.
+     * Constant for &#x1218;&#x1235;&#x12a8;&#x1228;&#x121d;, the 1st month of the Ethiopic year.
      * @stable ICU 3.4
      */
     public static final int MESKEREM = 0;
 
     /** 
-     * Constant for ጥቅምት, the 2nd month of the Ethiopic year. 
+     * Constant for &#x1325;&#x1245;&#x121d;&#x1275;, the 2nd month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int TEKEMT = 1;
 
     /** 
-     * Constant for ኅዳር, the 3rd month of the Ethiopic year. 
+     * Constant for &#x1285;&#x12f3;&#x122d;, the 3rd month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int HEDAR = 2;
 
     /** 
-     * Constant for ታኅሣሥ, the 4th month of the Ethiopic year. 
+     * Constant for &#x1273;&#x1285;&#x1223;&#x1225;, the 4th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int TAHSAS = 3;
 
     /** 
-     * Constant for ጥር, the 5th month of the Ethiopic year. 
+     * Constant for &#x1325;&#x122d;, the 5th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int TER = 4;
 
     /** 
-     * Constant for የካቲት, the 6th month of the Ethiopic year. 
+     * Constant for &#x12e8;&#x12ab;&#x1272;&#x1275;, the 6th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int YEKATIT = 5;
 
     /** 
-     * Constant for መጋቢት, the 7th month of the Ethiopic year. 
+     * Constant for &#x1218;&#x130b;&#x1262;&#x1275;, the 7th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int MEGABIT = 6;
 
     /** 
-     * Constant for ሚያዝያ, the 8th month of the Ethiopic year. 
+     * Constant for &#x121a;&#x12eb;&#x12dd;&#x12eb;, the 8th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int MIAZIA = 7;
 
     /** 
-     * Constant for ግንቦት, the 9th month of the Ethiopic year. 
+     * Constant for &#x130d;&#x1295;&#x1266;&#x1275;, the 9th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int GENBOT = 8;
 
     /** 
-     * Constant for ሰኔ, the 10th month of the Ethiopic year. 
+     * Constant for &#x1230;&#x1294;, the 10th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int SENE = 9;
 
     /** 
-     * Constant for ሐምሌ, the 11th month of the Ethiopic year. 
+     * Constant for &#x1210;&#x121d;&#x120c;, the 11th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int HAMLE = 10;
 
     /** 
-     * Constant for ነሐሴ, the 12th month of the Ethiopic year. 
+     * Constant for &#x1290;&#x1210;&#x1234;, the 12th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int NEHASSE = 11;
 
     /** 
-     * Constant for ጳጉሜን, the 13th month of the Ethiopic year. 
+     * Constant for &#x1333;&#x1309;&#x121c;&#x1295;, the 13th month of the Ethiopic year. 
      * @stable ICU 3.4
      */
     public static final int PAGUMEN = 12;
@@ -155,7 +150,7 @@ public final class EthiopicCalendar extends CECalendar
      * @stable ICU 3.4
      */
     public EthiopicCalendar() {
-        this(TimeZone.getDefault(), ULocale.getDefault(Category.FORMAT));
+        super();
     }
 
     /**
@@ -166,7 +161,7 @@ public final class EthiopicCalendar extends CECalendar
      * @stable ICU 3.4
      */
     public EthiopicCalendar(TimeZone zone) {
-        this(zone, ULocale.getDefault(Category.FORMAT));
+        super(zone);
     }
 
     /**
@@ -177,7 +172,7 @@ public final class EthiopicCalendar extends CECalendar
      * @stable ICU 3.4
      */
     public EthiopicCalendar(Locale aLocale) {
-        this(TimeZone.getDefault(), aLocale);
+        super(aLocale);
     }
 
     /**
@@ -188,7 +183,7 @@ public final class EthiopicCalendar extends CECalendar
      * @stable ICU 3.4
      */
     public EthiopicCalendar(ULocale locale) {
-        this(TimeZone.getDefault(), locale);
+        super(locale);
     }
 
     /**
@@ -200,7 +195,7 @@ public final class EthiopicCalendar extends CECalendar
      * @stable ICU 3.4
      */
     public EthiopicCalendar(TimeZone zone, Locale aLocale) {
-        this(zone, ULocale.forLocale(aLocale));
+        super(zone, aLocale);
     }
     
     /**
@@ -213,9 +208,8 @@ public final class EthiopicCalendar extends CECalendar
      */
     public EthiopicCalendar(TimeZone zone, ULocale locale) {
         super(zone, locale);
-        setCalcTypeForLocale(locale);
     }
-
+    
     /**
      * Constructs a <code>EthiopicCalendar</code> with the given date set
      * in the default time zone with the default locale.
@@ -296,7 +290,6 @@ public final class EthiopicCalendar extends CECalendar
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected int handleGetExtendedYear() {
         // Ethiopic calendar uses EXTENDED_YEAR aligned to
         // Amelete Mihret year always.
@@ -323,7 +316,6 @@ public final class EthiopicCalendar extends CECalendar
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected void handleComputeFields(int julianDay) {
         int era, year;
         int[] fields = new int[3];
@@ -359,7 +351,6 @@ public final class EthiopicCalendar extends CECalendar
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected int handleGetLimit(int field, int limitType) {
         if (isAmeteAlemEra() && field == ERA) {
             return 0; // Only one era in this mode, era is always 0
@@ -372,7 +363,6 @@ public final class EthiopicCalendar extends CECalendar
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected int getJDEpochOffset() {
         return JD_EPOCH_OFFSET_AMETE_MIHRET;
     }
@@ -393,18 +383,6 @@ public final class EthiopicCalendar extends CECalendar
     // removed in future.  2008-03-21 yoshito
     public static int EthiopicToJD(long year, int month, int date) {
         return ceToJD(year, month, date, JD_EPOCH_OFFSET_AMETE_MIHRET);
-    }
-
-    /**
-     * set type based on locale
-     */
-    private void setCalcTypeForLocale(ULocale locale) {
-        String localeCalType = CalendarUtil.getCalendarType(locale);
-        if("ethiopic-amete-alem".equals(localeCalType)) { 
-            setAmeteAlemEra(true);
-        } else {
-            setAmeteAlemEra(false); // default - Amete Mihret
-        }
     }
 }
 

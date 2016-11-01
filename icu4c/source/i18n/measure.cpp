@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-* Copyright (c) 2004-2014, International Business Machines
+* Copyright (c) 2004-2012, International Business Machines
 * Corporation and others.  All Rights Reserved.
 **********************************************************************
 * Author: Alan Liu
@@ -20,8 +18,6 @@
 #include "unicode/measunit.h"
 
 U_NAMESPACE_BEGIN
-
-UOBJECT_DEFINE_RTTI_IMPLEMENTATION(Measure)
 
 Measure::Measure() {}
 
@@ -48,26 +44,23 @@ Measure& Measure::operator=(const Measure& other) {
     return *this;
 }
 
-UObject *Measure::clone() const {
-    return new Measure(*this);
-}
-
 Measure::~Measure() {
     delete unit;
 }
 
 UBool Measure::operator==(const UObject& other) const {
-    if (this == &other) {  // Same object, equal
-        return TRUE;
-    }
-    if (typeid(*this) != typeid(other)) { // Different types, not equal
-        return FALSE;
-    }
-    const Measure &m = static_cast<const Measure&>(other);
-    return number == m.number &&
-        ((unit == NULL) == (m.unit == NULL)) &&
-        (unit == NULL || *unit == *m.unit);
+    const Measure* m = (const Measure*) &other;
+    return typeid(*this) == typeid(other) &&
+        number == m->getNumber() && 
+        (unit != NULL && *unit == m->getUnit());
 }
+
+//----------------------------------------------------------------------
+// MeasureUnit implementation
+
+MeasureUnit:: MeasureUnit() {}
+
+MeasureUnit::~MeasureUnit() {}
 
 U_NAMESPACE_END
 

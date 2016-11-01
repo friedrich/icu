@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2002-2015, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2002-2012, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 
@@ -20,8 +18,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
 import com.ibm.icu.text.CollationElementIterator;
@@ -33,11 +29,14 @@ public class CollationThaiTest extends TestFmwk {
     
     final int MAX_FAILURES_TO_SHOW = -1;
     
+    public static void main(String[] args) throws Exception {
+        new CollationThaiTest().run(args);
+    }
+    
     /**
      * Odd corner conditions taken from "How to Sort Thai Without Rewriting Sort",
      * by Doug Cooper, http://seasrc.th.net/paper/thaisort.zip
      */
-    @Test
     public void TestCornerCases() {
         String TESTS[] = {
             // Shorter words precede longer
@@ -118,7 +117,6 @@ public class CollationThaiTest extends TestFmwk {
      * sorted order, and confirm that the collator compares each line as
      * preceding the following line.
      */
-    @Test
     public void TestDictionary() {
         RuleBasedCollator coll = null;
         try {
@@ -127,75 +125,88 @@ public class CollationThaiTest extends TestFmwk {
             warnln("could not construct Thai collator");
             return;
         }
-
+     
         // Read in a dictionary of Thai words
+        BufferedReader in = null;
+        String fileName = "riwords.txt";
+        try {
+            in = TestUtil.getDataReader(fileName, "UTF-8");
+        } catch (SecurityException e) {
+            warnln("Security exception encountered reading test data file.");
+                   return;
+        } catch (Exception e) {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException ioe) {}
+            errln("Error: could not open test file: " + fileName 
+                  + ". Aborting test.");
+            return;        
+        }
+    
+        //
+        // Loop through each word in the dictionary and compare it to the previous
+        // word.  They should be in sorted order.
+        //
+        String lastWord = "";
         int line = 0;
         int failed = 0;
         int wordCount = 0;
-        BufferedReader in = null;
         try {
-            String fileName = "riwords.txt";
-            in = TestUtil.getDataReader(fileName, "UTF-8");
-
-            //
-            // Loop through each word in the dictionary and compare it to the previous
-            // word. They should be in sorted order.
-            //
-            String lastWord = "";
-            String word = in.readLine();
-            while (word != null) {
-                line++;
-
-                // Skip comments and blank lines
-                if (word.length() == 0 || word.charAt(0) == 0x23) {
-                    word = in.readLine();
-                    continue;
-                }
-
-                // Show the first 8 words being compared, so we can see what's happening
-                ++wordCount;
-                if (wordCount <= 8) {
-                    logln("Word " + wordCount + ": " + word);
-                }
-
-                if (lastWord.length() > 0) {
-                    // CollationTest.doTest isn't really set up to handle situations where
-                    // the result can be equal or greater than the previous, so have to skip for now.
-                    // Not a big deal, since we're still testing to make sure everything sorts out
-                    // right, just not looking at the colation keys in detail...
-                    // CollationTest.doTest(this, coll, lastWord, word, -1);
-                    int result = coll.compare(lastWord, word);
-
-                    if (result > 0) {
-                        failed++;
-                        if (MAX_FAILURES_TO_SHOW < 0 || failed <= MAX_FAILURES_TO_SHOW) {
-                            String msg = "--------------------------------------------\n" + line + " compare("
-                                    + lastWord + ", " + word + ") returned " + result + ", expected -1\n";
-                            CollationKey k1, k2;
+        String word = in.readLine();
+        while (word != null) {
+            line++;
+             
+            // Skip comments and blank lines
+            if (word.length() == 0 || word.charAt(0) == 0x23) {
+                word = in.readLine();
+                continue;
+            }
+    
+            // Show the first 8 words being compared, so we can see what's happening
+            ++wordCount;
+            if (wordCount <= 8) {
+                logln("Word " + wordCount + ": " + word);
+            }
+    
+            if (lastWord.length() > 0) {
+                // CollationTest.doTest isn't really set up to handle situations where
+                // the result can be equal or greater than the previous, so have to skip for now.
+                // Not a big deal, since we're still testing to make sure everything sorts out
+                // right, just not looking at the colation keys in detail...
+                // CollationTest.doTest(this, coll, lastWord, word, -1);
+                int result = coll.compare(lastWord, word); 
+        
+                if (result > 0) {
+                    failed++;
+                    if (MAX_FAILURES_TO_SHOW < 0 || failed <= MAX_FAILURES_TO_SHOW) {
+                        String msg = "--------------------------------------------\n"
+                                    + line
+                                    + " compare(" + lastWord
+                                    + ", " + word + ") returned " + result
+                                    + ", expected -1\n";
+                        CollationKey k1, k2;
+                        try {
                             k1 = coll.getCollationKey(lastWord);
                             k2 = coll.getCollationKey(word);
-                            msg += "key1: " + CollationTest.prettify(k1) + "\n" + "key2: " + CollationTest.prettify(k2);
-                            errln(msg);
+                        } catch (Exception e) {
+                            errln("Fail: getCollationKey returned ");
+                            return;
                         }
+                        msg += "key1: " + prettify(k1) + "\n"
+                                    + "key2: " + prettify(k2);
+                        errln(msg);
                     }
                 }
-                lastWord = word;
-                word = in.readLine();
             }
+            lastWord = word;
+            word = in.readLine();
+        }
         } catch (IOException e) {
             errln("IOException " + e.getMessage());
-        } finally {
-            if (in == null) {
-                errln("Error: could not open test file. Aborting test.");
-                return;
-            } else {
-                try {
-                    in.close();
-                } catch (IOException ignored) {
-                }
-            }
         }
-
+    
         if (failed != 0) {
             if (failed > MAX_FAILURES_TO_SHOW) {
                 errln("Too many failures; only the first " +
@@ -208,7 +219,6 @@ public class CollationThaiTest extends TestFmwk {
         logln("Words checked: " + wordCount);
     }
     
-    @Test
     public void TestInvalidThai() 
     {
         String tests[] = { "\u0E44\u0E01\u0E44\u0E01",
@@ -246,7 +256,6 @@ public class CollationThaiTest extends TestFmwk {
         }
     }
     
-    @Test
     public void TestReordering() 
     {
         String tests[] = {
@@ -298,7 +307,30 @@ public class CollationThaiTest extends TestFmwk {
         }
         compareArray(collator, testcontraction);
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
+    
+    String prettify(CollationKey sourceKey) {
+        int i;
+        byte[] bytes= sourceKey.toByteArray();
+        String target = "[";
+    
+        for (i = 0; i < bytes.length; i++) {
+            target += Integer.toHexString(bytes[i]);
+            target += " ";
+        }
+        target += "]";
+        return target;
+    }
+    
     // private inner class -------------------------------------------------
     
     private static final class StrCmp implements Comparator<String> 

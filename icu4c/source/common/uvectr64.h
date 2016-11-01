@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-*   Copyright (C) 1999-2014, International Business Machines
+*   Copyright (C) 1999-2010, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 */
@@ -124,7 +122,7 @@ public:
 
     int32_t size(void) const;
 
-    inline UBool isEmpty(void) const { return count == 0; }
+    //UBool isEmpty(void) const;
 
     // Inline.  Use this one for speedy size check.
     inline UBool ensureCapacity(int32_t minimumCapacity, UErrorCode &status);

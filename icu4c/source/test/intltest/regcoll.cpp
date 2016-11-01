@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2011, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -11,7 +9,6 @@
 #if !UCONFIG_NO_COLLATION
 
 #include "unicode/coll.h"
-#include "unicode/localpointer.h"
 #include "unicode/tblcoll.h"
 #include "unicode/unistr.h"
 #include "unicode/sortkey.h"
@@ -19,6 +16,8 @@
 #include "sfwdchit.h"
 #include "testutil.h"
 #include "cmemory.h"
+
+#define ARRAY_LENGTH(array) ((int32_t)(sizeof array / sizeof array[0]))
 
 CollationRegressionTest::CollationRegressionTest()
 {
@@ -85,10 +84,19 @@ void CollationRegressionTest::Test4048446(/* char* par */)
 //
 void CollationRegressionTest::Test4051866(/* char* par */)
 {
+/*
+    RuleBasedCollator c1 = new RuleBasedCollator("< o "
+                                                +"& oe ,o\u3080"
+                                                +"& oe ,\u1530 ,O"
+                                                +"& OE ,O\u3080"
+                                                +"& OE ,\u1520"
+                                                +"< p ,P");
+*/
+
     UnicodeString rules;
     UErrorCode status = U_ZERO_ERROR;
 
-    rules += "&n < o ";
+    rules += "< o ";
     rules += "& oe ,o";
     rules += (UChar)0x3080;
     rules += "& oe ,";
@@ -101,24 +109,19 @@ void CollationRegressionTest::Test4051866(/* char* par */)
     rules += "< p ,P";
 
     // Build a collator containing expanding characters
-    LocalPointer<RuleBasedCollator> c1(new RuleBasedCollator(rules, status), status);
-    if (U_FAILURE(status)) {
-        errln("RuleBasedCollator(rule string) failed - %s", u_errorName(status));
-        return;
-    }
+    RuleBasedCollator *c1 = new RuleBasedCollator(rules, status);
 
     // Build another using the rules from  the first
-    LocalPointer<RuleBasedCollator> c2(new RuleBasedCollator(c1->getRules(), status), status);
-    if (U_FAILURE(status)) {
-        errln("RuleBasedCollator(rule string from other RBC) failed - %s", u_errorName(status));
-        return;
-    }
+    RuleBasedCollator *c2 = new RuleBasedCollator(c1->getRules(), status);
 
     // Make sure they're the same
     if (!(c1->getRules() == c2->getRules()))
     {
         errln("Rules are not equal");
     }
+
+    delete c2;
+    delete c1;
 }
 
 // @bug 4053636
@@ -189,7 +192,7 @@ void CollationRegressionTest::Test4054734(/* char* par */)
     c->setStrength(Collator::IDENTICAL);
 
     c->setAttribute(UCOL_NORMALIZATION_MODE, UCOL_ON, status);
-    compareArray(*c, decomp, UPRV_LENGTHOF(decomp));
+    compareArray(*c, decomp, ARRAY_LENGTH(decomp));
 
     delete c;
 }
@@ -211,7 +214,7 @@ void CollationRegressionTest::Test4054736(/* char* par */)
         {0xFB4F, 0}, {0x3d, 0}, {0x05D0, 0x05DC}  // Alef-Lamed vs. Alef, Lamed
     };
 
-    compareArray(*c, tests, UPRV_LENGTHOF(tests));
+    compareArray(*c, tests, ARRAY_LENGTH(tests));
 
     delete c;
 }
@@ -270,7 +273,7 @@ void CollationRegressionTest::Test4059820(/* char* par */)
     UErrorCode status = U_ZERO_ERROR;
 
     RuleBasedCollator *c = NULL;
-    UnicodeString rules = "&9 < a < b , c/a < d < z";
+    UnicodeString rules = "< a < b , c/a < d < z";
 
     c = new RuleBasedCollator(rules, status);
 
@@ -298,7 +301,7 @@ void CollationRegressionTest::Test4060154(/* char* par */)
     UErrorCode status = U_ZERO_ERROR;
     UnicodeString rules;
 
-    rules += "&f < g, G < h, H < i, I < j, J";
+    rules += "< g, G < h, H < i, I < j, J";
     rules +=  " & H < ";
     rules += (UChar)0x0131;
     rules += ", ";
@@ -340,7 +343,7 @@ void CollationRegressionTest::Test4060154(/* char* par */)
     };
 
     c->setStrength(Collator::TERTIARY);
-    compareArray(*c, tertiary, UPRV_LENGTHOF(tertiary));
+    compareArray(*c, tertiary, ARRAY_LENGTH(tertiary));
 
     /*
     String[] secondary = {
@@ -355,7 +358,7 @@ void CollationRegressionTest::Test4060154(/* char* par */)
     };
 
     c->setStrength(Collator::PRIMARY);
-    compareArray(*c, secondary, UPRV_LENGTHOF(secondary));
+    compareArray(*c, secondary, ARRAY_LENGTH(secondary));
 
     delete c;
 }
@@ -391,7 +394,7 @@ void CollationRegressionTest::Test4062418(/* char* par */)
         {0x70, 0x00EA, 0x63, 0x68, 0x65, 0}, {0x3c, 0}, {0x70, 0x00E9, 0x63, 0x68, 0x00E9, 0}
     };
 
-    compareArray(*c, tests, UPRV_LENGTHOF(tests));
+    compareArray(*c, tests, ARRAY_LENGTH(tests));
 
     delete c;
 }
@@ -479,7 +482,7 @@ void CollationRegressionTest::Test4066696(/* char* par */)
         {0x00E0, 0}, {0x3e, 0}, {0x01FA, 0}
     };
 
-    compareArray(*c, tests, UPRV_LENGTHOF(tests));
+    compareArray(*c, tests, ARRAY_LENGTH(tests));
 
     delete c;
 }
@@ -541,7 +544,7 @@ void CollationRegressionTest::Test4079231(/* char* par */)
 void CollationRegressionTest::Test4078588(/* char *par */)
 {
     UErrorCode status = U_ZERO_ERROR;
-    RuleBasedCollator *rbc = new RuleBasedCollator("&9 < a < bb", status);
+    RuleBasedCollator *rbc = new RuleBasedCollator((UnicodeString)"< a < bb", status);
 
     if (rbc == NULL || U_FAILURE(status))
     {
@@ -613,11 +616,11 @@ void CollationRegressionTest::Test4087241(/* char* par */)
     static const UChar tests[][CollationRegressionTest::MAX_TOKEN_LEN] =
     {
         {0x7a, 0},          {0x3c, 0}, {0x00E6, 0},            // z        < ae
-        {0x61, 0x0308, 0},  {0x3c, 0}, {0x61, 0x030A, 0},      // a-umlaut < a-ring
+        {0x61, 0x0308, 0}, {0x3c, 0}, {0x61, 0x030A, 0},      // a-unlaut < a-ring
         {0x59, 0},          {0x3c, 0}, {0x75, 0x0308, 0},      // Y        < u-umlaut
     };
 
-    compareArray(*c, tests, UPRV_LENGTHOF(tests));
+    compareArray(*c, tests, ARRAY_LENGTH(tests));
 
     delete c;
 }
@@ -636,7 +639,7 @@ void CollationRegressionTest::Test4087243(/* char* par */)
         {0x31, 0x32, 0x33, 0}, {0x3d, 0}, {0x31, 0x32, 0x33, 0x0001, 0}    // 1 2 3  =  1 2 3 ctrl-A
     };
 
-    compareArray(*c, tests, UPRV_LENGTHOF(tests));
+    compareArray(*c, tests, ARRAY_LENGTH(tests));
 
     delete c;
 }
@@ -669,7 +672,7 @@ void CollationRegressionTest::Test4092260(/* char* par */)
         {0x00B5, 0}, {0x3d, 0}, {0x03BC, 0}
     };
 
-    compareArray(*c, tests, UPRV_LENGTHOF(tests));
+    compareArray(*c, tests, ARRAY_LENGTH(tests));
 
     delete c;
 }
@@ -697,7 +700,7 @@ void CollationRegressionTest::Test4095316(/* char* par */)
         {0x03D4, 0}, {0x3d, 0}, {0x03AB, 0}
     };
 
-    compareArray(*c, tests, UPRV_LENGTHOF(tests));
+    compareArray(*c, tests, ARRAY_LENGTH(tests));
 
     delete c;
 }
@@ -708,7 +711,7 @@ void CollationRegressionTest::Test4101940(/* char* par */)
 {
     UErrorCode status = U_ZERO_ERROR;
     RuleBasedCollator *c = NULL;
-    UnicodeString rules = "&9 < a < b";
+    UnicodeString rules = "< a < b";
     UnicodeString nothing = "";
 
     c = new RuleBasedCollator(rules, status);
@@ -747,7 +750,7 @@ void CollationRegressionTest::Test4103436(/* char* par */)
         {0x66, 0x69, 0x6c, 0x65, 0}, {0x3c, 0}, {0x66, 0x69, 0x6c, 0x65, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0}
     };
 
-    compareArray(*c, tests, UPRV_LENGTHOF(tests));
+    compareArray(*c, tests, ARRAY_LENGTH(tests));
 
     delete c;
 }
@@ -773,7 +776,7 @@ void CollationRegressionTest::Test4114076(/* char* par */)
     };
 
     c->setAttribute(UCOL_NORMALIZATION_MODE, UCOL_ON, status);
-    compareArray(*c, test1, UPRV_LENGTHOF(test1));
+    compareArray(*c, test1, ARRAY_LENGTH(test1));
 
     // From UTR #15:
     // *In earlier versions of Unicode, jamo characters like ksf
@@ -790,7 +793,7 @@ void CollationRegressionTest::Test4114076(/* char* par */)
 //obsolete-    };
 //obsolete-
 //obsolete-    c->setDecomposition(Normalizer::DECOMP_COMPAT);
-//obsolete-    compareArray(*c, test2, UPRV_LENGTHOF(test2));
+//obsolete-    compareArray(*c, test2, ARRAY_LENGTH(test2));
 
     delete c;
 }
@@ -853,7 +856,7 @@ void CollationRegressionTest::Test4132736(/* char* par */)
         {0x65, 0x0300, 0x0301, 0},       {0x3c, 0}, {0x65, 0x0301, 0x0300, 0}
     };
 
-    compareArray(*c, test1, UPRV_LENGTHOF(test1));
+    compareArray(*c, test1, ARRAY_LENGTH(test1));
 
     delete c;
 }
@@ -871,7 +874,7 @@ void CollationRegressionTest::Test4133509(/* char* par */)
         {0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0},                  {0x3c, 0}, {0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x42, 0x75, 0x66, 0x66, 0x65, 0x72, 0}
     };
 
-    compareArray(*en_us, test1, UPRV_LENGTHOF(test1));
+    compareArray(*en_us, test1, ARRAY_LENGTH(test1));
 }
 
 // @bug 4114077
@@ -898,7 +901,7 @@ void CollationRegressionTest::Test4114077(/* char* par */)
     };
 
     c->setAttribute(UCOL_NORMALIZATION_MODE, UCOL_OFF, status);
-    compareArray(*c, test1, UPRV_LENGTHOF(test1));
+    compareArray(*c, test1, ARRAY_LENGTH(test1));
 
     static const UChar test2[][CollationRegressionTest::MAX_TOKEN_LEN] =
     {
@@ -906,7 +909,7 @@ void CollationRegressionTest::Test4114077(/* char* par */)
     };
 
     c->setAttribute(UCOL_NORMALIZATION_MODE, UCOL_ON, status);
-    compareArray(*c, test2, UPRV_LENGTHOF(test2));
+    compareArray(*c, test2, ARRAY_LENGTH(test2));
 
     delete c;
 }
@@ -1075,104 +1078,6 @@ void CollationRegressionTest::Test4146160(/* char* par */)
 #endif
 }
 
-void CollationRegressionTest::Test4179216() {
-    // you can position a CollationElementIterator in the middle of
-    // a contracting character sequence, yielding a bogus collation
-    // element
-    IcuTestErrorCode errorCode(*this, "Test4179216");
-    RuleBasedCollator coll(en_us->getRules() + " & C < ch , cH , Ch , CH < cat < crunchy", errorCode);
-    UnicodeString testText = "church church catcatcher runcrunchynchy";
-    CollationElementIterator *iter = coll.createCollationElementIterator(testText);
-
-    // test that the "ch" combination works properly
-    iter->setOffset(4, errorCode);
-    int32_t elt4 = CollationElementIterator::primaryOrder(iter->next(errorCode));
-
-    iter->reset();
-    int32_t elt0 = CollationElementIterator::primaryOrder(iter->next(errorCode));
-
-    iter->setOffset(5, errorCode);
-    int32_t elt5 = CollationElementIterator::primaryOrder(iter->next(errorCode));
-
-    // Compares and prints only 16-bit primary weights.
-    if (elt4 != elt0 || elt5 != elt0) {
-        errln("The collation elements at positions 0 (0x%04x), "
-                "4 (0x%04x), and 5 (0x%04x) don't match.",
-                elt0, elt4, elt5);
-    }
-
-    // test that the "cat" combination works properly
-    iter->setOffset(14, errorCode);
-    int32_t elt14 = CollationElementIterator::primaryOrder(iter->next(errorCode));
-
-    iter->setOffset(15, errorCode);
-    int32_t elt15 = CollationElementIterator::primaryOrder(iter->next(errorCode));
-
-    iter->setOffset(16, errorCode);
-    int32_t elt16 = CollationElementIterator::primaryOrder(iter->next(errorCode));
-
-    iter->setOffset(17, errorCode);
-    int32_t elt17 = CollationElementIterator::primaryOrder(iter->next(errorCode));
-
-    iter->setOffset(18, errorCode);
-    int32_t elt18 = CollationElementIterator::primaryOrder(iter->next(errorCode));
-
-    iter->setOffset(19, errorCode);
-    int32_t elt19 = CollationElementIterator::primaryOrder(iter->next(errorCode));
-
-    // Compares and prints only 16-bit primary weights.
-    if (elt14 != elt15 || elt14 != elt16 || elt14 != elt17
-            || elt14 != elt18 || elt14 != elt19) {
-        errln("\"cat\" elements don't match: elt14 = 0x%04x, "
-                "elt15 = 0x%04x, elt16 = 0x%04x, elt17 = 0x%04x, "
-                "elt18 = 0x%04x, elt19 = 0x%04x",
-                elt14, elt15, elt16, elt17, elt18, elt19);
-    }
-
-    // now generate a complete list of the collation elements,
-    // first using next() and then using setOffset(), and
-    // make sure both interfaces return the same set of elements
-    iter->reset();
-
-    int32_t elt = iter->next(errorCode);
-    int32_t count = 0;
-    while (elt != CollationElementIterator::NULLORDER) {
-        ++count;
-        elt = iter->next(errorCode);
-    }
-
-    LocalArray<UnicodeString> nextElements(new UnicodeString[count]);
-    LocalArray<UnicodeString> setOffsetElements(new UnicodeString[count]);
-    int32_t lastPos = 0;
-
-    iter->reset();
-    elt = iter->next(errorCode);
-    count = 0;
-    while (elt != CollationElementIterator::NULLORDER) {
-        nextElements[count++] = testText.tempSubStringBetween(lastPos, iter->getOffset());
-        lastPos = iter->getOffset();
-        elt = iter->next(errorCode);
-    }
-    int32_t nextElementsLength = count;
-    count = 0;
-    for (int32_t i = 0; i < testText.length(); ) {
-        iter->setOffset(i, errorCode);
-        lastPos = iter->getOffset();
-        elt = iter->next(errorCode);
-        setOffsetElements[count++] = testText.tempSubStringBetween(lastPos, iter->getOffset());
-        i = iter->getOffset();
-    }
-    for (int32_t i = 0; i < nextElementsLength; i++) {
-        if (nextElements[i] == setOffsetElements[i]) {
-            logln(nextElements[i]);
-        } else {
-            errln(UnicodeString("Error: next() yielded ") + nextElements[i] +
-                ", but setOffset() yielded " + setOffsetElements[i]);
-        }
-    }
-    delete iter;
-}
-
 // Ticket 7189
 //
 // nextSortKeyPart incorrect for EO_S1 collation
@@ -1227,7 +1132,7 @@ void CollationRegressionTest::TestT7189() {
         return;
     }
 
-    for (i = 0; i < UPRV_LENGTHOF(text1); i++) {
+    for (i = 0; i < sizeof(text1) / (CollationRegressionTest::MAX_TOKEN_LEN * sizeof(UChar)); i++) {
         uint8_t key1[100], key2[100];
         int32_t len1, len2;
 
@@ -1311,33 +1216,7 @@ void CollationRegressionTest::caseFirstCompressionSub(Collator *col, UnicodeStri
     }
 }
 
-void CollationRegressionTest::TestTrailingComment() {
-    // ICU ticket #8070:
-    // Check that the rule parser handles a comment without terminating end-of-line.
-    IcuTestErrorCode errorCode(*this, "TestTrailingComment");
-    RuleBasedCollator coll(UNICODE_STRING_SIMPLE("&c<b#comment1\n<a#comment2"), errorCode);
-    UnicodeString a((UChar)0x61), b((UChar)0x62), c((UChar)0x63);
-    assertTrue("c<b", coll.compare(c, b) < 0);
-    assertTrue("b<a", coll.compare(b, a) < 0);
-}
 
-void CollationRegressionTest::TestBeforeWithTooStrongAfter() {
-    // ICU ticket #9959:
-    // Forbid rules with a before-reset followed by a stronger relation.
-    IcuTestErrorCode errorCode(*this, "TestBeforeWithTooStrongAfter");
-    RuleBasedCollator before2(UNICODE_STRING_SIMPLE("&[before 2]x<<q<p"), errorCode);
-    if(errorCode.isSuccess()) {
-        errln("should forbid before-2-reset followed by primary relation");
-    } else {
-        errorCode.reset();
-    }
-    RuleBasedCollator before3(UNICODE_STRING_SIMPLE("&[before 3]x<<<q<<s<p"), errorCode);
-    if(errorCode.isSuccess()) {
-        errln("should forbid before-3-reset followed by primary or secondary relation");
-    } else {
-        errorCode.reset();
-    }
-}
 
 void CollationRegressionTest::compareArray(Collator &c,
                                            const UChar tests[][CollationRegressionTest::MAX_TOKEN_LEN],
@@ -1436,49 +1315,48 @@ void CollationRegressionTest::runIndexedTest(int32_t index, UBool exec, const ch
         logln("Collation Regression Tests: ");
     }
 
-    if(en_us == NULL) {
-        dataerrln("Class collator not instantiated");
-        name = "";
-        return;
+    if(en_us) {
+      switch (index)
+      {
+          case  0: name = "Test4048446"; if (exec) Test4048446(/* par */); break;
+          case  1: name = "Test4051866"; if (exec) Test4051866(/* par */); break;
+          case  2: name = "Test4053636"; if (exec) Test4053636(/* par */); break;
+          case  3: name = "Test4054238"; if (exec) Test4054238(/* par */); break;
+          case  4: name = "Test4054734"; if (exec) Test4054734(/* par */); break;
+          case  5: name = "Test4054736"; if (exec) Test4054736(/* par */); break;
+          case  6: name = "Test4058613"; if (exec) Test4058613(/* par */); break;
+          case  7: name = "Test4059820"; if (exec) Test4059820(/* par */); break;
+          case  8: name = "Test4060154"; if (exec) Test4060154(/* par */); break;
+          case  9: name = "Test4062418"; if (exec) Test4062418(/* par */); break;
+          case 10: name = "Test4065540"; if (exec) Test4065540(/* par */); break;
+          case 11: name = "Test4066189"; if (exec) Test4066189(/* par */); break;
+          case 12: name = "Test4066696"; if (exec) Test4066696(/* par */); break;
+          case 13: name = "Test4076676"; if (exec) Test4076676(/* par */); break;
+          case 14: name = "Test4078588"; if (exec) Test4078588(/* par */); break;
+          case 15: name = "Test4079231"; if (exec) Test4079231(/* par */); break;
+          case 16: name = "Test4081866"; if (exec) Test4081866(/* par */); break;
+          case 17: name = "Test4087241"; if (exec) Test4087241(/* par */); break;
+          case 18: name = "Test4087243"; if (exec) Test4087243(/* par */); break;
+          case 19: name = "Test4092260"; if (exec) Test4092260(/* par */); break;
+          case 20: name = "Test4095316"; if (exec) Test4095316(/* par */); break;
+          case 21: name = "Test4101940"; if (exec) Test4101940(/* par */); break;
+          case 22: name = "Test4103436"; if (exec) Test4103436(/* par */); break;
+          case 23: name = "Test4114076"; if (exec) Test4114076(/* par */); break;
+          case 24: name = "Test4114077"; if (exec) Test4114077(/* par */); break;
+          case 25: name = "Test4124632"; if (exec) Test4124632(/* par */); break;
+          case 26: name = "Test4132736"; if (exec) Test4132736(/* par */); break;
+          case 27: name = "Test4133509"; if (exec) Test4133509(/* par */); break;
+          case 28: name = "Test4139572"; if (exec) Test4139572(/* par */); break;
+          case 29: name = "Test4141640"; if (exec) Test4141640(/* par */); break;
+          case 30: name = "Test4146160"; if (exec) Test4146160(/* par */); break;
+          case 31: name = "TestT7189";   if (exec) TestT7189(); break;
+          case 32: name = "TestCaseFirstCompression"; if (exec) TestCaseFirstCompression(); break;
+          default: name = ""; break;
+      }
+    } else {
+      dataerrln("Class collator not instantiated");
+      name = "";
     }
-    TESTCASE_AUTO_BEGIN;
-    TESTCASE_AUTO(Test4048446);
-    TESTCASE_AUTO(Test4051866);
-    TESTCASE_AUTO(Test4053636);
-    TESTCASE_AUTO(Test4054238);
-    TESTCASE_AUTO(Test4054734);
-    TESTCASE_AUTO(Test4054736);
-    TESTCASE_AUTO(Test4058613);
-    TESTCASE_AUTO(Test4059820);
-    TESTCASE_AUTO(Test4060154);
-    TESTCASE_AUTO(Test4062418);
-    TESTCASE_AUTO(Test4065540);
-    TESTCASE_AUTO(Test4066189);
-    TESTCASE_AUTO(Test4066696);
-    TESTCASE_AUTO(Test4076676);
-    TESTCASE_AUTO(Test4078588);
-    TESTCASE_AUTO(Test4079231);
-    TESTCASE_AUTO(Test4081866);
-    TESTCASE_AUTO(Test4087241);
-    TESTCASE_AUTO(Test4087243);
-    TESTCASE_AUTO(Test4092260);
-    TESTCASE_AUTO(Test4095316);
-    TESTCASE_AUTO(Test4101940);
-    TESTCASE_AUTO(Test4103436);
-    TESTCASE_AUTO(Test4114076);
-    TESTCASE_AUTO(Test4114077);
-    TESTCASE_AUTO(Test4124632);
-    TESTCASE_AUTO(Test4132736);
-    TESTCASE_AUTO(Test4133509);
-    TESTCASE_AUTO(Test4139572);
-    TESTCASE_AUTO(Test4141640);
-    TESTCASE_AUTO(Test4146160);
-    TESTCASE_AUTO(Test4179216);
-    TESTCASE_AUTO(TestT7189);
-    TESTCASE_AUTO(TestCaseFirstCompression);
-    TESTCASE_AUTO(TestTrailingComment);
-    TESTCASE_AUTO(TestBeforeWithTooStrongAfter);
-    TESTCASE_AUTO_END;
 }
 
 #endif /* #if !UCONFIG_NO_COLLATION */

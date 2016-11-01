@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2010, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -55,7 +53,6 @@ import com.ibm.icu.impl.Normalizer2Impl;
  * It will be updated as later versions of Unicode are released.
  * @deprecated ICU 2.2
  */
-@Deprecated
 ///CLOVER:OFF
 public final class ComposedCharIter {
     /**
@@ -64,7 +61,6 @@ public final class ComposedCharIter {
      * over which to iterate.
      * @deprecated ICU 2.2
      */
-    @Deprecated
     public static final  char DONE = (char) Normalizer.DONE;
 
     /**
@@ -73,7 +69,6 @@ public final class ComposedCharIter {
      * Hangul characters.
      * @deprecated ICU 2.2
      */
-    @Deprecated
     public ComposedCharIter() {
         this(false, 0);
     }
@@ -88,7 +83,6 @@ public final class ComposedCharIter {
      * @param options   Optional decomposition features. None are supported, so this is ignored.
      * @deprecated ICU 2.2
      */
-    @Deprecated
     public ComposedCharIter(boolean compat, int options) {
         if(compat) {
             n2impl = Norm2AllModes.getNFKCInstance().impl;
@@ -102,7 +96,6 @@ public final class ComposedCharIter {
      * by {@link #next}.
      * @deprecated ICU 2.2
      */
-    @Deprecated
     public boolean hasNext() {
         if (nextChar == Normalizer.DONE)  {
             findNextChar();
@@ -118,7 +111,6 @@ public final class ComposedCharIter {
      * to <tt>next</tt> will return {@link #DONE}.
      * @deprecated ICU 2.2
      */
-    @Deprecated
     public char next() {
         if (nextChar == Normalizer.DONE)  {
             findNextChar();
@@ -135,7 +127,6 @@ public final class ComposedCharIter {
      * affected by the settings of the options passed to the constructor.
      * @deprecated ICU 2.2
      */
-    @Deprecated
     public String decomposition() {
         // the decomposition buffer contains the decomposition of 
         // current char so just return it

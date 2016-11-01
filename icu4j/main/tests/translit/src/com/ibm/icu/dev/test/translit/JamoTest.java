@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2001-2010, International Business Machines Corporation and    *
@@ -11,9 +9,6 @@ package com.ibm.icu.dev.test.translit;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Utility;
 import com.ibm.icu.text.Transliterator;
 
@@ -21,8 +16,12 @@ import com.ibm.icu.text.Transliterator;
  * @test
  * @summary Test the Latin-Jamo transliterator
  */
-public class JamoTest extends TestFmwk {
-    @Test
+public class JamoTest extends TransliteratorTest {
+
+    public static void main(String[] args) throws Exception {
+        new JamoTest().run(args);
+    }
+
     public void TestJamo() {
         Transliterator latinJamo = Transliterator.getInstance("Latin-Jamo");
         Transliterator jamoLatin = latinJamo.getInverse();
@@ -80,11 +79,11 @@ public class JamoTest extends TestFmwk {
         for (int i=0; i<CASE.length; i+=3) {
             String jamo = nameToJamo(CASE[i+1]);
             if (CASE[i+2] == null) {
-                TransliteratorTest.expect(latinJamo, CASE[i], jamo, jamoLatin);
+                expect(latinJamo, CASE[i], jamo, jamoLatin);
             } else {
                 // Handle case where round-trip is expected to fail
-                TransliteratorTest.expect(latinJamo, CASE[i], jamo);
-                TransliteratorTest.expect(jamoLatin, jamo, CASE[i+2]);
+                expect(latinJamo, CASE[i], jamo);
+                expect(jamoLatin, jamo, CASE[i+2]);
             }
         }
     }
@@ -93,7 +92,6 @@ public class JamoTest extends TestFmwk {
      * These are problems turned up by the Hangul-Jamo;Jamo-Latin
      * round trip test.
      */
-    @Test
     public void TestRoundTrip() {
         String HANGUL[] = { "\uAC03\uC2F8",
                             "\uC544\uC5B4"};
@@ -128,7 +126,6 @@ public class JamoTest extends TestFmwk {
      * Test various step-at-a-time transformation of hangul to jamo to
      * latin and back.
      */
-    @Test
     public void TestPiecemeal() {
         String hangul = "\uBC0F";
         String jamo = nameToJamo("(Mi)(I)(Cf)");
@@ -138,34 +135,33 @@ public class JamoTest extends TestFmwk {
         Transliterator t = null;
 
         t = Transliterator.getInstance("NFD"); // was Hangul-Jamo
-        TransliteratorTest.expect(t, hangul, jamo);
+        expect(t, hangul, jamo);
 
         t = Transliterator.getInstance("NFC"); // was Jamo-Hangul
-        TransliteratorTest.expect(t, jamo, hangul);
+        expect(t, jamo, hangul);
 
         t = Transliterator.getInstance("Latin-Jamo");
-        TransliteratorTest.expect(t, latin, jamo);
+        expect(t, latin, jamo);
 
         t = Transliterator.getInstance("Jamo-Latin");
-        TransliteratorTest.expect(t, jamo, latin2);
+        expect(t, jamo, latin2);
 
         t = Transliterator.getInstance("Hangul-Latin");
-        TransliteratorTest.expect(t, hangul, latin2);
+        expect(t, hangul, latin2);
 
         t = Transliterator.getInstance("Latin-Hangul");
-        TransliteratorTest.expect(t, latin, hangul);
+        expect(t, latin, hangul);
 
         t = Transliterator.getInstance("Hangul-Latin; Latin-Jamo");
-        TransliteratorTest.expect(t, hangul, jamo);
+        expect(t, hangul, jamo);
 
         t = Transliterator.getInstance("Jamo-Latin; Latin-Hangul");
-        TransliteratorTest.expect(t, jamo, hangul);
+        expect(t, jamo, hangul);
 
         t = Transliterator.getInstance("Hangul-Latin; Latin-Hangul");
-        TransliteratorTest.expect(t, hangul, hangul);
+        expect(t, hangul, hangul);
     }
 
-    @Test
     public void TestRealText() {
         Transliterator latinJamo = Transliterator.getInstance("Latin-Jamo");
         Transliterator jamoLatin = latinJamo.getInverse();
@@ -379,7 +375,7 @@ public class JamoTest extends TestFmwk {
     // TransliteratorTest override
     boolean expectAux(String tag, String summary, boolean pass,
                    String expectedResult) {
-        return TransliteratorTest.expectAux(tag, jamoToName(summary),
+        return super.expectAux(tag, jamoToName(summary),
                         pass, jamoToName(expectedResult));
     }
 

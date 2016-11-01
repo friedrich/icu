@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /***********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2016, International Business Machines Corporation
+ * Copyright (c) 1997-2013, International Business Machines Corporation
  * and others. All Rights Reserved.
  ***********************************************************************/
 
@@ -22,6 +20,8 @@
 #include "putilimp.h"
 #include "cstring.h"
 #include "olsontz.h"
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 #define CASE(id,test) case id:                               \
                           name = #test;                      \
@@ -66,7 +66,6 @@ void TimeZoneTest::runIndexedTest( int32_t index, UBool exec, const char* &name,
     TESTCASE_AUTO(TestAliasedNames);
     TESTCASE_AUTO(TestFractionalDST);
     TESTCASE_AUTO(TestFebruary);
-    TESTCASE_AUTO(TestCanonicalIDAPI);
     TESTCASE_AUTO(TestCanonicalID);
     TESTCASE_AUTO(TestDisplayNamesMeta);
     TESTCASE_AUTO(TestGetRegion);
@@ -111,21 +110,21 @@ TimeZoneTest::TestGenericAPI()
 
     TimeZone* saveDefault = TimeZone::createDefault();
     logln((UnicodeString)"TimeZone::createDefault() => " + saveDefault->getID(id));
-
-    TimeZone::adoptDefault(zone);
-    TimeZone* defaultzone = TimeZone::createDefault();
-    if (defaultzone == zone ||
-        !(*defaultzone == *zone))
-        errln("FAIL: createDefault failed");
-    TimeZone::adoptDefault(saveDefault);
-    delete defaultzone;
-    delete zoneclone;
+    TimeZone* pstZone = TimeZone::createTimeZone("America/Los_Angeles");
 
     logln("call uprv_timezone() which uses the host");
     logln("to get the difference in seconds between coordinated universal");
     logln("time and local time. E.g., -28,800 for PST (GMT-8hrs)");
 
     int32_t tzoffset = uprv_timezone();
+    logln(UnicodeString("Value returned from uprv_timezone = ") + tzoffset);
+    // Invert sign because UNIX semantics are backwards
+    if (tzoffset < 0)
+        tzoffset = -tzoffset;
+    if ((*saveDefault == *pstZone) && (tzoffset != 28800)) {
+        errln("FAIL: t_timezone may be incorrect.  It is not 28800");
+    }
+
     if ((tzoffset % 900) != 0) {
         /*
          * Ticket#6364 and #7648
@@ -137,12 +136,15 @@ TimeZoneTest::TestGenericAPI()
         infoln("WARNING: t_timezone may be incorrect. It is not a multiple of 15min.", tzoffset);
     }
 
-    TimeZone* hostZone = TimeZone::detectHostTimeZone();
-    /* Host time zone's offset should match the offset returned by uprv_timezone() */
-    if (hostZone->getRawOffset() != tzoffset * (-1000)) {
-        errln("FAIL: detectHostTimeZone()'s raw offset != host timezone's offset");
-    }
-    delete hostZone;
+    TimeZone::adoptDefault(zone);
+    TimeZone* defaultzone = TimeZone::createDefault();
+    if (defaultzone == zone ||
+        !(*defaultzone == *zone))
+        errln("FAIL: createDefault failed");
+    TimeZone::adoptDefault(saveDefault);
+    delete defaultzone;
+    delete zoneclone;
+    delete pstZone;
 
     UErrorCode status = U_ZERO_ERROR;
     const char* tzver = TimeZone::getTZDataVersion(status);
@@ -862,7 +864,7 @@ void TimeZoneTest::TestShortZoneIDs()
         {"UTC", 0, FALSE},    // Olson etcetera 0
         {"ECT", 60, TRUE},    // ICU Link - Europe/Paris
         {"MET", 60, TRUE},    // Olson europe 1:00 C-Eur
-        {"CAT", 120, FALSE},  // ICU Link - Africa/Maputo
+        {"CAT", 120, FALSE},  // ICU Link - Africa/Harare
         {"ART", 120, FALSE},  // ICU Link - Africa/Cairo
         {"EET", 120, TRUE},   // Olson europe 2:00 EU
         {"EAT", 180, FALSE},  // ICU Link - Africa/Addis_Ababa
@@ -961,7 +963,7 @@ void TimeZoneTest::TestShortZoneIDs()
         "AST", "America/Anchorage",
         "BET", "America/Sao_Paulo",
         "BST", "Asia/Dhaka", // # spelling changed in 2000h; was Asia/Dacca
-        "CAT", "Africa/Maputo",
+        "CAT", "Africa/Harare",
         "CNT", "America/St_Johns",
         "CST", "America/Chicago",
         "CTT", "Asia/Shanghai",
@@ -1329,7 +1331,7 @@ TimeZoneTest::TestAliasedNames()
     int32_t i, j, k, loc;
     UnicodeString fromName, toName;
     TimeZone *from = NULL, *to = NULL;
-    for(i = 0; i < UPRV_LENGTHOF(kData); i++) {
+    for(i = 0; i < (int32_t)(sizeof(kData)/sizeof(kData[0])); i++) {
         from = TimeZone::createTimeZone(kData[i].from);
         to = TimeZone::createTimeZone(kData[i].to);
         if(!from->hasSameRules(*to)) {
@@ -1338,8 +1340,8 @@ TimeZoneTest::TestAliasedNames()
         if(!quick) {
             for(loc = 0; loc < noLoc; loc++) {
                 const char* locale = uloc_getAvailable(loc); 
-                for(j = 0; j < UPRV_LENGTHOF(styles); j++) {
-                    for(k = 0; k < UPRV_LENGTHOF(useDst); k++) {
+                for(j = 0; j < (int32_t)(sizeof(styles)/sizeof(styles[0])); j++) {
+                    for(k = 0; k < (int32_t)(sizeof(useDst)/sizeof(useDst[0])); k++) {
                         fromName.remove();
                         toName.remove();
                         from->getDisplayName(useDst[k], styles[j],locale, fromName);
@@ -1914,9 +1916,9 @@ void TimeZoneTest::TestFebruary() {
     TimeZone *tz;
     UDate dt;
     int32_t t, i, raw, dst;
-    for (t = 0; t < UPRV_LENGTHOF(timezones); ++t) {
+    for (t = 0; t < LENGTHOF(timezones); ++t) {
         tz = timezones[t];
-        for (i = 0; i < UPRV_LENGTHOF(data); ++i) {
+        for (i = 0; i < LENGTHOF(data); ++i) {
             gc.set(data[i].year, data[i].month, data[i].day,
                    data[i].hour, data[i].minute, data[i].second);
             dt = gc.getTime(status);
@@ -1946,34 +1948,6 @@ void TimeZoneTest::TestFebruary() {
         }
     }
 }
-
-void TimeZoneTest::TestCanonicalIDAPI() {
-    // Bogus input string.
-    UnicodeString bogus;
-    bogus.setToBogus();
-    UnicodeString canonicalID;
-    UErrorCode ec = U_ZERO_ERROR;
-    UnicodeString *pResult = &TimeZone::getCanonicalID(bogus, canonicalID, ec);
-    assertEquals("TimeZone::getCanonicalID(bogus) should fail", (int32_t)U_ILLEGAL_ARGUMENT_ERROR, ec);
-    assertTrue("TimeZone::getCanonicalID(bogus) should return the dest string", pResult == &canonicalID);
-
-    // U_FAILURE on input.
-    UnicodeString berlin("Europe/Berlin");
-    ec = U_MEMORY_ALLOCATION_ERROR;
-    pResult = &TimeZone::getCanonicalID(berlin, canonicalID, ec);
-    assertEquals("TimeZone::getCanonicalID(failure) should fail", (int32_t)U_MEMORY_ALLOCATION_ERROR, ec);
-    assertTrue("TimeZone::getCanonicalID(failure) should return the dest string", pResult == &canonicalID);
-
-    // Valid input should un-bogus the dest string.
-    canonicalID.setToBogus();
-    ec = U_ZERO_ERROR;
-    pResult = &TimeZone::getCanonicalID(berlin, canonicalID, ec);
-    assertSuccess("TimeZone::getCanonicalID(bogus dest) should succeed", ec, TRUE);
-    assertTrue("TimeZone::getCanonicalID(bogus dest) should return the dest string", pResult == &canonicalID);
-    assertFalse("TimeZone::getCanonicalID(bogus dest) should un-bogus the dest string", canonicalID.isBogus());
-    assertEquals("TimeZone::getCanonicalID(bogus dest) unexpected result", canonicalID, berlin, TRUE);
-}
-
 void TimeZoneTest::TestCanonicalID() {
 
     // Some canonical IDs in CLDR are defined as "Link"
@@ -1982,92 +1956,43 @@ void TimeZoneTest::TestCanonicalID() {
         const char *alias;
         const char *zone;
     } excluded1[] = {
-        {"Africa/Addis_Ababa", "Africa/Nairobi"},
-        {"Africa/Asmera", "Africa/Nairobi"},
-        {"Africa/Bamako", "Africa/Abidjan"},
-        {"Africa/Bangui", "Africa/Lagos"},
-        {"Africa/Banjul", "Africa/Abidjan"},
-        {"Africa/Blantyre", "Africa/Maputo"},
-        {"Africa/Brazzaville", "Africa/Lagos"},
-        {"Africa/Bujumbura", "Africa/Maputo"},
-        {"Africa/Conakry", "Africa/Abidjan"},
-        {"Africa/Dakar", "Africa/Abidjan"},
-        {"Africa/Dar_es_Salaam", "Africa/Nairobi"},
-        {"Africa/Djibouti", "Africa/Nairobi"},
-        {"Africa/Douala", "Africa/Lagos"},
-        {"Africa/Freetown", "Africa/Abidjan"},
-        {"Africa/Gaborone", "Africa/Maputo"},
-        {"Africa/Harare", "Africa/Maputo"},
-        {"Africa/Kampala", "Africa/Nairobi"},
         {"Africa/Khartoum", "Africa/Juba"},
-        {"Africa/Kigali", "Africa/Maputo"},
-        {"Africa/Kinshasa", "Africa/Lagos"},
-        {"Africa/Libreville", "Africa/Lagos"},
-        {"Africa/Lome", "Africa/Abidjan"},
-        {"Africa/Luanda", "Africa/Lagos"},
-        {"Africa/Lubumbashi", "Africa/Maputo"},
-        {"Africa/Lusaka", "Africa/Maputo"},
-        {"Africa/Maseru", "Africa/Johannesburg"},
-        {"Africa/Malabo", "Africa/Lagos"},
-        {"Africa/Mbabane", "Africa/Johannesburg"},
-        {"Africa/Mogadishu", "Africa/Nairobi"},
-        {"Africa/Niamey", "Africa/Lagos"},
-        {"Africa/Nouakchott", "Africa/Abidjan"},
-        {"Africa/Ouagadougou", "Africa/Abidjan"},
-        {"Africa/Porto-Novo", "Africa/Lagos"},
-        {"Africa/Sao_Tome", "Africa/Abidjan"},
-        {"America/Antigua", "America/Port_of_Spain"},
-        {"America/Anguilla", "America/Port_of_Spain"},
+        {"America/Shiprock", "America/Denver"}, // America/Shiprock is defined as a Link to America/Denver in tzdata
+        {"America/Dominica", "America/Anguilla"},
+        {"America/Grenada", "America/Anguilla"},
+        {"America/Guadeloupe", "America/Anguilla"},
+        {"America/Marigot", "America/Anguilla"},
+        {"America/Montserrat", "America/Anguilla"},
+        {"America/Port_of_Spain", "America/Anguilla"},
+        {"America/St_Barthelemy", "America/Anguilla"},
+        {"America/St_Kitts", "America/Anguilla"},
+        {"America/St_Lucia", "America/Anguilla"},
+        {"America/St_Thomas", "America/Anguilla"},
+        {"America/St_Vincent", "America/Anguilla"},
+        {"America/Tortola", "America/Anguilla"},
+        {"America/Virgin", "America/Anguilla"},
         {"America/Curacao", "America/Aruba"},
-        {"America/Dominica", "America/Port_of_Spain"},
-        {"America/Grenada", "America/Port_of_Spain"},
-        {"America/Guadeloupe", "America/Port_of_Spain"},
         {"America/Kralendijk", "America/Aruba"},
         {"America/Lower_Princes", "America/Aruba"},
-        {"America/Marigot", "America/Port_of_Spain"},
-        {"America/Montserrat", "America/Port_of_Spain"},
-        {"America/Panama", "America/Cayman"},
-        {"America/Santa_Isabel", "America/Tijuana"},
-        {"America/Shiprock", "America/Denver"},
-        {"America/St_Barthelemy", "America/Port_of_Spain"},
-        {"America/St_Kitts", "America/Port_of_Spain"},
-        {"America/St_Lucia", "America/Port_of_Spain"},
-        {"America/St_Thomas", "America/Port_of_Spain"},
-        {"America/St_Vincent", "America/Port_of_Spain"},
-        {"America/Toronto", "America/Montreal"},
-        {"America/Tortola", "America/Port_of_Spain"},
-        {"America/Virgin", "America/Port_of_Spain"},
         {"Antarctica/South_Pole", "Antarctica/McMurdo"},
-        {"Arctic/Longyearbyen", "Europe/Oslo"},
-        {"Asia/Kuwait", "Asia/Aden"},
-        {"Asia/Muscat", "Asia/Dubai"},
-        {"Asia/Phnom_Penh", "Asia/Bangkok"},
-        {"Asia/Qatar", "Asia/Bahrain"},
-        {"Asia/Riyadh", "Asia/Aden"},
-        {"Asia/Vientiane", "Asia/Bangkok"},
         {"Atlantic/Jan_Mayen", "Europe/Oslo"},
-        {"Atlantic/St_Helena", "Africa/Abidjan"},
-        {"Europe/Bratislava", "Europe/Prague"},
+        {"Arctic/Longyearbyen", "Europe/Oslo"},
         {"Europe/Busingen", "Europe/Zurich"},
         {"Europe/Guernsey", "Europe/London"},
         {"Europe/Isle_of_Man", "Europe/London"},
         {"Europe/Jersey", "Europe/London"},
         {"Europe/Ljubljana", "Europe/Belgrade"},
-        {"Europe/Mariehamn", "Europe/Helsinki"},
         {"Europe/Podgorica", "Europe/Belgrade"},
-        {"Europe/San_Marino", "Europe/Rome"},
         {"Europe/Sarajevo", "Europe/Belgrade"},
         {"Europe/Skopje", "Europe/Belgrade"},
-        {"Europe/Vaduz", "Europe/Zurich"},
-        {"Europe/Vatican", "Europe/Rome"},
         {"Europe/Zagreb", "Europe/Belgrade"},
-        {"Indian/Antananarivo", "Africa/Nairobi"},
-        {"Indian/Comoro", "Africa/Nairobi"},
-        {"Indian/Mayotte", "Africa/Nairobi"},
+        {"Europe/Bratislava", "Europe/Prague"},
+        {"Europe/Mariehamn", "Europe/Helsinki"},
+        {"Europe/San_Marino", "Europe/Rome"},
+        {"Europe/Vatican", "Europe/Rome"},
+        {"Europe/Vaduz", "Europe/Zurich"},
         {"Pacific/Auckland", "Antarctica/McMurdo"},
         {"Pacific/Johnston", "Pacific/Honolulu"},
-        {"Pacific/Midway", "Pacific/Pago_Pago"},
-        {"Pacific/Saipan", "Pacific/Guam"},
         {0, 0}
     };
 
@@ -2316,8 +2241,7 @@ void TimeZoneTest::TestGetRegion()
         {"Europe/Helsinki",                 "FI"},
         {"Europe/Mariehamn",                "AX"},  // Link Europe/Helsinki, but in zone.tab
         {"Asia/Riyadh",                     "SA"},
-        // tz file solar87 was removed from tzdata2013i
-        // {"Asia/Riyadh87",                   "001"}, // this should be "SA" actually, but not in zone.tab
+        {"Asia/Riyadh87",                   "001"}, // this should be "SA" actually, but not in zone.tab
         {"Etc/Unknown",                     0},  // CLDR canonical, but not a sysmte zone ID
         {"bogus",                           0},  // bogus
         {"GMT+08:00",                       0},  // a custom ID, not a system zone ID
@@ -2409,7 +2333,7 @@ void TimeZoneTest::TestGetWindowsID(void) {
         {"America/Indianapolis",    "US Eastern Standard Time"},            // CLDR canonical name
         {"America/Indiana/Indianapolis",    "US Eastern Standard Time"},    // tzdb canonical name
         {"Asia/Khandyga",           "Yakutsk Standard Time"},
-        {"Australia/Eucla",         "Aus Central W. Standard Time"}, // formerly no Windows ID mapping, now has one
+        {"Australia/Eucla",         ""}, // No Windows ID mapping
         {"Bogus",                   ""},
         {0,                         0},
     };

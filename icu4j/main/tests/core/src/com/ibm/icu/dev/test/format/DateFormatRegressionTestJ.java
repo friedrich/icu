@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2001-2014, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2001-2010, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 
@@ -18,9 +16,6 @@ import java.text.ParsePosition;
 import java.util.Date;
 import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DateFormatSymbols;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -31,15 +26,17 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
     
     private static final String TIME_STRING = "2000/11/17 08:01:00";
     private static final long UTC_LONG = 974476860000L;
-    private SimpleDateFormat sdf_;
+    private static SimpleDateFormat sdf_;
     
-    @Before
-    public void init()throws Exception {
-        sdf_ = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");        
+    protected void init()throws Exception{
+        sdf_ = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        
+    }
+    public static void main(String[] args) throws Exception {
+        new DateFormatRegressionTestJ().run(args);
     }
     
     //Return value of getAmPmStrings
-    @Test
     public void Test4103926() {
         String act_Ampms[];
         String exp_Ampms[]={"AM","PM"};
@@ -56,11 +53,10 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
             }
         }
     }
-
-    // Missing digit in millisecond format in SimpleDateFormat 
-    @Test
+    
+    //Missing digit in millisecone format in SimpleDateFormat 
     public void Test4148168() {
-            Date d = new Date(1002705212906L);
+            Date d = new Date(1002705212906l); 
             String[] ISOPattern = {
                 "''yyyy-MM-dd-hh.mm.ss.S''", "''yyyy-MM-dd-hh.mm.ss.SS''", 
                 "''yyyy-MM-dd-hh.mm.ss.SSS''", "''yyyy-MM-dd-hh.mm.ss.SSSS''", 
@@ -76,7 +72,6 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
     }
     
     //DateFormat getDateTimeInstance(int, int), invalid styles no exception
-    @Test
     public void Test4213086() {
         Date someDate = new Date();
         String d=null;
@@ -125,7 +120,6 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
     }
     
     //DateFormat.format works wrongly?
-    @Test
     public void Test4250359() {
         Locale.setDefault(Locale.US);
         Calendar cal = Calendar.getInstance();
@@ -142,10 +136,9 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
     }
     
     //pattern "s.S, parse '1ms'"
-    @Test
     public void Test4253490() {
-        Date d = new Date(1002705212231L);
-
+        Date d = new Date(1002705212231l);
+    
         String[] ISOPattern = {
                 "''yyyy-MM-dd-hh.mm.ss.S''", 
                 "''yyyy-MM-dd-hh.mm.ss.SS''", 
@@ -164,7 +157,6 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
     }
     
     //about regression test
-    @Test
     public void Test4266432() {
         Locale.setDefault(Locale.JAPAN);
         Locale loc = Locale.getDefault();
@@ -178,7 +170,6 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
     }
     
     //SimpleDateFormat inconsistent for number of digits for years
-    @Test
     public void Test4358730() {
         SimpleDateFormat sdf = new SimpleDateFormat();
         Calendar cal = Calendar.getInstance();
@@ -202,7 +193,6 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
     }
     
     //Parse invalid string
-    @Test
     public void Test4375399() {
         final String pattern = new String("yyyy.MM.dd G 'at' hh:mm:ss z");
         SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.JAPAN);
@@ -216,7 +206,6 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
         }
     }
     /*
-    @Test
     public void Test4407042() {
         DateParseThread d1 = new DateParseThread();
         DateFormatThread d2 = new DateFormatThread();
@@ -228,9 +217,8 @@ public class DateFormatRegressionTestJ extends com.ibm.icu.dev.test.TestFmwk {
         } catch (Exception e) {}
     }*/
     
-    @Test
     public void Test4468663() {
-        Date d =new Date(-93716671115767L);
+        Date d =new Date(-93716671115767l);
         String origin_d = d.toString();
         String str;
         final String pattern = new String("EEEE, MMMM d, yyyy");

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
- * COPYRIGHT:
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * COPYRIGHT: 
+ * Copyright (c) 1997-2013, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -20,7 +18,24 @@
 
 #if U_NO_DEFAULT_INCLUDE_UTF_HEADERS
 /* deprecated  - make tests pass with U_NO_DEFAULT_INCLUDE_UTF_HEADERS */
-#include "unicode/utf_old.h"
+#include "unicode/utf_old.h" 
+#endif
+
+/**
+ * \def ICU_USE_THREADS
+ *
+ * Enables multi-threaded testing. Moved here from uconfig.h.
+ * Default: enabled
+ *
+ * This switch used to allow thread support (use of mutexes) to be compiled out of ICU.
+ */
+#ifdef ICU_USE_THREADS
+    /* Use the predefined value. */
+#elif defined(APP_NO_THREADS)
+    /* APP_NO_THREADS is an old symbol. We'll honour it if present. */
+#   define ICU_USE_THREADS 0
+#else
+#   define ICU_USE_THREADS 1
 #endif
 
 U_NAMESPACE_USE
@@ -102,30 +117,6 @@ UnicodeString toString(UBool b);
             break; \
         }
 
-#define TESTCASE_AUTO_CLASS(TestClass) \
-        if (index == testCaseAutoNumber++) { \
-            name = #TestClass; \
-            if (exec) { \
-                logln(#TestClass "---"); \
-                logln(); \
-                TestClass test; \
-                callTest(test, par); \
-            } \
-            break; \
-        }
-
-#define TESTCASE_AUTO_CREATE_CLASS(TestClass) \
-        if (index == testCaseAutoNumber++) { \
-            name = #TestClass; \
-            if (exec) { \
-                logln(#TestClass "---"); \
-                logln(); \
-                LocalPointer<IntlTest> test(create##TestClass()); \
-                callTest(*test, par); \
-            } \
-            break; \
-        }
-
 #define TESTCASE_AUTO_END \
         name = ""; \
         break; \
@@ -168,7 +159,7 @@ public:
     /**
      * Replaces isICUVersionAtLeast and isICUVersionBefore
      * log that an issue is known.
-     * Usually used this way:
+     * Usually used this way:   
      * <code>if( ... && logKnownIssue("12345", "some bug")) continue; </code>
      * @param ticket ticket string, "12345" or "cldrbug:1234"
      * @param message optional message string
@@ -232,11 +223,11 @@ public:
     void errcheckln(UErrorCode status, const char *fmt, ...);
 
     // Print ALL named errors encountered so far
-    void printErrors();
+    void printErrors(); 
 
     // print known issues. return TRUE if there were any.
     UBool printKnownIssues();
-
+        
     virtual void usage( void ) ;
 
     /**
@@ -254,30 +245,6 @@ public:
      * Convenience method using a global seed.
      */
     static float random();
-
-
-    /**
-     *   Integer random numbers, similar to C++ std::minstd_rand, with the same algorithm
-     *   and constants.  Allow additional access to internal state, for use by monkey tests,
-     *   which need to recreate previous random sequences beginning near a failure point.
-     */
-    class icu_rand {
-      public:
-        icu_rand(uint32_t seed = 1);
-        ~icu_rand();
-        void seed(uint32_t seed);
-        uint32_t operator()();
-        /**
-          * Get a seed corresponding to the current state of the generator.
-          * Seeding any generator with this value will cause it to produce the
-          * same sequence as this one will from this point forward.
-          */
-        uint32_t getSeed();
-      private:
-        uint32_t fLast;
-    };
-
-
 
     enum { kMaxProps = 16 };
 
@@ -301,7 +268,6 @@ protected:
                        UBool actual);
     UBool assertEquals(const char* message, int32_t expected, int32_t actual);
     UBool assertEquals(const char* message, int64_t expected, int64_t actual);
-    UBool assertEquals(const char* message, double expected, double actual);
 #if !UCONFIG_NO_FORMATTING
     UBool assertEquals(const char* message, const Formattable& expected,
                        const Formattable& actual, UBool possibleDataError=FALSE);
@@ -346,7 +312,7 @@ private:
     int32_t     dataErrorCount;
     IntlTest*   caller;
     char*       testPath;           // specifies subtests
-
+    
     char basePath[1024];
     char currName[1024]; // current test name
 
@@ -381,7 +347,6 @@ public:
     static const char* loadTestData(UErrorCode& err);
     virtual const char* getTestDataPath(UErrorCode& err);
     static const char* getSourceTestData(UErrorCode& err);
-    static char *getUnidataPath(char path[]);
 
 // static members
 public:

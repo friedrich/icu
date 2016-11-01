@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-*   Copyright (c) 2002-2014, International Business Machines Corporation
+*   Copyright (c) 2002-2012, International Business Machines Corporation
 *   and others.  All Rights Reserved.
 **********************************************************************
 *   Date        Name        Description
@@ -17,8 +15,6 @@
 #include "tridpars.h"
 #include "hash.h"
 #include "mutex.h"
-#include "transreg.h"
-#include "uassert.h"
 #include "ucln_in.h"
 #include "unicode/parsepos.h"
 #include "unicode/translit.h"
@@ -45,7 +41,6 @@ static const int32_t FORWARD = UTRANS_FORWARD;
 static const int32_t REVERSE = UTRANS_REVERSE;
 
 static Hashtable* SPECIAL_INVERSES = NULL;
-static UInitOnce gSpecialInversesInitOnce = U_INITONCE_INITIALIZER;
 
 /**
  * The mutex controlling access to SPECIAL_INVERSES
@@ -649,7 +644,7 @@ void TransliteratorIDParser::registerSpecialInverse(const UnicodeString& target,
                                                     const UnicodeString& inverseTarget,
                                                     UBool bidirectional,
                                                     UErrorCode &status) {
-    umtx_initOnce(gSpecialInversesInitOnce, init, status);
+    init(status);
     if (U_FAILURE(status)) {
         return;
     }
@@ -856,10 +851,7 @@ TransliteratorIDParser::specsToSpecialInverse(const Specs& specs, UErrorCode &st
     if (0!=specs.source.caseCompare(ANY, 3, U_FOLD_CASE_DEFAULT)) {
         return NULL;
     }
-    umtx_initOnce(gSpecialInversesInitOnce, init, status);
-    if (U_FAILURE(status)) {
-        return NULL;
-    }
+    init(status);
 
     UnicodeString* inverseTarget;
 
@@ -902,18 +894,30 @@ Transliterator* TransliteratorIDParser::createBasicInstance(const UnicodeString&
 }
 
 /**
- * Initialize static memory. Called through umtx_initOnce only.
+ * Initialize static memory.
  */
-void U_CALLCONV TransliteratorIDParser::init(UErrorCode &status) {
-    U_ASSERT(SPECIAL_INVERSES == NULL);
-    ucln_i18n_registerCleanup(UCLN_I18N_TRANSLITERATOR, utrans_transliterator_cleanup);
+void TransliteratorIDParser::init(UErrorCode &status) {
+    if (SPECIAL_INVERSES != NULL) {
+        return;
+    }
 
-    SPECIAL_INVERSES = new Hashtable(TRUE, status);
-    if (SPECIAL_INVERSES == NULL) {
+    Hashtable* special_inverses = new Hashtable(TRUE, status);
+    // Null pointer check
+    if (special_inverses == NULL) {
     	status = U_MEMORY_ALLOCATION_ERROR;
     	return;
     }
-    SPECIAL_INVERSES->setValueDeleter(uprv_deleteUObject);
+    special_inverses->setValueDeleter(uprv_deleteUObject);
+
+    umtx_lock(&LOCK);
+    if (SPECIAL_INVERSES == NULL) {
+        SPECIAL_INVERSES = special_inverses;
+        special_inverses = NULL;
+    }
+    umtx_unlock(&LOCK);
+    delete special_inverses; /*null instance*/
+
+    ucln_i18n_registerCleanup(UCLN_I18N_TRANSLITERATOR, utrans_transliterator_cleanup);
 }
 
 /**
@@ -924,7 +928,6 @@ void TransliteratorIDParser::cleanup() {
         delete SPECIAL_INVERSES;
         SPECIAL_INVERSES = NULL;
     }
-    gSpecialInversesInitOnce.reset();
 }
 
 U_NAMESPACE_END

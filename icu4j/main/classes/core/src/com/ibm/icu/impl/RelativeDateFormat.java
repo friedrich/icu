@@ -1,30 +1,27 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2007-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2007-2013, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.impl;
 
 import java.text.FieldPosition;
 import java.text.ParsePosition;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Set;
+import java.util.TreeSet;
 
-import com.ibm.icu.lang.UCharacter;
-import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.DateFormat;
-import com.ibm.icu.text.DisplayContext;
 import com.ibm.icu.text.MessageFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
+import com.ibm.icu.util.UResourceBundleIterator;
 
 /**
  * @author srl
@@ -49,16 +46,13 @@ public class RelativeDateFormat extends DateFormat {
     }
 
     // copy c'tor?
-
+    
     /**
      * @param timeStyle The time style for the date and time.
      * @param dateStyle The date style for the date and time.
      * @param locale The locale for the date.
-     * @param cal The calendar to be used
      */
-    public RelativeDateFormat(int timeStyle, int dateStyle, ULocale locale, Calendar cal) {
-        calendar = cal;
-
+    public RelativeDateFormat(int timeStyle, int dateStyle, ULocale locale) {
         fLocale = locale;
         fTimeStyle = timeStyle;
         fDateStyle = dateStyle;
@@ -95,7 +89,7 @@ public class RelativeDateFormat extends DateFormat {
         loadDates();
         initializeCombinedFormat(calendar, fLocale);
     }
-
+    
     /**
      * serial version (generated)
      */
@@ -104,41 +98,16 @@ public class RelativeDateFormat extends DateFormat {
     /* (non-Javadoc)
      * @see com.ibm.icu.text.DateFormat#format(com.ibm.icu.util.Calendar, java.lang.StringBuffer, java.text.FieldPosition)
      */
-    @Override
     public StringBuffer format(Calendar cal, StringBuffer toAppendTo,
             FieldPosition fieldPosition) {
 
         String relativeDayString = null;
-        DisplayContext capitalizationContext = getContext(DisplayContext.Type.CAPITALIZATION);
-
         if (fDateStyle != DateFormat.NONE) {
             // calculate the difference, in days, between 'cal' and now.
             int dayDiff = dayDifference(cal);
 
             // look up string
             relativeDayString = getStringForDay(dayDiff);
-        }
-
-        if (fDateTimeFormat != null) {
-            if (relativeDayString != null && fDatePattern != null &&
-                    (fTimePattern == null || fCombinedFormat == null || combinedFormatHasDateAtStart) ) {
-                // capitalize relativeDayString according to context for relative, set formatter no context
-                if ( relativeDayString.length() > 0 && UCharacter.isLowerCase(relativeDayString.codePointAt(0)) &&
-                     (capitalizationContext == DisplayContext.CAPITALIZATION_FOR_BEGINNING_OF_SENTENCE ||
-                        (capitalizationContext == DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU && capitalizationOfRelativeUnitsForListOrMenu) ||
-                        (capitalizationContext == DisplayContext.CAPITALIZATION_FOR_STANDALONE && capitalizationOfRelativeUnitsForStandAlone) )) {
-                    if (capitalizationBrkIter == null) {
-                        // should only happen when deserializing, etc.
-                        capitalizationBrkIter = BreakIterator.getSentenceInstance(fLocale);
-                    }
-                    relativeDayString = UCharacter.toTitleCase(fLocale, relativeDayString, capitalizationBrkIter,
-                                    UCharacter.TITLECASE_NO_LOWERCASE | UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT);
-                }
-                fDateTimeFormat.setContext(DisplayContext.CAPITALIZATION_NONE);
-            } else {
-                // set our context for the formatter
-                fDateTimeFormat.setContext(capitalizationContext);
-            }
         }
 
         if (fDateTimeFormat != null && (fDatePattern != null || fTimePattern != null)) {
@@ -182,35 +151,14 @@ public class RelativeDateFormat extends DateFormat {
     /* (non-Javadoc)
      * @see com.ibm.icu.text.DateFormat#parse(java.lang.String, com.ibm.icu.util.Calendar, java.text.ParsePosition)
      */
-    @Override
     public void parse(String text, Calendar cal, ParsePosition pos) {
         throw new UnsupportedOperationException("Relative Date parse is not implemented yet");
-    }
-
-    /* (non-Javadoc)
-     * @see com.ibm.icu.text.DateFormat#setContext(com.ibm.icu.text.DisplayContext)
-     * Here we override the DateFormat implementation in order to
-     * lazily initialize relevant items
-     */
-    @Override
-    public void setContext(DisplayContext context) {
-        super.setContext(context);
-        if (!capitalizationInfoIsSet &&
-              (context==DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU || context==DisplayContext.CAPITALIZATION_FOR_STANDALONE)) {
-            initCapitalizationContextInfo(fLocale);
-            capitalizationInfoIsSet = true;
-        }
-        if (capitalizationBrkIter == null && (context==DisplayContext.CAPITALIZATION_FOR_BEGINNING_OF_SENTENCE ||
-              (context==DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU && capitalizationOfRelativeUnitsForListOrMenu) ||
-              (context==DisplayContext.CAPITALIZATION_FOR_STANDALONE && capitalizationOfRelativeUnitsForStandAlone) )) {
-            capitalizationBrkIter = BreakIterator.getSentenceInstance(fLocale);
-        }
     }
 
     private DateFormat fDateFormat; // keep for serialization compatibility
     @SuppressWarnings("unused")
     private DateFormat fTimeFormat; // now unused, keep for serialization compatibility
-    private MessageFormat fCombinedFormat; //  the {0} {1} format.
+    private MessageFormat fCombinedFormat; //  the {0} {1} format. 
     private SimpleDateFormat fDateTimeFormat = null; // the held date/time formatter
     private String fDatePattern = null;
     private String fTimePattern = null;
@@ -218,90 +166,58 @@ public class RelativeDateFormat extends DateFormat {
     int fDateStyle;
     int fTimeStyle;
     ULocale  fLocale;
-
-    private transient List<URelativeString> fDates = null;
-
-    private boolean combinedFormatHasDateAtStart = false;
-    private boolean capitalizationInfoIsSet = false;
-    private boolean capitalizationOfRelativeUnitsForListOrMenu = false;
-    private boolean capitalizationOfRelativeUnitsForStandAlone = false;
-    private transient BreakIterator capitalizationBrkIter = null;
-
+    
+    private transient URelativeString fDates[] = null; // array of strings
+    
+    
     /**
      * Get the string at a specific offset.
-     * @param day day offset ( -1, 0, 1, etc.. ). Does not require sorting by offset.
+     * @param day day offset ( -1, 0, 1, etc.. )
      * @return the string, or NULL if none at that location.
      */
     private String getStringForDay(int day) {
         if(fDates == null) {
             loadDates();
         }
-        for(URelativeString dayItem : fDates) {
-            if(dayItem.offset == day) {
-                return dayItem.string;
+        for(int i=0;i<fDates.length;i++) {
+            if(fDates[i].offset == day) {
+                return fDates[i].string;
             }
         }
         return null;
     }
-
-    // Sink to get "fields/day/relative".
-    private final class RelDateFmtDataSink extends UResource.Sink {
-
-        @Override
-        public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
-            if (value.getType() == ICUResourceBundle.ALIAS) {
-                return;
-            }
-
-            UResource.Table table = value.getTable();
-            for (int i = 0; table.getKeyAndValue(i, key, value); ++i) {
-
-                int keyOffset;
-                try {
-                    keyOffset = Integer.parseInt(key.toString());
-                }
-                catch (NumberFormatException nfe) {
-                    // Flag the error?
-                    return;
-                }
-                // Check if already set.
-                if (getStringForDay(keyOffset) == null) {
-                    URelativeString newDayInfo = new URelativeString(keyOffset, value.getString());
-                    fDates.add(newDayInfo);
-                }
-            }
-        }
-    }
-
-    /**
+    
+    /** 
      * Load the Date string array
      */
     private synchronized void loadDates() {
-        ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, fLocale);
-
-        // Use sink mechanism to traverse data structure.
-        fDates = new ArrayList<URelativeString>();
-        RelDateFmtDataSink sink = new RelDateFmtDataSink();
-        rb.getAllItemsWithFallback("fields/day/relative", sink);
-    }
-
-    /**
-     * Set capitalizationOfRelativeUnitsForListOrMenu, capitalizationOfRelativeUnitsForStandAlone
-     */
-    private void initCapitalizationContextInfo(ULocale locale) {
-        ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, locale);
-        try {
-            ICUResourceBundle rdb = rb.getWithFallback("contextTransforms/relative");
-            int[] intVector = rdb.getIntVector();
-            if (intVector.length >= 2) {
-                capitalizationOfRelativeUnitsForListOrMenu = (intVector[0] != 0);
-                capitalizationOfRelativeUnitsForStandAlone = (intVector[1] != 0);
+        ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, fLocale);
+        ICUResourceBundle rdb = rb.getWithFallback("fields/day/relative");
+        
+        Set<URelativeString> datesSet = new TreeSet<URelativeString>(new Comparator<URelativeString>() { 
+            public int compare(URelativeString r1, URelativeString r2) {
+                
+                if(r1.offset == r2.offset) {
+                    return 0;
+                } else if(r1.offset < r2.offset) {
+                    return -1;
+                } else {
+                    return 1;
+                }
             }
-        } catch (MissingResourceException e) {
-            // use default
+        }) ;
+        
+        for(UResourceBundleIterator i = rdb.getIterator();i.hasNext();) {
+            UResourceBundle line = i.next();
+            
+            String k = line.getKey();
+            String v = line.getString();
+            URelativeString rs = new URelativeString(k,v);
+            datesSet.add(rs);
         }
+        fDates = datesSet.toArray(new URelativeString[0]);
     }
-
+    
     /**
      * @return the number of days in "until-now"
      */
@@ -313,7 +229,7 @@ public class RelativeDateFormat extends DateFormat {
         int dayDiff = until.get(Calendar.JULIAN_DAY) - nowCal.get(Calendar.JULIAN_DAY);
         return dayDiff;
     }
-
+    
     /**
      * initializes fCalendar from parameters.  Returns fCalendar as a convenience.
      * @param zone  Zone to be adopted, or NULL for TimeZone::createDefault().
@@ -333,38 +249,41 @@ public class RelativeDateFormat extends DateFormat {
     }
 
     private MessageFormat initializeCombinedFormat(Calendar cal, ULocale locale) {
-        String pattern;
-        ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-            ICUData.ICU_BASE_NAME, locale);
-        String resourcePath = "calendar/" + cal.getType() + "/DateTimePatterns";
-        ICUResourceBundle patternsRb= rb.findWithFallback(resourcePath);
-        if (patternsRb == null && !cal.getType().equals("gregorian")) {
-            // Try again with gregorian, if not already attempted.
-            patternsRb = rb.findWithFallback("calendar/gregorian/DateTimePatterns");
-        }
-
-        if (patternsRb == null || patternsRb.getSize() < 9) {
-            // Undefined or too few elements.
-            pattern = "{1} {0}";
-        } else {
-            int glueIndex = 8;
-            if (patternsRb.getSize() >= 13) {
-              if (fDateStyle >= DateFormat.FULL && fDateStyle <= DateFormat.SHORT) {
-                  glueIndex += fDateStyle + 1;
-              } else
-                  if (fDateStyle >= DateFormat.RELATIVE_FULL &&
-                      fDateStyle <= DateFormat.RELATIVE_SHORT) {
-                      glueIndex += fDateStyle + 1 - DateFormat.RELATIVE;
-                  }
+        String pattern = "{1} {0}";
+        try {
+            CalendarData calData = new CalendarData(locale, cal.getType());
+            String[] patterns = calData.getDateTimePatterns();
+            if (patterns != null && patterns.length >= 9) {
+                int glueIndex = 8;
+                if (patterns.length >= 13)
+                {
+                    switch (fDateStyle)
+                    {
+                        case DateFormat.RELATIVE_FULL:
+                        case DateFormat.FULL:
+                            glueIndex += (DateFormat.FULL + 1);
+                            break;
+                        case DateFormat.RELATIVE_LONG:
+                        case DateFormat.LONG:
+                            glueIndex += (DateFormat.LONG +1);
+                            break;
+                        case DateFormat.RELATIVE_MEDIUM:
+                        case DateFormat.MEDIUM:
+                            glueIndex += (DateFormat.MEDIUM +1);
+                            break;
+                        case DateFormat.RELATIVE_SHORT:
+                        case DateFormat.SHORT:
+                            glueIndex += (DateFormat.SHORT + 1);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                pattern = patterns[glueIndex];
             }
-            int elementType = patternsRb.get(glueIndex).getType();
-            if (elementType == UResourceBundle.ARRAY) {
-                pattern = patternsRb.get(glueIndex).getString(0);
-            } else {
-                pattern = patternsRb.getString(glueIndex);
-            }
+        } catch (MissingResourceException e) {
+            // use default
         }
-        combinedFormatHasDateAtStart = pattern.startsWith("{1}");
         fCombinedFormat = new MessageFormat(pattern, locale);
         return fCombinedFormat;
     }

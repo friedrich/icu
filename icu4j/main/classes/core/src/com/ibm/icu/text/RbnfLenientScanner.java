@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2009-2014, International Business Machines Corporation and    *
+ * Copyright (C) 2009-2012, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -12,9 +10,8 @@ package com.ibm.icu.text;
 /**
  * Used by RBNF to leniently parse a string.
  *
- * @deprecated ICU 54
+ * @stable ICU 4.4
  */
-@Deprecated
 public interface RbnfLenientScanner {
     /**
      * Returns true if a string consists entirely of ignorable
@@ -22,9 +19,8 @@ public interface RbnfLenientScanner {
      * @param s The string to test
      * @return true if the string is empty or consists entirely of
      * characters that are ignorable.
-     * @deprecated ICU 54
+     * @stable ICU 4.4
      */
-    @Deprecated
     boolean allIgnorable(String s);
 
     /**
@@ -37,9 +33,8 @@ public interface RbnfLenientScanner {
      * @param str The string being tested
      * @param prefix The text we're hoping to see at the beginning of "str"
      * @return the number of characters in "str" that were matched
-     * @deprecated ICU 54
+     * @stable ICU 4.4
      */
-    @Deprecated
     int prefixLength(String str, String prefix);
 
     /**
@@ -53,8 +48,7 @@ public interface RbnfLenientScanner {
      * of the match, or -1 if there was no match.  Element 1 is the
      * number of characters in "str" that matched (which isn't necessarily
      * the same as the length of "key")
-     * @deprecated ICU 54
+     * @stable ICU 4.4
      */
-    @Deprecated
     int[] findText(String str, String key, int startingAt);
 }

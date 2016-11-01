@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2002-2014, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2002-2010, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 
@@ -16,14 +14,15 @@
  
  import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
  
  public class CollationSpanishTest extends TestFmwk {
+    public static void main(String[] args) throws Exception {
+        new CollationSpanishTest().run(args);
+    }
+    
     private static char[][] testSourceCases = {
         {0x61, 0x6c, 0x69, 0x61, 0x73},
         {0x45, 0x6c, 0x6c, 0x69, 0x6f, 0x74},
@@ -66,14 +65,11 @@ import com.ibm.icu.text.Collator;
     private Collator myCollation = null;
     
     public CollationSpanishTest() {
+
     }
-    
-    @Before
-    public void init() throws Exception {
+    protected void init()throws Exception{
         myCollation = Collator.getInstance(new Locale("es", "ES"));
     }
-    
-    @Test
     public void TestTertiary(){
         int i = 0;
         myCollation.setStrength(Collator.TERTIARY);
@@ -82,7 +78,6 @@ import com.ibm.icu.text.Collator;
         }
     }
     
-    @Test
     public void TestPrimary(){
         int i;
         myCollation.setStrength(Collator.PRIMARY);
@@ -124,8 +119,8 @@ import com.ibm.icu.text.Collator;
             
             String sExpect = new String("");
             String sResult = new String("");
-            sResult = CollationTest.appendCompareResult(compareResult, sResult);
-            sExpect = CollationTest.appendCompareResult(expectedResult, sExpect);
+            sResult = appendCompareResult(compareResult, sResult);
+            sExpect = appendCompareResult(expectedResult, sExpect);
             if (ok1) {
                 logln(msg1 + source + msg2 + target + msg3 + sResult);
             } else {
@@ -135,21 +130,21 @@ import com.ibm.icu.text.Collator;
             msg1 = ok2 ? "Ok: key(\"" : "FAIL: key(\"";
             msg2 = "\").compareTo(key(\"";
             msg3 = "\")) returned ";
-            sResult = CollationTest.appendCompareResult(keyResult, sResult);
+            sResult = appendCompareResult(keyResult, sResult);
             if (ok2) {
                 logln(msg1 + source + msg2 + target + msg3 + sResult);
             } else {
                 errln(msg1 + source + msg2 + target + msg3 + sResult + msg4 + sExpect);
                 msg1 = "  ";
                 msg2 = " vs. ";
-                errln(msg1 + CollationTest.prettify(sourceKey) + msg2 + CollationTest.prettify(targetKey));
+                errln(msg1 + prettify(sourceKey) + msg2 + prettify(targetKey));
             }
             
             msg1 = ok3 ? "Ok: incCompare(\"" : "FAIL: incCompare(\"";
             msg2 = "\", \"";
             msg3 = "\") returned ";
 
-            sResult = CollationTest.appendCompareResult(incResult, sResult);
+            sResult = appendCompareResult(incResult, sResult);
 
             if (ok3) {
                 logln(msg1 + source + msg2 + target + msg3 + sResult);
@@ -157,5 +152,32 @@ import com.ibm.icu.text.Collator;
                 errln(msg1 + source + msg2 + target + msg3 + sResult + msg4 + sExpect);
             }                
         }
+    }
+    
+    private String appendCompareResult(int result, String target){
+        if (result == -1) {
+            target += "LESS";
+        } else if (result == 0) {
+            target += "EQUAL";
+        } else if (result == 1) {
+            target += "GREATER";
+        } else {
+            String huh = "?";
+            target += huh + result;
+        }
+        return target;
+    }
+    
+    String prettify(CollationKey sourceKey) {
+        int i;
+        byte[] bytes= sourceKey.toByteArray();
+        String target = "[";
+    
+        for (i = 0; i < bytes.length; i++) {
+            target += Integer.toHexString(bytes[i]);
+            target += " ";
+        }
+        target += "]";
+        return target;
     }
 }

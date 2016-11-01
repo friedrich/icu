@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2009-2016 International Business Machines
+# Copyright (c) 2009-2013 International Business Machines
 # Corporation and others. All Rights Reserved.
 #
 #   file name:  preparseucd.py
@@ -40,26 +40,37 @@ import sys
 _ucd_version = "?"
 _copyright = ""
 _terms_of_use = ""
-_current_year = datetime.date.today().strftime("%Y")
 
 # ISO 15924 script codes --------------------------------------------------- ***
 
 # Script codes from ISO 15924 http://www.unicode.org/iso15924/codechanges.html
 # that are not yet in the UCD.
 _scripts_only_in_iso15924 = (
-    "Afak", "Blis", "Cirt", "Cyrs",
+    "Blis", "Cirt", "Cyrs",
     "Egyd", "Egyh", "Geok",
-    "Hanb", "Hans", "Hant",
-    "Inds", "Jamo", "Jpan", "Jurc", "Kore", "Kpel", "Latf", "Latg", "Loma",
-    "Maya", "Moon", "Nkgb", "Nshu", "Phlv", "Roro",
-    "Sara", "Syre", "Syrj", "Syrn",
-    "Teng", "Visp", "Wole", "Zmth", "Zsye", "Zsym", "Zxxx"
+    "Hans", "Hant", "Hmng", "Hung",
+    "Inds", "Jpan", "Latf", "Latg", "Lina",
+    "Maya", "Moon", "Perm", "Roro",
+    "Sara", "Sgnw", "Syre", "Syrj", "Syrn",
+    "Teng", "Visp", "Zxxx",
+
+    "Kore", "Mani", "Phlp", "Phlv", "Zmth", "Zsym",
+
+    "Nkgb",
+
+    "Bass", "Dupl", "Elba", "Gran",
+    "Kpel", "Loma", "Mend", "Narb", "Nbat",
+    "Palm", "Sind", "Wara",
+
+    "Afak", "Jurc", "Mroo", "Nshu", "Tang", "Wole",
+
+    "Hluw", "Khoj", "Tirh",
+
+    "Aghb", "Mahj"
 )
 
 # Properties --------------------------------------------------------------- ***
 
-# Properties that we do not want to store in ppucd.txt.
-# Not a frozenset so that we can add aliases for simpler subsequent testing.
 _ignored_properties = set((
   # Other_Xyz only contribute to Xyz, store only the latter.
   "OAlpha",
@@ -95,16 +106,6 @@ _ignored_properties = set((
   "cjkIRG_USource",
   "cjkIRG_VSource",
   "cjkRSUnicode"
-))
-
-# These properties (short names) map code points to
-# strings or other unusual values (property types String or Miscellaneous)
-# that cannot be block-compressed (or would be confusing).
-_uncompressible_props = frozenset((
-  "bmg", "bpb", "cf", "Conditional_Case_Mappings", "dm", "FC_NFKC",
-  "isc", "lc", "na", "na1", "Name_Alias", "NFKC_CF",
-  # scx is block-compressible.
-  "scf", "slc", "stc", "suc", "tc", "Turkic_Case_Folding", "uc"
 ))
 
 # Dictionary of properties.
@@ -362,7 +363,6 @@ def ReadUCDLines(in_file, want_ranges=True, want_other=False,
   Strips comments, ignores empty and all-comment lines.
   Returns a tuple (type, line, ...).
   """
-  global _copyright, _terms_of_use
   for line in in_file:
     line = line.strip()
     if not line: continue
@@ -375,11 +375,6 @@ def ReadUCDLines(in_file, want_ranges=True, want_other=False,
           yield ("missing", line, fields)
           continue
       if want_comments: yield ("comment", line)
-      if line.startswith("# Copyright"):
-        if not _copyright and _current_year in line:
-          _copyright = line
-      elif "terms of use" in line and not _terms_of_use:
-        _terms_of_use = line
       continue
     comment_start = line.find("#")  # inline comment
     if comment_start >= 0:
@@ -435,7 +430,7 @@ _ucd_version_re = re.compile("# *PropertyAliases" +
                              "\\.txt")
 
 def ParsePropertyAliases(in_file):
-  global _ucd_version
+  global _copyright, _terms_of_use, _ucd_version
   prop_type_nulls = {
     "Binary": False,
     "Catalog": "??",  # Must be specified, e.g., in @missing line.
@@ -451,6 +446,10 @@ def ParsePropertyAliases(in_file):
       match = _ucd_version_re.match(line)
       if match:
         _ucd_version = match.group(1)
+      elif line.startswith("# Copyright"):
+        _copyright = line
+      elif "terms of use" in line:
+        _terms_of_use = line
       else:
         words = line[1:].lstrip().split()
         if len(words) == 2 and words[1] == "Properties":
@@ -528,11 +527,6 @@ def ParsePropertyAliases(in_file):
   AddBinaryProperty("nfcinert", "NFC_Inert")
   AddBinaryProperty("nfkcinert", "NFKC_Inert")
   AddBinaryProperty("segstart", "Segment_Starter")
-  # http://www.unicode.org/reports/tr51/#Emoji_Properties
-  AddBinaryProperty("Emoji", "Emoji")
-  AddBinaryProperty("Emoji_Presentation", "Emoji_Presentation")
-  AddBinaryProperty("Emoji_Modifier", "Emoji_Modifier")
-  AddBinaryProperty("Emoji_Modifier_Base", "Emoji_Modifier_Base")
   # C/POSIX character classes that do not have Unicode property [value] aliases.
   # See uchar.h.
   AddPOSIXBinaryProperty("alnum")
@@ -666,9 +660,7 @@ def ParseUnicodeData(in_file):
         range_first = -1
         # Remember algorithmic name ranges.
         if "Ideograph" in name:
-          prefix = "CJK UNIFIED IDEOGRAPH-"
-          if c == 0x17000: prefix = "TANGUT IDEOGRAPH-"
-          _alg_names_ranges.append([c, end, "han", prefix])
+          _alg_names_ranges.append([c, end, "han", "CJK UNIFIED IDEOGRAPH-"])
         elif name == "Hangul Syllable":
           _alg_names_ranges.append([c, end, "hangul"])
         name = ""
@@ -699,23 +691,6 @@ def ParseUnicodeData(in_file):
     if (decimal and decimal != nv) or (digit and digit != nv):
       raise SyntaxError("error: numeric values differ at\n  %s\n" % line)
     if nv:
-      # Map improper fractions to proper ones.
-      # U+109F7 MEROITIC CURSIVE FRACTION TWO TWELFTHS
-      # .. U+109FF MEROITIC CURSIVE FRACTION TEN TWELFTHS
-      if nv == "2/12":
-        nv = "1/6"
-      elif nv == "3/12":
-        nv = "1/4"
-      elif nv == "4/12":
-        nv = "1/3"
-      elif nv == "6/12":
-        nv = "1/2"
-      elif nv == "8/12":
-        nv = "2/3"
-      elif nv == "9/12":
-        nv = "3/4"
-      elif nv == "10/12":
-        nv = "5/6"
       props["nv"] = nv
       props["nt"] = "De" if decimal else "Di" if digit else "Nu"
     if fields[9] == "Y": props["Bidi_M"] = True
@@ -809,7 +784,7 @@ def ParseDerivedJoiningGroup(in_file): ParseOneProperty(in_file, "jg")
 def ParseDerivedJoiningType(in_file): ParseOneProperty(in_file, "jt")
 def ParseEastAsianWidth(in_file): ParseOneProperty(in_file, "ea")
 def ParseGraphemeBreakProperty(in_file): ParseOneProperty(in_file, "GCB")
-def ParseIndicPositionalCategory(in_file): ParseOneProperty(in_file, "InPC")
+def ParseIndicMatraCategory(in_file): ParseOneProperty(in_file, "InMC")
 def ParseIndicSyllabicCategory(in_file): ParseOneProperty(in_file, "InSC")
 def ParseLineBreak(in_file): ParseOneProperty(in_file, "lb")
 def ParseScripts(in_file): ParseOneProperty(in_file, "sc")
@@ -860,8 +835,8 @@ def NeedToSetNumericValue(nv, start, end, c_props):
     assert "nt" not in c_props
     return True
   if nv != c_nv:
-    raise ValueError(("UnicodeData.txt has nv=%s for %04lX..%04lX " +
-                     "but DerivedNumericValues.txt has nv=%s") %
+    raise ValueError("UnicodeData.txt has nv=%s for %04lX..%04lX " +
+                     "but DerivedNumericValues.txt has nv=%s" %
                      (c_nv, start, end, nv))
   return False
 
@@ -956,32 +931,31 @@ def CompactBlock(b, i):
   assert b[0] == _starts[i]
   orig_i = i
   # Count the number of occurrences of each property's value in this block.
-  # To minimize the output, count the number of ranges,
-  # not the number of code points.
-  num_ranges_so_far = 0
+  num_cp_so_far = 0
   prop_counters = {}
   while True:
     start = _starts[i]
     if start > b[1]: break
+    num_cp_in_this_range = _starts[i + 1] - start
     props = _props[i]
     for (pname, value) in props.iteritems():
       if pname in prop_counters:
         counter = prop_counters[pname]
       else:
-        counter = {_null_or_defaults[pname]: num_ranges_so_far}
+        counter = {_null_or_defaults[pname]: num_cp_so_far}
         prop_counters[pname] = counter
       if value in counter:
-        counter[value] += 1
+        counter[value] += num_cp_in_this_range
       else:
-        counter[value] = 1
+        counter[value] = num_cp_in_this_range
     # Also count default values for properties that do not occur in a range.
     for pname in prop_counters:
       if pname not in props:
         counter = prop_counters[pname]
         value = _null_or_defaults[pname]
-        counter[value] += 1
-    num_ranges_so_far += 1
-    # Invariant: For each counter, the sum of counts must equal num_ranges_so_far.
+        counter[value] += num_cp_in_this_range
+    num_cp_so_far += num_cp_in_this_range
+    # Invariant: For each counter, the sum of counts must equal num_cp_so_far.
     i += 1
   # For each property that occurs within this block,
   # set the most common value as a block property value.
@@ -997,12 +971,7 @@ def CompactBlock(b, i):
       if count == 1: num_unique += 1
     if max_value != _null_or_defaults[pname]:
       # Avoid picking randomly among several unique values.
-      # Do not compress uncompressible properties,
-      # with an exception for many empty-string values in a block
-      # (NFCK_CF='' for tags and variation selectors).
-      if ((max_count > 1 or num_unique == 1) and
-          ((pname not in _uncompressible_props) or
-            (max_value == '' and max_count >= 12))):
+      if (max_count > 1 or num_unique == 1):
         b_props[pname] = max_value
   # For each range and property, remove the default+block value
   # but set the default value if that property was not set
@@ -1083,28 +1052,9 @@ def WriteFieldsRangeProps(fields, start, end, props, out_file):
   out_file.write("\n")
 
 
-def EscapeNonASCII(s):
-  i = 0
-  while i < len(s):
-    c = ord(s[i])
-    if c <= 0x7f:
-      i = i + 1
-    else:
-      if c <= 0xffff:
-        esc = u"\\u%04X" % c
-      else:
-        esc = u"\\U%08X" % c
-      s = s[:i] + esc + s[i+1:]
-      i = i + len(esc)
-  return s
-
-
 def WritePreparsedUCD(out_file):
-  global _copyright, _terms_of_use
   out_file.write("# Preparsed UCD generated by ICU preparseucd.py\n");
-  if not _copyright:
-    _copyright = "# Copyright (c) 1991-" + _current_year + " Unicode, Inc."
-  out_file.write(_copyright + "\n")
+  if _copyright: out_file.write(_copyright + "\n")
   if _terms_of_use: out_file.write(_terms_of_use + "\n")
   out_file.write("ucd;%s\n\n" % _ucd_version)
   # Sort property names (props keys) by their normalized forms
@@ -1160,7 +1110,7 @@ def WritePreparsedUCD(out_file):
     # NamesList h1 heading (for [most of] a block).
     if i_h1 < len(_h1) and start == _h1[i_h1][0]:
       h = _h1[i_h1]
-      out_file.write("# %04lX..%04lX %s\n" % (h[0], h[1], EscapeNonASCII(h[2])))
+      out_file.write("# %04lX..%04lX %s\n" % (h[0], h[1], h[2]))
       i_h1 += 1
     # Algorithmic-names range.
     if i_alg < len(_alg_names_ranges) and start == _alg_names_ranges[i_alg][0]:
@@ -1173,7 +1123,7 @@ def WritePreparsedUCD(out_file):
       i_alg += 1
     # NamesList h2 heading.
     if i_h2 < len(_h2) and start == _h2[i_h2][0]:
-      out_file.write("# %s\n" % EscapeNonASCII(_h2[i_h2][1]))
+      out_file.write("# %s\n" % (_h2[i_h2][1]))
       i_h2 += 1
     # Code point/range data.
     props = _props[i]
@@ -1237,10 +1187,10 @@ def HasOneWayMapping(c):
 
 
 def WriteNorm2NFCTextFile(path):
-  global _current_year
+  year = datetime.date.today().strftime("%Y")
   with open(os.path.join(path, "nfc.txt"), "w") as out_file:
     out_file.write(
-        """# Copyright (C) 1999-""" + _current_year +
+        """# Copyright (C) 1999-""" + year +
         """, International Business Machines
 # Corporation and others.  All Rights Reserved.
 #
@@ -1269,10 +1219,10 @@ def WriteNorm2NFCTextFile(path):
 
 
 def WriteNorm2NFKCTextFile(path):
-  global _current_year
+  year = datetime.date.today().strftime("%Y")
   with open(os.path.join(path, "nfkc.txt"), "w") as out_file:
     out_file.write(
-        """# Copyright (C) 1999-""" + _current_year +
+        """# Copyright (C) 1999-""" + year +
         """, International Business Machines
 # Corporation and others.  All Rights Reserved.
 #
@@ -1306,11 +1256,11 @@ def WriteNorm2NFKCTextFile(path):
 
 
 def WriteNorm2NFKC_CFTextFile(path):
-  global _current_year
+  year = datetime.date.today().strftime("%Y")
   with open(os.path.join(path, "nfkc_cf.txt"), "w") as out_file:
     out_file.write(
         """# Unicode Character Database
-# Copyright (c) 1991-""" + _current_year + """ Unicode, Inc.
+# Copyright (c) 1991-""" + year + """ Unicode, Inc.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 # For documentation, see http://www.unicode.org/reports/tr44/
 #
@@ -1559,10 +1509,9 @@ _files = {
   "DerivedNormalizationProps.txt": (CopyAndStrip, ParseNamedProperties),
   "DerivedNumericValues.txt": (DontCopy, ParseDerivedNumericValues),
   "EastAsianWidth.txt": (DontCopy, ParseEastAsianWidth),
-  "emoji-data.txt": (DontCopy, ParseNamedProperties),
   "GraphemeBreakProperty.txt": (DontCopy, ParseGraphemeBreakProperty),
   "GraphemeBreakTest.txt": (PrependBOM, "testdata"),
-  "IndicPositionalCategory.txt": (DontCopy, ParseIndicPositionalCategory),
+  "IndicMatraCategory.txt": (DontCopy, ParseIndicMatraCategory),
   "IndicSyllabicCategory.txt": (DontCopy, ParseIndicSyllabicCategory),
   "LineBreak.txt": (DontCopy, ParseLineBreak),
   "LineBreakTest.txt": (PrependBOM, "testdata"),
@@ -2009,10 +1958,10 @@ def CheckPNamesData():
 
 
 def WritePNamesDataHeader(out_path):
-  global _current_year
+  year = datetime.date.today().strftime("%Y")
   with open(out_path, "w") as out_file:
     out_file.write("""/**
- * Copyright (C) 2002-""" + _current_year +
+ * Copyright (C) 2002-""" + year +
 """, International Business Machines Corporation and
  * others. All Rights Reserved.
  *
@@ -2131,11 +2080,8 @@ def main():
   # Optimize block vs. cp properties.
   CompactBlocks()
   # Write the ppucd.txt output file.
-  # Use US-ASCII so that ICU tests can parse it in the platform charset,
-  # which may be EBCDIC.
-  # Fix up non-ASCII data (NamesList.txt headings) to fit.
   out_path = os.path.join(unidata_path, "ppucd.txt")
-  with codecs.open(out_path, "w", "US-ASCII") as out_file:
+  with open(out_path, "w") as out_file:
     WritePreparsedUCD(out_file)
     out_file.flush()
 

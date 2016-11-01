@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2007-2016, International Business Machines Corporation and
-* others. All Rights Reserved.
+* Copyright (C) 2007-2013, International Business Machines Corporation and
+* others. All Rights Reserved.                                                *
 *******************************************************************************
 *
 * File DTPTNGEN.H
@@ -11,11 +9,10 @@
 *******************************************************************************
 */
 
+#include "uvector.h"
+
 #ifndef __DTPTNGEN_IMPL_H__
 #define __DTPTNGEN_IMPL_H__
-
-#include "unicode/udatpg.h"
-#include "uvector.h"
 
 // TODO(claireho): Split off Builder class.
 // TODO(claireho): If splitting off Builder class: As subclass or independent?
@@ -41,7 +38,6 @@
 #define DOT               ((UChar)0x002E)
 #define COLON             ((UChar)0x003A)
 #define CAP_A             ((UChar)0x0041)
-#define CAP_B             ((UChar)0x0042)
 #define CAP_C             ((UChar)0x0043)
 #define CAP_D             ((UChar)0x0044)
 #define CAP_E             ((UChar)0x0045)
@@ -64,7 +60,6 @@
 #define CAP_Z             ((UChar)0x005A)
 #define LOWLINE           ((UChar)0x005F)
 #define LOW_A             ((UChar)0x0061)
-#define LOW_B             ((UChar)0x0062)
 #define LOW_C             ((UChar)0x0063)
 #define LOW_D             ((UChar)0x0064)
 #define LOW_E             ((UChar)0x0065)
@@ -114,56 +109,17 @@ typedef struct dtTypeElem {
     int16_t                weight;
 }dtTypeElem;
 
-// A compact storage mechanism for skeleton field strings.  Several dozen of these will be created
-// for a typical DateTimePatternGenerator instance.
-class SkeletonFields : public UMemory {
-public:
-    SkeletonFields();
-    void clear();
-    void copyFrom(const SkeletonFields& other);
-    void clearField(int32_t field);
-    UChar getFieldChar(int32_t field) const;
-    int32_t getFieldLength(int32_t field) const;
-    void populate(int32_t field, const UnicodeString& value);
-    void populate(int32_t field, UChar repeatChar, int32_t repeatCount);
-    UBool isFieldEmpty(int32_t field) const;
-    UnicodeString& appendTo(UnicodeString& string) const;
-    UnicodeString& appendFieldTo(int32_t field, UnicodeString& string) const;
-    UChar getFirstChar() const;
-    inline UBool operator==(const SkeletonFields& other) const;
-    inline UBool operator!=(const SkeletonFields& other) const;
-
-private:
-    int8_t chars[UDATPG_FIELD_COUNT];
-    int8_t lengths[UDATPG_FIELD_COUNT];
-};
-
-inline UBool SkeletonFields::operator==(const SkeletonFields& other) const {
-    return (uprv_memcmp(chars, other.chars, sizeof(chars)) == 0
-        && uprv_memcmp(lengths, other.lengths, sizeof(lengths)) == 0);
-}
-
-inline UBool SkeletonFields::operator!=(const SkeletonFields& other) const {
-    return (! operator==(other));
-}
-
 class PtnSkeleton : public UMemory {
 public:
     int32_t type[UDATPG_FIELD_COUNT];
-    SkeletonFields original;
-    SkeletonFields baseOriginal;
+    UnicodeString original[UDATPG_FIELD_COUNT];
+    UnicodeString baseOriginal[UDATPG_FIELD_COUNT];
 
     PtnSkeleton();
     PtnSkeleton(const PtnSkeleton& other);
-    void copyFrom(const PtnSkeleton& other);
-    void clear();
-    UBool equals(const PtnSkeleton& other) const;
-    UnicodeString getSkeleton() const;
-    UnicodeString getBaseSkeleton() const;
-    UChar getFirstChar() const;
-
-    // TODO: Why is this virtual, as well as the other destructors in this file? We don't want
-    // vtables when we don't use class objects polymorphically.
+    UBool equals(const PtnSkeleton& other);
+    UnicodeString getSkeleton();
+    UnicodeString getBaseSkeleton();
     virtual ~PtnSkeleton();
 };
 
@@ -189,11 +145,12 @@ public:
     FormatParser();
     virtual ~FormatParser();
     void set(const UnicodeString& patternString);
+    UBool isQuoteLiteral(const UnicodeString& s) const;
     void getQuoteLiteral(UnicodeString& quote, int32_t *itemIndex);
+    int32_t getCanonicalIndex(const UnicodeString& s) { return getCanonicalIndex(s, TRUE); }
+    int32_t getCanonicalIndex(const UnicodeString& s, UBool strict);
     UBool isPatternSeparator(UnicodeString& field);
-    static UBool isQuoteLiteral(const UnicodeString& s);
-    static int32_t getCanonicalIndex(const UnicodeString& s) { return getCanonicalIndex(s, TRUE); }
-    static int32_t getCanonicalIndex(const UnicodeString& s, UBool strict);
+    void setFilter(UErrorCode &status);
 
 private:
    typedef enum TokenStatus {
@@ -224,7 +181,7 @@ class DateTimeMatcher: public UMemory {
 public:
     PtnSkeleton skeleton;
 
-    void getBasePattern(UnicodeString& basePattern);
+    void getBasePattern(UnicodeString &basePattern);
     UnicodeString getPattern();
     void set(const UnicodeString& pattern, FormatParser* fp);
     void set(const UnicodeString& pattern, FormatParser* fp, PtnSkeleton& skeleton);

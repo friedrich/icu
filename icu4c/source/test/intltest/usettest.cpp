@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ********************************************************************************
-*   Copyright (C) 1999-2016 International Business Machines Corporation and
+*   Copyright (C) 1999-2013 International Business Machines Corporation and
 *   others. All Rights Reserved.
 ********************************************************************************
 *   Date        Name        Description
@@ -24,8 +22,9 @@
 #include "unicode/parsepos.h"
 #include "unicode/symtable.h"
 #include "unicode/uversion.h"
-#include "cmemory.h"
 #include "hash.h"
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 #define TEST_ASSERT_SUCCESS(status) {if (U_FAILURE(status)) { \
     dataerrln("fail in file \"%s\", line %d: \"%s\"", __FILE__, __LINE__, \
@@ -93,7 +92,6 @@ UnicodeSetTest::runIndexedTest(int32_t index, UBool exec,
         CASE(21,TestFreezable);
         CASE(22,TestSpan);
         CASE(23,TestStringSpan);
-        CASE(24,TestUCAUnsafeBackwards);
         default: name = ""; break;
     }
 }
@@ -693,7 +691,7 @@ void UnicodeSetTest::TestAPI() {
     if (set != exp) { errln("FAIL: retain('s')"); return; }
 
     uint16_t buf[32];
-    int32_t slen = set.serialize(buf, UPRV_LENGTHOF(buf), status);
+    int32_t slen = set.serialize(buf, sizeof(buf)/sizeof(buf[0]), status);
     if (U_FAILURE(status)) { errln("FAIL: serialize"); return; }
     if (slen != 3 || buf[0] != 2 || buf[1] != 0x73 || buf[2] != 0x74) {
         errln("FAIL: serialize");
@@ -1056,11 +1054,11 @@ void UnicodeSetTest::TestPropertySet() {
         // U+FDF2 has Script=Arabic and also Arab in its Script_Extensions,
         // so scx-sc is missing U+FDF2.
         "[[:Script_Extensions=Arabic:]-[:Arab:]]",
-        "\\u0640\\u064B\\u0650\\u0655",
+        "\\u0640\\u064B\\u0650\\u0655\\uFDFD",
         "\\uFDF2"
     };
 
-    static const int32_t DATA_LEN = UPRV_LENGTHOF(DATA);
+    static const int32_t DATA_LEN = sizeof(DATA)/sizeof(DATA[0]);
 
     for (int32_t i=0; i<DATA_LEN; i+=3) {  
         expectContainment(UnicodeString(DATA[i], -1, US_INV), CharsToUnicodeString(DATA[i+1]),
@@ -1464,7 +1462,7 @@ void UnicodeSetTest::TestInvalidCodePoint() {
         (UChar32)-1, 8,           0, 8,
         8, 0x110000,              8, 0x10FFFF
     };
-    const int32_t DATA_LENGTH = UPRV_LENGTHOF(DATA);
+    const int32_t DATA_LENGTH = sizeof(DATA)/sizeof(DATA[0]);
 
     UnicodeString pat;
     int32_t i;
@@ -1527,7 +1525,7 @@ void UnicodeSetTest::TestInvalidCodePoint() {
         (UChar32)-1,
         0x110000
     };
-    const int32_t DATA2_LENGTH = UPRV_LENGTHOF(DATA2);
+    const int32_t DATA2_LENGTH = sizeof(DATA2)/sizeof(DATA2[0]);
 
     for (i=0; i<DATA2_LENGTH; ++i) {
         UChar32 c = DATA2[i], end = 0x10FFFF;
@@ -1718,12 +1716,6 @@ void UnicodeSetTest::TestSurrogate() {
             errln((UnicodeString)"FAIL: " + UnicodeString(DATA[i], -1, US_INV) + ".size() == " + 
                   set.size() + ", expected 4");
         }
-
-        {
-          UErrorCode subErr = U_ZERO_ERROR;
-          checkRoundTrip(set);
-          checkSerializeRoundTrip(set, subErr);
-        }
     }
 }
 
@@ -1740,12 +1732,8 @@ void UnicodeSetTest::TestExhaustive() {
         logln((UnicodeString)"Testing " + i + ", " + x);
         _testComplement(i, x, y);
 
-        UnicodeSet &toTest = bitsToSet(i, aa);
-
         // AS LONG AS WE ARE HERE, check roundtrip
-        checkRoundTrip(toTest);
-        UErrorCode ec = U_ZERO_ERROR;
-        checkSerializeRoundTrip(toTest, ec);
+        checkRoundTrip(bitsToSet(i, aa));
 
         for (int32_t j = 0; j < limit; ++j) {
             _testAdd(i,j,  x,y,z);
@@ -1904,80 +1892,39 @@ UnicodeString UnicodeSetTest::getPairs(const UnicodeSet& set) {
  * get the same thing back
  */
 void UnicodeSetTest::checkRoundTrip(const UnicodeSet& s) {
-    {
-        UnicodeSet t(s);
-        checkEqual(s, t, "copy ct");
-    }
+    UErrorCode ec = U_ZERO_ERROR;
 
-    {
-        UnicodeSet t(0xabcd, 0xdef0);  // dummy contents should be overwritten
-        t = s;
-        checkEqual(s, t, "operator=");
-    }
+    UnicodeSet t(s);
+    checkEqual(s, t, "copy ct");
 
-    {
-        UnicodeSet t;
-        copyWithIterator(t, s, FALSE);
-        checkEqual(s, t, "iterator roundtrip");
-    }
+    t = s;
+    checkEqual(s, t, "operator=");
 
-    {
-        UnicodeSet t;
-        copyWithIterator(t, s, TRUE); // try range
-        checkEqual(s, t, "iterator roundtrip");
-    }
+    copyWithIterator(t, s, FALSE);
+    checkEqual(s, t, "iterator roundtrip");
 
-    {
-        UnicodeSet t;
-        UnicodeString pat;
-        UErrorCode ec = U_ZERO_ERROR;
-        s.toPattern(pat, FALSE);
-        t.applyPattern(pat, ec);
-        if (U_FAILURE(ec)) {
-            errln("FAIL: toPattern(escapeUnprintable=FALSE), applyPattern - %s", u_errorName(ec));
-            return;
-        } else {
-            checkEqual(s, t, "toPattern(false)");
-        }
+    copyWithIterator(t, s, TRUE); // try range
+    checkEqual(s, t, "iterator roundtrip");
+        
+    UnicodeString pat; s.toPattern(pat, FALSE);
+    t.applyPattern(pat, ec);
+    if (U_FAILURE(ec)) {
+        errln("FAIL: applyPattern");
+        return;
+    } else {
+        checkEqual(s, t, "toPattern(false)");
     }
-
-    {
-        UnicodeSet t;
-        UnicodeString pat;
-        UErrorCode ec = U_ZERO_ERROR;
-        s.toPattern(pat, TRUE);
-        t.applyPattern(pat, ec);
-        if (U_FAILURE(ec)) {
-            errln("FAIL: toPattern(escapeUnprintable=TRUE), applyPattern - %s", u_errorName(ec));
-            return;
-        } else {
-            checkEqual(s, t, "toPattern(true)");
-        }
+        
+    s.toPattern(pat, TRUE);
+    t.applyPattern(pat, ec);
+    if (U_FAILURE(ec)) {
+        errln("FAIL: applyPattern");
+        return;
+    } else {
+        checkEqual(s, t, "toPattern(true)");
     }
 }
-
-void UnicodeSetTest::checkSerializeRoundTrip(const UnicodeSet& t, UErrorCode &status) {
-  if(U_FAILURE(status)) return;
-  int32_t len = t.serialize(serializeBuffer.getAlias(), serializeBuffer.getCapacity(), status);
-  if(status == U_BUFFER_OVERFLOW_ERROR) {
-    status = U_ZERO_ERROR;
-    serializeBuffer.resize(len);
-    len = t.serialize(serializeBuffer.getAlias(), serializeBuffer.getCapacity(), status);
-    // let 2nd error stand
-  }
-  if(U_FAILURE(status)) {
-    errln("checkSerializeRoundTrip: error %s serializing buffer\n", u_errorName(status));
-    return;
-  }
-  UnicodeSet deserialized(serializeBuffer.getAlias(), len, UnicodeSet::kSerialized, status);
-  if(U_FAILURE(status)) {
-    errln("checkSerializeRoundTrip: error %s deserializing buffer: buf %p len %d, original %d\n", u_errorName(status), serializeBuffer.getAlias(), len, t.getRangeCount());
-    return;
-  }
-
-  checkEqual(t, deserialized, "Set was unequal when deserialized");
-}
-
+    
 void UnicodeSetTest::copyWithIterator(UnicodeSet& t, const UnicodeSet& s, UBool withRange) {
     t.clear();
     UnicodeSetIterator it(s);
@@ -2001,8 +1948,6 @@ void UnicodeSetTest::copyWithIterator(UnicodeSet& t, const UnicodeSet& s, UBool 
 }
     
 UBool UnicodeSetTest::checkEqual(const UnicodeSet& s, const UnicodeSet& t, const char* message) {
-  assertEquals(UnicodeString("RangeCount: ","") + message, s.getRangeCount(), t.getRangeCount());
-  assertEquals(UnicodeString("size: ","") + message, s.size(), t.size());
     UnicodeString source; s.toPattern(source, TRUE);
     UnicodeString result; t.toPattern(result, TRUE);
     if (s != t) {
@@ -2377,7 +2322,7 @@ public:
             const UnicodeString *s;
             char *s8=utf8;
             int32_t length8, utf8Count=0;
-            while(iter.nextRange() && stringsLength<UPRV_LENGTHOF(strings)) {
+            while(iter.nextRange() && stringsLength<LENGTHOF(strings)) {
                 if(iter.isString()) {
                     // Store the pointer to the set's string element
                     // which we happen to know is a stable pointer.
@@ -3131,7 +3076,7 @@ void UnicodeSetTest::testSpan(const UnicodeSetWithStrings *sets[4],
                                  s, length, isUTF16,
                                  whichSpans,
                                  type, typeName,
-                                 limits, UPRV_LENGTHOF(limits), expectCount);
+                                 limits, LENGTHOF(limits), expectCount);
             if(typeName[0]==0) {
                 break; // All types tried.
             }
@@ -3140,9 +3085,9 @@ void UnicodeSetTest::testSpan(const UnicodeSetWithStrings *sets[4],
             }
             if(expectCount<0) {
                 expectCount=limitsCount;
-                if(limitsCount>UPRV_LENGTHOF(limits)) {
+                if(limitsCount>LENGTHOF(limits)) {
                     errln("FAIL: %s[0x%lx].%s.%s span count=%ld > %ld capacity - too many spans",
-                          testName, (long)index, setNames[i], typeName, (long)limitsCount, (long)UPRV_LENGTHOF(limits));
+                          testName, (long)index, setNames[i], typeName, (long)limitsCount, (long)LENGTHOF(limits));
                     return;
                 }
                 memcpy(expectLimits, limits, limitsCount*4);
@@ -3335,7 +3280,7 @@ void UnicodeSetTest::testSpanContents(const UnicodeSetWithStrings *sets[4], uint
 
     UChar32 c, first;
     for(first=c=0;; c=nextCodePoint(c)) {
-        if(c>0x10ffff || length>(UPRV_LENGTHOF(s)-U16_MAX_LENGTH)) {
+        if(c>0x10ffff || length>(LENGTHOF(s)-U16_MAX_LENGTH)) {
             localWhichSpans=whichSpans;
             if(stringContainsUnpairedSurrogate(s, length) && inconsistentSurrogates) {
                 localWhichSpans&=~SPAN_UTF8;
@@ -3371,7 +3316,7 @@ void UnicodeSetTest::testSpanUTF16String(const UnicodeSetWithStrings *sets[4], u
         return;
     }
     testSpan(sets, s, -1, TRUE, (whichSpans&~SPAN_UTF8), testName, 0);
-    testSpan(sets, s, UPRV_LENGTHOF(s)-1, TRUE, (whichSpans&~SPAN_UTF8), testName, 1);
+    testSpan(sets, s, LENGTHOF(s)-1, TRUE, (whichSpans&~SPAN_UTF8), testName, 1);
 }
 
 void UnicodeSetTest::testSpanUTF8String(const UnicodeSetWithStrings *sets[4], uint32_t whichSpans, const char *testName) {
@@ -3468,7 +3413,7 @@ void UnicodeSetTest::testSpanUTF8String(const UnicodeSetWithStrings *sets[4], ui
         return;
     }
     testSpan(sets, s, -1, FALSE, (whichSpans&~SPAN_UTF16), testName, 0);
-    testSpan(sets, s, UPRV_LENGTHOF(s)-1, FALSE, (whichSpans&~SPAN_UTF16), testName, 1);
+    testSpan(sets, s, LENGTHOF(s)-1, FALSE, (whichSpans&~SPAN_UTF16), testName, 1);
 }
 
 // Take a set of span options and multiply them so that
@@ -3670,7 +3615,7 @@ void UnicodeSetTest::TestSpan() {
     char *testNameLimit=testName;
 
     int32_t i, j;
-    for(i=0; i<UPRV_LENGTHOF(testdata); ++i) {
+    for(i=0; i<LENGTHOF(testdata); ++i) {
         const char *s=testdata[i];
         if(s[0]=='[') {
             // Create new test sets from this pattern.
@@ -3868,60 +3813,4 @@ void UnicodeSetTest::TestStringSpan() {
     ) {
         errln("FAIL: UnicodeSet(%s).spanBack(while longest match) returns the wrong value", pattern);
     }
-}
-
-/**
- * Including collationroot.h fails here with
-1>c:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\driverspecs.h(142): error C2008: '$' : unexpected in macro definition
- *  .. so, we skip this test on Windows.
- * 
- * the cause is that  intltest builds with /Za which disables language extensions - which means
- *  windows header files can't be used.
- */
-#if !UCONFIG_NO_COLLATION && !U_PLATFORM_HAS_WIN32_API
-#include "collationroot.h"
-#include "collationtailoring.h"
-#endif
-
-void UnicodeSetTest::TestUCAUnsafeBackwards() {
-#if U_PLATFORM_HAS_WIN32_API
-    infoln("Skipping TestUCAUnsafeBackwards() - can't include collationroot.h on Windows without language extensions!");
-#elif !UCONFIG_NO_COLLATION
-    UErrorCode errorCode = U_ZERO_ERROR;
-
-    // Get the unsafeBackwardsSet
-    const CollationCacheEntry *rootEntry = CollationRoot::getRootCacheEntry(errorCode);
-    if(U_FAILURE(errorCode)) {
-      dataerrln("FAIL: %s getting root cache entry", u_errorName(errorCode));
-      return;
-    }
-    //const UVersionInfo &version = rootEntry->tailoring->version;
-    const UnicodeSet *unsafeBackwardSet = rootEntry->tailoring->unsafeBackwardSet;
-
-    checkSerializeRoundTrip(*unsafeBackwardSet, errorCode);
-
-    if(!logKnownIssue("11891","UnicodeSet fails to round trip on CollationRoot...unsafeBackwards set")) {
-        // simple test case
-        // TODO(ticket #11891): Simplify this test function to this simple case. Rename it appropriately.
-        // TODO(ticket #11891): Port test to Java. Is this a bug there, too?
-        UnicodeSet surrogates;
-        surrogates.add(0xd83a);  // a lead surrogate
-        surrogates.add(0xdc00, 0xdfff);  // a range of trail surrogates
-        UnicodeString pat;
-        surrogates.toPattern(pat, FALSE);  // bad: [ 0xd83a, 0xdc00, 0x2d, 0xdfff ]
-        // TODO: Probably fix either UnicodeSet::_generatePattern() or _appendToPat()
-        // so that at least one type of surrogate code points are escaped,
-        // or (minimally) so that adjacent lead+trail surrogate code points are escaped.
-        errorCode = U_ZERO_ERROR;
-        UnicodeSet s2;
-        s2.applyPattern(pat, errorCode);  // looks like invalid range [ 0x1e800, 0x2d, 0xdfff ]
-        if(U_FAILURE(errorCode)) {
-            errln("FAIL: surrogates to/from pattern - %s", u_errorName(errorCode));
-        } else {
-            checkEqual(surrogates, s2, "surrogates to/from pattern");
-        }
-        // This occurs in the UCA unsafe-backwards set.
-        checkRoundTrip(*unsafeBackwardSet);
-    }
-#endif
 }

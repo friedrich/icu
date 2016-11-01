@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2005-2014, International Business Machines
+*   Copyright (C) 2005-2013, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -28,7 +26,7 @@
 // .dat package file representation ---------------------------------------- ***
 
 #define STRING_STORE_SIZE 100000
-#define MAX_PKG_NAME_LENGTH 64
+#define MAX_PKG_NAME_LENGTH 32
 
 typedef void CheckDependency(void *context, const char *itemName, const char *targetName);
 

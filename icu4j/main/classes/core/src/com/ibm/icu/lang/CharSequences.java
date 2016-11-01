@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ********************************************************************************
- * Copyright (C) 2010-2014, Google, International Business Machines Corporation *
+ * Copyright (C) 2010-2011, Google, International Business Machines Corporation *
  * and others. All Rights Reserved.                                                 *
  ********************************************************************************
  */
@@ -25,7 +23,6 @@ package com.ibm.icu.lang;
  * @internal
  * @deprecated This API is ICU internal only.
  */
-@Deprecated
 public class CharSequences {
     // TODO
     // compareTo(a, b);
@@ -49,7 +46,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static int matchAfter(CharSequence a, CharSequence b, int aIndex, int bIndex) {
         int i = aIndex, j = bIndex;
         int alen = a.length();
@@ -74,7 +70,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public int codePointLength(CharSequence s) {
         return Character.codePointCount(s, 0, s.length());
 //        int length = s.length();
@@ -97,7 +92,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static final boolean equals(int codepoint, CharSequence other) {
         if (other == null) {
             return false;
@@ -113,7 +107,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static final boolean equals(CharSequence other, int codepoint) {
         return equals(codepoint, other);
     }
@@ -128,7 +121,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static int compare(CharSequence string, int codePoint) {
         if (codePoint < Character.MIN_CODE_POINT || codePoint > Character.MAX_CODE_POINT) {
             throw new IllegalArgumentException();
@@ -172,10 +164,8 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static int compare(int codepoint, CharSequence a) {
-        int result = compare(a, codepoint);
-        return result > 0 ? -1 : result < 0 ? 1 : 0; // Reverse the order.
+        return -compare(a, codepoint);
     }
 
     /**
@@ -184,7 +174,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static int getSingleCodePoint(CharSequence s) {
         int length = s.length();
         if (length < 1 || length > 2) {
@@ -201,7 +190,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static final <T extends Object> boolean equals(T a, T b) {
         return a == null ? b == null
                 : b == null ? false
@@ -214,7 +202,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static int compare(CharSequence a, CharSequence b) {
         int alength = a.length();
         int blength = b.length();
@@ -234,7 +221,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static boolean equalsChars(CharSequence a, CharSequence b) {
         // do length test first for fast path
         return a.length() == b.length() && compare(a,b) == 0;
@@ -246,7 +232,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static boolean onCharacterBoundary(CharSequence s, int i) {
         return i <= 0 
         || i >= s.length() 
@@ -260,7 +245,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static int indexOf(CharSequence s, int codePoint) {
         int cp;
         for (int i = 0; i < s.length(); i += Character.charCount(cp)) {
@@ -283,7 +267,6 @@ public class CharSequences {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static int[] codePoints(CharSequence s) {
         int[] result = new int[s.length()]; // in the vast majority of cases, the length is the same
         int j = 0;

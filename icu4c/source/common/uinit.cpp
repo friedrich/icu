@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
-* Copyright (C) 2001-2015, International Business Machines
+* Copyright (C) 2001-2013, International Business Machines
 *                Corporation and others. All Rights Reserved.
 ******************************************************************************
 *   file name:  uinit.cpp
@@ -36,10 +34,8 @@ static UBool U_CALLCONV uinit_cleanup() {
 static void U_CALLCONV
 initData(UErrorCode &status)
 {
-#if UCONFIG_ENABLE_PLUGINS
     /* initialize plugins */
     uplug_init(&status);
-#endif
 
 #if !UCONFIG_NO_CONVERSION
     /*
@@ -59,10 +55,6 @@ initData(UErrorCode &status)
     ucln_common_registerCleanup(UCLN_COMMON_UINIT, uinit_cleanup);
 }
 
-U_NAMESPACE_END
-
-U_NAMESPACE_USE
-
 /*
  * ICU Initialization Function. Need not be called.
  */
@@ -72,3 +64,5 @@ u_init(UErrorCode *status) {
     umtx_initOnce(gICUInitOnce, &initData, *status);
     UTRACE_EXIT_STATUS(*status);
 }
+
+U_NAMESPACE_END

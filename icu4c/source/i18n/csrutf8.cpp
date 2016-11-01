@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  **********************************************************************
- *   Copyright (C) 2005-2014, International Business Machines
+ *   Copyright (C) 2005-2012, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  **********************************************************************
  */
@@ -57,7 +55,12 @@ UBool CharsetRecog_UTF8::match(InputText* input, CharsetMatch *results) const {
             trailBytes = 3;
         } else {
             numInvalid += 1;
-            continue;
+
+            if (numInvalid > 5) {
+                break;
+            }
+
+            trailBytes = 0;
         }
 
         // Verify that we've got the right number of trail bytes in the sequence
@@ -83,7 +86,7 @@ UBool CharsetRecog_UTF8::match(InputText* input, CharsetMatch *results) const {
 
     }
 
-    // Cook up some sort of confidence score, based on presence of a BOM
+    // Cook up some sort of confidence score, based on presense of a BOM
     //    and the existence of valid and/or invalid multi-byte sequences.
     confidence = 0;
     if (hasBOM && numInvalid == 0) {
@@ -95,9 +98,8 @@ UBool CharsetRecog_UTF8::match(InputText* input, CharsetMatch *results) const {
     } else if (numValid > 0 && numInvalid == 0) {
         confidence = 80;
     } else if (numValid == 0 && numInvalid == 0) {
-        // Plain ASCII. Confidence must be > 10, it's more likely than UTF-16, which
-        //              accepts ASCII with confidence = 10.
-        confidence = 15;
+        // Plain ASCII.
+        confidence = 10;
     } else if (numValid > numInvalid*10) {
         // Probably corruput utf-8 data.  Valid sequences aren't likely by chance.
         confidence = 25;

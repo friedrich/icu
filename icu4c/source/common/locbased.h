@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-* Copyright (c) 2004-2014, International Business Machines
+* Copyright (c) 2004, International Business Machines
 * Corporation and others.  All Rights Reserved.
 **********************************************************************
 * Author: Alan Liu
@@ -19,7 +17,7 @@
 /**
  * Macro to declare a locale LocaleBased wrapper object for the given
  * object, which must have two members named `validLocale' and
- * `actualLocale' of size ULOC_FULLNAME_CAPACITY
+ * `actualLocale'.
  */
 #define U_LOCALE_BASED(varname, objname) \
   LocaleBased varname((objname).validLocale, (objname).actualLocale);
@@ -76,14 +74,6 @@ class U_COMMON_API LocaleBased : public UMemory {
      * @param actual the ID of the actual locale
      */
     void setLocaleIDs(const char* valid, const char* actual);
-
-    /**
-     * Set the locale meta-data for the service object wrapped by this
-     * object.
-     * @param valid the ID of the valid locale
-     * @param actual the ID of the actual locale
-     */
-    void setLocaleIDs(const Locale& valid, const Locale& actual);
 
  private:
 

@@ -1,12 +1,8 @@
 /*  
-*************************************************************************
-*   Copyright (C) 2016 and later: Unicode, Inc. and others.
-*   License & terms of use: http://www.unicode.org/copyright.html#License
-*************************************************************************
-*************************************************************************
-*   Copyright (C) 2014, International Business Machines
+**********************************************************************
+*   Copyright (C) 2007, International Business Machines
 *   Corporation and others.  All Rights Reserved.
-*************************************************************************
+**********************************************************************
 *   file name:  bitset.cpp
 *   encoding:   US-ASCII
 *   tab size:   8 (not used)
@@ -24,7 +20,6 @@
 
 #include "unicode/utypes.h"
 #include "unicont.h"
-#include "cmemory.h" // for UPRV_LENGTHOF
 
 /*
  * Hash table for up to 1k 64-bit words, for 1 bit per BMP code point.
@@ -151,7 +146,7 @@ public:
             prevIndex=j;
         }
 
-        if(bitHash->countKeys()>UPRV_LENGTHOF(shortBits)) {
+        if(bitHash->countKeys()>LENGTHOF(shortBits)) {
             bits=(int64_t *)uprv_malloc(bitHash->countKeys()*8);
         }
         if(bits!=NULL) {
