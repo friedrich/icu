@@ -1,8 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/zh_Hant.xml
+// *
+// ***************************************************************************
 zh_Hant{
     %%Parent{"root"}
-    Version{"2.1.28.79"}
+    Version{"2.1.19.89"}
     durationUnits{
         hm{"h:mm"}
         hms{"h:mm:ss"}
@@ -67,7 +73,6 @@ zh_Hant{
             square-kilometer{
                 dnam{"平方公里"}
                 other{"{0} 平方公里"}
-                per{"每平方公里 {0}"}
             }
             square-meter{
                 dnam{"平方公尺"}
@@ -77,7 +82,6 @@ zh_Hant{
             square-mile{
                 dnam{"平方英里"}
                 other{"{0} 平方英里"}
-                per{"每平方英里 {0}"}
             }
             square-yard{
                 dnam{"平方碼"}
@@ -86,23 +90,6 @@ zh_Hant{
         }
         compound{
             per{"每{1} {0}"}
-        }
-        concentr{
-            karat{
-                dnam{"克拉"}
-                other{"{0} 克拉"}
-            }
-            milligram-per-deciliter{
-                dnam{"每分升毫克"}
-                other{"每分升 {0} 毫克"}
-            }
-            millimole-per-liter{
-                dnam{"每公升毫莫耳"}
-                other{"每公升 {0} 毫莫耳"}
-            }
-            part-per-million{
-                dnam{"百萬分率"}
-            }
         }
         consumption{
             liter-per-100kilometers{
@@ -116,10 +103,6 @@ zh_Hant{
             mile-per-gallon{
                 dnam{"每加侖英里"}
                 other{"每加侖 {0} 英里"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"每英制加侖英里"}
-                other{"每英制加侖 {0} 英里"}
             }
         }
         coordinate{
@@ -472,6 +455,12 @@ zh_Hant{
                 other{"每平方英寸 {0} 磅力"}
             }
         }
+        proportion{
+            karat{
+                dnam{"克拉"}
+                other{"{0} 克拉"}
+            }
+        }
         speed{
             kilometer-per-hour{
                 dnam{"每小時公里"}
@@ -557,7 +546,6 @@ zh_Hant{
             }
             cup-metric{
                 dnam{"公制量杯"}
-                other{"{0} 公制杯"}
             }
             deciliter{
                 dnam{"公合"}
@@ -571,11 +559,6 @@ zh_Hant{
                 dnam{"加侖"}
                 other{"{0} 加侖"}
                 per{"每加侖 {0}"}
-            }
-            gallon-imperial{
-                dnam{"英制加侖"}
-                other{"{0} 英制加侖"}
-                per{"每英制加侖 {0}"}
             }
             hectoliter{
                 dnam{"公石"}
@@ -670,11 +653,6 @@ zh_Hant{
         }
         compound{
             per{"{0}/{1}"}
-        }
-        concentr{
-            karat{
-                other{"{0}kt"}
-            }
         }
         consumption{
             liter-per-100kilometers{
@@ -956,6 +934,11 @@ zh_Hant{
                 other{"{0}psi"}
             }
         }
+        proportion{
+            karat{
+                other{"{0}kt"}
+            }
+        }
         speed{
             kilometer-per-hour{
                 dnam{"公里/小時"}
@@ -1111,7 +1094,6 @@ zh_Hant{
             square-kilometer{
                 dnam{"平方公里"}
                 other{"{0} 平方公里"}
-                per{"{0}/平方公里"}
             }
             square-meter{
                 dnam{"平方公尺"}
@@ -1121,7 +1103,6 @@ zh_Hant{
             square-mile{
                 dnam{"平方英里"}
                 other{"{0} 平方英里"}
-                per{"{0}/平方英里"}
             }
             square-yard{
                 dnam{"平方碼"}
@@ -1130,20 +1111,6 @@ zh_Hant{
         }
         compound{
             per{"{0}/{1}"}
-        }
-        concentr{
-            karat{
-                dnam{"克拉"}
-                other{"{0} 克拉"}
-            }
-            milligram-per-deciliter{
-                dnam{"毫克/分升"}
-                other{"{0} 毫克/分升"}
-            }
-            millimole-per-liter{
-                dnam{"毫莫耳/公升"}
-                other{"{0} 毫莫耳/公升"}
-            }
         }
         consumption{
             liter-per-100kilometers{
@@ -1157,10 +1124,6 @@ zh_Hant{
             mile-per-gallon{
                 dnam{"英里/加侖"}
                 other{"{0} 英里/加侖"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"英里/英制加侖"}
-                other{"{0} 英里/英制加侖"}
             }
         }
         coordinate{
@@ -1513,6 +1476,12 @@ zh_Hant{
                 other{"{0} 磅力/平方英寸"}
             }
         }
+        proportion{
+            karat{
+                dnam{"克拉"}
+                other{"{0} 克拉"}
+            }
+        }
         speed{
             kilometer-per-hour{
                 dnam{"公里/小時"}
@@ -1612,11 +1581,6 @@ zh_Hant{
                 dnam{"加侖"}
                 other{"{0} 加侖"}
                 per{"{0}/加侖"}
-            }
-            gallon-imperial{
-                dnam{"英制加侖"}
-                other{"{0} 英制加侖"}
-                per{"{0}/英制加侖"}
             }
             hectoliter{
                 dnam{"公石"}

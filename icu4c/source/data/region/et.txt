@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/et.xml
+// *
+// ***************************************************************************
 et{
     Countries{
         001{"maailm"}
@@ -40,8 +46,9 @@ et{
         AI{"Anguilla"}
         AL{"Albaania"}
         AM{"Armeenia"}
+        AN{"Hollandi Antillid"}
         AO{"Angola"}
-        AQ{"Antarktika"}
+        AQ{"Antarktis"}
         AR{"Argentina"}
         AS{"Ameerika Samoa"}
         AT{"Austria"}
@@ -272,7 +279,6 @@ et{
         UA{"Ukraina"}
         UG{"Uganda"}
         UM{"Ühendriikide hajasaared"}
-        UN{"Ühendatud Rahvaste Organisatsioon"}
         US{"Ameerika Ühendriigid"}
         UY{"Uruguay"}
         UZ{"Usbekistan"}
@@ -298,17 +304,15 @@ et{
         HK{"Hongkong"}
         MO{"Macau"}
         PS{"Palestiina"}
-        UN{"ÜRO"}
         US{"USA"}
     }
     Countries%variant{
         CD{"Kongo-Kinshasa"}
         CG{"Kongo-Brazzaville"}
         CI{"Elevandiluurannik"}
-        CZ{"Tšehhia"}
         FK{"Malviini saared"}
         MK{"Makedoonia Vabariik"}
         TL{"Timor-Leste"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.20.4"}
 }

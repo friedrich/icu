@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 ******************************************************************************
 * Copyright (C) 2007, International Business Machines Corporation and        *
@@ -11,12 +9,23 @@
 
 package com.ibm.icu.dev.test.duration.languages;
 
-import com.ibm.icu.dev.test.duration.LanguageTestFmwk;
+import com.ibm.icu.dev.test.duration.LanguageTestRoot;
 
 /**
  * Test cases for ko
  */
-public class Test_ko extends LanguageTestFmwk {
+public class Test_ko extends LanguageTestRoot {
+
+  /**
+   * Invoke the tests.
+   */
+  public static void main(String[] args) {
+      new Test_ko().run(args);
+  }
+
+  /**
+   * Constructor.
+   */
   public Test_ko() {
     super("ko", false);
   }

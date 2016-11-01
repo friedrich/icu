@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/zh_Hant_HK.xml
+// *
+// ***************************************************************************
 zh_Hant_HK{
     Currencies{
         AED{
@@ -201,10 +207,6 @@ zh_Hant_HK{
         STD{
             "STD",
             "聖多美和普林西比多布拉",
-        }
-        SYP{
-            "SYP",
-            "敍利亞鎊",
         }
         SZL{
             "SZL",
@@ -412,9 +414,6 @@ zh_Hant_HK{
         STD{
             other{"聖多美和普林西比多布拉"}
         }
-        SYP{
-            other{"敍利亞鎊"}
-        }
         SZL{
             other{"斯威士蘭里朗吉尼"}
         }
@@ -449,5 +448,5 @@ zh_Hant_HK{
             other{"贊比亞克瓦查"}
         }
     }
-    Version{"2.1.27.99"}
+    Version{"2.1.19.94"}
 }

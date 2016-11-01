@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/km.xml
+// *
+// ***************************************************************************
 km{
     Currencies{
         AED{
@@ -94,13 +100,9 @@ km{
             "BWP",
             "ពូឡា​បុតស្វាណា",
         }
-        BYN{
-            "BYN",
-            "រ៉ូបល​បេឡារុស",
-        }
         BYR{
             "BYR",
-            "រ៉ូបល​បេឡារុស (2000–2016)",
+            "រ៉ូបល​បេឡារុស",
         }
         BZD{
             "BZD",
@@ -248,7 +250,7 @@ km{
         }
         ILS{
             "₪",
-            "ស៊ីគែលថ្មីអ៊ីស្រាអែល",
+            "ស្ស៊ីហ្គែល​អ៊ីស្រាអែល",
         }
         INR{
             "₹",
@@ -584,7 +586,7 @@ km{
         }
         UZS{
             "UZS",
-            "សុមអ៊ូបេគីស្ថាន",
+            "សុម​អ៊ូសបេគីស្ថាន",
         }
         VEF{
             "VEF",
@@ -652,7 +654,7 @@ km{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -805,11 +807,8 @@ km{
         BWP{
             other{"ពូឡា​បុតស្វាណា"}
         }
-        BYN{
-            other{"រ៉ូបល​បេឡារុស"}
-        }
         BYR{
-            other{"រ៉ូបល​បេឡារុស (2000–2016)"}
+            other{"រ៉ូបល​បេឡារុស"}
         }
         BZD{
             other{"ដុល្លារ​បេលី"}
@@ -920,7 +919,7 @@ km{
             other{"រូពីឥណ្ឌូណេស៊ី"}
         }
         ILS{
-            other{"ស៊ីគែលថ្មីអ៊ីស្រាអែល"}
+            other{"ស្ស៊ីហ្គែល​អ៊ីស្រាអែល"}
         }
         INR{
             other{"រូពីឥណ្ឌា"}
@@ -1172,7 +1171,7 @@ km{
             other{"ប៉េសូអ៊ុយរូហ្គាយ"}
         }
         UZS{
-            other{"សុមអ៊ូបេគីស្ថាន"}
+            other{"សុម​អ៊ូសបេគីស្ថាន"}
         }
         VEF{
             other{"ប៊ូលីវ៉ា​វ៉េណេស៊ុយអេឡា"}
@@ -1214,5 +1213,5 @@ km{
     CurrencyUnitPatterns{
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.19.94"}
 }

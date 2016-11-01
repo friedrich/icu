@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/da.xml
+// *
+// ***************************************************************************
 da{
     Countries{
         001{"Verden"}
@@ -40,6 +46,7 @@ da{
         AI{"Anguilla"}
         AL{"Albanien"}
         AM{"Armenien"}
+        AN{"Hollandske Antiller"}
         AO{"Angola"}
         AQ{"Antarktis"}
         AR{"Argentina"}
@@ -62,7 +69,7 @@ da{
         BM{"Bermuda"}
         BN{"Brunei"}
         BO{"Bolivia"}
-        BQ{"De tidligere Nederlandske Antiller"}
+        BQ{"De Nederlandske Antiller"}
         BR{"Brasilien"}
         BS{"Bahamas"}
         BT{"Bhutan"}
@@ -126,12 +133,12 @@ da{
         GP{"Guadeloupe"}
         GQ{"Ækvatorialguinea"}
         GR{"Grækenland"}
-        GS{"South Georgia og De Sydlige Sandwichøer"}
+        GS{"South Georgia og South Sandwich Islands"}
         GT{"Guatemala"}
         GU{"Guam"}
         GW{"Guinea-Bissau"}
         GY{"Guyana"}
-        HK{"SAR Hongkong"}
+        HK{"Hongkong SAR"}
         HM{"Heard Island og McDonald Islands"}
         HN{"Honduras"}
         HR{"Kroatien"}
@@ -185,7 +192,7 @@ da{
         ML{"Mali"}
         MM{"Myanmar (Burma)"}
         MN{"Mongoliet"}
-        MO{"SAR Macao"}
+        MO{"Macao SAR"}
         MP{"Nordmarianerne"}
         MQ{"Martinique"}
         MR{"Mauretanien"}
@@ -203,7 +210,7 @@ da{
         NF{"Norfolk Island"}
         NG{"Nigeria"}
         NI{"Nicaragua"}
-        NL{"Holland"}
+        NL{"Nederlandene"}
         NO{"Norge"}
         NP{"Nepal"}
         NR{"Nauru"}
@@ -272,7 +279,6 @@ da{
         UA{"Ukraine"}
         UG{"Uganda"}
         UM{"Amerikanske oversøiske øer"}
-        UN{"Forenede Nationer"}
         US{"USA"}
         UY{"Uruguay"}
         UZ{"Usbekistan"}
@@ -298,15 +304,14 @@ da{
         HK{"Hongkong"}
         MO{"Macao"}
         PS{"Palæstina"}
-        UN{"FN"}
         US{"USA"}
     }
     Countries%variant{
-        CD{"Den Demokratiske Republik Congo (DRC)"}
+        CD{"Den Demokratiske Republik Congo"}
         CG{"Republikken Congo"}
         FK{"Falklandsøerne (Islas Malvinas)"}
         MK{"Den tidligere jugoslaviske republik Makedonien"}
         TL{"Østtimor"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.19.44"}
 }

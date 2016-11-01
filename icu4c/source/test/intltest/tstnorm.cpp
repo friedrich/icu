@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -17,7 +15,6 @@
 #include "unicode/usetiter.h"
 #include "unicode/schriter.h"
 #include "unicode/utf16.h"
-#include "cmemory.h"
 #include "cstring.h"
 #include "normalizer2impl.h"
 #include "tstnorm.h"
@@ -352,7 +349,7 @@ void BasicNormalizerTest::TestZeroIndex(void) {
         "c\\u0321\\u0327", "c\\u0321\\u0327", "c\\u0321\\u0327",
         "c\\u0327\\u0321", "\\u00E7\\u0321", "c\\u0327\\u0321",
     };
-    int32_t DATA_length = UPRV_LENGTHOF(DATA);
+    int32_t DATA_length = (int32_t)(sizeof(DATA) / sizeof(DATA[0]));
 
     for (int32_t i=0; i<DATA_length; i+=3) {
         UErrorCode status = U_ZERO_ERROR;
@@ -806,7 +803,7 @@ void BasicNormalizerTest::TestConcatenate() {
     int32_t i;
 
     /* test concatenation */
-    for(i=0; i<UPRV_LENGTHOF(cases); ++i) {
+    for(i=0; i<(int32_t)(sizeof(cases)/sizeof(cases[0])); ++i) {
         switch(*cases[i][0]) {
         case 'C': mode=UNORM_NFC; break;
         case 'D': mode=UNORM_NFD; break;

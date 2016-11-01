@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2007-2016, International Business Machines
+*   Copyright (C) 2007-2015, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -32,7 +30,6 @@
 #include "unicode/udatpg.h"
 #include "unicode/ustring.h"
 #include "cintltst.h"
-#include "cmemory.h"
 
 void addDateTimePatternGeneratorTest(TestNode** root);
 
@@ -341,7 +338,7 @@ static void TestBuilder() {
     udatpg_close(dtpg);
     
     /* sample code in Userguide */
-    patternCapacity = UPRV_LENGTHOF(pattern);
+    patternCapacity = (int32_t)(sizeof(pattern)/sizeof((pattern)[0]));
     status=U_ZERO_ERROR;
     generator=udatpg_open(locale, &status);
     if(U_FAILURE(status)) {
@@ -360,7 +357,7 @@ static void TestBuilder() {
     }
 
     /* use it to format (or parse) */
-    formattedCapacity = UPRV_LENGTHOF(formatted);
+    formattedCapacity = (int32_t)(sizeof(formatted)/sizeof((formatted)[0]));
     resultLen=udat_format(formatter, ucal_getNow(), formatted, formattedCapacity,
                           NULL, &status);
     /* for French, the result is "13 sept." */
@@ -411,7 +408,7 @@ static void TestOptions() {
         { "da", skel_hhmm, UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_hhpmm_a },
     };
 
-    int count = UPRV_LENGTHOF(testData);
+    int count = sizeof(testData) / sizeof(testData[0]);
     const DTPtnGenOptionsData * testDataPtr = testData;
 
     for (; count-- > 0; ++testDataPtr) {

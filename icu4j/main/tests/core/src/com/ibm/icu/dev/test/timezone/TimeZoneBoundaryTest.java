@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2000-2015, International Business Machines Corporation and
@@ -8,8 +6,6 @@
  */
 package com.ibm.icu.dev.test.timezone;
 import java.util.Date;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
@@ -46,6 +42,10 @@ public class TimeZoneBoundaryTest extends TestFmwk
     static final String AUSTRALIA = "Australia/Adelaide";
     static final long AUSTRALIA_1997_BEG = 877797000000L;
     static final long AUSTRALIA_1997_END = 859653000000L;
+    
+    public static void main(String[] args) throws Exception {
+        new TimeZoneBoundaryTest().run(args);
+    }
 
     /**
      * Date.toString().substring() Boundary Test
@@ -380,7 +380,6 @@ public class TimeZoneBoundaryTest extends TestFmwk
 //        }
 //    }
 
-    @Test
     public void TestBoundaries()
     {
         TimeZone save = TimeZone.getDefault();
@@ -715,7 +714,6 @@ public class TimeZoneBoundaryTest extends TestFmwk
     /**
      * Test new rule formats.
      */
-    @Test
     public void TestNewRules()
     {
         //logln(Locale.getDefault().getDisplayName());
@@ -844,7 +842,6 @@ public class TimeZoneBoundaryTest extends TestFmwk
         }
     }
 
-    @Test
     public void TestStepwise()
     {
         findBoundariesStepwise(1997, ONE_DAY, safeGetTimeZone("America/New_York"), 2);

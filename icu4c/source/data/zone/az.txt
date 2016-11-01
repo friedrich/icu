@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/az.xml
+// *
+// ***************************************************************************
 az{
-    Version{"2.1.28.79"}
+    Version{"2.1.19.83"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abican"}
@@ -302,9 +308,6 @@ az{
         }
         "America:El_Salvador"{
             ec{"Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +672,6 @@ az{
         "Asia:Bangkok"{
             ec{"Banqkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beyrut"}
         }
@@ -849,9 +849,6 @@ az{
         "Asia:Tokyo"{
             ec{"Tokyo"}
         }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"Ulanbator"}
         }
@@ -951,9 +948,6 @@ az{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Həştərxan"}
-        }
         "Europe:Athens"{
             ec{"Afina"}
         }
@@ -1011,9 +1005,6 @@ az{
         }
         "Europe:Kiev"{
             ec{"Kiyev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lissabon"}
@@ -1090,9 +1081,6 @@ az{
         }
         "Europe:Tirane"{
             ec{"Tirana"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Ulyanovsk"}
         }
         "Europe:Uzhgorod"{
             ec{"Ujgorod"}
@@ -1748,9 +1736,6 @@ az{
         }
         "meta:Ponape"{
             ls{"Ponape Vaxtı"}
-        }
-        "meta:Pyongyang"{
-            ls{"Pxenyan Vaxtı"}
         }
         "meta:Reunion"{
             ls{"Reunion Vaxtı"}

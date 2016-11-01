@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2009-2016 International Business Machines
+# Copyright (c) 2009-2015 International Business Machines
 # Corporation and others. All Rights Reserved.
 #
 #   file name:  preparseucd.py
@@ -49,17 +49,15 @@ _current_year = datetime.date.today().strftime("%Y")
 _scripts_only_in_iso15924 = (
     "Afak", "Blis", "Cirt", "Cyrs",
     "Egyd", "Egyh", "Geok",
-    "Hanb", "Hans", "Hant",
-    "Inds", "Jamo", "Jpan", "Jurc", "Kore", "Kpel", "Latf", "Latg", "Loma",
+    "Hans", "Hant",
+    "Inds", "Jpan", "Jurc", "Kore", "Kpel", "Latf", "Latg", "Loma",
     "Maya", "Moon", "Nkgb", "Nshu", "Phlv", "Roro",
     "Sara", "Syre", "Syrj", "Syrn",
-    "Teng", "Visp", "Wole", "Zmth", "Zsye", "Zsym", "Zxxx"
+    "Tang", "Teng", "Visp", "Wole", "Zmth", "Zsym", "Zxxx"
 )
 
 # Properties --------------------------------------------------------------- ***
 
-# Properties that we do not want to store in ppucd.txt.
-# Not a frozenset so that we can add aliases for simpler subsequent testing.
 _ignored_properties = set((
   # Other_Xyz only contribute to Xyz, store only the latter.
   "OAlpha",
@@ -95,16 +93,6 @@ _ignored_properties = set((
   "cjkIRG_USource",
   "cjkIRG_VSource",
   "cjkRSUnicode"
-))
-
-# These properties (short names) map code points to
-# strings or other unusual values (property types String or Miscellaneous)
-# that cannot be block-compressed (or would be confusing).
-_uncompressible_props = frozenset((
-  "bmg", "bpb", "cf", "Conditional_Case_Mappings", "dm", "FC_NFKC",
-  "isc", "lc", "na", "na1", "Name_Alias", "NFKC_CF",
-  # scx is block-compressible.
-  "scf", "slc", "stc", "suc", "tc", "Turkic_Case_Folding", "uc"
 ))
 
 # Dictionary of properties.
@@ -528,11 +516,6 @@ def ParsePropertyAliases(in_file):
   AddBinaryProperty("nfcinert", "NFC_Inert")
   AddBinaryProperty("nfkcinert", "NFKC_Inert")
   AddBinaryProperty("segstart", "Segment_Starter")
-  # http://www.unicode.org/reports/tr51/#Emoji_Properties
-  AddBinaryProperty("Emoji", "Emoji")
-  AddBinaryProperty("Emoji_Presentation", "Emoji_Presentation")
-  AddBinaryProperty("Emoji_Modifier", "Emoji_Modifier")
-  AddBinaryProperty("Emoji_Modifier_Base", "Emoji_Modifier_Base")
   # C/POSIX character classes that do not have Unicode property [value] aliases.
   # See uchar.h.
   AddPOSIXBinaryProperty("alnum")
@@ -666,9 +649,7 @@ def ParseUnicodeData(in_file):
         range_first = -1
         # Remember algorithmic name ranges.
         if "Ideograph" in name:
-          prefix = "CJK UNIFIED IDEOGRAPH-"
-          if c == 0x17000: prefix = "TANGUT IDEOGRAPH-"
-          _alg_names_ranges.append([c, end, "han", prefix])
+          _alg_names_ranges.append([c, end, "han", "CJK UNIFIED IDEOGRAPH-"])
         elif name == "Hangul Syllable":
           _alg_names_ranges.append([c, end, "hangul"])
         name = ""
@@ -997,12 +978,7 @@ def CompactBlock(b, i):
       if count == 1: num_unique += 1
     if max_value != _null_or_defaults[pname]:
       # Avoid picking randomly among several unique values.
-      # Do not compress uncompressible properties,
-      # with an exception for many empty-string values in a block
-      # (NFCK_CF='' for tags and variation selectors).
-      if ((max_count > 1 or num_unique == 1) and
-          ((pname not in _uncompressible_props) or
-            (max_value == '' and max_count >= 12))):
+      if (max_count > 1 or num_unique == 1):
         b_props[pname] = max_value
   # For each range and property, remove the default+block value
   # but set the default value if that property was not set
@@ -1559,7 +1535,6 @@ _files = {
   "DerivedNormalizationProps.txt": (CopyAndStrip, ParseNamedProperties),
   "DerivedNumericValues.txt": (DontCopy, ParseDerivedNumericValues),
   "EastAsianWidth.txt": (DontCopy, ParseEastAsianWidth),
-  "emoji-data.txt": (DontCopy, ParseNamedProperties),
   "GraphemeBreakProperty.txt": (DontCopy, ParseGraphemeBreakProperty),
   "GraphemeBreakTest.txt": (PrependBOM, "testdata"),
   "IndicPositionalCategory.txt": (DontCopy, ParseIndicPositionalCategory),

@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2014-2016, International Business Machines Corporation and
+ * Copyright (C) 2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -44,7 +42,7 @@ public abstract class FilteredBreakIteratorBuilder {
      * Construct a FilteredBreakIteratorBuilder based on rules in a locale.
      * The rules are taken from CLDR exception data for the locale,
      * see http://www.unicode.org/reports/tr35/tr35-general.html#Segmentation_Exceptions
-     * This is the equivalent of calling createInstance(UErrorCode&amp;)
+     * This is the equivalent of calling createInstance(UErrorCode&)
      * and then repeatedly calling addNoBreakAfter(...) with the contents
      * of the CLDR exception data.
      * @param where the locale.

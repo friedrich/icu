@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ml.xml
+// *
+// ***************************************************************************
 ml{
-    Version{"2.1.28.79"}
+    Version{"2.1.19.77"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"അബിദ്‌ജാൻ‌"}
@@ -34,7 +40,7 @@ ml{
             ec{"ബ്ലാണ്ടെയർ‌"}
         }
         "Africa:Brazzaville"{
-            ec{"ബ്രാസവിൽ"}
+            ec{"ബ്രാസവില്ലി"}
         }
         "Africa:Bujumbura"{
             ec{"ബുജും‌ബുര"}
@@ -235,7 +241,7 @@ ml{
             ec{"കേംബ്രിഡ്‌ജ് ബേ"}
         }
         "America:Campo_Grande"{
-            ec{"ക്യാമ്പോ ഗ്രാൻഡെ"}
+            ec{"ക്യാന്പോ ഗ്രാൻഡെ"}
         }
         "America:Cancun"{
             ec{"കാൻകൂൺ"}
@@ -259,7 +265,7 @@ ml{
             ec{"ചിഹ്വാഹ"}
         }
         "America:Coral_Harbour"{
-            ec{"ഏറ്റികോക്കൺ"}
+            ec{"ആത്തികോക്കൺ"}
         }
         "America:Cordoba"{
             ec{"കോർഡോബ"}
@@ -302,9 +308,6 @@ ml{
         }
         "America:El_Salvador"{
             ec{"എൽ സാൽ‌വദോർ"}
-        }
-        "America:Fort_Nelson"{
-            ec{"ഫോർട്ട് നെൽസൺ"}
         }
         "America:Fortaleza"{
             ec{"ഫോർട്ടലീസ"}
@@ -424,7 +427,7 @@ ml{
             ec{"മറ്റാമൊറോസ്"}
         }
         "America:Mazatlan"{
-            ec{"മസറ്റ്‌ലാൻ"}
+            ec{"മാസറ്റ്ലാൻ"}
         }
         "America:Mendoza"{
             ec{"മെൻഡോസ"}
@@ -550,7 +553,7 @@ ml{
             ec{"സെൻറ് ബർത്തലെമി"}
         }
         "America:St_Johns"{
-            ec{"സെന്റ് ജോൺസ്"}
+            ec{"സെന്റ്. ജോൺസ്"}
         }
         "America:St_Kitts"{
             ec{"സെന്റ് കിറ്റ്സ്"}
@@ -668,9 +671,6 @@ ml{
         }
         "Asia:Bangkok"{
             ec{"ബാങ്കോക്ക്"}
-        }
-        "Asia:Barnaul"{
-            ec{"ബർണോൽ"}
         }
         "Asia:Beirut"{
             ec{"ബെയ്‌റൂട്ട്"}
@@ -790,7 +790,7 @@ ml{
             ec{"ഓറൽ"}
         }
         "Asia:Phnom_Penh"{
-            ec{"ഫെനോം പെൻ"}
+            ec{"നാം പെൻ"}
         }
         "Asia:Pontianak"{
             ec{"പൊൻറിയാനക്"}
@@ -820,7 +820,7 @@ ml{
             ec{"സമർക്കന്ദ്"}
         }
         "Asia:Seoul"{
-            ec{"സോൾ"}
+            ec{"സിയോൾ"}
         }
         "Asia:Shanghai"{
             ec{"ഷാങ്‌ഹായി"}
@@ -848,9 +848,6 @@ ml{
         }
         "Asia:Tokyo"{
             ec{"ടോക്കിയോ"}
-        }
-        "Asia:Tomsk"{
-            ec{"ടോംസ്ക്"}
         }
         "Asia:Ulaanbaatar"{
             ec{"ഉലാൻബാത്തർ"}
@@ -951,9 +948,6 @@ ml{
         "Europe:Andorra"{
             ec{"അണ്ടോറ"}
         }
-        "Europe:Astrakhan"{
-            ec{"അസ്‌ട്രഖാൻ"}
-        }
         "Europe:Athens"{
             ec{"ഏതൻ‌സ്"}
         }
@@ -1011,9 +1005,6 @@ ml{
         }
         "Europe:Kiev"{
             ec{"കീവ്"}
-        }
-        "Europe:Kirov"{
-            ec{"കിറോ"}
         }
         "Europe:Lisbon"{
             ec{"ലിസ്‌ബൺ‌"}
@@ -1091,9 +1082,6 @@ ml{
         "Europe:Tirane"{
             ec{"ടിരാനെ"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"ഉല്ല്യാനോവ്‌സ്‌ക്"}
-        }
         "Europe:Uzhgorod"{
             ec{"ഉസ്ഗൊറോഡ്"}
         }
@@ -1167,7 +1155,7 @@ ml{
             ec{"ബോഗൺവില്ലെ"}
         }
         "Pacific:Chatham"{
-            ec{"ചാത്തം"}
+            ec{"ചാതം"}
         }
         "Pacific:Easter"{
             ec{"ഈസ്റ്റർ"}
@@ -1434,7 +1422,7 @@ ml{
             ls{"ചമോറോ സ്റ്റാൻഡേർഡ് സമയം"}
         }
         "meta:Chatham"{
-            ld{"ചാത്തം ഗ്രീഷ്‌മകാല സമയം"}
+            ld{"ചാതം വേനൽക്കാല സമയം"}
             lg{"ചാത്തം സമയം"}
             ls{"ചാത്തം സ്റ്റാൻഡേർഡ് സമയം"}
         }
@@ -1794,9 +1782,6 @@ ml{
         "meta:Ponape"{
             ls{"പൊനാപ്പ് സമയം"}
         }
-        "meta:Pyongyang"{
-            ls{"പ്യോംഗ്‌യാംഗ് സമയം"}
-        }
         "meta:Qyzylorda"{
             ld{"ഖിസിലോർഡ വേനൽക്കാല സമയം"}
             lg{"ഖിസിലോർഡ സമയം"}
@@ -1819,7 +1804,7 @@ ml{
             ls{"സമാറ സ്റ്റാൻഡേർഡ് സമയം"}
         }
         "meta:Samoa"{
-            ld{"സമോവാ ഗ്രീഷ്‌മകാല സമയം"}
+            ld{"സമോവാ വേനൽക്കാല സമയം"}
             lg{"സമോവ സമയം"}
             ls{"സമോവ സ്റ്റാൻഡേർഡ് സമയം"}
         }

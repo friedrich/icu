@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (c) 2004-2011, International Business Machines
@@ -8,8 +6,6 @@
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.format;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.SelectFormat;
@@ -22,10 +18,13 @@ public class SelectFormatUnitTest extends TestFmwk {
   
     static final String SIMPLE_PATTERN = "feminine {feminineVerbValue} other{otherVerbValue}";
 
+    public static void main(String[] args) throws Exception {
+        new SelectFormatUnitTest().run(args);
+    }
+  
     /**
      * Unit tests for pattern syntax
      */
-    @Test
     public void TestPatternSyntax() {
         String checkSyntaxData[] = {
             "odd{foo}",
@@ -61,7 +60,6 @@ public class SelectFormatUnitTest extends TestFmwk {
     /**
      * Unit tests for invalid keywords 
      */
-    @Test
     public void TestInvalidKeyword() {
         // Test formatting with invalid keyword:
         // one which contains Pattern_Syntax or Pattern_White_Space.
@@ -97,7 +95,6 @@ public class SelectFormatUnitTest extends TestFmwk {
     /**
      * API tests for  applyPattern and format
      */
-    @Test
     public void TestApplyFormat() {
         //Test applying and formatting with various pattern
         String patternTestData[] = {

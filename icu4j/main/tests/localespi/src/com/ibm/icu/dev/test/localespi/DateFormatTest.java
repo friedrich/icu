@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2008-2015, International Business Machines Corporation and    *
@@ -14,17 +12,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.jdkadapter.CalendarICU;
 import com.ibm.icu.util.ULocale;
 
 public class DateFormatTest extends TestFmwk {
+
+    public static void main(String[] args) throws Exception {
+        new DateFormatTest().run(args);
+    }
+
     /*
      * Check if getInstance returns the ICU implementation.
      */
-    @Test
     public void TestGetInstance() {
         for (Locale loc : DateFormat.getAvailableLocales()) {
             if (TestUtil.isExcluded(loc)) {
@@ -108,7 +108,6 @@ public class DateFormatTest extends TestFmwk {
      * Testing the behavior of date format between ICU instance and its
      * equivalent created via the Locale SPI framework.
      */
-    @Test
     public void TestICUEquivalent() {
         Locale[] TEST_LOCALES = {
                 new Locale("en", "US"),
@@ -179,7 +178,6 @@ public class DateFormatTest extends TestFmwk {
      * Check if ICU DateFormatProvider uses Thai native digit for Locale
      * th_TH_TH.
      */
-    @Test
     public void TestThaiDigit() {
         Locale thTHTH = new Locale("th", "TH", "TH");
         String pattern = "yyyy-MM-dd";
@@ -199,7 +197,6 @@ public class DateFormatTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestCalendarKeyword() {
         // ICU provider variant is appended
         ULocale uloc0 = new ULocale("en_US_" + TestUtil.ICU_VARIANT + "@calendar=buddhist");

@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and
@@ -17,8 +15,6 @@ package com.ibm.icu.dev.test.collator;
 import java.util.Locale;
 import java.util.Random;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -35,7 +31,10 @@ public class CollationMonkeyTest extends TestFmwk {
     
     private String source = "-abcdefghijklmnopqrstuvwxyz#&^$@";
     
-    @Test
+    public static void main(String[] args) throws Exception {
+        new CollationMonkeyTest().run(args);
+    }
+    
     public void TestCollationKey() {
         if(source.length() == 0) {
             errln("CollationMonkeyTest.TestCollationKey(): source is empty - ICU_DATA not set or data missing?");
@@ -108,7 +107,6 @@ public class CollationMonkeyTest extends TestFmwk {
     }
     
     // perform monkey tests using Collator.compare
-    @Test
     public void TestCompare() {
         if(source.length() == 0) {
             errln("CollationMonkeyTest.TestCompare(): source is empty - ICU_DATA not set or data missing?");
@@ -187,7 +185,6 @@ public class CollationMonkeyTest extends TestFmwk {
         }
     }
     
-    @Test
     public void TestRules() {
         String testSourceCases[] = {
             "\u0061\u0062\u007a", 

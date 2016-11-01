@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/sw.xml
+// *
+// ***************************************************************************
 sw{
     Currencies{
         AED{
@@ -44,7 +50,7 @@ sw{
         }
         BAM{
             "BAM",
-            "Mark Inayoweza Kubadilishwa ya Bosnia na Hezegovina",
+            "Convertible Mark ya Bosnia na Hezegovina",
         }
         BBD{
             "BBD",
@@ -94,13 +100,9 @@ sw{
             "BWP",
             "Pula ya Botswana",
         }
-        BYN{
-            "BYN",
-            "Ruble ya Belarusi",
-        }
         BYR{
             "BYR",
-            "Ruble ya Belarusi (2000–2016)",
+            "Ruble ya Belarusi",
         }
         BZD{
             "BZD",
@@ -256,7 +258,7 @@ sw{
         }
         ILS{
             "₪",
-            "Shekeli Mpya ya Israel",
+            "Sheqel Mpya ya Israeli",
         }
         INR{
             "₹",
@@ -624,7 +626,7 @@ sw{
         }
         XAF{
             "FCFA",
-            "Faranga ya Afrika ya Kati CFA",
+            "CFA faranga ya BEAC",
         }
         XCD{
             "EC$",
@@ -632,7 +634,7 @@ sw{
         }
         XOF{
             "CFA",
-            "Faranga ya Afrika Magharibi CFA",
+            "CFA faranga za BCEAO",
         }
         XPF{
             "CFPF",
@@ -676,7 +678,7 @@ sw{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -693,7 +695,6 @@ sw{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -805,7 +806,7 @@ sw{
         }
         BAM{
             one{"Convertible Mark ya Bosnia na Hezegovina"}
-            other{"Mark Inayoweza Kubadilishwa ya Bosnia na Hezegovina"}
+            other{"Convertible Mark za Bosnia na Hezegovina"}
         }
         BBD{
             one{"Dola ya Barbados"}
@@ -855,13 +856,9 @@ sw{
             one{"pula ya Botswana"}
             other{"pula za Botswana"}
         }
-        BYN{
+        BYR{
             one{"Ruble ya Belarusi"}
             other{"Ruble za Belarusi"}
-        }
-        BYR{
-            one{"Ruble ya Belarusi (2000–2016)"}
-            other{"Ruble za Belarusi (2000–2016)"}
         }
         BZD{
             one{"Dola ya Belize"}
@@ -1008,8 +1005,8 @@ sw{
             other{"Rupiah za Indonesia"}
         }
         ILS{
-            one{"Shekeli Mpya ya Israel"}
-            other{"Shekeli Mpya za Israel"}
+            one{"Sheqel Mpya ya Israeli"}
+            other{"Sheqel Mpya za Israeli"}
         }
         INR{
             one{"rupia ya India"}
@@ -1372,24 +1369,24 @@ sw{
             other{"Tala za Samoa"}
         }
         XAF{
-            one{"faranga ya Afrika ya Kati CFA"}
-            other{"faranga za Afrika ya Kati CFA"}
+            one{"CFA faranga ya BEAC"}
+            other{"CFA faranga za BEAC"}
         }
         XCD{
             one{"Dola ya Karibea ya Mashariki"}
             other{"Dola za Karibea ya Mashariki"}
         }
         XOF{
-            one{"faranga ya Afrika Magharibi CFA"}
-            other{"faranga za Afrika Magharibi CFA"}
+            one{"CFA faranga za BCEAO"}
+            other{"CFA faranga za BCEAO"}
         }
         XPF{
             one{"Faranga ya CFP"}
             other{"Faranga za CFP"}
         }
         XXX{
-            one{"(sarafu isiyojulikana)"}
-            other{"(sarafu isiyojulikana)"}
+            one{"sarafu isiyojulikana"}
+            other{"sarafu zisizojulikana"}
         }
         YER{
             one{"Rial ya Yemeni"}
@@ -1408,5 +1405,5 @@ sw{
         one{"{1} {0}"}
         other{"{1} {0}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.19.14"}
 }

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ********************************************************************************
-*   Copyright (C) 1999-2016 International Business Machines Corporation and
+*   Copyright (C) 1999-2015 International Business Machines Corporation and
 *   others. All Rights Reserved.
 ********************************************************************************
 *   Date        Name        Description
@@ -24,7 +22,6 @@
 #include "unicode/parsepos.h"
 #include "unicode/symtable.h"
 #include "unicode/uversion.h"
-#include "cmemory.h"
 #include "hash.h"
 
 #define TEST_ASSERT_SUCCESS(status) {if (U_FAILURE(status)) { \
@@ -693,7 +690,7 @@ void UnicodeSetTest::TestAPI() {
     if (set != exp) { errln("FAIL: retain('s')"); return; }
 
     uint16_t buf[32];
-    int32_t slen = set.serialize(buf, UPRV_LENGTHOF(buf), status);
+    int32_t slen = set.serialize(buf, sizeof(buf)/sizeof(buf[0]), status);
     if (U_FAILURE(status)) { errln("FAIL: serialize"); return; }
     if (slen != 3 || buf[0] != 2 || buf[1] != 0x73 || buf[2] != 0x74) {
         errln("FAIL: serialize");
@@ -1060,7 +1057,7 @@ void UnicodeSetTest::TestPropertySet() {
         "\\uFDF2"
     };
 
-    static const int32_t DATA_LEN = UPRV_LENGTHOF(DATA);
+    static const int32_t DATA_LEN = sizeof(DATA)/sizeof(DATA[0]);
 
     for (int32_t i=0; i<DATA_LEN; i+=3) {  
         expectContainment(UnicodeString(DATA[i], -1, US_INV), CharsToUnicodeString(DATA[i+1]),
@@ -1464,7 +1461,7 @@ void UnicodeSetTest::TestInvalidCodePoint() {
         (UChar32)-1, 8,           0, 8,
         8, 0x110000,              8, 0x10FFFF
     };
-    const int32_t DATA_LENGTH = UPRV_LENGTHOF(DATA);
+    const int32_t DATA_LENGTH = sizeof(DATA)/sizeof(DATA[0]);
 
     UnicodeString pat;
     int32_t i;
@@ -1527,7 +1524,7 @@ void UnicodeSetTest::TestInvalidCodePoint() {
         (UChar32)-1,
         0x110000
     };
-    const int32_t DATA2_LENGTH = UPRV_LENGTHOF(DATA2);
+    const int32_t DATA2_LENGTH = sizeof(DATA2)/sizeof(DATA2[0]);
 
     for (i=0; i<DATA2_LENGTH; ++i) {
         UChar32 c = DATA2[i], end = 0x10FFFF;

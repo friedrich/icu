@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2012-2015, International Business Machines Corporation and    *
@@ -88,26 +86,7 @@ public enum DisplayContext {
      * e.g. "U.S." for US.
      * @stable ICU 54
      */
-    LENGTH_SHORT(Type.DISPLAY_LENGTH, 1),
-    /**
-     * ================================
-     * Settings for SUBSTITUTE_HANDLING (choose one)
-     */
-    /**
-     * A possible setting for SUBSTITUTE_HANDLING:
-     * Returns a fallback value (e.g., the input code) when no data is available.
-     * This is the default behavior.
-     * @draft ICU 58
-     * @provisional This API might change or be removed in a future release.
-     */
-    SUBSTITUTE(Type.SUBSTITUTE_HANDLING, 0),
-    /**
-     * A possible setting for SUBSTITUTE_HANDLING:
-     * Returns a null value when no data is available.
-     * @draft ICU 58
-     * @provisional This API might change or be removed in a future release.
-     */
-    NO_SUBSTITUTE(Type.SUBSTITUTE_HANDLING, 1);
+    LENGTH_SHORT(Type.DISPLAY_LENGTH, 1);
 
     /**
      * Type values for DisplayContext
@@ -129,13 +108,7 @@ public enum DisplayContext {
          * DISPLAY_LENGTH can be set to LENGTH_FULL or LENGTH_SHORT.
          * @stable ICU 54
          */
-        DISPLAY_LENGTH,
-        /**
-         * SUBSTITUTE_HANDLING can be set to SUBSTITUTE or NO_SUBSTITUTE.
-         * @draft ICU 58
-         * @provisional This API might change or be removed in a future release.
-         */
-        SUBSTITUTE_HANDLING
+        DISPLAY_LENGTH
     }
 
     private final Type type;

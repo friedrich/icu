@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/gsw.xml
+// *
+// ***************************************************************************
 gsw{
     Countries{
         001{"Wält"}
@@ -39,6 +45,7 @@ gsw{
         AI{"Anguilla"}
         AL{"Albaanie"}
         AM{"Armeenie"}
+        AN{"Niderländischi Antille"}
         AO{"Angoola"}
         AQ{"Antarktis"}
         AR{"Argentiinie"}
@@ -288,5 +295,5 @@ gsw{
     Countries%variant{
         MK{"Mazedoonie (EJRM)"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.19.74"}
 }

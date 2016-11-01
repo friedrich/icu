@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fi.xml
+// *
+// ***************************************************************************
 fi{
-    Version{"2.1.29.88"}
+    Version{"2.1.19.14"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -302,9 +308,6 @@ fi{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -672,9 +675,6 @@ fi{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beirut"}
         }
@@ -852,9 +852,6 @@ fi{
         "Asia:Tokyo"{
             ec{"Tokio"}
         }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"Ulan Bator"}
         }
@@ -954,9 +951,6 @@ fi{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrahan"}
-        }
         "Europe:Athens"{
             ec{"Ateena"}
         }
@@ -979,7 +973,7 @@ fi{
             ec{"Budapest"}
         }
         "Europe:Busingen"{
-            ec{"Büsingen"}
+            ec{"Busingen"}
         }
         "Europe:Chisinau"{
             ec{"Chişinău"}
@@ -1014,9 +1008,6 @@ fi{
         }
         "Europe:Kiev"{
             ec{"Kiova"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lissabon"}
@@ -1094,9 +1085,6 @@ fi{
         }
         "Europe:Tirane"{
             ec{"Tirana"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Uljanovsk"}
         }
         "Europe:Uzhgorod"{
             ec{"Užgorod"}
@@ -1800,9 +1788,6 @@ fi{
         "meta:Ponape"{
             ls{"Pohnpein aika"}
         }
-        "meta:Pyongyang"{
-            ls{"Pjongjangin aika"}
-        }
         "meta:Qyzylorda"{
             ld{"Qızılordan kesäaika"}
             lg{"Qızılordan aika"}
@@ -1842,7 +1827,7 @@ fi{
             ls{"Etelä-Georgian aika"}
         }
         "meta:Suriname"{
-            ls{"Surinamen aika"}
+            ls{"Surinamin aika"}
         }
         "meta:Syowa"{
             ls{"Syowan aika"}

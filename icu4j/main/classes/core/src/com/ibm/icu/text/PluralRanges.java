@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2008-2015, Google, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2008-2014, Google, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.text;
@@ -11,14 +9,14 @@ package com.ibm.icu.text;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import com.ibm.icu.impl.StandardPlural;
+import com.ibm.icu.text.PluralRules.StandardPluralCategories;
 import com.ibm.icu.util.Freezable;
 import com.ibm.icu.util.Output;
 
 /**
  * Utility class for returning the plural category for a range of numbers, such as 1–5, so that appropriate messages can
  * be chosen. The rules for determining this value vary widely across locales.
- *
+ * 
  * @author markdavis
  * @internal
  * @deprecated This API is ICU internal only.
@@ -28,11 +26,11 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
 
     private volatile boolean isFrozen;
     private Matrix matrix = new Matrix();
-    private boolean[] explicit = new boolean[StandardPlural.COUNT];
+    private boolean[] explicit = new boolean[StandardPluralCategories.COUNT];
 
     /**
      * Constructor
-     *
+     * 
      * @internal
      * @deprecated This API is ICU internal only.
      */
@@ -44,7 +42,7 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
      * Internal class for mapping from two StandardPluralCategories values to another.
      */
     private static final class Matrix implements Comparable<Matrix>, Cloneable {
-        private byte[] data = new byte[StandardPlural.COUNT * StandardPlural.COUNT];
+        private byte[] data = new byte[StandardPluralCategories.COUNT * StandardPluralCategories.COUNT];
         {
             for (int i = 0; i < data.length; ++i) {
                 data[i] = -1;
@@ -58,41 +56,41 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
          * Internal method for setting.
          */
         @SuppressWarnings("unused")
-        void set(StandardPlural start, StandardPlural end, StandardPlural result) {
-            data[start.ordinal() * StandardPlural.COUNT + end.ordinal()] = result == null ? (byte) -1
+        void set(StandardPluralCategories start, StandardPluralCategories end, StandardPluralCategories result) {
+            data[start.ordinal() * StandardPluralCategories.COUNT + end.ordinal()] = result == null ? (byte) -1
                     : (byte) result.ordinal();
         }
 
         /**
          * Internal method for setting; throws exception if already set.
          */
-        void setIfNew(StandardPlural start, StandardPlural end,
-                StandardPlural result) {
-            byte old = data[start.ordinal() * StandardPlural.COUNT + end.ordinal()];
+        void setIfNew(StandardPluralCategories start, StandardPluralCategories end,
+                StandardPluralCategories result) {
+            byte old = data[start.ordinal() * StandardPluralCategories.COUNT + end.ordinal()];
             if (old >= 0) {
                 throw new IllegalArgumentException("Previously set value for <" + start + ", " + end + ", "
-                        + StandardPlural.VALUES.get(old) + ">");
+                        + StandardPluralCategories.VALUES.get(old) + ">");
             }
-            data[start.ordinal() * StandardPlural.COUNT + end.ordinal()] = result == null ? (byte) -1
+            data[start.ordinal() * StandardPluralCategories.COUNT + end.ordinal()] = result == null ? (byte) -1
                     : (byte) result.ordinal();
         }
 
         /**
          * Internal method for getting.
          */
-        StandardPlural get(StandardPlural start, StandardPlural end) {
-            byte result = data[start.ordinal() * StandardPlural.COUNT + end.ordinal()];
-            return result < 0 ? null : StandardPlural.VALUES.get(result);
+        StandardPluralCategories get(StandardPluralCategories start, StandardPluralCategories end) {
+            byte result = data[start.ordinal() * StandardPluralCategories.COUNT + end.ordinal()];
+            return result < 0 ? null : StandardPluralCategories.VALUES.get(result);
         }
 
         /**
          * Internal method to see if <*,end> values are all the same.
          */
         @SuppressWarnings("unused")
-        StandardPlural endSame(StandardPlural end) {
-            StandardPlural first = null;
-            for (StandardPlural start : StandardPlural.VALUES) {
-                StandardPlural item = get(start, end);
+        StandardPluralCategories endSame(StandardPluralCategories end) {
+            StandardPluralCategories first = null;
+            for (StandardPluralCategories start : StandardPluralCategories.VALUES) {
+                StandardPluralCategories item = get(start, end);
                 if (item == null) {
                     continue;
                 }
@@ -111,12 +109,12 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
          * Internal method to see if <start,*> values are all the same.
          */
         @SuppressWarnings("unused")
-        StandardPlural startSame(StandardPlural start,
-                EnumSet<StandardPlural> endDone, Output<Boolean> emit) {
+        StandardPluralCategories startSame(StandardPluralCategories start,
+                EnumSet<StandardPluralCategories> endDone, Output<Boolean> emit) {
             emit.value = false;
-            StandardPlural first = null;
-            for (StandardPlural end : StandardPlural.VALUES) {
-                StandardPlural item = get(start, end);
+            StandardPluralCategories first = null;
+            for (StandardPluralCategories end : StandardPluralCategories.VALUES) {
+                StandardPluralCategories item = get(start, end);
                 if (item == null) {
                     continue;
                 }
@@ -152,7 +150,6 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
             return 0 == compareTo((Matrix) other);
         }
 
-        @Override
         public int compareTo(Matrix o) {
             for (int i = 0; i < data.length; ++i) {
                 int diff = data[i] - o.data[i];
@@ -169,13 +166,13 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
             result.data = data.clone();
             return result;
         }
-
+        
         @Override
         public String toString() {
             StringBuilder result = new StringBuilder();
-            for (StandardPlural i : StandardPlural.values()) {
-                for (StandardPlural j : StandardPlural.values()) {
-                    StandardPlural x = get(i, j);
+            for (StandardPluralCategories i : StandardPluralCategories.values()) {
+                for (StandardPluralCategories j : StandardPluralCategories.values()) {
+                    StandardPluralCategories x = get(i, j);
                     if (x != null) {
                         result.append(i + " & " + j + " → " + x + ";\n");
                     }
@@ -187,7 +184,7 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
 
     /**
      * Internal method for building. If the start or end are null, it means everything of that type.
-     *
+     * 
      * @param rangeStart
      *            plural category for the start of the range
      * @param rangeEnd
@@ -198,16 +195,16 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
      * @deprecated This API is ICU internal only.
      */
     @Deprecated
-    public void add(StandardPlural rangeStart, StandardPlural rangeEnd,
-            StandardPlural result) {
+    public void add(StandardPluralCategories rangeStart, StandardPluralCategories rangeEnd,
+            StandardPluralCategories result) {
         if (isFrozen) {
             throw new UnsupportedOperationException();
         }
         explicit[result.ordinal()] = true;
         if (rangeStart == null) {
-            for (StandardPlural rs : StandardPlural.values()) {
+            for (StandardPluralCategories rs : StandardPluralCategories.values()) {
                 if (rangeEnd == null) {
-                    for (StandardPlural re : StandardPlural.values()) {
+                    for (StandardPluralCategories re : StandardPluralCategories.values()) {
                         matrix.setIfNew(rs, re, result);
                     }
                 } else {
@@ -217,7 +214,7 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
             }
         } else if (rangeEnd == null) {
             explicit[rangeStart.ordinal()] = true;
-            for (StandardPlural re : StandardPlural.values()) {
+            for (StandardPluralCategories re : StandardPluralCategories.values()) {
                 matrix.setIfNew(rangeStart, re, result);
             }
         } else {
@@ -230,7 +227,7 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
     /**
      * Returns the appropriate plural category for a range from start to end. If there is no available data, then
      * 'end' is returned as an implicit value. (Such an implicit value can be tested for with {@link #isExplicit}.)
-     *
+     * 
      * @param start
      *            plural category for the start of the range
      * @param end
@@ -240,15 +237,15 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
      * @deprecated This API is ICU internal only.
      */
     @Deprecated
-    public StandardPlural get(StandardPlural start, StandardPlural end) {
-        StandardPlural result = matrix.get(start, end);
+    public StandardPluralCategories get(StandardPluralCategories start, StandardPluralCategories end) {
+        StandardPluralCategories result = matrix.get(start, end);
         return result == null ? end : result;
     }
 
     /**
      * Returns whether the appropriate plural category for a range from start to end
      * is explicitly in the data (vs given an implicit value). See also {@link #get}.
-     *
+     * 
      * @param start
      *            plural category for the start of the range
      * @param end
@@ -258,13 +255,13 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
      * @deprecated This API is ICU internal only.
      */
     @Deprecated
-    public boolean isExplicit(StandardPlural start, StandardPlural end) {
+    public boolean isExplicit(StandardPluralCategories start, StandardPluralCategories end) {
         return matrix.get(start, end) != null;
     }
 
     /**
      * Internal method to determines whether the StandardPluralCategories was explicitly used in any add statement.
-     *
+     * 
      * @param count
      *            plural category to test
      * @return true if set
@@ -272,7 +269,7 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
      * @deprecated This API is ICU internal only.
      */
     @Deprecated
-    public boolean isExplicitlySet(StandardPlural count) {
+    public boolean isExplicitlySet(StandardPluralCategories count) {
         return explicit[count.ordinal()];
     }
 
@@ -310,7 +307,6 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public int compareTo(PluralRanges that) {
         return matrix.compareTo(that.matrix);
@@ -321,7 +317,6 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public boolean isFrozen() {
         return isFrozen;
@@ -332,7 +327,6 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public PluralRanges freeze() {
         isFrozen = true;
@@ -344,7 +338,6 @@ public final class PluralRanges implements Freezable<PluralRanges>, Comparable<P
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public PluralRanges cloneAsThawed() {
         PluralRanges result = new PluralRanges();

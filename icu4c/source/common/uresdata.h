@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
-* Copyright (C) 1999-2016, International Business Machines
+* Copyright (C) 1999-2015, International Business Machines
 *                Corporation and others. All Rights Reserved.
 ******************************************************************************
 *   file name:  uresdata.h
@@ -381,7 +379,7 @@ enum {
 /*
  * Structure for a single, memory-mapped ResourceBundle.
  */
-typedef struct ResourceData {
+typedef struct {
     UDataMemory *data;
     const int32_t *pRoot;
     const uint16_t *p16BitUnits;
@@ -455,57 +453,11 @@ res_getTableItemByIndex(const ResourceData *pResData, Resource table, int32_t in
 U_INTERNAL Resource U_EXPORT2
 res_getTableItemByKey(const ResourceData *pResData, Resource table, int32_t *indexS, const char* * key);
 
-/**
- * Iterates over the path and stops when a scalar resource is found.
- * Follows aliases.
+/*
  * Modifies the contents of *path (replacing separators with NULs),
  * and also moves *path forward while it finds items.
- *
- * @param path input: "CollationElements/Sequence" or "zoneStrings/3/2" etc.;
- *             output: points to the part that has not yet been processed
  */
-U_CFUNC Resource res_findResource(const ResourceData *pResData, Resource r,
-                                  char** path, const char** key);
-
-#ifdef __cplusplus
-
-#include "resource.h"
-
-U_NAMESPACE_BEGIN
-
-class ResourceDataValue : public ResourceValue {
-public:
-    ResourceDataValue() : pResData(NULL), res(URES_NONE) {}
-    virtual ~ResourceDataValue();
-
-    void setData(const ResourceData *data) { pResData = data; }
-    void setResource(Resource r) { res = r; }
-
-    virtual UResType getType() const;
-    virtual const UChar *getString(int32_t &length, UErrorCode &errorCode) const;
-    virtual const UChar *getAliasString(int32_t &length, UErrorCode &errorCode) const;
-    virtual int32_t getInt(UErrorCode &errorCode) const;
-    virtual uint32_t getUInt(UErrorCode &errorCode) const;
-    virtual const int32_t *getIntVector(int32_t &length, UErrorCode &errorCode) const;
-    virtual const uint8_t *getBinary(int32_t &length, UErrorCode &errorCode) const;
-    virtual ResourceArray getArray(UErrorCode &errorCode) const;
-    virtual ResourceTable getTable(UErrorCode &errorCode) const;
-    virtual UBool isNoInheritanceMarker() const;
-    virtual int32_t getStringArray(UnicodeString *dest, int32_t capacity,
-                                   UErrorCode &errorCode) const;
-    virtual int32_t getStringArrayOrStringAsArray(UnicodeString *dest, int32_t capacity,
-                                                  UErrorCode &errorCode) const;
-    virtual UnicodeString getStringOrFirstOfArray(UErrorCode &errorCode) const;
-
-    const ResourceData *pResData;
-
-private:
-    Resource res;
-};
-
-U_NAMESPACE_END
-
-#endif  /* __cplusplus */
+U_CFUNC Resource res_findResource(const ResourceData *pResData, Resource r, char** path, const char** key);
 
 /**
  * Swap an ICU resource bundle. See udataswp.h.

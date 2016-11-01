@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ja.xml
+// *
+// ***************************************************************************
 ja{
     Currencies{
         ADP{
@@ -16,7 +22,7 @@ ja{
         }
         AFN{
             "AFN",
-            "アフガニスタン アフガニー",
+            "アフガニー",
         }
         ALK{
             "ALK",
@@ -36,7 +42,7 @@ ja{
         }
         AOA{
             "AOA",
-            "アンゴラ クワンザ",
+            "クワンザ",
         }
         AOK{
             "AOK",
@@ -75,7 +81,7 @@ ja{
             "オーストリア シリング",
         }
         AUD{
-            "A$",
+            "AU$",
             "オーストラリア ドル",
         }
         AWG{
@@ -218,13 +224,9 @@ ja{
             "BYB",
             "ベラルーシ 新ルーブル (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "ベラルーシ ルーブル",
-        }
         BYR{
             "BYR",
-            "ベラルーシ ルーブル (2000–2016)",
+            "ベラルーシ ルーブル",
         }
         BZD{
             "BZD",
@@ -548,7 +550,7 @@ ja{
         }
         KPW{
             "KPW",
-            "北朝鮮ウォン",
+            "北朝鮮 ウォン",
         }
         KRH{
             "KRH",
@@ -560,7 +562,7 @@ ja{
         }
         KRW{
             "₩",
-            "韓国ウォン",
+            "韓国 ウォン",
         }
         KWD{
             "KWD",
@@ -908,7 +910,7 @@ ja{
         }
         SSP{
             "SSP",
-            "南スーダン ポンド",
+            "南スーダン・ポンド",
         }
         STD{
             "STD",
@@ -931,7 +933,7 @@ ja{
             "スワジランド リランゲニ",
         }
         THB{
-            "THB",
+            "฿",
             "タイ バーツ",
         }
         TJR{
@@ -1208,7 +1210,7 @@ ja{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -1226,7 +1228,6 @@ ja{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -1281,7 +1282,7 @@ ja{
         TOP{"T$"}
         TRY{"₺"}
         TTD{"$"}
-        TWD{"$"}
+        TWD{"NT$"}
         UAH{"₴"}
         USD{"$"}
         UYU{"$"}
@@ -1306,7 +1307,7 @@ ja{
             other{"アフガニスタン アフガニー (1927–2002)"}
         }
         AFN{
-            other{"アフガニスタン アフガニー"}
+            other{"アフガニー"}
         }
         ALK{
             other{"アルバニア レク (1946–1965)"}
@@ -1321,7 +1322,7 @@ ja{
             other{"オランダ領アンティル ギルダー"}
         }
         AOA{
-            other{"アンゴラ クワンザ"}
+            other{"クワンザ"}
         }
         AOK{
             other{"アンゴラ クワンザ (1977–1991)"}
@@ -1458,11 +1459,8 @@ ja{
         BYB{
             other{"ベラルーシ 新ルーブル (1994–1999)"}
         }
-        BYN{
-            other{"ベラルーシ ルーブル"}
-        }
         BYR{
-            other{"ベラルーシ ルーブル (2000–2016)"}
+            other{"ベラルーシ ルーブル"}
         }
         BZD{
             other{"ベリーズ ドル"}
@@ -1705,7 +1703,7 @@ ja{
             other{"コモロ フラン"}
         }
         KPW{
-            other{"北朝鮮ウォン"}
+            other{"北朝鮮 ウォン"}
         }
         KRH{
             other{"韓国 ファン（1953–1962）"}
@@ -1714,7 +1712,7 @@ ja{
             other{"韓国 ウォン（1945–1953）"}
         }
         KRW{
-            other{"韓国ウォン"}
+            other{"韓国 ウォン"}
         }
         KWD{
             other{"クウェート ディナール"}
@@ -1975,7 +1973,7 @@ ja{
             other{"スリナム ギルダー"}
         }
         SSP{
-            other{"南スーダン ポンド"}
+            other{"南スーダン・ポンド"}
         }
         STD{
             other{"サントメ・プリンシペ ドブラ"}
@@ -2194,5 +2192,5 @@ ja{
     CurrencyUnitPatterns{
         other{"{0}{1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.19.89"}
 }

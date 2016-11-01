@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2001-2016, International Business Machines Corporation and    *
+ * Copyright (C) 2001-2004, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -47,7 +45,7 @@ public interface UnicodeMatcher {
     public static final int U_MATCH = 2;
 
     /**
-     * The character at index i, where i &lt; contextStart || i &gt;= contextLimit,
+     * The character at index i, where i < contextStart || i >= contextLimit,
      * is ETHER.  This allows explicit matching by rules and UnicodeSets
      * of text outside the context.  In traditional terms, this allows anchoring
      * at the start and/or end.
@@ -60,11 +58,11 @@ public interface UnicodeMatcher {
      * the given text at the given offset.  Zero, one, or more
      * characters may be matched.
      *
-     * Matching in the forward direction is indicated by limit &gt;
+     * Matching in the forward direction is indicated by limit >
      * offset.  Characters from offset forwards to limit-1 will be
      * considered for matching.
      *
-     * Matching in the reverse direction is indicated by limit &lt;
+     * Matching in the reverse direction is indicated by limit <
      * offset.  Characters from offset backwards to limit+1 will be
      * considered for matching.
      *
@@ -117,7 +115,7 @@ public interface UnicodeMatcher {
 
     /**
      * Returns TRUE if this matcher will match a character c, where c
-     * &amp; 0xFF == v, at offset, in the forward direction (with limit &gt;
+     * & 0xFF == v, at offset, in the forward direction (with limit >
      * offset).  This is used by <tt>RuleBasedTransliterator</tt> for
      * indexing.
      *

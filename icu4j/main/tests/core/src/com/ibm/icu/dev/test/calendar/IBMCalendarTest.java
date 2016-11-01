@@ -1,26 +1,20 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2000-2016, International Business Machines Corporation and
+ * Copyright (C) 2000-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.calendar;
 
-import java.text.FieldPosition;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.ibm.icu.impl.CalendarAstronomer;
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.impl.ZoneMeta;
 import com.ibm.icu.text.DateFormat;
-import com.ibm.icu.text.DateFormatSymbols;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.util.BuddhistCalendar;
 import com.ibm.icu.util.Calendar;
@@ -35,7 +29,12 @@ import com.ibm.icu.util.ULocale;
 /**
  * @summary Tests of new functionality in IBMCalendar
  */
-public class IBMCalendarTest extends CalendarTestFmwk {
+public class IBMCalendarTest extends CalendarTest {
+
+    public static void main(String[] args) throws Exception {
+        new IBMCalendarTest().run(args);
+    }
+
     /**
      * Test weekend support in IBMCalendar.
      *
@@ -46,7 +45,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
      *       a Calendar in the given locale (using getInstance()) and call
      *       that Calendar's isWeekend() etc. methods.
      */
-    @Test
     public void TestWeekend() {
         SimpleDateFormat fmt = new SimpleDateFormat("EEE MMM dd yyyy G HH:mm:ss.SSS");
 
@@ -203,7 +201,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
      * Verify that BuddhistCalendar shifts years to Buddhist Era but otherwise
      * behaves like GregorianCalendar.
      */
-    @Test
     public void TestBuddhist() {
         quasiGregorianTest(new BuddhistCalendar(),
                            new int[] {
@@ -212,7 +209,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
                            });
     }
 
-    @Test
     public void TestBuddhistCoverage() {
     {
         // new BuddhistCalendar(ULocale)
@@ -309,7 +305,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
     /**
      * Test limits of the Buddhist calendar.
      */
-    @Test
     public void TestBuddhistLimits() {
         // Final parameter is either number of days, if > 0, or test
         // duration in seconds, if < 0.
@@ -323,7 +318,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
     /**
      * Default calendar for Thai (Ticket#6302)
      */
-    @Test
     public void TestThaiDefault() {
         // Buddhist calendar is used as the default calendar for
         // Thai locale
@@ -333,12 +327,11 @@ public class IBMCalendarTest extends CalendarTestFmwk {
             errln("FAIL: Buddhist calendar is not returned for locale " + cal.toString());
         }
     }
-
+    
     /**
      * Verify that TaiwanCalendar shifts years to Minguo Era but otherwise
      * behaves like GregorianCalendar.
      */
-    @Test
     public void TestTaiwan() {
         quasiGregorianTest(new TaiwanCalendar(),
                            new int[] {
@@ -352,7 +345,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
     /**
      * Test limits of the Taiwan calendar.
      */
-    @Test
     public void TestTaiwanLimits() {
         // Final parameter is either number of days, if > 0, or test
         // duration in seconds, if < 0.
@@ -363,7 +355,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         doTheoreticalLimitsTest(taiwan, false);
     }
 
-    @Test
     public void TestTaiwanCoverage() {
     {
         // new TaiwanCalendar(ULocale)
@@ -461,7 +452,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
      * Verify that JapaneseCalendar shifts years to Japanese Eras but otherwise
      * behaves like GregorianCalendar.
      */
-    @Test
     public void TestJapanese() {
         // First make sure this test works for GregorianCalendar
         int[] control = {
@@ -488,7 +478,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
     /**
      * Test limits of the Gregorian calendar.
      */
-    @Test
     public void TestGregorianLimits() {
         // Final parameter is either number of days, if > 0, or test
         // duration in seconds, if < 0.
@@ -503,7 +492,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
      * Test behavior of fieldDifference around leap years.  Also test a large
      * field difference to check binary search.
      */
-    @Test
     public void TestLeapFieldDifference() {
         Calendar cal = Calendar.getInstance();
         cal.set(2004, Calendar.FEBRUARY, 29);
@@ -544,7 +532,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
     /**
      * Test ms_MY "Malay (Malaysia)" locale.  Bug 1543.
      */
-    @Test
     public void TestMalaysianInstance() {
         Locale loc = new Locale("ms", "MY");  // Malay (Malaysia)
         Calendar cal = Calendar.getInstance(loc);
@@ -558,7 +545,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
      * field <=> time mapping, since they affect the interpretation of
      * the WEEK_OF_MONTH or WEEK_OF_YEAR fields.
      */
-    @Test
     public void TestWeekShift() {
         Calendar cal = new GregorianCalendar(
                              TimeZone.getTimeZone("America/Los_Angeles"),
@@ -628,7 +614,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
      * different day.  The DST adjustments we use to keep the hour
      * constant across DST changes can backfire and change the day.
      */
-    @Test
     public void TestTimeZoneTransitionAdd() {
         Locale locale = Locale.US; // could also be CHINA
         SimpleDateFormat dateFormat =
@@ -660,7 +645,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestJB1684() {
         class TestData {
             int year;
@@ -805,7 +789,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
     /**
      * Test the ZoneMeta API.
      */
-    @Test
     public void TestZoneMeta() {
         // Test index by country API
 
@@ -864,7 +847,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestComparable() {
     GregorianCalendar c0 = new GregorianCalendar();
     GregorianCalendar c1 = new GregorianCalendar();
@@ -887,7 +869,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
     /**
      * Miscellaneous tests to increase coverage.
      */
-    @Test
     public void TestCoverage() {
         // BuddhistCalendar
         BuddhistCalendar bcal = new BuddhistCalendar();
@@ -953,27 +934,9 @@ public class IBMCalendarTest extends CalendarTestFmwk {
              * For serialization
              */
             private static final long serialVersionUID = -4558903444622684759L;
-
-            @Override
-            protected int handleGetLimit(int field, int limitType) {
-                if (limitType == Calendar.LEAST_MAXIMUM) {
-                    return 1;
-                } else if (limitType == Calendar.GREATEST_MINIMUM) {
-                    return 7;
-                }
-               return -1;
-            }
-            @Override
-            protected int handleComputeMonthStart(int eyear, int month, boolean useMonth) {
-                if (useMonth) {
-                    return eyear * 365 + month * 31;
-                } else {
-                    return eyear * 365;
-                }
-            }
-            @Override
-            protected int handleGetExtendedYear() {return 2017;}
-
+            protected int handleGetLimit(int field, int limitType) {return 0;}
+            protected int handleComputeMonthStart(int eyear, int month, boolean useMonth) {return 0;}
+            protected int handleGetExtendedYear() {return 0;}
             public void run(){
                 if (Calendar.gregorianPreviousMonthLength(2000,2) != 29){
                     errln("Year 2000 Feb should have 29 days.");
@@ -989,37 +952,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
                 if (!getType().equals("unknown")){
                     errln ("Calendar.getType() should be 'unknown'");
                 }
-
-                // Tests for complete coverage of Calendar functions.
-                int julianDay = Calendar.millisToJulianDay(millis - 1);
-                assertEquals("Julian max day -1", julianDay, Calendar.MAX_JULIAN - 1);
-
-                DateFormat df1 = handleGetDateFormat("GG yyyy-d:MM", "option=xyz", Locale.getDefault());
-                if (!df1.equals(handleGetDateFormat("GG yyyy-d:MM", "option=xyz", ULocale.getDefault()))){
-                    errln ("Calendar.handleGetDateFormat(String, Locale) should delegate to ( ,ULocale)");
-                }
-
-                // Prove that the local overrides are used.
-                int leastMsInDay = handleGetLimit(Calendar.MILLISECONDS_IN_DAY, Calendar.LEAST_MAXIMUM);
-                assertEquals("getLimit test 1", leastMsInDay, 1);
-                int maxMsInDay = handleGetLimit(Calendar.WEEK_OF_MONTH, Calendar.GREATEST_MINIMUM);
-                assertEquals("getLimit test 2", 7, maxMsInDay);
-
-                int febLeapLength = handleGetMonthLength(2020, Calendar.FEBRUARY);
-                assertEquals("handleMonthLength", 31, febLeapLength);
-                int exYear = handleGetExtendedYear();
-                assertEquals("handleGetExtendeYear", exYear, 2017);
-                int monthStart = handleComputeMonthStart(2016, 4, false);
-                assertEquals("handleComputeMonthStart false", 735840, monthStart);
-                monthStart = handleComputeMonthStart(2016, 4, true);
-                assertEquals("handleComputeMonthStart true", 735964, monthStart);
-
-                Calendar cal = Calendar.getInstance();
-                cal.set(1980, 5, 2);
-                this.setTime(cal.getTime());
-                assertEquals("handleComputeFields: year set", 1980, get(YEAR));
-                assertEquals("handleComputeFields: month set", 5, get(MONTH));
-                assertEquals("handleComputeFields: day set", 2, get(DAY_OF_MONTH));
             }
         }
         StubCalendar stub = new StubCalendar();
@@ -1027,19 +959,18 @@ public class IBMCalendarTest extends CalendarTestFmwk {
     }
 
     // Tests for jb 4541
-    @Test
     public void TestJB4541() {
         ULocale loc = new ULocale("en_US");
 
         // !!! Shouldn't we have an api like this?
-        // !!! Question: should this reflect those actually available in this copy of ICU, or
+        // !!! Question: should this reflect those actually available in this copy of ICU, or 
         // the list of types we assume is available?
         // String[] calTypes = Calendar.getAvailableTypes();
         final String[] calTypes = {
-            "buddhist", "chinese", "coptic", "ethiopic", "gregorian", "hebrew",
+            "buddhist", "chinese", "coptic", "ethiopic", "gregorian", "hebrew", 
             "islamic", "islamic-civil", "japanese", "roc"
         };
-
+        
         // constructing a DateFormat with a locale indicating a calendar type should construct a
         // date format appropriate to that calendar
         final Date time = new Date();
@@ -1062,19 +993,18 @@ public class IBMCalendarTest extends CalendarTestFmwk {
 
         // dateFormat.setCalendar should throw exception if wrong format for calendar
         if (false) {
-            DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL,
-                                                           DateFormat.FULL,
+            DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, 
+                                                           DateFormat.FULL, 
                                                            new ULocale("en_US@calendar=chinese"));
 
             logln("dateformat type: " + df.getClass().getName());
 
             Calendar cal = Calendar.getInstance(new ULocale("en_US@calendar=chinese"));
-
+                                                
             logln("calendar type: " + cal.getClass().getName());
         }
     }
 
-    @Test
     public void TestTypes() {
         String[] locs = {
                 "en_US_VALLEYGIRL",
@@ -1091,12 +1021,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
                 "th",       // th's default region is TH and buddhist is used as default for TH
                 "en_TH",    // Default calendar for any locales with region TH is buddhist
                 "th_TH@calendar=iso8601",   // iso8601 calendar type
-                "fr_CH",
-                "fr_SA",
-                "fr_CH@rg=sazzzz",
-                "fr_CH@calendar=japanese;rg=sazzzz",
-                "fr_TH@rg=SA",  // ignore malformed rg tag, use buddhist
-                "th@rg=SA",		// ignore malformed rg tag, use buddhist
         };
 
         String[] types = {
@@ -1113,13 +1037,7 @@ public class IBMCalendarTest extends CalendarTestFmwk {
                 "buddhist",
                 "buddhist",
                 "buddhist",
-                "gregorian",    // iso8601 is a gregorian sub type
-                "gregorian",
-                "islamic-umalqura",
-                "islamic-umalqura",
-                "japanese",
-                "buddhist",
-                "buddhist",
+                "gregorian",    // iso8601 is a gregiran sub type
         };
 
         for (int i = 0; i < locs.length; i++) {
@@ -1130,7 +1048,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestISO8601() {
         final ULocale[] TEST_LOCALES = {
             new ULocale("en_US@calendar=iso8601"),
@@ -1202,12 +1119,10 @@ public class IBMCalendarTest extends CalendarTestFmwk {
             cal.set(Calendar.MILLISECOND, ms);
         }
 
-        @Override
         public String toString() {
             return String.format("%04d-%02d-%02d %02d:%02d:%02d.%03d", year, month, day, hour, min, sec, ms);
         }
 
-        @Override
         public boolean equals(Object other) {
             if (other instanceof CalFields) {
                 CalFields otr = (CalFields)other;
@@ -1221,7 +1136,7 @@ public class IBMCalendarTest extends CalendarTestFmwk {
             }
             return false;
         }
-
+ 
         boolean isEquivalentTo(Calendar cal) {
             return year == cal.get(Calendar.YEAR)
                     && month == cal.get(Calendar.MONTH) + 1
@@ -1244,7 +1159,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestAmbiguousWallTimeAPIs() {
         Calendar cal = Calendar.getInstance();
 
@@ -1273,7 +1187,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestRepeatedWallTime() {
         final Object[][] TESTDATA = {
             // Time zone            Input wall time                     WALLTIME_LAST in GMT                WALLTIME_FIRST in GMT
@@ -1338,7 +1251,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestSkippedWallTime() {
         final Object[][] TESTDATA = {
             // Time zone            Input wall time                     Valid wall time?
@@ -1475,7 +1387,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestFieldDifference() {
         class TFDItem {
             public String tzname;
@@ -1581,7 +1492,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestAddRollEra0AndEraBounds() {
         final String[] localeIDs = {
             // calendars with non-modern era 0 that goes backwards, max era == 1
@@ -1607,7 +1517,7 @@ public class IBMCalendarTest extends CalendarTestFmwk {
             String calType = ucalTest.getType();
             boolean era0YearsGoBackwards = (calType.equals("gregorian") || calType.equals("roc") || calType.equals("coptic"));
             int yrBefore, yrAfter, yrMax, eraAfter, eraMax, eraNow;
-
+            
             ucalTest.clear();
             ucalTest.set(Calendar.YEAR, 2);
             ucalTest.set(Calendar.ERA, 0);
@@ -1675,7 +1585,7 @@ public class IBMCalendarTest extends CalendarTestFmwk {
                 if ( yrAfter<yrBefore ) {
                     errln("Fail: era 1 add 1 year does not move forward in time for " + localeID);
                 }
-
+    
                 ucalTest.clear();
                 ucalTest.set(Calendar.YEAR, 2);
                 ucalTest.set(Calendar.ERA, 1);
@@ -1712,7 +1622,7 @@ public class IBMCalendarTest extends CalendarTestFmwk {
                                 + localeID + " (get era " + eraAfter + " year " + yrAfter + ")");
                     }
                 }
-
+                
                 // if current era  > 1, try the same roll tests for current era
                 ucalTest.setTime(new Date());
                 eraNow = ucalTest.get(Calendar.ERA);
@@ -1750,7 +1660,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestWeekData() {
         // Each line contains two locales using the same set of week rule data.
         final String LOCALE_PAIRS[] = {
@@ -1791,7 +1700,6 @@ public class IBMCalendarTest extends CalendarTestFmwk {
         }
     }
 
-    @Test
     public void TestAddAcrossZoneTransition() {
         class TestData {
             String zone;
@@ -1961,54 +1869,5 @@ public class IBMCalendarTest extends CalendarTestFmwk {
                         + ", result:" + res.toString() + " - expected:" + d.expected.toString());
             }
         }
-    }
-
-    public void TestSimpleDateFormatCoverage() {
-
-        class StubSimpleDateFormat extends SimpleDateFormat {
-            private static final long serialVersionUID = 1L;
-
-            public StubSimpleDateFormat(String pattern, Locale loc) {
-                new SimpleDateFormat(pattern, loc);
-            }
-
-            public void run(){
-                Calendar cal = Calendar.getInstance(Locale.US);
-                cal.clear();
-                cal.set(2000, Calendar.MARCH, 18, 15,  0, 1); // Sat 15:00
-
-                DateFormatSymbols theseSymbols = this.getSymbols();
-                String shouldBeMonday = theseSymbols.getWeekdays()[Calendar.MONDAY];
-                assertEquals("Should be Monday", "Monday", shouldBeMonday);
-
-                String [] matchData = {"16", "2016", "2016AD", "Monday", "lunes"};
-                int matchIndex =  matchString("Monday March 28, 2016", 0, Calendar.DAY_OF_WEEK, matchData, cal);
-                assertEquals("matchData for Monday", 6, matchIndex); // Position of the pointer after the matched string.
-                matchIndex =  matchString("Monday March 28, 2016 AD", 17, Calendar.YEAR, matchData, cal);
-                assertEquals("matchData for 2016", 21, matchIndex); // Position of the pointer after the matched string.
-
-                char ch = 'y';
-                int count = 4;
-                int beginOffset = 0;
-                cal.set(Calendar.YEAR, 2000);  // Reset this
-                assertEquals("calendar year reset", 2000, cal.get(Calendar.YEAR));
-                FieldPosition pos = new FieldPosition(java.text.DateFormat.YEAR_FIELD);
-                String subFormatResult = subFormat(ch, count, beginOffset,
-                        pos, theseSymbols, cal);
-                assertEquals("subFormat result", "2000", subFormatResult);
-
-                String testParseString = "some text with a date 2017-03-15";
-                int start = 22;
-                boolean obeyCount = true;
-                boolean allowNegative = false;
-                boolean ambiguousYear[] = {true, false, true};
-                int subParseResult = subParse(testParseString, start, ch, count,
-                        obeyCount, allowNegative, ambiguousYear, cal);
-                assertEquals("subParseResult result", 26, subParseResult);
-                assertEquals("parsed year", 2017, cal.get(Calendar.YEAR));
-            }
-        }
-        StubSimpleDateFormat stub = new StubSimpleDateFormat("EEE MMM dd yyyy G HH:mm:ss.SSS", Locale.US);
-        stub.run();
     }
 }

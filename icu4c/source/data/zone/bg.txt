@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bg.xml
+// *
+// ***************************************************************************
 bg{
-    Version{"2.1.30.6"}
+    Version{"2.1.19.94"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Абиджан"}
@@ -302,9 +308,6 @@ bg{
         }
         "America:El_Salvador"{
             ec{"Салвадор"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Форт Нелсън"}
         }
         "America:Fortaleza"{
             ec{"Форталеза"}
@@ -669,9 +672,6 @@ bg{
         "Asia:Bangkok"{
             ec{"Банкок"}
         }
-        "Asia:Barnaul"{
-            ec{"Барнаул"}
-        }
         "Asia:Beirut"{
             ec{"Бейрут"}
         }
@@ -849,9 +849,6 @@ bg{
         "Asia:Tokyo"{
             ec{"Токио"}
         }
-        "Asia:Tomsk"{
-            ec{"Томск"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"Улан Батор"}
         }
@@ -951,9 +948,6 @@ bg{
         "Europe:Andorra"{
             ec{"Андора"}
         }
-        "Europe:Astrakhan"{
-            ec{"Астрахан"}
-        }
         "Europe:Athens"{
             ec{"Атина"}
         }
@@ -1011,9 +1005,6 @@ bg{
         }
         "Europe:Kiev"{
             ec{"Киев"}
-        }
-        "Europe:Kirov"{
-            ec{"Киров"}
         }
         "Europe:Lisbon"{
             ec{"Лисабон"}
@@ -1090,9 +1081,6 @@ bg{
         }
         "Europe:Tirane"{
             ec{"Тирана"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Уляновск"}
         }
         "Europe:Uzhgorod"{
             ec{"Ужгород"}
@@ -1758,9 +1746,6 @@ bg{
         }
         "meta:Ponape"{
             ls{"Понапе"}
-        }
-        "meta:Pyongyang"{
-            ls{"Времето в Пхенян"}
         }
         "meta:Reunion"{
             ls{"Реюнион"}

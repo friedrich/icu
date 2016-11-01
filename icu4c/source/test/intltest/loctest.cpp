@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2015, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -13,7 +11,6 @@
 #include "unicode/dtfmtsym.h"
 #include "unicode/brkiter.h"
 #include "unicode/coll.h"
-#include "cmemory.h"
 #include "cstring.h"
 #include <stdio.h>
 #include <string.h>
@@ -1552,7 +1549,7 @@ LocaleTest::Test4105828()
             return;
         }
         UnicodeString result;
-        FieldPosition pos(FieldPosition::DONT_CARE);
+        FieldPosition pos(0);
         fmt->format((int32_t)1, result, pos);
         UnicodeString temp;
         if(result != "100%") {
@@ -1620,7 +1617,7 @@ LocaleTest::TestKeywordVariants(void) {
     const UnicodeString *keywordString;
     int32_t keywordLen = 0;
 
-    for(i = 0; i < UPRV_LENGTHOF(testCases); i++) {
+    for(i = 0; i < (int32_t)(sizeof(testCases)/sizeof(testCases[0])); i++) {
         status = U_ZERO_ERROR;
         Locale l(testCases[i].localeID);
         keywords = l.createKeywords(status);
@@ -1706,7 +1703,7 @@ LocaleTest::TestKeywordVariantParsing(void) {
     int32_t resultLen = 0;
     char buffer[256];
 
-    for(i = 0; i < UPRV_LENGTHOF(testCases); i++) {
+    for(i = 0; i < (int32_t)(sizeof(testCases)/sizeof(testCases[0])); i++) {
         *buffer = 0;
         Locale l(testCases[i].localeID);
         resultLen = l.getKeywordValue(testCases[i].keyword, buffer, 256, status);
@@ -1737,7 +1734,7 @@ LocaleTest::TestSetKeywordValue(void) {
 
     Locale l(Locale::getGerman());
 
-    for(i = 0; i < UPRV_LENGTHOF(testCases); i++) {
+    for(i = 0; i < (int32_t)(sizeof(testCases)/sizeof(testCases[0])); i++) {
         l.setKeywordValue(testCases[i].keyword, testCases[i].value, status);
         if(U_FAILURE(status)) {
             err("FAIL: Locale::setKeywordValue failed - %s\n", u_errorName(status));
@@ -2325,7 +2322,7 @@ void LocaleTest::TestCanonicalization(void)
 
     int32_t i, j;
     
-    for (i=0; i < UPRV_LENGTHOF(testCases); i++) {
+    for (i=0; i < (int)(sizeof(testCases)/sizeof(testCases[0])); i++) {
         for (j=0; j<3; ++j) {
             const char* expected = (j==1) ? testCases[i].canonicalID : testCases[i].getNameID;
             Locale loc = _canonicalize(j, testCases[i].localeID);

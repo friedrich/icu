@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2009-2016, International Business Machines Corporation and    *
+ * Copyright (C) 2009-2015, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -81,7 +79,7 @@ public abstract class CurrencyDisplayNames {
      * for the locale, but not data for the requested ISO code, null is returned
      * from those APIs instead of a substitute value.
      * 
-     * @param locale the {@link java.util.Locale} into which to localize the names
+     * @param locale the JDK locale into which to localize the names
      * @param noSubstitute if true, do not return substitute values.
      * @return a CurrencyDisplayNames
      * @stable ICU 54

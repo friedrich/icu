@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fo.xml
+// *
+// ***************************************************************************
 fo{
     Countries{
         001{"heimur"}
@@ -40,6 +46,7 @@ fo{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Niðurlendsku Antilloyggjarnar"}
         AO{"Angola"}
         AQ{"Antarktis"}
         AR{"Argentina"}
@@ -302,5 +309,5 @@ fo{
     Countries%variant{
         MK{"Makedónia (FJM)"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.19.17"}
 }

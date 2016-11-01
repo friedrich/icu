@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ********************************************************************************
-*   Copyright (C) 2012-2016, International Business Machines
+*   Copyright (C) 2012-2015, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 ********************************************************************************
 *
@@ -168,7 +166,7 @@ public:
      * @param pos       On input: an alignment field, if desired.
      *                  On output: the offsets of the alignment field.
      * @return          Reference to 'appendTo' parameter.
-     * @stable ICU 56
+     * @draft ICU 56
      */
     virtual UnicodeString& format(int32_t number,
                                   UnicodeString& appendTo,
@@ -275,7 +273,7 @@ public:
      * @return          Reference to 'appendTo' parameter.
      * @internal
      */
-    virtual UnicodeString& format(StringPiece number,
+    virtual UnicodeString& format(const StringPiece &number,
                                   UnicodeString& appendTo,
                                   FieldPositionIterator* posIter,
                                   UErrorCode& status) const;
@@ -304,7 +302,7 @@ public:
      * Format a decimal number. Currently sets status to U_UNSUPPORTED_ERROR.
      * The number is a DigitList wrapper onto a floating point decimal number.
      * The default implementation in NumberFormat converts the decimal number
-     * to a double and formats that.
+     * to a double and formats that.  
      *
      * @param number    The number, a DigitList format Decimal Floating Point.
      * @param appendTo  Output parameter to receive result.
@@ -337,7 +335,7 @@ public:
      * CompactDecimalFormat does not support parsing. This implementation
      * sets status to U_UNSUPPORTED_ERROR
      *
-     * @param text      Unused.
+     * @param text      Unused. 
      * @param result    Does not change.
      * @param status    Always set to U_UNSUPPORTED_ERROR.
      * @stable ICU 51

@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ********************************************************************************
  * Copyright (C) 2010-2014, Google, International Business Machines Corporation *
@@ -174,8 +172,7 @@ public class CharSequences {
      */
     @Deprecated
     public static int compare(int codepoint, CharSequence a) {
-        int result = compare(a, codepoint);
-        return result > 0 ? -1 : result < 0 ? 1 : 0; // Reverse the order.
+        return -compare(a, codepoint);
     }
 
     /**

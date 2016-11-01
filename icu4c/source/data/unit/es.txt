@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/es.xml
+// *
+// ***************************************************************************
 es{
-    Version{"2.1.28.80"}
+    Version{"2.1.20.15"}
     durationUnits{
         hm{"h:mm"}
         hms{"h:mm:ss"}
@@ -79,7 +85,6 @@ es{
                 dnam{"kilómetros cuadrados"}
                 one{"{0} kilómetro cuadrado"}
                 other{"{0} kilómetros cuadrados"}
-                per{"{0} por kilómetro cuadrado"}
             }
             square-meter{
                 dnam{"metros cuadrados"}
@@ -91,7 +96,6 @@ es{
                 dnam{"millas cuadradas"}
                 one{"{0} milla cuadrada"}
                 other{"{0} millas cuadradas"}
-                per{"{0} por milla cuadrada"}
             }
             square-yard{
                 dnam{"yardas cuadradas"}
@@ -101,28 +105,6 @@ es{
         }
         compound{
             per{"{0} por {1}"}
-        }
-        concentr{
-            karat{
-                dnam{"quilates"}
-                one{"{0} quilate"}
-                other{"{0} quilates"}
-            }
-            milligram-per-deciliter{
-                dnam{"miligramos por decilitro"}
-                one{"{0} miligramo por decilitro"}
-                other{"{0} miligramos por decilitro"}
-            }
-            millimole-per-liter{
-                dnam{"milimoles por litro"}
-                one{"{0} milimol por litro"}
-                other{"{0} milimoles por litro"}
-            }
-            part-per-million{
-                dnam{"partes por millón"}
-                one{"{0} parte por millón"}
-                other{"{0} partes por millón"}
-            }
         }
         consumption{
             liter-per-100kilometers{
@@ -139,11 +121,6 @@ es{
                 dnam{"millas por galón"}
                 one{"{0} milla por galón"}
                 other{"{0} millas por galón"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"millas por galón imperial"}
-                one{"{0} milla por galón imperial"}
-                other{"{0} millas por galón imperial"}
             }
         }
         coordinate{
@@ -558,6 +535,13 @@ es{
                 other{"{0} libras por pulgada cuadrada"}
             }
         }
+        proportion{
+            karat{
+                dnam{"quilates"}
+                one{"{0} quilate"}
+                other{"{0} quilates"}
+            }
+        }
         speed{
             kilometer-per-hour{
                 dnam{"kilómetros por hora"}
@@ -675,12 +659,6 @@ es{
                 one{"{0} galón"}
                 other{"{0} galones"}
                 per{"{0} por galón"}
-            }
-            gallon-imperial{
-                dnam{"galones imperiales"}
-                one{"{0} galón imperial"}
-                other{"{0} galones imperiales"}
-                per{"{0} por galón imperial"}
             }
             hectoliter{
                 dnam{"hectolitros"}
@@ -1043,7 +1021,6 @@ es{
                 dnam{"km²"}
                 one{"{0} km²"}
                 other{"{0} km²"}
-                per{"{0}/km²"}
             }
             square-meter{
                 dnam{"m²"}
@@ -1055,7 +1032,6 @@ es{
                 dnam{"mi²"}
                 one{"{0} mi²"}
                 other{"{0} mi²"}
-                per{"{0}/mi²"}
             }
             square-yard{
                 dnam{"yd²"}
@@ -1065,28 +1041,6 @@ es{
         }
         compound{
             per{"{0}/{1}"}
-        }
-        concentr{
-            karat{
-                dnam{"ct"}
-                one{"{0} ct"}
-                other{"{0} ct"}
-            }
-            milligram-per-deciliter{
-                dnam{"mg/dL"}
-                one{"{0} mg/dL"}
-                other{"{0} mg/dL"}
-            }
-            millimole-per-liter{
-                dnam{"mmol/L"}
-                one{"{0} mmol/L"}
-                other{"{0} mmol/L"}
-            }
-            part-per-million{
-                dnam{"ppm"}
-                one{"{0} ppm"}
-                other{"{0} ppm"}
-            }
         }
         consumption{
             liter-per-100kilometers{
@@ -1103,11 +1057,6 @@ es{
                 dnam{"mi/gal"}
                 one{"{0} mi/gal"}
                 other{"{0} mi/gal"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"mi/gal imp."}
-                one{"{0} mi/gal imp."}
-                other{"{0} mi/gal imp."}
             }
         }
         coordinate{
@@ -1426,9 +1375,9 @@ es{
                 per{"{0}/kg"}
             }
             metric-ton{
-                dnam{"tm"}
-                one{"{0} tm"}
-                other{"{0} tm"}
+                dnam{"t"}
+                one{"{0} t"}
+                other{"{0} t"}
             }
             microgram{
                 dnam{"µg"}
@@ -1458,9 +1407,9 @@ es{
                 per{"{0}/lb"}
             }
             ton{
-                dnam{"t"}
-                one{"{0} t"}
-                other{"{0} t"}
+                dnam{"ton"}
+                one{"{0} ton"}
+                other{"{0} ton"}
             }
         }
         power{
@@ -1520,6 +1469,13 @@ es{
                 dnam{"psi"}
                 one{"{0} psi"}
                 other{"{0} psi"}
+            }
+        }
+        proportion{
+            karat{
+                dnam{"c"}
+                one{"{0} c"}
+                other{"{0} c"}
             }
         }
         speed{
@@ -1639,12 +1595,6 @@ es{
                 one{"{0} gal"}
                 other{"{0} gal"}
                 per{"{0}/gal"}
-            }
-            gallon-imperial{
-                dnam{"gal imp."}
-                one{"{0} gal imp."}
-                other{"{0} gal imp."}
-                per{"{0}/gal imp."}
             }
             hectoliter{
                 dnam{"hl"}

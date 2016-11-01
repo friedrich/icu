@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2016, International Business Machines Corporation and
+ * Copyright (C) 1996-2015, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -112,7 +110,7 @@ import com.ibm.icu.util.ULocale;
  * <p> 
  * Restriction: <br>
  * Currently there are no composite characters that consists of a
- * character with combining class &gt; 0 before a character with combining
+ * character with combining class > 0 before a character with combining
  * class == 0. However, if such a character exists in the future,
  * <tt>StringSearch</tt> does not guarantee the results for option 1.
  * <p>
@@ -1175,7 +1173,7 @@ public final class StringSearch extends SearchIterator {
             // * the match limit is a normalization boundary
             boolean allowMidclusterMatch =
                             breakIterator == null &&
-                            (((nextCEI.ce_) >>> 32) & 0xFFFF0000L) != 0 &&
+                            nextCEI != null && (((nextCEI.ce_) >>> 32) & 0xFFFF0000L) != 0 &&
                             maxLimit >= lastCEI.highIndex_ && nextCEI.highIndex_ > maxLimit &&
                             (nfd_.hasBoundaryBefore(codePointAt(targetText, maxLimit)) ||
                                     nfd_.hasBoundaryAfter(codePointBefore(targetText, maxLimit)));
@@ -1435,7 +1433,7 @@ public final class StringSearch extends SearchIterator {
                 // * the match limit is a normalization boundary
                 boolean allowMidclusterMatch =
                                 breakIterator == null &&
-                                (((nextCEI.ce_) >>> 32) & 0xFFFF0000L) != 0 &&
+                                nextCEI != null && (((nextCEI.ce_) >>> 32) & 0xFFFF0000L) != 0 &&
                                 maxLimit >= lastCEI.highIndex_ && nextCEI.highIndex_ > maxLimit &&
                                 (nfd_.hasBoundaryBefore(codePointAt(targetText, maxLimit)) ||
                                         nfd_.hasBoundaryAfter(codePointBefore(targetText, maxLimit)));

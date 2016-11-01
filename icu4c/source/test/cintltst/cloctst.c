@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2015, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 /*****************************************************************************
@@ -19,7 +17,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "cintltst.h"
-#include "cmemory.h"
 #include "cstring.h"
 #include "uparse.h"
 #include "uresimp.h"
@@ -43,7 +40,6 @@
 static void TestNullDefault(void);
 static void TestNonexistentLanguageExemplars(void);
 static void TestLocDataErrorCodeChaining(void);
-static void TestLocDataWithRgTag(void);
 static void TestLanguageExemplarsFallbacks(void);
 static void TestDisplayNameBrackets(void);
 
@@ -236,7 +232,6 @@ void addLocaleTest(TestNode** root)
     TESTCASE(TestDisplayNameWarning);
     TESTCASE(TestNonexistentLanguageExemplars);
     TESTCASE(TestLocDataErrorCodeChaining);
-    TESTCASE(TestLocDataWithRgTag);
     TESTCASE(TestLanguageExemplarsFallbacks);
     TESTCASE(TestCalendar);
     TESTCASE(TestDateFormat);
@@ -594,7 +589,7 @@ static int32_t UCharsToEscapedAscii(const UChar* utext, int32_t len, char* resul
         /*t*/ {'t', 0x09},
         /*v*/ {'v', 0x0b}
     };
-    static const int32_t ESCAPE_MAP_LENGTH = UPRV_LENGTHOF(ESCAPE_MAP);
+    static const int32_t ESCAPE_MAP_LENGTH = sizeof(ESCAPE_MAP)/sizeof(ESCAPE_MAP[0]);
     static const char HEX_DIGITS[] = {
         '0', '1', '2', '3', '4', '5', '6', '7',
         '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
@@ -1051,8 +1046,8 @@ static const DisplayNameBracketsItem displayNameBracketsItems[] = {
     { "en", "CC", "en_CC",      "Cocos (Keeling) Islands",  "English (Cocos [Keeling] Islands)"  },
     { "en", "MM", "my_MM",      "Myanmar (Burma)",          "Burmese (Myanmar [Burma])"          },
     { "en", "MM", "my_Mymr_MM", "Myanmar (Burma)",          "Burmese (Myanmar, Myanmar [Burma])" },
-    { "zh", "CC", "en_CC",      "\\u79D1\\u79D1\\u65AF\\uFF08\\u57FA\\u6797\\uFF09\\u7FA4\\u5C9B", "\\u82F1\\u8BED\\uFF08\\u79D1\\u79D1\\u65AF\\uFF3B\\u57FA\\u6797\\uFF3D\\u7FA4\\u5C9B\\uFF09" },
-    { "zh", "CG", "fr_CG",      "\\u521A\\u679C\\uFF08\\u5E03\\uFF09",                             "\\u6CD5\\u8BED\\uFF08\\u521A\\u679C\\uFF3B\\u5E03\\uFF3D\\uFF09" },
+    { "zh", "CC", "en_CC",      "\\u79D1\\u79D1\\u65AF\\uFF08\\u57FA\\u6797\\uFF09\\u7FA4\\u5C9B", "\\u82F1\\u6587\\uFF08\\u79D1\\u79D1\\u65AF\\uFF3B\\u57FA\\u6797\\uFF3D\\u7FA4\\u5C9B\\uFF09" },
+    { "zh", "CG", "fr_CG",      "\\u521A\\u679C\\uFF08\\u5E03\\uFF09",                             "\\u6CD5\\u6587\\uFF08\\u521A\\u679C\\uFF3B\\u5E03\\uFF3D\\uFF09" },
     { NULL, NULL, NULL,         NULL,                       NULL                                 }
 };
 
@@ -1733,7 +1728,7 @@ static void TestKeywordVariants(void)
     const char *keyword = NULL;
     int32_t keywordLen = 0;
     
-    for(i = 0; i < UPRV_LENGTHOF(testCases); i++) {
+    for(i = 0; i < sizeof(testCases)/sizeof(testCases[0]); i++) {
         status = U_ZERO_ERROR;
         *buffer = 0;
         keywords = uloc_openKeywords(testCases[i].localeID, &status);
@@ -1840,7 +1835,7 @@ static void TestKeywordVariantParsing(void)
     int32_t resultLen = 0;
     char buffer[256];
     
-    for(i = 0; i < UPRV_LENGTHOF(testCases); i++) {
+    for(i = 0; i < sizeof(testCases)/sizeof(testCases[0]); i++) {
         *buffer = 0;
         resultLen = uloc_getKeywordValue(testCases[i].localeID, testCases[i].keyword, buffer, 256, &status);
         (void)resultLen;    /* Suppress set but not used warning. */
@@ -1911,7 +1906,7 @@ static void TestKeywordSet(void)
 
     char cbuffer[1024];
 
-    for(i = 0; i < UPRV_LENGTHOF(kwSetTestCases); i++) {
+    for(i = 0; i < sizeof(kwSetTestCases)/sizeof(kwSetTestCases[0]); i++) {
         UErrorCode status = U_ZERO_ERROR;
         memset(buffer,'%',1023);
         strcpy(buffer, kwSetTestCases[i].l);
@@ -2133,7 +2128,7 @@ static void TestCanonicalization(void)
     int32_t i, j, resultLen = 0, origResultLen;
     char buffer[256];
     
-    for (i=0; i < UPRV_LENGTHOF(testCases); i++) {
+    for (i=0; i < sizeof(testCases)/sizeof(testCases[0]); i++) {
         for (j=0; j<2; ++j) {
             const char* expected = (j==0) ? testCases[i].getNameID : testCases[i].canonicalID;
             *buffer = 0;
@@ -2195,7 +2190,7 @@ static void TestDisplayKeywords(void)
             {0x0053, 0x006f, 0x0072, 0x0074, 0x0069, 0x0065, 0x0072, 0x0075, 0x006e, 0x0067, 0x0000}
         },
     };
-    for(i = 0; i < UPRV_LENGTHOF(testCases); i++) {
+    for(i = 0; i < sizeof(testCases)/sizeof(testCases[0]); i++) {
         UErrorCode status = U_ZERO_ERROR;
         const char* keyword =NULL;
         int32_t keywordLen = 0;
@@ -2277,7 +2272,7 @@ static void TestDisplayKeywordValues(void){
            {0x004a, 0x0061, 0x0070, 0x0061, 0x006e, 0x0069, 0x0073, 0x0063, 0x0068, 0x0065, 0x0072, 0x0020, 0x004b, 0x0061, 0x006c, 0x0065, 0x006e, 0x0064, 0x0065, 0x0072, 0x0000}
         }, 
     };
-    for(i = 0; i < UPRV_LENGTHOF(testCases); i++) {
+    for(i = 0; i < sizeof(testCases)/sizeof(testCases[0]); i++) {
         UErrorCode status = U_ZERO_ERROR;
         const char* keyword =NULL;
         int32_t keywordLen = 0;
@@ -2406,7 +2401,7 @@ static void TestGetBaseName(void) {
     char baseName[256];
     UErrorCode status = U_ZERO_ERROR;
 
-    for(i = 0; i < UPRV_LENGTHOF(testCases); i++) {
+    for(i = 0; i < sizeof(testCases)/sizeof(testCases[0]); i++) {
         baseNameLen = uloc_getBaseName(testCases[i].localeID, baseName, 256, &status);
         (void)baseNameLen;    /* Suppress set but not used warning. */
         if(strcmp(testCases[i].baseName, baseName)) {
@@ -2444,7 +2439,7 @@ static void TestDisplayNameWarning(void) {
     int32_t size;
     UErrorCode status = U_ZERO_ERROR;
     
-    size = uloc_getDisplayLanguage("qqq", "kl", name, UPRV_LENGTHOF(name), &status);
+    size = uloc_getDisplayLanguage("qqq", "kl", name, sizeof(name)/sizeof(name[0]), &status);
     (void)size;    /* Suppress set but not used warning. */
     if (status != U_USING_DEFAULT_WARNING) {
         log_err("For language \"qqq\" in locale \"kl\", expecting U_USING_DEFAULT_WARNING, but got %s\n",
@@ -2710,36 +2705,6 @@ static void TestLocDataErrorCodeChaining(void) {
     }
 }
 
-typedef struct {
-    const char*        locale;
-    UMeasurementSystem measureSys;
-} LocToMeasureSys;
-
-static const LocToMeasureSys locToMeasures[] = {
-    { "fr_FR",            UMS_SI },
-    { "en",               UMS_US },
-    { "en_GB",            UMS_UK },
-    { "fr_FR@rg=GBZZZZ",  UMS_UK },
-    { "en@rg=frzzzz",     UMS_SI },
-    { "en_GB@rg=USZZZZ",  UMS_US },
-    { NULL, (UMeasurementSystem)0 } /* terminator */
-};
-
-static void TestLocDataWithRgTag(void) {
-    const  LocToMeasureSys* locToMeasurePtr = locToMeasures;
-    for (; locToMeasurePtr->locale != NULL; locToMeasurePtr++) {
-        UErrorCode status = U_ZERO_ERROR;
-        UMeasurementSystem measureSys = ulocdata_getMeasurementSystem(locToMeasurePtr->locale, &status);
-        if (U_FAILURE(status)) {
-            log_data_err("ulocdata_getMeasurementSystem(\"%s\", ...) failed: %s - Are you missing data?\n",
-                        locToMeasurePtr->locale, u_errorName(status));
-        } else if (measureSys != locToMeasurePtr->measureSys) {
-            log_err("ulocdata_getMeasurementSystem(\"%s\", ...), expected %d, got %d\n",
-                        locToMeasurePtr->locale, (int) locToMeasurePtr->measureSys, (int)measureSys);
-        }
-    }
-}
-
 static void TestLanguageExemplarsFallbacks(void) {
     /* Test that en_US fallsback, but en doesn't fallback. */
     UErrorCode ec = U_ZERO_ERROR;
@@ -2777,22 +2742,18 @@ static void TestAcceptLanguage(void) {
         const char *icuSet;    /**< ? */
         const char *expect;    /**< The expected locale result */
         UAcceptResult res;     /**< The expected error code */
-        UErrorCode expectStatus; /**< expected status */
     } tests[] = { 
-        /*0*/{ 0, NULL, "mt_MT", ULOC_ACCEPT_VALID, U_ZERO_ERROR},
-        /*1*/{ 1, NULL, "en", ULOC_ACCEPT_VALID, U_ZERO_ERROR},
-        /*2*/{ 2, NULL, "en", ULOC_ACCEPT_FALLBACK, U_ZERO_ERROR},
-        /*3*/{ 3, NULL, "", ULOC_ACCEPT_FAILED, U_ZERO_ERROR},
-        /*4*/{ 4, NULL, "es", ULOC_ACCEPT_VALID, U_ZERO_ERROR},
-        /*5*/{ 5, NULL, "en", ULOC_ACCEPT_VALID, U_ZERO_ERROR},  /* XF */
-        /*6*/{ 6, NULL, "ja", ULOC_ACCEPT_FALLBACK, U_ZERO_ERROR},  /* XF */
-        /*7*/{ 7, NULL, "zh", ULOC_ACCEPT_FALLBACK, U_ZERO_ERROR},  /* XF */
-        /*8*/{ 8, NULL, "", ULOC_ACCEPT_FAILED, U_ZERO_ERROR },  /*  */
-        /*9*/{ 9, NULL, "", ULOC_ACCEPT_FAILED, U_ZERO_ERROR },  /*  */
-       /*10*/{10, NULL, "", ULOC_ACCEPT_FAILED, U_BUFFER_OVERFLOW_ERROR },  /*  */
-       /*11*/{11, NULL, "", ULOC_ACCEPT_FAILED, U_BUFFER_OVERFLOW_ERROR },  /*  */
+        /*0*/{ 0, NULL, "mt_MT", ULOC_ACCEPT_VALID },
+        /*1*/{ 1, NULL, "en", ULOC_ACCEPT_VALID },
+        /*2*/{ 2, NULL, "en", ULOC_ACCEPT_FALLBACK },
+        /*3*/{ 3, NULL, "", ULOC_ACCEPT_FAILED },
+        /*4*/{ 4, NULL, "es", ULOC_ACCEPT_VALID },
+        
+        /*5*/{ 5, NULL, "en", ULOC_ACCEPT_VALID },  /* XF */
+        /*6*/{ 6, NULL, "ja", ULOC_ACCEPT_FALLBACK },  /* XF */
+        /*7*/{ 7, NULL, "zh", ULOC_ACCEPT_FALLBACK },  /* XF */
     };
-    const int32_t numTests = UPRV_LENGTHOF(tests);
+    const int32_t numTests = sizeof(tests)/sizeof(tests[0]);
     static const char *http[] = {
         /*0*/ "mt-mt, ja;q=0.76, en-us;q=0.95, en;q=0.92, en-gb;q=0.89, fr;q=0.87, iu-ca;q=0.84, iu;q=0.82, ja-jp;q=0.79, mt;q=0.97, de-de;q=0.74, de;q=0.71, es;q=0.68, it-it;q=0.66, it;q=0.63, vi-vn;q=0.61, vi;q=0.58, nl-nl;q=0.55, nl;q=0.53, th-th-traditional;q=.01",
         /*1*/ "ja;q=0.5, en;q=0.8, tlh",
@@ -2806,25 +2767,10 @@ static void TestAcceptLanguage(void) {
               "xxx-yyy;q=.01, xxx-yyy;q=.01, xxx-yyy;q=.01, xxx-yyy;q=.01, xxx-yyy;q=.01, "
               "xxx-yyy;q=.01, xxx-yyy;q=.01, xxx-yyy;q=.01, xx-yy;q=.1, "
               "es",
+              
         /*5*/ "zh-xx;q=0.9, en;q=0.6",
         /*6*/ "ja-JA",
         /*7*/ "zh-xx;q=0.9",
-       /*08*/ "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", // 156
-       /*09*/ "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB", // 157 (this hits U_STRING_NOT_TERMINATED_WARNING )
-       /*10*/ "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABC", // 158
-       /*11*/ "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-              "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", // 163 bytes
     };
 
     for(i=0;i<numTests;i++) {
@@ -2839,22 +2785,17 @@ static void TestAcceptLanguage(void) {
         (void)rc;    /* Suppress set but not used warning. */
         uenum_close(available);
         log_verbose(" got %s, %s [%s]\n", tmp[0]?tmp:"(EMPTY)", acceptResult(outResult), u_errorName(status));
-        if(status != tests[i].expectStatus) {
-          log_err_status(status, "FAIL: expected status %s but got %s\n", u_errorName(tests[i].expectStatus), u_errorName(status));
-        } else if(U_SUCCESS(tests[i].expectStatus)) {
-            /* don't check content if expected failure */
-            if(outResult != tests[i].res) {
+        if(outResult != tests[i].res) {
             log_err_status(status, "FAIL: #%d: expected outResult of %s but got %s\n", i, 
                 acceptResult( tests[i].res), 
                 acceptResult( outResult));
             log_info("test #%d: http[%s], ICU[%s], expect %s, %s\n", 
                 i, http[tests[i].httpSet], tests[i].icuSet, tests[i].expect,acceptResult(tests[i].res));
-            }
-            if((outResult>0)&&uprv_strcmp(tmp, tests[i].expect)) {
-              log_err_status(status, "FAIL: #%d: expected %s but got %s\n", i, tests[i].expect, tmp);
-              log_info("test #%d: http[%s], ICU[%s], expect %s, %s\n", 
-                       i, http[tests[i].httpSet], tests[i].icuSet, tests[i].expect, acceptResult(tests[i].res));
-            }
+        }
+        if((outResult>0)&&uprv_strcmp(tmp, tests[i].expect)) {
+            log_err_status(status, "FAIL: #%d: expected %s but got %s\n", i, tests[i].expect, tmp);
+            log_info("test #%d: http[%s], ICU[%s], expect %s, %s\n", 
+                i, http[tests[i].httpSet], tests[i].icuSet, tests[i].expect, acceptResult(tests[i].res));
         }
     }
 }
@@ -3050,7 +2991,7 @@ static void  TestOrientation()
     };
 
     size_t i = 0;
-    for (; i < UPRV_LENGTHOF(toTest); ++i) {
+    for (; i < sizeof(toTest) / sizeof(toTest[0]); ++i) {
         UErrorCode statusCO = U_ZERO_ERROR;
         UErrorCode statusLO = U_ZERO_ERROR;
         const char* const localeId = toTest[i].localeId;
@@ -3237,7 +3178,7 @@ static void TestGetLocaleForLCID() {
         status = U_ZERO_ERROR;
     }
     
-    length = uloc_getLocaleForLCID(lcid, temp2, UPRV_LENGTHOF(temp2), &status);
+    length = uloc_getLocaleForLCID(lcid, temp2, sizeof(temp2)/sizeof(char), &status);
     if (U_FAILURE(status)) {
         log_err("  unexpected result from uloc_getLocaleForLCID(0x0409): %s\n", u_errorName(status));
         status = U_ZERO_ERROR;
@@ -3247,7 +3188,7 @@ static void TestGetLocaleForLCID() {
         log_err("  uloc_getLocaleForLCID(0x0409): returned length %d does not match preflight length %d\n", length, lengthPre);
     }
     
-    length = uloc_getLocaleForLCID(0x12345, temp2, UPRV_LENGTHOF(temp2), &status);
+    length = uloc_getLocaleForLCID(0x12345, temp2, sizeof(temp2)/sizeof(char), &status);
     if (U_SUCCESS(status)) {
         log_err("  unexpected result from uloc_getLocaleForLCID(0x12345): %s, status %s\n", temp2, u_errorName(status));
     }
@@ -3261,7 +3202,7 @@ static void TestGetLocaleForLCID() {
         log_verbose("Testing   %s ......\n", testLocale);
         
         sscanf(rawData2[LCID][i], "%x", &lcid);
-        length = uloc_getLocaleForLCID(lcid, temp2, UPRV_LENGTHOF(temp2), &status);
+        length = uloc_getLocaleForLCID(lcid, temp2, sizeof(temp2)/sizeof(char), &status);
         if (U_FAILURE(status)) {
             log_err("  unexpected failure of uloc_getLocaleForLCID(%#04x), status %s\n", lcid, u_errorName(status));
             status = U_ZERO_ERROR;
@@ -3273,7 +3214,7 @@ static void TestGetLocaleForLCID() {
         }
         
         /* Compare language, country, script */
-        length = uloc_getLanguage(temp2, temp3, UPRV_LENGTHOF(temp3), &status);
+        length = uloc_getLanguage(temp2, temp3, sizeof(temp3)/sizeof(char), &status);
         if (U_FAILURE(status)) {
             log_err("  couldn't get language in uloc_getLocaleForLCID(%#04x) = %s, status %s\n", lcid, temp2, u_errorName(status));
             status = U_ZERO_ERROR;
@@ -3282,7 +3223,7 @@ static void TestGetLocaleForLCID() {
             log_err("  language doesn't match expected %s in in uloc_getLocaleForLCID(%#04x) = %s\n", rawData2[LANG][i], lcid, temp2);
         }
         
-        length = uloc_getScript(temp2, temp3, UPRV_LENGTHOF(temp3), &status);
+        length = uloc_getScript(temp2, temp3, sizeof(temp3)/sizeof(char), &status);
         if (U_FAILURE(status)) {
             log_err("  couldn't get script in uloc_getLocaleForLCID(%#04x) = %s, status %s\n", lcid, temp2, u_errorName(status));
             status = U_ZERO_ERROR;
@@ -3291,7 +3232,7 @@ static void TestGetLocaleForLCID() {
             log_err("  script doesn't match expected %s in in uloc_getLocaleForLCID(%#04x) = %s\n", rawData2[SCRIPT][i], lcid, temp2);
         }
         
-        length = uloc_getCountry(temp2, temp3, UPRV_LENGTHOF(temp3), &status);
+        length = uloc_getCountry(temp2, temp3, sizeof(temp3)/sizeof(char), &status);
         if (U_FAILURE(status)) {
             log_err("  couldn't get country in uloc_getLocaleForLCID(%#04x) = %s, status %s\n", lcid, temp2, u_errorName(status));
             status = U_ZERO_ERROR;
@@ -5039,8 +4980,8 @@ const char* const full_data[][3] = {
     "zh_TW"
   }, {
     "und_Hant_CN",
-    "yue_Hant_CN",
-    "yue_Hant_CN"
+    "zh_Hant_CN",
+    "zh_Hant_CN"
   }, {
     "und_Hant_TW",
     "zh_Hant_TW",
@@ -5605,7 +5546,7 @@ static void TestLikelySubtags()
     char buffer[ULOC_FULLNAME_CAPACITY + ULOC_KEYWORD_AND_VALUES_CAPACITY + 1];
     int32_t i = 0;
 
-    for (; i < UPRV_LENGTHOF(basic_maximize_data); ++i)
+    for (; i < sizeof(basic_maximize_data) / sizeof(basic_maximize_data[0]); ++i)
     {
         UErrorCode status = U_ZERO_ERROR;
         const char* const minimal = basic_maximize_data[i][0];
@@ -5631,7 +5572,7 @@ static void TestLikelySubtags()
         }
     }
 
-    for (i = 0; i < UPRV_LENGTHOF(basic_minimize_data); ++i) {
+    for (i = 0; i < sizeof(basic_minimize_data) / sizeof(basic_minimize_data[0]); ++i) {
 
         UErrorCode status = U_ZERO_ERROR;
         const char* const maximal = basic_minimize_data[i][0];
@@ -5658,7 +5599,7 @@ static void TestLikelySubtags()
         }
     }
 
-    for (i = 0; i < UPRV_LENGTHOF(full_data); ++i) {
+    for (i = 0; i < sizeof(full_data) / sizeof(full_data[0]); ++i) {
 
         UErrorCode status = U_ZERO_ERROR;
         const char* const minimal = full_data[i][0];
@@ -5684,7 +5625,7 @@ static void TestLikelySubtags()
         }
     }
 
-    for (i = 0; i < UPRV_LENGTHOF(full_data); ++i) {
+    for (i = 0; i < sizeof(full_data) / sizeof(full_data[0]); ++i) {
 
         UErrorCode status = U_ZERO_ERROR;
         const char* const maximal = full_data[i][1];
@@ -5714,7 +5655,7 @@ static void TestLikelySubtags()
         }
     }
 
-    for (i = 0; i < UPRV_LENGTHOF(maximizeErrors); ++i) {
+    for (i = 0; i < sizeof(maximizeErrors) / sizeof(maximizeErrors[0]); ++i) {
 
         UErrorCode status = U_ZERO_ERROR;
         const char* const minimal = maximizeErrors[i].tag;
@@ -5748,7 +5689,7 @@ static void TestLikelySubtags()
         }
     }
 
-    for (i = 0; i < UPRV_LENGTHOF(minimizeErrors); ++i) {
+    for (i = 0; i < sizeof(minimizeErrors) / sizeof(minimizeErrors[0]); ++i) {
 
         UErrorCode status = U_ZERO_ERROR;
         const char* const maximal = minimizeErrors[i].tag;
@@ -5824,13 +5765,6 @@ const char* const locale_to_langtag[][3] = {
     {"en@x=elmer",  "en-x-elmer",   "en-x-elmer"},
     {"@x=elmer;a=exta", "und-a-exta-x-elmer",   "und-a-exta-x-elmer"},
     {"en_US@attribute=attr1-attr2;calendar=gregorian", "en-US-u-attr1-attr2-ca-gregory", "en-US-u-attr1-attr2-ca-gregory"},
-    /* #12671 */
-    {"en@a=bar;attribute=baz",  "en-a-bar-u-baz",   "en-a-bar-u-baz"},
-    {"en@a=bar;attribute=baz;x=u-foo",  "en-a-bar-u-baz-x-u-foo",   "en-a-bar-u-baz-x-u-foo"},
-    {"en@attribute=baz",    "en-u-baz", "en-u-baz"},
-    {"en@attribute=baz;calendar=islamic-civil", "en-u-baz-ca-islamic-civil",    "en-u-baz-ca-islamic-civil"},
-    {"en@a=bar;calendar=islamic-civil;x=u-foo", "en-a-bar-u-ca-islamic-civil-x-u-foo",  "en-a-bar-u-ca-islamic-civil-x-u-foo"},
-    {"en@a=bar;attribute=baz;calendar=islamic-civil;x=u-foo",   "en-a-bar-u-baz-ca-islamic-civil-x-u-foo",  "en-a-bar-u-baz-ca-islamic-civil-x-u-foo"},
     {NULL,          NULL,           NULL}
 };
 
@@ -5896,6 +5830,7 @@ static const struct {
     const char  *locID;
     int32_t     len;
 } langtag_to_locale[] = {
+    {"ja-u-ijkl-efgh-abcd-ca-japanese-xx-yyy-zzz-kn",   "ja@attribute=abcd-efgh-ijkl;calendar=japanese;colnumeric=yes;xx=yyy-zzz",  FULL_LENGTH},
     {"en",                  "en",                   FULL_LENGTH},
     {"en-us",               "en_US",                FULL_LENGTH},
     {"und-US",              "_US",                  FULL_LENGTH},
@@ -5939,15 +5874,9 @@ static const struct {
     {"de-u-kn-co-phonebk",  "de@collation=phonebook;colnumeric=yes",    FULL_LENGTH},
     {"en-u-attr2-attr1-kn-kb",  "en@attribute=attr1-attr2;colbackwards=yes;colnumeric=yes", FULL_LENGTH},
     {"ja-u-ijkl-efgh-abcd-ca-japanese-xx-yyy-zzz-kn",   "ja@attribute=abcd-efgh-ijkl;calendar=japanese;colnumeric=yes;xx=yyy-zzz",  FULL_LENGTH},
+
     {"de-u-xc-xphonebk-co-phonebk-ca-buddhist-mo-very-lo-extensi-xd-that-de-should-vc-probably-xz-killthebuffer",
      "de@calendar=buddhist;collation=phonebook;de=should;lo=extensi;mo=very;vc=probably;xc=xphonebk;xd=that;xz=yes", 91},
-    /* #12761 */
-    {"en-a-bar-u-baz",      "en@a=bar;attribute=baz",   FULL_LENGTH},
-    {"en-a-bar-u-baz-x-u-foo",  "en@a=bar;attribute=baz;x=u-foo",   FULL_LENGTH},
-    {"en-u-baz",            "en@attribute=baz",     FULL_LENGTH},
-    {"en-u-baz-ca-islamic-civil",   "en@attribute=baz;calendar=islamic-civil",  FULL_LENGTH},
-    {"en-a-bar-u-ca-islamic-civil-x-u-foo", "en@a=bar;calendar=islamic-civil;x=u-foo",  FULL_LENGTH},
-    {"en-a-bar-u-baz-ca-islamic-civil-x-u-foo", "en@a=bar;attribute=baz;calendar=islamic-civil;x=u-foo",    FULL_LENGTH},
     {NULL,          NULL,           0}
 };
 
@@ -6069,7 +5998,6 @@ static void TestToUnicodeLocaleType(void)
         {"calendar",        "islamicc",         "islamic-civil"},   /* bcp type alias */
         {"colalternate",    "NON-IGNORABLE",    "noignore"},
         {"colcaselevel",    "yes",              "true"},
-        {"rg",              "GBzzzz",           "$IN"},
         {"tz",              "america/new_york", "usnyc"},
         {"tz",              "Asia/Kolkata",     "inccu"},
         {"timezone",        "navajo",           "usden"},
@@ -6121,7 +6049,6 @@ static void TestToLegacyType(void)
         {"calendar",        "islamicc",         "islamic-civil"},   /* bcp type alias */
         {"colalternate",    "noignore",         "non-ignorable"},
         {"colcaselevel",    "true",             "yes"},
-        {"rg",              "gbzzzz",           "gbzzzz"},
         {"tz",              "usnyc",            "America/New_York"},
         {"tz",              "inccu",            "Asia/Calcutta"},
         {"timezone",        "usden",            "America/Denver"},
@@ -6159,8 +6086,6 @@ static void TestToLegacyType(void)
             }
         } else if (uprv_strcmp(legacyType, expected) != 0) {
             log_data_err("toLegacyType: keyword=%s, value=%s => %s, expected=%s\n", keyword, value, legacyType, expected);
-        } else {
-            log_verbose("toLegacyType: keyword=%s, value=%s => %s\n", keyword, value, legacyType);
         }
     }
 }

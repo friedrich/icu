@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ksh.xml
+// *
+// ***************************************************************************
 ksh{
     AuxExemplarCharacters{"[á à ă â ã ā ç é è ĕ ê ē ğ í ì ĭ î ï ī ĳ ı ł ñ ó ò ŏ ô ø ō ú ù ŭ û ū ÿ]"}
     ExemplarCharacters{"[a å ä æ b c d e ë ė f g h i j k l m n o ö œ p q r s ß t u ů ü v w x y z]"}
@@ -9,7 +15,6 @@ ksh{
         "# % † ‡ ° < = > ~ \$]"
     }
     NumberElements{
-        default{"latn"}
         latn{
             patterns{
                 currencyFormat{"#,##0.00 ¤"}
@@ -158,9 +163,8 @@ ksh{
                 plusSign{"+"}
             }
         }
-        native{"latn"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.19.14"}
     calendar{
         buddhist{
             DateTimePatterns{
@@ -267,8 +271,8 @@ ksh{
                 "Uhr nommendaachs",
             }
             AmPmMarkersAbbr{
-                "v.M.",
-                "n.M.",
+                "v.m.",
+                "n.m.",
             }
             DateTimePatterns{
                 "HH:mm:ss zzzz",
@@ -332,7 +336,7 @@ ksh{
                     }
                     wide{
                         "Sunndaach",
-                        "Mohndaach",
+                        "Moondaach",
                         "Dinnsdaach",
                         "Metwoch",
                         "Dunnersdaach",
@@ -364,8 +368,8 @@ ksh{
             dayPeriod{
                 stand-alone{
                     wide{
-                        am{"Vörmeddaach"}
-                        pm{"Nommendaach"}
+                        am{"Vormittag"}
+                        pm{"Nachmittag"}
                     }
                 }
             }
@@ -375,8 +379,8 @@ ksh{
                     "n. Chr.",
                 }
                 abbreviated%variant{
-                    "v. Kr.",
-                    "n. K.",
+                    "v. d. Z.",
+                    "d. Z.",
                 }
                 narrow{
                     "vC",
@@ -387,12 +391,12 @@ ksh{
                     "dZ",
                 }
                 wide{
-                    "vür Krestos",
-                    "noh Krestos",
+                    "vür Chrestus",
+                    "noh Chrestus",
                 }
                 wide%variant{
-                    "vür de jewöhnlejje Ziggrääschnong",
-                    "en de jewöhnlejje Ziggrääschnong",
+                    "vür der gewöhnlichen Zeitrechnung",
+                    "der gewöhnlichen Zeitrechnung",
                 }
             }
             intervalFormats{
@@ -434,10 +438,6 @@ ksh{
                     M{"MMMM–MMMM y"}
                     y{"MMMM y – MMMM y"}
                 }
-                yMMMd{
-                    M{"y MMM d – MMM d"}
-                    d{"d.–d. MMMM y"}
-                }
             }
             monthNames{
                 format{
@@ -446,7 +446,7 @@ ksh{
                         "Fäb",
                         "Mäz",
                         "Apr",
-                        "Mai",
+                        "Mäi",
                         "Jun",
                         "Jul",
                         "Ouj",
@@ -460,12 +460,12 @@ ksh{
                         "Fäbrowa",
                         "Määz",
                         "Aprell",
-                        "Mai",
+                        "Mäi",
                         "Juuni",
                         "Juuli",
                         "Oujoß",
                         "Septämber",
-                        "Oktohber",
+                        "Oktoober",
                         "Novämber",
                         "Dezämber",
                     }
@@ -476,7 +476,7 @@ ksh{
                         "Fäb.",
                         "Mäz.",
                         "Apr.",
-                        "Mai",
+                        "Mäi",
                         "Jun.",
                         "Jul.",
                         "Ouj.",
@@ -493,7 +493,7 @@ ksh{
                         "M",
                         "J",
                         "J",
-                        "O",
+                        "A",
                         "S",
                         "O",
                         "N",
@@ -509,31 +509,11 @@ ksh{
                         "3.Q.",
                         "4.Q.",
                     }
-                    narrow{
-                        "1",
-                        "2",
-                        "3",
-                        "4",
-                    }
                     wide{
-                        "1. Quattahl",
-                        "2. Quattahl",
-                        "3. Quattahl",
-                        "4. Quattahl",
-                    }
-                }
-                stand-alone{
-                    narrow{
-                        "1Q",
-                        "2Q",
-                        "3Q",
-                        "4Q",
-                    }
-                    wide{
-                        "1. Quattahl",
-                        "2. Quattahl",
-                        "3. Quattahl",
-                        "4. Quattahl",
+                        "1. Quattaal",
+                        "2. Quattaal",
+                        "3. Quattaal",
+                        "4. Quattaal",
                     }
                 }
             }
@@ -556,17 +536,11 @@ ksh{
                 "2"{"övvermorje"}
             }
         }
-        day-narrow{
-            dn{"D."}
-        }
-        day-short{
-            dn{"D."}
-        }
         dayperiod{
             dn{"Daachteil"}
         }
         era{
-            dn{"Ähra"}
+            dn{"Era"}
         }
         fri{
             relative{
@@ -578,20 +552,8 @@ ksh{
         hour{
             dn{"Schtund"}
         }
-        hour-narrow{
-            dn{"S."}
-        }
-        hour-short{
-            dn{"Std."}
-        }
         minute{
             dn{"Menutt"}
-        }
-        minute-narrow{
-            dn{"m."}
-        }
-        minute-short{
-            dn{"min."}
         }
         mon{
             relative{
@@ -608,21 +570,6 @@ ksh{
                 "1"{"nächste Mohnd"}
             }
         }
-        month-narrow{
-            dn{"M."}
-        }
-        month-short{
-            dn{"Mohnd"}
-        }
-        quarter{
-            dn{"Quattahl"}
-        }
-        quarter-narrow{
-            dn{"Q."}
-        }
-        quarter-short{
-            dn{"Q."}
-        }
         sat{
             relative{
                 "-1"{"Samsdaach letzte Woche"}
@@ -632,12 +579,6 @@ ksh{
         }
         second{
             dn{"Sekond"}
-        }
-        second-narrow{
-            dn{"s."}
-        }
-        second-short{
-            dn{"sek."}
         }
         sun{
             relative{
@@ -675,12 +616,6 @@ ksh{
                 "1"{"nächste Woche"}
             }
         }
-        week-narrow{
-            dn{"W."}
-        }
-        week-short{
-            dn{"W."}
-        }
         weekday{
             dn{"Wochedaach"}
         }
@@ -688,27 +623,9 @@ ksh{
             dn{"Johr"}
             relative{
                 "-1"{"läz Johr"}
-                "0"{"diß Johr"}
-                "1"{"näx Johr"}
+                "0"{"diese Johr"}
+                "1"{"nächste Johr"}
             }
-            relativeTime{
-                future{
-                    one{"en {0} Johr"}
-                    other{"en {0} Johre"}
-                    zero{"en keinem Johr"}
-                }
-                past{
-                    one{"vör {0} Johr"}
-                    other{"vör {0} Johre"}
-                    zero{"vör keijnem Johr"}
-                }
-            }
-        }
-        year-narrow{
-            dn{"J."}
-        }
-        year-short{
-            dn{"J."}
         }
         zone{
             dn{"Zickzohn"}

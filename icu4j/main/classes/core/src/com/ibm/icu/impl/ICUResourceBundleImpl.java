@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2004-2016, International Business Machines Corporation and
+ * Copyright (C) 2004-2015, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -13,22 +11,16 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.ibm.icu.impl.ICUResourceBundleReader.ReaderValue;
 import com.ibm.icu.util.UResourceBundle;
 import com.ibm.icu.util.UResourceTypeMismatchException;
 
 class ICUResourceBundleImpl extends ICUResourceBundle {
-    protected int resource;
-
-    protected ICUResourceBundleImpl(ICUResourceBundleImpl container, String key, int resource) {
+    protected ICUResourceBundleImpl(ICUResourceBundleImpl container, String key) {
         super(container, key);
-        this.resource = resource;
     }
     ICUResourceBundleImpl(WholeBundle wholeBundle) {
         super(wholeBundle);
-        resource = wholeBundle.reader.getRootResource();
-    }
-    public int getResource() {
-        return resource;
     }
     protected final ICUResourceBundle createBundleObject(String _key,
                                                          int _resource,
@@ -61,46 +53,43 @@ class ICUResourceBundleImpl extends ICUResourceBundle {
     // Scalar values ------------------------------------------------------- ***
 
     private static final class ResourceBinary extends ICUResourceBundleImpl {
-        @Override
+        private int resource;
         public int getType() {
             return BINARY;
         }
-        @Override
         public ByteBuffer getBinary() {
             return wholeBundle.reader.getBinary(resource);
         }
-        @Override
         public byte [] getBinary(byte []ba) {
             return wholeBundle.reader.getBinary(resource, ba);
         }
         ResourceBinary(ICUResourceBundleImpl container, String key, int resource) {
-            super(container, key, resource);
+            super(container, key);
+            this.resource = resource;
         }
     }
     private static final class ResourceInt extends ICUResourceBundleImpl {
-        @Override
+        private int resource;
         public int getType() {
             return INT;
         }
-        @Override
         public int getInt() {
             return ICUResourceBundleReader.RES_GET_INT(resource);
         }
-        @Override
         public int getUInt() {
             return ICUResourceBundleReader.RES_GET_UINT(resource);
         }
         ResourceInt(ICUResourceBundleImpl container, String key, int resource) {
-            super(container, key, resource);
+            super(container, key);
+            this.resource = resource;
         }
     }
     private static final class ResourceString extends ICUResourceBundleImpl {
+        private int resource;
         private String value;
-        @Override
         public int getType() {
             return STRING;
         }
-        @Override
         public String getString() {
             if (value != null) {
                 return value;
@@ -108,26 +97,26 @@ class ICUResourceBundleImpl extends ICUResourceBundle {
             return wholeBundle.reader.getString(resource);
         }
         ResourceString(ICUResourceBundleImpl container, String key, int resource) {
-            super(container, key, resource);
+            super(container, key);
+            this.resource = resource;
             String s = wholeBundle.reader.getString(resource);
             // Allow the reader cache's SoftReference to do its job.
-            if (s.length() < ICUResourceBundleReader.LARGE_SIZE / 2 ||
-                    CacheValue.futureInstancesWillBeStrong()) {
+            if (s.length() < ICUResourceBundleReader.LARGE_SIZE / 2) {
                 value = s;
             }
         }
     }
     private static final class ResourceIntVector extends ICUResourceBundleImpl {
-        @Override
+        private int resource;
         public int getType() {
             return INT_VECTOR;
         }
-        @Override
         public int[] getIntVector() {
             return wholeBundle.reader.getIntVector(resource);
         }
         ResourceIntVector(ICUResourceBundleImpl container, String key, int resource) {
-            super(container, key, resource);
+            super(container, key);
+            this.resource = resource;
         }
     }
 
@@ -136,7 +125,6 @@ class ICUResourceBundleImpl extends ICUResourceBundle {
     static abstract class ResourceContainer extends ICUResourceBundleImpl {
         protected ICUResourceBundleReader.Container value;
 
-        @Override
         public int getSize() {
             return value.getSize();
         }
@@ -164,19 +152,17 @@ class ICUResourceBundleImpl extends ICUResourceBundle {
             return createBundleObject(resKey, item, aliasesVisited, requested);
         }
 
-        ResourceContainer(ICUResourceBundleImpl container, String key, int resource) {
-            super(container, key, resource);
+        ResourceContainer(ICUResourceBundleImpl container, String key) {
+            super(container, key);
         }
         ResourceContainer(WholeBundle wholeBundle) {
             super(wholeBundle);
         }
     }
     static class ResourceArray extends ResourceContainer {
-        @Override
         public int getType() {
             return ARRAY;
         }
-        @Override
         protected String[] handleGetStringArray() {
             ICUResourceBundleReader reader = wholeBundle.reader;
             int length = value.getSize();
@@ -190,7 +176,6 @@ class ICUResourceBundleImpl extends ICUResourceBundle {
             }
             return strings;
         }
-        @Override
         public String[] getStringArray() {
             return handleGetStringArray();
         }
@@ -205,20 +190,28 @@ class ICUResourceBundleImpl extends ICUResourceBundle {
                                             UResourceBundle requested) {
             return createBundleObject(index, Integer.toString(index), aliasesVisited, requested);
         }
+        /**
+         * @param key will be set during enumeration; input contents is ignored
+         * @param readerValue will be set during enumeration; input contents is ignored
+         * @param sink receives all array item values
+         */
+        void getAllItems(ICUResource.Key key, ReaderValue readerValue, ICUResource.ArraySink sink) {
+            ICUResourceBundleReader reader = wholeBundle.reader;
+            readerValue.reader = reader;
+            ((ICUResourceBundleReader.Array)value).getAllItems(reader, key, readerValue, sink);
+        }
         ResourceArray(ICUResourceBundleImpl container, String key, int resource) {
-            super(container, key, resource);
+            super(container, key);
             value = wholeBundle.reader.getArray(resource);
         }
     }
     static class ResourceTable extends ResourceContainer {
-        @Override
         public int getType() {
             return TABLE;
         }
         protected String getKey(int index) {
             return ((ICUResourceBundleReader.Table)value).getKey(wholeBundle.reader, index);
         }
-        @Override
         protected Set<String> handleKeySet() {
             ICUResourceBundleReader reader = wholeBundle.reader;
             TreeSet<String> keySet = new TreeSet<String>();
@@ -294,8 +287,18 @@ class ICUResourceBundleImpl extends ICUResourceBundle {
             }
             return reader.getString(value.getContainerResource(reader, index));
         }
+        /**
+         * @param key will be set during enumeration; input contents is ignored
+         * @param readerValue will be set during enumeration; input contents is ignored
+         * @param sink receives all table item key-value pairs
+         */
+        void getAllItems(ICUResource.Key key, ReaderValue readerValue, ICUResource.TableSink sink) {
+            ICUResourceBundleReader reader = wholeBundle.reader;
+            readerValue.reader = reader;
+            ((ICUResourceBundleReader.Table)value).getAllItems(reader, key, readerValue, sink);
+        }
         ResourceTable(ICUResourceBundleImpl container, String key, int resource) {
-            super(container, key, resource);
+            super(container, key);
             value = wholeBundle.reader.getTable(resource);
         }
         /**

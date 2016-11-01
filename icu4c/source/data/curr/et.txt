@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/et.xml
+// *
+// ***************************************************************************
 et{
     Currencies{
         ADP{
@@ -202,13 +208,9 @@ et{
             "BYB",
             "Valgevene uus rubla (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Valgevene rubla",
-        }
         BYR{
             "BYR",
-            "Valgevene rubla (2000–2016)",
+            "Valgevene rubla",
         }
         BZD{
             "BZD",
@@ -1097,7 +1099,7 @@ et{
         BND{"$"}
         BRL{"R$"}
         BSD{"$"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -1105,7 +1107,6 @@ et{
         COP{"$"}
         CRC{"₡"}
         CUP{"$"}
-        DKK{"kr"}
         DOP{"$"}
         EUR{"€"}
         FJD{"$"}
@@ -1115,7 +1116,6 @@ et{
         HKD{"$"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
@@ -1325,13 +1325,9 @@ et{
             one{"Valgevene uus rubla (1994–1999)"}
             other{"Valgevene uut rubla (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"Valgevene rubla"}
             other{"Valgevene rubla"}
-        }
-        BYR{
-            one{"Valgevene rubla (2000–2016)"}
-            other{"Valgevene rubla (2000–2016)"}
         }
         BZD{
             one{"Belize’i dollar"}
@@ -2150,5 +2146,5 @@ et{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.20.4"}
 }

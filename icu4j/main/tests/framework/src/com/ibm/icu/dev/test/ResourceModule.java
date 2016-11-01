@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  **********************************************************************
- * Copyright (c) 2006-2016, International Business Machines
+ * Copyright (c) 2006-2014, International Business Machines
  * Corporation and others.  All Rights Reserved.
  **********************************************************************
  * Created on 2006-4-21
@@ -78,8 +76,7 @@ class ResourceModule implements TestDataModule {
     
     ResourceModule(String baseName, String localeName) throws DataModuleFormatError{
 
-        res = (UResourceBundle) UResourceBundle.getBundleInstance(baseName, localeName,
-                getClass().getClassLoader());
+        res = (UResourceBundle) UResourceBundle.getBundleInstance(baseName, localeName);
         info = getFromTable(res, INFO, UResourceBundle.TABLE);
         testData = getFromTable(res, TEST_DATA, UResourceBundle.TABLE);
 

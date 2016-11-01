@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1998-2016, International Business Machines Corporation and
+ * Copyright (c) 1998-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 /*
@@ -58,7 +56,7 @@ static void TestCodeUnitValues()
     static uint16_t codeunit[]={0x0000,0xe065,0x20ac,0xd7ff,0xd800,0xd841,0xd905,0xdbff,0xdc00,0xdc02,0xddee,0xdfff,0};
     
     int16_t i;
-    for(i=0; i<UPRV_LENGTHOF(codeunit); i++){
+    for(i=0; i<sizeof(codeunit)/sizeof(codeunit[0]); i++){
         UChar c=codeunit[i];
         log_verbose("Testing code unit value of %x\n", c);
         if(i<4){
@@ -96,7 +94,7 @@ static void TestCharLength()
     
     int16_t i;
     UBool multiple;
-    for(i=0; i<UPRV_LENGTHOF(codepoint); i=(int16_t)(i+2)){
+    for(i=0; i<sizeof(codepoint)/sizeof(codepoint[0]); i=(int16_t)(i+2)){
         UChar32 c=codepoint[i+1];
         if(UTF16_CHAR_LENGTH(c) != (uint16_t)codepoint[i] || U16_LENGTH(c) != (uint16_t)codepoint[i]){
               log_err("The no: of code units for %lx:- Expected: %d Got: %d\n", c, codepoint[i], UTF16_CHAR_LENGTH(c));
@@ -149,8 +147,8 @@ static void TestGetChar()
     uint16_t i=0;
     UChar32 c;
     uint16_t offset=0;
-    for(offset=0; offset<UPRV_LENGTHOF(input); offset++) {
-        if(0<offset && offset<UPRV_LENGTHOF(input)-1){
+    for(offset=0; offset<sizeof(input)/U_SIZEOF_UCHAR; offset++) {
+        if(0<offset && offset<sizeof(input)/U_SIZEOF_UCHAR-1){
             UTF16_GET_CHAR_UNSAFE(input, offset, c);
             if(c != result[i]){
                 log_err("ERROR: UTF16_GET_CHAR_UNSAFE failed for offset=%ld. Expected:%lx Got:%lx\n", offset, result[i], c);
@@ -162,17 +160,17 @@ static void TestGetChar()
             }
         }
 
-        UTF16_GET_CHAR_SAFE(input, 0, offset, UPRV_LENGTHOF(input), c, FALSE);
+        UTF16_GET_CHAR_SAFE(input, 0, offset, sizeof(input)/U_SIZEOF_UCHAR, c, FALSE);
         if(c != result[i+1]){
             log_err("ERROR: UTF16_GET_CHAR_SAFE failed for offset=%ld. Expected:%lx Got:%lx\n", offset, result[i+1], c);
         }
 
-        U16_GET(input, 0, offset, UPRV_LENGTHOF(input), c);
+        U16_GET(input, 0, offset, sizeof(input)/U_SIZEOF_UCHAR, c);
         if(c != result[i+1]){
             log_err("ERROR: U16_GET failed for offset=%ld. Expected:%lx Got:%lx\n", offset, result[i+1], c);
         }
 
-        UTF16_GET_CHAR_SAFE(input, 0, offset, UPRV_LENGTHOF(input), c, TRUE);
+        UTF16_GET_CHAR_SAFE(input, 0, offset, sizeof(input)/U_SIZEOF_UCHAR, c, TRUE);
         if(c != result[i+2]){
             log_err("ERROR: UTF16_GET_CHAR_SAFE(strict) failed for offset=%ld. Expected:%lx Got:%lx\n", offset, result[i+2], c);
         }
@@ -219,7 +217,7 @@ static void TestNextPrevChar(){
     UChar32 c=0x0000;
     uint16_t i=0;
     uint16_t offset=0, setOffset=0;
-    for(offset=0; offset<UPRV_LENGTHOF(input); offset++){
+    for(offset=0; offset<sizeof(input)/U_SIZEOF_UCHAR; offset++){
          setOffset=offset;
          UTF16_NEXT_CHAR_UNSAFE(input, setOffset, c);
          if(setOffset != movedOffset[i]){
@@ -241,7 +239,7 @@ static void TestNextPrevChar(){
          }
 
          setOffset=offset;
-         UTF16_NEXT_CHAR_SAFE(input, setOffset, UPRV_LENGTHOF(input), c, FALSE);
+         UTF16_NEXT_CHAR_SAFE(input, setOffset, sizeof(input)/U_SIZEOF_UCHAR, c, FALSE);
          if(setOffset != movedOffset[i+1]){
              log_err("ERROR: UTF16_NEXT_CHAR_SAFE failed to move the offset correctly at %d\n ExpectedOffset:%d Got %d\n",
                  offset, movedOffset[i+1], setOffset);
@@ -251,7 +249,7 @@ static void TestNextPrevChar(){
          }
 
          setOffset=offset;
-         U16_NEXT(input, setOffset, UPRV_LENGTHOF(input), c);
+         U16_NEXT(input, setOffset, sizeof(input)/U_SIZEOF_UCHAR, c);
          if(setOffset != movedOffset[i+1]){
              log_err("ERROR: U16_NEXT failed to move the offset correctly at %d\n ExpectedOffset:%d Got %d\n",
                  offset, movedOffset[i+1], setOffset);
@@ -261,7 +259,7 @@ static void TestNextPrevChar(){
          }
 
          setOffset=offset;
-         UTF16_NEXT_CHAR_SAFE(input, setOffset, UPRV_LENGTHOF(input), c, TRUE);
+         UTF16_NEXT_CHAR_SAFE(input, setOffset, sizeof(input)/U_SIZEOF_UCHAR, c, TRUE);
          if(setOffset != movedOffset[i+1]){
              log_err("ERROR: UTF16_NEXT_CHAR_SAFE(strict) failed to move the offset correctly at %d\n ExpectedOffset:%d Got %d\n",
                  offset, movedOffset[i+2], setOffset);
@@ -273,7 +271,7 @@ static void TestNextPrevChar(){
          i=(uint16_t)(i+6);
     }
     i=0;
-    for(offset=(uint16_t)UPRV_LENGTHOF(input); offset > 0; --offset){
+    for(offset=(uint16_t)sizeof(input)/U_SIZEOF_UCHAR; offset > 0; --offset){
          setOffset=offset;
          UTF16_PREV_CHAR_UNSAFE(input, setOffset, c);
          if(setOffset != movedOffset[i+3]){
@@ -410,7 +408,7 @@ static void TestFwdBack(){
 
     uint16_t offunsafe=0, offsafe=0;
     uint16_t i=0;
-    while(offunsafe < UPRV_LENGTHOF(input)){
+    while(offunsafe < sizeof(input)/U_SIZEOF_UCHAR){
         UTF16_FWD_1_UNSAFE(input, offunsafe);
         if(offunsafe != fwd_unsafe[i]){
             log_err("ERROR: Forward_unsafe offset expected:%d, Got:%d\n", fwd_unsafe[i], offunsafe);
@@ -420,7 +418,7 @@ static void TestFwdBack(){
 
     offunsafe=0, offsafe=0;
     i=0;
-    while(offunsafe < UPRV_LENGTHOF(input)){
+    while(offunsafe < sizeof(input)/U_SIZEOF_UCHAR){
         U16_FWD_1_UNSAFE(input, offunsafe);
         if(offunsafe != fwd_unsafe[i]){
             log_err("ERROR: U16_FWD_1_UNSAFE offset expected:%d, Got:%d\n", fwd_unsafe[i], offunsafe);
@@ -429,8 +427,8 @@ static void TestFwdBack(){
     }
 
     i=0;
-    while(offsafe < UPRV_LENGTHOF(input)){
-        UTF16_FWD_1_SAFE(input, offsafe, UPRV_LENGTHOF(input));
+    while(offsafe < sizeof(input)/U_SIZEOF_UCHAR){
+        UTF16_FWD_1_SAFE(input, offsafe, sizeof(input)/U_SIZEOF_UCHAR);
         if(offsafe != fwd_safe[i]){
             log_err("ERROR: Forward_safe offset expected:%d, Got:%d\n", fwd_safe[i], offsafe);
         }
@@ -438,16 +436,16 @@ static void TestFwdBack(){
     }
 
     i=0;
-    while(offsafe < UPRV_LENGTHOF(input)){
-        U16_FWD_1(input, offsafe, UPRV_LENGTHOF(input));
+    while(offsafe < sizeof(input)/U_SIZEOF_UCHAR){
+        U16_FWD_1(input, offsafe, sizeof(input)/U_SIZEOF_UCHAR);
         if(offsafe != fwd_safe[i]){
             log_err("ERROR: U16_FWD_1 offset expected:%d, Got:%d\n", fwd_safe[i], offsafe);
         }
         i++;
     }
 
-    offunsafe=UPRV_LENGTHOF(input);
-    offsafe=UPRV_LENGTHOF(input);
+    offunsafe=sizeof(input)/U_SIZEOF_UCHAR;
+    offsafe=sizeof(input)/U_SIZEOF_UCHAR;
     i=0;
     while(offunsafe > 0){
         UTF16_BACK_1_UNSAFE(input, offunsafe);
@@ -457,8 +455,8 @@ static void TestFwdBack(){
         i++;
     }
 
-    offunsafe=UPRV_LENGTHOF(input);
-    offsafe=UPRV_LENGTHOF(input);
+    offunsafe=sizeof(input)/U_SIZEOF_UCHAR;
+    offsafe=sizeof(input)/U_SIZEOF_UCHAR;
     i=0;
     while(offunsafe > 0){
         U16_BACK_1_UNSAFE(input, offunsafe);
@@ -488,7 +486,7 @@ static void TestFwdBack(){
 
     offunsafe=0;
     offsafe=0;
-    for(i=0; i<UPRV_LENGTHOF(Nvalue)-2; i++){  /*didn't want it to fail(we assume 0<i<length)*/
+    for(i=0; i<sizeof(Nvalue)/sizeof(Nvalue[0])-2; i++){  /*didn't want it to fail(we assume 0<i<length)*/
         UTF16_FWD_N_UNSAFE(input, offunsafe, Nvalue[i]);
         if(offunsafe != fwd_N_unsafe[i]){
             log_err("ERROR: Forward_N_unsafe offset expected:%d, Got:%d\n", fwd_N_unsafe[i], offunsafe);
@@ -496,7 +494,7 @@ static void TestFwdBack(){
     }
 
     offunsafe=0;
-    for(i=0; i<UPRV_LENGTHOF(Nvalue)-2; i++){  /*didn't want it to fail(we assume 0<i<length)*/
+    for(i=0; i<sizeof(Nvalue)/sizeof(Nvalue[0])-2; i++){  /*didn't want it to fail(we assume 0<i<length)*/
         U16_FWD_N_UNSAFE(input, offunsafe, Nvalue[i]);
         if(offunsafe != fwd_N_unsafe[i]){
             log_err("ERROR: U16_FWD_N_UNSAFE offset expected:%d, Got:%d\n", fwd_N_unsafe[i], offunsafe);
@@ -504,8 +502,8 @@ static void TestFwdBack(){
     }
 
     offsafe=0;
-    for(i=0; i<UPRV_LENGTHOF(Nvalue); i++){
-        UTF16_FWD_N_SAFE(input, offsafe, UPRV_LENGTHOF(input), Nvalue[i]);
+    for(i=0; i<sizeof(Nvalue)/sizeof(Nvalue[0]); i++){
+        UTF16_FWD_N_SAFE(input, offsafe, sizeof(input)/U_SIZEOF_UCHAR, Nvalue[i]);
         if(offsafe != fwd_N_safe[i]){
             log_err("ERROR: Forward_N_safe offset expected:%d, Got:%d\n", fwd_N_safe[i], offsafe);
         }
@@ -513,40 +511,40 @@ static void TestFwdBack(){
     }
 
     offsafe=0;
-    for(i=0; i<UPRV_LENGTHOF(Nvalue); i++){
-        U16_FWD_N(input, offsafe, UPRV_LENGTHOF(input), Nvalue[i]);
+    for(i=0; i<sizeof(Nvalue)/sizeof(Nvalue[0]); i++){
+        U16_FWD_N(input, offsafe, sizeof(input)/U_SIZEOF_UCHAR, Nvalue[i]);
         if(offsafe != fwd_N_safe[i]){
             log_err("ERROR: U16_FWD_N offset expected:%d, Got:%d\n", fwd_N_safe[i], offsafe);
         }
     
     }
 
-    offunsafe=UPRV_LENGTHOF(input);
-    for(i=0; i<UPRV_LENGTHOF(Nvalue)-2; i++){
+    offunsafe=sizeof(input)/U_SIZEOF_UCHAR;
+    for(i=0; i<sizeof(Nvalue)/sizeof(Nvalue[0])-2; i++){
         UTF16_BACK_N_UNSAFE(input, offunsafe, Nvalue[i]);
         if(offunsafe != back_N_unsafe[i]){
             log_err("ERROR: backward_N_unsafe offset expected:%d, Got:%d\n", back_N_unsafe[i], offunsafe);
         }
     }
 
-    offunsafe=UPRV_LENGTHOF(input);
-    for(i=0; i<UPRV_LENGTHOF(Nvalue)-2; i++){
+    offunsafe=sizeof(input)/U_SIZEOF_UCHAR;
+    for(i=0; i<sizeof(Nvalue)/sizeof(Nvalue[0])-2; i++){
         U16_BACK_N_UNSAFE(input, offunsafe, Nvalue[i]);
         if(offunsafe != back_N_unsafe[i]){
             log_err("ERROR: U16_BACK_N_UNSAFE offset expected:%d, Got:%d\n", back_N_unsafe[i], offunsafe);
         }
     }
 
-    offsafe=UPRV_LENGTHOF(input);
-    for(i=0; i<UPRV_LENGTHOF(Nvalue); i++){
+    offsafe=sizeof(input)/U_SIZEOF_UCHAR;
+    for(i=0; i<sizeof(Nvalue)/sizeof(Nvalue[0]); i++){
         UTF16_BACK_N_SAFE(input, 0, offsafe, Nvalue[i]);
         if(offsafe != back_N_safe[i]){
             log_err("ERROR: backward_N_safe offset expected:%d, Got:%d\n", back_N_safe[i], offsafe);
         }
     }
 
-    offsafe=UPRV_LENGTHOF(input);
-    for(i=0; i<UPRV_LENGTHOF(Nvalue); i++){
+    offsafe=sizeof(input)/U_SIZEOF_UCHAR;
+    for(i=0; i<sizeof(Nvalue)/sizeof(Nvalue[0]); i++){
         U16_BACK_N(input, 0, offsafe, Nvalue[i]);
         if(offsafe != back_N_safe[i]){
             log_err("ERROR: U16_BACK_N offset expected:%d, Got:%d\n", back_N_safe[i], offsafe);
@@ -563,7 +561,7 @@ static void TestSetChar(){
     
     uint16_t i=0;
     uint16_t offset=0, setOffset=0;
-    for(offset=0; offset<UPRV_LENGTHOF(input); offset++){
+    for(offset=0; offset<sizeof(input)/U_SIZEOF_UCHAR; offset++){
          setOffset=offset;
          UTF16_SET_CHAR_START_UNSAFE(input, setOffset);
          if(setOffset != start_unsafe[i]){
@@ -603,7 +601,7 @@ static void TestSetChar(){
          }
 
          setOffset=offset; 
-         U16_SET_CP_LIMIT(input,0, setOffset, UPRV_LENGTHOF(input));
+         U16_SET_CP_LIMIT(input,0, setOffset, sizeof(input)/U_SIZEOF_UCHAR);
          if(setOffset != limit_safe[i]){
              log_err("ERROR: U16_SET_CHAR_LIMIT failed for offset=%ld. Expected:%lx Got:%lx\n", offset, limit_safe[i], setOffset);
          }
@@ -671,7 +669,7 @@ static void TestAppendChar(){
     uint16_t i, count=0;
     UChar *str=(UChar*)malloc(sizeof(UChar) * (u_strlen(s)+1));
     uint16_t offset;
-    for(i=0; i<UPRV_LENGTHOF(test); i=(uint16_t)(i+2)){
+    for(i=0; i<sizeof(test)/sizeof(test[0]); i=(uint16_t)(i+2)){
         if(count<5){
             u_strcpy(str, s);
             offset=(uint16_t)test[i];

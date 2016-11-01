@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and
@@ -16,15 +14,16 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
  
 public class CollationFrenchTest extends TestFmwk{
+    public static void main(String[] args) throws Exception {
+        new CollationFrenchTest().run(args);
+    }
+    
     private static char[][] testSourceCases = {
         {0x0061/*'a'*/, 0x0062/*'b'*/, 0x0063/*'c'*/},
         {0x0043/*'C'*/, 0x004f/*'O'*/, 0x0054/*'T'*/, 0x0045/*'E'*/},
@@ -117,15 +116,13 @@ public class CollationFrenchTest extends TestFmwk{
     private Collator myCollation = null;
     
     public CollationFrenchTest() {
+
     }
-    
-    @Before
-    public void init()throws Exception {
+    protected void init()throws Exception{
         myCollation = Collator.getInstance(Locale.CANADA_FRENCH);
     }
      
     // perform tests with strength TERTIARY
-    @Test
     public void TestTertiary() {
         int i = 0;
         myCollation.setStrength(Collator.TERTIARY);
@@ -136,7 +133,6 @@ public class CollationFrenchTest extends TestFmwk{
     }
     
     // perform tests with strength SECONDARY
-    @Test
     public void TestSecondary() {
         //test acute and grave ordering
         int i = 0;
@@ -160,7 +156,6 @@ public class CollationFrenchTest extends TestFmwk{
     }
 
     // perform extra tests
-    @Test
     public void TestExtra() {
         int i, j;
         myCollation.setStrength(Collator.TERTIARY);
@@ -171,7 +166,6 @@ public class CollationFrenchTest extends TestFmwk{
         }
     }
     
-    @Test
     public void TestContinuationReordering()
     {
         String rule = "&0x2f00 << 0x2f01";

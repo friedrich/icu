@@ -1,13 +1,19 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/id.xml
+// *
+// ***************************************************************************
 id{
     Keys{
         calendar{"Kalender"}
-        cf{"Format Mata Uang"}
         colAlternate{"Penyortiran Abaikan Simbol"}
         colBackwards{"Penyortiran Aksen Terbalik"}
         colCaseFirst{"Pengurutan Huruf Besar/Huruf Kecil"}
         colCaseLevel{"Penyortiran Peka Huruf Besar"}
+        colHiraganaQuaternary{"Penyortiran Kana"}
         colNormalization{"Penyortiran Dinormalisasi"}
         colNumeric{"Penyortiran Numerik"}
         colStrength{"Kekuatan Penyortiran"}
@@ -19,6 +25,7 @@ id{
         numbers{"Angka"}
         timezone{"Zona Waktu"}
         va{"Varian Lokal"}
+        variableTop{"Sortir Sebagai Simbol"}
         x{"Penggunaan Pribadi"}
     }
     Languages{
@@ -46,20 +53,20 @@ id{
         ar{"Arab"}
         ar_001{"Arab Standar Modern"}
         arc{"Aram"}
-        arn{"Mapuche"}
+        arn{"Araukan"}
         arp{"Arapaho"}
-        arq{"Arab Aljazair"}
+        arq{"Arab Algeria"}
         arw{"Arawak"}
         ary{"Arab Maroko"}
         arz{"Arab Mesir"}
         as{"Assam"}
         asa{"Asu"}
         ase{"Bahasa Isyarat Amerika"}
-        ast{"Asturia"}
+        ast{"Astur"}
         av{"Avar"}
         awa{"Awadhi"}
         ay{"Aymara"}
-        az{"Azerbaijani"}
+        az{"Azerbaijan"}
         ba{"Bashkir"}
         bal{"Baluchi"}
         ban{"Bali"}
@@ -102,7 +109,7 @@ id{
         cay{"Cayuga"}
         cch{"Atsam"}
         ce{"Chechen"}
-        ceb{"Cebuano"}
+        ceb{"Sebuano"}
         cgg{"Kiga"}
         ch{"Chamorro"}
         chb{"Chibcha"}
@@ -119,7 +126,6 @@ id{
         cop{"Koptik"}
         cr{"Kree"}
         crh{"Tatar Krimea"}
-        crs{"Seselwa Kreol Prancis"}
         cs{"Cheska"}
         csb{"Kashubia"}
         cu{"Bahasa Gereja Slavonia"}
@@ -139,7 +145,7 @@ id{
         doi{"Dogri"}
         dsb{"Sorbia Rendah"}
         dua{"Duala"}
-        dum{"Belanda Abad Pertengahan"}
+        dum{"Belanda Tengah"}
         dv{"Divehi"}
         dyo{"Jola-Fonyi"}
         dyu{"Dyula"}
@@ -153,13 +159,14 @@ id{
         el{"Yunani"}
         elx{"Elam"}
         en{"Inggris"}
-        en_GB{"Inggris (Inggris)"}
         enm{"Inggris Abad Pertengahan"}
         eo{"Esperanto"}
         es{"Spanyol"}
+        es_419{"Spanyol Amerika Latin"}
         es_ES{"Spanyol (Eropa)"}
+        es_MX{"Spanyol Meksiko"}
         et{"Esti"}
-        eu{"Basque"}
+        eu{"Bask"}
         ewo{"Ewondo"}
         fa{"Persia"}
         fan{"Fang"}
@@ -168,7 +175,7 @@ id{
         fi{"Suomi"}
         fil{"Filipino"}
         fj{"Fiji"}
-        fo{"Faroe"}
+        fo{"Faro"}
         fon{"Fon"}
         fr{"Prancis"}
         frm{"Prancis Abad Pertengahan"}
@@ -193,11 +200,11 @@ id{
         goh{"Jerman Kuno"}
         gon{"Gondi"}
         gor{"Gorontalo"}
-        got{"Gotik"}
+        got{"Gothik"}
         grb{"Grebo"}
         grc{"Yunani Kuno"}
         gsw{"Jerman (Swiss)"}
-        gu{"Gujarat"}
+        gu{"Gujarati"}
         guz{"Gusii"}
         gv{"Manx"}
         gwi{"Gwich’in"}
@@ -213,7 +220,7 @@ id{
         ho{"Hiri Motu"}
         hr{"Kroasia"}
         hsb{"Sorbia Atas"}
-        ht{"Kreol Haiti"}
+        ht{"Haiti"}
         hu{"Hungaria"}
         hup{"Hupa"}
         hy{"Armenia"}
@@ -328,7 +335,7 @@ id{
         mg{"Malagasi"}
         mga{"Irlandia Abad Pertengahan"}
         mgh{"Makhuwa-Meetto"}
-        mgo{"Meta’"}
+        mgo{"meta’"}
         mh{"Marshall"}
         mi{"Maori"}
         mic{"Mikmak"}
@@ -349,7 +356,7 @@ id{
         mwl{"Miranda"}
         mwr{"Marwari"}
         mwv{"Mentawai"}
-        my{"Burma"}
+        my{"Myanmar"}
         mye{"Myene"}
         myv{"Eryza"}
         mzn{"Mazanderani"}
@@ -395,14 +402,12 @@ id{
         pam{"Pampanga"}
         pap{"Papiamento"}
         pau{"Palau"}
-        pcm{"Pidgin Nigeria"}
         pdc{"Jerman Pennsylvania"}
         peo{"Persia Kuno"}
         phn{"Funisia"}
         pi{"Pali"}
         pl{"Polski"}
         pon{"Pohnpeia"}
-        prg{"Prusia"}
         pro{"Provencal Lama"}
         ps{"Pashto"}
         pt{"Portugis"}
@@ -421,7 +426,7 @@ id{
         root{"Root"}
         rtm{"Rotuma"}
         ru{"Rusia"}
-        rup{"Aromania"}
+        rup{"Makedo-Rumania"}
         rw{"Kinyarwanda"}
         rwk{"Rwa"}
         sa{"Sanskerta"}
@@ -454,7 +459,7 @@ id{
         sid{"Sidamo"}
         sk{"Slovak"}
         sl{"Sloven"}
-        sli{"Silesia Rendah"}
+        sli{"Silesia Bawah"}
         sly{"Selayar"}
         sm{"Samoa"}
         sma{"Sami Selatan"}
@@ -478,8 +483,8 @@ id{
         sux{"Sumeria"}
         sv{"Swedia"}
         sw{"Swahili"}
-        sw_CD{"Kongo Swahili"}
         swb{"Komoria"}
+        swc{"Kongo Swahili"}
         syc{"Suriah Klasik"}
         syr{"Suriah"}
         szl{"Silesia"}
@@ -556,9 +561,9 @@ id{
         zbl{"Blissymbol"}
         zen{"Zenaga"}
         zgh{"Tamazight Maroko Standar"}
-        zh{"Tionghoa"}
-        zh_Hans{"Tionghoa (Aksara Sederhana)"}
-        zh_Hant{"Tionghoa (Aksara Tradisional)"}
+        zh{"China"}
+        zh_Hans{"China (Aksara Sederhana)"}
+        zh_Hant{"China (Aksara Tradisional)"}
         zu{"Zulu"}
         zun{"Zuni"}
         zxx{"Tidak ada konten linguistik"}
@@ -614,9 +619,8 @@ id{
         Goth{"Gothic"}
         Gran{"Grantha"}
         Grek{"Yunani"}
-        Gujr{"Gujarat"}
+        Gujr{"Gujarati"}
         Guru{"Gurmukhi"}
-        Hanb{"Hanb"}
         Hang{"Hangul"}
         Hani{"Han"}
         Hano{"Hanunoo"}
@@ -630,7 +634,6 @@ id{
         Hung{"Hungaria Kuno"}
         Inds{"Indus"}
         Ital{"Italia Lama"}
-        Jamo{"Jamo"}
         Java{"Jawa"}
         Jpan{"Jepang"}
         Jurc{"Jurchen"}
@@ -733,7 +736,6 @@ id{
         Yiii{"Yi"}
         Zinh{"Warisan"}
         Zmth{"Notasi Matematika"}
-        Zsye{"Emoji"}
         Zsym{"Simbol"}
         Zxxx{"Tidak Tertulis"}
         Zyyy{"Umum"}
@@ -749,7 +751,7 @@ id{
     Types{
         calendar{
             buddhist{"Kalender Buddha"}
-            chinese{"Kalender Tionghoa"}
+            chinese{"Kalender China"}
             coptic{"Kalender Koptik"}
             dangi{"Kalender Dangi"}
             ethiopic{"Kalender Etiopia"}
@@ -764,10 +766,6 @@ id{
             japanese{"Kalender Jepang"}
             persian{"Kalender Persia"}
             roc{"Kalendar Minguo"}
-        }
-        cf{
-            account{"Format Mata Uang Akuntansi"}
-            standard{"Format Mata Uang Standar"}
         }
         colAlternate{
             non-ignorable{"Sortir Simbol"}
@@ -786,6 +784,10 @@ id{
             no{"Sortir Tidak Peka Huruf Besar"}
             yes{"Sortir Peka Huruf Besar"}
         }
+        colHiraganaQuaternary{
+            no{"Sortir Kana Secara Terpisah"}
+            yes{"Sortir Kana Secara Berbeda"}
+        }
         colNormalization{
             no{"Sortir Tanpa Normalisasi"}
             yes{"Sortir Unicode Dinormalisasi"}
@@ -802,11 +804,11 @@ id{
             tertiary{"Sortir Aksen/Ukuran Huruf/Lebar"}
         }
         collation{
-            big5han{"Urutan Sortir Tionghoa Tradisional - Big5"}
+            big5han{"Urutan Sortir China Tradisional - Big5"}
             dictionary{"Urutan Sortir Kamus"}
             ducet{"Aturan Pengurutan Unicode Default"}
             eor{"Aturan Pengurutan Eropa"}
-            gb2312han{"Urutan Sortir Tionghoa Aks. Sederhana - GB2312"}
+            gb2312han{"Urutan Sortir China Aks. Sederhana - GB2312"}
             phonebook{"Urutan Sortir Buku Telepon"}
             phonetic{"Urutan Sortir Fonetik"}
             pinyin{"Urutan Sortir Pinyin"}
@@ -818,11 +820,6 @@ id{
             traditional{"Urutan Sortir Tradisional"}
             unihan{"Urutan Sortir Guratan Radikal"}
         }
-        d0{
-            fwidth{"Lebar penuh"}
-            hwidth{"Lebar separuh"}
-            npinyin{"Angka"}
-        }
         hc{
             h11{"Sistem 12 Jam (0–11)"}
             h12{"Sistem 12 Jam (1–12)"}
@@ -833,10 +830,6 @@ id{
             loose{"Gaya Pemisah Baris Renggang"}
             normal{"Gaya Pemisah Baris Normal"}
             strict{"Gaya Pemisah Baris Rapat"}
-        }
-        m0{
-            bgn{"BGN"}
-            ungegn{"UNGEGN"}
         }
         ms{
             metric{"Sistem Metrik"}
@@ -858,13 +851,13 @@ id{
             geor{"Angka Georgia"}
             grek{"Angka Yunani"}
             greklow{"Angka Yunani Huruf Kecil"}
-            gujr{"Angka Gujarat"}
+            gujr{"Angka Gujarati"}
             guru{"Angka Gurmukhi"}
-            hanidec{"Angka Desimal Tionghoa"}
-            hans{"Angka Tionghoa Sederhana"}
-            hansfin{"Angka Keuangan Tionghoa Sederhana"}
-            hant{"Angka Tionghoa Tradisional"}
-            hantfin{"Angka Keuangan Tionghoa Tradisional"}
+            hanidec{"Angka Desimal China"}
+            hans{"Angka China Sederhana"}
+            hansfin{"Angka Keuangan China Sederhana"}
+            hant{"Angka China Tradisional"}
+            hantfin{"Angka Keuangan China Tradisional"}
             hebr{"Angka Ibrani"}
             java{"Angka Jawa"}
             jpan{"Angka Jepang"}
@@ -959,21 +952,7 @@ id{
         VALLADER{"VALLADER"}
         WADEGILE{"Wade-Giles Latin"}
     }
-    Version{"2.1.28.79"}
-    characterLabelPattern{
-        all{"{0} — Semua"}
-        category-list{"{0}: {1}"}
-        compatibility{"{0} — Kompatibilitas"}
-        enclosed{"{0} — Terlampir"}
-        extended{"{0} — Diperluas"}
-        historic{"{0} — Historis"}
-        miscellaneous{"{0} — Lain-lain"}
-        other{"{0} — Lainnya"}
-        scripts{"Skrip — {0}"}
-        strokes{
-            other{"{0} Goresan"}
-        }
-    }
+    Version{"2.1.19.17"}
     codePatterns{
         language{"Bahasa: {0}"}
         script{"Skrip: {0}"}

@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2008-2015, International Business Machines Corporation and    *
@@ -15,12 +13,14 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 
 @SuppressWarnings("unchecked")
 public class CurrencyNameTest extends TestFmwk {
+    public static void main(String[] args) throws Exception {
+        new CurrencyNameTest().run(args);
+    }
+
     private static final Set<Currency> AVAILABLE_CURRENCIES;
     private static final Method GETDISPLAYNAME_METHOD;
 
@@ -56,7 +56,6 @@ public class CurrencyNameTest extends TestFmwk {
         AVAILABLE_CURRENCIES = Collections.unmodifiableSet(currencies);
     }
 
-    @Test
     public void TestCurrencySymbols() {
         for (Currency currency : AVAILABLE_CURRENCIES) {
             String currencyCode = currency.getCurrencyCode();
@@ -101,7 +100,6 @@ public class CurrencyNameTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestCurrencyDisplayNames() {
         if (GETDISPLAYNAME_METHOD == null) {
             logln("INFO: Currency#getDisplayName(String,Locale) is not available.");

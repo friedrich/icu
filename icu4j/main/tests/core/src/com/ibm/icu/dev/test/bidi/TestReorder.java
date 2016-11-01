@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
 *   Copyright (C) 2001-2013, International Business Machines
@@ -8,8 +6,6 @@
 */
 
 package com.ibm.icu.dev.test.bidi;
-
-import org.junit.Test;
 
 import com.ibm.icu.text.Bidi;
 
@@ -20,7 +16,7 @@ import com.ibm.icu.text.Bidi;
  * ported from C by Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestReorder extends BidiFmwk {
+public class TestReorder extends BidiTest {
 
     private static final String[] logicalOrder = {
         "del(KC)add(K.C.&)",
@@ -112,7 +108,6 @@ public class TestReorder extends BidiFmwk {
         "hello ZYXW"
     };
 
-    @Test
     public void testReorder() {
         Bidi bidi = new Bidi();
         int testNumber;
@@ -252,4 +247,15 @@ public class TestReorder extends BidiFmwk {
 
         logln("\nExiting TestReorder\n");
     }
+
+
+    public static void main(String[] args) {
+        try {
+            new TestReorder().run(args);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
 }

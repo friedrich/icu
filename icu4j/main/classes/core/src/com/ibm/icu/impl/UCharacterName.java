@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2014, International Business Machines Corporation and
@@ -261,7 +259,7 @@ public final class UCharacterName
         }
 
         synchronized (m_utilStringBuffer_) {
-            m_utilStringBuffer_.setLength(0);
+            m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
             byte b;
             char token;
             for (int i = 0; i < length;) {
@@ -369,7 +367,7 @@ public final class UCharacterName
                 result = TYPE_NAMES_[type];
             }
             synchronized (m_utilStringBuffer_) {
-                m_utilStringBuffer_.setLength(0);
+                m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
                 m_utilStringBuffer_.append('<');
                 m_utilStringBuffer_.append(result);
                 m_utilStringBuffer_.append('-');
@@ -491,7 +489,7 @@ public final class UCharacterName
     {
         String result = null;
         synchronized (m_utilStringBuffer_) {
-            m_utilStringBuffer_.setLength(0);
+            m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
             m_algorithm_[index].appendName(codepoint, m_utilStringBuffer_);
             result = m_utilStringBuffer_.toString();
         }
@@ -820,7 +818,8 @@ public final class UCharacterName
                         int count = 0;
                         for (int factor = m_factor_[i]; factor > 0; -- factor) {
                             synchronized (m_utilStringBuffer_) {
-                                m_utilStringBuffer_.setLength(0);
+                                m_utilStringBuffer_.delete(0,
+                                                m_utilStringBuffer_.length());
                                 count
                                   = UCharacterUtility.getNullTermByteSubString(
                                                 m_utilStringBuffer_,
@@ -882,7 +881,7 @@ public final class UCharacterName
             }
 
             synchronized (m_utilStringBuffer_) {
-                m_utilStringBuffer_.setLength(0);
+                m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
                 int count = 0;
                 int factor;
                 size --;
@@ -1189,7 +1188,7 @@ public final class UCharacterName
         ) {
             // index in terms integer index
             synchronized (m_utilStringBuffer_) {
-                m_utilStringBuffer_.setLength(0);
+                m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
 
                 for (int index = m_algorithm_.length - 1; index >= 0; index --)
                 {
@@ -1522,7 +1521,8 @@ public final class UCharacterName
                     byte tlength = tokenlength[b];
                     if (tlength == 0) {
                         synchronized (m_utilStringBuffer_) {
-                            m_utilStringBuffer_.setLength(0);
+                            m_utilStringBuffer_.delete(0,
+                                                 m_utilStringBuffer_.length());
                             UCharacterUtility.getNullTermByteSubString(
                                            m_utilStringBuffer_, m_tokenstring_,
                                            token);

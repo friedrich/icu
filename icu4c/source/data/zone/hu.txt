@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/hu.xml
+// *
+// ***************************************************************************
 hu{
-    Version{"2.1.28.79"}
+    Version{"2.1.19.17"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -302,9 +308,6 @@ hu{
         }
         "America:El_Salvador"{
             ec{"Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +672,6 @@ hu{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Bejrút"}
         }
@@ -849,9 +849,6 @@ hu{
         "Asia:Tokyo"{
             ec{"Tokió"}
         }
-        "Asia:Tomsk"{
-            ec{"Tomszk"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"Ulánbátor"}
         }
@@ -951,9 +948,6 @@ hu{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
-        }
         "Europe:Athens"{
             ec{"Athén"}
         }
@@ -1011,9 +1005,6 @@ hu{
         }
         "Europe:Kiev"{
             ec{"Kijev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lisszabon"}
@@ -1090,9 +1081,6 @@ hu{
         }
         "Europe:Tirane"{
             ec{"Tirana"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Uljanovszk"}
         }
         "Europe:Uzhgorod"{
             ec{"Ungvár"}
@@ -1802,9 +1790,6 @@ hu{
         }
         "meta:Ponape"{
             ls{"ponape-szigeti idő"}
-        }
-        "meta:Pyongyang"{
-            ls{"phenjani idő"}
         }
         "meta:Qyzylorda"{
             ld{"Qyzylordai nyári idő"}

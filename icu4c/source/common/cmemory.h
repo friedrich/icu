@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 1997-2016, International Business Machines
+*   Copyright (C) 1997-2015, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -155,8 +153,6 @@ U_NAMESPACE_BEGIN
 template<typename T>
 class LocalMemory : public LocalPointerBase<T> {
 public:
-    using LocalPointerBase<T>::operator*;
-    using LocalPointerBase<T>::operator->;
     /**
      * Constructor takes ownership.
      * @param p simple pointer to an array of T items that is adopted
@@ -283,7 +279,7 @@ inline T *LocalMemory<T>::allocateInsteadAndCopy(int32_t newCapacity, int32_t le
                 if(length>newCapacity) {
                     length=newCapacity;
                 }
-                uprv_memcpy(p, LocalPointerBase<T>::ptr, (size_t)length*sizeof(T));
+                uprv_memcpy(p, LocalPointerBase<T>::ptr, length*sizeof(T));
             }
             uprv_free(LocalPointerBase<T>::ptr);
             LocalPointerBase<T>::ptr=p;
@@ -430,7 +426,7 @@ inline T *MaybeStackArray<T, stackCapacity>::resize(int32_t newCapacity, int32_t
                 if(length>newCapacity) {
                     length=newCapacity;
                 }
-                uprv_memcpy(p, ptr, (size_t)length*sizeof(T));
+                uprv_memcpy(p, ptr, length*sizeof(T));
             }
             releaseArray();
             ptr=p;
@@ -461,7 +457,7 @@ inline T *MaybeStackArray<T, stackCapacity>::orphanOrClone(int32_t length, int32
         if(p==NULL) {
             return NULL;
         }
-        uprv_memcpy(p, ptr, (size_t)length*sizeof(T));
+        uprv_memcpy(p, ptr, length*sizeof(T));
     }
     resultCapacity=length;
     ptr=stackArray;
@@ -609,7 +605,7 @@ inline H *MaybeStackHeaderAndArray<H, T, stackCapacity>::resize(int32_t newCapac
                     length=newCapacity;
                 }
             }
-            uprv_memcpy(p, ptr, sizeof(H)+(size_t)length*sizeof(T));
+            uprv_memcpy(p, ptr, sizeof(H)+length*sizeof(T));
             releaseMemory();
             ptr=p;
             capacity=newCapacity;
@@ -640,7 +636,7 @@ inline H *MaybeStackHeaderAndArray<H, T, stackCapacity>::orphanOrClone(int32_t l
         if(p==NULL) {
             return NULL;
         }
-        uprv_memcpy(p, ptr, sizeof(H)+(size_t)length*sizeof(T));
+        uprv_memcpy(p, ptr, sizeof(H)+length*sizeof(T));
     }
     resultCapacity=length;
     ptr=&stackHeader;

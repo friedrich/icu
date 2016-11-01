@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/pt_PT.xml
+// *
+// ***************************************************************************
 pt_PT{
-    Version{"2.1.29.54"}
+    Version{"2.1.19.79"}
     zoneStrings{
         "Africa:Djibouti"{
             ec{"Jibuti"}
@@ -84,17 +90,14 @@ pt_PT{
         "Asia:Dhaka"{
             ec{"Daca"}
         }
-        "Asia:Hebron"{
-            ec{"Hebron"}
-        }
         "Asia:Kabul"{
             ec{"Cabul"}
         }
         "Asia:Kuala_Lumpur"{
             ec{"Kuala Lumpur"}
         }
-        "Asia:Makassar"{
-            ec{"Macassar"}
+        "Asia:Riyadh"{
+            ec{"Riade"}
         }
         "Asia:Saigon"{
             ec{"Cidade de Ho Chi Minh"}
@@ -130,7 +133,7 @@ pt_PT{
             ec{"Copenhaga"}
         }
         "Europe:Dublin"{
-            ld{"Hora de verão da Irlanda"}
+            ld{"Hora de Verão da Irlanda"}
         }
         "Europe:Helsinki"{
             ec{"Helsínquia"}
@@ -139,7 +142,7 @@ pt_PT{
             ec{"Caliningrado"}
         }
         "Europe:London"{
-            ld{"Hora de verão Britânica"}
+            ld{"Hora de Verão Britânica"}
         }
         "Europe:Madrid"{
             ec{"Madrid"}
@@ -149,6 +152,9 @@ pt_PT{
         }
         "Europe:Moscow"{
             ec{"Moscovo"}
+        }
+        "Europe:Podgorica"{
+            ec{"Podgorica"}
         }
         "Europe:San_Marino"{
             ec{"São Marinho"}
@@ -716,9 +722,6 @@ pt_PT{
         }
         "meta:Ponape"{
             ls{"Hora de Ponape"}
-        }
-        "meta:Pyongyang"{
-            ls{"Hora de Pyongyang"}
         }
         "meta:Qyzylorda"{
             ld{"Hora de verão de Qyzylorda"}

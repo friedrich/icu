@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/pt.xml
+// *
+// ***************************************************************************
 pt{
-    Version{"2.1.28.79"}
+    Version{"2.1.19.17"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -302,9 +308,6 @@ pt{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -661,16 +664,13 @@ pt{
             ec{"Bagdá"}
         }
         "Asia:Bahrain"{
-            ec{"Bahrein"}
+            ec{"Barein"}
         }
         "Asia:Baku"{
             ec{"Baku"}
         }
         "Asia:Bangkok"{
             ec{"Bangkok"}
-        }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
         }
         "Asia:Beirut"{
             ec{"Beirute"}
@@ -712,7 +712,7 @@ pt{
             ec{"Gaza"}
         }
         "Asia:Hebron"{
-            ec{"Hebrom"}
+            ec{"Hebron"}
         }
         "Asia:Hong_Kong"{
             ec{"Hong Kong"}
@@ -766,7 +766,7 @@ pt{
             ec{"Magadan"}
         }
         "Asia:Makassar"{
-            ec{"Macáçar"}
+            ec{"Macassar"}
         }
         "Asia:Manila"{
             ec{"Manila"}
@@ -808,7 +808,7 @@ pt{
             ec{"Yangon"}
         }
         "Asia:Riyadh"{
-            ec{"Riade"}
+            ec{"Riadi"}
         }
         "Asia:Saigon"{
             ec{"Ho Chi Minh"}
@@ -848,9 +848,6 @@ pt{
         }
         "Asia:Tokyo"{
             ec{"Tóquio"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ulan Bator"}
@@ -895,7 +892,7 @@ pt{
             ec{"Madeira"}
         }
         "Atlantic:Reykjavik"{
-            ec{"Reykjavík"}
+            ec{"Reykjavik"}
         }
         "Atlantic:South_Georgia"{
             ec{"Geórgia do Sul"}
@@ -950,9 +947,6 @@ pt{
         }
         "Europe:Andorra"{
             ec{"Andorra"}
-        }
-        "Europe:Astrakhan"{
-            ec{"Astracã"}
         }
         "Europe:Athens"{
             ec{"Atenas"}
@@ -1012,9 +1006,6 @@ pt{
         "Europe:Kiev"{
             ec{"Kiev"}
         }
-        "Europe:Kirov"{
-            ec{"Kirov"}
-        }
         "Europe:Lisbon"{
             ec{"Lisboa"}
         }
@@ -1053,7 +1044,7 @@ pt{
             ec{"Paris"}
         }
         "Europe:Podgorica"{
-            ec{"Podgorica"}
+            ec{"Podgóritza"}
         }
         "Europe:Prague"{
             ec{"Praga"}
@@ -1090,9 +1081,6 @@ pt{
         }
         "Europe:Tirane"{
             ec{"Tirana"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Ulianovsk"}
         }
         "Europe:Uzhgorod"{
             ec{"Uzhgorod"}
@@ -1463,7 +1451,7 @@ pt{
             ls{"Horário Padrão de Choibalsan"}
         }
         "meta:Christmas"{
-            ls{"Horário da Ilha Christmas"}
+            ls{"Horário das Ilhas Natal"}
         }
         "meta:Cocos"{
             ls{"Horário das Ilhas Coco"}
@@ -1511,7 +1499,7 @@ pt{
             ls{"Horário Padrão da Europa Oriental"}
         }
         "meta:Europe_Further_Eastern"{
-            ls{"Horário do Extremo Leste Europeu"}
+            ls{"Horário de Kaliningrado"}
         }
         "meta:Europe_Western"{
             ld{"Horário de Verão da Europa Ocidental"}
@@ -1801,9 +1789,6 @@ pt{
         }
         "meta:Ponape"{
             ls{"Horário de Ponape"}
-        }
-        "meta:Pyongyang"{
-            ls{"Horário de Pyongyang"}
         }
         "meta:Qyzylorda"{
             ld{"Horário de Verão de Qyzylorda"}

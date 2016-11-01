@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ps.xml
+// *
+// ***************************************************************************
 ps{
-    Version{"2.1.27.40"}
+    Version{"2.1.19.14"}
     zoneStrings{
         "Asia:Kabul"{
             ec{"کابل"}
@@ -12,9 +18,9 @@ ps{
             ls{"∅∅∅"}
         }
         "meta:Europe_Western"{
-            ld{"د لودیځې اورپا د اوړي وخت"}
+            ld{"∅∅∅"}
             lg{"لوېديزې اروپا وخت"}
-            ls{"د لودیځې اروپا معیاري وخت"}
+            ls{"∅∅∅"}
         }
         "meta:GMT"{
             ls{"گرينويچ وخت"}

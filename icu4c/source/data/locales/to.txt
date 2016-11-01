@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/to.xml
+// *
+// ***************************************************************************
 to{
     AuxExemplarCharacters{
         "[à ă â å ä æ b c ç d è ĕ ê ë g ì ĭ î ï j ñ ò ŏ ô ö ø œ q r ù ŭ û ü w x y ÿ z"
@@ -131,7 +137,7 @@ to{
         minimumGroupingDigits{"1"}
         native{"latn"}
     }
-    Version{"2.1.27.98"}
+    Version{"2.1.19.14"}
     calendar{
         generic{
             DateTimePatterns{
@@ -276,10 +282,6 @@ to{
         }
         gregorian{
             AmPmMarkers{
-                "hengihengi",
-                "efiafi",
-            }
-            AmPmMarkersAbbr{
                 "AM",
                 "PM",
             }
@@ -437,8 +439,8 @@ to{
                         pm{"PM"}
                     }
                     wide{
-                        am{"HH"}
-                        pm{"EA"}
+                        am{"AM"}
+                        pm{"PM"}
                     }
                 }
             }
@@ -713,10 +715,7 @@ to{
         day-narrow{
             dn{"ʻaho"}
             relative{
-                "-1"{"ʻaneafi"}
                 "-2"{"ʻaneheafi"}
-                "0"{"ʻahó ni"}
-                "1"{"ʻapongipongi"}
                 "2"{"ʻahepongipongi"}
             }
             relativeTime{
@@ -731,10 +730,7 @@ to{
         day-short{
             dn{"ʻaho"}
             relative{
-                "-1"{"ʻaneafi"}
                 "-2"{"ʻaneheafi"}
-                "0"{"ʻahó ni"}
-                "1"{"ʻapongipongi"}
                 "2"{"ʻahepongipongi"}
             }
             relativeTime{
@@ -980,7 +976,7 @@ to{
         second{
             dn{"sekoni"}
             relative{
-                "0"{"taimí ni"}
+                "0"{"taimiʻni"}
             }
             relativeTime{
                 future{
@@ -1202,12 +1198,6 @@ to{
     }
     listPattern{
         standard{
-            2{"{0} mo {1}"}
-            end{"{0} mo {1}"}
-            middle{"{0} mo {1}"}
-            start{"{0} mo {1}"}
-        }
-        standard-short{
             2{"{0} mo {1}"}
             end{"{0} mo {1}"}
             middle{"{0} mo {1}"}

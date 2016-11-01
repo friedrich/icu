@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fr_CA.xml
+// *
+// ***************************************************************************
 fr_CA{
-    Version{"2.1.27.99"}
+    Version{"2.1.19.14"}
     zoneStrings{
         "Africa:Ndjamena"{
             ec{"Ndjamena"}
@@ -73,7 +79,6 @@ fr_CA{
         }
         "meta:Amazon"{
             ld{"heure avancée de l’Amazonie"}
-            lg{"heure de l’Amazonie"}
             ls{"heure normale de l’Amazonie"}
         }
         "meta:America_Central"{
@@ -135,7 +140,6 @@ fr_CA{
         }
         "meta:Argentina"{
             ld{"heure avancée de l’Argentine"}
-            lg{"heure de l’Argentine"}
             ls{"heure normale d’Argentine"}
         }
         "meta:Argentina_Western"{
@@ -395,9 +399,9 @@ fr_CA{
             ls{"heure normale de Novossibirsk"}
         }
         "meta:Omsk"{
-            ld{"heure avancée d’Omsk"}
-            lg{"heure d’Omsk"}
-            ls{"heure normale d’Omsk"}
+            ld{"heure avancée de Omsk"}
+            lg{"heure de Omsk"}
+            ls{"heure normale de Omsk"}
         }
         "meta:Pakistan"{
             ld{"heure avancée du Pakistan"}
@@ -423,9 +427,6 @@ fr_CA{
             ld{"heure avancée de Saint-Pierre-et-Miquelon"}
             lg{"heure de Saint-Pierre-et-Miquelon"}
             ls{"heure normale de Saint-Pierre-et-Miquelon"}
-        }
-        "meta:Reunion"{
-            ls{"heure de la Réunion"}
         }
         "meta:Sakhalin"{
             ld{"heure avancée de Sakhaline"}

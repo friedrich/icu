@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/cy.xml
+// *
+// ***************************************************************************
 cy{
-    Version{"2.1.30.6"}
+    Version{"2.1.20.4"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -302,9 +308,6 @@ cy{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +672,6 @@ cy{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beirut"}
         }
@@ -849,9 +849,6 @@ cy{
         "Asia:Tokyo"{
             ec{"Tokyo"}
         }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"Ulan Bator"}
         }
@@ -883,7 +880,7 @@ cy{
             ec{"Bermuda"}
         }
         "Atlantic:Canary"{
-            ec{"Yr Ynysoedd Dedwydd"}
+            ec{"yr Ynysoedd Dedwydd"}
         }
         "Atlantic:Cape_Verde"{
             ec{"Cabo Verde"}
@@ -930,9 +927,6 @@ cy{
         "Australia:Lindeman"{
             ec{"Lindeman"}
         }
-        "Australia:Lord_Howe"{
-            ec{"Lord Howe"}
-        }
         "Australia:Melbourne"{
             ec{"Melbourne"}
         }
@@ -950,9 +944,6 @@ cy{
         }
         "Europe:Andorra"{
             ec{"Andorra"}
-        }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
         }
         "Europe:Athens"{
             ec{"Athen"}
@@ -1011,9 +1002,6 @@ cy{
         }
         "Europe:Kiev"{
             ec{"Kiev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lisbon"}
@@ -1091,9 +1079,6 @@ cy{
         "Europe:Tirane"{
             ec{"Tirane"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Ulyanovsk"}
-        }
         "Europe:Uzhgorod"{
             ec{"Uzhhorod"}
         }
@@ -1101,7 +1086,7 @@ cy{
             ec{"Vaduz"}
         }
         "Europe:Vatican"{
-            ec{"Y Fatican"}
+            ec{"y Fatican"}
         }
         "Europe:Vienna"{
             ec{"Fienna"}
@@ -1758,9 +1743,6 @@ cy{
         }
         "meta:Ponape"{
             ls{"Amser Pohnpei"}
-        }
-        "meta:Pyongyang"{
-            ls{"Amser Pyongyang"}
         }
         "meta:Reunion"{
             ls{"Amser Réunion"}

@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bg.xml
+// *
+// ***************************************************************************
 bg{
     Countries{
         001{"Свят"}
@@ -40,6 +46,7 @@ bg{
         AI{"Ангуила"}
         AL{"Албания"}
         AM{"Армения"}
+        AN{"Холандски Антили"}
         AO{"Ангола"}
         AQ{"Антарктика"}
         AR{"Аржентина"}
@@ -272,7 +279,6 @@ bg{
         UA{"Украйна"}
         UG{"Уганда"}
         UM{"Отдалечени острови на САЩ"}
-        UN{"Организация на обединените нации"}
         US{"Съединени щати"}
         UY{"Уругвай"}
         UZ{"Узбекистан"}
@@ -304,9 +310,8 @@ bg{
         CD{"Конго (ДРК)"}
         CG{"Конго (Република)"}
         CI{"Бряг на слоновата кост"}
-        CZ{"Чехия"}
         FK{"Фолклендски острови (Малвински острови)"}
         MK{"Бивша югославска република Македония"}
     }
-    Version{"2.1.30.6"}
+    Version{"2.1.19.94"}
 }

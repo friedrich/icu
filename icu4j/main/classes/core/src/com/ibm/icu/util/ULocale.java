@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ******************************************************************************
- * Copyright (C) 2003-2016, International Business Machines Corporation and
+ * Copyright (C) 2003-2015, International Business Machines Corporation and
  * others. All Rights Reserved.
  ******************************************************************************
  */
@@ -26,14 +24,13 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.ibm.icu.impl.CacheBase;
-import com.ibm.icu.impl.ICUData;
+import com.ibm.icu.impl.ICUCache;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.ICUResourceTableAccess;
 import com.ibm.icu.impl.LocaleIDParser;
 import com.ibm.icu.impl.LocaleIDs;
 import com.ibm.icu.impl.LocaleUtility;
-import com.ibm.icu.impl.SoftCache;
+import com.ibm.icu.impl.SimpleCache;
 import com.ibm.icu.impl.locale.AsciiUtil;
 import com.ibm.icu.impl.locale.BaseLocale;
 import com.ibm.icu.impl.locale.Extension;
@@ -88,7 +85,7 @@ import com.ibm.icu.text.LocaleDisplayNames.DialectHandling;
  * All ULocale constructors automatically normalize the locale id.  To handle
  * POSIX ids, <code>canonicalize</code> can be called to convert the id
  * to canonical form, or the <code>canonicalInstance</code> factory method
- * can be called.
+ * can be called.</p>
  *
  * <p>This class provides selectors {@link #VALID_LOCALE} and {@link
  * #ACTUAL_LOCALE} intended for use in methods named
@@ -96,10 +93,10 @@ import com.ibm.icu.text.LocaleDisplayNames.DialectHandling;
  * including {@link com.ibm.icu.util.Calendar}, {@link
  * com.ibm.icu.util.Currency}, {@link com.ibm.icu.text.UFormat},
  * {@link com.ibm.icu.text.BreakIterator},
- * {@link com.ibm.icu.text.Collator},
+ * <a href="../text/Collator.html" title="class in com.ibm.icu.text"><code>Collator</code></a>,
  * {@link com.ibm.icu.text.DateFormatSymbols}, and {@link
  * com.ibm.icu.text.DecimalFormatSymbols} and their subclasses, if
- * any. Once an object of one of these classes has been created,
+ * any.  Once an object of one of these classes has been created,
  * <tt>getLocale()</tt> may be called on it to determine the valid and
  * actual locale arrived at during the object's construction.
  *
@@ -112,17 +109,11 @@ import com.ibm.icu.text.LocaleDisplayNames.DialectHandling;
  * @author Ram Viswanadha
  * @stable ICU 2.8
  */
-@SuppressWarnings("javadoc")    // com.ibm.icu.text.Collator is in another project
 public final class ULocale implements Serializable, Comparable<ULocale> {
     // using serialver from jdk1.4.2_05
     private static final long serialVersionUID = 3715177670352309217L;
 
-    private static CacheBase<String, String, Void> nameCache = new SoftCache<String, String, Void>() {
-        @Override
-        protected String createInstance(String tmpLocaleID, Void unused) {
-            return new LocaleIDParser(tmpLocaleID).getName();
-        }
-    };
+    private static ICUCache<String, String> nameCache = new SimpleCache<String, String>();
 
     /**
      * Useful constant for language.
@@ -312,12 +303,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
         FORMAT
     }
 
-    private static final SoftCache<Locale, ULocale, Void> CACHE = new SoftCache<Locale, ULocale, Void>() {
-        @Override
-        protected ULocale createInstance(Locale key, Void unused) {
-            return JDKLocaleHelper.toULocale(key);
-        }
-    };
+    private static final SimpleCache<Locale, ULocale> CACHE = new SimpleCache<Locale, ULocale>();
 
     /**
      * Cache the locale.
@@ -437,7 +423,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
 
     /**
      * Construct a ULocale object from a {@link java.util.Locale}.
-     * @param loc a {@link java.util.Locale}
+     * @param loc a JDK locale
      */
     private ULocale(Locale loc) {
         this.localeID = getName(forLocale(loc).toString());
@@ -447,14 +433,19 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
     /**
      * {@icu} Returns a ULocale object for a {@link java.util.Locale}.
      * The ULocale is canonicalized.
-     * @param loc a {@link java.util.Locale}
+     * @param loc a JDK locale
      * @stable ICU 3.2
      */
     public static ULocale forLocale(Locale loc) {
         if (loc == null) {
             return null;
         }
-        return CACHE.getInstance(loc, null /* unused */);
+        ULocale result = CACHE.get(loc);
+        if (result == null) {
+            result = JDKLocaleHelper.toULocale(loc);
+            CACHE.put(loc, result);
+        }
+        return result;
     }
 
     /**
@@ -466,7 +457,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * are distinguished by position as indicated by the underscores.  The
      * start of the keyword list is indicated by '@', and consists of two
      * or more keyword/value pairs separated by semicolons(';').
-     *
+     * 
      * <p>This constructor does not canonicalize the localeID.  So, for
      * example, "zh__pinyin" remains unchanged instead of converting
      * to "zh@collation=pinyin".  By default ICU only recognizes the
@@ -551,7 +542,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
 
     /**
      * {@icu} Converts this ULocale object to a {@link java.util.Locale}.
-     * @return a {@link java.util.Locale} that either exactly represents this object
+     * @return a JDK locale that either exactly represents this object
      * or is the closest approximation.
      * @stable ICU 2.8
      */
@@ -581,7 +572,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
         // Locale.getDefault().
 
         // Note: The "user.script" property is only used by initialization.
-        //
+        // 
         if (JDKLocaleHelper.hasLocaleCategories()) {
             for (Category cat: Category.values()) {
                 int idx = cat.ordinal();
@@ -622,21 +613,20 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * The default ULocale is synchronized to the default Java Locale. This method checks
      * the current default Java Locale and returns an equivalent ULocale.
      * <p>
-     * <b>Note:</b> Before Java 7, the {@link java.util.Locale} was not able to represent a
-     * locale's script. Therefore, the script field in the default ULocale is always empty unless
+     * <b>Note:</b> Before Java 7, the JDK Locale was not able to represent a locale's script.
+     * Therefore, the script field in the default ULocale is always empty unless
      * a ULocale with non-empty script is explicitly set by {@link #setDefault(ULocale)}
      * on Java 6 or older systems.
      * <p>
      * <b>Note for ICU 49 or later:</b> Some JRE implementations allow users to override the default
-     * {@link java.util.Locale} using system properties - <code>user.language</code>,
-     * <code>user.country</code> and <code>user.variant</code>. In addition to these system
-     * properties, some Java 7 implementations support <code>user.script</code> for overriding the
-     * default Locale's script.
+     * JDK Locale using system properties - <code>user.language</code>, <code>user.country</code>
+     * and <code>user.variant</code>. In addition to these system properties, some Java 7
+     * implementations support <code>user.script</code> for overriding the default Locale's script.
      * ICU 49 and later versions use the <code>user.script</code> system property on Java 6
      * or older systems supporting other <code>user.*</code> system properties to initialize
      * the default ULocale. The <code>user.script</code> override for default ULocale is not
      * used on Java 7, or if the current Java default Locale is changed after start up.
-     *
+     * 
      * @return the default ULocale.
      * @stable ICU 2.8
      */
@@ -702,7 +692,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
 
     /**
      * Returns the current default ULocale for the specified category.
-     *
+     * 
      * @param category the category
      * @return the default ULocale for the specified category.
      * @stable ICU 49
@@ -760,7 +750,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * of the JVM. If the caller does not have write permission to the
      * user.language property, a security exception will be thrown,
      * and the default ULocale for the specified Category will remain unchanged.
-     *
+     * 
      * @param category the specified category to set the default locale
      * @param newLocale the new default locale
      * @see SecurityManager#checkPermission(java.security.Permission)
@@ -780,7 +770,6 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * immutable, there is no reason to clone it, so this API returns 'this'.
      * @stable ICU 3.0
      */
-    @Override
     public Object clone() {
         return this;
     }
@@ -789,7 +778,6 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * Returns the hashCode.
      * @stable ICU 3.0
      */
-    @Override
     public int hashCode() {
         return localeID.hashCode();
     }
@@ -803,7 +791,6 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * @return true if this Locale is equal to the specified object.
      * @stable ICU 3.0
      */
-    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -816,16 +803,15 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
 
     /**
      * Compares two ULocale for ordering.
-     * <p><b>Note:</b> The order might change in future.
-     *
+     * <p><b>Note:</b> The order might change in future.</p>
+     * 
      * @param other the ULocale to be compared.
      * @return a negative integer, zero, or a positive integer as this ULocale is less than, equal to, or greater
      * than the specified ULocale.
      * @throws NullPointerException if <code>other</code> is null.
-     *
+     * 
      * @stable ICU 53
      */
-    @Override
     public int compareTo(ULocale other) {
         if (this == other) {
             return 0;
@@ -991,44 +977,6 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
     }
 
     /**
-     * {@icu} Get the region to use for supplemental data lookup.
-     * Uses
-     * (1) any region specified by locale tag "rg"; if none then
-     * (2) any unicode_region_tag in the locale ID; if none then
-     * (3) if inferRegion is TRUE, the region suggested by
-     *     getLikelySubtags on the localeID.
-     * If no region is found, returns empty string ""
-     *
-     * @param locale
-     *     The locale (includes any keywords) from which
-     *     to get the region to use for supplemental data.
-     * @param inferRegion
-     *     If TRUE, will try to infer region from other
-     *     locale elements if not found any other way.
-     * @return
-     *     String with region to use ("" if none found).
-     * @internal ICU 57
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public static String getRegionForSupplementalData(
-                            ULocale locale, boolean inferRegion) {
-        String region = locale.getKeywordValue("rg");
-        if (region != null && region.length() == 6) {
-            String regionUpper = AsciiUtil.toUpperString(region);
-            if (regionUpper.endsWith("ZZZZ")) {
-            	return regionUpper.substring(0,2);
-            }
-        }
-        region = locale.getCountry();
-        if (region.length() == 0 && inferRegion) {
-            ULocale maximized = addLikelySubtags(locale);
-            region = maximized.getCountry();
-        }
-        return region;
-    }
-
-    /**
      * Returns the variant code for this locale, which might be the empty string.
      * @see #getDisplayVariant()
      * @see #getDisplayVariant(ULocale)
@@ -1176,14 +1124,18 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
         } else {
             tmpLocaleID = localeID;
         }
-        return nameCache.getInstance(tmpLocaleID, null /* unused */);
+        String name = nameCache.get(tmpLocaleID);
+        if (name == null) {
+            name = new LocaleIDParser(tmpLocaleID).getName();
+            nameCache.put(tmpLocaleID, name);
+        }
+        return name;
     }
 
     /**
      * Returns a string representation of this object.
      * @stable ICU 3.0
      */
-    @Override
     public String toString() {
         return localeID;
     }
@@ -1972,8 +1924,8 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * @stable ICU 4.0
      */
     public String getCharacterOrientation() {
-        return ICUResourceTableAccess.getTableString(ICUData.ICU_BASE_NAME, this,
-                "layout", "characters", "characters");
+        return ICUResourceTableAccess.getTableString(ICUResourceBundle.ICU_BASE_NAME, this,
+                "layout", "characters");
     }
 
     /**
@@ -1984,8 +1936,8 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * @stable ICU 4.0
      */
     public String getLineOrientation() {
-        return ICUResourceTableAccess.getTableString(ICUData.ICU_BASE_NAME, this,
-                "layout", "lines", "lines");
+        return ICUResourceTableAccess.getTableString(ICUResourceBundle.ICU_BASE_NAME, this,
+                "layout", "lines");
     }
 
     /**
@@ -2171,7 +2123,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
     /**
      * Package local method used for parsing Accept-Language string
      */
-    static ULocale[] parseAcceptLanguage(String acceptLanguage, boolean isLenient)
+    static ULocale[] parseAcceptLanguage(String acceptLanguage, boolean isLenient) 
             throws ParseException {
         class ULocaleAcceptLanguageQ implements Comparable<ULocaleAcceptLanguageQ> {
             private double q;
@@ -2180,7 +2132,6 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
                 q = theq;
                 serial = theserial;
             }
-            @Override
             public int compareTo(ULocaleAcceptLanguageQ other) {
                 if (q > other.q) { // reverse - to sort in descending order
                     return -1;
@@ -2198,7 +2149,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
         }
 
         // parse out the acceptLanguage into an array
-        TreeMap<ULocaleAcceptLanguageQ, ULocale> map =
+        TreeMap<ULocaleAcceptLanguageQ, ULocale> map = 
                 new TreeMap<ULocaleAcceptLanguageQ, ULocale>();
         StringBuilder languageRangeBuf = new StringBuilder();
         StringBuilder qvalBuf = new StringBuilder();
@@ -2343,7 +2294,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
                 }
                 break;
             case 8: // before q value fraction part
-                if ('0' <= c && c <= '9') {
+                if ('0' <= c || c <= '9') {
                     if (q1 && c != '0' && !isLenient) {
                         // if q value starts with 1, the fraction part must be 0
                         state = -1;
@@ -2507,64 +2458,64 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * @stable ICU 4.0
      */
     public static ULocale minimizeSubtags(ULocale loc) {
-        return minimizeSubtags(loc, Minimize.FAVOR_REGION);
-    }
+        return minimizeSubtags(loc, Minimize.FAVOR_REGION); 
+    } 
 
-    /**
-     * Options for minimizeSubtags.
+    /** 
+     * Options for minimizeSubtags. 
      * @internal
      * @deprecated This API is ICU internal only.
-     */
+     */ 
     @Deprecated
-    public enum Minimize {
-        /**
+    public enum Minimize { 
+        /** 
          * Favor including the script, when either the region <b>or</b> the script could be suppressed, but not both.
          * @internal
          * @deprecated This API is ICU internal only.
          */
         @Deprecated
-        FAVOR_SCRIPT,
+        FAVOR_SCRIPT,  
         /**
          * Favor including the region, when either the region <b>or</b> the script could be suppressed, but not both.
          * @internal
          * @deprecated This API is ICU internal only.
          */
         @Deprecated
-        FAVOR_REGION
-    }
+        FAVOR_REGION 
+    } 
 
-    /**
-     * {@icu} Minimizes the subtags for a provided locale ID, per the algorithm described
-     * in the following CLDR technical report:<blockquote>
-     *
-     *   <a href="http://www.unicode.org/reports/tr35/#Likely_Subtags"
-     *>http://www.unicode.org/reports/tr35/#Likely_Subtags</a></blockquote>
-     *
-     * If the provided ULocale instance is already in the minimal form, or there
-     * is no data available for minimization, it will be returned.  Since the
-     * minimization algorithm relies on proper maximization, see the comments
-     * for addLikelySubtags for reasons why there might not be any data.
-     *
-     * Examples:<pre>
-     *
-     * "en_Latn_US" minimizes to "en"
-     *
-     * "de_Latn_US" minimizes to "de"
-     *
-     * "sr_Cyrl_RS" minimizes to "sr"
-     *
-     * "zh_Hant_TW" minimizes to "zh_TW" if fieldToFavor == {@link Minimize#FAVOR_REGION}
-     * "zh_Hant_TW" minimizes to "zh_Hant" if fieldToFavor == {@link Minimize#FAVOR_SCRIPT}
-     * </pre>
-     * The fieldToFavor only has an effect if either the region or the script could be suppressed, but not both.
-     * @param loc The ULocale to minimize
-     * @param fieldToFavor Indicate which should be preferred, when either the region <b>or</b> the script could be suppressed, but not both.
-     * @return The minimized ULocale instance.
+    /** 
+     * {@icu} Minimizes the subtags for a provided locale ID, per the algorithm described 
+     * in the following CLDR technical report:<blockquote> 
+     * 
+     *   <a href="http://www.unicode.org/reports/tr35/#Likely_Subtags" 
+     *>http://www.unicode.org/reports/tr35/#Likely_Subtags</a></blockquote> 
+     * 
+     * If the provided ULocale instance is already in the minimal form, or there 
+     * is no data available for minimization, it will be returned.  Since the 
+     * minimization algorithm relies on proper maximization, see the comments 
+     * for addLikelySubtags for reasons why there might not be any data. 
+     * 
+     * Examples:<pre> 
+     * 
+     * "en_Latn_US" minimizes to "en" 
+     * 
+     * "de_Latn_US" minimizes to "de" 
+     * 
+     * "sr_Cyrl_RS" minimizes to "sr" 
+     * 
+     * "zh_Hant_TW" minimizes to "zh_TW" if fieldToFavor == {@link Minimize#FAVOR_REGION} 
+     * "zh_Hant_TW" minimizes to "zh_Hant" if fieldToFavor == {@link Minimize#FAVOR_SCRIPT} 
+     * </pre> 
+     * The fieldToFavor only has an effect if either the region or the script could be suppressed, but not both. 
+     * @param loc The ULocale to minimize 
+     * @param fieldToFavor Indicate which should be preferred, when either the region <b>or</b> the script could be suppressed, but not both. 
+     * @return The minimized ULocale instance. 
      * @internal
      * @deprecated This API is ICU internal only.
-     */
+     */ 
     @Deprecated
-    public static ULocale minimizeSubtags(ULocale loc, Minimize fieldToFavor) {
+    public static ULocale minimizeSubtags(ULocale loc, Minimize fieldToFavor) { 
         String[] tags = new String[3];
 
         int trailingIndex = parseTagString(
@@ -2628,85 +2579,85 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
         /**
          * Next, try the language and region.
          **/
-        if (fieldToFavor == Minimize.FAVOR_REGION) {
-            if (originalRegion.length() != 0) {
-                String tag =
-                        createLikelySubtagsString(
-                                originalLang,
-                                null,
-                                originalRegion,
-                                null);
+        if (fieldToFavor == Minimize.FAVOR_REGION) { 
+            if (originalRegion.length() != 0) { 
+                String tag = 
+                        createLikelySubtagsString( 
+                                originalLang, 
+                                null, 
+                                originalRegion, 
+                                null); 
 
-                if (tag.equals(maximizedLocaleID)) {
-                    String newLocaleID =
-                            createTagString(
-                                    originalLang,
-                                    null,
-                                    originalRegion,
-                                    originalTrailing);
+                if (tag.equals(maximizedLocaleID)) { 
+                    String newLocaleID = 
+                            createTagString( 
+                                    originalLang, 
+                                    null, 
+                                    originalRegion, 
+                                    originalTrailing); 
 
-                    return new ULocale(newLocaleID);
-                }
-            }
-            if (originalScript.length() != 0){
-                String tag =
-                        createLikelySubtagsString(
-                                originalLang,
-                                originalScript,
-                                null,
-                                null);
+                    return new ULocale(newLocaleID); 
+                } 
+            } 
+            if (originalScript.length() != 0){ 
+                String tag = 
+                        createLikelySubtagsString( 
+                                originalLang, 
+                                originalScript, 
+                                null, 
+                                null); 
 
-                if (tag.equals(maximizedLocaleID)) {
-                    String newLocaleID =
-                            createTagString(
-                                    originalLang,
-                                    originalScript,
-                                    null,
-                                    originalTrailing);
+                if (tag.equals(maximizedLocaleID)) { 
+                    String newLocaleID = 
+                            createTagString( 
+                                    originalLang, 
+                                    originalScript, 
+                                    null, 
+                                    originalTrailing); 
 
-                    return new ULocale(newLocaleID);
-                }
-            }
-        } else { // FAVOR_SCRIPT, so
-            if (originalScript.length() != 0){
-                String tag =
-                        createLikelySubtagsString(
-                                originalLang,
-                                originalScript,
-                                null,
-                                null);
+                    return new ULocale(newLocaleID); 
+                } 
+            } 
+        } else { // FAVOR_SCRIPT, so 
+            if (originalScript.length() != 0){ 
+                String tag = 
+                        createLikelySubtagsString( 
+                                originalLang, 
+                                originalScript, 
+                                null, 
+                                null); 
 
-                if (tag.equals(maximizedLocaleID)) {
-                    String newLocaleID =
-                            createTagString(
-                                    originalLang,
-                                    originalScript,
-                                    null,
-                                    originalTrailing);
+                if (tag.equals(maximizedLocaleID)) { 
+                    String newLocaleID = 
+                            createTagString( 
+                                    originalLang, 
+                                    originalScript, 
+                                    null, 
+                                    originalTrailing); 
 
-                    return new ULocale(newLocaleID);
-                }
-            }
-            if (originalRegion.length() != 0) {
-                String tag =
-                        createLikelySubtagsString(
-                                originalLang,
-                                null,
-                                originalRegion,
-                                null);
+                    return new ULocale(newLocaleID); 
+                } 
+            } 
+            if (originalRegion.length() != 0) { 
+                String tag = 
+                        createLikelySubtagsString( 
+                                originalLang, 
+                                null, 
+                                originalRegion, 
+                                null); 
 
-                if (tag.equals(maximizedLocaleID)) {
-                    String newLocaleID =
-                            createTagString(
-                                    originalLang,
-                                    null,
-                                    originalRegion,
-                                    originalTrailing);
+                if (tag.equals(maximizedLocaleID)) { 
+                    String newLocaleID = 
+                            createTagString( 
+                                    originalLang, 
+                                    null, 
+                                    originalRegion, 
+                                    originalTrailing); 
 
-                    return new ULocale(newLocaleID);
-                }
-            }
-        }
+                    return new ULocale(newLocaleID); 
+                } 
+            } 
+        } 
         return loc;
     }
 
@@ -2964,7 +2915,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
     private static String lookupLikelySubtags(String localeId) {
         UResourceBundle bundle =
                 UResourceBundle.getBundleInstance(
-                        ICUData.ICU_BASE_NAME, "likelySubtags");
+                        ICUResourceBundle.ICU_BASE_NAME, "likelySubtags");
         try {
             return bundle.getString(localeId);
         }
@@ -3000,7 +2951,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
                 System.err.println("Tag mismatch: \"" + likelySubtags + "\" \"(null)\"");
             }
             else if (!likelySubtags.equals(likelySubtags2)) {
-                System.err.println("Tag mismatch: \"" + likelySubtags + "\" \"" + likelySubtags2
+                System.err.println("Tag mismatch: \"" + likelySubtags + "\" \"" + likelySubtags2 
                     + "\"");
             }
              */
@@ -3183,7 +3134,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * locale does not define the key.
      * @throws IllegalArgumentException if the key is not well-formed
      * @throws NullPointerException if <code>key</code> is null
-     *
+     * 
      * @stable ICU 4.4
      */
     public String getUnicodeLocaleType(String key) {
@@ -3199,7 +3150,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      *
      * @return The set of Unicode locale keys, or the empty set if this locale has
      * no Unicode locale keywords.
-     *
+     * 
      * @stable ICU 4.4
      */
     public Set<String> getUnicodeLocaleKeys() {
@@ -3220,7 +3171,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      *
      * <p><b>Script:</b> If script is not well-formed (for example "12"
      * or "Latin"), it will be omitted.
-     *
+     * 
      * <p><b>Country:</b> If country is not well-formed (for example "12"
      * or "USA"), it will be omitted.
      *
@@ -3251,7 +3202,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * necessarily a valid BCP 47 language tag.  For example,
      * <pre>
      *   new Locale("xx", "YY").toLanguageTag();</pre>
-     *
+     * 
      * will return "xx-YY", but the language subtag "xx" and the
      * region subtag "YY" are invalid because they are not registered
      * in the IANA Language Subtag Registry.
@@ -3334,8 +3285,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * to {@link ULocale.Builder#setLanguageTag} which throws an exception
      * in this case.
      *
-     * <p>The following <b>conversions</b> are performed:
-     * <ul>
+     * <p>The following <b>conversions</b> are performed:<ul>
      *
      * <li>The language code "und" is mapped to language "".
      *
@@ -3368,14 +3318,12 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * script to title case, country to upper case, variant to upper case,
      * and extensions to lower case.
      *
-     * </ul>
-     *
      * <p>This implements the 'Language-Tag' production of BCP47, and
      * so supports grandfathered (regular and irregular) as well as
      * private use language tags.  Stand alone private use tags are
      * represented as empty language and extension 'x-whatever',
      * and grandfathered tags are converted to their canonical replacements
-     * where they exist.
+     * where they exist.  
      *
      * <p>Grandfathered tags with canonical replacements are as follows:
      *
@@ -3451,13 +3399,13 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * then the lower-case version of the input keyword will be returned.
      * For example,
      * <code>toUnicodeLocaleKey("ZZ")</code> returns "zz".
-     *
+     * 
      * @param keyword       the input locale keyword (either legacy key
      *                      such as "collation" or BCP 47 Unicode locale extension
      *                      key such as "co").
      * @return              the well-formed BCP 47 Unicode locale extension key,
      *                      or null if the specified locale keyword cannot be mapped
-     *                      to a well-formed BCP 47 Unicode locale extension key.
+     *                      to a well-formed BCP 47 Unicode locale extension key. 
      * @see #toLegacyKey(String)
      * @stable ICU 54
      */
@@ -3484,7 +3432,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * will be returned. For example,
      * <code>toUnicodeLocaleType("Foo", "Bar")</code> returns "bar",
      * <code>toUnicodeLocaleType("variableTop", "00A4")</code> returns "00a4".
-     *
+     * 
      * @param keyword       the locale keyword (either legacy key such as
      *                      "collation" or BCP 47 Unicode locale extension
      *                      key such as "co").
@@ -3510,7 +3458,7 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
      * {@icu} Converts the specified keyword (BCP 47 Unicode locale extension key, or
      * legacy key) to the legacy key. For example, legacy key "collation" is
      * returned for the input BCP 47 Unicode locale extension key "co".
-     *
+     * 
      * @param keyword       the input locale keyword (either BCP 47 Unicode locale
      *                      extension key or legacy key).
      * @return              the well-formed legacy key, or null if the specified
@@ -4471,7 +4419,6 @@ public final class ULocale implements Serializable, Comparable<ULocale> {
             if (System.getSecurityManager() != null) {
                 try {
                     val = AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
                         public String run() {
                             return System.getProperty(fkey);
                         }

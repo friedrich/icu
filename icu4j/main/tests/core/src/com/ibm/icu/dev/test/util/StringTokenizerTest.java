@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
 * Copyright (C) 1996-2010, International Business Machines Corporation and    *
@@ -8,8 +6,6 @@
 */
 
 package com.ibm.icu.dev.test.util;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Utility;
@@ -38,7 +34,6 @@ public final class StringTokenizerTest extends TestFmwk
     /**
      * Testing constructors
      */
-    @Test
     public void TestConstructors()
     {
         String str = "this\tis\na\rstring\ftesting\tStringTokenizer\nconstructors!";
@@ -145,7 +140,6 @@ public final class StringTokenizerTest extends TestFmwk
     /**
      * Testing supplementary
      */
-    @Test
     public void TestSupplementary()
     {
         String str = "bmp string \ud800 with a unmatched surrogate character";
@@ -226,7 +220,6 @@ public final class StringTokenizerTest extends TestFmwk
       /**
       * Testing next api
       */
-    @Test
       public void TestNextNonDelimiterToken()
       {
         String str = "  ,  1 2 3  AHHHHH! 5.5 6 7    ,        8\n";
@@ -299,7 +292,6 @@ public final class StringTokenizerTest extends TestFmwk
     /**
      * Test java compatibility, except we support surrogates.
      */
-    @Test
     public void TestNoCoalesce() {
         String str = "This is   a test\rto see if\nwhitespace is handled \n\r unusually\r\n by our tokenizer\n\n\n!!!plus some other odd ones like \ttab\ttab\ttab\nand form\ffeed\ffoo.\n";
         String delims = " \t\n\r\f\ud800\udc00";
@@ -327,7 +319,6 @@ public final class StringTokenizerTest extends TestFmwk
     /**
     * Testing next api
     */
-    @Test
     public void TestNextDelimiterToken()
     {
         String str = "  ,  1 2 3  AHHHHH! 5.5 6 7    ,        8\n";
@@ -395,7 +386,6 @@ public final class StringTokenizerTest extends TestFmwk
     /**
      * Testing count tokens
      */
-    @Test
     public void TestCountTokens()
     {
         String str = "this\tis\na\rstring\ftesting\tStringTokenizer\nconstructors!";
@@ -430,7 +420,6 @@ public final class StringTokenizerTest extends TestFmwk
     /**
      * Next token with new delimiters
      */
-    @Test
     public void TestNextNewDelimiters()
     {
         String str = "abc0def1ghi2jkl3mno4pqr0stu1vwx2yza3bcd4efg0hij1klm2nop3qrs4tuv";
@@ -466,7 +455,6 @@ public final class StringTokenizerTest extends TestFmwk
         }
     }
     
-    @Test
     public void TestBug4423()
     {
         // bug 4423:  a bad interaction between countTokens() and hasMoreTokens().
@@ -520,7 +508,6 @@ public final class StringTokenizerTest extends TestFmwk
         
     }
 
-    @Test
     public void TestCountTokensNoCoalesce() {
         // jitterbug 5207
         String str = "\"\"";
@@ -545,10 +532,23 @@ public final class StringTokenizerTest extends TestFmwk
         }
     }
 
+    public static void main(String[] arg)
+    {
+        try
+        {
+            StringTokenizerTest test = new StringTokenizerTest();
+            test.run(arg);
+            // test.TestCaseCompare();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
     /* Tests the method
      *      public StringBuffer _generatePattern(StringBuffer result, boolean escapeUnprintable)
      */
-    @Test
     public void Test_GeneratePattern(){
         UnicodeSet us = new UnicodeSet();
         StringBuffer sb = new StringBuffer();
@@ -571,7 +571,6 @@ public final class StringTokenizerTest extends TestFmwk
     /* Tests the method
      *      public int matches(Replaceable text, int[] offset, int limit, boolean incremental)
      */
-    @Test
     public void TestMatches(){
         // Tests when "return incremental ? U_PARTIAL_MATCH : U_MATCH;" is true and false
         ReplaceableString rs = new ReplaceableString("dummy");
@@ -608,7 +607,6 @@ public final class StringTokenizerTest extends TestFmwk
      *      private static int matchRest (Replaceable text, int start, int limit, String s)
      * from public int matches(Replaceable text, ...
      */
-    @Test
     public void TestMatchRest(){
         // TODO: Tests when "if (maxLen > slen) maxLen = slen;" is true and false
     }
@@ -616,7 +614,6 @@ public final class StringTokenizerTest extends TestFmwk
     /* Tests the method
      *      public int matchesAt(CharSequence text, int offset)
      */
-    @Test
     public void TestMatchesAt(){
         UnicodeSet us = new UnicodeSet();           // Empty set
         us.matchesAt((CharSequence)"dummy", 0);
@@ -635,7 +632,6 @@ public final class StringTokenizerTest extends TestFmwk
     /* Tests the method
      *      public int indexOf(int c)
      */
-    @Test
     public void TestIndexOf(){
         // Tests when "if (c < MIN_VALUE || c > MAX_VALUE)" is true
         UnicodeSet us = new UnicodeSet();
@@ -665,7 +661,6 @@ public final class StringTokenizerTest extends TestFmwk
     /* Tests the method
      *      public int charAt(int index)
      */
-    @Test
     public void TestCharAt(){
         UnicodeSet us = new UnicodeSet();
         
@@ -683,7 +678,6 @@ public final class StringTokenizerTest extends TestFmwk
      *      private UnicodeSet add_unchecked(int start, int end)
      * from public UnicodeSet add(int start, int end)
      */
-    @Test
      public void TestAdd_int_int(){
          UnicodeSet us = new UnicodeSet();
          int[] invalid = {UnicodeSet.MIN_VALUE-1, UnicodeSet.MIN_VALUE-2,
@@ -725,7 +719,6 @@ public final class StringTokenizerTest extends TestFmwk
       *     private final UnicodeSet add_unchecked(int c)
       * from public final UnicodeSet add(int c)
       */
-    @Test
      public void TestAdd_int(){
          UnicodeSet us = new UnicodeSet();
          int[] invalid = {UnicodeSet.MIN_VALUE-1, UnicodeSet.MIN_VALUE-2,
@@ -749,7 +742,6 @@ public final class StringTokenizerTest extends TestFmwk
       *     private static int getSingleCP(String s)
       * from public final boolean contains(String s)
       */
-    @Test
      public void TestGetSingleCP(){
          UnicodeSet us = new UnicodeSet();
          // Tests when "if (s.length() < 1)" is true
@@ -780,7 +772,6 @@ public final class StringTokenizerTest extends TestFmwk
      /* Tests the method
       *     public final UnicodeSet removeAllStrings()
       */
-    @Test
      public void TestRemoveAllString(){
          // Tests when "if (strings.size() != 0)" is false
          UnicodeSet us = new UnicodeSet();
@@ -795,7 +786,6 @@ public final class StringTokenizerTest extends TestFmwk
      /* Tests the method
       *     public UnicodeSet retain(int start, int end)
       */
-    @Test
       public void TestRetain_int_int(){
           UnicodeSet us = new UnicodeSet();
           int[] invalid = {UnicodeSet.MIN_VALUE-1, UnicodeSet.MIN_VALUE-2,
@@ -840,7 +830,6 @@ public final class StringTokenizerTest extends TestFmwk
       /* Tests the method
        *        public final UnicodeSet retain(String s)
        */
-    @Test
       public void TestRetain_String(){
           // Tests when "if (isIn && size() == 1)" is true
           UnicodeSet us = new UnicodeSet();
@@ -854,7 +843,6 @@ public final class StringTokenizerTest extends TestFmwk
       /* Tests the method
        *     public UnicodeSet remove(int start, int end)
        */
-    @Test
        public void TestRemove(){
            UnicodeSet us = new UnicodeSet();
            int[] invalid = {UnicodeSet.MIN_VALUE-1, UnicodeSet.MIN_VALUE-2,
@@ -899,7 +887,6 @@ public final class StringTokenizerTest extends TestFmwk
        /* Tests the method
         *     public UnicodeSet complement(int start, int end)
         */
-    @Test
         public void TestComplement_int_int(){
             UnicodeSet us = new UnicodeSet();
             int[] invalid = {UnicodeSet.MIN_VALUE-1, UnicodeSet.MIN_VALUE-2,
@@ -944,7 +931,6 @@ public final class StringTokenizerTest extends TestFmwk
         /* Tests the method
          *      public final UnicodeSet complement(String s)
          */
-    @Test
         public void TestComplement_String(){
             // Tests when "if (cp < 0)" is false
             UnicodeSet us = new UnicodeSet();
@@ -970,7 +956,6 @@ public final class StringTokenizerTest extends TestFmwk
         /* Tests the method
          *      public boolean contains(int c)
          */
-    @Test
         public void TestContains_int(){
             UnicodeSet us = new UnicodeSet();
             int[] invalid = {UnicodeSet.MIN_VALUE-1, UnicodeSet.MIN_VALUE-2,
@@ -990,7 +975,6 @@ public final class StringTokenizerTest extends TestFmwk
         /* Tests the method
          *     public boolean contains(int start, int end)
          */
-    @Test
          public void TestContains_int_int(){
              UnicodeSet us = new UnicodeSet();
              int[] invalid = {UnicodeSet.MIN_VALUE-1, UnicodeSet.MIN_VALUE-2,
@@ -1020,7 +1004,6 @@ public final class StringTokenizerTest extends TestFmwk
          /* Tests the method
           *     public String getRegexEquivalent()
           */
-    @Test
          public void TestGetRegexEquivalent(){
              UnicodeSet us = new UnicodeSet();
              String res = us.getRegexEquivalent();
@@ -1032,7 +1015,6 @@ public final class StringTokenizerTest extends TestFmwk
          /* Tests the method
           *     public boolean containsNone(int start, int end)
           */
-    @Test
           public void TestContainsNone(){
               UnicodeSet us = new UnicodeSet();
               int[] invalid = {UnicodeSet.MIN_VALUE-1, UnicodeSet.MIN_VALUE-2,

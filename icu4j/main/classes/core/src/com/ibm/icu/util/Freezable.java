@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ******************************************************************************
- * Copyright (C) 2005-2016, International Business Machines Corporation and    *
+ * Copyright (C) 2005-2014, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                               *
  ******************************************************************************
 */
@@ -141,7 +139,7 @@ package com.ibm.icu.util;
  * </p>
  * 
  * <pre>
- *  public class A implements Freezable&lt;A&gt; {
+ *  public class A implements Freezable<A> {
  *   ...
  *   public final boolean isFrozen() {return true;}
  *   public final A freeze() {return this;}

@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ca.xml
+// *
+// ***************************************************************************
 ca{
     Currencies{
         ADP{
@@ -218,13 +224,9 @@ ca{
             "BYB",
             "nou ruble bielorús (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "ruble bielorús",
-        }
         BYR{
             "BYR",
-            "ruble bielorús (2000–2016)",
+            "ruble bielorús",
         }
         BZD{
             "BZD",
@@ -1185,7 +1187,7 @@ ca{
         }
     }
     Currencies%narrow{
-        AOA{"Kz"}
+        AOA{"AOA"}
         ARS{"$"}
         AUD{"$"}
         BAM{"KM"}
@@ -1193,11 +1195,11 @@ ca{
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
+        BOB{"BOB"}
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -1207,26 +1209,25 @@ ca{
         CUC{"$"}
         CUP{"$"}
         CZK{"Kč"}
-        DKK{"kr"}
+        DKK{"DKK"}
         DOP{"$"}
         EGP{"E£"}
         EUR{"€"}
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
-        GTQ{"Q"}
+        GTQ{"GTQ"}
         GYD{"$"}
         HKD{"$"}
-        HNL{"L"}
+        HNL{"HNL"}
         HRK{"kn"}
         HUF{"Ft"}
         IDR{"Rp"}
         ILS{"₪"}
         INR{"₹"}
-        ISK{"kr"}
+        ISK{"ISK"}
         JMD{"$"}
         JPY{"¥"}
         KHR{"៛"}
@@ -1248,7 +1249,7 @@ ca{
         NAD{"$"}
         NGN{"₦"}
         NIO{"C$"}
-        NOK{"kr"}
+        NOK{"NOK"}
         NPR{"Rs"}
         NZD{"$"}
         PHP{"₱"}
@@ -1258,12 +1259,12 @@ ca{
         RUB{"₽"}
         RWF{"RF"}
         SBD{"$"}
-        SEK{"kr"}
+        SEK{"SEK"}
         SGD{"$"}
         SHP{"£"}
         SRD{"$"}
         SSP{"£"}
-        STD{"Db"}
+        STD{"STD"}
         SYP{"£"}
         THB{"฿"}
         TOP{"T$"}
@@ -1500,13 +1501,9 @@ ca{
             one{"nou ruble bielorús (1994–1999)"}
             other{"nous rubles bielorussos (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"ruble bielorús"}
             other{"rubles bielorussos"}
-        }
-        BYR{
-            one{"ruble bielorús (2000–2016)"}
-            other{"rubles bielorussos (2000–2016)"}
         }
         BZD{
             one{"dòlar de Belize"}
@@ -2469,5 +2466,5 @@ ca{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.19.94"}
 }

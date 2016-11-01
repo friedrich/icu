@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/pt_PT.xml
+// *
+// ***************************************************************************
 pt_PT{
-    Version{"2.1.29.54"}
+    Version{"2.1.19.79"}
     units{
         acceleration{
             g-force{
@@ -20,14 +26,6 @@ pt_PT{
                 dnam{"quilómetros quadrados"}
                 one{"{0} quilómetro quadrado"}
                 other{"{0} quilómetros quadrados"}
-                per{"{0} por quilómetro quadrado"}
-            }
-        }
-        concentr{
-            karat{
-                dnam{"quilates"}
-                one{"{0} quilate"}
-                other{"{0} quilates"}
             }
         }
         consumption{
@@ -44,7 +42,6 @@ pt_PT{
         }
         duration{
             century{
-                one{"{0} século"}
                 other{"{0} séculos"}
             }
             hour{
@@ -92,6 +89,13 @@ pt_PT{
                 other{"{0} picómetros"}
             }
         }
+        proportion{
+            karat{
+                dnam{"quilates"}
+                one{"{0} quilate"}
+                other{"{0} quilates"}
+            }
+        }
         speed{
             kilometer-per-hour{
                 dnam{"quilómetros por hora"}
@@ -99,7 +103,15 @@ pt_PT{
                 other{"{0} quilómetros por hora"}
             }
         }
+        temperature{
+            generic{
+                other{"{0}°"}
+            }
+        }
         volume{
+            cubic-centimeter{
+                per{"por centímetro cúbico"}
+            }
             cubic-kilometer{
                 dnam{"quilómetros cúbicos"}
                 one{"{0} quilómetro cúbico"}
@@ -109,10 +121,6 @@ pt_PT{
                 dnam{"chávenas"}
                 one{"{0} chávena"}
                 other{"{0} chávenas"}
-            }
-            cup-metric{
-                one{"{0} chávena métrica"}
-                other{"{0} chávenas métricas"}
             }
         }
     }
@@ -180,13 +188,6 @@ pt_PT{
                 dnam{"yd²"}
             }
         }
-        concentr{
-            karat{
-                dnam{"quilates"}
-                one{"{0} kt"}
-                other{"{0} kt"}
-            }
-        }
         consumption{
             liter-per-100kilometers{
                 dnam{"l/100km"}
@@ -195,9 +196,6 @@ pt_PT{
             }
             mile-per-gallon{
                 dnam{"milhas/galão"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"milhas/gal imp."}
             }
         }
         duration{
@@ -224,6 +222,9 @@ pt_PT{
             mile{
                 one{"{0} milha"}
                 other{"{0} milhas"}
+            }
+            mile-scandinavian{
+                other{"{0} smi"}
             }
             nautical-mile{
                 dnam{"nmi"}
@@ -253,6 +254,13 @@ pt_PT{
             millibar{
                 one{"{0} mb"}
                 other{"{0} mb"}
+            }
+        }
+        proportion{
+            karat{
+                dnam{"quilates"}
+                one{"{0} kt"}
+                other{"{0} kt"}
             }
         }
         speed{
@@ -296,16 +304,6 @@ pt_PT{
                 dnam{"chávenas"}
                 one{"{0} cháv."}
                 other{"{0} cháv."}
-            }
-            cup-metric{
-                one{"{0} chám"}
-                other{"{0} chám"}
-            }
-            gallon-imperial{
-                dnam{"gal imp."}
-                one{"{0} gal imp."}
-                other{"{0} gal imp."}
-                per{"{0}/gal imp."}
             }
             tablespoon{
                 dnam{"cs"}

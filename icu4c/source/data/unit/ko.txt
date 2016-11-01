@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ko.xml
+// *
+// ***************************************************************************
 ko{
-    Version{"2.1.29.22"}
+    Version{"2.1.19.94"}
     durationUnits{
         hm{"h:mm"}
         hms{"h:mm:ss"}
@@ -66,7 +72,6 @@ ko{
             square-kilometer{
                 dnam{"제곱킬로미터"}
                 other{"{0}제곱킬로미터"}
-                per{"제곱킬로미터당 {0}"}
             }
             square-meter{
                 dnam{"제곱미터"}
@@ -76,7 +81,6 @@ ko{
             square-mile{
                 dnam{"제곱마일"}
                 other{"{0}제곱마일"}
-                per{"제곱마일당 {0}"}
             }
             square-yard{
                 dnam{"제곱야드"}
@@ -85,23 +89,6 @@ ko{
         }
         compound{
             per{"{1}당 {0}"}
-        }
-        concentr{
-            karat{
-                dnam{"캐럿"}
-                other{"{0}캐럿"}
-            }
-            milligram-per-deciliter{
-                dnam{"데시리터당 밀리그램"}
-                other{"데시리터당 {0}밀리그램"}
-            }
-            millimole-per-liter{
-                dnam{"리터당 밀리몰"}
-                other{"리터당 {0}밀리몰"}
-            }
-            part-per-million{
-                dnam{"ppm"}
-            }
         }
         consumption{
             liter-per-100kilometers{
@@ -115,10 +102,6 @@ ko{
             mile-per-gallon{
                 dnam{"갤런당 마일"}
                 other{"갤런당 {0}마일"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"영국식 갤런당 마일"}
-                other{"영국식 갤런당 {0}마일"}
             }
         }
         coordinate{
@@ -459,6 +442,12 @@ ko{
                 other{"{0}제곱인치당 파운드"}
             }
         }
+        proportion{
+            karat{
+                dnam{"캐럿"}
+                other{"{0}캐럿"}
+            }
+        }
         speed{
             kilometer-per-hour{
                 dnam{"시간당 킬로미터"}
@@ -554,11 +543,6 @@ ko{
                 dnam{"갤런"}
                 other{"{0}갤런"}
                 per{"갤런당 {0}"}
-            }
-            gallon-imperial{
-                dnam{"영국식 갤런"}
-                other{"{0}영국식 갤런"}
-                per{"영국식 갤런당 {0}"}
             }
             hectoliter{
                 dnam{"헥토리터"}
@@ -852,7 +836,6 @@ ko{
             square-kilometer{
                 dnam{"km²"}
                 other{"{0}km²"}
-                per{"{0}/km²"}
             }
             square-meter{
                 dnam{"m²"}
@@ -862,7 +845,6 @@ ko{
             square-mile{
                 dnam{"mi²"}
                 other{"{0}mi²"}
-                per{"{0}/mi²"}
             }
             square-yard{
                 dnam{"yd²"}
@@ -871,23 +853,6 @@ ko{
         }
         compound{
             per{"{0}/{1}"}
-        }
-        concentr{
-            karat{
-                dnam{"kt"}
-                other{"{0}kt"}
-            }
-            milligram-per-deciliter{
-                dnam{"mg/dL"}
-                other{"{0}mg/dL"}
-            }
-            millimole-per-liter{
-                dnam{"mmol/L"}
-                other{"{0}mmol/L"}
-            }
-            part-per-million{
-                dnam{"ppm"}
-            }
         }
         consumption{
             liter-per-100kilometers{
@@ -901,9 +866,6 @@ ko{
             mile-per-gallon{
                 dnam{"mpg"}
                 other{"{0}mpg"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"mpg Imp."}
             }
         }
         coordinate{
@@ -922,15 +884,15 @@ ko{
                 other{"{0}byte"}
             }
             gigabit{
-                dnam{"Gb"}
+                dnam{"Gbit"}
                 other{"{0}Gb"}
             }
             gigabyte{
-                dnam{"GB"}
+                dnam{"GByte"}
                 other{"{0}GB"}
             }
             kilobit{
-                dnam{"kb"}
+                dnam{"kbit"}
                 other{"{0}kb"}
             }
             kilobyte{
@@ -938,7 +900,7 @@ ko{
                 other{"{0}kB"}
             }
             megabit{
-                dnam{"Mb"}
+                dnam{"Mbit"}
                 other{"{0}Mb"}
             }
             megabyte{
@@ -946,11 +908,11 @@ ko{
                 other{"{0}MB"}
             }
             terabit{
-                dnam{"Tb"}
+                dnam{"Tbit"}
                 other{"{0}Tb"}
             }
             terabyte{
-                dnam{"TB"}
+                dnam{"TByte"}
                 other{"{0}TB"}
             }
         }
@@ -1244,6 +1206,12 @@ ko{
                 other{"{0}psi"}
             }
         }
+        proportion{
+            karat{
+                dnam{"kt"}
+                other{"{0}kt"}
+            }
+        }
         speed{
             kilometer-per-hour{
                 dnam{"km/h"}
@@ -1339,11 +1307,6 @@ ko{
                 dnam{"gal"}
                 other{"{0}gal"}
                 per{"{0}/gal"}
-            }
-            gallon-imperial{
-                dnam{"Imp. gal"}
-                other{"{0}gal Imp."}
-                per{"{0}/gal Imp."}
             }
             hectoliter{
                 dnam{"hL"}

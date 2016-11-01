@@ -1,7 +1,7 @@
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2004-2016, International Business Machines
+*   Copyright (C) 2004-2015, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -1053,7 +1053,7 @@ static int32_t indexes[UCASE_IX_TOP]={
     0, 0, 0, 0
 };
 
-static uint8_t trieBlock[100000];
+static uint8_t trieBlock[40000];
 static int32_t trieSize;
 
 void
@@ -1083,20 +1083,15 @@ CasePropsBuilder::build(UErrorCode &errorCode) {
         }
     }
     if(U_FAILURE(errorCode)) {
-        fprintf(stderr, "genprops/case error: unable to set UCASE_SENSITIVE: %s\n",
+        fprintf(stderr, "genprops error: unable to set UCASE_SENSITIVE: %s\n",
                 u_errorName(errorCode));
         return;
     }
 
     utrie2_freeze(pTrie, UTRIE2_16_VALUE_BITS, &errorCode);
-    if(U_FAILURE(errorCode)) {
-        fprintf(stderr, "genprops/case error: utrie2_freeze() failed: %s\n",
-                u_errorName(errorCode));
-        return;
-    }
     trieSize=utrie2_serialize(pTrie, trieBlock, sizeof(trieBlock), &errorCode);
     if(U_FAILURE(errorCode)) {
-        fprintf(stderr, "genprops/case error: utrie2_serialize() failed: %s (length %ld)\n",
+        fprintf(stderr, "genprops error: utrie2_freeze()+utrie2_serialize() failed: %s (length %ld)\n",
                 u_errorName(errorCode), (long)trieSize);
         return;
     }
@@ -1127,7 +1122,9 @@ CasePropsBuilder::writeCSourceFile(const char *path, UErrorCode &errorCode) {
         errorCode=U_FILE_ACCESS_ERROR;
         return;
     }
-    fputs("#ifdef INCLUDED_FROM_UCASE_CPP\n\n", f);
+    fputs("#ifndef INCLUDED_FROM_UCASE_CPP\n"
+          "#   error This file must be #included from ucase.cpp only.\n"
+          "#endif\n\n", f);
     usrc_writeArray(f,
         "static const UVersionInfo ucase_props_dataVersion={",
         dataInfo.dataVersion, 8, 4,
@@ -1160,8 +1157,7 @@ CasePropsBuilder::writeCSourceFile(const char *path, UErrorCode &errorCode) {
         pTrie, "ucase_props_trieIndex", NULL,
         "  },\n");
     usrc_writeArray(f, "  { ", dataInfo.formatVersion, 8, 4, " }\n");
-    fputs("};\n\n"
-          "#endif  // INCLUDED_FROM_UCASE_CPP\n", f);
+    fputs("};\n", f);
     fclose(f);
 }
 

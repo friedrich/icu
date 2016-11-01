@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2015 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/id.xml
+// *
+// ***************************************************************************
 id{
     Currencies{
         ADP{
@@ -214,13 +220,9 @@ id{
             "BYB",
             "Rubel Baru Belarus (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Rubel Belarusia",
-        }
         BYR{
             "BYR",
-            "Rubel Belarusia (2000–2016)",
+            "Rubel Belarusia",
         }
         BZD{
             "BZD",
@@ -260,7 +262,7 @@ id{
         }
         CNY{
             "CN¥",
-            "Yuan Tiongkok",
+            "Yuan China",
         }
         COP{
             "COP",
@@ -1192,7 +1194,7 @@ id{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -1209,7 +1211,6 @@ id{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -1404,11 +1405,8 @@ id{
         BYB{
             other{"Rubel Baru Belarus (1994–1999)"}
         }
-        BYN{
-            other{"Rubel Belarusia"}
-        }
         BYR{
-            other{"Rubel Belarusia (2000–2016)"}
+            other{"Rubel Belarusia"}
         }
         BZD{
             other{"Dolar Belize"}
@@ -1426,7 +1424,7 @@ id{
             other{"Peso Cile"}
         }
         CNY{
-            other{"Yuan Tiongkok"}
+            other{"Yuan China"}
         }
         COP{
             other{"Peso Kolombia"}
@@ -1867,7 +1865,7 @@ id{
             other{"Franc CFP"}
         }
         XXX{
-            other{"(mata uang tidak dikenal)"}
+            other{"Mata Uang Tidak Dikenal"}
         }
         YER{
             other{"Rial Yaman"}
@@ -1906,5 +1904,5 @@ id{
     CurrencyUnitPatterns{
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.19.17"}
 }

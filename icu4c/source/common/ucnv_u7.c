@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*  
 **********************************************************************
-*   Copyright (C) 2002-2016, International Business Machines
+*   Copyright (C) 2002-2015, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 *   file name:  ucnv_u7.c
@@ -20,7 +18,6 @@
 
 #if !UCONFIG_NO_CONVERSION && !UCONFIG_ONLY_HTML_CONVERSION
 
-#include "cmemory.h"
 #include "unicode/ucnv.h"
 #include "ucnv_bld.h"
 #include "ucnv_cnv.h"
@@ -490,7 +487,7 @@ _UTF7FromUnicodeWithOffsets(UConverterFromUnicodeArgs *pArgs,
         inDirectMode=(UBool)((status>>24)&1);
         base64Counter=(int8_t)(status>>16);
         bits=(uint8_t)status;
-        U_ASSERT(bits<=UPRV_LENGTHOF(toBase64));
+        U_ASSERT(bits<=sizeof(toBase64)/sizeof(toBase64[0]));
     }
 
     /* UTF-7 always encodes UTF-16 code units, therefore we need only a simple sourceIndex */
@@ -762,10 +759,7 @@ static const UConverterImpl _UTF7Impl={
     _UTF7GetName,
     NULL, /* we don't need writeSub() because we never call a callback at fromUnicode() */
     NULL,
-    ucnv_getCompleteUnicodeSet,
-
-    NULL,
-    NULL
+    ucnv_getCompleteUnicodeSet
 };
 
 static const UConverterStaticData _UTF7StaticData={
