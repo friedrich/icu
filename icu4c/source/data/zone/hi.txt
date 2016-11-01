@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/hi.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/hi.xml
+ */
 hi{
-    Version{"2.1.28.79"}
+    Version{"2.0.92.96"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"अबिदजान"}
@@ -184,10 +193,10 @@ hi{
             ec{"साल्टा"}
         }
         "America:Argentina:San_Juan"{
-            ec{"सैन ह्वान"}
+            ec{"सान जुआन"}
         }
         "America:Argentina:San_Luis"{
-            ec{"सैन लूई"}
+            ec{"सान लुईस"}
         }
         "America:Argentina:Tucuman"{
             ec{"टोकूमन"}
@@ -303,20 +312,17 @@ hi{
         "America:El_Salvador"{
             ec{"अल सल्वाडोर"}
         }
-        "America:Fort_Nelson"{
-            ec{"फ़ोर्ट नेल्सन"}
-        }
         "America:Fortaleza"{
             ec{"फ़ोर्टालेज़ा"}
         }
         "America:Glace_Bay"{
-            ec{"ग्लेस खाड़ी"}
+            ec{"ग्लेस खा़ड़ी"}
         }
         "America:Godthab"{
             ec{"नुक"}
         }
         "America:Goose_Bay"{
-            ec{"गूस खाड़ी"}
+            ec{"गूस खा़ड़ी"}
         }
         "America:Grand_Turk"{
             ec{"ग्रांड टर्क"}
@@ -385,7 +391,7 @@ hi{
             ec{"ज्यूनाउ"}
         }
         "America:Kentucky:Monticello"{
-            ec{"मोंटीसेलो, केंटकी"}
+            ec{"मोंटीसेलो, केंचुकी"}
         }
         "America:Kralendijk"{
             ec{"क्रालैंडिजिक"}
@@ -439,7 +445,7 @@ hi{
             ec{"मेट्लेकाट्ला"}
         }
         "America:Mexico_City"{
-            ec{"मेक्सिको सिटी"}
+            ec{"मैक्सिको सिटी"}
         }
         "America:Miquelon"{
             ec{"मिकेलॉन"}
@@ -452,6 +458,9 @@ hi{
         }
         "America:Montevideo"{
             ec{"मोंटेवीडियो"}
+        }
+        "America:Montreal"{
+            ec{"मोंट्रियल"}
         }
         "America:Montserrat"{
             ec{"मोंटसेरात"}
@@ -541,7 +550,10 @@ hi{
             ec{"साओ पाउलो"}
         }
         "America:Scoresbysund"{
-            ec{"इटोकोर्टोरमिट"}
+            ec{"इटोकोर्टोरमियाट"}
+        }
+        "America:Shiprock"{
+            ec{"शिपरॉक"}
         }
         "America:Sitka"{
             ec{"सिट्का"}
@@ -624,11 +636,11 @@ hi{
         "Antarctica:Rothera"{
             ec{"रोथेरा"}
         }
+        "Antarctica:South_Pole"{
+            ec{"दक्षिणी ध्रुव"}
+        }
         "Antarctica:Syowa"{
             ec{"स्योवा"}
-        }
-        "Antarctica:Troll"{
-            ec{"ट्रोल"}
         }
         "Antarctica:Vostok"{
             ec{"वोस्तोक"}
@@ -669,9 +681,6 @@ hi{
         "Asia:Bangkok"{
             ec{"बैंकॉक"}
         }
-        "Asia:Barnaul"{
-            ec{"बर्नोल"}
-        }
         "Asia:Beirut"{
             ec{"बेरुत"}
         }
@@ -684,11 +693,11 @@ hi{
         "Asia:Calcutta"{
             ec{"कोलकाता"}
         }
-        "Asia:Chita"{
-            ec{"त्शिता"}
-        }
         "Asia:Choibalsan"{
             ec{"चोइबालसन"}
+        }
+        "Asia:Chongqing"{
+            ec{"चोंगकिंग"}
         }
         "Asia:Colombo"{
             ec{"कोलंबो"}
@@ -710,6 +719,9 @@ hi{
         }
         "Asia:Gaza"{
             ec{"गाज़ा"}
+        }
+        "Asia:Harbin"{
+            ec{"हर्बिन"}
         }
         "Asia:Hebron"{
             ec{"हेब्रोन"}
@@ -740,6 +752,9 @@ hi{
         }
         "Asia:Karachi"{
             ec{"कराची"}
+        }
+        "Asia:Kashgar"{
+            ec{"काश्गर"}
         }
         "Asia:Katmandu"{
             ec{"काठमांडू"}
@@ -828,9 +843,6 @@ hi{
         "Asia:Singapore"{
             ec{"सिंगापुर"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"स्रेद्निकोलिमस्क"}
-        }
         "Asia:Taipei"{
             ec{"ताईपेई"}
         }
@@ -849,14 +861,11 @@ hi{
         "Asia:Tokyo"{
             ec{"टोक्यो"}
         }
-        "Asia:Tomsk"{
-            ec{"तोम्स्क"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"उलानबातर"}
         }
         "Asia:Urumqi"{
-            ec{"उरूम्की"}
+            ec{"उरम्ची"}
         }
         "Asia:Ust-Nera"{
             ec{"यूस्ट–नेरा"}
@@ -951,9 +960,6 @@ hi{
         "Europe:Andorra"{
             ec{"अंडोरा"}
         }
-        "Europe:Astrakhan"{
-            ec{"आस्ट्राखान"}
-        }
         "Europe:Athens"{
             ec{"एथेंस"}
         }
@@ -986,7 +992,7 @@ hi{
         }
         "Europe:Dublin"{
             ec{"डबलिन"}
-            ld{"आइरिश मानक समय"}
+            ld{"आइरिश ग्रीष्मकालीन समय"}
         }
         "Europe:Gibraltar"{
             ec{"जिब्राल्टर"}
@@ -1011,9 +1017,6 @@ hi{
         }
         "Europe:Kiev"{
             ec{"कीव"}
-        }
-        "Europe:Kirov"{
-            ec{"किरोव"}
         }
         "Europe:Lisbon"{
             ec{"लिस्बन"}
@@ -1091,9 +1094,6 @@ hi{
         "Europe:Tirane"{
             ec{"टाइरेन"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Ulyanovsk"}
-        }
         "Europe:Uzhgorod"{
             ec{"अज़्गोरोद"}
         }
@@ -1110,7 +1110,7 @@ hi{
             ec{"विल्नियस"}
         }
         "Europe:Volgograd"{
-            ec{"वोल्गोग्राड"}
+            ec{"वोल्गोग्राद"}
         }
         "Europe:Warsaw"{
             ec{"वॉरसॉ"}
@@ -1119,7 +1119,7 @@ hi{
             ec{"ज़ाग्रेब"}
         }
         "Europe:Zaporozhye"{
-            ec{"ज़ैपोरोज़ाई"}
+            ec{"ज़ैपोरोज़ाइ"}
         }
         "Europe:Zurich"{
             ec{"ज़्यूरिख़"}
@@ -1162,9 +1162,6 @@ hi{
         }
         "Pacific:Auckland"{
             ec{"ऑकलैंड"}
-        }
-        "Pacific:Bougainville"{
-            ec{"बोगनविल"}
         }
         "Pacific:Chatham"{
             ec{"चाथम"}
@@ -1326,11 +1323,6 @@ hi{
             lg{"एनाडीयर समय"}
             ls{"एनाडीयर मानक समय"}
         }
-        "meta:Apia"{
-            ld{"एपिआ डेलाइट समय"}
-            lg{"एपिआ समय"}
-            ls{"एपिआ मानक समय"}
-        }
         "meta:Arabian"{
             ld{"अरब डेलाइट समय"}
             lg{"अरब समय"}
@@ -1403,7 +1395,7 @@ hi{
             ls{"ब्राजीलिया मानक समय"}
         }
         "meta:Brunei"{
-            ls{"ब्रूनेई दारूस्सलम समय"}
+            ls{"ब्रूनेई दारूस्सलाम समय"}
         }
         "meta:Cape_Verde"{
             ld{"केप वर्ड ग्रीष्मकालीन समय"}
@@ -1472,7 +1464,7 @@ hi{
             ls{"इक्वाडोर समय"}
         }
         "meta:Europe_Central"{
-            ld{"मध्‍य यूरोपीय ग्रीष्‍मकालीन समय"}
+            ld{"मध्‍य यूरोप ग्रीष्‍मकालीन समय"}
             lg{"मध्य यूरोपीय समय"}
             ls{"मध्य यूरोपीय मानक समय"}
         }
@@ -1480,9 +1472,6 @@ hi{
             ld{"पूर्वी यूरोपीय ग्रीष्मकालीन समय"}
             lg{"पूर्वी यूरोपीय समय"}
             ls{"पूर्वी यूरोपीय मानक समय"}
-        }
-        "meta:Europe_Further_Eastern"{
-            ls{"अग्र पूर्वी यूरोपीय समय"}
         }
         "meta:Europe_Western"{
             ld{"पश्चिमी यूरोपीय ग्रीष्‍मकालीन समय"}
@@ -1495,9 +1484,9 @@ hi{
             ls{"फ़ॉकलैंड द्वीपसमूह मानक समय"}
         }
         "meta:Fiji"{
-            ld{"फ़िजी ग्रीष्मकालीन समय"}
-            lg{"फ़िजी समय"}
-            ls{"फ़िजी मानक समय"}
+            ld{"फ़िजी का ग्रीष्मकालीन समय"}
+            lg{"फ़िजी का समय"}
+            ls{"फ़िजी का मानक समय"}
         }
         "meta:French_Guiana"{
             ls{"फ़्रेंच गुयाना समय"}
@@ -1554,7 +1543,7 @@ hi{
             ls{"होव्ड मानक समय"}
         }
         "meta:India"{
-            ls{"भारतीय मानक समय"}
+            ls{"भारतीय समय"}
             ss{"IST"}
         }
         "meta:Indian_Ocean"{
@@ -1642,7 +1631,7 @@ hi{
             ls{"मालदीव समय"}
         }
         "meta:Marquesas"{
-            ls{"मार्केसस समय"}
+            ls{"मार्कोसिस समय"}
         }
         "meta:Marshall_Islands"{
             ls{"मार्शल द्वीपसमूह समय"}
@@ -1654,16 +1643,6 @@ hi{
         }
         "meta:Mawson"{
             ls{"माव्सन समय"}
-        }
-        "meta:Mexico_Northwest"{
-            ld{"उत्तर पश्चिमी मेक्सिको डेलाइट समय"}
-            lg{"उत्तर पश्चिमी मेक्सिको समय"}
-            ls{"उत्तर पश्चिमी मेक्सिको मानक समय"}
-        }
-        "meta:Mexico_Pacific"{
-            ld{"मेक्सिकन प्रशांत डेलाइट समय"}
-            lg{"मेक्सिकन प्रशांत समय"}
-            ls{"मेक्सिकन प्रशांत मानक समय"}
         }
         "meta:Mongolia"{
             ld{"उलान बटोर ग्रीष्मकालीन समय"}
@@ -1750,18 +1729,15 @@ hi{
             ls{"फ़ीनिक्स द्वीपसमूह समय"}
         }
         "meta:Pierre_Miquelon"{
-            ld{"सेंट पियरे और मिकेलान डेलाइट समय"}
-            lg{"सेंट पियरे और मिकेलान समय"}
-            ls{"सेंट पियरे और मिकेलान मानक समय"}
+            ld{"सेंट पियरे और मिकेलान डेलाइट टाइम"}
+            lg{"सेंट पियरे और मिकेलान टाइम"}
+            ls{"सेंट पियरे और मिकेलान मानक टाइम"}
         }
         "meta:Pitcairn"{
             ls{"पिटकैर्न समय"}
         }
         "meta:Ponape"{
             ls{"पोनापे समय"}
-        }
-        "meta:Pyongyang"{
-            ls{"प्योंगयांग समय"}
         }
         "meta:Reunion"{
             ls{"रीयूनियन समय"}
@@ -1780,7 +1756,7 @@ hi{
             ls{"समारा मानक समय"}
         }
         "meta:Samoa"{
-            ld{"समोआ डेलाइट समय"}
+            ld{"समोआ ग्रीष्मकालीन समय"}
             lg{"समोआ समय"}
             ls{"समोआ मानक समय"}
         }

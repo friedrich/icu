@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 ******************************************************************************
 * Copyright (C) 2007-2010, International Business Machines Corporation and   *
@@ -81,7 +79,6 @@ public class BasicPeriodFormatterFactory implements PeriodFormatterFactory {
   /**
    * Set the locale for this factory.
    */
-  @Override
   public PeriodFormatterFactory setLocale(String localeName) {
     data = null;
     this.localeName = localeName;
@@ -94,7 +91,6 @@ public class BasicPeriodFormatterFactory implements PeriodFormatterFactory {
    * @param display true if limits will be displayed
    * @return this PeriodFormatterFactory
    */
-  @Override
   public PeriodFormatterFactory setDisplayLimit(boolean display) {
     updateCustomizations().displayLimit = display;
     return this;
@@ -115,7 +111,6 @@ public class BasicPeriodFormatterFactory implements PeriodFormatterFactory {
    * @param display true if past and future will be displayed
    * @return this PeriodFormatterFactory
    */
-  @Override
   public PeriodFormatterFactory setDisplayPastFuture(boolean display) {
     updateCustomizations().displayDirection = display;
     return this;
@@ -136,7 +131,6 @@ public class BasicPeriodFormatterFactory implements PeriodFormatterFactory {
    * @param variant the variant indicating separators will be displayed
    * @return this PeriodFormatterFactory
    */
-  @Override
   public PeriodFormatterFactory setSeparatorVariant(int variant) {
     updateCustomizations().separatorVariant = (byte) variant;
     return this;
@@ -157,7 +151,6 @@ public class BasicPeriodFormatterFactory implements PeriodFormatterFactory {
    * @param variant the variant to use
    * @return this PeriodFormatterFactory
    */
-  @Override
   public PeriodFormatterFactory setUnitVariant(int variant) {
     updateCustomizations().unitVariant = (byte) variant;
     return this;
@@ -178,7 +171,6 @@ public class BasicPeriodFormatterFactory implements PeriodFormatterFactory {
    * @param variant the variant to use
    * @return this PeriodFormatterFactory
    */
-  @Override
   public PeriodFormatterFactory setCountVariant(int variant) {
     updateCustomizations().countVariant = (byte) variant;
     return this;
@@ -193,10 +185,9 @@ public class BasicPeriodFormatterFactory implements PeriodFormatterFactory {
     return customizations.countVariant;
   }
 
-  @Override
   public PeriodFormatter getFormatter() {
     customizationsInUse = true;
-    return new BasicPeriodFormatter(this, localeName, getData(),
+    return new BasicPeriodFormatter(this, localeName, getData(), 
                                     customizations);
   }
 
@@ -228,7 +219,7 @@ public class BasicPeriodFormatterFactory implements PeriodFormatterFactory {
     byte separatorVariant = ESeparatorVariant.FULL;
     byte unitVariant = EUnitVariant.PLURALIZED;
     byte countVariant = ECountVariant.INTEGER;
-
+    
     public Customizations copy() {
         Customizations result = new Customizations();
         result.displayLimit = displayLimit;

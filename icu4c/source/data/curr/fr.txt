@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fr.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/fr.xml
+ */
 fr{
     Currencies{
         ADP{
@@ -190,13 +199,9 @@ fr{
             "BYB",
             "nouveau rouble biélorusse (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "rouble biélorusse",
-        }
         BYR{
             "BYR",
-            "rouble biélorusse (2000–2016)",
+            "rouble biélorusse",
         }
         BZD{
             "$BZ",
@@ -231,7 +236,7 @@ fr{
             "peso chilien",
         }
         CNY{
-            "CNY",
+            "¥CN",
             "yuan renminbi chinois",
         }
         COP{
@@ -263,7 +268,7 @@ fr{
             "peso cubain",
         }
         CVE{
-            "CVE",
+            "$CV",
             "escudo capverdien",
         }
         CYP{
@@ -311,7 +316,7 @@ fr{
             "couronne estonienne",
         }
         EGP{
-            "EGP",
+            "£EG",
             "livre égyptienne",
         }
         ERN{
@@ -348,7 +353,7 @@ fr{
         }
         FKP{
             "£FK",
-            "livre des îles Malouines",
+            "livre des Falkland",
         }
         FRF{
             "F",
@@ -415,7 +420,7 @@ fr{
             "dollar du Guyana",
         }
         HKD{
-            "HKD",
+            "$HK",
             "dollar de Hong Kong",
         }
         HNL{
@@ -483,7 +488,7 @@ fr{
             "dinar jordanien",
         }
         JPY{
-            "JPY",
+            "¥JP",
             "yen japonais",
         }
         KES{
@@ -535,7 +540,7 @@ fr{
             "roupie srilankaise",
         }
         LRD{
-            "LRD",
+            "$LR",
             "dollar libérien",
         }
         LSL{
@@ -795,7 +800,7 @@ fr{
             "dinar soudanais",
         }
         SDG{
-            "SDG",
+            "£SD",
             "livre soudanaise",
         }
         SDP{
@@ -811,7 +816,7 @@ fr{
             "dollar de Singapour",
         }
         SHP{
-            "SHP",
+            "£SH",
             "livre de Sainte-Hélène",
         }
         SIT{
@@ -839,7 +844,7 @@ fr{
             "florin surinamais",
         }
         SSP{
-            "SSP",
+            "£SS",
             "livre sud-soudanaise",
         }
         STD{
@@ -863,7 +868,7 @@ fr{
             "lilangeni swazi",
         }
         THB{
-            "THB",
+            "฿",
             "baht thaïlandais",
         }
         TJR{
@@ -907,7 +912,7 @@ fr{
             "dollar trinidadien",
         }
         TWD{
-            "TWD",
+            "$TW",
             "nouveau dollar taïwanais",
         }
         TZS{
@@ -1007,7 +1012,7 @@ fr{
             "unité de compte européenne (XBD)",
         }
         XCD{
-            "XCD",
+            "EC$",
             "dollar des Caraïbes orientales",
         }
         XDR{
@@ -1110,106 +1115,6 @@ fr{
             "ZWR",
             "dollar zimbabwéen (2008)",
         }
-    }
-    Currencies%narrow{
-        AOA{"Kz"}
-        ARS{"$"}
-        AUD{"$"}
-        BAM{"KM"}
-        BBD{"$"}
-        BDT{"৳"}
-        BMD{"$"}
-        BND{"$"}
-        BOB{"Bs"}
-        BRL{"R$"}
-        BSD{"$"}
-        BWP{"P"}
-        BYN{"р."}
-        BZD{"$"}
-        CAD{"$"}
-        CLP{"$"}
-        CNY{"¥"}
-        COP{"$"}
-        CRC{"₡"}
-        CUC{"$"}
-        CUP{"$"}
-        CZK{"Kč"}
-        DKK{"kr"}
-        DOP{"$"}
-        EGP{"£E"}
-        EUR{"€"}
-        FJD{"$"}
-        FKP{"£"}
-        GBP{"£"}
-        GEL{"₾"}
-        GIP{"£"}
-        GNF{"FG"}
-        GTQ{"Q"}
-        GYD{"$"}
-        HKD{"$"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
-        ILS{"₪"}
-        INR{"₹"}
-        ISK{"kr"}
-        JMD{"$"}
-        JPY{"¥"}
-        KHR{"៛"}
-        KMF{"FC"}
-        KPW{"₩"}
-        KRW{"₩"}
-        KYD{"$"}
-        KZT{"₸"}
-        LAK{"₭"}
-        LBP{"£L"}
-        LKR{"Rs"}
-        LRD{"$"}
-        MGA{"Ar"}
-        MMK{"K"}
-        MNT{"₮"}
-        MUR{"Rs"}
-        MXN{"$"}
-        MYR{"RM"}
-        NAD{"$"}
-        NGN{"₦"}
-        NIO{"$C"}
-        NOK{"kr"}
-        NPR{"Rs"}
-        NZD{"$"}
-        PHP{"₱"}
-        PKR{"Rs"}
-        PLN{"zł"}
-        PYG{"₲"}
-        RON{"L"}
-        RUB{"₽"}
-        RWF{"FR"}
-        SBD{"$"}
-        SEK{"kr"}
-        SGD{"$"}
-        SHP{"£"}
-        SRD{"$"}
-        SSP{"£"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
-        TRY{"₺"}
-        TTD{"$"}
-        TWD{"NT$"}
-        UAH{"₴"}
-        USD{"$"}
-        UYU{"$"}
-        VEF{"Bs"}
-        VND{"₫"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"Kw"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"LT"}
     }
     CurrencyPlurals{
         ADP{
@@ -1400,13 +1305,9 @@ fr{
             one{"nouveau rouble biélorusse (1994–1999)"}
             other{"nouveaux roubles biélorusses (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"rouble biélorusse"}
             other{"roubles biélorusses"}
-        }
-        BYR{
-            one{"rouble biélorusse (2000–2016)"}
-            other{"roubles biélorusses (2000–2016)"}
         }
         BZD{
             one{"dollar bélizéen"}
@@ -1557,8 +1458,8 @@ fr{
             other{"dollars fidjiens"}
         }
         FKP{
-            one{"livre des îles Malouines"}
-            other{"livres des îles Malouines"}
+            one{"livre des Falkland"}
+            other{"livres des Falkland"}
         }
         FRF{
             one{"franc français"}
@@ -2257,8 +2158,8 @@ fr{
             other{"(devises de test)"}
         }
         XXX{
-            one{"devise inconnue"}
-            other{"devises inconnues"}
+            one{"devise inconnue ou non valide"}
+            other{"devise inconnue ou non valide"}
         }
         YDD{
             one{"dinar nord-yéménite"}
@@ -2321,5 +2222,5 @@ fr{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.0.93.10"}
 }

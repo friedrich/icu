@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 1996-2016, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2010, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -14,12 +12,14 @@ import java.nio.ByteBuffer;
 import com.ibm.icu.impl.Utility;
 
 /**
+ * <p>
  * A simple utility class to wrap a byte array.
+ * </p>
  * <p>
  * Generally passed as an argument object into a method. The method takes
  * responsibility of writing into the internal byte array and increasing its
  * size when necessary.
- *
+ * </p> 
  * @author syn wee
  * @stable ICU 2.8
  */
@@ -56,11 +56,11 @@ public class ByteArrayWrapper implements Comparable<ByteArrayWrapper>
      * @param bytesToAdopt the byte array to adopt
      * @param size the length of valid data in the byte array
      * @throws IndexOutOfBoundsException if bytesToAdopt == null and size != 0, or
-     * size &lt; 0, or size &gt; bytesToAdopt.length.
+     * size < 0, or size > bytesToAdopt.length.
      * @stable ICU 3.2
      */
     public ByteArrayWrapper(byte[] bytesToAdopt, int size) {
-        if ((bytesToAdopt == null && size != 0) || size < 0 || (bytesToAdopt != null && size > bytesToAdopt.length)) {
+        if ((bytesToAdopt == null && size != 0) || size < 0 || size > bytesToAdopt.length) {
             throw new IndexOutOfBoundsException("illegal size: " + size);
         }
         this.bytes = bytesToAdopt;
@@ -115,9 +115,7 @@ public class ByteArrayWrapper implements Comparable<ByteArrayWrapper>
     {
         if (bytes == null || bytes.length < capacity) {
             byte[] newbytes = new byte[capacity];
-            if (bytes != null) {
-                copyBytes(bytes, 0, newbytes, 0, size);
-            }
+            copyBytes(bytes, 0, newbytes, 0, size);
             bytes = newbytes;
         }
         return this;
@@ -244,7 +242,7 @@ public class ByteArrayWrapper implements Comparable<ByteArrayWrapper>
     /**
      * Compare this object to another ByteArrayWrapper, which must not be null.
      * @param other the object to compare to.
-     * @return a value &lt;0, 0, or &gt;0 as this compares less than, equal to, or
+     * @return a value <0, 0, or >0 as this compares less than, equal to, or
      * greater than other.
      * @throws ClassCastException if the other object is not a ByteArrayWrapper
      * @stable ICU 4.4

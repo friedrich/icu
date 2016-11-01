@@ -1,7 +1,7 @@
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2004-2016, International Business Machines
+*   Copyright (C) 2004-2013, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -43,7 +43,7 @@ the udata API for loading ICU data. Especially, a UDataInfo structure
 precedes the actual data. It contains platform properties values and the
 file format version.
 
-The following is a description of format version 2.2 .
+The following is a description of format version 2.1 .
 
 The file contains the following structures:
 
@@ -58,11 +58,7 @@ The file contains the following structures:
     i4 jgStart; -- first code point with Joining_Group data
     i5 jgLimit; -- limit code point for Joining_Group data
 
-    -- i6, i7 new in format version 2.2:
-    i6 jgStart2; -- first code point with Joining_Group data, second range
-    i7 jgLimit2; -- limit code point for Joining_Group data, second range
-
-    i8..i14 reservedIndexes; -- reserved values; 0 for now
+    i6..i14 reservedIndexes; -- reserved values; 0 for now
 
     i15 maxValues; -- maximum code values for enumerated properties
                       bits 23..16 contain the max value for Joining_Group,
@@ -72,8 +68,7 @@ The file contains the following structures:
 
     const uint32_t mirrors[mirrorLength];
 
-    const uint8_t jgArray[i5-i4]; -- (i5-i4)+(i7-i6) is always a multiple of 4
-    const uint8_t jgArray2[i7-i6]; -- new in format version 2.2
+    const uint8_t jgArray[i5-i4]; -- (i5-i4) is always a multiple of 4
 
 Trie data word:
 Bits
@@ -125,13 +120,6 @@ containing the Joining_Group value.
 
 All code points outside of this range have No_Joining_Group (0).
 
-ICU 54 adds jgArray2[] for a second range.
-
---- Changes in format version 2.2 ---
-
-Addition of second range for Joining_Group values (i6, i7),
-for 10800..10FFF, including Unicode 7.0 10AC0..10AFF Manichaean.
-
 --- Changes in format version 2.1 ---
 
 Addition of Bidi_Paired_Bracket_Type(bpt) values.
@@ -157,7 +145,7 @@ static UDataInfo dataInfo={
 
     /* dataFormat="BiDi" */
     { UBIDI_FMT_0, UBIDI_FMT_1, UBIDI_FMT_2, UBIDI_FMT_3 },
-    { 2, 2, 0, 0 },                             /* formatVersion */
+    { 2, 1, 0, 0 },                             /* formatVersion */
     { 6, 0, 0, 0 }                              /* dataVersion */
 };
 
@@ -178,21 +166,18 @@ private:
     int32_t encodeBidiMirroringGlyph(UChar32 src, UChar32 end, UChar32 mirror, UErrorCode &errorCode);
     void makeMirror(UErrorCode &errorCode);
 
-    static const UChar32 MIN_JG_START=0x600;
-    static const UChar32 MAX_JG_LIMIT=0x8ff+1;
-    static const UChar32 MIN_JG_START2=0x10800;
-    static const UChar32 MAX_JG_LIMIT2=0x10fff+1;
-
     UnicodeSet relevantProps;
     UTrie2 *pTrie;
-    uint8_t jgArray[MAX_JG_LIMIT-MIN_JG_START];
-    uint8_t jgArray2[MAX_JG_LIMIT2-MIN_JG_START2];
+    uint8_t jgArray[0x300]; /* at most for U+0600..U+08FF */
+    UChar32 jgStart;  // First code point with a Joining_Group.
+    UChar32 jgLimit;  // One past the last one.
     uint32_t mirrors[UBIDI_MAX_MIRROR_INDEX+1][2];
     int32_t mirrorTop;
 };
 
 BiDiPropsBuilder::BiDiPropsBuilder(UErrorCode &errorCode)
         : pTrie(NULL),
+          jgStart(0), jgLimit(0),
           mirrorTop(0) {
     // This builder encodes the following properties.
     relevantProps.
@@ -209,7 +194,6 @@ BiDiPropsBuilder::BiDiPropsBuilder(UErrorCode &errorCode)
                 u_errorName(errorCode));
     }
     uprv_memset(jgArray, U_JG_NO_JOINING_GROUP, sizeof(jgArray));
-    uprv_memset(jgArray2, U_JG_NO_JOINING_GROUP, sizeof(jgArray2));
 }
 
 BiDiPropsBuilder::~BiDiPropsBuilder() {
@@ -303,19 +287,28 @@ BiDiPropsBuilder::setProps(const UniProps &props, const UnicodeSet &newValues,
         return;
     }
 
-    // Store Joining_Group values from vector column 1 in simple byte arrays.
+    /* store Joining_Group values from vector column 1 in a simple byte array */
     int32_t jg=props.getIntProp(UCHAR_JOINING_GROUP);
-    for(UChar32 c=start; c<=end; ++c) {
-        int32_t jgStart;
-        if(MIN_JG_START<=c && c<MAX_JG_LIMIT) {
-            jgArray[c-MIN_JG_START]=(uint8_t)jg;
-        } else if(MIN_JG_START2<=c && c<MAX_JG_LIMIT2) {
-            jgArray2[c-MIN_JG_START2]=(uint8_t)jg;
-        } else if(jg!=U_JG_NO_JOINING_GROUP) {
+    if(jg!=U_JG_NO_JOINING_GROUP) {
+        if(start<0x600 || 0x8ff<end) {
             fprintf(stderr, "genprops error: Joining_Group for out-of-range code points U+%04lx..U+%04lx\n",
                     (long)start, (long)end);
             errorCode=U_ILLEGAL_ARGUMENT_ERROR;
             return;
+        }
+        if(start<jgStart || jgStart==0) { jgStart=start; }
+        if(end>=jgLimit || jgLimit==0) { jgLimit=end+1; }
+    }
+    // On the off-chance that a block is defined with a Joining_Group
+    // that is then overridden by No_Joining_Group,
+    // we set that too, but only inside U+0600..U+08FF.
+    if(end>=0x600 && start<=0x8ff) {
+        if(start<0x600) { start=0x600; }
+        if(end>0x8ff) { end=0x8ff; }
+
+        /* set Joining_Group value for start..end */
+        for(UChar32 c=start; c<=end; ++c) {
+            jgArray[c-0x600]=(uint8_t)jg;
         }
     }
 }
@@ -425,48 +418,15 @@ BiDiPropsBuilder::build(UErrorCode &errorCode) {
         return;
     }
 
-    // Finish jgArray & jgArray2.
-    UChar32 jgStart;  // First code point with a Joining_Group, first range.
-    UChar32 jgLimit;  // One past the last one.
-    // Find the end of the range first, so that if it's empty we
-    // get jgStart=jgLimit=MIN_JG_START.
-    for(jgLimit=MAX_JG_LIMIT;
-        MIN_JG_START<jgLimit && jgArray[jgLimit-MIN_JG_START-1]==U_JG_NO_JOINING_GROUP;
-        --jgLimit) {}
-    for(jgStart=MIN_JG_START;
-        jgStart<jgLimit && jgArray[jgStart-MIN_JG_START]==U_JG_NO_JOINING_GROUP;
-        ++jgStart) {}
-
-    UChar32 jgStart2;  // First code point with a Joining_Group, second range.
-    UChar32 jgLimit2;  // One past the last one.
-    for(jgLimit2=MAX_JG_LIMIT2;
-        MIN_JG_START2<jgLimit2 && jgArray2[jgLimit2-MIN_JG_START2-1]==U_JG_NO_JOINING_GROUP;
-        --jgLimit2) {}
-    for(jgStart2=MIN_JG_START2;
-        jgStart2<jgLimit2 && jgArray2[jgStart2-MIN_JG_START2]==U_JG_NO_JOINING_GROUP;
-        ++jgStart2) {}
-
-    // Pad the total Joining_Group arrays length to a multiple of 4.
-    // Prefer rounding down starts before rounding up limits
-    // so that we are guaranteed not to increase the limits beyond
-    // the end of the arrays' code point ranges.
-    int32_t jgLength=jgLimit-jgStart+jgLimit2-jgStart2;
-    while(jgLength&3) {
-        if((jgStart<jgLimit) && (jgStart&3)) {
-            --jgStart;
-        } else if((jgStart2<jgLimit2) && (jgStart2&3)) {
-            --jgStart2;
-        } else if(jgStart<jgLimit) {
-            ++jgLimit;
-        } else {
-            ++jgLimit2;
-        }
-        ++jgLength;
+    /* finish jgArray, pad to multiple of 4 */
+    while((jgLimit-jgStart)&3) {
+        // Prefer rounding down jgStart before rounding up jgLimit
+        // so that we are guaranteed not to increase jgLimit beyond 0x900
+        // which (after the offset) is the end of the jgArray.
+        if(jgStart&3) { --jgStart; } else { ++jgLimit; }
     }
     indexes[UBIDI_IX_JG_START]=jgStart;
     indexes[UBIDI_IX_JG_LIMIT]=jgLimit;
-    indexes[UBIDI_IX_JG_START2]=jgStart2;
-    indexes[UBIDI_IX_JG_LIMIT2]=jgLimit2;
 
     indexes[UBIDI_IX_TRIE_SIZE]=trieSize;
     indexes[UBIDI_IX_MIRROR_LENGTH]=mirrorTop;
@@ -474,16 +434,13 @@ BiDiPropsBuilder::build(UErrorCode &errorCode) {
         (int32_t)sizeof(indexes)+
         trieSize+
         4*mirrorTop+
-        jgLength;
+        (jgLimit-jgStart);
 
     if(!beQuiet) {
         puts("* ubidi.icu stats *");
         printf("trie size in bytes:                    %5d\n", (int)trieSize);
         printf("size in bytes of mirroring table:      %5d\n", (int)(4*mirrorTop));
-        printf("length of Joining_Group array:         %5d (U+%04x..U+%04x)\n",
-               (int)(jgLimit-jgStart), (int)jgStart, (int)(jgLimit-1));
-        printf("length of Joining_Group array 2:       %5d (U+%04x..U+%04x)\n",
-               (int)(jgLimit2-jgStart2), (int)jgStart2, (int)(jgLimit2-1));
+        printf("length of Joining_Group array:         %5d (U+%04x..U+%04x)\n", (int)(jgLimit-jgStart), (int)jgStart, (int)(jgLimit-1));
         printf("data size:                             %5d\n", (int)indexes[UBIDI_IX_LENGTH]);
     }
 
@@ -504,7 +461,9 @@ BiDiPropsBuilder::writeCSourceFile(const char *path, UErrorCode &errorCode) {
         errorCode=U_FILE_ACCESS_ERROR;
         return;
     }
-    fputs("#ifdef INCLUDED_FROM_UBIDI_PROPS_C\n\n", f);
+    fputs("#ifndef INCLUDED_FROM_UBIDI_PROPS_C\n"
+          "#   error This file must be #included from ubidi_props.c only.\n"
+          "#endif\n\n", f);
     usrc_writeArray(f,
         "static const UVersionInfo ubidi_props_dataVersion={",
         dataInfo.dataVersion, 8, 4,
@@ -521,33 +480,23 @@ BiDiPropsBuilder::writeCSourceFile(const char *path, UErrorCode &errorCode) {
         "static const uint32_t ubidi_props_mirrors[%ld]={\n",
         mirrors, 32, mirrorTop,
         "\n};\n\n");
-    UChar32 jgStart=indexes[UBIDI_IX_JG_START];
-    UChar32 jgLimit=indexes[UBIDI_IX_JG_LIMIT];
     usrc_writeArray(f,
         "static const uint8_t ubidi_props_jgArray[%ld]={\n",
-        jgArray+(jgStart-MIN_JG_START), 8, jgLimit-jgStart,
-        "\n};\n\n");
-    UChar32 jgStart2=indexes[UBIDI_IX_JG_START2];
-    UChar32 jgLimit2=indexes[UBIDI_IX_JG_LIMIT2];
-    usrc_writeArray(f,
-        "static const uint8_t ubidi_props_jgArray2[%ld]={\n",
-        jgArray2+(jgStart2-MIN_JG_START2), 8, jgLimit2-jgStart2,
+        jgArray+(jgStart-0x600), 8, jgLimit-jgStart,
         "\n};\n\n");
     fputs(
         "static const UBiDiProps ubidi_props_singleton={\n"
         "  NULL,\n"
         "  ubidi_props_indexes,\n"
         "  ubidi_props_mirrors,\n"
-        "  ubidi_props_jgArray,\n"
-        "  ubidi_props_jgArray2,\n",
+        "  ubidi_props_jgArray,\n",
         f);
     usrc_writeUTrie2Struct(f,
         "  {\n",
         pTrie, "ubidi_props_trieIndex", NULL,
         "  },\n");
     usrc_writeArray(f, "  { ", dataInfo.formatVersion, 8, 4, " }\n");
-    fputs("};\n\n"
-          "#endif  // INCLUDED_FROM_UBIDI_PROPS_C\n", f);
+    fputs("};\n", f);
     fclose(f);
 }
 
@@ -566,12 +515,7 @@ BiDiPropsBuilder::writeBinaryData(const char *path, UBool withCopyright, UErrorC
     udata_writeBlock(pData, indexes, sizeof(indexes));
     udata_writeBlock(pData, trieBlock, trieSize);
     udata_writeBlock(pData, mirrors, 4*mirrorTop);
-    UChar32 jgStart=indexes[UBIDI_IX_JG_START];
-    UChar32 jgLimit=indexes[UBIDI_IX_JG_LIMIT];
-    udata_writeBlock(pData, jgArray+(jgStart-MIN_JG_START), jgLimit-jgStart);
-    UChar32 jgStart2=indexes[UBIDI_IX_JG_START2];
-    UChar32 jgLimit2=indexes[UBIDI_IX_JG_LIMIT2];
-    udata_writeBlock(pData, jgArray2+(jgStart2-MIN_JG_START2), jgLimit2-jgStart2);
+    udata_writeBlock(pData, jgArray+(jgStart-0x600), jgLimit-jgStart);
 
     long dataLength=udata_finish(pData, &errorCode);
     if(U_FAILURE(errorCode)) {

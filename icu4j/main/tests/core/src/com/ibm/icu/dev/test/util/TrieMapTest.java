@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2011-2012, Google, International Business Machines Corporation and
@@ -17,10 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.util.TrieMap.Style;
@@ -43,21 +37,22 @@ public class TrieMapTest extends TestFmwk {
     private Map<String, Integer> unicodeTestMap = new HashMap<String, Integer>();
     private boolean useSmallList = true;
 
-    private static Timer t = new Timer();
-    private static DecimalFormat nf = t.getNumberFormat();
-    private static DecimalFormat pf = t.getPercentFormat();
+    private Timer t = new Timer();
+    private DecimalFormat nf = t.getNumberFormat();
+    private DecimalFormat pf = t.getPercentFormat();
     {
         pf.setMaximumFractionDigits(0);
     }
 
-    @Before
-    public void init() throws Exception {
+    @Override
+    protected void init() throws Exception {
+        super.init();
         if (unicodeTestMap.size() == 0) {
-            if (TestFmwk.getExhaustiveness() < 5) {
+            if (getInclusion() < 5) {
                 logln("\tShort version, timing for 1s:\t to get more accurate figures and test for reasonable times, use -e5 or more");
                 t.setTimingPeriod(1*Timer.SECONDS);
             } else {
-                int seconds = TestFmwk.getExhaustiveness();
+                int seconds = getInclusion();
                 logln("\tExhaustive version, timing for " + seconds + "s");
                 t.setTimingPeriod(seconds*Timer.SECONDS);
                 useSmallList = false;
@@ -107,8 +102,10 @@ public class TrieMapTest extends TestFmwk {
         }
     }
 
-    @Ignore
-    @Test
+    public static void main(String[] args) {
+        new TrieMapTest().run(args);
+    }
+
     public void TestByteConversion() {
         byte bytes[] = new byte[200];
         for (Entry<String, Integer> entry : unicodeTestMap.entrySet()) {
@@ -122,8 +119,6 @@ public class TrieMapTest extends TestFmwk {
         }
     }
 
-    @Ignore
-    @Test
     public void TestGet() {
         checkGet(unicodeTestMap, TrieMap.Style.BYTES);
         checkGet(unicodeTestMap, TrieMap.Style.CHARS);
@@ -148,8 +143,6 @@ public class TrieMapTest extends TestFmwk {
         }        
     }
 
-    @Ignore
-    @Test
     public void TestTimeIteration() {
         long comparisonTime = timeIteration(unicodeTestMap, 0, null, 0);
         timeIteration(unicodeTestMap, comparisonTime, null, 0);
@@ -202,8 +195,6 @@ public class TrieMapTest extends TestFmwk {
         }
     }
 
-    @Ignore
-    @Test
     public void TestContents() {
         checkContents(unicodeTestMap, Style.BYTES);
         checkContents(unicodeTestMap, Style.CHARS);
@@ -240,8 +231,6 @@ public class TrieMapTest extends TestFmwk {
         }
     }
 
-    @Ignore
-    @Test
     public void TestSearch() {
         checkSearch(Style.BYTES);
         checkSearch(Style.CHARS);
@@ -289,8 +278,6 @@ public class TrieMapTest extends TestFmwk {
         //        );
     }
 
-    @Ignore
-    @Test
     public void TestTimeBuilding() {
         long comparisonTime = timeBuilding(unicodeTestMap, 0, null, Option.SMALL, 0);
         timeBuilding(unicodeTestMap, comparisonTime, null, Option.SMALL, 0);
@@ -343,8 +330,6 @@ public class TrieMapTest extends TestFmwk {
         }
     }
 
-    @Ignore
-    @Test
     public void TestSize() {
         int size = checkSize(0, null, Option.SMALL, 0);
         checkSize(size, Style.BYTES, Option.SMALL, 0.20);
@@ -381,8 +366,6 @@ public class TrieMapTest extends TestFmwk {
         }
     }
 
-    @Ignore
-	@Test
     public void TestTimeGet() {
         HashSet<String> keySet = new HashSet<String>(unicodeTestMap.keySet());
         ULocale[] locales = ULocale.getAvailableLocales();

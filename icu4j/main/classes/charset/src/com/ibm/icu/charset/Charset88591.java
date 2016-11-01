@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2006-2011, International Business Machines Corporation and    *
@@ -27,7 +25,6 @@ class Charset88591 extends CharsetASCII {
             super(cs);
         }
 
-        @Override
         protected CoderResult decodeLoopCoreOptimized(ByteBuffer source, CharBuffer target,
                 byte[] sourceArray, char[] targetArray, int oldSource, int offset, int limit) {
 
@@ -41,7 +38,6 @@ class Charset88591 extends CharsetASCII {
             return null;
         }
 
-        @Override
         protected CoderResult decodeLoopCoreUnoptimized(ByteBuffer source, CharBuffer target) {
             byte ch;
             /*
@@ -56,7 +52,7 @@ class Charset88591 extends CharsetASCII {
                     return CoderResult.OVERFLOW;
                 }
             }
-
+            
             return CoderResult.UNDERFLOW;
         }
     }
@@ -66,7 +62,6 @@ class Charset88591 extends CharsetASCII {
             super(cs);
         }
 
-        @Override
         protected final CoderResult encodeLoopCoreOptimized(CharBuffer source, ByteBuffer target,
                 char[] sourceArray, byte[] targetArray, int oldSource, int offset, int limit,
                 boolean flush) {
@@ -77,7 +72,7 @@ class Charset88591 extends CharsetASCII {
              * char in the source is within the correct range
              */
             for (i = oldSource; i < limit; i++) {
-                ch = sourceArray[i];
+                ch = (int) sourceArray[i];
                 if ((ch & 0xff00) == 0) {
                     targetArray[i + offset] = (byte) ch;
                 } else {
@@ -98,7 +93,6 @@ class Charset88591 extends CharsetASCII {
                 return null;
         }
 
-        @Override
         protected final CoderResult encodeLoopCoreUnoptimized(CharBuffer source, ByteBuffer target, boolean flush) {
             int ch;
 
@@ -106,9 +100,9 @@ class Charset88591 extends CharsetASCII {
              * perform 88591 conversion from the source buffer to the target buffer, making sure
              * each char in the source is within the correct range
              */
-
+            
             while (source.hasRemaining()) {
-                ch = source.get();
+                ch = (int) source.get();
                 if ((ch & 0xff00) == 0) {
                     if (target.hasRemaining()) {
                         target.put((byte) ch);
@@ -123,23 +117,20 @@ class Charset88591 extends CharsetASCII {
                     return encodeMalformedOrUnmappable(source, ch, flush);
                 }
             }
-
+            
             return CoderResult.UNDERFLOW;
         }
 
     }
 
-    @Override
     public CharsetDecoder newDecoder() {
         return new CharsetDecoder88591(this);
     }
 
-    @Override
     public CharsetEncoder newEncoder() {
         return new CharsetEncoder88591(this);
     }
-
-    @Override
+    
     void getUnicodeSetImpl( UnicodeSet setFillIn, int which){
         setFillIn.add(0,0xff);
      }

@@ -1,7 +1,5 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
- * Copyright (c) 2014-2016, International Business Machines Corporation
+ * Copyright (c) 2013, International Business Machines Corporation
  * and others. All Rights Reserved.
  ********************************************************************/
 /* C API TEST FOR UREGION */
@@ -52,6 +50,8 @@ typedef struct KnownRegion {
   URegionType type;
   const char *containingContinent;
 } KnownRegion;
+
+#define LENGTHOF(array) (int32_t)(sizeof(array) / sizeof((array)[0]))
 
 static KnownRegion knownRegions[] = {
     // Code, Num, Parent, Type,             Containing Continent
@@ -306,7 +306,7 @@ static KnownRegion knownRegions[] = {
     { "SN" , 686, "011", URGN_TERRITORY, "002" },
     { "SO" , 706, "014", URGN_TERRITORY, "002" },
     { "SR" , 740, "005", URGN_TERRITORY, "019" },
-    { "SS" , 728, "014", URGN_TERRITORY, "002" },
+    { "SS" , 728, "015", URGN_TERRITORY, "002" },
     { "ST" , 678, "017", URGN_TERRITORY, "002" },
     { "SU" , 810, NULL , URGN_DEPRECATED , NULL},
     { "SV" , 222, "013", URGN_TERRITORY, "019" },

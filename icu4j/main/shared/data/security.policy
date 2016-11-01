@@ -1,5 +1,3 @@
-//#* © 2016 and later: Unicode, Inc. and others.
-//#* License & terms of use: http://www.unicode.org/copyright.html#License
 //#
 //#*******************************************************************************
 //#* Copyright (C) 1997-2015, International Business Machines Corporation and    *
@@ -30,9 +28,6 @@ grant
 
     // for setting the default time zone by the test framework
     permission java.util.PropertyPermission "user.timezone", "write";
-
-    // for creating a fallback class loader
-    permission java.lang.RuntimePermission "createClassLoader";
 };
 
 // there must be a way for code in one jar file to call code in another jar

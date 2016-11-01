@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2007-2015, International Business Machines Corporation and    *
+* Copyright (C) 2007-2013, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 */
@@ -17,7 +15,6 @@
 #include "intltest.h"
 
 class TimeZoneFormatTest : public IntlTest {
-  public:
     // IntlTest override
     void runIndexedTest(int32_t index, UBool exec, const char*& name, char* par);
 
@@ -26,9 +23,6 @@ class TimeZoneFormatTest : public IntlTest {
     void TestParse(void);
     void TestISOFormat(void);
     void TestFormat(void);
-    void TestFormatTZDBNames(void);
-
-    void RunTimeRoundTripTests(int32_t threadNumber);
 };
 
 #endif /* #if !UCONFIG_NO_FORMATTING */

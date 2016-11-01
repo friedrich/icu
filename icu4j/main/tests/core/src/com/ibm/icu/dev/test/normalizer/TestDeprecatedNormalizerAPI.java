@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2010, International Business Machines Corporation and    *
@@ -7,8 +5,6 @@
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.normalizer;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Utility;
@@ -19,11 +15,34 @@ import com.ibm.icu.text.Normalizer;
 import com.ibm.icu.text.StringCharacterIterator;
 
 public class TestDeprecatedNormalizerAPI extends TestFmwk
-{     
+{
+     
+    public static void main(String[] args) throws Exception
+    {
+        String[] tempArgs = new String[args.length];
+        int count = 0;
+
+        // Allow the test to be pointed at a specific version of the Unicode database
+        //for (int i = 0; i < args.length; i++)
+        //{
+        //    if (args[i].equals("-data")) {
+        //        tempInfo = new UInfo(args[++i], args[++i]);
+        //    } else {
+        //        tempArgs[count++] = args[i];
+        //    }
+        //}
+
+        args = new String[count];
+        System.arraycopy(tempArgs, 0, args, 0, count);
+
+
+
+        new TestDeprecatedNormalizerAPI().run(args);
+    }
+    
     public TestDeprecatedNormalizerAPI() {
     }
 
-    @Test
     public void TestNormalizerAPI(){
          // instantiate a Normalizer from a CharacterIterator
         String s=Utility.unescape("a\u0308\uac00\\U0002f800");
@@ -73,12 +92,11 @@ public class TestDeprecatedNormalizerAPI extends TestFmwk
      *          have decompositions.
      * </ul>
      */
-    @Test
     public void TestComposedCharIter() {
         doTestComposedChars(false);
     }
 
-    private void doTestComposedChars(boolean compat) {
+    public void doTestComposedChars(boolean compat) {
         int options = Normalizer.IGNORE_HANGUL;
         ComposedCharIter iter = new ComposedCharIter(compat, options);
 
@@ -122,7 +140,6 @@ public class TestDeprecatedNormalizerAPI extends TestFmwk
     }
 
 
-    @Test
     public void TestRoundTrip() {
         int options = Normalizer.IGNORE_HANGUL;
         boolean compat = false;

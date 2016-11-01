@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  *******************************************************************************
  *
- *   Copyright (C) 2003-2014, International Business Machines
+ *   Copyright (C) 2003-2010, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *
  *******************************************************************************
@@ -29,7 +27,7 @@
 #include "ustr_imp.h"
 #include "intltest.h"
 
-#ifdef NPTRANS_DEBUG 
+#ifdef DEBUG 
 #include <stdio.h>
 #endif
 
@@ -86,14 +84,14 @@ NamePrepTransform::NamePrepTransform(UParseError& parseError, UErrorCode& status
         pattern =  ures_getStringByKey(bundle,"ProhibitedSet",&patternLen, &status);
         UnicodeString test(pattern,patternLen);
         prohibited.applyPattern(test,status);
-#ifdef NPTRANS_DEBUG
+#ifdef DEBUG
         if(U_FAILURE(status)){
             printf("Construction of Unicode set failed\n");
         }
 
         if(U_SUCCESS(status)){
             if(prohibited.contains((UChar) 0x644)){
-                printf("The string contains 0x644 ... !!\n");
+                printf("The string contains 0x644 ... damn !!\n");
             }
             UnicodeString temp;
             prohibited.toPattern(temp,TRUE);
@@ -174,7 +172,7 @@ int32_t NamePrepTransform::map(const UChar* src, int32_t srcLength,
     }
     // check if there is enough room in the output
     if(bufLen < destCapacity){
-        u_memcpy(dest, buffer, bufLen);
+        uprv_memcpy(dest,buffer,bufLen*U_SIZEOF_UCHAR);
     }
 
     return u_terminateUChars(dest, destCapacity, bufLen, &status);
@@ -266,7 +264,7 @@ int32_t NamePrepTransform::process( const UChar* src, int32_t srcLength,
     }
 
     if(b1Len <= destCapacity){
-        u_memmove(dest, b1, b1Len);
+        uprv_memmove(dest,b1, b1Len*U_SIZEOF_UCHAR);
     }
 
 CLEANUP:

@@ -1,12 +1,9 @@
-/* Copyright (C) 2010-2013 International Business Machines Corporation and Others. All Rights Reserved. */
+/* @override http://bugs.icu-project.org/trac/chrome/icucodetools/css/icuxtn.css */
+
+/* Copyright (C) 2010-2012 International Business Machines Corporation and Others. All Rights Reserved. */
 
 /* @override http://unicode.org/cldr/trac/chrome/icucodetools/css/icuxtn.css */
 
-table.icureview tr:hover,
-table.icureview tr:hover td,
-table.icureview tr:hover th {
-    background-color: yellow !important;
-}
 
 table.icureview {
 	border-collapse: collapse;

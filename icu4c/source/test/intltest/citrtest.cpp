@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /****************************************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2014, International Business Machines Corporation and
+ * Copyright (c) 1997-2012, International Business Machines Corporation and
  * others. All Rights Reserved.
  * Modification History:
  *
@@ -22,7 +20,6 @@
 #include "unicode/putil.h"
 #include "unicode/utf16.h"
 #include "citrtest.h"
-#include "cmemory.h"
 
 
 class  SCharacterIterator : public CharacterIterator {
@@ -141,6 +138,8 @@ private:
     static const char fgClassID;
 };
 const char SCharacterIterator::fgClassID=0;
+
+#define LENGTHOF(array) ((int32_t)(sizeof(array)/sizeof((array)[0])))
 
 CharIterTest::CharIterTest()
 {
@@ -968,7 +967,7 @@ class SubCharIter : public CharacterIterator {
 public:
     // public default constructor, to get coverage of CharacterIterator()
     SubCharIter() : CharacterIterator() {
-        textLength=end=UPRV_LENGTHOF(s);
+        textLength=end=LENGTHOF(s);
         s[0]=0x61;      // 'a'
         s[1]=0xd900;    // U+50400
         s[2]=0xdd00;
@@ -977,7 +976,7 @@ public:
 
     // useful stuff, mostly dummy but testing coverage and subclassability
     virtual UChar nextPostInc() {
-        if(pos<UPRV_LENGTHOF(s)) {
+        if(pos<LENGTHOF(s)) {
             return s[pos++];
         } else {
             return DONE;
@@ -985,9 +984,9 @@ public:
     }
 
     virtual UChar32 next32PostInc() {
-        if(pos<UPRV_LENGTHOF(s)) {
+        if(pos<LENGTHOF(s)) {
             UChar32 c;
-            U16_NEXT(s, pos, UPRV_LENGTHOF(s), c);
+            U16_NEXT(s, pos, LENGTHOF(s), c);
             return c;
         } else {
             return DONE;
@@ -995,7 +994,7 @@ public:
     }
 
     virtual UBool hasNext() {
-        return pos<UPRV_LENGTHOF(s);
+        return pos<LENGTHOF(s);
     }
 
     virtual UChar first() {
@@ -1006,15 +1005,15 @@ public:
     virtual UChar32 first32() {
         UChar32 c;
         pos=0;
-        U16_NEXT(s, pos, UPRV_LENGTHOF(s), c);
+        U16_NEXT(s, pos, LENGTHOF(s), c);
         pos=0;
         return c;
     }
 
     virtual UChar setIndex(int32_t position) {
-        if(0<=position && position<=UPRV_LENGTHOF(s)) {
+        if(0<=position && position<=LENGTHOF(s)) {
             pos=position;
-            if(pos<UPRV_LENGTHOF(s)) {
+            if(pos<LENGTHOF(s)) {
                 return s[pos];
             }
         }
@@ -1022,11 +1021,11 @@ public:
     }
 
     virtual UChar32 setIndex32(int32_t position) {
-        if(0<=position && position<=UPRV_LENGTHOF(s)) {
+        if(0<=position && position<=LENGTHOF(s)) {
             pos=position;
-            if(pos<UPRV_LENGTHOF(s)) {
+            if(pos<LENGTHOF(s)) {
                 UChar32 c;
-                U16_GET(s, 0, pos, UPRV_LENGTHOF(s), c);
+                U16_GET(s, 0, pos, LENGTHOF(s), c);
                 return c;
             }
         }
@@ -1034,7 +1033,7 @@ public:
     }
 
     virtual UChar current() const {
-        if(pos<UPRV_LENGTHOF(s)) {
+        if(pos<LENGTHOF(s)) {
             return s[pos];
         } else {
             return DONE;
@@ -1042,9 +1041,9 @@ public:
     }
 
     virtual UChar32 current32() const {
-        if(pos<UPRV_LENGTHOF(s)) {
+        if(pos<LENGTHOF(s)) {
             UChar32 c;
-            U16_GET(s, 0, pos, UPRV_LENGTHOF(s), c);
+            U16_GET(s, 0, pos, LENGTHOF(s), c);
             return c;
         } else {
             return DONE;
@@ -1052,7 +1051,7 @@ public:
     }
 
     virtual UChar next() {
-        if(pos<UPRV_LENGTHOF(s) && ++pos<UPRV_LENGTHOF(s)) {
+        if(pos<LENGTHOF(s) && ++pos<LENGTHOF(s)) {
             return s[pos];
         } else {
             return DONE;
@@ -1060,13 +1059,13 @@ public:
     }
 
     virtual UChar32 next32() {
-        if(pos<UPRV_LENGTHOF(s)) {
-            U16_FWD_1(s, pos, UPRV_LENGTHOF(s));
+        if(pos<LENGTHOF(s)) {
+            U16_FWD_1(s, pos, LENGTHOF(s));
         }
-        if(pos<UPRV_LENGTHOF(s)) {
+        if(pos<LENGTHOF(s)) {
             UChar32 c;
             int32_t i=pos;
-            U16_NEXT(s, i, UPRV_LENGTHOF(s), c);
+            U16_NEXT(s, i, LENGTHOF(s), c);
             return c;
         } else {
             return DONE;
@@ -1078,7 +1077,7 @@ public:
     }
 
     virtual void getText(UnicodeString &result) {
-        result.setTo(s, UPRV_LENGTHOF(s));
+        result.setTo(s, LENGTHOF(s));
     }
 
     // dummy implementations of other pure virtual base class functions

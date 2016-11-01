@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2007-2016, International Business Machines
+*   Copyright (C) 2007-2013, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -32,7 +30,6 @@
 #include "unicode/udatpg.h"
 #include "unicode/ustring.h"
 #include "cintltst.h"
-#include "cmemory.h"
 
 void addDateTimePatternGeneratorTest(TestNode** root);
 
@@ -122,8 +119,8 @@ typedef struct {
 static const AppendItemNameData appendItemNameData[] = { /* for Finnish */
     { UDATPG_YEAR_FIELD,    {0x0076,0x0075,0x006F,0x0073,0x0069,0} }, /* "vuosi" */
     { UDATPG_MONTH_FIELD,   {0x006B,0x0075,0x0075,0x006B,0x0061,0x0075,0x0073,0x0069,0} }, /* "kuukausi" */
-    { UDATPG_WEEKDAY_FIELD, {0x0076,0x0069,0x0069,0x006B,0x006F,0x006E,0x0070,0x00E4,0x0069,0x0076,0x00E4,0} },
-    { UDATPG_DAY_FIELD,     {0x0070,0x00E4,0x0069,0x0076,0x00E4,0} },
+    { UDATPG_WEEKDAY_FIELD, {0x0076,0x0069,0x0069,0x006B,0x006F,0x006E,0x0070,0x00E4,0x0069,0x0076,0x00E4,0} }, /* "viikonpäivä" */
+    { UDATPG_DAY_FIELD,     {0x0070,0x00E4,0x0069,0x0076,0x00E4,0} }, /* "päivä" */
     { UDATPG_HOUR_FIELD,    {0x0074,0x0075,0x006E,0x0074,0x0069,0} }, /* "tunti" */
     { UDATPG_FIELD_COUNT,   {0}        }  /* terminator */
 };
@@ -220,10 +217,10 @@ static void TestUsage() {
     }
     
     /* set append name to hr */
-    udatpg_setAppendItemName(dtpg, UDATPG_HOUR_FIELD, appendItemName, 2);
+    udatpg_setAppendItemName( dtpg, UDATPG_HOUR_FIELD, appendItemName, 7 );
     r = udatpg_getAppendItemName(dtpg, UDATPG_HOUR_FIELD, &length);
     
-    if(length!=2 || 0!=u_memcmp(r, appendItemName, length) || r[length]!=0) { 
+    if(length!=7 || 0!=u_memcmp(r, appendItemName, length) || r[length]!=0) { 
         log_err("udatpg_setAppendItemName did not return the expected string\n");
         return;
     }
@@ -341,7 +338,7 @@ static void TestBuilder() {
     udatpg_close(dtpg);
     
     /* sample code in Userguide */
-    patternCapacity = UPRV_LENGTHOF(pattern);
+    patternCapacity = (int32_t)(sizeof(pattern)/sizeof((pattern)[0]));
     status=U_ZERO_ERROR;
     generator=udatpg_open(locale, &status);
     if(U_FAILURE(status)) {
@@ -360,7 +357,7 @@ static void TestBuilder() {
     }
 
     /* use it to format (or parse) */
-    formattedCapacity = UPRV_LENGTHOF(formatted);
+    formattedCapacity = (int32_t)(sizeof(formatted)/sizeof((formatted)[0]));
     resultLen=udat_format(formatter, ucal_getNow(), formatted, formattedCapacity,
                           NULL, &status);
     /* for French, the result is "13 sept." */
@@ -386,6 +383,7 @@ enum { kTestOptionsPatLenMax = 32 };
 static const UChar skel_Hmm[]     = { 0x0048, 0x006D, 0x006D, 0 };
 static const UChar skel_HHmm[]    = { 0x0048, 0x0048, 0x006D, 0x006D, 0 };
 static const UChar skel_hhmm[]    = { 0x0068, 0x0068, 0x006D, 0x006D, 0 };
+static const UChar patn_Hcmm[]    = { 0x0048, 0x003A, 0x006D, 0x006D, 0 }; /* H:mm */
 static const UChar patn_hcmm_a[]  = { 0x0068, 0x003A, 0x006D, 0x006D, 0x0020, 0x0061, 0 }; /* h:mm a */
 static const UChar patn_HHcmm[]   = { 0x0048, 0x0048, 0x003A, 0x006D, 0x006D, 0 }; /* HH:mm */
 static const UChar patn_hhcmm_a[] = { 0x0068, 0x0068, 0x003A, 0x006D, 0x006D, 0x0020, 0x0061, 0 }; /* hh:mm a */
@@ -403,15 +401,15 @@ static void TestOptions() {
         { "en", skel_Hmm,  UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_HHcmm   },
         { "en", skel_HHmm, UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_HHcmm   },
         { "en", skel_hhmm, UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_hhcmm_a },
-        { "da", skel_Hmm,  UDATPG_MATCH_NO_OPTIONS,        patn_HHpmm   },
-        { "da", skel_HHmm, UDATPG_MATCH_NO_OPTIONS,        patn_HHpmm   },
-        { "da", skel_hhmm, UDATPG_MATCH_NO_OPTIONS,        patn_hpmm_a  },
-        { "da", skel_Hmm,  UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_Hpmm    },
-        { "da", skel_HHmm, UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_HHpmm   },
-        { "da", skel_hhmm, UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_hhpmm_a },
+        { "be", skel_Hmm,  UDATPG_MATCH_NO_OPTIONS,        patn_HHpmm   },
+        { "be", skel_HHmm, UDATPG_MATCH_NO_OPTIONS,        patn_HHpmm   },
+        { "be", skel_hhmm, UDATPG_MATCH_NO_OPTIONS,        patn_hpmm_a  },
+        { "be", skel_Hmm,  UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_Hpmm    },
+        { "be", skel_HHmm, UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_HHpmm   },
+        { "be", skel_hhmm, UDATPG_MATCH_HOUR_FIELD_LENGTH, patn_hhpmm_a },
     };
 
-    int count = UPRV_LENGTHOF(testData);
+    int count = sizeof(testData) / sizeof(testData[0]);
     const DTPtnGenOptionsData * testDataPtr = testData;
 
     for (; count-- > 0; ++testDataPtr) {

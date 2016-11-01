@@ -1,12 +1,8 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  *
- * (C) Copyright IBM Corp. 1998-2014 - All Rights Reserved
+ * (C) Copyright IBM Corp. 1998-2008 - All Rights Reserved
  *
  */
-
-#ifndef USING_ICULEHB /* C API not available under HB */
 
 #ifndef __CFONTS_H
 #define __CFONTS_H
@@ -33,5 +29,4 @@ void le_deleteUnicodeNameString(le_font *font, const LEUnicode16 *name);
 
 le_uint32 le_getFontChecksum(le_font *font);
 
-#endif
 #endif

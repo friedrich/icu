@@ -1,13 +1,12 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2001-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2001-2013, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.impl;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,7 +21,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.ULocale.Category;
@@ -297,7 +295,6 @@ public class ICUService extends ICUNotifier {
          * Return the service instance if the factory's id is equal to
          * the key's currentID.  Service is ignored.
          */
-        @Override
         public Object create(Key key, ICUService service) {
             if (id.equals(key.currentID())) {
                 return instance;
@@ -309,7 +306,6 @@ public class ICUService extends ICUNotifier {
          * If visible, adds a mapping from id -> this to the result,
          * otherwise removes id from result.
          */
-        @Override
         public void updateVisibleIDs(Map<String, Factory> result) {
             if (visible) {
                 result.put(id, this);
@@ -323,7 +319,6 @@ public class ICUService extends ICUNotifier {
          * otherwise returns null.  (This default implementation has
          * no localized id information.)
          */
-        @Override
         public String getDisplayName(String identifier, ULocale locale) {
             return (visible && id.equals(identifier)) ? identifier : null;
         }
@@ -331,7 +326,6 @@ public class ICUService extends ICUNotifier {
         /**
          * For debugging.
          */
-        @Override
         public String toString() {
             StringBuilder buf = new StringBuilder(super.toString());
             buf.append(", id: ");
@@ -405,12 +399,19 @@ public class ICUService extends ICUNotifier {
                 // The cache has to stay in synch with the factory list.
                 factoryLock.acquireRead();
 
-                Map<String, CacheEntry> cache = this.cache; // copy so we don't need to sync on this
+                Map<String, CacheEntry> cache = null;
+                SoftReference<Map<String, CacheEntry>> cref = cacheref; // copy so we don't need to sync on this
+                if (cref != null) {
+                    if (DEBUG) System.out.println("Service " + name + " ref exists");
+                    cache = cref.get();
+                }
                 if (cache == null) {
                     if (DEBUG) System.out.println("Service " + name + " cache was empty");
                     // synchronized since additions and queries on the cache must be atomic
                     // they can be interleaved, though
-                    cache = new ConcurrentHashMap<String, CacheEntry>();
+                    cache = Collections.synchronizedMap(new HashMap<String, CacheEntry>());
+//                  hardRef = cache; // debug
+                    cref = new SoftReference<Map<String, CacheEntry>>(cache);
                 }
 
                 String currentDescriptor = null;
@@ -494,7 +495,7 @@ public class ICUService extends ICUNotifier {
                         // so we know our cache is consistent with the factory list.
                         // We might stomp over a cache that some other thread
                         // rebuilt, but that's the breaks.  They're both good.
-                        this.cache = cache;
+                        cacheref = cref;
                     }
 
                     if (actualReturn != null) {
@@ -520,7 +521,7 @@ public class ICUService extends ICUNotifier {
 
         return handleDefault(key, actualReturn);
     }
-    private Map<String, CacheEntry> cache;
+    private SoftReference<Map<String, CacheEntry>> cacheref;
 
     // Record the actual id for this service in the cache, so we can return it
     // even if we succeed later with a different id.
@@ -582,25 +583,43 @@ public class ICUService extends ICUNotifier {
      * Return a map from visible ids to factories.
      */
     private Map<String, Factory> getVisibleIDMap() {
-        synchronized (this) { // or idcache-only lock?
-            if (idcache == null) {
-                try {
-                    factoryLock.acquireRead();
-                    Map<String, Factory> mutableMap = new HashMap<String, Factory>();
-                    ListIterator<Factory> lIter = factories.listIterator(factories.size());
-                    while (lIter.hasPrevious()) {
-                        Factory f = lIter.previous();
-                        f.updateVisibleIDs(mutableMap);
+        Map<String, Factory> idcache = null;
+        SoftReference<Map<String, Factory>> ref = idref;
+        if (ref != null) {
+            idcache = ref.get();
+        }
+        while (idcache == null) {
+            synchronized (this) { // or idref-only lock?
+                if (ref == idref || idref == null) {
+                    // no other thread updated idref before we got the lock, so
+                    // grab the factory list and update it ourselves
+                    try {
+                        factoryLock.acquireRead();
+                        idcache = new HashMap<String, Factory>();
+                        ListIterator<Factory> lIter = factories.listIterator(factories.size());
+                        while (lIter.hasPrevious()) {
+                            Factory f = lIter.previous();
+                            f.updateVisibleIDs(idcache);
+                        }
+                        idcache = Collections.unmodifiableMap(idcache);
+                        idref = new SoftReference<Map<String, Factory>>(idcache);
                     }
-                    this.idcache = Collections.unmodifiableMap(mutableMap);
-                } finally {
-                    factoryLock.releaseRead();
+                    finally {
+                        factoryLock.releaseRead();
+                    }
+                } else {
+                    // another thread updated idref, but gc may have stepped
+                    // in and undone its work, leaving idcache null.  If so,
+                    // retry.
+                    ref = idref;
+                    idcache = ref.get();
                 }
             }
         }
+
         return idcache;
     }
-    private Map<String, Factory> idcache;
+    private SoftReference<Map<String, Factory>> idref;
 
     /**
      * Convenience override for getDisplayName(String, ULocale) that
@@ -629,12 +648,12 @@ public class ICUService extends ICUNotifier {
                 return f.getDisplayName(id, locale);
             }
         }
-
+        
         return null;
     }
 
     /**
-     * Convenience override of getDisplayNames(ULocale, Comparator, String) that
+     * Convenience override of getDisplayNames(ULocale, Comparator, String) that 
      * uses the current default Locale as the locale, null as
      * the comparator, and null for the matchID.
      */
@@ -689,7 +708,7 @@ public class ICUService extends ICUNotifier {
             synchronized (this) {
                 if (ref == dnref || dnref == null) {
                     dncache = new TreeMap<String, String>(com); // sorted
-
+                    
                     Map<String, Factory> m = getVisibleIDMap();
                     Iterator<Entry<String, Factory>> ei = m.entrySet().iterator();
                     while (ei.hasNext()) {
@@ -728,18 +747,18 @@ public class ICUService extends ICUNotifier {
     // locale, comparator, and corresponding map.
     private static class LocaleRef {
         private final ULocale locale;
-        private SortedMap<String, String> dnCache;
+        private SoftReference<SortedMap<String, String>> ref;
         private Comparator<Object> com;
 
         LocaleRef(SortedMap<String, String> dnCache, ULocale locale, Comparator<Object> com) {
             this.locale = locale;
             this.com = com;
-            this.dnCache = dnCache;
+            this.ref = new SoftReference<SortedMap<String, String>>(dnCache);
         }
 
 
         SortedMap<String, String> get(ULocale loc, Comparator<Object> comp) {
-            SortedMap<String, String> m = dnCache;
+            SortedMap<String, String> m = ref.get();
             if (m != null &&
                 this.locale.equals(loc) &&
                 (this.com == comp || (this.com != null && this.com.equals(comp)))) {
@@ -896,8 +915,8 @@ public class ICUService extends ICUNotifier {
         // we don't synchronize on these because methods that use them
         // copy before use, and check for changes if they modify the
         // caches.
-        cache = null;
-        idcache = null;
+        cacheref = null;
+        idref = null;
         dnref = null;
     }
 
@@ -908,7 +927,7 @@ public class ICUService extends ICUNotifier {
      * the resolution of ids changes, but not the visible ids themselves.
      */
     protected void clearServiceCache() {
-        cache = null;
+        cacheref = null;
     }
 
     /**
@@ -927,7 +946,6 @@ public class ICUService extends ICUNotifier {
      * requires a ServiceListener.  Subclasses can override to accept
      * different listeners.
      */
-    @Override
     protected boolean acceptsListener(EventListener l) {
         return l instanceof ServiceListener;
     }
@@ -936,7 +954,6 @@ public class ICUService extends ICUNotifier {
      * Notify the listener, which by default is a ServiceListener.
      * Subclasses can override to use a different listener.
      */
-    @Override
     protected void notifyListener(EventListener l) {
         ((ServiceListener)l).serviceChanged(this);
     }
@@ -965,7 +982,6 @@ public class ICUService extends ICUNotifier {
     /**
      * Returns the result of super.toString, appending the name in curly braces.
      */
-    @Override
     public String toString() {
         return super.toString() + "{" + name + "}";
     }

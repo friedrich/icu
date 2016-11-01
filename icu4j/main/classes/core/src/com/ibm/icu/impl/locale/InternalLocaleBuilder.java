@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2009-2010, International Business Machines Corporation and    *
@@ -642,12 +640,10 @@ public final class InternalLocaleBuilder {
             return _s;
         }
 
-        @Override
         public int hashCode() {
             return AsciiUtil.toLowerString(_s).hashCode();
         }
 
-        @Override
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
@@ -670,12 +666,10 @@ public final class InternalLocaleBuilder {
             return _c;
         }
 
-        @Override
         public int hashCode() {
             return AsciiUtil.toLower(_c);
         }
 
-        @Override
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;

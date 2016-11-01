@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2007-2010, International Business Machines Corporation and    *
@@ -16,7 +14,7 @@ import com.ibm.icu.impl.Grego;
  * <code>AnnualTimeZoneRule</code> is a class used for representing a time zone
  * rule which takes effect annually.  Years used in this class are
  * all Gregorian calendar years.
- *
+ * 
  * @stable ICU 3.8
  */
 public class AnnualTimeZoneRule extends TimeZoneRule {
@@ -37,7 +35,7 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
      * Constructs a <code>AnnualTimeZoneRule</code> with the name, the GMT offset of its
      * standard time, the amount of daylight saving offset adjustment,
      * the annual start time rule and the start/until years.
-     *
+     * 
      * @param name          The time zone name.
      * @param rawOffset     The GMT offset of its standard time in milliseconds.
      * @param dstSavings    The amount of daylight saving offset adjustment in
@@ -47,7 +45,7 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
      * @param startYear     The first year when this rule takes effect.
      * @param endYear       The last year when this rule takes effect.  If this
      *                      rule is effective forever in future, specify MAX_YEAR.
-     *
+     * 
      * @stable ICU 3.8
      */
     public AnnualTimeZoneRule(String name, int rawOffset, int dstSavings,
@@ -55,15 +53,15 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
         super(name, rawOffset, dstSavings);
         this.dateTimeRule = dateTimeRule;
         this.startYear = startYear;
-        this.endYear = endYear;
+        this.endYear = endYear > MAX_YEAR ? MAX_YEAR : endYear;
     }
 
     /**
      * Gets the start date/time rule associated used by this rule.
-     *
+     * 
      * @return  An <code>AnnualDateTimeRule</code> which represents the start date/time
      *          rule used by this time zone rule.
-     *
+     * 
      * @stable ICU 3.8
      */
     public DateTimeRule getRule() {
@@ -72,10 +70,10 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
 
     /**
      * Gets the first year when this rule takes effect.
-     *
+     * 
      * @return  The start year of this rule.  The year is in Gregorian calendar
      *          with 0 == 1 BCE, -1 == 2 BCE, etc.
-     *
+     * 
      * @stable ICU 3.8
      */
     public int getStartYear() {
@@ -84,10 +82,10 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
 
     /**
      * Gets the end year when this rule takes effect.
-     *
+     * 
      * @return  The end year of this rule (inclusive). The year is in Gregorian calendar
      *          with 0 == 1 BCE, -1 == 2 BCE, etc.
-     *
+     * 
      * @stable ICU 3.8
      */
     public int getEndYear() {
@@ -96,16 +94,16 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
 
     /**
      * Gets the time when this rule takes effect in the given year.
-     *
+     * 
      * @param year              The Gregorian year, with 0 == 1 BCE, -1 == 2 BCE, etc.
      * @param prevRawOffset     The standard time offset from UTC before this rule
      *                          takes effect in milliseconds.
      * @param prevDSTSavings    The amount of daylight saving offset from the
      *                          standard time.
-     *
+     * 
      * @return  The time when this rule takes effect in the year, or
      *          null if this rule is not applicable in the year.
-     *
+     * 
      * @stable ICU 3.8
      */
     public Date getStartInYear(int year, int prevRawOffset, int prevDSTSavings) {
@@ -127,7 +125,7 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
                     ruleDay += 7 * (weeks - 1);
                 } else {
                     after = false;
-                    ruleDay = Grego.fieldsToDay(year, dateTimeRule.getRuleMonth(),
+                    ruleDay = Grego.fieldsToDay(year, dateTimeRule.getRuleMonth(), 
                             Grego.monthLength(year, dateTimeRule.getRuleMonth()));
                     ruleDay += 7 * (weeks + 1);
                 }
@@ -168,7 +166,6 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
      * {@inheritDoc}
      * @stable ICU 3.8
      */
-    @Override
     public Date getFirstStart(int prevRawOffset, int prevDSTSavings) {
         return getStartInYear(startYear, prevRawOffset, prevDSTSavings);
     }
@@ -177,7 +174,6 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
      * {@inheritDoc}
      * @stable ICU 3.8
      */
-    @Override
     public Date getFinalStart(int prevRawOffset, int prevDSTSavings) {
         if (endYear == MAX_YEAR) {
             return null;
@@ -189,7 +185,6 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
      * {@inheritDoc}
      * @stable ICU 3.8
      */
-    @Override
     public Date getNextStart(long base, int prevRawOffset, int prevDSTSavings, boolean inclusive) {
         int[] fields = Grego.timeToFields(base, null);
         int year = fields[0];
@@ -207,7 +202,6 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
      * {@inheritDoc}
      * @stable ICU 3.8
      */
-    @Override
     public Date getPreviousStart(long base, int prevRawOffset, int prevDSTSavings, boolean inclusive) {
         int[] fields = Grego.timeToFields(base, null);
         int year = fields[0];
@@ -225,7 +219,6 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
      * {@inheritDoc}
      * @stable ICU 3.8
      */
-    @Override
     public boolean isEquivalentTo(TimeZoneRule other) {
         if (!(other instanceof AnnualTimeZoneRule)) {
             return false;
@@ -244,7 +237,6 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
      * Note: This method in <code>AnnualTimeZoneRule</code> always returns true.
      * @stable ICU 3.8
      */
-    @Override
     public boolean isTransitionRule() {
         return true;
     }
@@ -253,10 +245,9 @@ public class AnnualTimeZoneRule extends TimeZoneRule {
      * Returns a <code>String</code> representation of this <code>AnnualTimeZoneRule</code> object.
      * This method is used for debugging purpose only.  The string representation can be changed
      * in future version of ICU without any notice.
-     *
+     * 
      * @stable ICU 3.8
      */
-    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(super.toString());

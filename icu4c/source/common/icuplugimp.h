@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 2009-2015, International Business Machines
+*   Copyright (C) 2009-2010, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -22,8 +20,6 @@
 #define ICUPLUGIMP_H
 
 #include "unicode/icuplug.h"
-
-#if UCONFIG_ENABLE_PLUGINS
 
 /*========================*/
 /** @{ Library Manipulation  
@@ -87,7 +83,5 @@ U_INTERNAL const char* U_EXPORT2
 uplug_getPluginFile(void);
 
 /** @} */
-
-#endif
 
 #endif

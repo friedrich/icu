@@ -1,36 +1,45 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fil.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/fil.xml
+ */
 fil{
     Countries{
         001{"Mundo"}
         002{"Africa"}
-        003{"Hilagang Amerika"}
-        005{"Timog Amerika"}
+        003{"North America"}
+        005{"South America"}
         009{"Oceania"}
-        011{"Kanlurang Africa"}
-        013{"Gitnang Amerika"}
-        014{"Silangang Africa"}
-        015{"Hilagang Africa"}
-        017{"Gitnang Africa"}
-        018{"Katimugang Africa"}
+        011{"Western Africa"}
+        013{"Central America"}
+        014{"Eastern Africa"}
+        015{"Northern Africa"}
+        017{"Middle Africa"}
+        018{"Southern Africa"}
         019{"Americas"}
         021{"Northern America"}
         029{"Carribbean"}
-        030{"Silangang Asya"}
-        034{"Katimugang Asya"}
-        035{"Timog-Silangang Asya"}
-        039{"Katimugang Europe"}
+        030{"Eastern Asia"}
+        034{"Southern Asia"}
+        035{"South-Eastern Asia"}
+        039{"Southern Europe"}
         053{"Australasia"}
         054{"Melanesia"}
-        057{"Rehiyon ng Micronesia"}
+        057{"Micronesian Region"}
         061{"Polynesia"}
-        142{"Asya"}
-        143{"Gitnang Asya"}
-        145{"Kanlurang Asya"}
+        142{"Asia"}
+        143{"Central Asia"}
+        145{"Western Asia"}
         150{"Europe"}
-        151{"Silangang Europe"}
-        154{"Hilagang Europe"}
-        155{"Kanlurang Europe"}
+        151{"Eastern Europe"}
+        154{"Northern Europe"}
+        155{"Western Europe"}
         419{"Latin America"}
         AC{"Acsencion island"}
         AD{"Andorra"}
@@ -40,6 +49,7 @@ fil{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Netherlands Antilles"}
         AO{"Angola"}
         AQ{"Antarctica"}
         AR{"Argentina"}
@@ -76,7 +86,7 @@ fil{
         CF{"Central African Republic"}
         CG{"Congo - Brazzaville"}
         CH{"Switzerland"}
-        CI{"Côte d’Ivoire"}
+        CI{"Côte d'Ivoire"}
         CK{"Cook Islands"}
         CL{"Chile"}
         CM{"Cameroon"}
@@ -101,7 +111,7 @@ fil{
         EC{"Ecuador"}
         EE{"Estonia"}
         EG{"Egypt"}
-        EH{"Kanlurang Sahara"}
+        EH{"Western Sahara"}
         ER{"Eritrea"}
         ES{"Spain"}
         ET{"Ethiopia"}
@@ -137,7 +147,7 @@ fil{
         HR{"Croatia"}
         HT{"Haiti"}
         HU{"Hungary"}
-        IC{"Canary Islands"}
+        IC{"Canary Island"}
         ID{"Indonesia"}
         IE{"Ireland"}
         IL{"Israel"}
@@ -158,8 +168,8 @@ fil{
         KI{"Kiribati"}
         KM{"Comoros"}
         KN{"Saint Kitts and Nevis"}
-        KP{"Hilagang Korea"}
-        KR{"Timog Korea"}
+        KP{"North Korea"}
+        KR{"South Korea"}
         KW{"Kuwait"}
         KY{"Cayman Islands"}
         KZ{"Kazakhstan"}
@@ -246,7 +256,7 @@ fil{
         SN{"Senegal"}
         SO{"Somalia"}
         SR{"Suriname"}
-        SS{"Timog Sudan"}
+        SS{"South Sudan"}
         ST{"São Tomé and Príncipe"}
         SV{"El Salvador"}
         SX{"Sint Maarten"}
@@ -272,7 +282,6 @@ fil{
         UA{"Ukraine"}
         UG{"Uganda"}
         UM{"U.S. Outlying Islands"}
-        UN{"Nagkakaisang Bansa"}
         US{"Estados Unidos"}
         UY{"Uruguay"}
         UZ{"Uzbekistan"}
@@ -293,22 +302,12 @@ fil{
         ZW{"Zimbabwe"}
         ZZ{"Hindi Kilalang Rehiyon"}
     }
-    Countries%short{
+    CountriesShort{
         GB{"U.K."}
         HK{"Hong Kong"}
         MO{"Macau"}
         PS{"Palestine"}
-        UN{"UN"}
         US{"U.S."}
     }
-    Countries%variant{
-        CD{"Congo (DRC)"}
-        CG{"Congo (Republika)"}
-        CI{"Ivory Coast"}
-        CZ{"Czechia"}
-        FK{"Falkland Islands (Islas Malvinas)"}
-        MK{"Macedonia (FYROM)"}
-        TL{"East Timor"}
-    }
-    Version{"2.1.28.79"}
+    Version{"2.0.92.87"}
 }

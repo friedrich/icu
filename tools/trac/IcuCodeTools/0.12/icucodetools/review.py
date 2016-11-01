@@ -1,11 +1,9 @@
-# Copyright (C) 2007-2015 International Business Machines Corporation and Others. All Rights Reserved.
+# Copyright (C) 2007-2012 International Business Machines Corporation and Others. All Rights Reserved.
 
 # Review module.
 # TODO: refactor ticket manipulation items into ticketmgr.
 
 import re
-
-import traceback
 
 from trac.core import Component, implements
 from trac.core import ComponentManager
@@ -15,8 +13,7 @@ from trac.web import IRequestHandler
 from trac.web.chrome import add_stylesheet, add_script, ITemplateProvider, add_ctxtnav
 from trac.versioncontrol import Changeset
 from trac.web.api import IRequestFilter
-from trac.wiki import wiki_to_html, format_to_oneliner, IWikiSyntaxProvider
-from trac.mimeview import Context
+from trac.wiki import wiki_to_html, wiki_to_oneliner, IWikiSyntaxProvider
             
 from genshi.builder import tag
 #from trac.env import IEnvironmentSetupParticipant
@@ -72,7 +69,6 @@ class ReviewModule(Component):
         return (template, data, content_type)
 
     def render_reviewlink(self, req):
-        """Render the "143 commits." box that shows in the topnav."""
         #add_stylesheet(req, 'icucodetools/css/icuxtn.css')
 
         els = []
@@ -93,32 +89,29 @@ class ReviewModule(Component):
         else:
             str = ' %d commits.' % len(revs)
             href = req.href.review(req.args['ticket'])
-            a = tag.a('Review' + str, href=href)
-            li = tag.li(a)
+            a = tag.a('Review', href=href)
+            li = tag.li(a + str)
             els.append(li)            
         
         ul = tag.ul(els, class_='review')
         className = ''
         title = "Reviews"
-        add_ctxtnav(req, tag.span(ul, id='icureview', title=title, class_=className))
+        add_ctxtnav(req, tag.span(tag.object(ul), id='icureview', title=title, class_=className))
 
 
     def match_request(self, req):
-        """Is this a review URL?"""
         match = re.match('/review(?:/([^/]+))?(?:/([^/]+))?(?:/(.*)$)?', req.path_info)
         if match:
             req.args['ticket'] = match.group(1)
             return True
 
     def match_ticketpage(self, req):
-        """Is this the ticket URL?"""
         match = re.match('/ticket(?:/([^/]+))?(?:/([^/]+))?(?:/(.*)$)?', req.path_info)
         if match:
             req.args['ticket'] = match.group(1)
             return True
 
     def pathToBranchName(self, path):
-        """convert a full path name to the 'branch' it applies to."""
         #return '/'.join(path.split('/')[0:2])
         windex = None
         win = None
@@ -138,54 +131,25 @@ class ReviewModule(Component):
             segments = path[windex:].split('/')
             return path[:windex] + ('/'.join(segments[0:win[1]+1])) # use specified # of following segments
 
-    def changeToRange(self, c_new, change, repos):
-        """preprocess a chgset.get_changes[n] entry.  Returns  (srcrev,dstrev,type) + change.  The specially processed srcrev and dstrev are -1 for none, and the type gets munged a bit."""
+    def changeToRange(self, c_new, change):
         # q: (u'trunk/Locale.java', 'file', 'add', None, u'-1')  from r3
         # q: (u'trunk/util.c',      'file', 'edit', u'trunk/util.c', u'2')  from r4
-        c_path = change[0]  # new path
-#        c_itemtype = change[1] # 'file' or ?
+#        c_path = change[0]
+#        c_itemtype = change[1]
         c_type = change[2]
         c_oldpath = change[3]
-        c_dstrev = c_new
-        c_srcrev = c_old = int(change[4] or -1)
+        c_old = int(change[4] or -1)
         if(c_type in (Changeset.COPY,Changeset.MOVE)):
-            c_srcrev = -1
+            return (-1, c_new, c_type, c_old, c_oldpath) # ignore OLD rev for these
         elif(c_type in (Changeset.DELETE)):
-            c_dstrev = -1
-        elif(c_type in (Changeset.EDIT, Changeset.ADD)):
-            if c_path != c_oldpath and c_oldpath != None and c_path != None: # did the path change? (copy or move)
-                if(c_old != -1): # if we have an old rev, track it
-                    ## SHOULD call repos.get_path_history(c_path, c_new, c_old) 
-                    ## and then look for 'copy' or 'move' here.
-                    ## Code below will only return the EDIT (etc) operation *before* the copy/move.
-                    # oldchange = repos.get_changeset(c_old) # old rev
-                    # found = None
-                    # for oldchg in oldchange.get_changes():
-                    #     if oldchg[0] == c_path or oldchg[3] == c_oldpath:
-                    #         found = oldchg
-                    # if found:
-                    #     # "found" is the source location (pre copy) 
-                    #     # however, change[] will have the correct from/to
-                    #     # 
-                    #     c_type = "["+str(c_old)+":"+str(c_new)+"]"+found[2] + "+" +c_type
-                    # else:
-                    #     c_type = "???+" + c_type
-                    c_type = "(copy/move)+" + c_type
-                else:
-                    c_type = "(???)+" + c_type
+            return (c_old, -1, c_type)
         else:
-            c_type = c_type +" ???"
-        return (c_srcrev, c_dstrev, c_type) + change + (1,) # preprocessed + (change) + (mergecount)
+            return (c_old, c_new, c_type)
         
     def describeChange(self, file, change, req, db):
-        """HTMLize a changeset (the 'details' column)"""
         what = change[2] or 'change'
         where = 'r%d:%d' % (change[0],change[1])
-        if(change[2] == 'move'):
-            url = req.href.changeset(change[1])
-            where = 'r%d' % change[1]
-            what = change[2]
-        elif(change[0] == -1):
+        if(change[0] == -1):
             if(change[1] == -1):
                 url = None
                 what = "noop"
@@ -200,32 +164,22 @@ class ReviewModule(Component):
             what = "deleted"
             where = None
         else:
-            url = req.href.changeset(old_path=change[6] or file, old=change[0], new_path=change[3] or file, new=change[1])
-
-        # multi change
-        if(change[8]>1):
-            what = u"%s\u00d7%d" % (what, change[8])
-
-        # urlize
+            url = req.href.changeset(old_path=file, old=change[0], new_path=file, new=change[1])
         if url:
             what = Markup('<a href="%s">%s</a>' % (url,what))
-
         if where:
-            # search query?
             return (what, tag.a(where, href=req.href.search(q=where)))
             #return (what, where)
         else:
-            # specific url
             return (what, '')
 
 
     def process_request(self, req):
-        """This is the 'main' of this module."""
+        #ok, what are we about.
         #db = self.env.get_db_cnx()
         #ticketlist = {}  # dict of ticket->???
         #revlist = {} # dict of revision->
         repos = self.env.get_repository()
-        context = Context.from_request(req, False)
 
         new_path = req.args.get('new_path')
         new_rev = req.args.get('new')
@@ -256,7 +210,6 @@ class ReviewModule(Component):
 
         data['overall_y'] = 0
         data['ticket_id'] = req.args['ticket']
-        data['ticket_summary'] = ''
         data['ticket_href'] = req.href.ticket(req.args['ticket'])
 
         ticket_mgr = TicketManager(self.compmgr)
@@ -274,10 +227,10 @@ class ReviewModule(Component):
             return req.redirect(req.href.changeset(revs[0]))
 
         revcount = 0
-        branches = {}         # track each branch separately.
-        files = {}            # track all of the files which are affected
+        branches = {}
+        files = {}
         # may be 0 revs.
-        revisions = []        # array of munged revisions
+        revisions = []
         
         for rev in revs:
             chgset = repos.get_changeset(rev)
@@ -290,25 +243,17 @@ class ReviewModule(Component):
             revision['author'] = chgset.author
             revision['num'] =  rev
             revision['comment'] =  message #wiki_to_oneliner( message, self.env, db, shorten=False )
-            try:
-                revision['comment_wiki'] = format_to_oneliner( self.env, context, message, shorten=False )
-            except Exception, e:
-                self.env.log.warn(e)
-                revision['comment_wiki'] = "%s (could not format - %s)" % (message, str(e))
-
             rbranches = revision['branches'] = []
-            # walk through all changes in this Changeset and apply them to the files[] array
             for chg in chgset.get_changes():
-                path = chg[0] # new path
+                path = chg[0]
                 if path in files:
-                    item = files[path] # known file
+                    item = files[path]
                 else:
                     item = []
-                    files[path] = item; # new file
-                item.append(self.changeToRange(rev,chg,repos))
+                    files[path] = item;
+                item.append(self.changeToRange(rev,chg))
                 branch_name = self.pathToBranchName(path)
                 if branch_name not in rbranches:
-                    # first time we have seen this branch
                     rbranches.append(branch_name)
             revisions.append(revision)
         data['revisions'] = revisions
@@ -321,25 +266,17 @@ class ReviewModule(Component):
         filelist = files.keys()
         filelist.sort()
 #        print 'bar to %d len of %s' % (len(filelist),str(filelist))
-        # see changeToRange() for definition of the elements here.
-        # (oldrev, newrev, type, (change...) )
         for file in filelist:
             changes = files[file]
             i = 0
 #            print " looping from %d to %d over %d " % (i,len(changes)-1,len(changes))
             while len(changes)>1 and i<(len(changes)-1):
-                merge = None
-                if changes[i][1] == changes[i+1][0]: # if this change is exactly subsequent to the previous
+                if changes[i][1] == changes[i+1][0]:
                     if changes[i][0] == -1:
-                        if changes[i][2] == Changeset.ADD and changes[i+1][2] == Changeset.EDIT:
-                            merge = (changes[i][0],changes[i+1][1],'add+commits') # merge, retain 'first' rev
-                    elif changes[i][2] == '(copy/move)+edit' and changes[i+1][2] == Changeset.EDIT:
-                        merge = (changes[i][0],changes[i+1][1],'(copy/move)+edit') # retain 'first' rev
-                    elif changes[i][2] == Changeset.EDIT and changes[i+1][2] == Changeset.EDIT:
-                        merge = (changes[i][0],changes[i+1][1],'edit') # retain 'first' rev
-                if merge:
-                    # preserve paths
-                    changes[i+1] = merge + (changes[i+1][3], changes[i+1][4], changes[i][5]+"+"+changes[i+1][5], changes[i][6], changes[i+1][7], changes[i][8]+1)
+                        changes[i+1] = (changes[i][0],changes[i+1][1],'add+commits') # retain 'first' rev
+                    else:
+                        changes[i+1] = (changes[i][0],changes[i+1][1],'multiple commits') # retain 'first' rev
+
                     changes = changes[:i] + changes[i+1:] # and shift down
 #                    print "merged: %s" % str(changes)
                     files[file] = changes
@@ -367,7 +304,7 @@ class ReviewModule(Component):
                 changes_data.append(self.describeChange(file, change, req, db))
             file_data['changes'] = changes_data
             if(len(changes)>1):
-                whathtml = self.describeChange(file, (int(changes[0][7] or -1), int(changes[len(changes)-1][1] or -1), 'overall', changes[len(changes)-1][3], None, None, changes[0][6], None, len(changes)), req, db)
+                whathtml = self.describeChange(file, (changes[0][0], changes[len(changes)-1][1], 'overall'), req, db)
                 file_data['overall'] = whathtml
                 file_data['overall_y'] = 1
                 data['overall_y'] = 1
@@ -382,9 +319,7 @@ class ReviewModule(Component):
 
         # .. convert dict to array.
         branch_list = []
-        branch_keys = branches.keys()
-        branch_keys.sort()
-        for branch in branch_keys:
+        for branch in branches:
             branch_list.append(branches[branch])
         data['branches'] = branch_list
         data['lastbranch'] = branch

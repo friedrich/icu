@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2004-2014, International Business Machines Corporation and    *
+ * Copyright (C) 2004-2012, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -20,16 +18,16 @@
  * - constructor, member, field (C M F)
  *
  * Requires JDK 1.5 or later
- *
+ * 
  * Sample compilation:
  * c:/doug/java/jdk1.5/build/windows-i586/bin/javac *.java
  *
  * Sample execution
  * c:/j2sdk1.5/bin/javadoc
- *   -classpath c:/jd2sk1.5/lib/tools.jar
+ *   -classpath c:/jd2sk1.5/lib/tools.jar 
  *   -doclet com.ibm.icu.dev.tool.docs.GatherAPIData
  *   -docletpath c:/doug/icu4j/tools/build/out/lib/icu4j-build-tools.jar
- *   -sourcepath c:/doug/icu4j/main/classes/core/src
+ *   -sourcepath c:/doug/icu4j/main/classes/core/src 
  *   -name "ICU4J 4.2"
  *   -output icu4j42.api2
  *   -gzip
@@ -37,8 +35,8 @@
  *   com.ibm.icu.lang com.ibm.icu.math com.ibm.icu.text com.ibm.icu.util
  *
  * todo: provide command-line control of filters of which subclasses/packages to process
- * todo: record full inheritance hierarchy, not just immediate inheritance
- * todo: allow for aliasing comparisons (force (pkg.)*class to be treated as though it
+ * todo: record full inheritance hierarchy, not just immediate inheritance 
+ * todo: allow for aliasing comparisons (force (pkg.)*class to be treated as though it 
  *       were in a different pkg/class hierarchy (facilitates comparison of icu4j and java)
  */
 
@@ -213,7 +211,6 @@ public class GatherAPIData {
             doDocs(cdoc.fields());
             doDocs(cdoc.constructors());
             doDocs(cdoc.methods());
-            doDocs(cdoc.enumConstants());
             // don't call this to iterate over inner classes,
             // root.classes already includes them
             // doDocs(cdoc.innerClasses());
@@ -254,17 +251,11 @@ public class GatherAPIData {
     // care if we didn't properly document the draft status of
     // default constructors for abstract classes.
 
-    // Update: We mandate a no-arg synthetic constructor with explicit
-    // javadoc comments by the policy. So, we no longer ignore abstract
-    // class's no-arg constructor blindly. -Yoshito 2014-05-21
-
     private boolean isAbstractClassDefaultConstructor(ProgramElementDoc doc) {
         return doc.isConstructor()
             && doc.containingClass().isAbstract()
             && "()".equals(((ConstructorDoc) doc).signature());
     }
-
-    private static final boolean IGNORE_NO_ARG_ABSTRACT_CTOR = false;
 
     private boolean ignore(ProgramElementDoc doc) {
         if (doc == null) return true;
@@ -276,8 +267,7 @@ public class GatherAPIData {
         if (isIgnoredEnumMethod(doc)) {
             return true;
         }
-
-        if (IGNORE_NO_ARG_ABSTRACT_CTOR && isAbstractClassDefaultConstructor(doc)) {
+        if (isAbstractClassDefaultConstructor(doc)) {
             return true;
         }
 
@@ -371,7 +361,7 @@ public class GatherAPIData {
         }
 
         // final
-        if (doc.isFinal() && !doc.isEnum()) {
+        if (doc.isFinal()) {
             info.setFinal();
         } else {
             // default is non-final
@@ -385,35 +375,14 @@ public class GatherAPIData {
         } else if (doc.isConstructor()) {
             info.setConstructor();
         } else if (doc.isClass() || doc.isInterface()) {
-            if (doc.isEnum()) {
-                info.setEnum();
-            } else {
-                info.setClass();
-            }
-        } else if (doc.isEnumConstant()) {
-            info.setEnumConstant();
+            info.setClass();
         }
 
         info.setPackage(trimBase(doc.containingPackage().name()));
-
-        String className = (doc.isClass() || doc.isInterface() || (doc.containingClass() == null))
-                ? ""
-                : doc.containingClass().name();
-        info.setClassName(className);
-
-        String name = doc.name();
-        if (doc.isConstructor()) {
-            // Workaround for Javadoc incompatibility between 7 and 8.
-            // Javadoc 7 prepends enclosing class name for a nested
-            // class's constructor. We need to generate the same format
-            // because existing ICU API signature were generated with
-            // Javadoc 7 or older verions.
-            int dotIdx = className.lastIndexOf('.');
-            if (!name.contains(".") && dotIdx > 0) {
-                name = className.substring(0, dotIdx + 1) + name;
-            }
-        }
-        info.setName(name);
+        info.setClassName((doc.isClass() || doc.isInterface() || (doc.containingClass() == null))
+                          ? ""
+                          : trimBase(doc.containingClass().name()));
+        info.setName(trimBase(doc.name()));
 
         if (doc instanceof FieldDoc) {
             FieldDoc fdoc = (FieldDoc)doc;
@@ -429,7 +398,7 @@ public class GatherAPIData {
             StringBuffer buf = new StringBuffer();
             if (cdoc.isClass()) {
                 buf.append("extends ");
-                buf.append(cdoc.superclassType().toString());
+                buf.append(cdoc.superclass().qualifiedName());
             }
             ClassDoc[] imp = cdoc.interfaces();
             if (imp != null && imp.length > 0) {
@@ -455,14 +424,7 @@ public class GatherAPIData {
             if (doc instanceof MethodDoc) {
                 MethodDoc mdoc = (MethodDoc)doc;
                 if (mdoc.isAbstract()) {
-                    // Workaround for Javadoc incompatibility between 7 and 8.
-                    // isAbstract() returns false for a method in an interface
-                    // on Javadoc 7, while Javadoc 8 returns true. Because existing
-                    // API signature data files were generated before, we do not
-                    // set abstract if a method is in an interface.
-                    if (!mdoc.containingClass().isInterface()) {
-                        info.setAbstract();
-                    }
+                    info.setAbstract();
                 }
                 info.setSignature(trimBase(mdoc.returnType().toString() + emdoc.signature()));
             } else {
@@ -476,59 +438,27 @@ public class GatherAPIData {
 
     private int tagStatus(final ProgramElementDoc doc, String[] version) {
         class Result {
-            boolean deprecatedFlag = false;
             int res = -1;
             void set(int val) {
                 if (res != -1) {
-                    boolean isValid = true;
                     if (val == APIInfo.STA_DEPRECATED) {
-                        // @internal and @obsolete should be always used along with @deprecated.
-                        // no change for status
-                        isValid = (res == APIInfo.STA_INTERNAL || res == APIInfo.STA_OBSOLETE);
-                        deprecatedFlag = true;
-                    } else if (val == APIInfo.STA_INTERNAL) {
-                        // @deprecated should be always used along with @internal.
-                        // update status
-                        if (res == APIInfo.STA_DEPRECATED) {
-                            res = val;  // APIInfo.STA_INTERNAL
-                        } else {
-                            isValid = false;
-                        }
-                    } else if (val == APIInfo.STA_OBSOLETE) {
-                        // @deprecated should be always used along with @obsolete.
-                        // update status
-                        if (res == APIInfo.STA_DEPRECATED) {
-                            res = val;  // APIInfo.STA_OBSOLETE
-                        } else {
-                            isValid = false;
-                        }
-                    } else {
-                        // two different status tags must not co-exist, except for
-                        // following two cases:
-                        // 1. @internal and @deprecated
-                        // 2. @obsolete and @deprecated
-                        isValid = false;
-                    }
-                    if (!isValid) {
+                        // ok to have both a 'standard' tag and deprecated
+                        return;
+                    } else if (res != APIInfo.STA_DEPRECATED) {
+                        // if already not deprecated, this is an error
                         System.err.println("bad doc: " + doc + " both: "
                                            + APIInfo.getTypeValName(APIInfo.STA, res) + " and: "
                                            + APIInfo.getTypeValName(APIInfo.STA, val));
                         return;
                     }
-                } else {
-                    // ok to replace with new tag
-                    res = val;
-                    if (val == APIInfo.STA_DEPRECATED) {
-                        deprecatedFlag = true;
-                    }
                 }
+                // ok to replace with new tag
+                res = val;
             }
             int get() {
                 if (res == -1) {
                     System.err.println("warning: no tag for " + doc);
                     return 0;
-                } else if (res == APIInfo.STA_INTERNAL && !deprecatedFlag) {
-                    System.err.println("warning: no @deprecated tag for @internal API: " + doc);
                 }
                 return res;
             }

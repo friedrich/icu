@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *****************************************************************
-* Copyright (c) 2002-2014, International Business Machines Corporation
+* Copyright (c) 2002-2011, International Business Machines Corporation
 * and others.  All Rights Reserved.
 *****************************************************************
 * Date        Name        Description
@@ -16,9 +14,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.ibm.icu.lang.UScript;
 /**
@@ -55,7 +53,7 @@ class AnyTransliterator extends Transliterator {
     /**
      * Cache mapping UScriptCode values to Transliterator*.
      */
-    private ConcurrentHashMap<Integer, Transliterator> cache;
+    private Map<Integer, Transliterator> cache;
 
     /**
      * The target or target/variant string.
@@ -66,7 +64,7 @@ class AnyTransliterator extends Transliterator {
      * The target script code.  Never USCRIPT_INVALID_CODE.
      */
     private int targetScript;
-
+    
     /**
      * Special code for handling width characters
      */
@@ -75,7 +73,6 @@ class AnyTransliterator extends Transliterator {
     /**
      * Implements {@link Transliterator#handleTransliterate}.
      */
-    @Override
     protected void handleTransliterate(Replaceable text,
                                        Position pos, boolean isIncremental) {
         int allStart = pos.start;
@@ -138,7 +135,7 @@ class AnyTransliterator extends Transliterator {
                               int theTargetScript) {
         super(id, null);
         targetScript = theTargetScript;
-        cache = new ConcurrentHashMap<Integer, Transliterator>();
+        cache = new HashMap<Integer, Transliterator>();
 
         target = theTarget;
         if (theVariant.length() > 0) {
@@ -150,13 +147,13 @@ class AnyTransliterator extends Transliterator {
      * @param id the ID of the form S-T or S-T/V, where T is theTarget
      * and V is theVariant.  Must not be empty.
      * @param filter The Unicode filter.
-     * @param target2 the target name.
+     * @param target2 the target name. 
      * @param targetScript2 the script code corresponding to theTarget.
      * @param widthFix2 The Transliterator width fix.
      * @param cache2 The Map object for cache.
      */
     public AnyTransliterator(String id, UnicodeFilter filter, String target2,
-            int targetScript2, Transliterator widthFix2, ConcurrentHashMap<Integer, Transliterator> cache2) {
+            int targetScript2, Transliterator widthFix2, Map<Integer, Transliterator> cache2) {
         super(id, filter);
         targetScript = targetScript2;
         cache = cache2;
@@ -205,10 +202,7 @@ class AnyTransliterator extends Transliterator {
                     v.add(t);
                     t = new CompoundTransliterator(v);
                 }
-                Transliterator prevCachedT = cache.putIfAbsent(key, t);
-                if (prevCachedT != null) {
-                    t = prevCachedT;
-                }
+                cache.put(key, t);
             } else if (!isWide(targetScript)) {
                 return widthFix;
             }
@@ -258,7 +252,7 @@ class AnyTransliterator extends Transliterator {
                 for (Enumeration<String> v = Transliterator.getAvailableVariants(source, target);
                      v.hasMoreElements(); ) {
                     String variant = v.nextElement();
-
+                    
                     // Only process each target/variant pair once
                     if (seenVariants.contains(variant)) {
                         continue;

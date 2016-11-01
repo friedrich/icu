@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
- * COPYRIGHT:
- * Copyright (c) 1997-2014, International Business Machines Corporation and
+ * COPYRIGHT: 
+ * Copyright (c) 1997-2013, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -19,7 +17,7 @@
 
 
 class IntlTestDecimalFormatAPI: public IntlTest {
-    void runIndexedTest( int32_t index, UBool exec, const char* &name, char* par = NULL );
+    void runIndexedTest( int32_t index, UBool exec, const char* &name, char* par = NULL );  
 
 public:
     /**
@@ -31,8 +29,6 @@ public:
     void TestCurrencyPluralInfo();
     void TestScale();
     void TestFixedDecimal();
-    void TestBadFastpath();
-    void TestRequiredDecimalPoint();
 private:
     /*Helper functions */
     void verify(const UnicodeString& message, const UnicodeString& got, double expected);

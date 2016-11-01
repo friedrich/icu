@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 2000-2016, International Business Machines
+*   Copyright (C) 2000-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -23,7 +21,7 @@
 
 #include "unicode/utypes.h"
 
-#if !UCONFIG_NO_CONVERSION && !UCONFIG_ONLY_HTML_CONVERSION
+#if !UCONFIG_NO_CONVERSION
 
 #include "unicode/ucnv.h"
 #include "unicode/ucnv_cb.h"
@@ -1397,16 +1395,12 @@ outputBytes:
                 /* each branch falls through to the next one */
             case 4:
                 *target++=(uint8_t)(c>>24);
-                U_FALLTHROUGH;
-            case 3:
+            case 3: /*fall through*/
                 *target++=(uint8_t)(c>>16);
-                U_FALLTHROUGH;
-            case 2:
+            case 2: /*fall through*/
                 *target++=(uint8_t)(c>>8);
-                U_FALLTHROUGH;
-            case 1:
+            case 1: /*fall through*/
                 *target++=(uint8_t)c;
-                U_FALLTHROUGH;
             default:
                 /* will never occur */
                 break;
@@ -1417,19 +1411,15 @@ outputBytes:
             case 4:
                 *target++=(uint8_t)(c>>24);
                 *offsets++=sourceIndex;
-                U_FALLTHROUGH;
-            case 3:
+            case 3: /*fall through*/
                 *target++=(uint8_t)(c>>16);
                 *offsets++=sourceIndex;
-                U_FALLTHROUGH;
-            case 2:
+            case 2: /*fall through*/
                 *target++=(uint8_t)(c>>8);
                 *offsets++=sourceIndex;
-                U_FALLTHROUGH;
-            case 1:
+            case 1: /*fall through*/
                 *target++=(uint8_t)c;
                 *offsets++=sourceIndex;
-                U_FALLTHROUGH;
             default:
                 /* will never occur */
                 break;
@@ -1458,16 +1448,12 @@ outputBytes:
             /* each branch falls through to the next one */
         case 4:
             *p++=(uint8_t)(c>>24);
-            U_FALLTHROUGH;
-        case 3:
+        case 3: /*fall through*/
             *p++=(uint8_t)(c>>16);
-            U_FALLTHROUGH;
-        case 2:
+        case 2: /*fall through*/
             *p++=(uint8_t)(c>>8);
-            U_FALLTHROUGH;
-        case 1:
+        case 1: /*fall through*/
             *p=(uint8_t)c;
-            U_FALLTHROUGH;
         default:
             /* will never occur */
             break;
@@ -1483,19 +1469,16 @@ outputBytes:
             if(offsets!=NULL) {
                 *offsets++=sourceIndex;
             }
-            U_FALLTHROUGH;
-        case 2:
+        case 2: /*fall through*/
             *target++=(uint8_t)(c>>8);
             if(offsets!=NULL) {
                 *offsets++=sourceIndex;
             }
-            U_FALLTHROUGH;
-        case 1:
+        case 1: /*fall through*/
             *target++=(uint8_t)c;
             if(offsets!=NULL) {
                 *offsets++=sourceIndex;
             }
-            U_FALLTHROUGH;
         default:
             break;
         }
@@ -1870,16 +1853,12 @@ outputBytes:
             /* each branch falls through to the next one */
         case 4:
             *target++=(uint8_t)(c>>24);
-            U_FALLTHROUGH;
-        case 3:
+        case 3: /*fall through*/
             *target++=(uint8_t)(c>>16);
-            U_FALLTHROUGH;
-        case 2:
+        case 2: /*fall through*/
             *target++=(uint8_t)(c>>8);
-            U_FALLTHROUGH;
-        case 1:
+        case 1: /*fall through*/
             *target++=(uint8_t)c;
-            U_FALLTHROUGH;
         default:
             /* will never occur */
             break;
@@ -1906,16 +1885,12 @@ outputBytes:
             /* each branch falls through to the next one */
         case 4:
             *p++=(uint8_t)(c>>24);
-            U_FALLTHROUGH;
-        case 3:
+        case 3: /*fall through*/
             *p++=(uint8_t)(c>>16);
-            U_FALLTHROUGH;
-        case 2:
+        case 2: /*fall through*/
             *p++=(uint8_t)(c>>8);
-            U_FALLTHROUGH;
-        case 1:
+        case 1: /*fall through*/
             *p=(uint8_t)c;
-            U_FALLTHROUGH;
         default:
             /* will never occur */
             break;
@@ -1928,13 +1903,10 @@ outputBytes:
             /* each branch falls through to the next one */
         case 3:
             *target++=(uint8_t)(c>>16);
-            U_FALLTHROUGH;
-        case 2:
+        case 2: /*fall through*/
             *target++=(uint8_t)(c>>8);
-            U_FALLTHROUGH;
-        case 1:
+        case 1: /*fall through*/
             *target++=(uint8_t)c;
-            U_FALLTHROUGH;
         default:
             break;
         }
@@ -2037,7 +2009,10 @@ static const UConverterStaticData _SCSUStaticData={
     { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } /* reserved */
 };
 
-const UConverterSharedData _SCSUData=
-        UCNV_IMMUTABLE_SHARED_DATA_INITIALIZER(&_SCSUStaticData, &_SCSUImpl);
+const UConverterSharedData _SCSUData={
+    sizeof(UConverterSharedData), ~((uint32_t)0),
+    NULL, NULL, &_SCSUStaticData, FALSE, &_SCSUImpl,
+    0
+};
 
 #endif

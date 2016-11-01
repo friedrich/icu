@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2007-2016, International Business Machines
+*   Copyright (C) 2007-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 */
@@ -25,7 +23,6 @@ import com.ibm.icu.util.UResourceBundle;
 /*
  * NumberFormat implementation dedicated/optimized for DateFormat,
  * used by SimpleDateFormat implementation.
- * This class is not thread-safe.
  */
 public final class DateNumberFormat extends NumberFormat {
 
@@ -36,8 +33,7 @@ public final class DateNumberFormat extends NumberFormat {
     private char minusSign;
     private boolean positiveOnly = false;
 
-    private static final int DECIMAL_BUF_SIZE = 20; // 20 digits is good enough to store Long.MAX_VALUE
-    private transient char[] decimalBuf = new char[DECIMAL_BUF_SIZE];
+    private transient char[] decimalBuf = new char[20]; // 20 digits is good enough to store Long.MAX_VALUE
 
     private static SimpleCache<ULocale, char[]> CACHE = new SimpleCache<ULocale, char[]>();
 
@@ -61,13 +57,13 @@ public final class DateNumberFormat extends NumberFormat {
         if (elems == null) {
             // Missed cache
             String minusString;
-            ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, loc);
+            ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, loc);
             try {
                 minusString = rb.getStringWithFallback("NumberElements/"+nsName+"/symbols/minusSign");
             } catch (MissingResourceException ex) {
                 if ( !nsName.equals("latn") ) {
                     try {
-                       minusString = rb.getStringWithFallback("NumberElements/latn/symbols/minusSign");
+                       minusString = rb.getStringWithFallback("NumberElements/latn/symbols/minusSign");                 
                     } catch (MissingResourceException ex1) {
                         minusString = "-";
                     }
@@ -90,22 +86,18 @@ public final class DateNumberFormat extends NumberFormat {
         minusSign = elems[10];
     }
 
-    @Override
     public void setMaximumIntegerDigits(int newValue) {
         maxIntDigits = newValue;
     }
 
-    @Override
     public int getMaximumIntegerDigits() {
         return maxIntDigits;
     }
 
-    @Override
     public void setMinimumIntegerDigits(int newValue) {
         minIntDigits = newValue;
     }
 
-    @Override
     public int getMinimumIntegerDigits() {
         return minIntDigits;
     }
@@ -131,16 +123,14 @@ public final class DateNumberFormat extends NumberFormat {
     }
 
     public char[] getDigits() {
-        return digits.clone();
+        return digits;
     }
 
-    @Override
     public StringBuffer format(double number, StringBuffer toAppendTo,
             FieldPosition pos) {
         throw new UnsupportedOperationException("StringBuffer format(double, StringBuffer, FieldPostion) is not implemented");
     }
 
-    @Override
     public StringBuffer format(long numberL, StringBuffer toAppendTo,
             FieldPosition pos) {
 
@@ -179,20 +169,17 @@ public final class DateNumberFormat extends NumberFormat {
         }
         return toAppendTo;
     }
-
-    @Override
+    
     public StringBuffer format(BigInteger number, StringBuffer toAppendTo,
             FieldPosition pos) {
         throw new UnsupportedOperationException("StringBuffer format(BigInteger, StringBuffer, FieldPostion) is not implemented");
     }
 
-    @Override
     public StringBuffer format(java.math.BigDecimal number, StringBuffer toAppendTo,
             FieldPosition pos) {
         throw new UnsupportedOperationException("StringBuffer format(BigDecimal, StringBuffer, FieldPostion) is not implemented");
     }
 
-    @Override
     public StringBuffer format(BigDecimal number,
             StringBuffer toAppendTo, FieldPosition pos) {
         throw new UnsupportedOperationException("StringBuffer format(BigDecimal, StringBuffer, FieldPostion) is not implemented");
@@ -203,7 +190,6 @@ public final class DateNumberFormat extends NumberFormat {
      */
     private static final long PARSE_THRESHOLD = 922337203685477579L; // (Long.MAX_VALUE / 10) - 1
 
-    @Override
     public Number parse(String text, ParsePosition parsePosition) {
         long num = 0;
         boolean sawNumber = false;
@@ -246,7 +232,6 @@ public final class DateNumberFormat extends NumberFormat {
         return result;
     }
 
-    @Override
     public boolean equals(Object obj) {
         if (obj == null || !super.equals(obj) || !(obj instanceof DateNumberFormat)) {
             return false;
@@ -258,8 +243,7 @@ public final class DateNumberFormat extends NumberFormat {
                 && this.positiveOnly == other.positiveOnly
                 && Arrays.equals(this.digits, other.digits));
     }
-
-    @Override
+    
     public int hashCode() {
         return super.hashCode();
     }
@@ -270,15 +254,7 @@ public final class DateNumberFormat extends NumberFormat {
             setZeroDigit(zeroDigit);
         }
         // re-allocate the work buffer
-        decimalBuf = new char[DECIMAL_BUF_SIZE];
-    }
-
-    @Override
-    public Object clone() {
-        DateNumberFormat dnfmt = (DateNumberFormat)super.clone();
-        dnfmt.digits = this.digits.clone();
-        dnfmt.decimalBuf = new char[DECIMAL_BUF_SIZE];
-        return dnfmt;
+        decimalBuf = new char[20];
     }
 }
 

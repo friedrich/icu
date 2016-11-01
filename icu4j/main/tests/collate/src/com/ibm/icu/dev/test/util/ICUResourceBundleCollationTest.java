@@ -1,19 +1,14 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2009-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2009-2013, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.util;
 
 import java.util.MissingResourceException;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.util.ULocale;
@@ -26,58 +21,60 @@ public final class ICUResourceBundleCollationTest extends TestFmwk {
     private static final String DEFAULT_NAME = "default";
     private static final String STANDARD_NAME = "standard";
 
-    @Test
+    public static void main(String args[]) throws Exception {
+        new ICUResourceBundleCollationTest().run(args);
+    }
+
     public void TestFunctionalEquivalent(){
        String[] collCases = {
        //  avail   locale                               equiv
            "f",     "sv_US_CALIFORNIA",                 "sv",
            "f",     "zh_TW@collation=stroke",           "zh@collation=stroke", /* alias of zh_Hant_TW */
-           "f",     "zh_Hant_TW@collation=stroke",      "zh@collation=stroke",
+           "t",     "zh_Hant_TW@collation=stroke",      "zh@collation=stroke",
            "f",     "sv_CN@collation=pinyin",           "sv",
            "t",     "zh@collation=pinyin",              "zh",
            "f",     "zh_CN@collation=pinyin",           "zh", /* alias of zh_Hans_CN */
-           "f",     "zh_Hans_CN@collation=pinyin",      "zh",
+           "t",     "zh_Hans_CN@collation=pinyin",      "zh",
            "f",     "zh_HK@collation=pinyin",           "zh", /* alias of zh_Hant_HK */
-           "f",     "zh_Hant_HK@collation=pinyin",      "zh",
+           "t",     "zh_Hant_HK@collation=pinyin",      "zh",
            "f",     "zh_HK@collation=stroke",           "zh@collation=stroke", /* alias of zh_Hant_HK */
-           "f",     "zh_Hant_HK@collation=stroke",      "zh@collation=stroke",
+           "t",     "zh_Hant_HK@collation=stroke",      "zh@collation=stroke",
            "f",     "zh_HK",                            "zh@collation=stroke", /* alias of zh_Hant_HK */
-           "f",     "zh_Hant_HK",                       "zh@collation=stroke",
+           "t",     "zh_Hant_HK",                       "zh@collation=stroke",
            "f",     "zh_MO",                            "zh@collation=stroke", /* alias of zh_Hant_MO */
-           "f",     "zh_Hant_MO",                       "zh@collation=stroke",
+           "t",     "zh_Hant_MO",                       "zh@collation=stroke",
            "f",     "zh_TW_STROKE",                     "zh@collation=stroke",
            "f",     "zh_TW_STROKE@collation=big5han",   "zh@collation=big5han",
            "f",     "sv_CN@calendar=japanese",          "sv",
            "t",     "sv@calendar=japanese",             "sv",
            "f",     "zh_TW@collation=big5han",          "zh@collation=big5han", /* alias of zh_Hant_TW */
-           "f",     "zh_Hant_TW@collation=big5han",     "zh@collation=big5han",
+           "t",     "zh_Hant_TW@collation=big5han",     "zh@collation=big5han",
            "f",     "zh_TW@collation=gb2312han",        "zh@collation=gb2312han", /* alias of zh_Hant_TW */
-           "f",     "zh_Hant_TW@collation=gb2312han",   "zh@collation=gb2312han",
+           "t",     "zh_Hant_TW@collation=gb2312han",   "zh@collation=gb2312han",
            "f",     "zh_CN@collation=big5han",          "zh@collation=big5han", /* alias of zh_Hans_CN */
-           "f",     "zh_Hans_CN@collation=big5han",     "zh@collation=big5han",
+           "t",     "zh_Hans_CN@collation=big5han",     "zh@collation=big5han",
            "f",     "zh_CN@collation=gb2312han",        "zh@collation=gb2312han", /* alias of zh_Hans_CN */
-           "f",     "zh_Hans_CN@collation=gb2312han",   "zh@collation=gb2312han",
+           "t",     "zh_Hans_CN@collation=gb2312han",   "zh@collation=gb2312han",
            "t",     "zh@collation=big5han",             "zh@collation=big5han",
            "t",     "zh@collation=gb2312han",           "zh@collation=gb2312han",
            "t",     "hi@collation=standard",            "hi",
            "f",     "hi_AU@collation=standard;currency=CHF;calendar=buddhist",  "hi",
-           "f",     "sv_SE@collation=pinyin",           "sv", /* bug 4582 tests */
+           "t",     "sv_SE@collation=pinyin",           "sv", /* bug 4582 tests */
            "f",     "sv_SE_BONN@collation=pinyin",      "sv",
            "t",     "nl",                               "root",
-           "f",     "nl_NL",                            "root",
+           "t",     "nl_NL",                            "root",
            "f",     "nl_NL_EEXT",                       "root",
            "t",     "nl@collation=stroke",              "root",
-           "f",     "nl_NL@collation=stroke",           "root",
+           "t",     "nl_NL@collation=stroke",           "root",
            "f",     "nl_NL_EEXT@collation=stroke",      "root",
        };
 
        logln("Testing functional equivalents for collation...");
-       getFunctionalEquivalentTestCases(ICUData.ICU_COLLATION_BASE_NAME,
+       getFunctionalEquivalentTestCases(ICUResourceBundle.ICU_COLLATION_BASE_NAME,
                                         Collator.class.getClassLoader(),
                COLLATION_RESNAME, COLLATION_KEYWORD, true, collCases);
     }
 
-    @Test
     public void TestGetWithFallback(){
         /*
         UResourceBundle bundle =(UResourceBundle) UResourceBundle.getBundleInstance("com/ibm/icu/dev/data/testdata","te_IN");
@@ -93,7 +90,7 @@ public final class ICUResourceBundleCollationTest extends TestFmwk {
         ICUResourceBundle bundle = null;
         String key = null;
         try{
-            bundle = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUData.ICU_COLLATION_BASE_NAME,ULocale.canonicalize("de__PHONEBOOK"));
+            bundle = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_COLLATION_BASE_NAME,ULocale.canonicalize("de__PHONEBOOK"));
 
             if(!bundle.getULocale().getName().equals("de")){
                 errln("did not get the expected bundle");
@@ -108,21 +105,20 @@ public final class ICUResourceBundleCollationTest extends TestFmwk {
         }
 
 
-        bundle = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUData.ICU_COLLATION_BASE_NAME,"fr_FR");
+        bundle = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_COLLATION_BASE_NAME,"fr_FR");
         key = bundle.getStringWithFallback("collations/default");
         if(!key.equals("standard")){
             errln("Did not get the expected result from getStringWithFallback method.");
         }
     }
 
-    @Test
     public void TestKeywordValues(){
         String kwVals[];
         boolean foundStandard = false;
         int n;
 
         logln("Testing getting collation values:");
-        kwVals = ICUResourceBundle.getKeywordValues(ICUData.ICU_COLLATION_BASE_NAME,COLLATION_RESNAME);
+        kwVals = ICUResourceBundle.getKeywordValues(ICUResourceBundle.ICU_COLLATION_BASE_NAME,COLLATION_RESNAME);
         for(n=0;n<kwVals.length;n++) {
             logln(new Integer(n).toString() + ": " + kwVals[n]);
             if(DEFAULT_NAME.equals(kwVals[n])) {
@@ -144,9 +140,8 @@ public final class ICUResourceBundleCollationTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestOpen(){
-        UResourceBundle bundle = (UResourceBundle)UResourceBundle.getBundleInstance(ICUData.ICU_COLLATION_BASE_NAME, "en_US_POSIX");
+        UResourceBundle bundle = (UResourceBundle)UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_COLLATION_BASE_NAME, "en_US_POSIX");
         if(bundle==null){
             errln("could not load the stream");
         }

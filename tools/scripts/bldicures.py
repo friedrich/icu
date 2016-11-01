@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2013-2014 IBM Corporation and Others. All Rights Reserved.
+# Copyright (C) 2013 IBM Corporation and Others. All Rights Reserved.
 #
 print "NOTE: this tool is a TECHNOLOGY PREVIEW and not a supported ICU tool."
 #
@@ -37,14 +37,11 @@ import sys
 import argparse
 import os
 
-endian=sys.byteorder
-
 parser = argparse.ArgumentParser(description='Yet Another ICU Resource Builder', epilog='ICU tool, http://icu-project.org - master copy at http://source.icu-project.org/repos/icu/tools/trunk/scripts/bldicures.py')
 parser.add_argument('-f', '--from', action='append', dest='fromdirs', help='read .txt files from this dir', metavar='fromdir', required=True)
 parser.add_argument('-n', '--name', action='store', help='set the bundle name, such as "myapp"', metavar='bundname', required=True)
 parser.add_argument('-m', '--mode', action='store', help='pkgdata mode', metavar='mode', default="archive")
 parser.add_argument('-d', '--dest', action='store', dest='destdir', help='dest dir, default is ".".', default=".", metavar='destdir')
-parser.add_argument('-e', '--endian', action='store', dest='endian', help='endian, big, little or host, your default is "%s".' % endian, default=endian, metavar='endianness')
 parser.add_argument('--verbose', '-v', action='count',default=0)
 
 args = parser.parse_args()
@@ -58,26 +55,6 @@ tmpdir = 'tmp'
 os.makedirs('%s/%s/' % (args.destdir, tmpdir))
 
 listname = '%s/%s/icufiles.lst' % (args.destdir, tmpdir)
-
-
-
-if args.endian not in ("big","little","host"):
-    print "Unknown endianness: %s" % args.endian
-    sys.exit(1)
-
-if args.endian is "host":
-    args.endian = endian
-
-needswap = args.endian is not endian
-
-if needswap and args.mode not in ("archive", "files"):
-    print "Don't know how to do swapping for mode=%s" % args.mode
-    sys.exit(1)
-
-pkgmode = args.mode
-
-if needswap and args.mode in ("files"):
-    pkgmode = "archive"
 
 if args.verbose > 0:
     print ">%s" % (listname)
@@ -122,11 +99,15 @@ for dir in args.fromdirs:
             if (path.find("/.svn") != -1):
                 continue
             for file in files:
-                if (file[-4:] != ".txt"):
+                if (file.find(".txt") == -1):
                     if args.verbose>1:
-                        print "Ignoring %s/%s with suffix %s" % (path,file, file[-4:])
+                        print "Ignoring %s/%s" % (path,file)
                     continue
-                loc = file[:-4]
+                (loc,ext) = file.split('.')
+                if ext != "txt":
+                    if args.verbose>1:
+                        print "Ignoring (bad ext %s) %s/%s" % (ext, path,file)
+                    continue
                 add_loc(path, loc)
 
 print >>idxfn, " }"
@@ -148,41 +129,8 @@ for gen in gens:
         print "# " + cmd
     os.system(cmd)
 
-cmd = 'pkgdata -m "%s" -T "%s/%s" -p "%s" -s "%s/%s" -d "%s" "%s"' % (pkgmode,args.destdir,tmpdir,args.name,args.destdir,tmpdir,args.destdir,listname)
+cmd = 'pkgdata -m "%s" -T "%s/%s" -p "%s" -s "%s/%s" -d "%s" "%s"' % (args.mode,args.destdir,tmpdir,args.name,args.destdir,tmpdir,args.destdir,listname)
 if (args.verbose>1):
     cmd = cmd + " -v"
     print "# " + cmd
-rc = os.system(cmd)
-if rc is not 0:
-    print "# Command failed: " + cmd
-    sys.exit(rc)
-
-if needswap:
-    outfile = "%s/%s.dat" % (args.destdir, args.name)
-    tmpfile =  "%s/%s/%s.dat" % (args.destdir, tmpdir, args.name)
-    if args.mode in ("files","archive"):
-        print "# %s -> %s" % (outfile, tmpfile)
-        os.rename(outfile,tmpfile)
-        # swap tmp back to out
-        cmd = 'icupkg -w -tb "%s" "%s"' % (tmpfile, outfile)
-        if (args.verbose>1):
-            cmd = cmd + " -v"
-            print "# " + cmd
-        rc = os.system(cmd)
-        if rc is not 0:
-            print "# Swap command failed: " + cmd
-            sys.exit(rc)
-    # fall through for files mode.
-    if args.mode in ("files"):
-        os.mkdir("%s/%s/" % (args.destdir, args.name))
-        # unpack
-        cmd = 'icupkg -tb -x "%s" -d "%s/%s/" "%s"' % (listname, args.destdir, args.name, outfile)
-        if (args.verbose>1):
-            cmd = cmd + " -v"
-            print "# " + cmd
-        rc = os.system(cmd)
-        if rc is not 0:
-            print "# Swap command failed: " + cmd
-            sys.exit(rc)
-        # todo cleanup??
-
+os.system(cmd)

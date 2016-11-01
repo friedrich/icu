@@ -1,16 +1,14 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
-/*
- *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and
- * others. All Rights Reserved.
- *******************************************************************************
- */
-
+/**
+*******************************************************************************
+* Copyright (C) 1996-2013, International Business Machines Corporation and    *
+* others. All Rights Reserved.                                                *
+*******************************************************************************
+*/
 package com.ibm.icu.impl;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
@@ -261,7 +259,7 @@ public final class UCharacterName
         }
 
         synchronized (m_utilStringBuffer_) {
-            m_utilStringBuffer_.setLength(0);
+            m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
             byte b;
             char token;
             for (int i = 0; i < length;) {
@@ -369,7 +367,7 @@ public final class UCharacterName
                 result = TYPE_NAMES_[type];
             }
             synchronized (m_utilStringBuffer_) {
-                m_utilStringBuffer_.setLength(0);
+                m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
                 m_utilStringBuffer_.append('<');
                 m_utilStringBuffer_.append(result);
                 m_utilStringBuffer_.append('-');
@@ -491,7 +489,7 @@ public final class UCharacterName
     {
         String result = null;
         synchronized (m_utilStringBuffer_) {
-            m_utilStringBuffer_.setLength(0);
+            m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
             m_algorithm_[index].appendName(codepoint, m_utilStringBuffer_);
             result = m_utilStringBuffer_.toString();
         }
@@ -820,7 +818,8 @@ public final class UCharacterName
                         int count = 0;
                         for (int factor = m_factor_[i]; factor > 0; -- factor) {
                             synchronized (m_utilStringBuffer_) {
-                                m_utilStringBuffer_.setLength(0);
+                                m_utilStringBuffer_.delete(0,
+                                                m_utilStringBuffer_.length());
                                 count
                                   = UCharacterUtility.getNullTermByteSubString(
                                                 m_utilStringBuffer_,
@@ -882,7 +881,7 @@ public final class UCharacterName
             }
 
             synchronized (m_utilStringBuffer_) {
-                m_utilStringBuffer_.setLength(0);
+                m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
                 int count = 0;
                 int factor;
                 size --;
@@ -1039,7 +1038,7 @@ public final class UCharacterName
     /**
     * Default name of the name datafile
     */
-    private static final String FILE_NAME_ = "unames.icu";
+    private static final String NAME_FILE_NAME_ = ICUResourceBundle.ICU_BUNDLE+"/unames.icu";
     /**
     * Shift count to retrieve group information
     */
@@ -1048,6 +1047,10 @@ public final class UCharacterName
     * Mask to retrieve the offset for a particular character within a group
     */
     private static final int GROUP_MASK_ = LINES_PER_GROUP_ - 1;
+    /**
+    * Default buffer size of datafile
+    */
+    private static final int NAME_BUFFER_SIZE_ = 100000;
 
     /**
     * Position of offsethigh in group information array
@@ -1168,9 +1171,11 @@ public final class UCharacterName
     */
     private UCharacterName() throws IOException
     {
-        ByteBuffer b = ICUBinary.getRequiredData(FILE_NAME_);
+        InputStream is = ICUData.getRequiredStream(NAME_FILE_NAME_);
+        BufferedInputStream b = new BufferedInputStream(is, NAME_BUFFER_SIZE_);
         UCharacterNameReader reader = new UCharacterNameReader(b);
         reader.read(this);
+        b.close();
     }
 
     // private methods ---------------------------------------------------
@@ -1189,7 +1194,7 @@ public final class UCharacterName
         ) {
             // index in terms integer index
             synchronized (m_utilStringBuffer_) {
-                m_utilStringBuffer_.setLength(0);
+                m_utilStringBuffer_.delete(0, m_utilStringBuffer_.length());
 
                 for (int index = m_algorithm_.length - 1; index >= 0; index --)
                 {
@@ -1522,7 +1527,8 @@ public final class UCharacterName
                     byte tlength = tokenlength[b];
                     if (tlength == 0) {
                         synchronized (m_utilStringBuffer_) {
-                            m_utilStringBuffer_.setLength(0);
+                            m_utilStringBuffer_.delete(0,
+                                                 m_utilStringBuffer_.length());
                             UCharacterUtility.getNullTermByteSubString(
                                            m_utilStringBuffer_, m_tokenstring_,
                                            token);

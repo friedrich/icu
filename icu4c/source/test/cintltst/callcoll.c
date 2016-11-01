@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2014, International Business Machines Corporation and
+ * Copyright (c) 1997-2013, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 /*******************************************************************************
@@ -1014,13 +1012,6 @@ static void TestJB1401(void)
 */
 static void TestVariableTop(void)
 {
-#if 0
-    /*
-     * Starting with ICU 53, setting the variable top via a pseudo relation string
-     * is not supported any more.
-     * It was replaced by the [maxVariable symbol] setting.
-     * See ICU tickets #9958 and #8032.
-     */
     static const char       str[]          = "&z = [variable top]";
           int         len          = strlen(str);
           UChar      rules[sizeof(str)];
@@ -1087,7 +1078,6 @@ static void TestVariableTop(void)
     ucol_close(myCollation);
     enCollation = NULL;
     myCollation = NULL;
-#endif
 }
 
 /**
@@ -1177,13 +1167,13 @@ TestInvalidRules(){
         "& C < ch, cH, & Ch[variable top]"
     };
     static const char* preContextArr[MAX_ERROR_STATES] = {
-        " C < ch, cH, Ch",
-        "& C < ch, cH",
+        "his should fail",
+        "& C < ch, cH, ",
 
     };
     static const char* postContextArr[MAX_ERROR_STATES] = {
-        "[this should fa",
-        ", & Ch[variable"
+        "<d",
+        " Ch[variable t"
     };
     int i;
 
@@ -1204,12 +1194,10 @@ TestInvalidRules(){
         coll = ucol_openRules(rules,u_strlen(rules),UCOL_OFF,UCOL_DEFAULT_STRENGTH,&parseError,&status);
         (void)coll;   /* Suppress set but not used warning. */
         if(u_strcmp(parseError.preContext,preContextExp)!=0){
-            log_err_status(status, "preContext in UParseError for ucol_openRules does not match: \"%s\"\n",
-                           aescstrdup(parseError.preContext, -1));
+            log_err_status(status, "preContext in UParseError for ucol_openRules does not match\n");
         }
         if(u_strcmp(parseError.postContext,postContextExp)!=0){
-            log_err_status(status, "postContext in UParseError for ucol_openRules does not match: \"%s\"\n",
-                           aescstrdup(parseError.postContext, -1));
+            log_err_status(status, "postContext in UParseError for ucol_openRules does not match\n");
         }
     }  
 }
@@ -1228,7 +1216,7 @@ TestJitterbug1098(){
          "&\\'<\\\\",
          "&\\\"<'\\'",
          "&'\"'<\\'",
-         NULL
+         '\0'
 
     };
     const UCollationResult results1098[] = {
@@ -1320,11 +1308,6 @@ static void TestJ5298(void)
     const char *keywordValue = NULL;
     log_verbose("Number of collator locales returned : %i \n", ucol_countAvailable());
     values = ucol_getKeywordValues("collation", &status);
-    while ((keywordValue = uenum_next(values, NULL, &status)) != NULL) {
-        if (strncmp(keywordValue, "private-", 8) == 0) {
-            log_err("ucol_getKeywordValues() returns private collation keyword: %s\n", keywordValue);
-        }
-    }
     for (i = 0; i < ucol_countAvailable(); i++) {
         uenum_reset(values, &status);
         while ((keywordValue = uenum_next(values, NULL, &status)) != NULL) {

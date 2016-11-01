@@ -1,24 +1,31 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/hu.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/hu.xml
+ */
 hu{
     Keys{
         calendar{"Naptár"}
-        cf{"Pénznemformátum"}
         colAlternate{"Szimbólumokat figyelmen kívül hagyó rendezés"}
         colBackwards{"Ékezetek fordított rendezése"}
         colCaseFirst{"Rendezés nagy- vagy kisbetűk szerint"}
         colCaseLevel{"Kisbetű-nagybetű érzékeny rendezés"}
+        colHiraganaQuaternary{"Kanák szerinti rendezés"}
         colNormalization{"Normalizált rendezés"}
         colNumeric{"Numerikus rendezés"}
         colStrength{"Rendezés erőssége"}
         collation{"Rendezési sorrend"}
         currency{"Pénznem"}
-        hc{"Óraformátum (12 – 24)"}
-        lb{"Sortörés stílusa"}
-        ms{"Mértékegységrendszer"}
         numbers{"Számok"}
         timezone{"Időzóna"}
         va{"Földrajzi helyvariáns"}
+        variableTop{"Rendezés szimbólumok szerint"}
         x{"Privát használatra"}
     }
     Languages{
@@ -30,43 +37,53 @@ hu{
         ady{"adyghe"}
         ae{"avesztán"}
         af{"afrikaans"}
+        afa{"afroázsiai nyelv"}
         afh{"afrihili"}
         agq{"agem"}
         ain{"ainu"}
         ak{"akan"}
         akk{"akkád"}
         ale{"aleut"}
+        alg{"algonkin nyelv"}
         alt{"dél-altaji"}
         am{"amhara"}
         an{"aragonéz"}
         ang{"óangol"}
         anp{"angika"}
+        apa{"apacs nyelvek"}
         ar{"arab"}
         ar_001{"modern szabányos arab"}
         arc{"arámi"}
-        arn{"mapucse"}
+        arn{"araucani"}
         arp{"arapaho"}
+        art{"mesterséges nyelv"}
         arw{"aravak"}
         as{"asszámi"}
         asa{"asu"}
         ast{"asztúr"}
+        ath{"atapaszkan nyelvek"}
+        aus{"ausztrál nyelvek"}
         av{"avar"}
         awa{"awádi"}
         ay{"ajmara"}
         az{"azerbajdzsáni"}
         ba{"baskír"}
+        bad{"banda"}
+        bai{"bamileke nyelvek"}
         bal{"balucsi"}
         ban{"balinéz"}
         bas{"basza"}
+        bat{"balti nyelv"}
         bax{"bamun"}
         bbj{"gomala"}
-        be{"belarusz"}
+        be{"belorusz"}
         bej{"bedzsa"}
         bem{"bemba"}
+        ber{"berber"}
         bez{"bena"}
         bfd{"bafut"}
         bg{"bolgár"}
-        bgn{"nyugati beludzs"}
+        bh{"bihari"}
         bho{"bodzspuri"}
         bi{"bislama"}
         bik{"bikol"}
@@ -74,13 +91,15 @@ hu{
         bkm{"kom"}
         bla{"siksika"}
         bm{"bambara"}
-        bn{"bangla"}
+        bn{"bengáli"}
+        bnt{"bantu"}
         bo{"tibeti"}
         br{"breton"}
         bra{"braj"}
         brx{"bodo"}
         bs{"bosnyák"}
         bss{"koszi"}
+        btk{"batak"}
         bua{"burját"}
         bug{"buginéz"}
         bum{"bulu"}
@@ -88,11 +107,14 @@ hu{
         byv{"medumba"}
         ca{"katalán"}
         cad{"caddo"}
+        cai{"egyéb közép-amerikai indián"}
         car{"karib"}
+        cau{"egyéb kaukázusi"}
         cay{"kajuga"}
         cch{"atszam"}
         ce{"csecsen"}
-        ceb{"szebuano"}
+        ceb{"cebui"}
+        cel{"egyéb kelta"}
         cgg{"kiga"}
         ch{"csamoró"}
         chb{"csibcsa"}
@@ -104,21 +126,27 @@ hu{
         chp{"csipevé"}
         chr{"cseroki"}
         chy{"csejen"}
-        ckb{"közép-ázsiai kurd"}
+        ckb{"szoráni kurd"}
+        cmc{"csam nyelv"}
         co{"korzikai"}
         cop{"kopt"}
+        cpe{"egyéb angol alapú kreol és pidgin"}
+        cpf{"egyéb francia alapú kreol és pidgin"}
+        cpp{"portugál alapú kreol vagy pidgin"}
         cr{"krí"}
         crh{"krími tatár"}
-        crs{"szeszelva kreol francia"}
+        crp{"kreol és pidzsin"}
         cs{"cseh"}
         csb{"kasub"}
         cu{"egyházi szláv"}
+        cus{"kusita nyelv"}
         cv{"csuvas"}
         cy{"walesi"}
         da{"dán"}
         dak{"dakota"}
         dar{"dargva"}
         dav{"taita"}
+        day{"dajak"}
         de{"német"}
         de_AT{"osztrák német"}
         de_CH{"svájci felnémet"}
@@ -128,13 +156,14 @@ hu{
         din{"dinka"}
         dje{"zarma"}
         doi{"dogri"}
-        dsb{"alsó-szorb"}
+        dra{"egyéb dravida"}
+        dsb{"alsó szorb"}
         dua{"duala"}
         dum{"közép holland"}
         dv{"divehi"}
         dyo{"jola-fonyi"}
         dyu{"diula"}
-        dz{"dzsonga"}
+        dz{"butáni"}
         dzg{"dazaga"}
         ebu{"embu"}
         ee{"eve"}
@@ -163,6 +192,7 @@ hu{
         ff{"fulani"}
         fi{"finn"}
         fil{"filippínó"}
+        fiu{"finnugor nyelv"}
         fj{"fidzsi"}
         fo{"feröeri"}
         fon{"fon"}
@@ -174,17 +204,16 @@ hu{
         frr{"északi fríz"}
         frs{"keleti fríz"}
         fur{"friuli"}
-        fy{"nyugati fríz"}
+        fy{"fríz"}
         ga{"ír"}
         gaa{"ga"}
-        gag{"gagauz"}
-        gan{"gan kínai"}
         gay{"gajo"}
         gba{"gbaja"}
-        gd{"skóciai kelta"}
+        gd{"skót gael"}
+        gem{"germán nyelv"}
         gez{"geez"}
         gil{"ikiribati"}
-        gl{"gallego"}
+        gl{"galíciai"}
         gmh{"közép felső német"}
         gn{"guarani"}
         goh{"ófelső német"}
@@ -194,39 +223,43 @@ hu{
         grb{"grebó"}
         grc{"ógörög"}
         gsw{"svájci német"}
-        gu{"gudzsaráti"}
+        gu{"gudzsarati"}
         guz{"guszii"}
-        gv{"man-szigeti"}
+        gv{"Man-szigeti"}
         gwi{"gvicsin"}
         ha{"hausza"}
         hai{"haida"}
-        hak{"hakka kínai"}
         haw{"hawaii"}
         he{"héber"}
         hi{"hindi"}
-        hil{"ilokano"}
+        hil{"hiligajnon"}
+        him{"himaháli"}
         hit{"hittite"}
         hmn{"hmong"}
         ho{"hiri motu"}
         hr{"horvát"}
-        hsb{"felső-szorb"}
-        hsn{"xiang kínai"}
-        ht{"haiti kreol"}
+        hsb{"felső szorb"}
+        ht{"haiti"}
         hu{"magyar"}
         hup{"hupa"}
         hy{"örmény"}
         hz{"herero"}
         ia{"interlingva"}
         iba{"iban"}
-        ibb{"ibibio"}
+        ibb{"ibibió"}
         id{"indonéz"}
         ie{"interlingue"}
         ig{"igbó"}
         ii{"szecsuán ji"}
+        ijo{"idzsó"}
         ik{"inupiak"}
         ilo{"ilokó"}
+        inc{"egyéb indiai"}
+        ine{"indoeurópai nyelv"}
         inh{"ingus"}
         io{"idó"}
+        ira{"iráni"}
+        iro{"irokéz nyelvek"}
         is{"izlandi"}
         it{"olasz"}
         iu{"inuktitut"}
@@ -243,6 +276,7 @@ hu{
         kac{"kacsin"}
         kaj{"jju"}
         kam{"kamba"}
+        kar{"karen"}
         kaw{"kawi"}
         kbd{"kabardi"}
         kbl{"kanembu"}
@@ -252,6 +286,7 @@ hu{
         kfo{"koro"}
         kg{"kongo"}
         kha{"kaszi"}
+        khi{"egyéb koiszan"}
         kho{"kotanéz"}
         khq{"kojra-csíni"}
         ki{"kikuju"}
@@ -260,19 +295,19 @@ hu{
         kkj{"kakó"}
         kl{"grönlandi"}
         kln{"kalendzsin"}
-        km{"khmer"}
+        km{"kambodzsai"}
         kmb{"kimbundu"}
         kn{"kannada"}
         ko{"koreai"}
-        koi{"komi-permják"}
         kok{"konkani"}
         kos{"kosrei"}
         kpe{"kpelle"}
         kr{"kanuri"}
         krc{"karacsáj-balkár"}
         krl{"karelai"}
+        kro{"kru"}
         kru{"kuruh"}
-        ks{"kasmíri"}
+        ks{"kásmíri"}
         ksb{"sambala"}
         ksf{"bafia"}
         ksh{"kölsch"}
@@ -291,12 +326,10 @@ hu{
         lez{"lezg"}
         lg{"ganda"}
         li{"limburgi"}
-        lkt{"lakota"}
         ln{"lingala"}
-        lo{"lao"}
+        lo{"laoszi"}
         lol{"mongó"}
         loz{"lozi"}
-        lrc{"északi luri"}
         lt{"litván"}
         lu{"luba-katanga"}
         lua{"luba-lulua"}
@@ -312,6 +345,7 @@ hu{
         mai{"maithili"}
         mak{"makaszar"}
         man{"mandingó"}
+        map{"ausztronéz"}
         mas{"masai"}
         mde{"maba"}
         mdf{"moksán"}
@@ -319,109 +353,119 @@ hu{
         men{"mende"}
         mer{"meru"}
         mfe{"mauritiusi kreol"}
-        mg{"malgas"}
+        mg{"málgas"}
         mga{"közép ír"}
         mgh{"makua-metó"}
-        mgo{"meta’"}
+        mgo{"meta'"}
         mh{"marshalli"}
         mi{"maori"}
         mic{"mikmak"}
         min{"minangkabau"}
+        mis{"egyéb nyelvek"}
         mk{"macedón"}
+        mkh{"egyéb mon-khmer"}
         ml{"malajálam"}
         mn{"mongol"}
         mnc{"mandzsu"}
         mni{"manipuri"}
+        mno{"manobó nyelvek"}
+        mo{"moldvai"}
         moh{"mohawk"}
         mos{"moszi"}
-        mr{"maráthi"}
+        mr{"marathi"}
         ms{"maláj"}
         mt{"máltai"}
         mua{"mundang"}
         mul{"többszörös nyelvek"}
+        mun{"munda nyelvek"}
         mus{"krík"}
         mwl{"mirandéz"}
-        mwr{"márvári"}
+        mwr{"marvari"}
         my{"burmai"}
         mye{"myene"}
+        myn{"maja nyelvek"}
         myv{"erzjány"}
-        mzn{"mázanderáni"}
         na{"naurui"}
-        nan{"min nan kínai"}
+        nah{"nahuati"}
+        nai{"észak-amerikai indián nyelv"}
         nap{"nápolyi"}
         naq{"nama"}
-        nb{"norvég (bokmál)"}
+        nb{"norvég bokmal"}
         nd{"északi ndebele"}
         nds{"alsónémet"}
-        nds_NL{"alsószász"}
         ne{"nepáli"}
         new{"nevari"}
         ng{"ndonga"}
         nia{"nias"}
-        niu{"niuei"}
+        nic{"niger-kordofan nyelv"}
+        niu{"niui"}
         nl{"holland"}
         nl_BE{"flamand"}
         nmg{"ngumba"}
-        nn{"norvég (nynrosk)"}
+        nn{"norvég nynorsk"}
         nnh{"ngiemboon"}
         no{"norvég"}
         nog{"nogaj"}
         non{"óskandináv"}
-        nqo{"n’kó"}
+        nqo{"n'kó"}
         nr{"déli ndebele"}
-        nso{"északi szeszotó"}
+        nso{"északi szotó"}
+        nub{"núbiai nyelv"}
         nus{"nuer"}
         nv{"navahó"}
         nwc{"klasszikus newari"}
-        ny{"nyandzsa"}
+        ny{"nyanja"}
         nym{"nyamvézi"}
         nyn{"nyankole"}
         nyo{"nyoró"}
         nzi{"nzima"}
         oc{"okszitán"}
         oj{"ojibva"}
-        om{"oromo"}
-        or{"odia"}
+        om{"oromói"}
+        or{"orija"}
         os{"oszét"}
         osa{"osage"}
         ota{"ottomán török"}
+        oto{"otomi nyelv"}
         pa{"pandzsábi"}
+        paa{"pápuai nyelv"}
         pag{"pangaszinan"}
         pal{"pahlavi"}
         pam{"pampangan"}
-        pap{"papiamento"}
+        pap{"papiamentó"}
         pau{"palaui"}
-        pcm{"nigériai pidgin"}
         peo{"óperzsa"}
+        phi{"Fülöp-szigeteki nyelv"}
         phn{"főniciai"}
         pi{"pali"}
         pl{"lengyel"}
         pon{"pohnpei"}
-        prg{"porosz"}
+        pra{"prakrit nyelvek"}
         pro{"óprovánszi"}
         ps{"pastu"}
         pt{"portugál"}
         pt_BR{"brazíliai portugál"}
         pt_PT{"európai portugál"}
         qu{"kecsua"}
-        quc{"kicse"}
         raj{"radzsasztáni"}
         rap{"rapanui"}
         rar{"rarotongai"}
-        rm{"rétoromán"}
+        rm{"réto-román"}
         rn{"kirundi"}
         ro{"román"}
-        ro_MD{"moldvai"}
+        roa{"román nyelv"}
         rof{"rombo"}
         rom{"roma"}
         root{"ősi"}
         ru{"orosz"}
         rup{"aromán"}
-        rw{"kinyarvanda"}
+        rw{"kiruanda"}
         rwk{"rwo"}
         sa{"szanszkrit"}
         sad{"szandave"}
-        sah{"szaha"}
+        sah{"jakut"}
+        sai{"dél-amerikai indián nyelv"}
+        sal{"szelis nyelv"}
         sam{"szamaritánus arámi"}
         saq{"szamburu"}
         sas{"sasak"}
@@ -432,49 +476,57 @@ hu{
         scn{"szicíliai"}
         sco{"skót"}
         sd{"szindhi"}
-        sdh{"dél-kurd"}
         se{"északi számi"}
         see{"szeneka"}
         seh{"szena"}
         sel{"szölkup"}
+        sem{"egyéb szemita"}
         ses{"kojra-szenni"}
         sg{"szangó"}
         sga{"óír"}
+        sgn{"jelnyelv"}
         sh{"szerbhorvát"}
         shi{"tachelhit"}
         shn{"san"}
         shu{"csádi arab"}
         si{"szingaléz"}
         sid{"szidamó"}
+        sio{"sziú nyelvek"}
+        sit{"sinotibeti nyelv"}
         sk{"szlovák"}
         sl{"szlovén"}
+        sla{"szláv nyelv"}
         sm{"szamoai"}
         sma{"déli számi"}
-        smj{"lulei számi"}
-        smn{"inari számi"}
-        sms{"kolta számi"}
+        smi{"lapp nyelv"}
+        smj{"lule számi"}
+        smn{"inar sami"}
+        sms{"koltta lapp"}
         sn{"sona"}
         snk{"szoninke"}
-        so{"szomáli"}
+        so{"szomáliai"}
         sog{"sogdien"}
+        son{"szongai"}
         sq{"albán"}
         sr{"szerb"}
         srn{"szranai tongó"}
         srr{"szerer"}
         ss{"sziszuati"}
+        ssa{"nílusi-szaharai nyelv"}
         ssy{"szahó"}
-        st{"déli szeszotó"}
+        st{"szeszotó"}
         su{"szundanéz"}
         suk{"szukuma"}
         sus{"szuszu"}
         sux{"sumér"}
         sv{"svéd"}
         sw{"szuahéli"}
-        sw_CD{"kongói szuahéli"}
         swb{"comorei"}
+        swc{"kongói szuahéli"}
         syc{"klasszikus szír"}
-        syr{"szír"}
+        syr{"szíriai"}
         ta{"tamil"}
+        tai{"thai nyelv"}
         te{"telugu"}
         tem{"temne"}
         teo{"teszó"}
@@ -482,7 +534,7 @@ hu{
         tet{"tetum"}
         tg{"tadzsik"}
         th{"thai"}
-        ti{"tigrinya"}
+        ti{"tigrinja"}
         tig{"tigré"}
         tiv{"tiv"}
         tk{"türkmén"}
@@ -492,8 +544,8 @@ hu{
         tli{"tlingit"}
         tmh{"tamasek"}
         tn{"szecsuáni"}
-        to{"tongai"}
-        tog{"nyugati nyasza"}
+        to{"tonga"}
+        tog{"nyasa tonga"}
         tpi{"tok pisin"}
         tr{"török"}
         trv{"tarokó"}
@@ -501,12 +553,14 @@ hu{
         tsi{"csimsiáni"}
         tt{"tatár"}
         tum{"tumbuka"}
+        tup{"tupi nyelv"}
+        tut{"altáji nyelv"}
         tvl{"tuvalu"}
         tw{"twi"}
         twq{"szavák"}
         ty{"tahiti"}
         tyv{"tuvai"}
-        tzm{"közép-atlaszi tamazigt"}
+        tzm{"közép-marokkói tamazigt"}
         udm{"udmurt"}
         ug{"ujgur"}
         uga{"ugariti"}
@@ -523,14 +577,14 @@ hu{
         vun{"vunjo"}
         wa{"vallon"}
         wae{"walser"}
+        wak{"vakas nyelv"}
         wal{"valamo"}
         war{"varaó"}
         was{"vasó"}
-        wbp{"warlpiri"}
+        wen{"szorb nyelvek"}
         wo{"volof"}
-        wuu{"wu kínai"}
         xal{"kalmük"}
-        xh{"xhosza"}
+        xh{"hosza"}
         xog{"szoga"}
         yao{"jaó"}
         yap{"japi"}
@@ -538,6 +592,7 @@ hu{
         ybb{"jemba"}
         yi{"jiddis"}
         yo{"joruba"}
+        ypk{"jupik nyelv"}
         yue{"kantoni"}
         za{"zsuang"}
         zap{"zapoték"}
@@ -547,14 +602,14 @@ hu{
         zh{"kínai"}
         zh_Hans{"egyszerűsített kínai"}
         zh_Hant{"hagyományos kínai"}
+        znd{"zande"}
         zu{"zulu"}
         zun{"zuni"}
         zxx{"nincs nyelvészeti tartalom"}
         zza{"zaza"}
     }
-    Languages%short{
+    LanguagesShort{
         az{"azeri"}
-        en_GB{"angol (UK)"}
         en_US{"angol (USA)"}
     }
     Scripts{
@@ -593,7 +648,6 @@ hu{
         Grek{"Görög"}
         Gujr{"Gudzsaráti"}
         Guru{"Gurmuki"}
-        Hanb{"Hanb"}
         Hang{"Hangul"}
         Hani{"Han"}
         Hano{"Hanunoo"}
@@ -606,7 +660,6 @@ hu{
         Hung{"Ómagyar"}
         Inds{"Indus"}
         Ital{"Régi olasz"}
-        Jamo{"Jamo"}
         Java{"Jávai"}
         Jpan{"Japán"}
         Kali{"Kajah li"}
@@ -636,7 +689,7 @@ hu{
         Moon{"Moon"}
         Mtei{"Meitei mayek"}
         Mymr{"Burmai"}
-        Nkoo{"N’ko"}
+        Nkoo{"N'ko"}
         Ogam{"Ogham"}
         Olck{"Ol chiki"}
         Orkh{"Orhon"}
@@ -685,25 +738,20 @@ hu{
         Yiii{"Ji"}
         Zinh{"Származtatott"}
         Zmth{"Matematikai jelrendszer"}
-        Zsye{"Emoji"}
         Zsym{"Szimbólum"}
         Zxxx{"Íratlan nyelvek kódja"}
         Zyyy{"Meghatározatlan"}
         Zzzz{"Ismeretlen írásrendszer"}
     }
     Scripts%stand-alone{
-        Hans{"Egyszerűsített kínai"}
+        Hans{"Egyszerűsített Han"}
         Hant{"Hagyományos kínai"}
-    }
-    Scripts%variant{
-        Arab{"Perzsa-arab"}
     }
     Types{
         calendar{
             buddhist{"Buddhista naptár"}
             chinese{"Kínai naptár"}
             coptic{"Kopt naptár"}
-            dangi{"Dangi naptár"}
             ethiopic{"Etióp naptár"}
             ethiopic-amete-alem{"Etióp amete alem naptár"}
             gregorian{"Gergely-naptár"}
@@ -711,14 +759,9 @@ hu{
             indian{"Indiai nemzeti naptár"}
             islamic{"Iszlám naptár"}
             islamic-civil{"Iszlám civil naptár"}
-            iso8601{"ISO-8601 naptár"}
             japanese{"Japán naptár"}
             persian{"Perzsa naptár"}
             roc{"Kínai köztársasági naptár"}
-        }
-        cf{
-            account{"Könyvelési pénznemformátum"}
-            standard{"Normál pénznemformátum"}
         }
         colAlternate{
             non-ignorable{"Szimbólumok rendezése"}
@@ -736,6 +779,10 @@ hu{
         colCaseLevel{
             no{"Kis- és nagybetűket meg nem különböztető rendezés"}
             yes{"Rendezés kisbetű-nagybetű szerint"}
+        }
+        colHiraganaQuaternary{
+            no{"Kanák rendezése külön"}
+            yes{"Kanák megkülönböztető rendezése"}
         }
         colNormalization{
             no{"Rendezés normalizálás nélkül"}
@@ -767,31 +814,6 @@ hu{
             stroke{"Vonássorrend"}
             traditional{"Hagyományos"}
             unihan{"Szótővonás rendezési sorrend"}
-        }
-        d0{
-            fwidth{"Teljes szélesség"}
-            hwidth{"Fél szélesség"}
-            npinyin{"Szám"}
-        }
-        hc{
-            h11{"12 órás rendszer (0–11)"}
-            h12{"12 órás rendszer (0–12)"}
-            h23{"24 órás rendszer (0–23)"}
-            h24{"24 órás rendszer (0–24)"}
-        }
-        lb{
-            loose{"Tág stílusú sortörés"}
-            normal{"Normál stílusú sortörés"}
-            strict{"Szűk stílusú sortörés"}
-        }
-        m0{
-            bgn{"BGN"}
-            ungegn{"UNGEGN"}
-        }
-        ms{
-            metric{"Méterrendszer"}
-            uksystem{"Angolszász mértékegységrendszer"}
-            ussystem{"Amerikai mértékegységrendszer"}
         }
         numbers{
             arab{"Arab-indiai számjegyek"}
@@ -894,22 +916,7 @@ hu{
         VALLADER{"Vallader"}
         WADEGILE{"Wade-Giles átírás"}
     }
-    Version{"2.1.28.79"}
-    characterLabelPattern{
-        all{"{0} — Összes"}
-        category-list{"{0}: {1}"}
-        compatibility{"{0} — Kompatibilitás"}
-        enclosed{"{0} — Zárt"}
-        extended{"{0} — Kibővített"}
-        historic{"{0} — Történelmi"}
-        miscellaneous{"{0} — Vegyes"}
-        other{"{0} — Egyéb"}
-        scripts{"Kézírások — {0}"}
-        strokes{
-            one{"{0} vonás"}
-            other{"{0} vonás"}
-        }
-    }
+    Version{"2.0.93.17"}
     codePatterns{
         language{"Nyelv: {0}"}
         script{"Írásrendszer: {0}"}

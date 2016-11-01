@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2003-2010, International Business Machines Corporation and    *
@@ -7,8 +5,6 @@
  *******************************************************************************
 */
 package com.ibm.icu.dev.test.stringprep;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.StringPrepParseException;
@@ -21,9 +17,10 @@ import com.ibm.icu.text.UCharacterIterator;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class TestIDNARef extends TestFmwk {
+    public static void main(String[] args) throws Exception {
+        new TestIDNARef().run(args);
+    }
     private StringPrepParseException unassignedException = new StringPrepParseException("",StringPrepParseException.UNASSIGNED_ERROR);
-
-    @Test
     public void TestToUnicode() throws Exception{
         try{
             for(int i=0; i<TestData.asciiIn.length; i++){
@@ -41,7 +38,6 @@ public class TestIDNARef extends TestFmwk {
         } 
     }
     
-    @Test
     public void TestToASCII() throws Exception{
         try{
             for(int i=0; i<TestData.asciiIn.length; i++){
@@ -59,7 +55,6 @@ public class TestIDNARef extends TestFmwk {
         } 
     }
     
-    @Test
     public void TestIDNToASCII() throws Exception{
         try{
             for(int i=0; i<TestData.domainNames.length; i++){
@@ -82,7 +77,6 @@ public class TestIDNARef extends TestFmwk {
             warnln("Could not load NamePrepTransform data");
         } 
     }
-    @Test
     public void TestIDNToUnicode() throws Exception{
         try{
             for(int i=0; i<TestData.domainNames.length; i++){
@@ -326,7 +320,6 @@ public class TestIDNARef extends TestFmwk {
             }
         }
     }
-    @Test
     public void TestConformance()throws Exception{
         try{
             for(int i=0; i<TestData.conformanceTestCases.length;i++){
@@ -346,7 +339,6 @@ public class TestIDNARef extends TestFmwk {
             warnln("Could not load NamePrepTransform data");
         } 
     }
-    @Test
     public void TestNamePrepConformance() throws Exception{
         try{
             NamePrepTransform namePrep = NamePrepTransform.getInstance();
@@ -395,7 +387,6 @@ public class TestIDNARef extends TestFmwk {
         } 
         
     }
-    @Test
     public void TestErrorCases() throws Exception{
         try{
             for(int i=0; i < TestData.errorCases.length; i++){
@@ -484,7 +475,6 @@ public class TestIDNARef extends TestFmwk {
             errln("Unexpected exception thrown by IDNAReference.compare");
         }     
     }
-    @Test
     public void TestCompare() throws Exception{
         String www = "www.";
         String com = ".com";
@@ -542,7 +532,7 @@ public class TestIDNARef extends TestFmwk {
 
     //  test and ascertain
     //  func(func(func(src))) == func(src)
-     private void doTestChainingToASCII(String source) throws Exception {
+    public void doTestChainingToASCII(String source)throws Exception{
 
         if (!IDNAReference.isReady()) {
             logln("Transliterator is not available on this environment.  Skipping doTestChainingToASCII.");
@@ -574,7 +564,7 @@ public class TestIDNARef extends TestFmwk {
     }
     //  test and ascertain
     //  func(func(func(src))) == func(src)
-    public void doTestChainingToUnicode(String source) throws Exception {
+    public void doTestChainingToUnicode(String source)throws Exception{
 
         if (!IDNAReference.isReady()) {
             logln("Transliterator is not available on this environment.  Skipping doTestChainingToUnicode.");
@@ -604,7 +594,6 @@ public class TestIDNARef extends TestFmwk {
         }
 
     }
-    @Test
     public void TestChaining() throws Exception{
         try{
             for(int i=0; i< TestData.unicodeIn.length; i++){
@@ -619,7 +608,6 @@ public class TestIDNARef extends TestFmwk {
             warnln("Could not load NamePrepTransform data");
         } 
     }
-    @Test
     public void TestRootLabelSeparator() throws Exception{
         String www = "www.";
         String com = ".com."; /*root label separator*/

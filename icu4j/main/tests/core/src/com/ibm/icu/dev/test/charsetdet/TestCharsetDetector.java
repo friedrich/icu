@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2005-2015, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2005-2013, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.charsetdet;
@@ -14,13 +12,10 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -28,9 +23,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.dev.test.TestUtil;
-import com.ibm.icu.dev.test.TestUtil.JavaVendor;
-import com.ibm.icu.impl.Utility;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
@@ -40,8 +32,24 @@ import com.ibm.icu.text.CharsetMatch;
  */
 public class TestCharsetDetector extends TestFmwk
 {
+    
+    /**
+     * Constructor
+     */
     public TestCharsetDetector()
     {
+    }
+
+    public static void main(String[] args) {
+        try
+        {
+            TestCharsetDetector test = new TestCharsetDetector();
+            test.run(args);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void CheckAssert(boolean exp) {
@@ -78,7 +86,6 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
     
-    @Test
     public void TestConstruction() {
         int i;
         CharsetDetector  det = new CharsetDetector();
@@ -124,7 +131,6 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
 
-    @Test
     public void TestInputFilter() throws Exception
     {
         String s = "<a> <lot> <of> <English> <inside> <the> <markup> Un tr\u00E8s petit peu de Fran\u00E7ais. <to> <confuse> <the> <detector>";
@@ -153,7 +159,6 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
     
-    @Test
     public void TestUTF8() throws Exception {
         
         String  s = "This is a string with some non-ascii characters that will " +
@@ -169,15 +174,10 @@ public class TestCharsetDetector extends TestFmwk
         CheckAssert(s.equals(retrievedS));
         
         reader = det.getReader(new ByteArrayInputStream(bytes), "UTF-8");
-        try {
-            CheckAssert(s.equals(stringFromReader(reader)));
-        } finally {
-            reader.close();
-        }
+        CheckAssert(s.equals(stringFromReader(reader)));
         det.setDeclaredEncoding("UTF-8"); // Jitterbug 4451, for coverage
     }
     
-    @Test
     public void TestUTF16() throws Exception
     {
         String source = 
@@ -210,7 +210,6 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
     
-    @Test
     public void TestC1Bytes() throws Exception
     {
         String sISO =
@@ -241,7 +240,6 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
     
-    @Test
     public void TestShortInput() {
         // Test that detection with very short byte strings does not crash and burn.
         // The shortest input that should produce positive detection result is two bytes, 
@@ -266,7 +264,6 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
     
-    @Test
     public void TestBufferOverflow()
     {
         byte testStrings[][] = {
@@ -318,7 +315,6 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
 
-    @Test
     public void TestDetection()
     {
         //
@@ -332,6 +328,8 @@ public class TestCharsetDetector extends TestFmwk
                 errln("Could not open test data file CharsetDetectionTests.xml");
                 return;
             }
+            
+            //isr = new InputStreamReader(is, "UTF-8"); 
 
             // Set up an xml parser.
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -341,18 +339,12 @@ public class TestCharsetDetector extends TestFmwk
             DocumentBuilder builder = factory.newDocumentBuilder();
             
             // Parse the xml content from the test case file.
-            Document doc;
-            try {
-                doc = builder.parse(is, null);
-            } finally {
-                is.close();
-            }
+            Document doc = builder.parse(is, null);
             Element root = doc.getDocumentElement();
             
             NodeList testCases = root.getElementsByTagName("test-case");
             
             // Process each test case
-            Map<String, byte[]> encToBytes = new TreeMap<String, byte[]>();
             for (int n = 0; n < testCases.getLength(); n += 1) {
                 Node testCase = testCases.item(n);
                 NamedNodeMap attrs = testCase.getAttributes();
@@ -360,53 +352,20 @@ public class TestCharsetDetector extends TestFmwk
                 StringBuffer testText = new StringBuffer();
                 String id = attrs.getNamedItem("id").getNodeValue();
                 String encodings = attrs.getNamedItem("encodings").getNodeValue();
-
-                // Collect the test case text and optional bytes.
-                // A <bytes encoding="name">ASCII with \xhh</bytes> element
-                // specifies the byte sequence to be tested.
-                // This is useful when not all platforms encode the test text the same way
-                // (or do not support encoding for that charset).
+                
+                // Collect the test case text.
                 for (int t = 0; t < testData.getLength(); t += 1) {
-                    Node node = testData.item(t);
-                    if (node.getNodeType() == Node.TEXT_NODE) {
-                        testText.append(node.getNodeValue());
-                    } else if (node.getNodeType() == Node.ELEMENT_NODE &&
-                            node.getNodeName().equals("bytes")) {
-                        String name = node.getAttributes().getNamedItem("encoding").getNodeValue();
-                        Node valueNode = node.getFirstChild();
-                        if (valueNode.getNodeType() != Node.TEXT_NODE) {
-                            throw new IllegalArgumentException("<bytes> node does not contain text");
-                        }
-                        // The bytes are stored as ASCII characters and \xhh escaped bytes.
-                        // We unescape the string to turn the \xhh into chars U+0000..U+00ff,
-                        // then use the deprecated String.getBytes() to turn those into bytes
-                        // by essentially casting each char to a byte.
-                        String bytesString = Utility.unescape(valueNode.getNodeValue());
-                        byte[] bytes = new byte[bytesString.length()];
-                        bytesString.getBytes(0, bytesString.length(), bytes, 0);
-                        encToBytes.put(name, bytes);
-                    } else {
-                        throw new IllegalArgumentException("unknown <test-case> child node: " + node);
-                    }
+                    Node textNode = testData.item(t);
+                    
+                    testText.append(textNode.getNodeValue());                    
                 }
-
+                
                 // Process test text with each encoding / language pair.
                 String testString = testText.toString();
                 String[] encodingList = encodings.split(" ");
                 for (int e = 0; e < encodingList.length; e += 1) {
-                    String[] params = encodingList[e].split("/");
-                    String encoding = params[0];
-                    String language = params.length == 1 || params[1].length() == 0 ? null : params[1];
-
-                    // With a few charsets, the conversion back to Unicode
-                    // may depend on the implementation.
-                    boolean checkRoundtrip =
-                            !encoding.startsWith("UTF-32") &&
-                            !(params.length >= 3 && params[2].equals("noroundtrip"));
-                    checkEncoding(testString, encoding, language, checkRoundtrip,
-                            encToBytes.get(encoding), id);
+                    checkEncoding(testString, encodingList[e], id);
                 }
-                encToBytes.clear();
             }
             
         } catch (Exception e) {
@@ -414,9 +373,11 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
 
-    private void checkMatch(CharsetDetector det, String testString,
-            String encoding, String language, boolean checkRoundtrip, String id) throws Exception {
+    private void checkMatch(CharsetDetector det, String testString, String encoding, String language, String id) throws Exception
+    {
         CharsetMatch m = det.detect();
+        String decoded;
+        
         if (! m.getName().equals(encoding)) {
             errln(id + ": encoding detection failure - expected " + encoding + ", got " + m.getName());
             return;
@@ -429,18 +390,12 @@ public class TestCharsetDetector extends TestFmwk
         {
             errln(id + ", " + encoding + ": language detection failure - expected " + language + ", got " + m.getLanguage());
         }
-
-        if (!checkRoundtrip) {
-            return;
-        }
-
-        // TODO temporary workaround for IBM Java 8 ISO-2022-KR problem
-        if (encoding.equals("ISO-2022-KR") && TestUtil.getJavaVendor() == JavaVendor.IBM && TestUtil.getJavaVersion() == 8) {
-            logln("Skipping roundtrip check on IBM Java 8: " + id + ", " + encoding);
+        
+        if (encoding.startsWith("UTF-32")) {
             return;
         }
         
-        String decoded = m.getString();
+        decoded = m.getString();
         
         if (! testString.equals(decoded)) {
             errln(id + ", " + encoding + ": getString() didn't return the original string!");
@@ -453,40 +408,64 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
     
-    private void checkEncoding(String testString,
-            String encoding, String language, boolean checkRoundtrip,
-            byte[] bytes, String id) {
-        if (bytes == null) {
-            try {
-                bytes = testString.getBytes(encoding);
-            } catch (UnsupportedOperationException uoe) {
-                // Ignore any converters that can't
-                // convert from Unicode.
-                logln("Unsupported encoding for conversion from Unicode: " + encoding);
-                return;
-            } catch (UnsupportedEncodingException uee) {
-                // Ignore any encodings that this runtime
-                // doesn't support.
-                logln("Unsupported encoding: " + encoding);
-                return;
-            }
+    private void checkEncoding(String testString, String encoding, String id)
+    {
+        String enc = null, lang = null;
+        String[] split = encoding.split("/");
+        
+        enc = split[0];
+        
+        if (split.length > 1) {
+            lang = split[1];
         }
 
         try {
             CharsetDetector det = new CharsetDetector();
+            byte[] bytes;
+            
+            //if (enc.startsWith("UTF-32")) {
+            //    UTF32 utf32 = UTF32.getInstance(enc);
+                
+            //    bytes = utf32.toBytes(testString);
+            //} else {
+                String from = enc;
 
+                while (true) {
+                    try {
+                        bytes = testString.getBytes(from);
+                    } catch (UnsupportedOperationException uoe) {
+                         // In some runtimes, the ISO-2022-CN converter
+                         // only converts *to* Unicode - we have to use
+                         // x-ISO-2022-CN-GB to convert *from* Unicode.
+                        if (from.equals("ISO-2022-CN")) {
+                            from = "x-ISO-2022-CN-GB";
+                            continue;
+                        }
+                        
+                        // Ignore any other converters that can't
+                        // convert from Unicode.
+                        return;
+                    } catch (UnsupportedEncodingException uee) {
+                        // Ignore any encodings that this runtime
+                        // doesn't support.
+                        return;
+                    }
+                    
+                    break;
+                }
+            //}
+        
             det.setText(bytes);
-            checkMatch(det, testString, encoding, language, checkRoundtrip, id);
-
+            checkMatch(det, testString, enc, lang, id);
+            
             det.setText(new ByteArrayInputStream(bytes));
-            checkMatch(det, testString, encoding, language, checkRoundtrip, id);
+            checkMatch(det, testString, enc, lang, id);
          } catch (Exception e) {
-            errln(id + ": " + e.toString() + "enc=" + encoding);
+            errln(id + ": " + e.toString() + "enc=" + enc);
             e.printStackTrace();
         }
     }
     
-    @Test
     public void TestJapanese() throws Exception {
         String s = "\u3000\u3001\u3002\u3003\u3005\u3006\u3007\u3008\u3009\u300A\u300B\u300C\u300D\u300E\u300F\u3010\u3011\u3012\u3013\u3014" + 
         "\u3015\u301C\u3041\u3042\u3043\u3044\u3045\u3046\u3047\u3048\u3049\u304A\u304B\u304C\u304D\u304E\u304F\u3050\u3051\u3052" + 
@@ -520,7 +499,6 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
 
-    @Test
     public void TestArabic() throws Exception {
         String  s = "\u0648\u0636\u0639\u062A \u0648\u0646\u0641\u0630\u062A \u0628\u0631\u0627" +
         "\u0645\u062C \u062A\u0623\u0645\u064A\u0646 \u0639\u062F\u064A\u062F\u0629 \u0641\u064A " + 
@@ -640,7 +618,6 @@ public class TestCharsetDetector extends TestFmwk
         }
     }
 
-    @Test
     public void TestHebrew() throws Exception {
         String  s =  "\u05D4\u05E4\u05E8\u05E7\u05DC\u05D9\u05D8 \u05D4\u05E6\u05D1\u05D0\u05D9 \u05D4" +
             "\u05E8\u05D0\u05E9\u05D9, \u05EA\u05EA \u05D0\u05DC\u05D5\u05E3 \u05D0\u05D1\u05D9" + 
@@ -743,7 +720,6 @@ public class TestCharsetDetector extends TestFmwk
     /*
      * Test the method int match(CharsetDetector det) in CharsetRecog_UTF_16_LE
      */
-    @Test
     public void TestCharsetRecog_UTF_16_LE_Match() {
         byte[] in = { Byte.MIN_VALUE, Byte.MIN_VALUE, Byte.MIN_VALUE, Byte.MIN_VALUE };
         CharsetDetector cd = new CharsetDetector();
@@ -759,8 +735,7 @@ public class TestCharsetDetector extends TestFmwk
     //
     //  Bug #8309, test case submitted with original bug report.
     //
-    @Test
-    public void TestFreshDetectorEachTime() throws Exception
+      public void TestFreshDetectorEachTime() throws Exception
       {
           CharsetDetector detector1 = new CharsetDetector();
           byte[] data1 = createData1();
@@ -776,8 +751,7 @@ public class TestCharsetDetector extends TestFmwk
           assertEquals("Expected ISO-8859-1, even though that isn't strictly correct", "ISO-8859-1", match2.getName());
       }
   
-    @Test
-    public void TestReusingDetector() throws Exception
+      public void TestReusingDetector() throws Exception
       {
           CharsetDetector detector = new CharsetDetector();
  
@@ -1125,7 +1099,6 @@ public class TestCharsetDetector extends TestFmwk
       //
 
 
-    @Test
     public void TestBug9267() {
         // Test a long input of Lam Alef characters for CharsetRecog_IBM420_ar.
         // Bug 9267 was an array out of bounds problem in the unshaping code for these.
@@ -1139,7 +1112,6 @@ public class TestCharsetDetector extends TestFmwk
         det.detect();
     }
     
-    @Test
     public void TestBug6954 () throws Exception {
         // Ticket 6954 - trouble with the haveC1Bytes flag that is used to distinguish between
         //  similar Windows and non-Windows SBCS encodings. State was kept in the shared
@@ -1174,7 +1146,6 @@ public class TestCharsetDetector extends TestFmwk
         assertEquals("Wrong charset name after running a second charset detector", "windows-1252", name1);
     }
     
-    @Test
     public void TestBug6889() {
         // Verify that CharsetDetector.detectAll() does not return the same encoding multiple times.
         String text =
@@ -1199,7 +1170,6 @@ public class TestCharsetDetector extends TestFmwk
         }   
     }
     
-    @Test
     public void TestMultithreaded() {
         String  s = "This is some random plain text to run charset detection on.";
         final byte [] bytes;

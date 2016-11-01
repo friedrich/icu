@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 1996-2013, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 
@@ -23,10 +21,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.util.Currency;
-import com.ibm.icu.util.Currency.CurrencyUsage;
 import com.ibm.icu.util.CurrencyAmount;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.ULocale.Category;
@@ -60,7 +56,7 @@ import com.ibm.icu.util.UResourceBundle;
  * <blockquote>
  * <pre>
  * NumberFormat nf = NumberFormat.getInstance();
- * for (int i = 0; i &lt; a.length; ++i) {
+ * for (int i = 0; i < a.length; ++i) {
  *     output.println(nf.format(myNumber[i]) + "; ");
  * }
  * </pre>
@@ -119,8 +115,8 @@ import com.ibm.icu.util.UResourceBundle;
  * the detailed description for each these control methods,
  * <p>
  * setParseIntegerOnly : only affects parsing, e.g.
- * if true,  "3456.78" -&gt; 3456 (and leaves the parse position just after '6')
- * if false, "3456.78" -&gt; 3456.78 (and leaves the parse position just after '8')
+ * if true,  "3456.78" -> 3456 (and leaves the parse position just after '6')
+ * if false, "3456.78" -> 3456.78 (and leaves the parse position just after '8')
  * This is independent of formatting.  If you want to not show a decimal point
  * where there might be no digits after the decimal point, use
  * setDecimalSeparatorAlwaysShown on DecimalFormat.
@@ -151,11 +147,12 @@ import com.ibm.icu.util.UResourceBundle;
  *      numbers: "(12)" for -12.
  * </ol>
  *
- * <h3>Synchronization</h3>
+ * <h4>Synchronization</h4>
  * <p>
  * Number formats are generally not synchronized. It is recommended to create
  * separate format instances for each thread. If multiple threads access a format
  * concurrently, it must be synchronized externally.
+ * <p>
  *
  * <h4>DecimalFormat</h4>
  * <p>DecimalFormat is the concrete implementation of NumberFormat, and the
@@ -177,10 +174,8 @@ public abstract class NumberFormat extends UFormat {
      */
     public static final int NUMBERSTYLE = 0;
     /**
-     * {@icu} Constant to specify general currency style of format. Defaults to
-     * STANDARDCURRENCYSTYLE, using currency symbol, for example "$3.00", with
-     * non-accounting style for negative values (e.g. minus sign).
-     * The specific style may be specified using the -cf- locale key.
+     * {@icu} Constant to specify currency style of format which uses currency symbol
+     * to represent currency, for example: "$3.00".
      * @stable ICU 4.2
      */
     public static final int CURRENCYSTYLE = 1;
@@ -212,28 +207,6 @@ public abstract class NumberFormat extends UFormat {
      * @stable ICU 4.2
      */
     public static final int PLURALCURRENCYSTYLE = 6;
-    /**
-     * {@icu} Constant to specify currency style of format which uses currency symbol
-     * to represent currency for accounting, for example: "($3.00), instead of
-     * "-$3.00" ({@link #CURRENCYSTYLE}).
-     * Overrides any style specified using -cf- key in locale.
-     * @stable ICU 53
-     */
-    public static final int ACCOUNTINGCURRENCYSTYLE = 7;
-    /**
-     * {@icu} Constant to specify currency cash style of format which uses currency
-     * ISO code to represent currency, for example: "NT$3" instead of "NT$3.23".
-     * @stable ICU 54
-     */
-    public static final int CASHCURRENCYSTYLE = 8;
-    /**
-     * {@icu} Constant to specify currency style of format which uses currency symbol
-     * to represent currency, for example "$3.00", using non-accounting style for
-     * negative values (e.g. minus sign).
-     * Overrides any style specified using -cf- key in locale.
-     * @stable ICU 56
-     */
-    public static final int STANDARDCURRENCYSTYLE = 9;
 
     /**
      * Field constant used to construct a FieldPosition object. Signifies that
@@ -401,13 +374,11 @@ public abstract class NumberFormat extends UFormat {
                                StringBuffer toAppendTo,
                                FieldPosition pos) {
         // Default implementation -- subclasses may override
-        synchronized(this) {
-            Currency save = getCurrency(), curr = currAmt.getCurrency();
-            boolean same = curr.equals(save);
-            if (!same) setCurrency(curr);
-            format(currAmt.getNumber(), toAppendTo, pos);
-            if (!same) setCurrency(save);
-        }
+        Currency save = getCurrency(), curr = currAmt.getCurrency();
+        boolean same = curr.equals(save);
+        if (!same) setCurrency(curr);
+        format(currAmt.getNumber(), toAppendTo, pos);
+        if (!same) setCurrency(save);
         return toAppendTo;
     }
 
@@ -458,7 +429,7 @@ public abstract class NumberFormat extends UFormat {
      *
      * @param text the text to parse
      * @param pos input-output position; on input, the position within
-     * text to match; must have 0 &lt;= pos.getIndex() &lt; text.length();
+     * text to match; must have 0 <= pos.getIndex() < text.length();
      * on output, the position after the last matched character. If
      * the parse fails, the position in unchanged upon output.
      * @return a CurrencyAmount, or null upon failure
@@ -525,32 +496,6 @@ public abstract class NumberFormat extends UFormat {
      */
     public boolean isParseStrict() {
         return parseStrict;
-    }
-
-    /**
-     * {@icu} Set a particular DisplayContext value in the formatter,
-     * such as CAPITALIZATION_FOR_STANDALONE.
-     *
-     * @param context The DisplayContext value to set.
-     * @stable ICU 53
-     */
-    public void setContext(DisplayContext context) {
-        if (context.type() == DisplayContext.Type.CAPITALIZATION) {
-            capitalizationSetting = context;
-        }
-    }
-
-    /**
-     * {@icu} Get the formatter's DisplayContext value for the specified DisplayContext.Type,
-     * such as CAPITALIZATION.
-     *
-     * @param type the DisplayContext.Type whose value to return
-     * @return the current DisplayContext setting for the specified type
-     * @stable ICU 53
-     */
-    public DisplayContext getContext(DisplayContext.Type type) {
-        return (type == DisplayContext.Type.CAPITALIZATION && capitalizationSetting != null)?
-                capitalizationSetting: DisplayContext.CAPITALIZATION_NONE;
     }
 
     //============== Locale Stuff =====================
@@ -1001,11 +946,6 @@ public abstract class NumberFormat extends UFormat {
      * {@icu} Registers a new NumberFormatFactory.  The factory is adopted by
      * the service and must not be modified.  The returned object is a
      * key that can be used to unregister this factory.
-     *
-     * <p>Because ICU may choose to cache NumberFormat objects internally, this must
-     * be called at application startup, prior to any calls to
-     * NumberFormat.getInstance to avoid undefined behavior.
-     *
      * @param factory the factory to register
      * @return a key with which to unregister the factory
      * @stable ICU 2.6
@@ -1071,8 +1011,7 @@ public abstract class NumberFormat extends UFormat {
             && minimumFractionDigits == other.minimumFractionDigits
             && groupingUsed == other.groupingUsed
             && parseIntegerOnly == other.parseIntegerOnly
-            && parseStrict == other.parseStrict
-            && capitalizationSetting == other.capitalizationSetting;
+            && parseStrict == other.parseStrict;
     }
 
     /**
@@ -1125,7 +1064,7 @@ public abstract class NumberFormat extends UFormat {
 
     /**
      * Sets the maximum number of digits allowed in the integer portion of a
-     * number. This must be &gt;= minimumIntegerDigits.  If the
+     * number. This must be >= minimumIntegerDigits.  If the
      * new value for maximumIntegerDigits is less than the current value
      * of minimumIntegerDigits, then minimumIntegerDigits will also be set to
      * the new value.
@@ -1157,7 +1096,7 @@ public abstract class NumberFormat extends UFormat {
 
     /**
      * Sets the minimum number of digits allowed in the integer portion of a
-     * number.  This must be &lt;= maximumIntegerDigits.  If the
+     * number.  This must be <= maximumIntegerDigits.  If the
      * new value for minimumIntegerDigits is more than the current value
      * of maximumIntegerDigits, then maximumIntegerDigits will also be set to
      * the new value.
@@ -1189,7 +1128,7 @@ public abstract class NumberFormat extends UFormat {
 
     /**
      * Sets the maximum number of digits allowed in the fraction portion of a
-     * number. This must be &gt;= minimumFractionDigits.  If the
+     * number. This must be >= minimumFractionDigits.  If the
      * new value for maximumFractionDigits is less than the current value
      * of minimumFractionDigits, then minimumFractionDigits will also be set to
      * the new value.
@@ -1221,7 +1160,7 @@ public abstract class NumberFormat extends UFormat {
 
     /**
      * Sets the minimum number of digits allowed in the fraction portion of a
-     * number.  This must be &lt;= maximumFractionDigits.  If the
+     * number.  This must be <= maximumFractionDigits.  If the
      * new value for minimumFractionDigits exceeds the current value
      * of maximumFractionDigits, then maximumFractionDigits will also be set to
      * the new value.
@@ -1316,15 +1255,14 @@ public abstract class NumberFormat extends UFormat {
      * @throws IllegalArgumentException  if choice is not one of
      *                                   NUMBERSTYLE, CURRENCYSTYLE,
      *                                   PERCENTSTYLE, SCIENTIFICSTYLE,
-     *                                   INTEGERSTYLE, ISOCURRENCYSTYLE,
-     *                                   PLURALCURRENCYSTYLE, ACCOUNTINGCURRENCYSTYLE.
-     *                                   CASHCURRENCYSTYLE, STANDARDCURRENCYSTYLE.
+     *                                   INTEGERSTYLE,
+     *                                   ISOCURRENCYSTYLE, PLURALCURRENCYSTYLE,
      * @stable ICU 4.2
      */
     public static NumberFormat getInstance(ULocale desiredLocale, int choice) {
-        if (choice < NUMBERSTYLE || choice > STANDARDCURRENCYSTYLE) {
+        if (choice < NUMBERSTYLE || choice > PLURALCURRENCYSTYLE) {
             throw new IllegalArgumentException(
-                "choice should be from NUMBERSTYLE to STANDARDCURRENCYSTYLE");
+                "choice should be from NUMBERSTYLE to PLURALCURRENCYSTYLE");
         }
 //          if (shim == null) {
 //              return createInstance(desiredLocale, choice);
@@ -1351,8 +1289,7 @@ public abstract class NumberFormat extends UFormat {
         // This style wont work for currency plural format.
         // For currency plural format, the pattern is get from
         // the locale (from CurrencyUnitPatterns) without override.
-        if (choice == CURRENCYSTYLE || choice == ISOCURRENCYSTYLE || choice == ACCOUNTINGCURRENCYSTYLE
-                || choice == CASHCURRENCYSTYLE || choice == STANDARDCURRENCYSTYLE) {
+        if(choice == CURRENCYSTYLE || choice == ISOCURRENCYSTYLE){
             String temp = symbols.getCurrencyPattern();
             if(temp!=null){
                 pattern = temp;
@@ -1415,10 +1352,6 @@ public abstract class NumberFormat extends UFormat {
                 f.setDecimalSeparatorAlwaysShown(false);
                 f.setParseIntegerOnly(true);
             }
-
-            if (choice == CASHCURRENCYSTYLE) {
-                f.setCurrencyUsage(CurrencyUsage.CASH);
-            }
             format = f;
        }
         // TODO: the actual locale of the *pattern* may differ from that
@@ -1451,51 +1384,64 @@ public abstract class NumberFormat extends UFormat {
      * @stable ICU 3.2
      */
     protected static String getPattern(ULocale forLocale, int choice) {
+
+        /* The following code takes care of a few cases where the
+         * resource data in the underlying JDK lags the new features
+         * we have added to ICU4J: scientific notation, rounding, and
+         * secondary grouping.
+         *
+         * We detect these cases here and return various hard-coded
+         * resource data.  This is the simplest solution for now, but
+         * it is not a good long-term mechanism.
+         *
+         * We should replace this code with a data-driven mechanism
+         * that reads the bundle com.ibm.icu.impl.data.LocaleElements
+         * and parses an exception table that overrides the standard
+         * data at java.text.resource.LocaleElements*.java.
+         * Alternatively, we should create our own copy of the
+         * resource data, and use that exclusively.
+         */
+
+        // TEMPORARY, until we get scientific patterns into the main
+        // resources:  Retrieve scientific patterns from our resources.
+        //if (choice == SCIENTIFICSTYLE) {
+            // Temporarily hard code; retrieve from resource later
+            /*For ICU compatibility [Richard/GCL]*/
+        //    return "#E0";
+            // return NumberFormat.getBaseStringArray("NumberPatterns")[SCIENTIFICSTYLE];
+        //}
+
+        /* {dlf}
+        // Try the cache first
+        String[] numberPatterns = (String[]) cachedLocaleData.get(forLocale);
+        if (numberPatterns == null) {
+            OverlayBundle resource = new OverlayBundle(new String[]
+                { "com.ibm.icu.impl.data.LocaleElements", RESOURCE_BASE }, forLocale);
+            numberPatterns = resource.getStringArray("NumberPatterns");
+            // Update the cache
+            cachedLocaleData.put(forLocale, numberPatterns);
+        }
+        */
+
         /* for ISOCURRENCYSTYLE and PLURALCURRENCYSTYLE,
          * the pattern is the same as the pattern of CURRENCYSTYLE
          * but by replacing the single currency sign with
          * double currency sign or triple currency sign.
          */
-        String patternKey = null;
-        switch (choice) {
-        case NUMBERSTYLE:
-        case INTEGERSTYLE:
-            patternKey = "decimalFormat";
-            break;
-        case CURRENCYSTYLE:
-            String cfKeyValue = forLocale.getKeywordValue("cf");
-            patternKey = (cfKeyValue != null && cfKeyValue.equals("account")) ?
-                    "accountingFormat" : "currencyFormat";
-            break;
-        case CASHCURRENCYSTYLE:
-        case ISOCURRENCYSTYLE:
-        case PLURALCURRENCYSTYLE:
-        case STANDARDCURRENCYSTYLE:
-            patternKey = "currencyFormat";
-            break;
-        case PERCENTSTYLE:
-            patternKey = "percentFormat";
-            break;
-        case SCIENTIFICSTYLE:
-            patternKey = "scientificFormat";
-            break;
-        case ACCOUNTINGCURRENCYSTYLE:
-            patternKey = "accountingFormat";
-            break;
-        default:
-            assert false;
-            patternKey = "decimalFormat";
-            break;
-        }
+        int entry = (choice == INTEGERSTYLE) ? NUMBERSTYLE :
+                ((choice == ISOCURRENCYSTYLE || choice == PLURALCURRENCYSTYLE)?
+                CURRENCYSTYLE : choice); //[Richard/GCL]
 
         ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.
-        getBundleInstance(ICUData.ICU_BASE_NAME, forLocale);
+        getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, forLocale);
+        String[] numberPatternKeys = { "decimalFormat", "currencyFormat", "percentFormat", "scientificFormat" };
         NumberingSystem ns = NumberingSystem.getInstance(forLocale);
 
-        String result = rb.findStringWithFallback(
-                    "NumberElements/" + ns.getName() + "/patterns/" + patternKey);
-        if (result == null) {
-            result = rb.getStringWithFallback("NumberElements/latn/patterns/" + patternKey);
+        String result = null;
+        try {
+            result = rb.getStringWithFallback("NumberElements/" + ns.getName() + "/patterns/"+numberPatternKeys[entry]);
+        } catch ( MissingResourceException ex ) {
+            result = rb.getStringWithFallback("NumberElements/latn/patterns/"+numberPatternKeys[entry]);
         }
 
         return result;
@@ -1524,10 +1470,6 @@ public abstract class NumberFormat extends UFormat {
             minimumIntegerDigits = minIntegerDigits;
             maximumFractionDigits = maxFractionDigits;
             minimumFractionDigits = minFractionDigits;
-        }
-        if (serialVersionOnStream < 2) {
-            // Didn't have capitalizationSetting, set it to default
-            capitalizationSetting = DisplayContext.CAPITALIZATION_NONE;
         }
         ///CLOVER:ON
         /*Bug 4185761
@@ -1715,7 +1657,7 @@ public abstract class NumberFormat extends UFormat {
      */
     private Currency currency;
 
-    static final int currentSerialVersion = 2;
+    static final int currentSerialVersion = 1;
 
     /**
      * Describes the version of <code>NumberFormat</code> present on the stream.
@@ -1730,8 +1672,6 @@ public abstract class NumberFormat extends UFormat {
      *     <code>byte</code> fields such as <code>maxIntegerDigits</code> are ignored,
      *     and the <code>int</code> fields such as <code>maximumIntegerDigits</code>
      *     are used instead.
-     *
-     * <li><b>2</b>: adds capitalizationSetting.
      * </ul>
      * When streaming out a <code>NumberFormat</code>, the most recent format
      * (corresponding to the highest allowable <code>serialVersionOnStream</code>)
@@ -1746,8 +1686,8 @@ public abstract class NumberFormat extends UFormat {
     private static final long serialVersionUID = -2308460125733713944L;
 
     /**
-     * Empty constructor.  Public for API compatibility with historic versions of
-     * {@link java.text.NumberFormat} which had public constructor even though this is
+     * Empty constructor.  Public for compatibily with JDK which lets the
+     * compiler generate a default public constructor even though this is
      * an abstract class.
      * @stable ICU 2.6
      */
@@ -1756,12 +1696,6 @@ public abstract class NumberFormat extends UFormat {
 
     // new in ICU4J 3.6
     private boolean parseStrict;
-
-    /*
-     * Capitalization context setting, new in ICU 53
-     * @serial
-     */
-    private DisplayContext capitalizationSetting = DisplayContext.CAPITALIZATION_NONE;
 
     /**
      * The instances of this inner class are used as attribute keys and values

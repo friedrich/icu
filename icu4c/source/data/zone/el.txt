@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/el.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/el.xml
+ */
 el{
-    Version{"2.1.28.79"}
+    Version{"2.0.92.87"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Αμπιτζάν"}
@@ -208,7 +217,7 @@ el{
             ec{"Μπαχία Ντε Μπαντέρας"}
         }
         "America:Barbados"{
-            ec{"Μπαρμπέιντος"}
+            ec{"Μπαρμπάντος"}
         }
         "America:Belem"{
             ec{"Μπέλεμ"}
@@ -226,7 +235,7 @@ el{
             ec{"Μπογκοτά"}
         }
         "America:Boise"{
-            ec{"Μπόιζι"}
+            ec{"Μπόιζ"}
         }
         "America:Buenos_Aires"{
             ec{"Μπουένος Άιρες"}
@@ -259,7 +268,7 @@ el{
             ec{"Τσιουάουα"}
         }
         "America:Coral_Harbour"{
-            ec{"Ατικόκαν"}
+            ec{"Κόραλ Χάρμπουρ"}
         }
         "America:Cordoba"{
             ec{"Κόρδοβα"}
@@ -292,7 +301,7 @@ el{
             ec{"Ντιτρόιτ"}
         }
         "America:Dominica"{
-            ec{"Ντομίνικα"}
+            ec{"Δομινίκα"}
         }
         "America:Edmonton"{
             ec{"Έντμοντον"}
@@ -303,9 +312,6 @@ el{
         "America:El_Salvador"{
             ec{"Ελ Σαλβαδόρ"}
         }
-        "America:Fort_Nelson"{
-            ec{"Φορτ Νέλσον"}
-        }
         "America:Fortaleza"{
             ec{"Φορταλέζα"}
         }
@@ -313,7 +319,7 @@ el{
             ec{"Γκλέις Μπέι"}
         }
         "America:Godthab"{
-            ec{"Νουούκ"}
+            ec{"Γκόνθαμπ"}
         }
         "America:Goose_Bay"{
             ec{"Γκους Μπέι"}
@@ -355,13 +361,13 @@ el{
             ec{"Πίτερσμπεργκ, Ιντιάνα"}
         }
         "America:Indiana:Tell_City"{
-            ec{"Τελ Σίτι, Ιντιάνα"}
+            ec{"Τελ Σίτυ, Ιντιάνα"}
         }
         "America:Indiana:Vevay"{
-            ec{"Βιβέι, Ιντιάνα"}
+            ec{"Βεβάι, Ιντιάνα"}
         }
         "America:Indiana:Vincennes"{
-            ec{"Βανσέν, Ιντιάνα"}
+            ec{"Βίνκενες, Ιντιάνα"}
         }
         "America:Indiana:Winamac"{
             ec{"Γουίναμακ, Ιντιάνα"}
@@ -373,7 +379,7 @@ el{
             ec{"Ινούβικ"}
         }
         "America:Iqaluit"{
-            ec{"Ικαλούιτ"}
+            ec{"Ικαλούτ"}
         }
         "America:Jamaica"{
             ec{"Τζαμάικα"}
@@ -400,10 +406,10 @@ el{
             ec{"Λος Άντζελες"}
         }
         "America:Louisville"{
-            ec{"Λούιβιλ"}
+            ec{"Λούισβιλ"}
         }
         "America:Lower_Princes"{
-            ec{"Lower Prince’s Quarter"}
+            ec{"[Lower Prince's Quarter]"}
         }
         "America:Maceio"{
             ec{"Μασέιο"}
@@ -415,7 +421,7 @@ el{
             ec{"Μανάος"}
         }
         "America:Marigot"{
-            ec{"Μαριγκό"}
+            ec{"Μάριγκοτ"}
         }
         "America:Martinique"{
             ec{"Μαρτινίκα"}
@@ -453,6 +459,9 @@ el{
         "America:Montevideo"{
             ec{"Μοντεβιδέο"}
         }
+        "America:Montreal"{
+            ec{"Μόντρεαλ"}
+        }
         "America:Montserrat"{
             ec{"Μονσεράτ"}
         }
@@ -472,13 +481,13 @@ el{
             ec{"Νορόνχα"}
         }
         "America:North_Dakota:Beulah"{
-            ec{"Μπέουλα, Βόρεια Ντακότα"}
+            ec{"Μπέουλαχ, Βόρεια Ντακότα"}
         }
         "America:North_Dakota:Center"{
-            ec{"Σέντερ, Βόρεια Ντακότα"}
+            ec{"Κέντρο, Βόρεια Ντακότα"}
         }
         "America:North_Dakota:New_Salem"{
-            ec{"Νιου Σέιλεμ, Βόρεια Ντακότα"}
+            ec{"Νιου Σάλεμ, Βόρεια Ντακότα"}
         }
         "America:Ojinaga"{
             ec{"Οχινάγκα"}
@@ -511,7 +520,7 @@ el{
             ec{"Ρέινι Ρίβερ"}
         }
         "America:Rankin_Inlet"{
-            ec{"Ράνκιν Ίνλετ"}
+            ec{"Ρέινκιν Ίνλετ"}
         }
         "America:Recife"{
             ec{"Ρεσίφε"}
@@ -520,7 +529,7 @@ el{
             ec{"Ρετζίνα"}
         }
         "America:Resolute"{
-            ec{"Ρέζολουτ"}
+            ec{"Ρέσολουτ"}
         }
         "America:Rio_Branco"{
             ec{"Ρίο Μπράνκο"}
@@ -543,6 +552,9 @@ el{
         "America:Scoresbysund"{
             ec{"Σκορεσμπίσουντ"}
         }
+        "America:Shiprock"{
+            ec{"Σίπροκ"}
+        }
         "America:Sitka"{
             ec{"Σίτκα"}
         }
@@ -550,10 +562,10 @@ el{
             ec{"Άγιος Βαρθολομαίος"}
         }
         "America:St_Johns"{
-            ec{"Σεν Τζονς"}
+            ec{"Σεντ Τζονς"}
         }
         "America:St_Kitts"{
-            ec{"Σεν Κιτς"}
+            ec{"Άγιος Χριστόφορος (Σαιντ Κιτς)"}
         }
         "America:St_Lucia"{
             ec{"Αγία Λουκία"}
@@ -565,13 +577,13 @@ el{
             ec{"Άγιος Βικέντιος"}
         }
         "America:Swift_Current"{
-            ec{"Σουίφτ Κάρεντ"}
+            ec{"Σουίφτ Κάρρεντ"}
         }
         "America:Tegucigalpa"{
             ec{"Τεγκουσιγκάλπα"}
         }
         "America:Thule"{
-            ec{"Θούλη"}
+            ec{"Τούλε"}
         }
         "America:Thunder_Bay"{
             ec{"Θάντερ Μπέι"}
@@ -624,11 +636,11 @@ el{
         "Antarctica:Rothera"{
             ec{"Ροθέρα"}
         }
+        "Antarctica:South_Pole"{
+            ec{"Νότιος Πόλος"}
+        }
         "Antarctica:Syowa"{
             ec{"Σίοβα"}
-        }
-        "Antarctica:Troll"{
-            ec{"Τρολ"}
         }
         "Antarctica:Vostok"{
             ec{"Βόστοκ"}
@@ -640,7 +652,7 @@ el{
             ec{"Άντεν"}
         }
         "Asia:Almaty"{
-            ec{"Αλμάτι"}
+            ec{"Αλμάτυ"}
         }
         "Asia:Amman"{
             ec{"Αμμάν"}
@@ -669,9 +681,6 @@ el{
         "Asia:Bangkok"{
             ec{"Μπανγκόκ"}
         }
-        "Asia:Barnaul"{
-            ec{"Μπαρναούλ"}
-        }
         "Asia:Beirut"{
             ec{"Βυρητός"}
         }
@@ -684,11 +693,11 @@ el{
         "Asia:Calcutta"{
             ec{"Καλκούτα"}
         }
-        "Asia:Chita"{
-            ec{"Τσίτα"}
-        }
         "Asia:Choibalsan"{
             ec{"Χόιμπαλσαν"}
+        }
+        "Asia:Chongqing"{
+            ec{"Τσονγκίνγκ"}
         }
         "Asia:Colombo"{
             ec{"Κολόμπο"}
@@ -710,6 +719,9 @@ el{
         }
         "Asia:Gaza"{
             ec{"Γάζα"}
+        }
+        "Asia:Harbin"{
+            ec{"Χαρμπίν"}
         }
         "Asia:Hebron"{
             ec{"Χεμπρόν"}
@@ -740,6 +752,9 @@ el{
         }
         "Asia:Karachi"{
             ec{"Καράτσι"}
+        }
+        "Asia:Kashgar"{
+            ec{"Κάσγκαρ"}
         }
         "Asia:Katmandu"{
             ec{"Κατμαντού"}
@@ -802,7 +817,7 @@ el{
             ec{"Κατάρ"}
         }
         "Asia:Qyzylorda"{
-            ec{"Κιζιλορντά"}
+            ec{"Κτζιλ-Ορντά"}
         }
         "Asia:Rangoon"{
             ec{"Ρανγκούν"}
@@ -828,9 +843,6 @@ el{
         "Asia:Singapore"{
             ec{"Σιγκαπούρη"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Σρεντνεκόλιμσκ"}
-        }
         "Asia:Taipei"{
             ec{"Ταϊπέι"}
         }
@@ -847,10 +859,7 @@ el{
             ec{"Τρίμφου"}
         }
         "Asia:Tokyo"{
-            ec{"Τόκιο"}
-        }
-        "Asia:Tomsk"{
-            ec{"Τομσκ"}
+            ec{"Τόκυο"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ουλάν Μπατόρ"}
@@ -880,7 +889,7 @@ el{
             ec{"Αζόρες"}
         }
         "Atlantic:Bermuda"{
-            ec{"Βερμούδες"}
+            ec{"Βερμούδα"}
         }
         "Atlantic:Canary"{
             ec{"Κανάρια"}
@@ -951,9 +960,6 @@ el{
         "Europe:Andorra"{
             ec{"Ανδόρα"}
         }
-        "Europe:Astrakhan"{
-            ec{"Αστραχάν"}
-        }
         "Europe:Athens"{
             ec{"Αθήνα"}
         }
@@ -1011,9 +1017,6 @@ el{
         }
         "Europe:Kiev"{
             ec{"Κίεβο"}
-        }
-        "Europe:Kirov"{
-            ec{"Κίροφ"}
         }
         "Europe:Lisbon"{
             ec{"Λισαβόνα"}
@@ -1091,9 +1094,6 @@ el{
         "Europe:Tirane"{
             ec{"Τίρανα"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Ουλιάνοφσκ"}
-        }
         "Europe:Uzhgorod"{
             ec{"Ουζκόροντ"}
         }
@@ -1163,9 +1163,6 @@ el{
         "Pacific:Auckland"{
             ec{"Όκλαντ"}
         }
-        "Pacific:Bougainville"{
-            ec{"Μπουγκενβίλ"}
-        }
         "Pacific:Chatham"{
             ec{"Τσάταμ"}
         }
@@ -1176,7 +1173,7 @@ el{
             ec{"Εφάτε"}
         }
         "Pacific:Enderbury"{
-            ec{"Έντερμπερι"}
+            ec{"Εντερμπέρυ"}
         }
         "Pacific:Fakaofo"{
             ec{"Φακαόφο"}
@@ -1248,7 +1245,7 @@ el{
             ec{"Πονάπε"}
         }
         "Pacific:Port_Moresby"{
-            ec{"Πορτ Μόρεσμπι"}
+            ec{"Πορτ Μόρεσμπυ"}
         }
         "Pacific:Rarotonga"{
             ec{"Ραροτόνγκα"}
@@ -1284,7 +1281,7 @@ el{
             ls{"Ώρα Ανατολικής Αφρικής"}
         }
         "meta:Africa_Southern"{
-            ls{"Χειμερινή ώρα Νότιας Αφρικής"}
+            ls{"Ώρα Νότιας Αφρικής"}
         }
         "meta:Africa_Western"{
             ld{"Θερινή ώρα Δυτικής Αφρικής"}
@@ -1325,11 +1322,6 @@ el{
             ld{"Θερινή ώρα Αναντίρ"}
             lg{"Ώρα Αναντίρ"}
             ls{"Χειμερινή ώρα Αναντίρ"}
-        }
-        "meta:Apia"{
-            ld{"Θερινή ώρα Απία"}
-            lg{"Ώρα Απία"}
-            ls{"Χειμερινή ώρα Απία"}
         }
         "meta:Arabian"{
             ld{"Αραβική θερινή ώρα"}
@@ -1487,9 +1479,6 @@ el{
             sg{"EET"}
             ss{"EET"}
         }
-        "meta:Europe_Further_Eastern"{
-            ls{"Ώρα περαιτέρω Ανατολικής Ευρώπης"}
-        }
         "meta:Europe_Western"{
             ld{"Θερινή ώρα Δυτικής Ευρώπης"}
             lg{"Ώρα Δυτικής Ευρώπης"}
@@ -1575,13 +1564,13 @@ el{
             ls{"Ώρα Ινδοκίνας"}
         }
         "meta:Indonesia_Central"{
-            ls{"Ώρα Κεντρικής Ινδονησίας"}
+            ls{"Ώρα: Κεντρική Ινδονησία"}
         }
         "meta:Indonesia_Eastern"{
-            ls{"Ώρα Ανατολικής Ινδονησίας"}
+            ls{"Ώρα: Ανατολική Ινδονησία"}
         }
         "meta:Indonesia_Western"{
-            ls{"Ώρα Δυτικής Ινδονησίας"}
+            ls{"Ώρα: Δυτική Ινδονησία"}
         }
         "meta:Iran"{
             ld{"Θερινή ώρα Ιράν"}
@@ -1670,16 +1659,6 @@ el{
         }
         "meta:Mawson"{
             ls{"Ώρα Μόσον"}
-        }
-        "meta:Mexico_Northwest"{
-            ld{"Θερινή ώρα Βορειοδυτικού Μεξικού"}
-            lg{"Ώρα Βορειοδυτικού Μεξικού"}
-            ls{"Χειμερινή ώρα Βορειοδυτικού Μεξικού"}
-        }
-        "meta:Mexico_Pacific"{
-            ld{"Θερινή ώρα Ειρηνικού Μεξικού"}
-            lg{"Ώρα Ειρηνικού Μεξικού"}
-            ls{"Χειμερινή ώρα Ειρηνικού Μεξικού"}
         }
         "meta:Mongolia"{
             ld{"Θερινή ώρα Ουλάν Μπατόρ"}
@@ -1778,9 +1757,6 @@ el{
         }
         "meta:Ponape"{
             ls{"Ώρα Πονάπε"}
-        }
-        "meta:Pyongyang"{
-            ls{"Ώρα Πιονγιάνγκ"}
         }
         "meta:Reunion"{
             ls{"Ώρα Ρεϊνιόν"}

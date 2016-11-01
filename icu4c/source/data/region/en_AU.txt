@@ -1,6 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/en_AU.xml
+// *
+// ***************************************************************************
 en_AU{
-    %%Parent{"en_001"}
-    Version{"2.1.30.50"}
+    %%Parent{"en_GB"}
+    CountriesShort{
+        GB{"U.K."}
+        US{"U.S."}
+    }
+    Version{"2.0.92.87"}
 }

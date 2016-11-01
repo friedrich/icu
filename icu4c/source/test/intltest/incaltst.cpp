@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /***********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2014, International Business Machines Corporation
+ * Copyright (c) 1997-2012, International Business Machines Corporation
  * and others. All Rights Reserved.
  ***********************************************************************/
 
@@ -55,6 +53,9 @@ static UnicodeString escape( const UnicodeString&src)
 // class IntlCalendarTest
 // *****************************************************************************
 //--- move to CalendarTest?
+
+static const double JULIAN_EPOCH = -210866760000000.;
+
 
 // Turn this on to dump the calendar fields 
 #define U_DEBUG_DUMPCALS  

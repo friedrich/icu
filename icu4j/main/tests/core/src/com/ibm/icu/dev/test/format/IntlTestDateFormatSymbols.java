@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*****************************************************************************************
  *
- *   Copyright (C) 1996-2014, International Business Machines
+ *   Copyright (C) 1996-2013, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  **/
 
@@ -20,16 +18,17 @@ package com.ibm.icu.dev.test.format;
 
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.ibm.icu.text.DateFormatSymbols;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.ULocale;
 
 public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
 {
+    public static void main(String[] args) throws Exception {
+        new IntlTestDateFormatSymbols().run(args);
+    }
+
     // Test getMonths
-    @Test
     public void TestGetMonths()
     {
         final String[] month;
@@ -48,7 +47,6 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
         }
     }
 
-    @Test
     public void TestGetMonths2()
     {
         DateFormatSymbols symbol;
@@ -71,7 +69,6 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
         }
     }
     
-    @Test
     public void TestGetWeekdays2(){
         DateFormatSymbols symbol;
         symbol=new DateFormatSymbols(Locale.getDefault());
@@ -94,7 +91,6 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
         
     }
     
-    @Test
     public void TestGetEraNames(){
         DateFormatSymbols symbol;
         symbol=new DateFormatSymbols(Locale.getDefault());
@@ -121,15 +117,12 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
 
 
     // Test the API of DateFormatSymbols; primarily a simple get/set set.
-    @Test
     public void TestSymbols()
     {
         DateFormatSymbols fr = new DateFormatSymbols(Locale.FRENCH);
         DateFormatSymbols fr2 = new DateFormatSymbols(Locale.FRENCH);
 
         DateFormatSymbols en = new DateFormatSymbols(Locale.ENGLISH);
-
-        DateFormatSymbols zhChiCal = new DateFormatSymbols(new ULocale("zh@calendar=chinese"));
 
         if(en.equals(fr)) {
             errln("ERROR: English DateFormatSymbols equal to French");
@@ -508,43 +501,8 @@ public class IntlTestDateFormatSymbols extends com.ibm.icu.dev.test.TestFmwk
         if(! en.equals(fr)) {
             errln("ERROR: Clone failed");
         }
-        
-        final String[] shortYearNames = zhChiCal.getYearNames(DateFormatSymbols.FORMAT, DateFormatSymbols.ABBREVIATED);
-        final String[] narrowYearNames = zhChiCal.getYearNames(DateFormatSymbols.STANDALONE, DateFormatSymbols.NARROW);
-        if (shortYearNames == null || shortYearNames.length != 60 ||
-                !shortYearNames[0].equals("\u7532\u5B50") || !shortYearNames[59].equals("\u7678\u4EA5")) {
-            errln("ERROR: invalid FORMAT/ABBREVIATED year names from zh@calendar=chinese");
-        }
-        if (narrowYearNames == null || narrowYearNames.length != 60 ||
-                !narrowYearNames[0].equals("\u7532\u5B50") || !narrowYearNames[59].equals("\u7678\u4EA5")) {
-            errln("ERROR: invalid STANDALONE/NARROW year names from zh@calendar=chinese");
-        }
-        final String[] enGregoYearNames = en.getYearNames(DateFormatSymbols.FORMAT, DateFormatSymbols.ABBREVIATED);
-        if (enGregoYearNames != null) {
-            errln("ERROR: yearNames not null for en");
-        }
-
-        final String[] shortZodiacNames = zhChiCal.getZodiacNames(DateFormatSymbols.FORMAT, DateFormatSymbols.ABBREVIATED);
-        if (shortZodiacNames == null || shortZodiacNames.length != 12 ||
-                !shortZodiacNames[0].equals("\u9F20") || !shortZodiacNames[11].equals("\u732A")) {
-            errln("ERROR: invalid FORMAT/ABBREVIATED zodiac names from zh@calendar=chinese");
-        }
-
-        final String[] newZodiacNames = {"Rat","Ox","Tiger","Rabbit","Dragon","Snake","Horse","Goat","Monkey","Rooster","Dog","Pig"};
-        zhChiCal.setZodiacNames(newZodiacNames, DateFormatSymbols.FORMAT, DateFormatSymbols.ABBREVIATED);
-        final String[] testZodiacNames = zhChiCal.getZodiacNames(DateFormatSymbols.FORMAT, DateFormatSymbols.ABBREVIATED);
-        if (testZodiacNames == null || testZodiacNames.length != 12 ||
-                !testZodiacNames[0].equals("Rat") || !testZodiacNames[11].equals("Pig")) {
-            errln("ERROR: setZodiacNames then getZodiacNames not working for zh@calendar=chinese");
-        }
-        
-        String leapMonthPatternFmtAbbrev = zhChiCal.getLeapMonthPattern(DateFormatSymbols.FORMAT, DateFormatSymbols.ABBREVIATED);
-        if (leapMonthPatternFmtAbbrev == null || !leapMonthPatternFmtAbbrev.equals("\u95F0{0}")) {
-            errln("ERROR: invalid FORMAT/ABBREVIATED leapMonthPattern from zh@calendar=chinese");
-        }
     }
 
-    @Test
     public void TestConstructorWithCalendar() {
         ULocale[] TestLocales = {
             new ULocale("en_US@calendar=gregorian"),

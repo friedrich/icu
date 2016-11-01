@@ -1,15 +1,12 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2013-2014, International Business Machines Corporation and    *
+ * Copyright (C) 2013, International Business Machines Corporation and         *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.samples.text.pluralformat;
 // ---PluralFormatExample
 import java.text.FieldPosition;
-
 import com.ibm.icu.text.MessageFormat;
 import com.ibm.icu.text.PluralFormat;
 import com.ibm.icu.util.ULocale;

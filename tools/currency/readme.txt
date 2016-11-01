@@ -1,7 +1,4 @@
 *******************************************************************************
-* © 2016 and later: Unicode, Inc. and others.
-* License & terms of use: http://www.unicode.org/copyright.html#License
-*******************************************************************************
 * Copyright (C) 2012-2013, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
@@ -65,8 +62,8 @@ the SIX Interbank Clearing site and invoke the tool command "check".
 
 When the target successfully finished, you should see the log like below:
 ----------------------------------------------------------------------------
-C:\devtools\trunk\currency>ant
-Buildfile: C:\devtools\trunk\currency\build.xml
+C:\devtls\trunk\currency>ant check
+Buildfile: C:\devtls\trunk\currency\build.xml
 
 classes:
 
@@ -76,26 +73,18 @@ _localXml:
 
 _downloadXml:
      [echo] Downloading ISO 4217 XML data files
-      [get] Getting: http://www.currency-iso.org/dam/downloads/lists/list_one.xm
-l
-      [get] To: C:\devtools\trunk\currency\out\xml\list_one.xml
-      [get] Getting: http://www.currency-iso.org/dam/downloads/lists/list_three.
-xml
-      [get] To: C:\devtools\trunk\currency\out\xml\list_three.xml
+      [get] Getting: http://www.currency-iso.org/dl_iso_table_a1.xml
+      [get] To: C:\devtls\trunk\currency\out\xml\dl_iso_table_a1.xml
+      [get] Getting: http://www.currency-iso.org/dl_iso_tables_a3.xml
+      [get] To: C:\devtls\trunk\currency\out\xml\dl_iso_tables_a3.xml
 
 xmlData:
 
 check:
      [java] [OK] ICU data is synchronized with the reference data
 
-resource:
-     [echo] ISO 4217 numeric code mapping data was successfully created in C:\de
-vtools\trunk\currency/out/res
-
-build:
-
 BUILD SUCCESSFUL
-Total time: 1 second
+Total time: 2 seconds
 ----------------------------------------------------------------------------
 In this case, our data is synchronized with the latest XML data and you're done.
 
@@ -107,7 +96,7 @@ check:
      [java] Codes not found in the reference data: ZZZ
 
 BUILD FAILED
-C:\devtools\trunk\currency\build.xml:54: Java returned: 1
+C:\devtls\trunk\currency\build.xml:54: Java returned: 1
 ----------------------------------------------------------------------------
 In this case, you have to update the hardcoded data in NumericCodeData.
 You can either edit the table in NumericCodeData manually, or run the tool

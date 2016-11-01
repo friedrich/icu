@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2009-2014, International Business Machines Corporation and    *
+ * Copyright (C) 2009-2012, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -11,22 +9,23 @@ package com.ibm.icu.dev.test;
 import static com.ibm.icu.impl.LocaleDisplayNamesImpl.DataTableType.LANG;
 import static com.ibm.icu.impl.LocaleDisplayNamesImpl.DataTableType.REGION;
 
-import java.util.Locale;
-
-import org.junit.Test;
-
 import com.ibm.icu.impl.LocaleDisplayNamesImpl;
 import com.ibm.icu.text.LocaleDisplayNames;
 import com.ibm.icu.text.LocaleDisplayNames.DialectHandling;
 import com.ibm.icu.util.ULocale;
 
 public class TestLocaleNamePackaging extends TestFmwk {
+
+    public static void main(String[] args) {
+        new TestLocaleNamePackaging().run(args);
+    }
+
     public TestLocaleNamePackaging() {
     }
 
     public boolean validate() {
-        logln("language data: " + LocaleDisplayNamesImpl.haveData(LANG));
-        logln("  region data: " + LocaleDisplayNamesImpl.haveData(REGION));
+        warnln("language data: " + LocaleDisplayNamesImpl.haveData(LANG));
+        warnln("  region data: " + LocaleDisplayNamesImpl.haveData(REGION));
         return true;
     }
 
@@ -35,13 +34,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
         new ULocale("und_TH")
     };
 
-    // Java Locales equivalent to above
-    private static Locale[] javaLocales = {
-        new Locale(""), Locale.US, new Locale("es", "ES"), Locale.GERMANY,
-        new Locale("und", "TH")
-    };
-
-    @Test
     public void testRegionDisplayNames() {
         String[] expectedWithRegionData = {
             "",
@@ -91,23 +83,8 @@ public class TestLocaleNamePackaging extends TestFmwk {
                 }
             }
         }
-
-        // Same test with Java Locale
-        n = 0;
-        for (Locale displayJavaLocale : javaLocales) {
-            LocaleDisplayNames dn = LocaleDisplayNames.getInstance(displayJavaLocale);
-            for (Locale targetLocale : javaLocales) {
-                String result = dn.regionDisplayName(targetLocale.getCountry());
-                assertEquals(targetLocale + " in " + displayJavaLocale, expected[n++], result);
-                if (n == expected.length) {
-                    n = 0;
-                }
-            }
-        }
-
     }
 
-    @Test
     public void testLanguageDisplayNames() {
         String[] expectedWithLanguageData = {
             "",
@@ -119,12 +96,12 @@ public class TestLocaleNamePackaging extends TestFmwk {
             "English",
             "Spanish",
             "German",
-            "Unknown Language",
+            "Unknown or Invalid Language",
             "",
             "ingl\u00E9s",
             "espa\u00F1ol",
             "alem\u00E1n",
-            "lengua desconocida",
+            "indeterminada",
             "",
             "Englisch",
             "Spanisch",
@@ -134,7 +111,7 @@ public class TestLocaleNamePackaging extends TestFmwk {
             "English",
             "Spanish",
             "German",
-            "Unknown Language",
+            "Unknown or Invalid Language",
         };
         String[] expectedWithoutLanguageData = {
             "",
@@ -157,31 +134,16 @@ public class TestLocaleNamePackaging extends TestFmwk {
                 }
             }
         }
-
-        // Same test with Java Locale
-        n = 0;
-        for (Locale displayJavaLocale : javaLocales) {
-            LocaleDisplayNames dn = LocaleDisplayNames.getInstance(displayJavaLocale);
-            for (Locale targetLocale : javaLocales) {
-                String result = dn.languageDisplayName(targetLocale.getLanguage());
-                assertEquals(targetLocale + " in " + displayJavaLocale, expected[n++], result);
-                if (n == expected.length) {
-                    n = 0;
-                }
-            }
-        }
-
     }
 
     // test a 'root' locale, with keywords
-    @Test
     public void testLocaleDisplayNameWithKeywords() {
         String[] expectedWithLanguageData = {
             "root (collation=phonebook)",
-            "Root (Phonebook Sort Order)",
-            "ra\u00EDz (orden de list\u00EDn telef\u00F3nico)",
-            "Root (Telefonbuch-Sortierung)",
-            "Root (Phonebook Sort Order)",
+            "Root (collation=Phonebook Sort Order)",
+            "ra\u00EDz (intercalaci\u00F3n=orden de list\u00EDn telef\u00F3nico)",
+            "Root (Sortierung=Telefonbuch-Sortierregeln)",
+            "Root (collation=Phonebook Sort Order)",
         };
         String[] expectedWithoutLanguageData = {
             "root (collation=phonebook)",
@@ -202,7 +164,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
         }
     }
 
-    @Test
     public void testLanguageDisplayNameDoesNotTranslateRoot() {
         // "root" is not a language code-- the fact that we have our data organized this
         // way is immaterial.  "root" remains untranslated whether we have data or not.
@@ -210,7 +171,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
         assertEquals("root", "root", dn.languageDisplayName("root"));
     }
 
-    @Test
     public void testLanguageDisplayNameDoesNotTranslateDialects() {
         // Dialect ids are also not language codes.
         LocaleDisplayNames dn = LocaleDisplayNames.getInstance(ULocale.US,
@@ -225,7 +185,6 @@ public class TestLocaleNamePackaging extends TestFmwk {
         assertEquals("dialect 2", target, dn.localeDisplayName("en_GB"));
     }
     
-    @Test
     public void testLocaleKeywords() {
         LocaleDisplayNames dn = LocaleDisplayNames.getInstance(ULocale.US,
                 DialectHandling.DIALECT_NAMES);

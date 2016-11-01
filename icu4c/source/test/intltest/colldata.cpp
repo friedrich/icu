@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  ******************************************************************************
- *   Copyright (C) 1996-2016, International Business Machines
- *   Corporation and others.  All Rights Reserved.
+ *   Copyright (C) 1996-2012, International Business Machines                 *
+ *   Corporation and others.  All Rights Reserved.                            *
  ******************************************************************************
  */
 
@@ -24,19 +22,18 @@
 
 #include "unicode/uniset.h"
 #include "unicode/uset.h"
-#include "unicode/usetiter.h"
 #include "unicode/ustring.h"
 #include "hash.h"
-#include "normalizer2impl.h"
 #include "uhash.h"
-#include "usrchimp.h"
+#include "ucol_imp.h"
 #include "uassert.h"
 
 #include "colldata.h"
 
-#define NEW_ARRAY(type, count) (type *) uprv_malloc((size_t)(count) * sizeof(type))
+#define ARRAY_SIZE(array) (sizeof(array)/sizeof(array[0]))
+#define NEW_ARRAY(type, count) (type *) uprv_malloc((count) * sizeof(type))
 #define DELETE_ARRAY(array) uprv_free((void *) (array))
-#define ARRAY_COPY(dst, src, count) uprv_memcpy((void *) (dst), (void *) (src), (size_t)(count) * sizeof (src)[0])
+#define ARRAY_COPY(dst, src, count) uprv_memcpy((void *) (dst), (void *) (src), (count) * sizeof (src)[0])
 
 CEList::CEList(UCollator *coll, const UnicodeString &string, UErrorCode &status)
     : ces(NULL), listMax(CELIST_BUFFER_SIZE), listSize(0)
@@ -53,16 +50,18 @@ CEList::CEList(UCollator *coll, const UnicodeString &string, UErrorCode &status)
     }
 
     // **** only set flag if string has Han(gul) ****
-    // ucol_forceHanImplicit(elems, &status); -- removed for ticket #10476
+    ucol_forceHanImplicit(elems, &status);
 
     switch (strength)
     {
     default:
         strengthMask |= UCOL_TERTIARYORDERMASK;
-        U_FALLTHROUGH;
+        /* fall through */
+
     case UCOL_SECONDARY:
         strengthMask |= UCOL_SECONDARYORDERMASK;
-        U_FALLTHROUGH;
+        /* fall through */
+
     case UCOL_PRIMARY:
         strengthMask |= UCOL_PRIMARYORDERMASK;
     }
@@ -411,23 +410,11 @@ bail:
         return;
     }
 
-    UnicodeSet hanRanges(UNICODE_STRING_SIMPLE("[:Unified_Ideograph:]"), status);
-    if (U_FAILURE(status)) {
-        return;
-    }
-    UnicodeSetIterator hanIter(hanRanges);
-    UnicodeString hanString;
-    while(hanIter.nextRange()) {
-        hanString.append(hanIter.getCodepoint());
-        hanString.append(hanIter.getCodepointEnd());
-    }
-    // TODO: Why U+11FF? The old code had an outdated UCOL_LAST_T_JAMO=0x11F9,
-    // but as of Unicode 6.3 the 11xx block is filled,
-    // and there are also more Jamo T at U+D7CB..U+D7FB.
-    // Maybe use [:HST=T:] and look for the end of the last range?
-    // Maybe use script boundary mappings instead of this code??
-    UChar  jamoRanges[] = {Hangul::JAMO_L_BASE, Hangul::JAMO_V_BASE, Hangul::JAMO_T_BASE + 1, 0x11FF};
-     UnicodeString jamoString(FALSE, jamoRanges, UPRV_LENGTHOF(jamoRanges));
+     UChar32 hanRanges[] = {UCOL_FIRST_HAN, UCOL_LAST_HAN, UCOL_FIRST_HAN_COMPAT, UCOL_LAST_HAN_COMPAT, UCOL_FIRST_HAN_A, UCOL_LAST_HAN_A,
+                            UCOL_FIRST_HAN_B, UCOL_LAST_HAN_B};
+     UChar  jamoRanges[] = {UCOL_FIRST_L_JAMO, UCOL_FIRST_V_JAMO, UCOL_FIRST_T_JAMO, UCOL_LAST_T_JAMO};
+     UnicodeString hanString = UnicodeString::fromUTF32(hanRanges, ARRAY_SIZE(hanRanges));
+     UnicodeString jamoString(FALSE, jamoRanges, ARRAY_SIZE(jamoRanges));
      CEList hanList(coll, hanString, status);
      CEList jamoList(coll, jamoString, status);
      int32_t j = 0;

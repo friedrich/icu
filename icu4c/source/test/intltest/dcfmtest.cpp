@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 2002-2014, International Business Machines Corporation and
+ * Copyright (c) 2002-2013, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -30,10 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
-#if !defined(_MSC_VER)
-namespace std { class type_info; } // WORKAROUND: http://llvm.org/bugs/show_bug.cgi?id=13364
-#endif
 
 #include <string>
 #include <iostream>

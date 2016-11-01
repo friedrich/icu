@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 **********************************************************************
 * Copyright (c) 2004-2013, International Business Machines
@@ -16,13 +14,13 @@ package com.ibm.icu.util;
 /**
  * An amount of a specified unit, consisting of a Number and a Unit.
  * For example, a length measure consists of a Number and a length
- * unit, such as feet or meters.
+ * unit, such as feet or meters.  This is an abstract class.
+ * Subclasses specify a concrete Unit type.
  *
  * <p>Measure objects are parsed and formatted by subclasses of
  * MeasureFormat.
  *
  * <p>Measure objects are immutable. All subclasses must guarantee that.
- * (However, subclassing is discouraged.)
  *
  * @see java.lang.Number
  * @see com.ibm.icu.util.MeasureUnit
@@ -31,8 +29,9 @@ package com.ibm.icu.util;
  * @stable ICU 3.0
  */
 public class Measure {
-
+    
     private final Number number;
+
     private final MeasureUnit unit;
 
     /**
@@ -48,24 +47,23 @@ public class Measure {
         this.number = number;
         this.unit = unit;
     }
-
+    
     /**
      * Returns true if the given object is equal to this object.
      * @return true if this object is equal to the given object
      * @stable ICU 3.0
      */
-    @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof Measure)) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        try {
+            Measure m = (Measure) obj;
+            return unit.equals(m.unit) && numbersEqual(number, m.number);
+        } catch (ClassCastException e) {
             return false;
         }
-        Measure m = (Measure) obj;
-        return unit.equals(m.unit) && numbersEqual(number, m.number);
     }
-
+    
     /*
      * See if two numbers are identical or have the same double value.
      * @param a A number
@@ -88,9 +86,8 @@ public class Measure {
      * @return a 32-bit hash
      * @stable ICU 3.0
      */
-    @Override
     public int hashCode() {
-        return 31 * Double.valueOf(number.doubleValue()).hashCode() + unit.hashCode();
+        return number.hashCode() ^ unit.hashCode();
     }
 
     /**
@@ -99,7 +96,6 @@ public class Measure {
      * code together with the numeric amount
      * @stable ICU 3.0
      */
-    @Override
     public String toString() {
         return number.toString() + ' ' + unit.toString();
     }

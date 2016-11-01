@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/th.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/th.xml
+ */
 th{
-    Version{"2.1.28.79"}
+    Version{"2.0.93.18"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"อาบีจาน"}
@@ -303,14 +312,11 @@ th{
         "America:El_Salvador"{
             ec{"เอลซัลวาดอร์"}
         }
-        "America:Fort_Nelson"{
-            ec{"ฟอร์ตเนลสัน"}
-        }
         "America:Fortaleza"{
             ec{"ฟอร์ตาเลซา"}
         }
         "America:Glace_Bay"{
-            ec{"เกลซเบย์"}
+            ec{"แกลซเบย์"}
         }
         "America:Godthab"{
             ec{"กอดแธบ"}
@@ -453,6 +459,9 @@ th{
         "America:Montevideo"{
             ec{"มอนเตวิเดโอ"}
         }
+        "America:Montreal"{
+            ec{"มอนทรีอัล"}
+        }
         "America:Montserrat"{
             ec{"มอนเซอร์รัต"}
         }
@@ -543,6 +552,9 @@ th{
         "America:Scoresbysund"{
             ec{"สกอเรสไบซันด์"}
         }
+        "America:Shiprock"{
+            ec{"ชิปร็อก"}
+        }
         "America:Sitka"{
             ec{"ซิตกา"}
         }
@@ -604,7 +616,7 @@ th{
             ec{"เคซีย์"}
         }
         "Antarctica:Davis"{
-            ec{"เดวิส"}
+            ec{"ดาวีส์"}
         }
         "Antarctica:DumontDUrville"{
             ec{"ดูมองต์ดูร์วิลล์"}
@@ -613,7 +625,7 @@ th{
             ec{"แมคควอรี"}
         }
         "Antarctica:Mawson"{
-            ec{"มอว์สัน"}
+            ec{"มาว์ซัน"}
         }
         "Antarctica:McMurdo"{
             ec{"แมคมัวโด"}
@@ -622,16 +634,16 @@ th{
             ec{"พาล์เมอร์"}
         }
         "Antarctica:Rothera"{
-            ec{"โรธีรา"}
+            ec{"โรเทรา"}
+        }
+        "Antarctica:South_Pole"{
+            ec{"ขั้วโลกใต้"}
         }
         "Antarctica:Syowa"{
-            ec{"ไซโยวา"}
-        }
-        "Antarctica:Troll"{
-            ec{"โทรล"}
+            ec{"เซียวา"}
         }
         "Antarctica:Vostok"{
-            ec{"วอสตอค"}
+            ec{"วอสต็อค"}
         }
         "Arctic:Longyearbyen"{
             ec{"ลองเยียร์เบียน"}
@@ -669,9 +681,6 @@ th{
         "Asia:Bangkok"{
             ec{"กรุงเทพ"}
         }
-        "Asia:Barnaul"{
-            ec{"บราโมล"}
-        }
         "Asia:Beirut"{
             ec{"เบรุต"}
         }
@@ -684,11 +693,11 @@ th{
         "Asia:Calcutta"{
             ec{"โกลกาตา"}
         }
-        "Asia:Chita"{
-            ec{"ชิตา"}
-        }
         "Asia:Choibalsan"{
             ec{"ชอยบาลซาน"}
+        }
+        "Asia:Chongqing"{
+            ec{"ฉงชิ่ง"}
         }
         "Asia:Colombo"{
             ec{"โคลัมโบ"}
@@ -710,6 +719,9 @@ th{
         }
         "Asia:Gaza"{
             ec{"กาซา"}
+        }
+        "Asia:Harbin"{
+            ec{"ฮาร์บิน"}
         }
         "Asia:Hebron"{
             ec{"เฮบรอน"}
@@ -740,6 +752,9 @@ th{
         }
         "Asia:Karachi"{
             ec{"การาจี"}
+        }
+        "Asia:Kashgar"{
+            ec{"กัชการ์"}
         }
         "Asia:Katmandu"{
             ec{"กาตมันดุ"}
@@ -828,9 +843,6 @@ th{
         "Asia:Singapore"{
             ec{"สิงคโปร์"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"ซเรดเนคโคลิมสก์"}
-        }
         "Asia:Taipei"{
             ec{"ไทเป"}
         }
@@ -848,9 +860,6 @@ th{
         }
         "Asia:Tokyo"{
             ec{"โตเกียว"}
-        }
-        "Asia:Tomsk"{
-            ec{"ตอมสค์"}
         }
         "Asia:Ulaanbaatar"{
             ec{"อูลานบาตอร์"}
@@ -931,13 +940,13 @@ th{
             ec{"ลินดีแมน"}
         }
         "Australia:Lord_Howe"{
-            ec{"ลอร์ดโฮว์"}
+            ec{"ลอร์ดโฮวี"}
         }
         "Australia:Melbourne"{
             ec{"เมลเบิร์น"}
         }
         "Australia:Perth"{
-            ec{"เพิร์ท"}
+            ec{"เพิิร์ท"}
         }
         "Australia:Sydney"{
             ec{"ซิดนีย์"}
@@ -950,9 +959,6 @@ th{
         }
         "Europe:Andorra"{
             ec{"อันดอร์รา"}
-        }
-        "Europe:Astrakhan"{
-            ec{"แอสตราคาน"}
         }
         "Europe:Athens"{
             ec{"เอเธนส์"}
@@ -986,7 +992,7 @@ th{
         }
         "Europe:Dublin"{
             ec{"ดับบลิน"}
-            ld{"เวลามาตรฐานไอร์แลนด์"}
+            ld{"เวลาฤดูร้อนไอร์แลนด์"}
         }
         "Europe:Gibraltar"{
             ec{"ยิบรอลตาร์"}
@@ -1011,9 +1017,6 @@ th{
         }
         "Europe:Kiev"{
             ec{"เคียฟ"}
-        }
-        "Europe:Kirov"{
-            ec{"คิรอฟ"}
         }
         "Europe:Lisbon"{
             ec{"ลิสบอน"}
@@ -1091,9 +1094,6 @@ th{
         "Europe:Tirane"{
             ec{"ติรานา"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"อะลิยานอฟ"}
-        }
         "Europe:Uzhgorod"{
             ec{"อัซโกร็อด"}
         }
@@ -1163,11 +1163,8 @@ th{
         "Pacific:Auckland"{
             ec{"โอคแลนด์"}
         }
-        "Pacific:Bougainville"{
-            ec{"บูเกนวิลล์"}
-        }
         "Pacific:Chatham"{
-            ec{"แชทัม"}
+            ec{"แชแทม"}
         }
         "Pacific:Easter"{
             ec{"อีสเตอร์"}
@@ -1176,7 +1173,7 @@ th{
             ec{"เอฟาเต"}
         }
         "Pacific:Enderbury"{
-            ec{"เอนเดอร์เบอรี"}
+            ec{"เอนเดอร์เบอร์รี"}
         }
         "Pacific:Fakaofo"{
             ec{"ฟาเคาโฟ"}
@@ -1209,7 +1206,7 @@ th{
             ec{"คิริทิมาตี"}
         }
         "Pacific:Kosrae"{
-            ec{"คอสไร"}
+            ec{"คอสแร"}
         }
         "Pacific:Kwajalein"{
             ec{"ควาจาเลน"}
@@ -1218,7 +1215,7 @@ th{
             ec{"มาจูโร"}
         }
         "Pacific:Marquesas"{
-            ec{"มาร์เคซัส"}
+            ec{"มาร์เควซัส"}
         }
         "Pacific:Midway"{
             ec{"มิดเวย์"}
@@ -1257,7 +1254,7 @@ th{
             ec{"ไซปัน"}
         }
         "Pacific:Tahiti"{
-            ec{"ตาฮีตี"}
+            ec{"ทาฮิติ"}
         }
         "Pacific:Tarawa"{
             ec{"ตาระวา"}
@@ -1307,39 +1304,34 @@ th{
             ls{"เวลามาตรฐานอัลมาตี"}
         }
         "meta:Amazon"{
-            ld{"เวลาฤดูร้อนแอมะซอน"}
-            lg{"เวลาแอมะซอน"}
-            ls{"เวลามาตรฐานแอมะซอน"}
+            ld{"เวลาฤดูร้อนอะเมซอน"}
+            lg{"เวลาอะเมซอน"}
+            ls{"เวลามาตรฐานอะเมซอน"}
         }
         "meta:America_Central"{
-            ld{"เวลาออมแสงตอนกลางในอเมริกาเหนือ"}
-            lg{"เวลาตอนกลางในอเมริกาเหนือ"}
-            ls{"เวลามาตรฐานตอนกลางในอเมริกาเหนือ"}
+            ld{"เวลาออมแสงทางตอนกลาง"}
+            lg{"เวลาตอนกลาง"}
+            ls{"เวลามาตรฐานตอนกลาง"}
         }
         "meta:America_Eastern"{
-            ld{"เวลาออมแสงทางตะวันออกในอเมริกาเหนือ"}
-            lg{"เวลาทางตะวันออกในอเมริกาเหนือ"}
-            ls{"เวลามาตรฐานทางตะวันออกในอเมริกาเหนือ"}
+            ld{"เวลาออมแสงทางตะวันออก"}
+            lg{"เวลาตะวันออก"}
+            ls{"เวลามาตรฐานตะวันออก"}
         }
         "meta:America_Mountain"{
-            ld{"เวลาออมแสงแถบภูเขาในอเมริกาเหนือ"}
-            lg{"เวลาแถบภูเขาในอเมริกาเหนือ"}
-            ls{"เวลามาตรฐานแถบภูเขาในอเมริกาเหนือ"}
+            ld{"เวลาออมแสงแถบภูเขา"}
+            lg{"เวลาแถบภูเขา"}
+            ls{"เวลามาตรฐานแถบภูเขา"}
         }
         "meta:America_Pacific"{
-            ld{"เวลาออมแสงแปซิฟิกในอเมริกาเหนือ"}
-            lg{"เวลาแปซิฟิกในอเมริกาเหนือ"}
-            ls{"เวลามาตรฐานแปซิฟิกในอเมริกาเหนือ"}
+            ld{"เวลาออมแสงของแปซิฟิก"}
+            lg{"เวลาแปซิฟิก"}
+            ls{"เวลามาตรฐานแปซิฟิก"}
         }
         "meta:Anadyr"{
             ld{"เวลาฤดูร้อนอะนาดีร์"}
             lg{"เวลาอะนาดีร์"}
             ls{"เวลามาตรฐานอะนาดีร์"}
-        }
-        "meta:Apia"{
-            ld{"เวลาออมแสงอาปีอา"}
-            lg{"เวลาอาปีอา"}
-            ls{"เวลามาตรฐานอาปีอา"}
         }
         "meta:Aqtau"{
             ld{"เวลาฤดูร้อนอัคตาอู"}
@@ -1504,9 +1496,6 @@ th{
             lg{"เวลายุโรปตะวันออก"}
             ls{"เวลามาตรฐานยุโรปตะวันออก"}
         }
-        "meta:Europe_Further_Eastern"{
-            ls{"เวลายุโรปตะวันออกไกล"}
-        }
         "meta:Europe_Western"{
             ld{"เวลาฤดูร้อนยุโรปตะวันตก"}
             lg{"เวลายุโรปตะวันตก"}
@@ -1651,8 +1640,8 @@ th{
             ls{"เวลาหมู่เกาะไลน์"}
         }
         "meta:Lord_Howe"{
-            ld{"เวลาออมแสงลอร์ดโฮว์"}
-            lg{"เวลาลอร์ดโฮว์"}
+            ld{"เวลาออมแสงของลอร์ดโฮว์"}
+            lg{"เวลาลอร์ดโฮว"}
             ls{"เวลามาตรฐานลอร์ดโฮว์"}
         }
         "meta:Macau"{
@@ -1687,16 +1676,6 @@ th{
         }
         "meta:Mawson"{
             ls{"เวลามอว์สัน"}
-        }
-        "meta:Mexico_Northwest"{
-            ld{"เวลาออมแสงเม็กซิโกตะวันตกเฉียงเหนือ"}
-            lg{"เวลาเม็กซิโกตะวันตกเฉียงเหนือ"}
-            ls{"เวลามาตรฐานเม็กซิโกตะวันตกเฉียงเหนือ"}
-        }
-        "meta:Mexico_Pacific"{
-            ld{"เวลาออมแสงแปซิฟิกเม็กซิโก"}
-            lg{"เวลาแปซิฟิกเม็กซิโก"}
-            ls{"เวลามาตรฐานแปซิฟิกเม็กซิโก"}
         }
         "meta:Mongolia"{
             ld{"เวลาฤดูร้อนอูลานบาตอร์"}
@@ -1794,10 +1773,7 @@ th{
             ls{"เวลาพิตแคร์น"}
         }
         "meta:Ponape"{
-            ls{"เวลาโปนาเป"}
-        }
-        "meta:Pyongyang"{
-            ls{"เวลาเปียงยาง"}
+            ls{"เวลาโปเนป"}
         }
         "meta:Qyzylorda"{
             ld{"เวลาฤดูร้อนคืยซิลออร์ดา"}
@@ -1841,7 +1817,7 @@ th{
             ls{"เวลาซูรินาเม"}
         }
         "meta:Syowa"{
-            ls{"เวลาไซโยวา"}
+            ls{"เวลาโซวา"}
         }
         "meta:Tahiti"{
             ls{"เวลาตาฮีตี"}

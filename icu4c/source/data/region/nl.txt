@@ -1,8 +1,17 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/nl.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/nl.xml
+ */
 nl{
     Countries{
-        001{"wereld"}
+        001{"Wereld"}
         002{"Afrika"}
         003{"Noord-Amerika"}
         005{"Zuid-Amerika"}
@@ -40,10 +49,11 @@ nl{
         AI{"Anguilla"}
         AL{"Albanië"}
         AM{"Armenië"}
+        AN{"Nederlandse Antillen"}
         AO{"Angola"}
         AQ{"Antarctica"}
         AR{"Argentinië"}
-        AS{"Amerikaans-Samoa"}
+        AS{"Amerikaans Samoa"}
         AT{"Oostenrijk"}
         AU{"Australië"}
         AW{"Aruba"}
@@ -58,7 +68,7 @@ nl{
         BH{"Bahrein"}
         BI{"Burundi"}
         BJ{"Benin"}
-        BL{"Saint-Barthélemy"}
+        BL{"Saint Barthélemy"}
         BM{"Bermuda"}
         BN{"Brunei"}
         BO{"Bolivia"}
@@ -68,7 +78,7 @@ nl{
         BT{"Bhutan"}
         BV{"Bouveteiland"}
         BW{"Botswana"}
-        BY{"Belarus"}
+        BY{"Wit-Rusland"}
         BZ{"Belize"}
         CA{"Canada"}
         CC{"Cocoseilanden"}
@@ -109,7 +119,7 @@ nl{
         FI{"Finland"}
         FJ{"Fiji"}
         FK{"Falklandeilanden"}
-        FM{"Micronesia"}
+        FM{"Micronesië"}
         FO{"Faeröer"}
         FR{"Frankrijk"}
         GA{"Gabon"}
@@ -132,7 +142,7 @@ nl{
         GW{"Guinee-Bissau"}
         GY{"Guyana"}
         HK{"Hongkong SAR van China"}
-        HM{"Heard en McDonaldeilanden"}
+        HM{"Heard- en McDonaldeilanden"}
         HN{"Honduras"}
         HR{"Kroatië"}
         HT{"Haïti"}
@@ -161,7 +171,7 @@ nl{
         KP{"Noord-Korea"}
         KR{"Zuid-Korea"}
         KW{"Koeweit"}
-        KY{"Kaaimaneilanden"}
+        KY{"Caymaneilanden"}
         KZ{"Kazachstan"}
         LA{"Laos"}
         LB{"Libanon"}
@@ -185,8 +195,8 @@ nl{
         ML{"Mali"}
         MM{"Myanmar (Birma)"}
         MN{"Mongolië"}
-        MO{"Macau SAR van China"}
-        MP{"Noordelijke Marianen"}
+        MO{"Macao SAR van China"}
+        MP{"Noordelijke Marianeneilanden"}
         MQ{"Martinique"}
         MR{"Mauritanië"}
         MS{"Montserrat"}
@@ -200,7 +210,7 @@ nl{
         NA{"Namibië"}
         NC{"Nieuw-Caledonië"}
         NE{"Niger"}
-        NF{"Norfolk"}
+        NF{"Norfolkeiland"}
         NG{"Nigeria"}
         NI{"Nicaragua"}
         NL{"Nederland"}
@@ -225,7 +235,7 @@ nl{
         PW{"Palau"}
         PY{"Paraguay"}
         QA{"Qatar"}
-        QO{"overig Oceanië"}
+        QO{"Overig Oceanië"}
         RE{"Réunion"}
         RO{"Roemenië"}
         RS{"Servië"}
@@ -272,7 +282,6 @@ nl{
         UA{"Oekraïne"}
         UG{"Oeganda"}
         UM{"Kleine afgelegen eilanden van de Verenigde Staten"}
-        UN{"verenigde naties"}
         US{"Verenigde Staten"}
         UY{"Uruguay"}
         UZ{"Oezbekistan"}
@@ -291,22 +300,14 @@ nl{
         ZA{"Zuid-Afrika"}
         ZM{"Zambia"}
         ZW{"Zimbabwe"}
-        ZZ{"onbekend gebied"}
+        ZZ{"Onbekend gebied"}
     }
-    Countries%short{
+    CountriesShort{
         GB{"VK"}
         HK{"Hongkong"}
-        MO{"Macau"}
+        MO{"Macao"}
         PS{"Palestina"}
-        UN{"vn"}
         US{"VS"}
     }
-    Countries%variant{
-        CD{"Congo (DRC)"}
-        CG{"Congo (Republiek)"}
-        CZ{"Tsjechische Republiek"}
-        FK{"Falklandeilanden (Islas Malvinas)"}
-        MK{"Macedonië (FYROM)"}
-    }
-    Version{"2.1.28.79"}
+    Version{"2.0.93.8"}
 }

@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bg.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/bg.xml
+ */
 bg{
     Currencies{
         ADP{
@@ -180,19 +189,15 @@ bg{
         }
         BWP{
             "BWP",
-            "Ботсванска пула",
+            "Ботсуанска пула",
         }
         BYB{
             "BYB",
             "Беларуска нова рубла (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Беларуска рубла",
-        }
         BYR{
             "BYR",
-            "Беларуска рубла (2000–2016)",
+            "Беларуска рубла",
         }
         BZD{
             "BZD",
@@ -743,7 +748,7 @@ bg{
             "Сръбски динар",
         }
         RUB{
-            "RUB",
+            "руб.",
             "Руска рубла",
         }
         RUR{
@@ -906,14 +911,6 @@ bg{
             "щ.д.",
             "Щатски долар",
         }
-        USN{
-            "USN",
-            "USN",
-        }
-        USS{
-            "USS",
-            "USS",
-        }
         UYI{
             "UYI",
             "Уругвайско песо (индекс на инфлацията)",
@@ -952,7 +949,7 @@ bg{
         }
         XAF{
             "FCFA",
-            "Централноафрикански франк",
+            "Централноафрикански CFA франк",
         }
         XAG{
             "XAG",
@@ -996,7 +993,7 @@ bg{
         }
         XOF{
             "CFA",
-            "Западноафрикански франк",
+            "Западноафрикански CFA франк",
         }
         XPD{
             "XPD",
@@ -1016,7 +1013,7 @@ bg{
         }
         XXX{
             "XXX",
-            "Непозната валута",
+            "Непозната или невалидна валута",
         }
         YDD{
             "YDD",
@@ -1070,104 +1067,6 @@ bg{
             "ZWL",
             "Зимбабвийски долар (2009)",
         }
-    }
-    Currencies%narrow{
-        AOA{"Kz"}
-        ARS{"ARS"}
-        AUD{"AUD"}
-        BAM{"KM"}
-        BBD{"BBD"}
-        BDT{"BDT"}
-        BMD{"BMD"}
-        BND{"BND"}
-        BOB{"Bs"}
-        BRL{"BRL"}
-        BSD{"BSD"}
-        BWP{"P"}
-        BYN{"BYN"}
-        BZD{"BZD"}
-        CAD{"CAD"}
-        CLP{"CLP"}
-        CNY{"CNY"}
-        COP{"COP"}
-        CRC{"CRC"}
-        CUC{"$"}
-        CUP{"CUP"}
-        CZK{"Kč"}
-        DKK{"kr"}
-        DOP{"DOP"}
-        EGP{"E£"}
-        EUR{"€"}
-        FJD{"FJD"}
-        GBP{"£"}
-        GEL{"₾"}
-        GIP{"GIP"}
-        GNF{"FG"}
-        GTQ{"Q"}
-        GYD{"GYD"}
-        HKD{"HKD"}
-        HNL{"L"}
-        HRK{"kn"}
-        HUF{"Ft"}
-        IDR{"Rp"}
-        ILS{"ILS"}
-        INR{"INR"}
-        ISK{"kr"}
-        JMD{"JMD"}
-        JPY{"¥"}
-        KHR{"KHR"}
-        KMF{"CF"}
-        KPW{"₩"}
-        KRW{"KRW"}
-        KYD{"KYD"}
-        KZT{"KZT"}
-        LAK{"LAK"}
-        LBP{"L£"}
-        LKR{"Rs"}
-        LRD{"LRD"}
-        MGA{"Ar"}
-        MMK{"K"}
-        MNT{"MNT"}
-        MUR{"Rs"}
-        MXN{"MXN"}
-        MYR{"RM"}
-        NAD{"NAD"}
-        NGN{"NGN"}
-        NIO{"C$"}
-        NOK{"kr"}
-        NPR{"Rs"}
-        NZD{"NZD"}
-        PHP{"PHP"}
-        PKR{"Rs"}
-        PLN{"zł"}
-        PYG{"PYG"}
-        RUB{"₽"}
-        RWF{"RF"}
-        SBD{"SBD"}
-        SEK{"kr"}
-        SGD{"SGD"}
-        SHP{"£"}
-        SRD{"SRD"}
-        SSP{"SSP"}
-        STD{"Db"}
-        SYP{"£"}
-        THB{"฿"}
-        TOP{"T$"}
-        TRY{"TRY"}
-        TTD{"TTD"}
-        TWD{"TWD"}
-        UAH{"UAH"}
-        USD{"$"}
-        UYU{"UYU"}
-        VEF{"Bs"}
-        VND{"VND"}
-        XCD{"$"}
-        ZAR{"R"}
-        ZMW{"ZK"}
-    }
-    Currencies%variant{
-        GEL{"₾"}
-        TRY{"TL"}
     }
     CurrencyPlurals{
         ADP{
@@ -1327,20 +1226,16 @@ bg{
             other{"бутански нгултрума"}
         }
         BWP{
-            one{"ботсванска пула"}
-            other{"ботсвански пули"}
+            one{"ботсуанска пула"}
+            other{"ботсуански пули"}
         }
         BYB{
             one{"беларуска нова рубла (1994–1999)"}
             other{"беларуски нови рубли (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"беларуска рубла"}
             other{"беларуски рубли"}
-        }
-        BYR{
-            one{"беларуска рубла (2000–2016)"}
-            other{"беларуски рубли (2000–2016)"}
         }
         BZD{
             one{"белизийски долар"}
@@ -2019,8 +1914,8 @@ bg{
             other{"самоански тали"}
         }
         XAF{
-            one{"централноафрикански франк"}
-            other{"централноафрикански франка"}
+            one{"централноафрикански CFA франк"}
+            other{"централноафрикански CFA франка"}
         }
         XCD{
             one{"източнокарибски долар"}
@@ -2031,16 +1926,16 @@ bg{
             other{"френски златна франка"}
         }
         XOF{
-            one{"западноафрикански франк"}
-            other{"западноафрикански франка"}
+            one{"западноафрикански CFA франк"}
+            other{"западноафрикански CFA франка"}
         }
         XPF{
             one{"френскополинезийски франк"}
             other{"френскополинезийски франка"}
         }
         XXX{
-            one{"(непозната валута)"}
-            other{"(непозната валута)"}
+            one{"непозната или невалидна валута"}
+            other{"непозната или невалидна валута"}
         }
         YDD{
             one{"йеменски динар"}
@@ -2095,5 +1990,5 @@ bg{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.30.6"}
+    Version{"2.0.92.87"}
 }

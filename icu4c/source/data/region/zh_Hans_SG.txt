@@ -1,8 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
-/**
- * generated alias target
- */
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/zh_Hans_SG.xml
+// *
+// ***************************************************************************
 zh_Hans_SG{
-    ___{""}
+    Countries{
+        CP{"克利柏顿岛"}
+        ME{"黑山"}
+        PM{"圣皮埃尔和密克隆"}
+    }
+    Version{"2.0.92.87"}
 }

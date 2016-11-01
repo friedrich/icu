@@ -1,51 +1,55 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
- *******************************************************************************
- *
- *   Copyright (C) 2004-2015, International Business Machines
- *   Corporation and others.  All Rights Reserved.
- *
- *******************************************************************************
- *   file name:  UBiDiProps.java
- *   encoding:   US-ASCII
- *   tab size:   8 (not used)
- *   indentation:4
- *
- *   created on: 2005jan16
- *   created by: Markus W. Scherer
- *
- *   Low-level Unicode bidi/shaping properties access.
- *   Java port of ubidi_props.h/.c.
- */
+*******************************************************************************
+*
+*   Copyright (C) 2004-2013, International Business Machines
+*   Corporation and others.  All Rights Reserved.
+*
+*******************************************************************************
+*   file name:  UBiDiProps.java
+*   encoding:   US-ASCII
+*   tab size:   8 (not used)
+*   indentation:4
+*
+*   created on: 2005jan16
+*   created by: Markus W. Scherer
+*
+*   Low-level Unicode bidi/shaping properties access.
+*   Java port of ubidi_props.h/.c.
+*/
 
 package com.ibm.icu.impl;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
 import java.util.Iterator;
 
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.lang.UProperty;
 import com.ibm.icu.text.UnicodeSet;
-import com.ibm.icu.util.ICUUncheckedIOException;
 
 public final class UBiDiProps {
     // constructors etc. --------------------------------------------------- ***
 
     // port of ubidi_openProps()
     private UBiDiProps() throws IOException{
-        ByteBuffer bytes=ICUBinary.getData(DATA_FILE_NAME);
-        readData(bytes);
+        InputStream is=ICUData.getStream(ICUResourceBundle.ICU_BUNDLE+"/"+DATA_FILE_NAME);
+        BufferedInputStream b=new BufferedInputStream(is, 4096 /* data buffer size */);
+        readData(b);
+        b.close();
+        is.close();
     }
 
-    private void readData(ByteBuffer bytes) throws IOException {
+    private void readData(InputStream is) throws IOException {
+        DataInputStream inputStream=new DataInputStream(is);
+
         // read the header
-        ICUBinary.readHeader(bytes, FMT, new IsAcceptable());
+        ICUBinary.readHeader(inputStream, FMT, new IsAcceptable());
 
         // read indexes[]
         int i, count;
-        count=bytes.getInt();
+        count=inputStream.readInt();
         if(count<IX_TOP) {
             throw new IOException("indexes[0] too small in "+DATA_FILE_NAME);
         }
@@ -53,39 +57,38 @@ public final class UBiDiProps {
 
         indexes[0]=count;
         for(i=1; i<count; ++i) {
-            indexes[i]=bytes.getInt();
+            indexes[i]=inputStream.readInt();
         }
 
         // read the trie
-        trie=Trie2_16.createFromSerialized(bytes);
+        trie=Trie2_16.createFromSerialized(inputStream);
         int expectedTrieLength=indexes[IX_TRIE_SIZE];
         int trieLength=trie.getSerializedLength();
         if(trieLength>expectedTrieLength) {
             throw new IOException(DATA_FILE_NAME+": not enough bytes for the trie");
         }
         // skip padding after trie bytes
-        ICUBinary.skipBytes(bytes, expectedTrieLength-trieLength);
+        inputStream.skipBytes(expectedTrieLength-trieLength);
 
         // read mirrors[]
         count=indexes[IX_MIRROR_LENGTH];
         if(count>0) {
-            mirrors=ICUBinary.getInts(bytes, count, 0);
+            mirrors=new int[count];
+            for(i=0; i<count; ++i) {
+                mirrors[i]=inputStream.readInt();
+            }
         }
 
         // read jgArray[]
         count=indexes[IX_JG_LIMIT]-indexes[IX_JG_START];
         jgArray=new byte[count];
-        bytes.get(jgArray);
-
-        // read jgArray2[]
-        count=indexes[IX_JG_LIMIT2]-indexes[IX_JG_START2];
-        jgArray2=new byte[count];
-        bytes.get(jgArray2);
+        for(i=0; i<count; ++i) {
+            jgArray[i]=inputStream.readByte();
+        }
     }
 
     // implement ICUBinary.Authenticate
     private final static class IsAcceptable implements ICUBinary.Authenticate {
-        @Override
         public boolean isDataVersionAcceptable(byte version[]) {
             return version[0]==2;
         }
@@ -116,30 +119,19 @@ public final class UBiDiProps {
         /* add the code points from the Joining_Group array where the value changes */
         start=indexes[IX_JG_START];
         limit=indexes[IX_JG_LIMIT];
-        byte[] jga=jgArray;
-        for(;;) {
-            length=limit-start;
-            prev=0;
-            for(i=0; i<length; ++i) {
-                jg=jga[i];
-                if(jg!=prev) {
-                    set.add(start);
-                    prev=jg;
-                }
-                ++start;
+        length=limit-start;
+        prev=0;
+        for(i=0; i<length; ++i) {
+            jg=jgArray[i];
+            if(jg!=prev) {
+                set.add(start);
+                prev=jg;
             }
-            if(prev!=0) {
-                /* add the limit code point if the last value was not 0 (it is now start==limit) */
-                set.add(limit);
-            }
-            if(limit==indexes[IX_JG_LIMIT]) {
-                /* switch to the second Joining_Group range */
-                start=indexes[IX_JG_START2];
-                limit=indexes[IX_JG_LIMIT2];
-                jga=jgArray2;
-            } else {
-                break;
-            }
+            ++start;
+        }
+        if(prev!=0) {
+            /* add the limit code point if the last value was not 0 (it is now start==limit) */
+            set.add(limit);
         }
 
         /* add code points with hardcoded properties, plus the ones following them */
@@ -227,14 +219,10 @@ public final class UBiDiProps {
         start=indexes[IX_JG_START];
         limit=indexes[IX_JG_LIMIT];
         if(start<=c && c<limit) {
-            return jgArray[c-start]&0xff;
+            return (int)jgArray[c-start]&0xff;
+        } else {
+            return UCharacter.JoiningGroup.NO_JOINING_GROUP;
         }
-        start=indexes[IX_JG_START2];
-        limit=indexes[IX_JG_LIMIT2];
-        if(start<=c && c<limit) {
-            return jgArray2[c-start]&0xff;
-        }
-        return UCharacter.JoiningGroup.NO_JOINING_GROUP;
     }
 
     public final int getPairedBracketType(int c) {
@@ -254,7 +242,6 @@ public final class UBiDiProps {
     private int indexes[];
     private int mirrors[];
     private byte jgArray[];
-    private byte jgArray2[];
 
     private Trie2_16 trie;
 
@@ -264,7 +251,7 @@ public final class UBiDiProps {
     private static final String DATA_FILE_NAME=DATA_NAME+"."+DATA_TYPE;
 
     /* format "BiDi" */
-    private static final int FMT=0x42694469;
+    private static final byte FMT[]={ 0x42, 0x69, 0x44, 0x69 };
 
     /* indexes into indexes[] */
     //private static final int IX_INDEX_TOP=0;
@@ -274,8 +261,6 @@ public final class UBiDiProps {
 
     private static final int IX_JG_START=4;
     private static final int IX_JG_LIMIT=5;
-    private static final int IX_JG_START2=6;  /* new in format version 2.2, ICU 54 */
-    private static final int IX_JG_LIMIT2=7;
 
     private static final int IX_MAX_VALUES=15;
     private static final int IX_TOP=16;
@@ -340,7 +325,7 @@ public final class UBiDiProps {
         try {
             INSTANCE = new UBiDiProps();
         } catch (IOException e) {
-            throw new ICUUncheckedIOException(e);
+            throw new RuntimeException(e);
         }
     }
 }

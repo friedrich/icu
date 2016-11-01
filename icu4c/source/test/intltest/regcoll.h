@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2014, International Business Machines Corporation and
+ * Copyright (c) 1997-2011, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -226,8 +224,6 @@ public:
     //
     void Test4146160(/* char* par */);
 
-    void Test4179216();
-
     // Ticket 7189
     //
     // nextSortKeyPart incorrect for EO_S1 collation
@@ -239,9 +235,6 @@ public:
     // Tertiary value compression problem with case first option enabled
     //
     void TestCaseFirstCompression();
-
-    void TestTrailingComment();
-    void TestBeforeWithTooStrongAfter();
 
 private:
     //------------------------------------------------------------------------
