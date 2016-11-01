@@ -1,14 +1,14 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2008-2016, Google Inc, International Business Machines Corporation
+ * Copyright (C) 2008-2013, Google Inc, International Business Machines Corporation
  * and others. All Rights Reserved.
  *******************************************************************************
  */
 package com.ibm.icu.text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -43,32 +43,32 @@ import com.ibm.icu.util.ULocale;
  * (bucket) of a larger "target" list. That is, each label corresponds to a bucket in
  * the target list, where everything in the bucket is greater than or equal to the character
  * (according to the locale's collation). Strings can be added to the index;
- * they will be in sorted order in the right bucket.
+ * they will be in sorted order in the right bucket.</p>
  * <p>
  * The class also supports having buckets for strings before the first (underflow),
  * after the last (overflow), and between scripts (inflow). For example, if the index
  * is constructed with labels for Russian and English, Greek characters would fall
- * into an inflow bucket between the other two scripts.
+ * into an inflow bucket between the other two scripts.</p>
  *
  * <p><em>Note:</em> If you expect to have a lot of ASCII or Latin characters
  * as well as characters from the user's language,
- * then it is a good idea to call addLabels(ULocale.English).
+ * then it is a good idea to call addLabels(ULocale.English).</p>
  *
  * <h2>Direct Use</h2>
  * <p>The following shows an example of building an index directly.
  *  The "show..." methods below are just to illustrate usage.
- *
+ * 
  * <pre>
  * // Create a simple index where the values for the strings are Integers, and add the strings
- *
+ * 
  * AlphabeticIndex&lt;Integer&gt; index = new AlphabeticIndex&lt;Integer&gt;(desiredLocale).addLabels(additionalLocale);
  * int counter = 0;
  * for (String item : test) {
- *     index.addRecord(item, counter++);
+ *     index.addRecord(item, counter++); 
  * }
  * ...
  * // Show index at top. We could skip or gray out empty buckets
- *
+ * 
  * for (AlphabeticIndex.Bucket&lt;Integer&gt; bucket : index) {
  *     if (showAll || bucket.size() != 0) {
  *         showLabelAtTop(UI, bucket.getLabel());
@@ -76,7 +76,7 @@ import com.ibm.icu.util.ULocale;
  * }
  *  ...
  * // Show the buckets with their contents, skipping empty buckets
- *
+ * 
  * for (AlphabeticIndex.Bucket&lt;Integer&gt; bucket : index) {
  *     if (bucket.size() != 0) {
  *         showLabelInList(UI, bucket.getLabel());
@@ -140,7 +140,6 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     // Comparator for records, so that the Record class can be static.
     private final Comparator<Record<V>> recordComparator = new Comparator<Record<V>>() {
-        @Override
         public int compare(Record<V> o1, Record<V> o2) {
             return collatorOriginal.compare(o1.name, o2.name);
         }
@@ -167,7 +166,8 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
      *
      * @param <V> The Record value type is unused. It can be omitted for this class
      * if it was omitted for the AlphabeticIndex that built it.
-     * @stable ICU 51
+     * @draft ICU 51
+     * @provisional This API might change or be removed in a future release.
      */
     public static final class ImmutableIndex<V> implements Iterable<Bucket<V>> {
         private final BucketList<V> buckets;
@@ -182,7 +182,8 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
          * Returns the number of index buckets and labels, including underflow/inflow/overflow.
          *
          * @return the number of index buckets
-         * @stable ICU 51
+         * @draft ICU 51
+         * @provisional This API might change or be removed in a future release.
          */
         public int getBucketCount() {
             return buckets.getBucketCount();
@@ -194,7 +195,8 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
          *
          * @param name the string to be sorted into an index bucket
          * @return the bucket number for the name
-         * @stable ICU 51
+         * @draft ICU 51
+         * @provisional This API might change or be removed in a future release.
          */
         public int getBucketIndex(CharSequence name) {
             return buckets.getBucketIndex(name, collatorPrimaryOnly);
@@ -205,7 +207,8 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
          *
          * @param index bucket number
          * @return the index-th bucket
-         * @stable ICU 51
+         * @draft ICU 51
+         * @provisional This API might change or be removed in a future release.
          */
         public Bucket<V> getBucket(int index) {
             if (0 <= index && index < buckets.getBucketCount()) {
@@ -217,9 +220,9 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
         /**
          * {@inheritDoc}
-         * @stable ICU 51
+         * @draft ICU 51
+         * @provisional This API might change or be removed in a future release.
          */
-        @Override
         public Iterator<Bucket<V>> iterator() {
             return buckets.iterator();
         }
@@ -227,7 +230,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     /**
      * Create the index object.
-     *
+     * 
      * @param locale
      *            The locale for the index.
      * @stable ICU 4.8
@@ -238,7 +241,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     /**
      * Create the index object.
-     *
+     * 
      * @param locale
      *            The locale for the index.
      * @stable ICU 4.8
@@ -247,18 +250,19 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
         this(ULocale.forLocale(locale), null);
     }
 
-    /**
+    /** 
      * Create an AlphabeticIndex that uses a specific collator.
-     *
+     * 
      * <p>The index will be created with no labels; the addLabels() function must be called
      * after creation to add the desired labels to the index.
-     *
-     * <p>The index will work directly with the supplied collator. If the caller will need to
+     * 
+     * <p>The index will work directly with the supplied collator. If the caller will need to 
      * continue working with the collator it should be cloned first, so that the
      * collator provided to the AlphabeticIndex remains unchanged after creation of the index.
-     *
+     * 
      * @param collator The collator to use to order the contents of this index.
-     * @stable ICU 51
+     * @draft ICU 51
+     * @provisional This API might change or be removed in a future release.
      */
     public AlphabeticIndex(RuleBasedCollator collator) {
         this(null, collator);
@@ -270,7 +274,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
     private AlphabeticIndex(ULocale locale, RuleBasedCollator collator) {
         collatorOriginal = collator != null ? collator : (RuleBasedCollator) Collator.getInstance(locale);
         try {
-            collatorPrimaryOnly = collatorOriginal.cloneAsThawed();
+            collatorPrimaryOnly = (RuleBasedCollator) (collatorOriginal.clone());
         } catch (Exception e) {
             // should never happen
             throw new IllegalStateException("Collator cannot be cloned", e);
@@ -278,8 +282,21 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
         collatorPrimaryOnly.setStrength(Collator.PRIMARY);
         collatorPrimaryOnly.freeze();
 
-        firstCharsInScripts = getFirstCharactersInScripts();
+        firstCharsInScripts = new ArrayList<String>(HACK_FIRST_CHARS_IN_SCRIPTS);
         Collections.sort(firstCharsInScripts, collatorPrimaryOnly);
+        if (collatorPrimaryOnly.compare("\u4E00", "\u1112") <= 0 &&
+                collatorPrimaryOnly.compare("\u1100", "\u4E00") <= 0) {
+            // The standard Korean tailoring sorts Hanja (Han characters)
+            // as secondary differences from Hangul syllables.
+            // This makes U+4E00 not useful as a Han-script boundary.
+            // TODO: This becomes obsolete when the root collator gets
+            // reliable script-first-primary mappings.
+            int hanIndex = Collections.binarySearch(
+                    firstCharsInScripts, "\u4E00", collatorPrimaryOnly);
+            if (hanIndex >= 0) {
+                firstCharsInScripts.remove(hanIndex);
+            }
+        }
         // Guard against a degenerate collator where
         // some script boundary strings are primary ignorable.
         for (;;) {
@@ -294,9 +311,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
             }
         }
 
-        // Chinese index characters, which are specific to each of the several Chinese tailorings,
-        // take precedence over the single locale data exemplar set per language.
-        if (!addChineseIndexCharacters() && locale != null) {
+        if (locale != null) {
             addIndexExemplars(locale);
         }
     }
@@ -355,7 +370,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     /**
      * Get the default label used in the IndexCharacters' locale for underflow, eg the last item in: X Y Z ...
-     *
+     * 
      * @return underflow label
      * @stable ICU 4.8
      */
@@ -378,7 +393,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     /**
      * Get the default label used in the IndexCharacters' locale for overflow, eg the first item in: ... A B C
-     *
+     * 
      * @return overflow label
      * @stable ICU 4.8
      */
@@ -402,7 +417,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
     /**
      * Get the default label used for abbreviated buckets <i>between</i> other labels. For example, consider the labels
      * for Latin and Greek are used: X Y Z ... &#x0391; &#x0392; &#x0393;.
-     *
+     * 
      * @return inflow label
      * @stable ICU 4.8
      */
@@ -413,7 +428,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     /**
      * Get the limit on the number of labels in the index. The number of buckets can be slightly larger: see getBucketCount().
-     *
+     * 
      * @return maxLabelCount maximum number of labels.
      * @stable ICU 4.8
      */
@@ -468,7 +483,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
             if (collatorPrimaryOnly.compare(item, firstScriptBoundary) < 0) {
                 // Ignore a primary-ignorable or non-alphabetic index character.
             } else if (collatorPrimaryOnly.compare(item, overflowBoundary) >= 0) {
-                // Ignore an index character that will land in the overflow bucket.
+                // Ignore an index characters that will land in the overflow bucket.
             } else if (checkDistinct && collatorPrimaryOnly.compare(item, separated(item)) == 0) {
                 // Ignore a multi-code point index character that does not sort distinctly
                 // from the sequence of its separate characters.
@@ -485,7 +500,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
             }
         }
 
-        // if the result is still too large, cut down to maxLabelCount elements, by removing every nth element
+        // if the result is still too large, cut down to maxCount elements, by removing every nth element
 
         final int size = indexCharacters.size() - 1;
         if (size > maxLabelCount) {
@@ -522,6 +537,18 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
      * but if they aren't available, we have to synthesize them.
      */
     private void addIndexExemplars(ULocale locale) {
+        // Chinese index characters, which are specific to each of the several Chinese tailorings,
+        // take precedence over the single locale data exemplar set per language.
+        final String language = locale.getLanguage();
+        if (language.equals("zh") || language.equals("ja") || language.equals("ko")) {
+            // TODO: This should be done regardless of the language, but it's expensive.
+            // We should add a Collator function (can be @internal)
+            // to enumerate just the contractions that start with a given code point or string.
+            if (addChineseIndexCharacters()) {
+                return;
+            }
+        }
+
         UnicodeSet exemplars = LocaleData.getExemplarSet(locale, 0, LocaleData.ES_INDEX);
         if (exemplars != null) {
             initialLabels.addAll(exemplars);
@@ -571,22 +598,44 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
     private boolean addChineseIndexCharacters() {
         UnicodeSet contractions = new UnicodeSet();
         try {
-            collatorPrimaryOnly.internalAddContractions(BASE.charAt(0), contractions);
+            collatorPrimaryOnly.getContractionsAndExpansions(contractions, null, false);
         } catch (Exception e) {
             return false;
         }
-        if (contractions.isEmpty()) { return false; }
-        initialLabels.addAll(contractions);
+        String firstHanBoundary = null;
+        boolean hasPinyin = false;
         for (String s : contractions) {
-            assert(s.startsWith(BASE));
-            char c = s.charAt(s.length() - 1);
-            if (0x41 <= c && c <= 0x5A) {  // A-Z
-                // There are Pinyin labels, add ASCII A-Z labels as well.
-                initialLabels.add(0x41, 0x5A);  // A-Z
-                break;
+            if (s.startsWith(BASE)) {
+                initialLabels.add(s);
+                if (firstHanBoundary == null ||
+                        collatorPrimaryOnly.compare(s, firstHanBoundary) < 0) {
+                    firstHanBoundary = s;
+                }
+                char c = s.charAt(s.length() - 1);
+                if ('A' <= c && c <= 'Z') {
+                    hasPinyin = true;
+                }
             }
         }
-        return true;
+        if (hasPinyin) {
+            initialLabels.add('A', 'Z');
+        }
+        if (firstHanBoundary != null) {
+            // The hardcoded list of script boundaries includes U+4E00
+            // which is tailored to not be the first primary
+            // in all Chinese tailorings except "unihan".
+            // Replace U+4E00 with the first boundary string from the tailoring.
+            // TODO: This becomes obsolete when the root collator gets
+            // reliable script-first-primary mappings.
+            int hanIndex = Collections.binarySearch(
+                    firstCharsInScripts, "\u4E00", collatorPrimaryOnly);
+            if (hanIndex >= 0) {
+                firstCharsInScripts.set(hanIndex, firstHanBoundary);
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -613,7 +662,8 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
      * Builds an immutable, thread-safe version of this instance, without data records.
      *
      * @return an immutable index instance
-     * @stable ICU 51
+     * @draft ICU 51
+     * @provisional This API might change or be removed in a future release.
      */
     public ImmutableIndex<V> buildImmutableIndex() {
         // The current AlphabeticIndex Java code never modifies the bucket list once built.
@@ -634,7 +684,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     /**
      * Get the labels.
-     *
+     * 
      * @return The list of bucket labels, after processing.
      * @stable ICU 4.8
      */
@@ -653,7 +703,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
      * <p>
      * <b><i>Don't use this method across threads if you are changing the settings on the collator, at least not without
      * synchronizing.</i></b>
-     *
+     * 
      * @return a clone of the collator used internally
      * @stable ICU 4.8
      */
@@ -673,7 +723,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
      * Add a record (name and data) to the index. The name will be used to sort the items into buckets, and to sort
      * within the bucket. Two records may have the same name. When they do, the sort order is according to the order added:
      * the first added comes first.
-     *
+     * 
      * @param name
      *            Name, such as a name
      * @param data
@@ -700,7 +750,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
      * <p>
      * Note that the bucket number (and sort key) are only valid for the settings of the current AlphabeticIndex; if
      * those are changed, then the bucket number and sort key must be regenerated.
-     *
+     * 
      * @param name
      *            Name, such as a name
      * @return the bucket index for the name
@@ -713,7 +763,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     /**
      * Clear the index.
-     *
+     * 
      * @return this, for chaining
      * @stable ICU 4.8
      */
@@ -727,7 +777,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     /**
      * Return the number of buckets in the index. This will be the same as the number of labels, plus buckets for the underflow, overflow, and inflow(s).
-     *
+     * 
      * @return number of buckets
      * @stable ICU 4.8
      */
@@ -737,8 +787,8 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
     }
 
     /**
-     * Return the number of records in the index: that is, the total number of distinct &lt;name,data&gt; pairs added with addRecord(...), over all the buckets.
-     *
+     * Return the number of records in the index: that is, the total number of distinct <name,data> pairs added with addRecord(...), over all the buckets.
+     * 
      * @return total number of records in buckets
      * @stable ICU 4.8
      */
@@ -748,11 +798,10 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
     /**
      * Return an iterator over the buckets.
-     *
+     * 
      * @return iterator over buckets.
      * @stable ICU 4.8
      */
-    @Override
     public Iterator<Bucket<V>> iterator() {
         initBuckets();
         return buckets.iterator();
@@ -842,7 +891,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
     /**
      * A (name, data) pair, to be sorted by name into one of the index buckets.
      * The user data is not used by the index implementation.
-     *
+     * 
      * @stable ICU 4.8
      */
     public static class Record<V> {
@@ -856,7 +905,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
         /**
          * Get the name
-         *
+         * 
          * @return the name
          * @stable ICU 4.8
          */
@@ -866,7 +915,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
         /**
          * Get the data
-         *
+         * 
          * @return the data
          * @stable ICU 4.8
          */
@@ -878,7 +927,6 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
          * Standard toString()
          * @stable ICU 4.8
          */
-        @Override
         public String toString() {
             return name + "=" + data;
         }
@@ -891,7 +939,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
      * returned by {@link AlphabeticIndex.ImmutableIndex#getBucket(int)},
      * and {@link AlphabeticIndex#addRecord(CharSequence, Object)} adds a record
      * into a bucket according to the record's name.
-     *
+     * 
      * @param <V>
      *            Data type
      * @stable ICU 4.8
@@ -906,35 +954,16 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
         /**
          * Type of the label
-         *
+         * 
          * @stable ICU 4.8
          */
         public enum LabelType {
-            /**
-             * Normal
-             * @stable ICU 4.8
-             */
-            NORMAL,
-            /**
-             * Underflow (before the first)
-             * @stable ICU 4.8
-             */
-            UNDERFLOW,
-            /**
-             * Inflow (between scripts)
-             * @stable ICU 4.8
-             */
-            INFLOW,
-            /**
-             * Overflow (after the last)
-             * @stable ICU 4.8
-             */
-            OVERFLOW
+            NORMAL, UNDERFLOW, INFLOW, OVERFLOW
         }
 
         /**
          * Set up the bucket.
-         *
+         * 
          * @param label
          *            label for the bucket
          * @param labelType
@@ -949,7 +978,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
         /**
          * Get the label
-         *
+         * 
          * @return label for the bucket
          * @stable ICU 4.8
          */
@@ -959,7 +988,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
         /**
          * Is a normal, underflow, overflow, or inflow bucket
-         *
+         * 
          * @return is an underflow, overflow, or inflow bucket
          * @stable ICU 4.8
          */
@@ -969,7 +998,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
 
         /**
          * Get the number of records in the bucket.
-         *
+         * 
          * @return number of records in bucket
          * @stable ICU 4.8
          */
@@ -981,7 +1010,6 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
          * Iterator over the records in the bucket
          * @stable ICU 4.8
          */
-        @Override
         public Iterator<Record<V>> iterator() {
             if (records == null) {
                 return Collections.<Record<V>>emptyList().iterator();
@@ -1011,18 +1039,19 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
         List<String> indexCharacters = initLabels();
 
         // Variables for hasMultiplePrimaryWeights().
-        long variableTop;
+        CollationElementIterator cei = collatorPrimaryOnly.getCollationElementIterator("");
+        int variableTop;
         if (collatorPrimaryOnly.isAlternateHandlingShifted()) {
-            variableTop = collatorPrimaryOnly.getVariableTop() & 0xffffffffL;
+            variableTop = CollationElementIterator.primaryOrder(collatorPrimaryOnly.getVariableTop());
         } else {
             variableTop = 0;
         }
         boolean hasInvisibleBuckets = false;
 
         // Helper arrays for Chinese Pinyin collation.
-        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @SuppressWarnings("unchecked")
         Bucket<V>[] asciiBuckets = new Bucket[26];
-        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @SuppressWarnings("unchecked")
         Bucket<V>[] pinyinBuckets = new Bucket[26];
         boolean hasPinyin = false;
 
@@ -1068,7 +1097,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
             }
             // Check for multiple primary weights.
             if (!current.startsWith(BASE) &&
-                    hasMultiplePrimaryWeights(collatorPrimaryOnly, variableTop, current) &&
+                    hasMultiplePrimaryWeights(cei, variableTop, current) &&
                     !current.endsWith("\uffff")) {
                 // "Æ" or "Sch" etc.
                 for (int i = bucketList.size() - 2;; --i) {
@@ -1079,7 +1108,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
                         break;
                     }
                     if (singleBucket.displayBucket == null &&
-                            !hasMultiplePrimaryWeights(collatorPrimaryOnly, variableTop, singleBucket.lowerBoundary)) {
+                            !hasMultiplePrimaryWeights(cei, variableTop, singleBucket.lowerBoundary)) {
                         // Add an invisible bucket that redirects strings greater than the expansion
                         // to the previous single-character bucket.
                         // For example, after ... Q R S Sch we add Sch\uFFFF->S
@@ -1193,21 +1222,23 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
         /**
          * Iterator over just the visible buckets.
          */
-        @Override
         public Iterator<Bucket<V>> iterator() {
             return immutableVisibleList.iterator(); // use immutable list to prevent remove().
         }
     }
 
     private static boolean hasMultiplePrimaryWeights(
-            RuleBasedCollator coll, long variableTop, String s) {
-        long[] ces = coll.internalGetCEs(s);
+            CollationElementIterator cei, int variableTop, String s) {
+        cei.setText(s);
         boolean seenPrimary = false;
-        for (int i = 0; i < ces.length; ++i) {
-            long ce = ces[i];
-            long p = ce >>> 32;
-            if (p > variableTop) {
-                // not primary ignorable
+        for (;;) {
+            int ce32 = cei.next();
+            if (ce32 == CollationElementIterator.NULLORDER) {
+                break;
+            }
+            int p = CollationElementIterator.primaryOrder(ce32);
+            if (p > variableTop && (ce32 & 0xc0) != 0xc0) {
+                // not primary ignorable, and not a continuation CE
                 if (seenPrimary) {
                     return true;
                 }
@@ -1217,15 +1248,62 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
         return false;
     }
 
-    // TODO: Surely we have at least a ticket for porting these mask values to UCharacter.java?!
-    private static final int GC_LU_MASK = 1 << UCharacter.UPPERCASE_LETTER;
-    private static final int GC_LL_MASK = 1 << UCharacter.LOWERCASE_LETTER;
-    private static final int GC_LT_MASK = 1 << UCharacter.TITLECASE_LETTER;
-    private static final int GC_LM_MASK = 1 << UCharacter.MODIFIER_LETTER;
-    private static final int GC_LO_MASK = 1 << UCharacter.OTHER_LETTER;
-    private static final int GC_L_MASK =
-            GC_LU_MASK|GC_LL_MASK|GC_LT_MASK|GC_LM_MASK|GC_LO_MASK;
-    private static final int GC_CN_MASK = 1 << UCharacter.GENERAL_OTHER_TYPES;
+    /**
+     * This list contains one character per script that has the
+     * lowest primary weight for that script in the root collator.
+     * This list will be copied and sorted to account for script reordering.
+     *
+     * <p>TODO: This is fragile. If the first character of a script is tailored
+     * so that it does not map to the script's lowest primary weight any more,
+     * then the buckets will be off.
+     * There are hacks in the code to handle the known CJK tailorings of U+4E00.
+     *
+     * <p>We use "A" not "a" because the en_US_POSIX tailoring sorts A primary-before a.
+     */
+    private static final List<String> HACK_FIRST_CHARS_IN_SCRIPTS = 
+        Arrays.asList(new String[] { 
+                "A", "\u03B1", "\u2C81", "\u0430", "\u2C30", "\u10D0", "\u0561", "\u05D0", "\uD802\uDD00", "\u0800", "\u0621",
+                "\u0710",  // Syriac
+                "\u0840",  // Mandaic
+                "\u0780", "\u07CA", "\u2D30", "\u1200", "\u0950", "\u0985", "\u0A74", "\u0AD0", "\u0B05", "\u0BD0", 
+                "\u0C05", "\u0C85", "\u0D05", "\u0D85",
+                "\uAAF2",  // Meetei Mayek
+                "\uA800", "\uA882", "\uD804\uDC83",
+                UCharacter.toString(0x111C4),  // Sharada
+                UCharacter.toString(0x11680),  // Takri
+                "\u1B83",  // Sundanese
+                "\uD804\uDC05",  // Brahmi (U+11005)
+                "\uD802\uDE00", "\u0E01",
+                "\u0EDE",  // Lao
+                "\uAA80", "\u0F40", "\u1C00", "\uA840", "\u1900", "\u1700", "\u1720", "\u1740", "\u1760", 
+                "\u1A00",  // Buginese
+                "\u1BC0",  // Batak
+                "\uA930", "\uA90A", "\u1000",
+                UCharacter.toString(0x11103),  // Chakma
+                "\u1780", "\u1950", "\u1980", "\u1A20", "\uAA00", "\u1B05", "\uA984", "\u1880", "\u1C5A", "\u13A0", "\u1401", "\u1681", "\u16A0", "\uD803\uDC00", "\uA500", "\uA6A0", "\u1100", 
+                "\u3041", "\u30A1", "\u3105", "\uA000", "\uA4F8",
+                UCharacter.toString(0x16F00),  // Miao
+                "\uD800\uDE80", "\uD800\uDEA0", "\uD802\uDD20", "\uD800\uDF00", "\uD800\uDF30", "\uD801\uDC28", "\uD801\uDC50", "\uD801\uDC80",
+                UCharacter.toString(0x110D0),  // Sora Sompeng
+                "\uD800\uDC00", "\uD802\uDC00", "\uD802\uDE60", "\uD802\uDF00", "\uD802\uDC40", 
+                "\uD802\uDF40", "\uD802\uDF60", "\uD800\uDF80", "\uD800\uDFA0", "\uD808\uDC00", "\uD80C\uDC00",
+                UCharacter.toString(0x109A0),  // Meroitic Cursive
+                UCharacter.toString(0x10980),  // Meroitic Hieroglyphs
+                "\u4E00",
+                // TODO: The overflow bucket's lowerBoundary string should be the
+                // first item after the last reordering group in the collator's script order.
+                // This should normally be the first Unicode code point
+                // that is unassigned (U+0378 in Unicode 6.3) and untailored.
+                // However, at least up to ICU 51 the Hani reordering group includes
+                // unassigned code points,
+                // and there is no stable string for the start of the trailing-weights range.
+                // The only known string that sorts "high" is U+FFFF.
+                // When ICU separates Hani vs. unassigned reordering groups, we need to fix this,
+                // and fix relevant test code.
+                // Ideally, FractionalUCA.txt will have a "script first primary"
+                // for unassigned code points.
+                "\uFFFF"
+        });
 
     /**
      * Return a list of the first character in each script. Only exposed for testing.
@@ -1234,27 +1312,7 @@ public final class AlphabeticIndex<V> implements Iterable<Bucket<V>> {
      * @internal
      * @deprecated This API is ICU internal, only for testing.
      */
-    @Deprecated
-    public List<String> getFirstCharactersInScripts() {
-        List<String> dest = new ArrayList<String>(200);
-        // Fetch the script-first-primary contractions which are defined in the root collator.
-        // They all start with U+FDD1.
-        UnicodeSet set = new UnicodeSet();
-        collatorPrimaryOnly.internalAddContractions(0xFDD1, set);
-        if (set.isEmpty()) {
-            throw new UnsupportedOperationException(
-                    "AlphabeticIndex requires script-first-primary contractions");
-        }
-        for (String boundary : set) {
-            int gcMask = 1 << UCharacter.getType(boundary.codePointAt(1));
-            if ((gcMask & (GC_L_MASK | GC_CN_MASK)) == 0) {
-                // Ignore boundaries for the special reordering groups.
-                // Take only those for "real scripts" (where the sample character is a Letter,
-                // and the one for unassigned implicit weights (Cn).
-                continue;
-            }
-            dest.add(boundary);
-        }
-        return dest;
+    public static Collection<String> getFirstCharactersInScripts() {
+        return HACK_FIRST_CHARS_IN_SCRIPTS;
     }
 }

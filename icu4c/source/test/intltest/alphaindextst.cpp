@@ -1,21 +1,16 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 2012-2016, International Business Machines Corporation
+ * Copyright (c) 2012-2013, International Business Machines Corporation
  * and others. All Rights Reserved.
  ********************************************************************/
 //
-//   file:  alphaindextst.cpp
+//   file:  alphaindex.cpp
 //          Alphabetic Index Tests.
 //
-//   Note: please... no character literals cast to UChars.. use (UChar)0xZZZZ
-
 #include <stdio.h>  // for sprintf
 
 #include "intltest.h"
 #include "alphaindextst.h"
-#include "cmemory.h"
 
 #include "unicode/alphaindex.h"
 #include "unicode/coll.h"
@@ -27,6 +22,8 @@
 
 // #include <string>
 // #include <iostream>
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 namespace {
 
@@ -64,8 +61,6 @@ void AlphabeticIndexTest::runIndexedTest( int32_t index, UBool exec, const char*
     TESTCASE_AUTO(TestSchSt);
     TESTCASE_AUTO(TestNoLabels);
     TESTCASE_AUTO(TestChineseZhuyin);
-    TESTCASE_AUTO(TestJapaneseKanji);
-    TESTCASE_AUTO(TestChineseUnihan);
     TESTCASE_AUTO_END;
 }
 
@@ -96,8 +91,7 @@ void AlphabeticIndexTest::APITest() {
     // Constructor from a Collator
     //
     status = U_ZERO_ERROR;
-    RuleBasedCollator *coll = dynamic_cast<RuleBasedCollator *>(
-        Collator::createInstance(Locale::getGerman(), status));
+    RuleBasedCollator *coll = dynamic_cast<RuleBasedCollator *>(Collator::createInstance(Locale::getChinese(), status));
     TEST_CHECK_STATUS;
     TEST_ASSERT(coll != NULL);
     index = new AlphabeticIndex(coll, status);
@@ -318,7 +312,7 @@ void AlphabeticIndexTest::APITest() {
     // if Russian sorts Cyrillic first.
     int32_t reorderCodes[20];
     int32_t expectedLatinIndex = 0;
-    if (index->getCollator().getReorderCodes(reorderCodes, UPRV_LENGTHOF(reorderCodes), status) > 0) {
+    if (index->getCollator().getReorderCodes(reorderCodes, LENGTHOF(reorderCodes), status) > 0) {
         expectedLatinIndex = index->getBucketCount(status) - 1;
     }
     n = index->getBucketIndex(adam, status);
@@ -431,7 +425,7 @@ void AlphabeticIndexTest::HackPinyinTest() {
     AlphabeticIndex aindex(Locale::createFromName("zh"), status);
     TEST_CHECK_STATUS; 
 
-    UnicodeString names[UPRV_LENGTHOF(pinyinTestData)];
+    UnicodeString names[sizeof(pinyinTestData) / sizeof(pinyinTestData[0])];
     int32_t  nameCount;
     for (nameCount=0; pinyinTestData[nameCount] != NULL; nameCount++) {
         names[nameCount] = UnicodeString(pinyinTestData[nameCount], -1, UnicodeString::kInvariant).unescape();
@@ -491,14 +485,14 @@ static const char *localeAndIndexCharactersLists[][2] = {
     /* Catalan*/    {"ca", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
     /* Czech*/  {"cs", "A:B:C:\\u010C:D:E:F:G:H:CH:I:J:K:L:M:N:O:P:Q:R:\\u0158:S:\\u0160:T:U:V:W:X:Y:Z:\\u017D"},
     /* Danish*/ {"da", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z:\\u00C6:\\u00D8:\\u00C5"},
-    /* German*/ {"de", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
+    /* German*/ {"de", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:Sch:St:T:U:V:W:X:Y:Z"},
     /* Greek*/  {"el", "\\u0391:\\u0392:\\u0393:\\u0394:\\u0395:\\u0396:\\u0397:\\u0398:\\u0399:\\u039A:\\u039B:\\u039C:\\u039D:\\u039E:\\u039F:\\u03A0:\\u03A1:\\u03A3:\\u03A4:\\u03A5:\\u03A6:\\u03A7:\\u03A8:\\u03A9"},
     /* English*/    {"en", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
     /* Spanish*/    {"es", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:\\u00D1:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
     /* Estonian*/   {"et", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:\\u0160:Z:\\u017D:T:U:V:\\u00D5:\\u00C4:\\u00D6:\\u00DC:X:Y"},
     /* Basque*/ {"eu", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
     /* Finnish*/    {"fi", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z:\\u00C5:\\u00C4:\\u00D6"},
-    /* Filipino*/   {"fil", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:\\u00D1:Ng:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
+    /* Filipino*/   {"fil", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
     /* French*/ {"fr", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
     /* Hebrew*/ {"he", "\\u05D0:\\u05D1:\\u05D2:\\u05D3:\\u05D4:\\u05D5:\\u05D6:\\u05D7:\\u05D8:\\u05D9:\\u05DB:\\u05DC:\\u05DE:\\u05E0:\\u05E1:\\u05E2:\\u05E4:\\u05E6:\\u05E7:\\u05E8:\\u05E9:\\u05EA"},
     /* Icelandic*/  {"is", "A:\\u00C1:B:C:D:\\u00D0:E:\\u00C9:F:G:H:I:\\u00CD:J:K:L:M:N:O:\\u00D3:P:Q:R:S:T:U:\\u00DA:V:W:X:Y:\\u00DD:Z:\\u00DE:\\u00C6:\\u00D6"},
@@ -506,7 +500,9 @@ static const char *localeAndIndexCharactersLists[][2] = {
     /* Japanese*/   {"ja", "\\u3042:\\u304B:\\u3055:\\u305F:\\u306A:\\u306F:\\u307E:\\u3084:\\u3089:\\u308F"},
     /* Korean*/ {"ko", "\\u3131:\\u3134:\\u3137:\\u3139:\\u3141:\\u3142:\\u3145:\\u3147:\\u3148:\\u314A:\\u314B:\\u314C:\\u314D:\\u314E"},
     /* Lithuanian*/ {"lt", "A:B:C:\\u010C:D:E:F:G:H:I:J:K:L:M:N:O:P:R:S:\\u0160:T:U:V:Z:\\u017D"},
-    /* Latvian*/    {"lv", "A:B:C:\\u010C:D:E:F:G:\\u0122:H:I:J:K:\\u0136:L:\\u013B:M:N:\\u0145:O:P:Q:R:S:\\u0160:T:U:V:W:X:Z:\\u017D"},
+    // This should be the correct data.  Commented till it is fixed in CLDR collation data.
+    // {"lv", "A:B:C:\\u010C:D:E:F:G:\\u0122:H:I:Y:J:K:\\u0136:L:\\u013B:M:N:\\u0145:O:P:Q:R:S:\\u0160:T:U:V:W:X:Z:\\u017D"},
+    /* Latvian*/    {"lv", "A:B:C:\\u010C:D:E:F:G:\\u0122:H:I:J:K:\\u0136:L:\\u013B:M:N:\\u0145:O:P:Q:R:S:\\u0160:T:U:V:W:X:Y:Z:\\u017D"},
     /* Norwegian Bokm\\u00E5l*/  {"nb", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z:\\u00C6:\\u00D8:\\u00C5"},
     /* Dutch*/  {"nl", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
     /* Polish*/ {"pl", "A:\\u0104:B:C:\\u0106:D:E:\\u0118:F:G:H:I:J:K:L:\\u0141:M:N:\\u0143:O:\\u00D3:P:Q:R:S:\\u015A:T:U:V:W:X:Y:Z:\\u0179:\\u017B"},
@@ -526,7 +522,7 @@ static const char *localeAndIndexCharactersLists[][2] = {
 
 void AlphabeticIndexTest::TestIndexCharactersList() {
     UErrorCode status = U_ZERO_ERROR;
-    for (int32_t i = 0; i < UPRV_LENGTHOF(localeAndIndexCharactersLists); ++i) {
+    for (int32_t i = 0; i < LENGTHOF(localeAndIndexCharactersLists); ++i) {
         const char *(&localeAndIndexCharacters)[2] = localeAndIndexCharactersLists[i];
         const char *locale = localeAndIndexCharacters[0];
         UnicodeString expectedIndexCharacters
@@ -555,7 +551,7 @@ void AlphabeticIndexTest::TestHaniFirst() {
         return;
     }
     int32_t reorderCodes[] = { USCRIPT_HAN };
-    coll->setReorderCodes(reorderCodes, UPRV_LENGTHOF(reorderCodes), status);
+    coll->setReorderCodes(reorderCodes, LENGTHOF(reorderCodes), status);
     TEST_CHECK_STATUS; 
     AlphabeticIndex index(coll.orphan(), status);
     TEST_CHECK_STATUS; 
@@ -568,9 +564,9 @@ void AlphabeticIndexTest::TestHaniFirst() {
     assertEquals("getBucketIndex(i)", 9, bucketIndex);
     bucketIndex = index.getBucketIndex(UnicodeString((UChar)0x03B1), status);
     assertEquals("getBucketIndex(Greek alpha)", 27, bucketIndex);
-    // U+50005 is an unassigned code point which sorts at the end, independent of the Hani group.
-    bucketIndex = index.getBucketIndex(UnicodeString((UChar32)0x50005), status);
-    assertEquals("getBucketIndex(U+50005)", 27, bucketIndex);
+    // TODO: Test with an unassigned code point (not just U+FFFF)
+    // when unassigned code points are not in the Hani reordering group any more.
+    // String unassigned = UTF16.valueOf(0x50005);
     bucketIndex = index.getBucketIndex(UnicodeString((UChar)0xFFFF), status);
     assertEquals("getBucketIndex(U+FFFF)", 27, bucketIndex);
 }
@@ -584,22 +580,22 @@ void AlphabeticIndexTest::TestPinyinFirst() {
         return;
     }
     int32_t reorderCodes[] = { USCRIPT_HAN };
-    coll->setReorderCodes(reorderCodes, UPRV_LENGTHOF(reorderCodes), status);
-    TEST_CHECK_STATUS;
+    coll->setReorderCodes(reorderCodes, LENGTHOF(reorderCodes), status);
+    TEST_CHECK_STATUS; 
     AlphabeticIndex index(coll.orphan(), status);
-    TEST_CHECK_STATUS;
-    assertEquals("getBucketCount()", 28, index.getBucketCount(status));   // ... A-Z ...
+    TEST_CHECK_STATUS; 
+    assertEquals("getBucketCount()", 1, index.getBucketCount(status));   // ... (underflow only)
     index.addLabels(Locale::getChinese(), status);
     assertEquals("getBucketCount()", 28, index.getBucketCount(status));  // ... A-Z ...
-    int32_t bucketIndex = index.getBucketIndex(UnicodeString((UChar)0x897f), status);
-    assertEquals("getBucketIndex(U+897F)", (int32_t)((UChar)0x0058/*X*/ - (UChar)0x0041/*A*/ + 1), bucketIndex);
+    int bucketIndex = index.getBucketIndex(UnicodeString((UChar)0x897f), status);
+    assertEquals("getBucketIndex(U+897F)", 'X' - 'A' + 1, bucketIndex);
     bucketIndex = index.getBucketIndex("i", status);
     assertEquals("getBucketIndex(i)", 9, bucketIndex);
     bucketIndex = index.getBucketIndex(UnicodeString((UChar)0x03B1), status);
-    assertEquals("getBucketIndex(Greek alpha)", (int32_t)27, bucketIndex);
-    // U+50005 is an unassigned code point which sorts at the end, independent of the Hani group.
-    bucketIndex = index.getBucketIndex(UnicodeString((UChar32)0x50005), status);
-    assertEquals("getBucketIndex(U+50005)", 27, bucketIndex);
+    assertEquals("getBucketIndex(Greek alpha)", 27, bucketIndex);
+    // TODO: Test with an unassigned code point (not just U+FFFF)
+    // when unassigned code points are not in the Hani reordering group any more.
+    // String unassigned = UTF16.valueOf(0x50005);
     bucketIndex = index.getBucketIndex(UnicodeString((UChar)0xFFFF), status);
     assertEquals("getBucketIndex(U+FFFF)", 27, bucketIndex);
 }
@@ -633,7 +629,7 @@ void AlphabeticIndexTest::TestSchSt() {
         { "Steiff", 22, "St" },
         { "Thomas", 23, "T" }
     };
-    for (int32_t i = 0; i < UPRV_LENGTHOF(testCases); ++i) {
+    for (int32_t i = 0; i < LENGTHOF(testCases); ++i) {
         const TestCase &testCase = testCases[i];
         UnicodeString name = UnicodeString(testCase.name).unescape();
         UnicodeString label = UnicodeString(testCase.bucketLabel).unescape();
@@ -651,22 +647,22 @@ void AlphabeticIndexTest::TestNoLabels() {
     UErrorCode status = U_ZERO_ERROR;
     LocalPointer<RuleBasedCollator> coll(
         static_cast<RuleBasedCollator *>(Collator::createInstance(Locale::getRoot(), status)));
-    TEST_CHECK_STATUS;
+    TEST_CHECK_STATUS; 
     AlphabeticIndex index(coll.orphan(), status);
-    TEST_CHECK_STATUS;
+    TEST_CHECK_STATUS; 
     index.addRecord(UnicodeString((UChar)0x897f), NULL, status);
     index.addRecord("i", NULL, status);
     index.addRecord(UnicodeString((UChar)0x03B1), NULL, status);
     assertEquals("getBucketCount()", 1, index.getBucketCount(status));  // ...
     TEST_ASSERT(index.nextBucket(status));
-    assertEquals("underflow label type", (int32_t)U_ALPHAINDEX_UNDERFLOW, index.getBucketLabelType());
-    assertEquals("all records in the underflow bucket", (int32_t)3, index.getBucketRecordCount());
+    assertEquals("underflow label type", U_ALPHAINDEX_UNDERFLOW, index.getBucketLabelType());
+    assertEquals("all records in the underflow bucket", 3, index.getBucketRecordCount());
 }
 
 void AlphabeticIndexTest::TestChineseZhuyin() {
     UErrorCode status = U_ZERO_ERROR;
     char loc[100];
-    uloc_forLanguageTag("zh-u-co-zhuyin", loc, UPRV_LENGTHOF(loc), NULL, &status);
+    uloc_forLanguageTag("zh-u-co-zhuyin", loc, LENGTHOF(loc), NULL, &status);
     AlphabeticIndex index(loc, status);
     LocalPointer<AlphabeticIndex::ImmutableIndex> immIndex(index.buildImmutableIndex(status));
     TEST_CHECK_STATUS; 
@@ -676,52 +672,6 @@ void AlphabeticIndexTest::TestChineseZhuyin() {
     assertEquals("label 3", UnicodeString((UChar)0x3107), immIndex->getBucket(3)->getLabel());
     assertEquals("label 4", UnicodeString((UChar)0x3108), immIndex->getBucket(4)->getLabel());
     assertEquals("label 5", UnicodeString((UChar)0x3109), immIndex->getBucket(5)->getLabel());
-}
-
-void AlphabeticIndexTest::TestJapaneseKanji() {
-    UErrorCode status = U_ZERO_ERROR;
-    AlphabeticIndex index(Locale::getJapanese(), status);
-    LocalPointer<AlphabeticIndex::ImmutableIndex> immIndex(index.buildImmutableIndex(status));
-    TEST_CHECK_STATUS;
-    // There are no index characters for Kanji in the Japanese standard collator.
-    // They should all go into the overflow bucket.
-    static const UChar32 kanji[] = { 0x4E9C, 0x95C7, 0x4E00, 0x58F1 };
-    int32_t overflowIndex = immIndex->getBucketCount() - 1;
-    for(int32_t i = 0; i < UPRV_LENGTHOF(kanji); ++i) {
-        char msg[40];
-        sprintf(msg, "kanji[%d]=U+%04lX in overflow bucket", (int)i, (long)kanji[i]);
-        assertEquals(msg, overflowIndex, immIndex->getBucketIndex(UnicodeString(kanji[i]), status));
-        TEST_CHECK_STATUS;
-    }
-}
-
-void AlphabeticIndexTest::TestChineseUnihan() {
-    UErrorCode status = U_ZERO_ERROR;
-    AlphabeticIndex index("zh-u-co-unihan", status);
-    if(U_FAILURE(status)) {
-        dataerrln("unable create an AlphabeticIndex for Chinese/unihan: %s", u_errorName(status));
-        return;
-    }
-    index.setMaxLabelCount(500, status);  // ICU 54 default is 99.
-    LocalPointer<AlphabeticIndex::ImmutableIndex> immIndex(index.buildImmutableIndex(status));
-    TEST_CHECK_STATUS;
-    int32_t bucketCount = immIndex->getBucketCount();
-    if(bucketCount < 216) {
-        // There should be at least an underflow and overflow label,
-        // and one for each of 214 radicals,
-        // and maybe additional labels for simplified radicals.
-        dataerrln("too few buckets/labels for Chinese/unihan: %d (is zh/unihan data available?)",
-                  bucketCount);
-        return;
-    } else {
-        logln("Chinese/unihan has %d buckets/labels", bucketCount);
-    }
-    // bucketIndex = radical number, adjusted for simplified radicals in lower buckets.
-    int32_t bucketIndex = index.getBucketIndex(UnicodeString((UChar)0x4e5d), status);
-    assertEquals("getBucketIndex(U+4E5D)", 5, bucketIndex);
-    // radical 100, and there is a 90' since Unicode 8
-    bucketIndex = index.getBucketIndex(UnicodeString((UChar)0x7527), status);
-    assertEquals("getBucketIndex(U+7527)", 101, bucketIndex);
 }
 
 #endif

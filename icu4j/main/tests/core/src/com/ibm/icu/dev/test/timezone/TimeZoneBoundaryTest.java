@@ -1,19 +1,13 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2000-2015, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2000-2010, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.timezone;
 import java.util.Date;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.dev.test.TestUtil;
-import com.ibm.icu.dev.test.TestUtil.JavaVendor;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.SimpleTimeZone;
@@ -46,6 +40,10 @@ public class TimeZoneBoundaryTest extends TestFmwk
     static final String AUSTRALIA = "Australia/Adelaide";
     static final long AUSTRALIA_1997_BEG = 877797000000L;
     static final long AUSTRALIA_1997_END = 859653000000L;
+    
+    public static void main(String[] args) throws Exception {
+        new TimeZoneBoundaryTest().run(args);
+    }
 
     /**
      * Date.toString().substring() Boundary Test
@@ -380,7 +378,6 @@ public class TimeZoneBoundaryTest extends TestFmwk
 //        }
 //    }
 
-    @Test
     public void TestBoundaries()
     {
         TimeZone save = TimeZone.getDefault();
@@ -441,7 +438,9 @@ public class TimeZoneBoundaryTest extends TestFmwk
         // support historic transitions, therefore, the test below
         // will fail on such environment (with the latest TimeZone
         // patch for US 2007+ rule).
-        if (TestUtil.getJavaVendor() == JavaVendor.Android || TestUtil.getJavaVersion() > 3) {
+        String javaver = System.getProperty("java.version", "1.3");
+        if (!javaver.startsWith("1.3"))
+        {
             // This only works in PST/PDT
             TimeZone.setDefault(safeGetTimeZone("PST"));
             logln("========================================");
@@ -715,7 +714,6 @@ public class TimeZoneBoundaryTest extends TestFmwk
     /**
      * Test new rule formats.
      */
-    @Test
     public void TestNewRules()
     {
         //logln(Locale.getDefault().getDisplayName());
@@ -844,7 +842,6 @@ public class TimeZoneBoundaryTest extends TestFmwk
         }
     }
 
-    @Test
     public void TestStepwise()
     {
         findBoundariesStepwise(1997, ONE_DAY, safeGetTimeZone("America/New_York"), 2);

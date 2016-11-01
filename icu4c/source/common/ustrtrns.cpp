@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 2001-2016, International Business Machines
+*   Copyright (C) 2001-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -293,8 +291,7 @@ utf8_nextCharSafeBodyTerminated(const uint8_t **ps, UChar32 c) {
             illegal=1;
             break;
         }
-        U_FALLTHROUGH;
-    case 2:
+    case 2: /*fall through*/
         trail=(uint8_t)(*s++ - 0x80);
         if(trail>0x3f) {
             /* not a trail byte */
@@ -302,8 +299,7 @@ utf8_nextCharSafeBodyTerminated(const uint8_t **ps, UChar32 c) {
             break;
         }
         c=(c<<6)|trail;
-        U_FALLTHROUGH;
-    case 1:
+    case 1: /*fall through*/
         trail=(uint8_t)(*s++ - 0x80);
         if(trail>0x3f) {
             /* not a trail byte */
@@ -366,13 +362,11 @@ utf8_nextCharSafeBodyPointer(const uint8_t **ps, const uint8_t *limit, UChar32 c
                 illegal=1;
                 break;
             }
-            U_FALLTHROUGH;
-        case 2:
+        case 2: /*fall through*/
             trail=*s++;
             c=(c<<6)|(trail&0x3f);
             illegal|=(trail&0xc0)^0x80;
-            U_FALLTHROUGH;
-        case 1:
+        case 1: /*fall through*/
             trail=*s++;
             c=(c<<6)|(trail&0x3f);
             illegal|=(trail&0xc0)^0x80;
@@ -387,7 +381,7 @@ utf8_nextCharSafeBodyPointer(const uint8_t **ps, const uint8_t *limit, UChar32 c
 
     /* correct sequence - all trail bytes have (b7..b6)==(10)? */
     /* illegal is also set if count>=4 */
-    U_ASSERT(illegal || count<UPRV_LENGTHOF(utf8_minLegal));
+    U_ASSERT(count<sizeof(utf8_minLegal)/sizeof(utf8_minLegal[0]));
     if(illegal || c<utf8_minLegal[count] || U_IS_SURROGATE(c)) {
         /* error handling */
         /* don't go beyond this sequence */

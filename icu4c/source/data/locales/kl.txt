@@ -1,10 +1,21 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/kl.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/kl.xml
+ */
 kl{
-    AuxExemplarCharacters{"[]"}
     ExemplarCharacters{
         "[a á â ã b c d e é ê f g h i í î ĩ j k l m n o ô p q ĸ r s t u ú û ũ v w x y"
         " z æ ø å]"
+    }
+    LocaleScript{
+        "Latn",
     }
     NumberElements{
         latn{
@@ -18,41 +29,12 @@ kl{
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.82.45"}
     calendar{
         gregorian{
             dayNames{
                 format{
                     abbreviated{
-                        "sab",
-                        "ata",
-                        "mar",
-                        "pin",
-                        "sis",
-                        "tal",
-                        "arf",
-                    }
-                    short{
-                        "sab",
-                        "ata",
-                        "mar",
-                        "pin",
-                        "sis",
-                        "tal",
-                        "arf",
-                    }
-                    wide{
-                        "sabaat",
-                        "ataasinngorneq",
-                        "marlunngorneq",
-                        "pingasunngorneq",
-                        "sisamanngorneq",
-                        "tallimanngorneq",
-                        "arfininngorneq",
-                    }
-                }
-                stand-alone{
-                    short{
                         "sab",
                         "ata",
                         "mar",
@@ -136,90 +118,34 @@ kl{
             }
         }
     }
-    fields{
+    units{
         day{
-            relativeTime{
-                future{
-                    one{"om {0} ulloq unnuarlu"}
-                    other{"om {0} ulloq unnuarlu"}
-                }
-                past{
-                    one{"for {0} ulloq unnuarlu siden"}
-                    other{"for {0} ulloq unnuarlu siden"}
-                }
-            }
+            one{"{0} ulloq unnuarlu"}
+            other{"{0} ulloq unnuarlu"}
         }
         hour{
-            relativeTime{
-                future{
-                    one{"om {0} nalunaaquttap-akunnera"}
-                    other{"om {0} nalunaaquttap-akunnera"}
-                }
-                past{
-                    one{"for {0} nalunaaquttap-akunnera siden"}
-                    other{"for {0} nalunaaquttap-akunnera siden"}
-                }
-            }
+            one{"{0} nalunaaquttap-akunnera"}
+            other{"{0} nalunaaquttap-akunnera"}
         }
         minute{
-            relativeTime{
-                future{
-                    one{"om {0} minutsi"}
-                    other{"om {0} minutsi"}
-                }
-                past{
-                    one{"for {0} minutsi siden"}
-                    other{"for {0} minutsi siden"}
-                }
-            }
+            one{"{0} minutsi"}
+            other{"{0} minutsi"}
         }
         month{
-            relativeTime{
-                future{
-                    one{"om {0} qaammat"}
-                    other{"om {0} qaammat"}
-                }
-                past{
-                    one{"for {0} qaammat siden"}
-                    other{"for {0} qaammat siden"}
-                }
-            }
+            one{"{0} qaammat"}
+            other{"{0} qaammat"}
         }
         second{
-            relativeTime{
-                future{
-                    one{"om {0} sekundi"}
-                    other{"om {0} sekundi"}
-                }
-                past{
-                    one{"for {0} sekundi siden"}
-                    other{"for {0} sekundi siden"}
-                }
-            }
+            one{"{0} sekundi"}
+            other{"{0} sekundi"}
         }
         week{
-            relativeTime{
-                future{
-                    one{"om {0} sapaatip-akunnera"}
-                    other{"om {0} sapaatip-akunnera"}
-                }
-                past{
-                    one{"for {0} sapaatip-akunnera siden"}
-                    other{"for {0} sapaatip-akunnera siden"}
-                }
-            }
+            one{"{0} sapaatip-akunnera"}
+            other{"{0} sapaatip-akunnera"}
         }
         year{
-            relativeTime{
-                future{
-                    one{"om {0} ukioq"}
-                    other{"om {0} ukioq"}
-                }
-                past{
-                    one{"for {0} ukioq siden"}
-                    other{"for {0} ukioq siden"}
-                }
-            }
+            one{"{0} ukioq"}
+            other{"{0} ukioq"}
         }
     }
 }

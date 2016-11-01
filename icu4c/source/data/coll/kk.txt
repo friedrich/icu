@@ -1,16 +1,26 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/collation/kk.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/collation/kk.xml
+ */
 kk{
-    Version{"2.1.19.14"}
+    Version{"2.0.82.42"}
     collations{
         standard{
             Sequence{
-                "[reorder Cyrl]"
+                " [reorder Cyrl][suppressContractions [АаӘәГгЕеЖжЗзІіОоӨөКкУуЧчЫыЭэѴѵ"
+                "]]"
                 "&Е<ё<<<Ё"
                 "&Ұ<ү<<<Ү"
                 "&[before 1]ь<і<<<І"
             }
-            Version{"30.0.2"}
+            Version{"23.1"}
         }
     }
 }

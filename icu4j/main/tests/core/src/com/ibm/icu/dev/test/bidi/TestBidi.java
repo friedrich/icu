@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2007-2013, International Business Machines
+*   Copyright (C) 2007-2010, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 */
@@ -10,8 +8,6 @@
 package com.ibm.icu.dev.test.bidi;
 
 import java.util.Arrays;
-
-import org.junit.Test;
 
 import com.ibm.icu.text.Bidi;
 import com.ibm.icu.text.BidiRun;
@@ -22,12 +18,11 @@ import com.ibm.icu.text.BidiRun;
  * @author Lina Kemmel, Matitiahu Allouche
  */
 
-public class TestBidi extends BidiFmwk {
+public class TestBidi extends BidiTest {
 
     private static final int MAXLEN = 256;
     private static final String levelString = "............................";
 
-    @Test
     public void testBidi() {
         Bidi bidi;
         Bidi bidiLine;
@@ -441,15 +436,13 @@ public class TestBidi extends BidiFmwk {
 
         int[] map = Bidi.reorderLogical(null);
         assertTrue("\nWe should have got a null map #1", map == null);
-        map = Bidi.reorderLogical(new byte[] {0,126, 127});
+        map = Bidi.reorderLogical(new byte[] {0,99,99});
         assertTrue("\nWe should have got a null map #2", map == null);
         map = Bidi.reorderVisual(null);
         assertTrue("\nWe should have got a null map #3", map == null);
-        map = Bidi.reorderVisual(new byte[] {0, -1, 4});
-        assertTrue("\nWe should have got a null map #4", map == null);
 
         map = Bidi.invertMap(null);
-        assertTrue("\nWe should have got a null map #5", map == null);
+        assertTrue("\nWe should have got a null map #4", map == null);
         map = Bidi.invertMap(new int[] {0,1,-1,5,4});
         assertTrue("\nUnexpected inverted Map",
                    Arrays.equals(map, new int[] {0,1,-1,-1,4,3}));
@@ -520,7 +513,7 @@ public class TestBidi extends BidiFmwk {
         /* check exceeding para level */
         bidi = new Bidi();
         bidi.setPara("A\u202a\u05d0\u202aC\u202c\u05d1\u202cE", (byte)(Bidi.MAX_EXPLICIT_LEVEL - 1), null);
-        assertEquals("\nWrong level at index 2", Bidi.MAX_EXPLICIT_LEVEL, bidi.getLevelAt(2));
+        assertEquals("\nWrong level at index 2", 61, bidi.getLevelAt(2));
 
         /* check 1-char runs with RUNS_ONLY */
         bidi.setReorderingMode(Bidi.REORDER_RUNS_ONLY);
@@ -573,5 +566,15 @@ public class TestBidi extends BidiFmwk {
         /* last R (Hebrew etc.) others are weak L (English Digits) */
         String lastHebrewOthersEnglishDigit = "\u0031\u0032\u0033\u05F1";
         assertEquals("\nWrong direction through fast detection #15", Bidi.RTL, Bidi.getBaseDirection(lastHebrewOthersEnglishDigit));
+    }
+
+
+    public static void main(String[] args) {
+        try {
+            new TestBidi().run(args);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

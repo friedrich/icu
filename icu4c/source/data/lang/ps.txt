@@ -1,25 +1,29 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ps.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/ps.xml
+ */
 ps{
     Languages{
-        am{"امهاري"}
         ar{"عربي"}
-        as{"آسامي"}
         bal{"بلوڅي"}
-        be{"بېلاروسي"}
-        bg{"بلغاري"}
-        bs{"بوسني"}
         de{"الماني"}
         el{"یوناني"}
-        en{"انګریزي"}
+        en{"انګلیسي"}
         et{"حبشي"}
-        eu{"باسکي"}
         fa{"فارسي"}
         fi{"فینلنډي"}
         fr{"فرانسوي"}
         he{"عبري"}
         hi{"هندي"}
         hy{"ارمني"}
+        ine{"هند و اروپایي"}
         it{"ایټالوي"}
         ja{"جاپانی"}
         ku{"کردي"}
@@ -28,16 +32,13 @@ ps{
         mk{"مقدوني"}
         mn{"مغولي"}
         ms{"ملایا"}
-        ne{"نېپالي"}
-        nl{"هالېنډي"}
         pl{"پولنډي"}
         ps{"پښتو"}
         pt{"پورتګالي"}
         ru{"روسي"}
         sa{"سنسکریټ"}
-        sq{"الباني"}
         sv{"سویډنی"}
-        tg{"تاجکي"}
+        tg{"تاجک"}
         tk{"ترکمني"}
         tt{"تاتار"}
         uz{"ازبکي"}
@@ -46,5 +47,5 @@ ps{
     Scripts{
         Arab{"عربي"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.82.45"}
 }

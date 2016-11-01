@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright (C) 2016 and later: Unicode, Inc. and others. -->
-<!-- License & terms of use: http://www.unicode.org/copyright.html#License -->
-<!-- Copyright (c) 2005-2015 IBM Corporation and others. All rights reserved -->
+<!-- Copyright (c) 2005-2007 IBM Corporation and others. All rights reserved -->
 <!-- See individual test cases for their specific copyright. -->
 
 <charset-detection-tests>
-    <test-case id="IUC10-ar" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-6/ar windows-1256/ar">
+    <test-case id="IUC10-ar" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-6/ar windows-1256/ar">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     أوروبا, برمجيات الحاسوب + انترنيت :
@@ -22,7 +20,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-da-Q" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE windows-1252/da">
+    <test-case id="IUC10-da-Q" encodings="UTF-8 UTF-32BE UTF-32LE windows-1252/da">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, Software + Internet:
@@ -38,7 +36,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-da" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/da">
+    <test-case id="IUC10-da" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/da">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, Software + Internet:
@@ -54,7 +52,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-de" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/de">
+    <test-case id="IUC10-de" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/de">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, Software + das Internet:
@@ -71,7 +69,7 @@
     </test-case>
 
     <!-- No UTF-8 in this test because there are no non-ASCII characters. -->
-    <test-case id="IUC10-en" encodings="UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/en">
+    <test-case id="IUC10-en" encodings="UTF-32BE UTF-32LE ISO-8859-1/en">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europe, Software + the Internet:
@@ -87,7 +85,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-es" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/es">
+    <test-case id="IUC10-es" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/es">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, Software + el Internet:
@@ -103,7 +101,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-fr" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/fr">
+    <test-case id="IUC10-fr" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/fr">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     L'Europe, le logiciel et l'Internet :
@@ -120,7 +118,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-he" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-8-I/he">
+    <test-case id="IUC10-he" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-8/he">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     אירופה, תוכנה והאינטרנט:
@@ -135,7 +133,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-he-Q" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE windows-1255/he">
+    <test-case id="IUC10-he-Q" encodings="UTF-8 UTF-32BE UTF-32LE windows-1255/he">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     אירופה, תוכנה והאינטרנט:
@@ -150,7 +148,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-hu" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-2/hu">
+    <test-case id="IUC10-hu" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-2/hu">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Európa, a Szoftver s az Internet -
@@ -167,7 +165,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-hu-Q" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE windows-1250/hu">
+    <test-case id="IUC10-hu-Q" encodings="UTF-8 UTF-32BE UTF-32LE windows-1250/hu">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Európa, a Szoftver s az Internet -
@@ -184,7 +182,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-it" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/it">
+    <test-case id="IUC10-it" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/it">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, software e Internet:
@@ -201,7 +199,7 @@
     </test-case>
 
     <!-- No EUC-JP in this test because it detects as GB18030 -->
-    <test-case id="IUC10-jp" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE Shift_JIS/ja ISO-2022-JP">
+    <test-case id="IUC10-jp" encodings="UTF-8 UTF-32BE UTF-32LE Shift_JIS/ja ISO-2022-JP">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     ヨーロッパ、ソフトウェア、そしてインターネット:
@@ -216,7 +214,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-ko" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE EUC-KR/ko ISO-2022-KR">
+    <test-case id="IUC10-ko" encodings="UTF-8 UTF-32BE UTF-32LE EUC-KR/ko ISO-2022-KR">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     유럽, 소프트웨어 그리고 인터넷:
@@ -232,7 +230,7 @@
     </test-case>
 
     <!-- No UTF-8 in this test because there are no non-ASCII characters. -->
-    <test-case id="IUC10-nl" encodings="UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/nl">
+    <test-case id="IUC10-nl" encodings="UTF-32BE UTF-32LE ISO-8859-1/nl">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, Software + het Internet:
@@ -249,7 +247,7 @@
     </test-case>
 
     <!-- No language for ISO-8859-1 in this test because no-NO is recogonized as Danish... -->
-    <test-case id="IUC10-no-NO" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/da">
+    <test-case id="IUC10-no-NO" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/da">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, Programvare og Internet:
@@ -264,7 +262,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-no-NO-NY" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/no">
+    <test-case id="IUC10-no-NO-NY" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/no">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, programvare og Internett:
@@ -280,7 +278,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-pt-BR" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/pt">
+    <test-case id="IUC10-pt-BR" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/pt">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, Software e a Internet:
@@ -296,7 +294,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-pt-PT" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/pt">
+    <test-case id="IUC10-pt-PT" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/pt">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, Software e a Internet:
@@ -313,7 +311,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-ro" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-2/ro">
+    <test-case id="IUC10-ro" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-2/ro">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, Software şi Internet:
@@ -330,7 +328,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-ru" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-5/ru windows-1251/ru KOI8-R/ru">
+    <test-case id="IUC10-ru" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-5/ru windows-1251/ru KOI8-R/ru">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Европа, Программное обеспечение + Интернет:
@@ -347,7 +345,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-sv" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-1/sv">
+    <test-case id="IUC10-sv" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-1/sv">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Europa, programvara och Internet:
@@ -363,7 +361,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-yi" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE">
+    <test-case id="IUC10-yi" encodings="UTF-8 UTF-32BE UTF-32LE">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     אײראָפּע: פּראָגראַמװאַרג און די װעלטנעץ:
@@ -379,7 +377,7 @@
 
     </test-case>
 
-    <test-case id="IUC10-zh-Hant" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE Big5/zh">
+    <test-case id="IUC10-zh-Hant" encodings="UTF-8 UTF-32BE UTF-32LE Big5/zh">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     歐洲，軟體及網際網路：
@@ -394,8 +392,8 @@
 
     </test-case>
 
-    <test-case id="IUC10-zh-Hans" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-2022-CN//noroundtrip GB18030/zh">
-    <bytes encoding="ISO-2022-CN">\n\ \ \ \ \n\ \ \ \ \n\n\ \ \ \ \x1b$)A\x0eE7V^#,Hm\x3c~#+;%A*Mx\x0f\n\ \ \ \ \x1b$)A\x0eSCM3R;Bk\x0f\ (Unicode)\ \x0eW_1iJ@=g\x0f\n\ \ \ \ IUC10\n\ \ \ \ \x1b$)A\x0e=+SZ\x0f1997\x0eDj\x0f\ 3\ \x0eTB\x0f10\x0eHU#-\x0f12\x0eHUTZ5B9z\x0f\ Mainz\ \x0eJP\x3eYPP5D5ZJ.=lM3R;Bk9z\x3cJQPLV;aOVTZ?*J\x3cW"2a!#\x0f\n\ \ \ \ \x1b$)A\x0e1\x3e4N;aRi=+;c\x3c/8w7=Cf5DW(\x3cR!#If\x3c05DAlSr0|@(#:9z\x3cJ;%A*Mx:MM3R;Bk#,9z\x3cJ;/:M1\x3e5X;/#,\x0f\n\ \ \ \ \x1b$)A\x0eM3R;BkTZ2YWwO5M3:MS\x26SCHm\x3c~VP5DJ5OV#,WVPM#,ND1\x3e8qJ=RT\x3c06`NDVV\x3cFKc5H!#\x0f\n\n\ \ \ \ Unicode\n\ \ \ \ \x1b$)A\x0e51J@=gPhR*95M(J1#,GkSC\x0fUnicode\x0e#!\x0f\n\nConference\ Program\n\ \ \ \ </bytes>
+    <!-- No ISO-2022-CN in this test because Java doesn't support it in both directions :-( -->
+    <test-case id="IUC10-zh-Hans" encodings="UTF-8 UTF-32BE UTF-32LE ISO-2022-CN GB18030/zh">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     欧洲，软件＋互联网
@@ -411,7 +409,7 @@
 Conference Program
     </test-case>
 
-    <test-case id="WIU-cz" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-2/cs">
+    <test-case id="WIU-cz" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-2/cs">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Co je Unicode?
@@ -434,7 +432,7 @@ Conference Program
 
     </test-case>
 
-    <test-case id="WIU-el" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-7/el">
+    <test-case id="WIU-el" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-7/el">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Τι είναι το Unicode;
@@ -460,7 +458,7 @@ Conference Program
 
     </test-case>
 
-    <test-case id="WIU-el-Q" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE windows-1253/el">
+    <test-case id="WIU-el-Q" encodings="UTF-8 UTF-32BE UTF-32LE windows-1253/el">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Τι είναι το “Unicode”;
@@ -486,7 +484,7 @@ Conference Program
 
     </test-case>
 
-    <test-case id="WIU-pl" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-2/pl">
+    <test-case id="WIU-pl" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-2/pl">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Czym jest Unikod ?
@@ -507,7 +505,7 @@ Conference Program
 
     </test-case>
 
-    <test-case id="WIU-tr" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE ISO-8859-9/tr">
+    <test-case id="WIU-tr" encodings="UTF-8 UTF-32BE UTF-32LE ISO-8859-9/tr">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     Evrensel Kod Nedir?
@@ -529,7 +527,7 @@ Conference Program
 
     </test-case>
 
-    <test-case id="WIU-tr-Q" encodings="UTF-8 UTF-16LE UTF-16BE UTF-32BE UTF-32LE windows-1254/tr">
+    <test-case id="WIU-tr-Q" encodings="UTF-8 UTF-32BE UTF-32LE windows-1254/tr">
     <!-- Copyright © 1991-2005 Unicode, Inc. All rights reserved. -->
 
     “Evrensel Kod” Nedir?
@@ -549,15 +547,5 @@ Conference Program
     vermiş olabilir ya da farklı sayılar aynı karekteri kodlayabilir. Bilgisayarlar, özellikle sunucular, birçok
     şifrelemeyi desteklemek zorundadırlar; veriler, farklı şifreleme ve altyapılardan geçerken bozulma riski taşırlar.
 
-    </test-case>
-    
-    
-    <test-case id="bug-10532-utf-16" encodings="UTF-8 UTF-16BE UTF-16LE UTF-32BE UTF-32LE">
-    foo 東京・銀座の歌舞伎座。４月に新調された４枚の緞帳のうち３枚は、京都の川島織物セルコンが織った朝日新聞デジタル会員（有料・無料）にご登録いただくと、様々な特典・サービスが受けられます。
-    </test-case>
-    
-    <test-case id="bug-10532-ASCII" encodings="UTF-8 UTF-16BE UTF-16LE UTF-32BE UTF-32LE">
-    <!--  Note that plain 7 bit ASCII is detected as UTF-8 -->
-    ,1,,,5
     </test-case>
 </charset-detection-tests>

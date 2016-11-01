@@ -1,8 +1,6 @@
-# Copyright (C) 2016 and later: Unicode, Inc. and others.
-# License & terms of use: http://www.unicode.org/copyright.html
 # ******************************************************************************
 # *
-# *   Copyright (C) 1995-2014, International Business Machines
+# *   Copyright (C) 1995-2013, International Business Machines
 # *   Corporation and others.  All Rights Reserved.
 # *
 # ******************************************************************************
@@ -457,22 +455,30 @@ ibm-1089_P100-1995 { UTR22* }
 # ISO Greek (with euro update). This is really ISO_8859-7:2003
 ibm-9005_X110-2007 { UTR22* }
                         ibm-9005 { IBM* }
-                        ISO-8859-7 { MIME* IANA JAVA* WINDOWS }
-                        8859_7 { JAVA }
-                        greek { IANA JAVA WINDOWS }
-                        greek8 { IANA JAVA WINDOWS }
-                        ELOT_928 { IANA JAVA WINDOWS }
-                        ECMA-118 { IANA JAVA WINDOWS }
-                        csISOLatinGreek { IANA JAVA WINDOWS }
-                        iso-ir-126 { IANA JAVA WINDOWS }
-                        ISO_8859-7:1987 { IANA* JAVA WINDOWS }
+                        ISO-8859-7 { MIME* IANA WINDOWS }
+                        greek { IANA WINDOWS }
+                        greek8 { IANA WINDOWS }
+                        ELOT_928 { IANA WINDOWS }
+                        ECMA-118 { IANA WINDOWS }
+                        csISOLatinGreek { IANA WINDOWS }
+                        iso-ir-126 { IANA WINDOWS }
+                        ISO_8859-7:1987 { IANA* WINDOWS }
                         windows-28597 { WINDOWS* }
                         sun_eu_greek # For Solaris
 
 # ISO Greek (w/o euro update)
 # JDK 1.5 has these aliases.
 ibm-813_P100-1995 { UTR22* }
-                        ibm-813 { IBM* JAVA* }
+                        ibm-813 { IBM* JAVA }
+                        ISO-8859-7 { JAVA* }
+                        greek { JAVA }
+                        greek8 { JAVA }
+                        ELOT_928 { JAVA }
+                        ECMA-118 { JAVA }
+                        csISOLatinGreek { JAVA }
+                        iso-ir-126 { JAVA }
+                        ISO_8859-7:1987 { JAVA }
+                        8859_7 { JAVA }
                         cp813 { JAVA }
                         813 { JAVA }
 
@@ -673,7 +679,7 @@ ibm-950_P110-1999 { UTR22* }                # Taiwan Big-5 (w/o euro update)
                         cp950 { JAVA* }
                         950 { JAVA }
                         x-IBM950 { JAVA }
-ibm-1375_P100-2008 { UTR22* }   # Big5-HKSCS-2004 with Unicode 3.1 mappings. This uses supplementary characters.
+ibm-1375_P100-2007 { UTR22* }   # Big5-HKSCS-2004 with Unicode 3.1 mappings. This uses supplementary characters.
                         ibm-1375 { IBM* }
                         Big5-HKSCS { IANA* JAVA* }
                         big5hk { JAVA }
@@ -723,11 +729,9 @@ ibm-5478_P100-1995 { UTR22* } ibm-5478 { IBM* } # This gb_2312_80 DBCS mapping i
                         gb2312-1980
                         GB2312.1980-0   # From X11R6
 
-euc-tw-2014 { UTR22* }                # Updated EUC-TW converter based on ibm-964
-                        EUC-TW
-
 ibm-964_P110-1999 { UTR22* }                # Taiwan EUC. x-euc-tw is a MIME name
                         ibm-964 { IBM* JAVA }
+                        EUC-TW
                         ibm-eucTW
                         cns11643 
                         cp964 { JAVA* }

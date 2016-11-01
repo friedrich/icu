@@ -1,19 +1,12 @@
 <!--
-* © 2016 and later: Unicode, Inc. and others.
-* License & terms of use: http://www.unicode.org/copyright.html#License
 *******************************************************************************
-* Copyright (C) 2009-2016, International Business Machines Corporation and    *
+* Copyright (C) 2009-2012, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 -->
 <project name="common-targets" basedir=".">
     <dirname property="common-targets.dir" file="${ant.file.common-targets}"/>
     <property file="${common-targets.dir}/locations.properties"/>
-
-    <!-- global (top-level) propeties - need locations.properties loaded first -->
-    <property file="${global.build-local.properties}"/>
-    <property file="${global.build.properties}"/>
-
     <property file="${common-targets.dir}/common.properties"/>
     <property environment="env"/>
 
@@ -24,18 +17,9 @@
     </target>
 
     <target name="@compile">
-        <echo message="build-local:     ${global.build-local.properties}"/>
-        <!-- set java 6 bootclasspath to empty if not set -->
-        <property name="java6.bootclasspath" value=""/>
-
-        <condition property="javac.bootclasspath" value="${java6.bootclasspath}" else="">
-            <equals arg1="${javac.target}" arg2="1.6"/>
-        </condition>
-
         <echo message="--- java compiler arguments ------------------------"/>
         <echo message="source dir:     ${basedir}/${src.dir}"/>
         <echo message="output dir:     ${basedir}/${bin.dir}"/>
-        <echo message="bootclasspath:  ${javac.bootclasspath}"/>
         <echo message="classpath:      ${toString:javac.classpathref}"/>
         <echo message="source:         ${javac.source}"/>
         <echo message="target:         ${javac.target}"/>
@@ -48,7 +32,6 @@
         <javac
             srcdir="${src.dir}"
             destdir="${bin.dir}"
-            bootclasspath="${javac.bootclasspath}"
             classpathref="javac.classpathref"
             source="${javac.source}"
             target="${javac.target}"
@@ -83,7 +66,7 @@
         <jar jarfile="${jar.dir}/${jar.name}" manifest="${out.dir}/manifest.stub" compress="true">
             <fileset dir="${bin.dir}" includes="**/*"/>
             <fileset dir="${shared.dir}/licenses">
-                <include name="LICENSE"/>
+                <include name="license.html"/>
             </fileset>
         </jar>
     </target>
@@ -93,7 +76,7 @@
         <jar jarfile="${jar.dir}/${src.jar.name}" compress="true">
             <fileset dir="${src.dir}" includes="**/*.java"/>
             <fileset dir="${shared.dir}/licenses">
-                <include name="LICENSE"/>
+                <include name="license.html"/>
             </fileset>
         </jar>
     </target>
@@ -121,14 +104,17 @@
         <echo message="${full.locale.names}" file="${res.dir}/fullLocaleNames.lst"/>
     </target>
 
-    <!-- FindBugs targets -->
-    <target name="_findbugs_init">
-        <property name="findbugs.home" value="${env.FINDBUGS_HOME}"/>
-        <echo message="----------------------------------------------------"/>
-        <echo message="findbugs.home:  ${findbugs.home}"/>
-        <echo message="----------------------------------------------------"/>
-
-        <fail message="FindBugs task not found. Set environment variable FINDBUGS_HOME properly.">
+    <!-- fail if findbugs.home is not given or the findbugs task is
+         unavailable -->
+    <target name="_findbugs_check">
+        <fail message="findbugs.home must be defined.">
+            <condition>
+                <not>
+                    <available file="${findbugs.home}" type="dir" />
+                </not>
+            </condition>
+        </fail>
+        <fail message="FindBugs task not found">
             <condition>
                 <not>
                     <or>
@@ -138,41 +124,28 @@
                 </not>
             </condition>
         </fail>
+    </target>
+
+    <!-- if findbugs-ant.jar is already on the path, just define the task -->
+    <target name="_findbugs_task_available" depends="_findbugs_check" if="_findbugs.task.available">
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" />
+    </target>
+
+    <!-- otherwise, specify findbugs-ant.jar on the path -->
+    <target name="_findbugs_task_unavailable" depends="_findbugs_check" unless="_findbugs.task.available">
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
-            classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
-
-        <property name="aux.classpath" value="${toString:javac.classpathref}"/>
-        <condition property="empty.aux.classpath">
-            <length string="${aux.classpath}" when="eq" length="0"/>
-        </condition>
+            classpath="${findbugs.home}/lib/findbugs-ant.jar" />
     </target>
 
-    <target name="_findbugs_empty_aux_classpath" if="empty.aux.classpath">
-        <findbugs
-            home="${findbugs.home}"
-            output="html"
-            outputFile="${out.dir}/fb-${ant.project.name}.html"
-            excludeFilter="findbugs-exclude.xml">
- 
-            <sourcePath path="${src.dir}"/>
-            <class location="${jar.dir}/${jar.name}"/>
+    <target name="_findbugs_task" depends="_findbugs_task_available, _findbugs_task_unavailable" />
+
+    <target name="@findbugs" depends="_findbugs_task, @build-all">
+        <findbugs home="${findbugs.home}" output="html" outputFile="${out.dir}/fb-${ant.project.name}.html">
+            <sourcePath path="${src.dir}" />
+            <class location="${jar.dir}/${jar.name}" />
+            <auxClasspath path="${toString:javac.classpathref}" />
         </findbugs>
     </target>
-
-    <target name="_findbugs_non_empty_aux_classpath" unless="empty.aux.classpath">
-        <findbugs
-            home="${findbugs.home}"
-            output="html"
-            outputFile="${out.dir}/fb-${ant.project.name}.html"
-            excludeFilter="findbugs-exclude.xml">
- 
-            <sourcePath path="${src.dir}"/>
-            <class location="${jar.dir}/${jar.name}"/>
-            <auxClasspath path="${aux.classpath}"/>
-        </findbugs>
-    </target>
-
-    <target name="@findbugs" depends="_findbugs_init, @build-all, _findbugs_empty_aux_classpath, _findbugs_non_empty_aux_classpath"/>
 
     <!-- Dependencies -->
 
@@ -323,17 +296,6 @@
         <ant dir="${icu4j.translit-tests.dir}" inheritAll="false"/>
     </target>
 
-    <!-- testall -->
-    <path id="javac.classpathref.testall">
-        <pathelement location="${icu4j.core.jar}"/>
-        <pathelement location="${icu4j.test-framework.jar}"/>
-    </path>
-
-    <target name="_all.testall" depends="_all.core, _all.test-framework">
-        <ant dir="${icu4j.testall.dir}" inheritAll="false"/>
-    </target>
-
-
     <!-- build-tools -->
     <path id="javac.classpathref.build-tools">
         <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
@@ -381,15 +343,12 @@
     </target>
 
     <!-- perf -->
-    <path id="javac.classpathref.perf-tests">
+    <path id="javac.classpathref.perf">
         <pathelement location="${icu4j.core.jar}"/>
         <pathelement location="${icu4j.charset.jar}"/>
         <pathelement location="${icu4j.collate.jar}"/>
         <pathelement location="${icu4j.tools.jar}"/>
     </path>
 
-    <target name="_all.perf-tests" depends="_all.core, _all.charset, _all.collate, _all.tools">
-        <ant dir="${icu4j.perf-tests.dir}" inheritAll="false"/>
-    </target>
 
 </project>

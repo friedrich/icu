@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2007-2015, International Business Machines Corporation and    *
+ * Copyright (C) 2007-2013, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -49,12 +47,8 @@ public class VTimeZone extends BasicTimeZone {
      * @stable ICU 3.8
      */
     public static VTimeZone create(String tzid) {
-        BasicTimeZone basicTimeZone = TimeZone.getFrozenICUTimeZone(tzid, true);
-        if (basicTimeZone == null) {
-            return null;
-        }
         VTimeZone vtz = new VTimeZone(tzid);
-        vtz.tz = (BasicTimeZone) basicTimeZone.cloneAsThawed();
+        vtz.tz = (BasicTimeZone)TimeZone.getTimeZone(tzid, TimeZone.TIMEZONE_ICU);
         vtz.olsonzid = vtz.tz.getID();
 
         return vtz;
@@ -101,7 +95,6 @@ public class VTimeZone extends BasicTimeZone {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     public void getOffsetFromLocal(long date,
             int nonExistingTimeOpt, int duplicatedTimeOpt, int[] offsets) {
@@ -1431,15 +1424,8 @@ public class VTimeZone extends BasicTimeZone {
                             // Not equivalent rule - write out two different rules
                             writeZonePropsByDOW(w, true, dstName, dstFromOffset, dstToOffset,
                                     dstMonth, dstWeekInMonth, dstDayOfWeek, dstStartTime, dstUntilTime);
-
-                            Date nextStart = finalDstRule.getNextStart(dstUntilTime,
-                                    dstFromOffset - dstFromDSTSavings, dstFromDSTSavings, false);
-
-                            assert nextStart != null;
-                            if (nextStart != null) {
-                                writeFinalRule(w, true, finalDstRule,
-                                        dstFromOffset - dstFromDSTSavings, dstFromDSTSavings, nextStart.getTime());
-                            }
+                            writeFinalRule(w, true, finalDstRule,
+                                    dstFromOffset - dstFromDSTSavings, dstFromDSTSavings, dstStartTime);
                         }
                     }
                 }
@@ -1461,21 +1447,13 @@ public class VTimeZone extends BasicTimeZone {
                         // Use a single rule if possible
                         if (isEquivalentDateRule(stdMonth, stdWeekInMonth, stdDayOfWeek, finalStdRule.getRule())) {
                             writeZonePropsByDOW(w, false, stdName, stdFromOffset, stdToOffset,
-                                    stdMonth, stdWeekInMonth, stdDayOfWeek, stdStartTime, MAX_TIME);
+                                    stdMonth, stdWeekInMonth, stdDayOfWeek, stdStartTime, MAX_TIME);                            
                         } else {
                             // Not equivalent rule - write out two different rules
                             writeZonePropsByDOW(w, false, stdName, stdFromOffset, stdToOffset,
                                     stdMonth, stdWeekInMonth, stdDayOfWeek, stdStartTime, stdUntilTime);
-
-                            Date nextStart = finalStdRule.getNextStart(stdUntilTime,
-                                    stdFromOffset - stdFromDSTSavings, stdFromDSTSavings, false);
-
-                            assert nextStart != null;
-                            if (nextStart != null) {
-                                writeFinalRule(w, false, finalStdRule,
-                                        stdFromOffset - stdFromDSTSavings, stdFromDSTSavings, nextStart.getTime());
-                                
-                            }
+                            writeFinalRule(w, false, finalStdRule,
+                                    stdFromOffset - stdFromDSTSavings, stdFromDSTSavings, stdStartTime);
                         }
                     }
                 }
@@ -2101,7 +2079,7 @@ public class VTimeZone extends BasicTimeZone {
     }
 
     // Freezable stuffs
-    private volatile transient boolean isFrozen = false;
+    private transient boolean isFrozen = false;
 
     /**
      * {@inheritDoc}

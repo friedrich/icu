@@ -1,25 +1,34 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/collation/si.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/collation/si.xml
+ */
 si{
-    Version{"2.1.19.14"}
+    Version{"2.0.82.42"}
     collations{
         dictionary{
             Sequence{
-                "[normalization on]"
-                "[reorder Sinh Deva Beng Guru Gujr Orya Taml Telu Knda Mlym]"
+                " [normalization on] [reorder Sinh Deva Beng Guru Gujr Orya Taml Telu"
+                " Knda Mlym]"
                 "&ඖ<ං<ඃ"
                 "&ජ්ඤ<<ඥ"
             }
-            Version{"30.0.2"}
+            Version{"23.1"}
         }
         standard{
             Sequence{
-                "[normalization on]"
-                "[reorder Sinh Deva Beng Guru Gujr Orya Taml Telu Knda Mlym]"
+                " [normalization on] [reorder Sinh Deva Beng Guru Gujr Orya Taml Telu"
+                " Knda Mlym]"
                 "&ඖ<ං<ඃ"
                 "&ඥ<ඤ"
             }
-            Version{"30.0.2"}
+            Version{"23.1"}
         }
     }
 }

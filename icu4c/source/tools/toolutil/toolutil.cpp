@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 1999-2014, International Business Machines
+*   Copyright (C) 1999-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -20,14 +18,6 @@
 *   This file contains utility functions for ICU tools like genccode.
 */
 
-#include "unicode/platform.h"
-#if U_PLATFORM == U_PF_MINGW
-// *cough* - for struct stat
-#ifdef __STRICT_ANSI__
-#undef __STRICT_ANSI__
-#endif
-#endif
-
 #include <stdio.h>
 #include <sys/stat.h>
 #include "unicode/utypes.h"
@@ -43,9 +33,6 @@
 #   define NOSERVICE
 #   define NOIME
 #   define NOMCX
-#   if U_PLATFORM == U_PF_MINGW
-#     define __NO_MINGW_LFS /* gets around missing 'off64_t' */
-#   endif
 #   include <windows.h>
 #   include <direct.h>
 #else
@@ -164,10 +151,7 @@ findBasename(const char *filename) {
     const char *basename=uprv_strrchr(filename, U_FILE_SEP_CHAR);
 
 #if U_FILE_ALT_SEP_CHAR!=U_FILE_SEP_CHAR
-#if !(U_PLATFORM == U_PF_CYGWIN && U_PLATFORM_USES_ONLY_WIN32_API)
-    if(basename==NULL)
-#endif
-    {
+    if(basename==NULL) {
         /* Use lenient matching on Windows, which can accept either \ or /
            This is useful for environments like Win32+CygWin which have both.
         */
@@ -206,18 +190,6 @@ uprv_mkdir(const char *pathname, UErrorCode *status) {
 #endif
     }
 }
-
-#if !UCONFIG_NO_FILE_IO
-U_CAPI UBool U_EXPORT2
-uprv_fileExists(const char *file) {
-  struct stat stat_buf;
-  if (stat(file, &stat_buf) == 0) {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
-}
-#endif
 
 /*U_CAPI UDate U_EXPORT2
 uprv_getModificationDate(const char *pathname, UErrorCode *status)
@@ -314,7 +286,7 @@ utm_hasCapacity(UToolMemory *mem, int32_t capacity) {
         if(mem->array==mem->staticArray) {
             mem->array=uprv_malloc(newCapacity*mem->size);
             if(mem->array!=NULL) {
-                uprv_memcpy(mem->array, mem->staticArray, (size_t)mem->idx*mem->size);
+                uprv_memcpy(mem->array, mem->staticArray, mem->idx*mem->size);
             }
         } else {
             mem->array=uprv_realloc(mem->array, newCapacity*mem->size);

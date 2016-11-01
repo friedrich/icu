@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2014, International Business Machines Corporation and         *
+ * Copyright (C) 2012, International Business Machines Corporation and         *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -15,19 +13,15 @@ import com.ibm.icu.util.CharsTrie;
 
 class CharsDictionaryMatcher extends DictionaryMatcher {
     private CharSequence characters;
-
+    
     public CharsDictionaryMatcher(CharSequence chars) {
         characters = chars;
     }
 
-    @Override
     public int matches(CharacterIterator text_, int maxLength, int[] lengths, int[] count_, int limit, int[] values) {
         UCharacterIterator text = UCharacterIterator.getInstance(text_);
         CharsTrie uct = new CharsTrie(characters, 0);
         int c = text.nextCodePoint();
-        if (c == UCharacterIterator.DONE) {
-            return 0;
-        }
         Result result = uct.firstForCodePoint(c);
         // TODO: should numChars count Character.charCount?
         int numChars = 1;
@@ -53,9 +47,6 @@ class CharsDictionaryMatcher extends DictionaryMatcher {
                 break;
             }
             c = text.nextCodePoint();
-            if (c == UCharacterIterator.DONE) {
-                break;
-            }
             ++numChars;
             result = uct.nextForCodePoint(c);
         }
@@ -63,7 +54,6 @@ class CharsDictionaryMatcher extends DictionaryMatcher {
         return numChars;
     }
 
-    @Override
     public int getType() {
         return DictionaryData.TRIE_TYPE_UCHARS;
     }

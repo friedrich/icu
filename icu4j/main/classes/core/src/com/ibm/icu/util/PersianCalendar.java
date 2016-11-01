@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2012, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -64,7 +62,6 @@ import com.ibm.icu.util.ULocale.Category;
  * @internal
  * @deprecated This API is ICU internal only.
  */
-@Deprecated
 public class PersianCalendar extends Calendar {
     private static final long serialVersionUID = -6727306982975111643L;
 
@@ -105,7 +102,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PersianCalendar()
     {
         this(TimeZone.getDefault(), ULocale.getDefault(Category.FORMAT));
@@ -120,7 +116,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PersianCalendar(TimeZone zone)
     {
         this(zone, ULocale.getDefault(Category.FORMAT));
@@ -135,7 +130,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PersianCalendar(Locale aLocale)
     {
         this(TimeZone.getDefault(), aLocale);
@@ -150,7 +144,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PersianCalendar(ULocale locale)
     {
         this(TimeZone.getDefault(), locale);
@@ -166,7 +159,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PersianCalendar(TimeZone zone, Locale aLocale)
     {
         super(zone, aLocale);
@@ -183,7 +175,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PersianCalendar(TimeZone zone, ULocale locale)
     {
         super(zone, locale);
@@ -200,7 +191,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PersianCalendar(Date date) {
         super(TimeZone.getDefault(), ULocale.getDefault(Category.FORMAT));
         this.setTime(date);
@@ -219,7 +209,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PersianCalendar(int year, int month, int date)
     {
         super(TimeZone.getDefault(), ULocale.getDefault(Category.FORMAT));
@@ -247,7 +236,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public PersianCalendar(int year, int month, int date, int hour,
                            int minute, int second)
     {
@@ -295,7 +283,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected int handleGetLimit(int field, int limitType) {
         return LIMITS[field][limitType];
     }
@@ -328,7 +315,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected int handleGetMonthLength(int extendedYear, int month) {
         // If the month is out of range, adjust it into range, and
         // modify the extended year value accordingly.
@@ -347,7 +333,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected int handleGetYearLength(int extendedYear) {
         return isLeapYear(extendedYear) ? 366 : 365;
     }
@@ -362,7 +347,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected int handleComputeMonthStart(int eyear, int month, boolean useMonth) {
         // If the month is out of range, adjust it into range, and
         // modify the extended year value accordingly.
@@ -387,7 +371,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected int handleGetExtendedYear() {
         int year;
         if (newerField(EXTENDED_YEAR, YEAR) == EXTENDED_YEAR) {
@@ -415,14 +398,13 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     protected void handleComputeFields(int julianDay) {
         int year, month, dayOfMonth, dayOfYear;
 
         long daysSinceEpoch = julianDay - PERSIAN_EPOCH;
         year = 1 + (int) floorDivide(33 * daysSinceEpoch + 3, 12053);
 
-        long farvardin1 = 365L * (year - 1L) + floorDivide(8L * year + 21, 33L);
+        long farvardin1 = 365 * (year - 1) + floorDivide(8 * year + 21, 33);
         dayOfYear = (int)(daysSinceEpoch - farvardin1); // 0-based
         if (dayOfYear < 216) { // Compute 0-based month
             month = dayOfYear / 31;
@@ -446,7 +428,6 @@ public class PersianCalendar extends Calendar {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public String getType() {
         return "persian";
     }

@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/eu.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/eu.xml
+ */
 eu{
     Countries{
         001{"Mundua"}
@@ -20,8 +29,8 @@ eu{
         034{"Asia hegoaldea"}
         035{"Asia hego-ekialdea"}
         039{"Europa hegoaldea"}
-        053{"Australasia"}
-        054{"Melanesia"}
+        053{"Australia eta Zeelanda Berria"}
+        054{"Melanesiera"}
         057{"Mikronesia eskualdea"}
         061{"Polinesia"}
         142{"Asia"}
@@ -32,14 +41,15 @@ eu{
         154{"Europa iparraldea"}
         155{"Europa mendebaldea"}
         419{"Latinoamerika"}
-        AC{"Ascension uhartea"}
+        AC{"Ascension Uhartea"}
         AD{"Andorra"}
-        AE{"Arabiar Emirerri Batuak"}
+        AE{"Arabiar Emirrerri Batuak"}
         AF{"Afganistan"}
         AG{"Antigua eta Barbuda"}
         AI{"Angila"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Holandarren Antillak"}
         AO{"Angola"}
         AQ{"Antartika"}
         AR{"Argentina"}
@@ -58,20 +68,20 @@ eu{
         BH{"Bahrain"}
         BI{"Burundi"}
         BJ{"Benin"}
-        BL{"Saint Barthélemy"}
+        BL{"San Bartolome"}
         BM{"Bermuda"}
         BN{"Brunei"}
-        BO{"Bolivia"}
-        BQ{"Karibeko Herbehereak"}
+        BO{"Bolibia"}
+        BQ{"Karibeko Holanda"}
         BR{"Brasil"}
         BS{"Bahamak"}
         BT{"Bhutan"}
-        BV{"Bouvet uhartea"}
+        BV{"Bouvet Uhartea"}
         BW{"Botswana"}
         BY{"Bielorrusia"}
         BZ{"Belize"}
         CA{"Kanada"}
-        CC{"Cocos uharteak"}
+        CC{"Cocos [Keeling] uharteak"}
         CD{"Kongoko Errepublika Demokratikoa"}
         CF{"Afrika Erdiko Errepublika"}
         CG{"Kongo (Brazzaville)"}
@@ -89,7 +99,7 @@ eu{
         CW{"Curaçao"}
         CX{"Christmas uhartea"}
         CY{"Zipre"}
-        CZ{"Txekiar Errepublika"}
+        CZ{"Txekiar errepublika"}
         DE{"Alemania"}
         DG{"Diego Garcia"}
         DJ{"Djibuti"}
@@ -110,14 +120,14 @@ eu{
         FJ{"Fiji"}
         FK{"Malvinak"}
         FM{"Mikronesia"}
-        FO{"Faroe uharteak"}
+        FO{"Faroe Uharteak"}
         FR{"Frantzia"}
         GA{"Gabon"}
         GB{"Erresuma Batua"}
         GD{"Grenada"}
         GE{"Georgia"}
         GF{"Guyana Frantsesa"}
-        GG{"Guernesey"}
+        GG{"Guernsey"}
         GH{"Ghana"}
         GI{"Gibraltar"}
         GL{"Groenlandia"}
@@ -132,7 +142,7 @@ eu{
         GW{"Ginea-Bissau"}
         GY{"Guyana"}
         HK{"Hong Kong AEB Txina"}
-        HM{"Heard eta McDonald uharteak"}
+        HM{"Heard eta McDonald Uharteak"}
         HN{"Honduras"}
         HR{"Kroazia"}
         HT{"Haiti"}
@@ -143,7 +153,7 @@ eu{
         IL{"Israel"}
         IM{"Man uhartea"}
         IN{"India"}
-        IO{"Indiako Ozeanoko lurralde britainiarra"}
+        IO{"Indiako Ozeanoko Britainiar Lurraldea"}
         IQ{"Irak"}
         IR{"Iran"}
         IS{"Islandia"}
@@ -152,7 +162,7 @@ eu{
         JM{"Jamaika"}
         JO{"Jordania"}
         JP{"Japonia"}
-        KE{"Kenya"}
+        KE{"Kenia"}
         KG{"Kirgizistan"}
         KH{"Kanbodia"}
         KI{"Kiribati"}
@@ -161,7 +171,7 @@ eu{
         KP{"Ipar Korea"}
         KR{"Hego Korea"}
         KW{"Kuwait"}
-        KY{"Kaiman uharteak"}
+        KY{"Kaiman Uharteak"}
         KZ{"Kazakhstan"}
         LA{"Laos"}
         LB{"Libano"}
@@ -178,14 +188,14 @@ eu{
         MC{"Monako"}
         MD{"Moldavia"}
         ME{"Montenegro"}
-        MF{"San Martin"}
+        MF{"Saint Martin"}
         MG{"Madagaskar"}
         MH{"Marshall uharteak"}
         MK{"Mazedonia"}
         ML{"Mali"}
-        MM{"Myanmar (Birmania)"}
+        MM{"Myanmar"}
         MN{"Mongolia"}
-        MO{"Macau AEB Txina"}
+        MO{"Makau"}
         MP{"Iparraldeko Mariana uharteak"}
         MQ{"Martinika"}
         MR{"Mauritania"}
@@ -195,7 +205,7 @@ eu{
         MV{"Maldivak"}
         MW{"Malawi"}
         MX{"Mexiko"}
-        MY{"Malaysia"}
+        MY{"Malasia"}
         MZ{"Mozambike"}
         NA{"Namibia"}
         NC{"Kaledonia Berria"}
@@ -224,7 +234,7 @@ eu{
         PT{"Portugal"}
         PW{"Palau"}
         PY{"Paraguai"}
-        QA{"Qatar"}
+        QA{"Katar"}
         QO{"Mugaz kanpoko Ozeania"}
         RE{"Reunion"}
         RO{"Errumania"}
@@ -237,7 +247,7 @@ eu{
         SD{"Sudan"}
         SE{"Suedia"}
         SG{"Singapur"}
-        SH{"Santa Helena"}
+        SH{"Saint Helena"}
         SI{"Eslovenia"}
         SJ{"Svalbard eta Jan Mayen uharteak"}
         SK{"Eslovakia"}
@@ -253,12 +263,12 @@ eu{
         SY{"Siria"}
         SZ{"Swazilandia"}
         TA{"Tristan da Cunha"}
-        TC{"Turk eta Caico uharteak"}
+        TC{"Turk eta Caicos uharteak"}
         TD{"Txad"}
-        TF{"Hegoaldeko lurralde frantsesak"}
+        TF{"Frantziaren Lurralde Australak"}
         TG{"Togo"}
-        TH{"Thailandia"}
-        TJ{"Tajikistan"}
+        TH{"Tailandia"}
+        TJ{"Tadjikistan"}
         TK{"Tokelau"}
         TL{"Ekialdeko Timor"}
         TM{"Turkmenistan"}
@@ -271,7 +281,7 @@ eu{
         TZ{"Tanzania"}
         UA{"Ukraina"}
         UG{"Uganda"}
-        UM{"Ameriketako Estatu Batuetako Kanpoaldeko Uharte Txikiak"}
+        UM{"Estatu Batuetatik urruti dauden uharte txikiak"}
         US{"Ameriketako Estatu Batuak"}
         UY{"Uruguai"}
         UZ{"Uzbekistan"}
@@ -292,20 +302,5 @@ eu{
         ZW{"Zimbabwe"}
         ZZ{"Eskualde ezezaguna"}
     }
-    Countries%short{
-        GB{"EB"}
-        HK{"Hong Kong"}
-        MO{"Macau"}
-        PS{"Palestina"}
-        US{"AEB"}
-    }
-    Countries%variant{
-        CD{"Kongo (KED)"}
-        CG{"Kongo (errepublika)"}
-        CZ{"Txekia"}
-        FK{"Falkland uharteak (Malvina uharteak)"}
-        MK{"Mazedonia (Mazedoniako Yugoslaviar Errepublika ohia)"}
-        TL{"Timor ekialdea"}
-    }
-    Version{"2.1.29.20"}
+    Version{"2.0.86.71"}
 }

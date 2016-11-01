@@ -1,8 +1,6 @@
-//#* © 2016 and later: Unicode, Inc. and others.
-//#* License & terms of use: http://www.unicode.org/copyright.html#License
 //#
 //#*******************************************************************************
-//#* Copyright (C) 1997-2015, International Business Machines Corporation and    *
+//#* Copyright (C) 1997-2011, International Business Machines Corporation and    *
 //#* others. All Rights Reserved.                                                *
 //#*******************************************************************************
 //#* This is the ant build file for ICU4J.  See readme.html for more information.
@@ -27,12 +25,6 @@ grant
 
     // for testing lenient decimal/group separator parsing
     permission java.util.PropertyPermission "com.ibm.icu.text.DecimalFormat.SkipExtendedSeparatorParsing", "write";
-
-    // for setting the default time zone by the test framework
-    permission java.util.PropertyPermission "user.timezone", "write";
-
-    // for creating a fallback class loader
-    permission java.lang.RuntimePermission "createClassLoader";
 };
 
 // there must be a way for code in one jar file to call code in another jar

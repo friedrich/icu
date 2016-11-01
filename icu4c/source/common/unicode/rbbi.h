@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ***************************************************************************
-*   Copyright (C) 1999-2016 International Business Machines Corporation   *
+*   Copyright (C) 1999-2013 International Business Machines Corporation   *
 *   and others. All rights reserved.                                      *
 ***************************************************************************
 
@@ -58,11 +56,15 @@ struct RBBIStateTable;
  *
  * <p>See the ICU User Guide for information on Break Iterator Rules.</p>
  *
- * <p>This class is not intended to be subclassed.</p>
+ * <p>This class is not intended to be subclassed.  (Class DictionaryBasedBreakIterator
+ *    is a subclass, but that relationship is effectively internal to the ICU
+ *    implementation.  The subclassing interface to RulesBasedBreakIterator is
+ *    not part of the ICU API, and may not remain stable.</p>
+ *
  */
-class U_COMMON_API RuleBasedBreakIterator /*U_FINAL*/ : public BreakIterator {
+class U_COMMON_API RuleBasedBreakIterator : public BreakIterator {
 
-private:
+protected:
     /**
      * The UText through which this BreakIterator accesses the text
      * @internal
@@ -137,7 +139,7 @@ private:
      * @internal
      */
     int32_t             fPositionInCache;
-
+    
     /**
      *
      * If present, UStack of LanguageBreakEngine objects that might handle
@@ -146,7 +148,7 @@ private:
      * @internal
      */
     UStack              *fLanguageBreakEngines;
-
+    
     /**
      *
      * If present, the special LanguageBreakEngine used for handling
@@ -155,17 +157,31 @@ private:
      * @internal
      */
     UnhandledEngine     *fUnhandledBreakEngine;
-
+    
     /**
      *
      * The type of the break iterator, or -1 if it has not been set.
      * @internal
      */
     int32_t             fBreakType;
-
+    
+protected:
     //=======================================================================
     // constructors
     //=======================================================================
+
+#ifndef U_HIDE_INTERNAL_API
+    /**
+     * Constant to be used in the constructor
+     * RuleBasedBreakIterator(RBBIDataHeader*, EDontAdopt, UErrorCode &);
+     * which does not adopt the memory indicated by the RBBIDataHeader*
+     * parameter.
+     *
+     * @internal
+     */
+    enum EDontAdopt {
+        kDontAdopt
+    };
 
     /**
      * Constructor from a flattened set of RBBI data in malloced memory.
@@ -178,6 +194,17 @@ private:
      * @internal
      */
     RuleBasedBreakIterator(RBBIDataHeader* data, UErrorCode &status);
+
+    /**
+     * Constructor from a flattened set of RBBI data in memory which need not
+     *             be malloced (e.g. it may be a memory-mapped file, etc.).
+     *
+     *             This version does not adopt the memory, and does not
+     *             free it when done.
+     * @internal
+     */
+    RuleBasedBreakIterator(const RBBIDataHeader* data, enum EDontAdopt dontAdopt, UErrorCode &status);
+#endif  /* U_HIDE_INTERNAL_API */
 
 
     friend class RBBIRuleBuilder;
@@ -221,7 +248,7 @@ public:
      * constuction from source rules.
      *
      * Ownership of the storage containing the compiled rules remains with the
-     * caller of this function.  The compiled rules must not be  modified or
+     * caller of this function.  The compiled rules must not be  modified or 
      * deleted during the life of the break iterator.
      *
      * The compiled rules are not compatible across different major versions of ICU.
@@ -375,11 +402,6 @@ public:
     /**
      * Set the iterator to analyze a new piece of text.  This function resets
      * the current iteration position to the beginning of the text.
-     *
-     * The BreakIterator will retain a reference to the supplied string.
-     * The caller must not modify or delete the text while the BreakIterator
-     * retains the reference.
-     *
      * @param newText The text to analyze.
      *  @stable ICU 2.0
      */
@@ -401,8 +423,8 @@ public:
     virtual void  setText(UText *text, UErrorCode &status);
 
     /**
-     * Sets the current iteration position to the beginning of the text, position zero.
-     * @return The offset of the beginning of the text, zero.
+     * Sets the current iteration position to the beginning of the text.
+     * @return The offset of the beginning of the text.
      *  @stable ICU 2.0
      */
     virtual int32_t first(void);
@@ -561,9 +583,7 @@ public:
      */
     static UClassID U_EXPORT2 getStaticClassID(void);
 
-    /**
-     * Deprecated functionality. Use clone() instead.
-     *
+    /*
      * Create a clone (copy) of this break iterator in memory provided
      *  by the caller.  The idea is to increase performance by avoiding
      *  a storage allocation.  Use of this functoin is NOT RECOMMENDED.
@@ -585,7 +605,7 @@ public:
      * @return  Pointer to the clone object.  This may differ from the stackBuffer
      *          address if the byte alignment of the stack buffer was not suitable
      *          or if the stackBuffer was too small to hold the clone.
-     * @deprecated ICU 52. Use clone() instead.
+     * @stable ICU 2.0
      */
     virtual BreakIterator *  createBufferClone(void *stackBuffer,
                                                int32_t &BufferSize,
@@ -639,7 +659,7 @@ public:
     virtual RuleBasedBreakIterator &refreshInputText(UText *input, UErrorCode &status);
 
 
-private:
+protected:
     //=======================================================================
     // implementation
     //=======================================================================
@@ -648,19 +668,42 @@ private:
      * in text or iteration position.
      * @internal
      */
-    void reset(void);
+    virtual void reset(void);
+
+#if 0
+    /**
+      * Return true if the category lookup for this char
+      * indicates that it is in the set of dictionary lookup chars.
+      * This function is intended for use by dictionary based break iterators.
+      * @return true if the category lookup for this char
+      * indicates that it is in the set of dictionary lookup chars.
+      * @internal
+      */
+    virtual UBool isDictionaryChar(UChar32);
+
+    /**
+      * Get the type of the break iterator.
+      * @internal
+      */
+    virtual int32_t getBreakType() const;
+#endif
 
     /**
       * Set the type of the break iterator.
       * @internal
       */
-    void setBreakType(int32_t type);
+    virtual void setBreakType(int32_t type);
 
+#ifndef U_HIDE_INTERNAL_API
     /**
       * Common initialization function, used by constructors and bufferClone.
+      *   (Also used by DictionaryBasedBreakIterator::createBufferClone().)
       * @internal
       */
     void init();
+#endif  /* U_HIDE_INTERNAL_API */
+
+private:
 
     /**
      * This method backs the iterator back up to a "safe position" in the text.
@@ -684,7 +727,9 @@ private:
      */
     int32_t handleNext(const RBBIStateTable *statetable);
 
+protected:
 
+#ifndef U_HIDE_INTERNAL_API
     /**
      * This is the function that actually implements dictionary-based
      * breaking.  Covering at least the range from startPos to endPos,
@@ -700,7 +745,9 @@ private:
      * @internal
      */
     int32_t checkDictionary(int32_t startPos, int32_t endPos, UBool reverse);
+#endif  /* U_HIDE_INTERNAL_API */
 
+private:
 
     /**
      * This function returns the appropriate LanguageBreakEngine for a

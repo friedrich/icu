@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  *******************************************************************************
  * Copyright (C) 1997-2013, International Business Machines Corporation and
@@ -1065,17 +1063,6 @@ SimpleTimeZone::deleteTransitionRules(void) {
 
 /*
  * Lazy transition rules initializer
- *
- *    Note On the removal of UMTX_CHECK from checkTransitionRules():
- *
- *         It would be faster to have a UInitOnce as part of a SimpleTimeZone object,
- *         which would avoid needing to lock a mutex to check the initialization state.
- *         But we can't easily because simpletz.h is a public header, and including
- *         a UInitOnce as a member of SimpleTimeZone would publicly expose internal ICU headers.
- *
- *         Alternatively we could have a pointer to a UInitOnce in the SimpleTimeZone object,
- *         allocate it in the constructors. This would be a more intrusive change, but doable
- *         if performance turns out to be an issue.
  */
 static UMutex gLock = U_MUTEX_INITIALIZER;
 
@@ -1084,12 +1071,16 @@ SimpleTimeZone::checkTransitionRules(UErrorCode& status) const {
     if (U_FAILURE(status)) {
         return;
     }
-    umtx_lock(&gLock);
-    if (!transitionRulesInitialized) {
-        SimpleTimeZone *ncThis = const_cast<SimpleTimeZone*>(this);
-        ncThis->initTransitionRules(status);
+    UBool initialized;
+    UMTX_CHECK(&gLock, transitionRulesInitialized, initialized);
+    if (!initialized) {
+        umtx_lock(&gLock);
+        if (!transitionRulesInitialized) {
+            SimpleTimeZone *ncThis = const_cast<SimpleTimeZone*>(this);
+            ncThis->initTransitionRules(status);
+        }
+        umtx_unlock(&gLock);
     }
-    umtx_unlock(&gLock);
 }
 
 void

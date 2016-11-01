@@ -1,7 +1,5 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 //
-//    Copyright (C) 2002-2014, International Business Machines Corporation and others.
+//    Copyright (C) 2002-2009, International Business Machines Corporation and others.
 //    All Rights Reserved.
 //
 //
@@ -18,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.ibm.icu.impl.Assert;
-import com.ibm.icu.impl.ICUBinary;
 import com.ibm.icu.impl.ICUDebug;
 
 class RBBIRuleBuilder {
@@ -188,8 +185,12 @@ class RBBIRuleBuilder {
 
         //
         // Write out an ICU Data Header
+        //   TODO:  actually create a real header, rather than just a placeholder.
+        //           The empty placeholder is ok for compile-and-go from within ICU4J.
+        //           Replicating the ICU4C genbrk tool for building .brk resources would need a real header.
         //
-        ICUBinary.writeHeader(RBBIDataWrapper.DATA_FORMAT, RBBIDataWrapper.FORMAT_VERSION, 0, dos);
+        byte[] ICUDataHeader = new byte[0x80];
+        dos.write(ICUDataHeader);
 
         //
         // Write out the RBBIDataHeader

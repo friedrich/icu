@@ -1,11 +1,20 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fil.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/fil.xml
+ */
 fil{
     Countries{
         001{"Mundo"}
         002{"Africa"}
-        003{"Hilagang Amerika"}
-        005{"Timog Amerika"}
+        003{"North America"}
+        005{"South America"}
         009{"Oceania"}
         011{"Kanlurang Africa"}
         013{"Gitnang Amerika"}
@@ -14,23 +23,23 @@ fil{
         017{"Gitnang Africa"}
         018{"Katimugang Africa"}
         019{"Americas"}
-        021{"Northern America"}
+        021{"Hilagang Amerika"}
         029{"Carribbean"}
         030{"Silangang Asya"}
         034{"Katimugang Asya"}
         035{"Timog-Silangang Asya"}
-        039{"Katimugang Europe"}
-        053{"Australasia"}
+        039{"Katimugang Europa"}
+        053{"Australia at New Zealand"}
         054{"Melanesia"}
-        057{"Rehiyon ng Micronesia"}
+        057{"Rehiyong Micronesia"}
         061{"Polynesia"}
         142{"Asya"}
         143{"Gitnang Asya"}
         145{"Kanlurang Asya"}
-        150{"Europe"}
-        151{"Silangang Europe"}
-        154{"Hilagang Europe"}
-        155{"Kanlurang Europe"}
+        150{"Europa"}
+        151{"Silangang Europa"}
+        154{"Hilagang Europa"}
+        155{"Kanlurang Europa"}
         419{"Latin America"}
         AC{"Acsencion island"}
         AD{"Andorra"}
@@ -40,14 +49,15 @@ fil{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Netherlands Antilles"}
         AO{"Angola"}
-        AQ{"Antarctica"}
+        AQ{"Antartica"}
         AR{"Argentina"}
         AS{"American Samoa"}
         AT{"Austria"}
         AU{"Australia"}
         AW{"Aruba"}
-        AX{"Åland Islands"}
+        AX{"Aland Islands"}
         AZ{"Azerbaijan"}
         BA{"Bosnia and Herzegovina"}
         BB{"Barbados"}
@@ -71,12 +81,12 @@ fil{
         BY{"Belarus"}
         BZ{"Belize"}
         CA{"Canada"}
-        CC{"Cocos (Keeling) Islands"}
+        CC{"Cocos [Keeling] Islands"}
         CD{"Congo - Kinshasa"}
         CF{"Central African Republic"}
         CG{"Congo - Brazzaville"}
         CH{"Switzerland"}
-        CI{"Côte d’Ivoire"}
+        CI{"Côte d'Ivoire"}
         CK{"Cook Islands"}
         CL{"Chile"}
         CM{"Cameroon"}
@@ -86,7 +96,7 @@ fil{
         CR{"Costa Rica"}
         CU{"Cuba"}
         CV{"Cape Verde"}
-        CW{"Curaçao"}
+        CW{"Curacao"}
         CX{"Christmas Island"}
         CY{"Cyprus"}
         CZ{"Czech Republic"}
@@ -101,9 +111,9 @@ fil{
         EC{"Ecuador"}
         EE{"Estonia"}
         EG{"Egypt"}
-        EH{"Kanlurang Sahara"}
+        EH{"Western Sahara"}
         ER{"Eritrea"}
-        ES{"Spain"}
+        ES{"Espanya"}
         ET{"Ethiopia"}
         EU{"European Union"}
         FI{"Finland"}
@@ -126,7 +136,7 @@ fil{
         GP{"Guadeloupe"}
         GQ{"Equatorial Guinea"}
         GR{"Greece"}
-        GS{"South Georgia and the South Sandwich Islands"}
+        GS{"South Georgia and The South Sandwich Islands"}
         GT{"Guatemala"}
         GU{"Guam"}
         GW{"Guinea-Bissau"}
@@ -137,7 +147,7 @@ fil{
         HR{"Croatia"}
         HT{"Haiti"}
         HU{"Hungary"}
-        IC{"Canary Islands"}
+        IC{"Canary Island"}
         ID{"Indonesia"}
         IE{"Ireland"}
         IL{"Israel"}
@@ -147,7 +157,7 @@ fil{
         IQ{"Iraq"}
         IR{"Iran"}
         IS{"Iceland"}
-        IT{"Italy"}
+        IT{"Italya"}
         JE{"Jersey"}
         JM{"Jamaica"}
         JO{"Jordan"}
@@ -158,8 +168,8 @@ fil{
         KI{"Kiribati"}
         KM{"Comoros"}
         KN{"Saint Kitts and Nevis"}
-        KP{"Hilagang Korea"}
-        KR{"Timog Korea"}
+        KP{"North Korea"}
+        KR{"South Korea"}
         KW{"Kuwait"}
         KY{"Cayman Islands"}
         KZ{"Kazakhstan"}
@@ -183,7 +193,7 @@ fil{
         MH{"Marshall Islands"}
         MK{"Macedonia"}
         ML{"Mali"}
-        MM{"Myanmar (Burma)"}
+        MM{"Myanmar [Burma]"}
         MN{"Mongolia"}
         MO{"Macau SAR China"}
         MP{"Northern Mariana Islands"}
@@ -218,18 +228,18 @@ fil{
         PK{"Pakistan"}
         PL{"Poland"}
         PM{"Saint Pierre and Miquelon"}
-        PN{"Pitcairn Islands"}
+        PN{"Pitcairn"}
         PR{"Puerto Rico"}
-        PS{"Palestinian Territories"}
+        PS{"Palestinian Territory"}
         PT{"Portugal"}
         PW{"Palau"}
         PY{"Paraguay"}
         QA{"Qatar"}
-        QO{"Outlying Oceania"}
+        QO{"Malayong bahagi ng Oceania"}
         RE{"Réunion"}
         RO{"Romania"}
         RS{"Serbia"}
-        RU{"Russia"}
+        RU{"Russian Federation"}
         RW{"Rwanda"}
         SA{"Saudi Arabia"}
         SB{"Solomon Islands"}
@@ -237,17 +247,17 @@ fil{
         SD{"Sudan"}
         SE{"Sweden"}
         SG{"Singapore"}
-        SH{"Saint Helena"}
+        SH{"St. Helena"}
         SI{"Slovenia"}
-        SJ{"Svalbard and Jan Mayen"}
+        SJ{"Svalbard and Jan Mayen Islands"}
         SK{"Slovakia"}
         SL{"Sierra Leone"}
         SM{"San Marino"}
         SN{"Senegal"}
         SO{"Somalia"}
         SR{"Suriname"}
-        SS{"Timog Sudan"}
-        ST{"São Tomé and Príncipe"}
+        SS{"South Sudan"}
+        ST{"Sao Tome and Principe"}
         SV{"El Salvador"}
         SX{"Sint Maarten"}
         SY{"Syria"}
@@ -272,7 +282,6 @@ fil{
         UA{"Ukraine"}
         UG{"Uganda"}
         UM{"U.S. Outlying Islands"}
-        UN{"Nagkakaisang Bansa"}
         US{"Estados Unidos"}
         UY{"Uruguay"}
         UZ{"Uzbekistan"}
@@ -283,7 +292,7 @@ fil{
         VI{"U.S. Virgin Islands"}
         VN{"Vietnam"}
         VU{"Vanuatu"}
-        WF{"Wallis and Futuna"}
+        WF{"Wallis and the Futuna Islands"}
         WS{"Samoa"}
         XK{"Kosovo"}
         YE{"Yemen"}
@@ -291,24 +300,7 @@ fil{
         ZA{"South Africa"}
         ZM{"Zambia"}
         ZW{"Zimbabwe"}
-        ZZ{"Hindi Kilalang Rehiyon"}
+        ZZ{"Hindi kilala o Hindi wastong Rehiyon"}
     }
-    Countries%short{
-        GB{"U.K."}
-        HK{"Hong Kong"}
-        MO{"Macau"}
-        PS{"Palestine"}
-        UN{"UN"}
-        US{"U.S."}
-    }
-    Countries%variant{
-        CD{"Congo (DRC)"}
-        CG{"Congo (Republika)"}
-        CI{"Ivory Coast"}
-        CZ{"Czechia"}
-        FK{"Falkland Islands (Islas Malvinas)"}
-        MK{"Macedonia (FYROM)"}
-        TL{"East Timor"}
-    }
-    Version{"2.1.28.79"}
+    Version{"2.0.86.71"}
 }

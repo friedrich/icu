@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2001-2013, International Business Machines
+*   Copyright (C) 2001-2007, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 */
@@ -39,16 +37,11 @@ public class TestData {
     protected static final int PDF = UCharacterDirection.POP_DIRECTIONAL_FORMAT;
     protected static final int NSM = UCharacterDirection.DIR_NON_SPACING_MARK;
     protected static final int BN  = UCharacterDirection.BOUNDARY_NEUTRAL;
-    protected static final int FSI = UCharacterDirection.FIRST_STRONG_ISOLATE;
-    protected static final int LRI = UCharacterDirection.LEFT_TO_RIGHT_ISOLATE;
-    protected static final int RLI = UCharacterDirection.RIGHT_TO_LEFT_ISOLATE;
-    protected static final int PDI = UCharacterDirection.POP_DIRECTIONAL_ISOLATE;
     protected static final int DEF = Bidi.CLASS_DEFAULT;
 
     protected static final String[] dirPropNames = {
         "L", "R", "EN", "ES", "ET", "AN", "CS", "B", "S", "WS", "ON",
-        "LRE", "LRO", "AL", "RLE", "RLO", "PDF", "NSM", "BN",
-        "FSI", "LRI", "RLI", "PDI"  /* new in Unicode 6.3/ICU 52 */
+        "LRE", "LRO", "AL", "RLE", "RLO", "PDF", "NSM", "BN"
     };
     protected static final short[][] testDirProps = {
         { L, L, WS, L, WS, EN, L, B },                                          // 0
@@ -58,16 +51,12 @@ public class TestData {
         { AL, R, AL, WS, EN, CS, WS, EN, CS, EN, WS, R, R, WS, L, L },          // 4
         { R, EN, NSM, ET },                                                     // 5
         { RLE, WS, R, R, R, WS, PDF, WS, B },                                   // 6
-        {
-    LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE,      /* 15 entries */
-    LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE,      /* 15 entries */
-    AN, RLO, NSM, LRE, PDF, RLE, ES, EN, ON                                         /*  9 entries */
-        },                                                                      //7
-        {
-    LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE,      /* 15 entries */
-    LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE,      /* 15 entries */
-    LRE, BN, CS, RLO, S, PDF, EN, LRO, AN, ES                                       /* 10 entries */
-        },                                                                      // 8
+        { LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE,
+            LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE,
+            LRE, LRE, LRE, AN, RLO, NSM, LRE, PDF, RLE, ES, EN, ON },           // 7
+        { LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE,
+            LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE, LRE,
+            LRE, LRE, LRE, LRE, BN, CS, RLO, S, PDF, EN, LRO, AN, ES },         // 8
         { S, WS, NSM, RLE, WS, L, L, L, WS, LRO, WS, R, R, R, WS, RLO, WS, L, L,
             L, WS, LRE, WS, R, R, R, WS, PDF, WS, L, L, L, WS, PDF, WS, AL, AL,
             AL, WS, PDF, WS, L, L, L, WS, PDF, WS, L, L, L, WS, PDF, ON, PDF,
@@ -113,16 +102,12 @@ public class TestData {
         { 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2 },                     // 4
         { 1, 2, 2, 2 },                                                         // 5
         { 1, 1, 1, 1, 1, 1, 1, 1, 1 },                                          // 6
-        {
-    126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126,      /* 15 entries */
-    126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126,      /* 15 entries */
-    126, 125, 125, 125, 125, 125, 125, 125, 125                                     /*  9 entries */
-        },                                                                      // 7
-        {
-    124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124,      /* 15 entries */
-    124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124,      /* 15 entries */
-    124, 124, 124, 64, 64, 124, 124, 126, 126, 124                                  /* 10 entries */
-        },                                                                      // 8
+        { 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
+            62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 61, 61,
+            61, 61, 61, 61, 61, 61 },                                           // 7
+        { 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+            60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 0,
+            0, 62, 62, 62, 62, 60 },                                            // 8
         { 0, 0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4,
             5, 5, 5, 4, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },                               // 9
@@ -164,11 +149,9 @@ public class TestData {
         { 15, 14, 13, 12, 11, 10, 9, 6, 7, 8, 5, 4, 3, 2, 0, 1 },               // 4
         { 3, 0, 1, 2 },                                                         // 5
         { 8, 7, 6, 5, 4, 3, 2, 1, 0 },                                          // 6
-        {
-    8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,                       /* 15 entries */
-    23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,                     /* 15 entries */
-    38, 7, 6, 5, 4, 3, 2, 1, 0                                                      /*  9 entries */
-        },                                                                      // 7
+        { 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+            26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 7, 6, 5, 4, 3,
+            2, 1, 0 },                                                          // 7
         { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
             20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
             37, 38, 39 },                                                       // 8
@@ -209,7 +192,7 @@ public class TestData {
     protected static final byte[] testParaLevels = {
         Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR,
         Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR,
-        Bidi.LEVEL_DEFAULT_LTR, 64,                     64,
+        Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR,
         Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_RTL,
         2, 5, Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR,
         Bidi.LEVEL_DEFAULT_LTR, Bidi.LEVEL_DEFAULT_LTR, Bidi.RTL, Bidi.LTR, Bidi.RTL,
@@ -225,7 +208,7 @@ public class TestData {
 
     protected static final byte[] testResultLevels = new byte[] {
         Bidi.LTR, Bidi.RTL, Bidi.LTR, Bidi.LTR, Bidi.RTL, Bidi.RTL, Bidi.RTL,
-        64,       64      , Bidi.LTR, Bidi.LTR, Bidi.LTR, 2, 5, Bidi.LTR,
+        Bidi.LTR, Bidi.LTR, Bidi.LTR, Bidi.LTR, Bidi.LTR, 2, 5, Bidi.LTR,
         Bidi.LTR, Bidi.LTR, Bidi.RTL, 2, Bidi.RTL, Bidi.LTR, Bidi.RTL, Bidi.LTR
     };
 

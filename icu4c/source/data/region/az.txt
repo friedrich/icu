@@ -1,314 +1,293 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/az.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/az.xml
+ */
 az{
     Countries{
         001{"Dünya"}
         002{"Afrika"}
-        003{"Şimali Amerika"}
-        005{"Cənubi Amerika"}
-        009{"Okeaniya"}
-        011{"Qərbi Afrika"}
-        013{"Mərkəzi Amerika"}
-        014{"Şərqi Afrika"}
-        015{"Şimali Afrika"}
-        017{"Mərkəzi Afrika"}
-        018{"Cənubi Afrika"}
-        019{"Amerika"}
-        021{"Şimal Amerikası"}
-        029{"Karib"}
-        030{"Şərqi Asiya"}
-        034{"Cənubi Asiya"}
-        035{"Cənub-Şərqi Asiya"}
-        039{"Cənubi Avropa"}
-        053{"Avstralaziya"}
-        054{"Melaneziya"}
-        057{"Mikroneziya Regionu"}
+        003{"Şimal Amerika"}
+        005{"Cənub Amerika"}
+        009{"Okeyaniya"}
+        011{"Qərb afrika"}
+        013{"Orta Amerika"}
+        014{"Şərq Afrika"}
+        015{"Şimal Afrika"}
+        017{"Orta Afrika"}
+        019{"Amerikalar"}
+        029{"Kariyıplar"}
+        030{"Şərq Asiya"}
+        034{"Cənub Asiya"}
+        035{"Cənub Şərq Asiya"}
+        039{"Cənub Avropa"}
+        053{"Avstraliya və Yeni Zelandiya"}
+        054{"Melanesya"}
+        057{"Mikronesiya reqionu"}
         061{"Polineziya"}
-        142{"Asiya"}
-        143{"Mərkəzi Asiya"}
-        145{"Qərbi Asiya"}
+        142{"Aziya"}
+        143{"Orta Aziya"}
+        145{"Qərb Asiya"}
         150{"Avropa"}
-        151{"Şərqi Avropa"}
-        154{"Şimali Avropa"}
-        155{"Qərbi Avropa"}
+        151{"Şərq Avropa"}
+        154{"Şimal Avropa"}
+        155{"Qərb Avropa"}
         419{"Latın Amerikası"}
-        AC{"Askenson adası"}
         AD{"Andorra"}
-        AE{"Birləşmiş Ərəb Əmirlikləri"}
-        AF{"Əfqanıstan"}
+        AE{"Birləşmiş Ərəb Emiratları"}
+        AF{"Əfqənistan"}
         AG{"Antiqua və Barbuda"}
-        AI{"Angilya"}
+        AI{"Anquila"}
         AL{"Albaniya"}
         AM{"Ermənistan"}
-        AO{"Anqola"}
+        AN{"Hollandiya antilleri"}
+        AO{"Angola"}
         AQ{"Antarktika"}
-        AR{"Argentina"}
+        AR{"Arqentina"}
         AS{"Amerika Samoası"}
         AT{"Avstriya"}
         AU{"Avstraliya"}
         AW{"Aruba"}
-        AX{"Aland adaları"}
+        AX{"Aland Adaları"}
         AZ{"Azərbaycan"}
-        BA{"Bosniya və Herseqovina"}
+        BA{"Bosniya və Herzokovina"}
         BB{"Barbados"}
         BD{"Banqladeş"}
         BE{"Belçika"}
         BF{"Burkina Faso"}
-        BG{"Bolqarıstan"}
-        BH{"Bəhreyn"}
+        BG{"Bolqariya"}
+        BH{"Bahreyn"}
         BI{"Burundi"}
         BJ{"Benin"}
-        BL{"Sent-Bartelemi"}
-        BM{"Bermud adaları"}
+        BL{"Seynt Bartelemey"}
+        BM{"Bermuda"}
         BN{"Bruney"}
         BO{"Boliviya"}
-        BQ{"Karib Niderlandı"}
         BR{"Braziliya"}
-        BS{"Baham adaları"}
+        BS{"Bahamalar"}
         BT{"Butan"}
-        BV{"Buve adası"}
+        BV{"Bove Adası"}
         BW{"Botsvana"}
         BY{"Belarus"}
         BZ{"Beliz"}
         CA{"Kanada"}
-        CC{"Kokos (Kilinq) adaları"}
+        CC{"Kokos Adaları"}
         CD{"Konqo - Kinşasa"}
-        CF{"Mərkəzi Afrika Respublikası"}
-        CG{"Konqo - Brazzavil"}
-        CH{"İsveçrə"}
-        CI{"Kotd’ivuar"}
-        CK{"Kuk adaları"}
-        CL{"Çili"}
+        CF{"Orta Afrika respublikası"}
+        CG{"Konqo - Brazavil"}
+        CH{"isveçriya"}
+        CI{"İvori Sahili"}
+        CK{"Kuk Adaları"}
+        CL{"Çile"}
         CM{"Kamerun"}
         CN{"Çin"}
         CO{"Kolumbiya"}
-        CP{"Klipperton adası"}
         CR{"Kosta Rika"}
         CU{"Kuba"}
-        CV{"Kabo-Verde"}
-        CW{"Kurasao"}
-        CX{"Milad adası"}
+        CV{"Kape Verde"}
+        CX{"Çristmas Adası"}
         CY{"Kipr"}
-        CZ{"Çex Respublikası"}
+        CZ{"Çex respublikası"}
         DE{"Almaniya"}
-        DG{"Dieqo Qarsiya"}
-        DJ{"Cibuti"}
-        DK{"Danimarka"}
+        DJ{"Ciboti"}
+        DK{"Danemarka"}
         DM{"Dominika"}
-        DO{"Dominikan Respublikası"}
-        DZ{"Əlcəzair"}
-        EA{"Seuta və Melilya"}
+        DO{"Dominik Respublikası"}
+        DZ{"Cezayır"}
         EC{"Ekvador"}
         EE{"Estoniya"}
         EG{"Misir"}
-        EH{"Qərbi Saxara"}
+        EH{"Qərb Sahara"}
         ER{"Eritreya"}
         ES{"İspaniya"}
         ET{"Efiopiya"}
-        EU{"Avropa Birliyi"}
+        EU{"Avropa Birləşliyi"}
         FI{"Finlandiya"}
         FJ{"Fici"}
-        FK{"Folklend adaları"}
-        FM{"Mikroneziya"}
-        FO{"Farer adaları"}
+        FK{"Folkland Adaları"}
+        FM{"Mikronesiya"}
+        FO{"Faro Adaları"}
         FR{"Fransa"}
         GA{"Qabon"}
         GB{"Birləşmiş Krallıq"}
         GD{"Qrenada"}
         GE{"Gürcüstan"}
-        GF{"Fransa Qvianası"}
-        GG{"Gernsi"}
+        GF{"Fransız Quyanası"}
+        GG{"Görnsey"}
         GH{"Qana"}
-        GI{"Cəbəllütariq"}
-        GL{"Qrenlandiya"}
+        GI{"Gibraltar"}
+        GL{"Qrinland"}
         GM{"Qambiya"}
         GN{"Qvineya"}
-        GP{"Qvadelupa"}
-        GQ{"Ekvatorial Qvineya"}
+        GP{"Qvadalup"}
+        GQ{"Ekvator Qineya"}
         GR{"Yunanıstan"}
-        GS{"Cənubi Corciya və Cənubi Sendviç adaları"}
+        GS{"Cənub Gürcüstan və Cənub Sandvilç Adaları"}
         GT{"Qvatemala"}
         GU{"Quam"}
         GW{"Qvineya-Bisau"}
-        GY{"Qayana"}
-        HK{"Honq Konq Xüsusi İnzibati Ərazi Çin"}
-        HM{"Herd və Makdonald adaları"}
-        HN{"Honduras"}
+        GY{"Quyana"}
+        HK{"Honk Konq çina"}
+        HM{"Hörd və Makdonald Adaları"}
+        HN{"Qonduras"}
         HR{"Xorvatiya"}
         HT{"Haiti"}
-        HU{"Macarıstan"}
-        IC{"Kanar adaları"}
+        HU{"Macaristan"}
         ID{"İndoneziya"}
         IE{"İrlandiya"}
-        IL{"İsrail"}
-        IM{"Men adası"}
+        IL{"İzrail"}
+        IM{"Man Adası"}
         IN{"Hindistan"}
-        IO{"Britaniyanın Hind Okeanı Ərazisi"}
-        IQ{"İraq"}
+        IO{"Britaniya-Hindistan Okeanik territoriyası"}
+        IQ{"İrak"}
         IR{"İran"}
         IS{"İslandiya"}
         IT{"İtaliya"}
-        JE{"Cersi"}
+        JE{"Cörsi"}
         JM{"Yamayka"}
-        JO{"İordaniya"}
+        JO{"Ürdün"}
         JP{"Yaponiya"}
-        KE{"Keniya"}
-        KG{"Qırğızıstan"}
-        KH{"Kamboca"}
+        KE{"Kenya"}
+        KG{"Kırqızstan"}
+        KH{"Kambodiya"}
         KI{"Kiribati"}
-        KM{"Komor adaları"}
-        KN{"Sent-Kits və Nevis"}
-        KP{"Şimali Koreya"}
-        KR{"Cənubi Koreya"}
-        KW{"Küveyt"}
-        KY{"Kayman adaları"}
-        KZ{"Qazaxıstan"}
+        KM{"Komoros"}
+        KN{"Seynt Kits və Nevis"}
+        KP{"Şimal Koreya"}
+        KR{"Cənub Koreya"}
+        KW{"Kuveyt"}
+        KY{"Kayman Adaları"}
+        KZ{"Kazaxstan"}
         LA{"Laos"}
-        LB{"Livan"}
-        LC{"Sent-Lusiya"}
+        LB{"Lebanon"}
+        LC{"Seynt Lusiya"}
         LI{"Lixtenşteyn"}
-        LK{"Şri-Lanka"}
+        LK{"Şri Lanka"}
         LR{"Liberiya"}
         LS{"Lesoto"}
         LT{"Litva"}
         LU{"Lüksemburq"}
         LV{"Latviya"}
-        LY{"Liviya"}
-        MA{"Mərakeş"}
+        LY{"Libya"}
+        MA{"Morokko"}
         MC{"Monako"}
         MD{"Moldova"}
         ME{"Monteneqro"}
-        MF{"Sent Martin"}
+        MF{"Seynt Martin"}
         MG{"Madaqaskar"}
-        MH{"Marşal adaları"}
-        MK{"Makedoniya"}
+        MH{"Marşal Adaları"}
+        MK{"Masedoniya"}
         ML{"Mali"}
-        MM{"Myanma"}
-        MN{"Monqolustan"}
-        MO{"Makao Xüsusi İnzibati Ərazi Çin"}
-        MP{"Şimali Marian adaları"}
-        MQ{"Martinik"}
+        MM{"Myanmar"}
+        MN{"Monqoliya"}
+        MO{"Makao Çina"}
+        MP{"Şimal Mariana Adaları"}
+        MQ{"Martiniqu"}
         MR{"Mavritaniya"}
-        MS{"Monserat"}
+        MS{"Montserat"}
         MT{"Malta"}
-        MU{"Mavriki"}
-        MV{"Maldiv adaları"}
+        MU{"Mavritis"}
+        MV{"Maldiv"}
         MW{"Malavi"}
         MX{"Meksika"}
-        MY{"Malayziya"}
-        MZ{"Mozambik"}
+        MY{"Malaysiya"}
+        MZ{"Mazambik"}
         NA{"Namibiya"}
         NC{"Yeni Kaledoniya"}
-        NE{"Niger"}
-        NF{"Norfolk adası"}
-        NG{"Nigeriya"}
+        NE{"nijer"}
+        NF{"Norfolk Adası"}
+        NG{"Nijeriya"}
         NI{"Nikaraqua"}
-        NL{"Niderland"}
-        NO{"Norveç"}
+        NL{"Hollandiya"}
+        NO{"Norvec"}
         NP{"Nepal"}
         NR{"Nauru"}
-        NU{"Niue"}
+        NU{"Niye"}
         NZ{"Yeni Zelandiya"}
         OM{"Oman"}
         PA{"Panama"}
         PE{"Peru"}
-        PF{"Fransa Polineziyası"}
-        PG{"Papua-Yeni Qvineya"}
-        PH{"Filippin"}
+        PF{"Fransız Polineziya"}
+        PG{"Papua Yeni Qvineya"}
+        PH{"Filipin"}
         PK{"Pakistan"}
         PL{"Polşa"}
-        PM{"Müqəddəs Pyer və Mikelon"}
-        PN{"Pitkern adaları"}
+        PM{"Seynt Piyer və Mikelon"}
+        PN{"Pitkarn"}
         PR{"Puerto Riko"}
-        PS{"Fələstin Əraziləri"}
-        PT{"Portuqaliya"}
-        PW{"Palau"}
+        PS{"Fələstin Bölqüsü"}
+        PT{"Portuqal"}
+        PW{"Palav"}
         PY{"Paraqvay"}
-        QA{"Qətər"}
-        QO{"Uzaq Okeaniya"}
-        RE{"Reyunyon"}
-        RO{"Rumıniya"}
+        QA{"Qatar"}
+        QO{"Uzak Okeyaniya"}
+        RE{"Reyunion"}
+        RO{"Romaniya"}
         RS{"Serbiya"}
         RU{"Rusiya"}
-        RW{"Ruanda"}
-        SA{"Səudiyyə Ərəbistanı"}
-        SB{"Solomon adaları"}
-        SC{"Seyşel adaları"}
-        SD{"Sudan"}
-        SE{"İsveç"}
+        RW{"Rvanda"}
+        SA{"Saudi Ərəbistan"}
+        SB{"Solomon Adaları"}
+        SC{"Seyçels"}
+        SD{"sudan"}
+        SE{"isveç"}
         SG{"Sinqapur"}
-        SH{"Müqəddəs Yelena"}
+        SH{"Seynt Elena"}
         SI{"Sloveniya"}
-        SJ{"Svalbard və Yan-Mayen"}
+        SJ{"svalbard və yan mayen"}
         SK{"Slovakiya"}
-        SL{"Syerra-Leone"}
-        SM{"San-Marino"}
+        SL{"Siyera Leon"}
+        SM{"San Marino"}
         SN{"Seneqal"}
-        SO{"Somali"}
-        SR{"Surinam"}
-        SS{"Cənubi Sudan"}
-        ST{"San-Tome və Prinsipi"}
-        SV{"Salvador"}
-        SX{"Sint-Marten"}
-        SY{"Suriya"}
-        SZ{"Svazilend"}
-        TA{"Tristan da Kunya"}
-        TC{"Törks və Kaykos adaları"}
+        SO{"Somaliya"}
+        SR{"surinamə"}
+        ST{"Sao Tom və Prinsip"}
+        SV{"El Salvador"}
+        SY{"siriya"}
+        SZ{"svazilənd"}
+        TC{"Türk və Kaykos Adaları"}
         TD{"Çad"}
-        TF{"Fransanın Cənub Əraziləri"}
+        TF{"Fransız Cənub teritoriyası"}
         TG{"Toqo"}
-        TH{"Tailand"}
-        TJ{"Tacikistan"}
+        TH{"tayland"}
+        TJ{"tacikistan"}
         TK{"Tokelau"}
-        TL{"Şərqi Timor"}
+        TL{"Şərq Timor"}
         TM{"Türkmənistan"}
-        TN{"Tunis"}
+        TN{"Tunisiya"}
         TO{"Tonqa"}
-        TR{"Türkiyə"}
-        TT{"Trinidad və Tobaqo"}
+        TR{"Türkiya"}
+        TT{"Trinidan və Tobaqo"}
         TV{"Tuvalu"}
-        TW{"Tayvan"}
-        TZ{"Tanzaniya"}
-        UA{"Ukrayna"}
+        TW{"tayvan"}
+        TZ{"tanzaniya"}
+        UA{"Ukraina"}
         UG{"Uqanda"}
-        UM{"ABŞ-a bağlı kiçik adacıqlar"}
-        UN{"Birləşmiş Millətlər Təşkilatı"}
+        UM{"Birləşmiş Ştatların uzaq adaları"}
         US{"Amerika Birləşmiş Ştatları"}
         UY{"Uruqvay"}
         UZ{"Özbəkistan"}
         VA{"Vatikan"}
-        VC{"Sent-Vinsent və Qrenadinlər"}
+        VC{"Seynt Vinsent və Qrenada"}
         VE{"Venesuela"}
-        VG{"Britaniyanın Virgin adaları"}
-        VI{"ABŞ Virgin adaları"}
+        VG{"Britaniya Virgin Adaları"}
+        VI{"ABŞ Virqin Adaları"}
         VN{"Vyetnam"}
         VU{"Vanuatu"}
-        WF{"Uollis və Futuna"}
+        WF{"Valis və Futuna"}
         WS{"Samoa"}
-        XK{"Kosovo"}
-        YE{"Yəmən"}
+        YE{"Yemen"}
         YT{"Mayot"}
         ZA{"Cənub Afrika"}
         ZM{"Zambiya"}
         ZW{"Zimbabve"}
-        ZZ{"Naməlum Region"}
+        ZZ{"bilinmir"}
     }
-    Countries%short{
-        GB{"BK"}
-        HK{"Honq Konq"}
-        MO{"Makao"}
-        PS{"Fələstin"}
-        UN{"BMT"}
-        US{"ABŞ"}
-    }
-    Countries%variant{
-        CD{"Konqo (KDR)"}
-        CG{"Konqo (Respublika)"}
-        CI{"Fil Dişi Sahili"}
-        CZ{"Çexiya"}
-        FK{"Folklend adaları (Malvin adaları)"}
-        MK{"Makedoniya (KYRM)"}
-        TL{"Doğu Timor"}
-    }
-    Version{"2.1.28.79"}
+    Version{"2.0.82.45"}
 }

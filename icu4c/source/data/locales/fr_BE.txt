@@ -1,7 +1,20 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fr_BE.xml
+// *
+// ***************************************************************************
 fr_BE{
-    Version{"2.1.27.40"}
+    NumberElements{
+        latn{
+            symbols{
+                group{"."}
+            }
+        }
+    }
+    Version{"2.0.82.45"}
     calendar{
         generic{
             DateTimePatterns{
@@ -14,8 +27,8 @@ fr_BE{
                 "d MMM y G",
                 "d/MM/yy GGGGG",
                 "{1} {0}",
-                "{1} 'à' {0}",
-                "{1} 'à' {0}",
+                "{1} {0}",
+                "{1} {0}",
                 "{1} {0}",
                 "{1} {0}",
             }
@@ -30,10 +43,10 @@ fr_BE{
                 "d MMMM y",
                 "d MMM y",
                 "d/MM/yy",
-                "{1} 'à' {0}",
-                "{1} 'à' {0}",
-                "{1} 'à' {0}",
-                "{1} 'à' {0}",
+                "{1} {0}",
+                "{1} {0}",
+                "{1} {0}",
+                "{1} {0}",
                 "{1} {0}",
             }
         }

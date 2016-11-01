@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others.  All Rights Reserved.
+// * Tool: com.ibm.icu.dev.tool.cldr.LDML2ICUConverter.java
+// * Source File:<path>/common/rbnf/ee.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/rbnf/ee.xml
+ */
 ee{
     RBNFRules{
         OrdinalRules{
@@ -11,8 +20,8 @@ ee{
         }
         SpelloutRules{
             "%spellout-numbering-year:",
-            "x.x: =0.0=;",
-            "0: =%spellout-numbering=;",
+            "x.x: =#,###0.#=;",
+            "0: \u0192e =%spellout-numbering=;",
             "%spellout-numbering:",
             "0: =%spellout-cardinal=;",
             "%%after-hundreds:",
@@ -69,19 +78,17 @@ ee{
             "1000000000000: bili\u0254n <%spellout-cardinal<[>%%after-billions>];",
             "1000000000000000000: =#,##0=;",
             "%spellout-cardinal:",
-            "-x: >> xl\u1EBDyimegbee;",
-            "0.x: kak\u025B >>;",
-            "x.x: << kple kak\u025B >>;",
+            "-x: >> xle\u0303yimegbee;",
+            "x.x: << ewoliawo \u0192e >>;",
             "0: \u0256ekeo;",
             "1: \u0256eka;",
             "2: =%%spellout-base=;",
             "%spellout-ordinal:",
-            "-x: >> xl\u1EBDyimegbee;",
-            "x.x: =#,##0.0=lia;",
+            "-x: >> xle\u0303yimegbee;",
             "0: \u0256ekeolia;",
             "1: gb\u00E3t\u0254;",
             "2: =%spellout-cardinal=lia;",
         }
     }
-    Version{"2.1.27.22"}
+    Version{"2.0.82.42"}
 }

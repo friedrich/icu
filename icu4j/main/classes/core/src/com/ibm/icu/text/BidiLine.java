@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2001-2014, International Business Machines
+*   Copyright (C) 2001-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 */
@@ -95,13 +93,13 @@ final class BidiLine {
            level of B chars from 0 to paraLevel in getLevels when
            orderParagraphsLTR==TRUE
         */
-        if (dirProps[start - 1] == Bidi.B) {
+        if (Bidi.NoContextRTL(dirProps[start - 1]) == Bidi.B) {
             bidi.trailingWSStart = start;   /* currently == bidi.length */
             return;
         }
         /* go backwards across all WS, BN, explicit codes */
         while (start > 0 &&
-                (Bidi.DirPropFlag(dirProps[start - 1]) & Bidi.MASK_WS) != 0) {
+                (Bidi.DirPropFlagNC(dirProps[start - 1]) & Bidi.MASK_WS) != 0) {
             --start;
         }
 
@@ -492,7 +490,7 @@ final class BidiLine {
             int length = bidi.length, limit;
             byte[] levels = bidi.levels;
             int i, runCount;
-            byte level = -1;    /* initialize with no valid level */
+            byte level = Bidi.LEVEL_DEFAULT_LTR;   /* initialize with no valid level */
             /*
              * If there are WS characters at the end of the line
              * and the run preceding them has a level different from
@@ -641,10 +639,7 @@ final class BidiLine {
         maxLevel = 0;
         for (start = levels.length; start>0; ) {
             level = levels[--start];
-            if (level < 0) {
-                return null;
-            }
-           if (level > (Bidi.MAX_EXPLICIT_LEVEL + 1)) {
+            if (level > Bidi.MAX_EXPLICIT_LEVEL + 1) {
                 return null;
             }
             if (level < minLevel) {

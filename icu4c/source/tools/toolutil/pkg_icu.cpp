@@ -1,12 +1,9 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /******************************************************************************
- *   Copyright (C) 2008-2015, International Business Machines
+ *   Copyright (C) 2008-2012, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *******************************************************************************
  */
 #include "unicode/utypes.h"
-#include "unicode/localpointer.h"
 #include "unicode/putil.h"
 #include "cstring.h"
 #include "toolutil.h"
@@ -18,6 +15,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 // read a file list -------------------------------------------------------- ***
 
@@ -38,7 +38,7 @@ isListTextFile(const char *listname) {
     const char *listNameEnd=strchr(listname, 0);
     const char *suffix;
     int32_t i, length;
-    for(i=0; i<UPRV_LENGTHOF(listFileSuffixes); ++i) {
+    for(i=0; i<LENGTHOF(listFileSuffixes); ++i) {
         suffix=listFileSuffixes[i].suffix;
         length=listFileSuffixes[i].length;
         if((listNameEnd-listname)>length && 0==memcmp(listNameEnd-length, suffix, length)) {
@@ -135,8 +135,6 @@ readList(const char *filesPath, const char *listname, UBool readContents, Packag
         fclose(file);
     } else if((listNameEnd-listname)>4 && 0==memcmp(listNameEnd-4, ".dat", 4)) {
         // read the ICU .dat package
-        // Accept a .dat file whose name differs from the ToC prefixes.
-        listPkg->setAutoPrefix();
         listPkg->readPackage(listname);
     } else {
         // list the single file itself
@@ -152,25 +150,33 @@ readList(const char *filesPath, const char *listname, UBool readContents, Packag
 
 U_CAPI int U_EXPORT2
 writePackageDatFile(const char *outFilename, const char *outComment, const char *sourcePath, const char *addList, Package *pkg, char outType) {
-    LocalPointer<Package> ownedPkg;
-    LocalPointer<Package> addListPkg;
+    Package *addListPkg = NULL;
+    UBool pkgDelete = FALSE;
 
     if (pkg == NULL) {
-        ownedPkg.adoptInstead(new Package);
-        if(ownedPkg.isNull()) {
+        pkg = new Package;
+        if(pkg == NULL) {
             fprintf(stderr, "icupkg: not enough memory\n");
             return U_MEMORY_ALLOCATION_ERROR;
         }
-        pkg = ownedPkg.getAlias();
 
-        addListPkg.adoptInstead(readList(sourcePath, addList, TRUE, NULL));
-        if(addListPkg.isValid()) {
+        addListPkg = readList(sourcePath, addList, TRUE, NULL);
+        if(addListPkg != NULL) {
             pkg->addItems(*addListPkg);
         } else {
             return U_ILLEGAL_ARGUMENT_ERROR;
         }
+
+        pkgDelete = TRUE;
     }
 
     pkg->writePackage(outFilename, outType, outComment);
+
+    if (pkgDelete) {
+        delete pkg;
+        delete addListPkg;
+    }
+
     return 0;
 }
+

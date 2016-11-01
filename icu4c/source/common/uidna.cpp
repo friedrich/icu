@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  *******************************************************************************
  *
- *   Copyright (C) 2003-2014, International Business Machines
+ *   Copyright (C) 2003-2009, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *
  *******************************************************************************
@@ -318,7 +316,7 @@ _internal_toASCII(const UChar* src, int32_t srcLength,
     // Step 4: if the source is ASCII then proceed to step 8
     if(srcIsASCII){
         if(b1Len <= destCapacity){
-            u_memmove(dest, b1, b1Len);
+            uprv_memmove(dest, b1, b1Len * U_SIZEOF_UCHAR);
             reqLength = b1Len;
         }else{
             reqLength = b1Len;
@@ -364,9 +362,9 @@ _internal_toASCII(const UChar* src, int32_t srcLength,
                 goto CLEANUP;
             }
             //Step 7: prepend the ACE prefix
-            u_memcpy(dest, ACE_PREFIX, ACE_PREFIX_LENGTH);
+            uprv_memcpy(dest,ACE_PREFIX,ACE_PREFIX_LENGTH * U_SIZEOF_UCHAR);
             //Step 6: copy the contents in b2 into dest
-            u_memcpy(dest+ACE_PREFIX_LENGTH, b2, b2Len);
+            uprv_memcpy(dest+ACE_PREFIX_LENGTH, b2, b2Len * U_SIZEOF_UCHAR);
 
         }else{
             *status = U_IDNA_ACE_PREFIX_ERROR; 
@@ -410,12 +408,13 @@ _internal_toUnicode(const UChar* src, int32_t srcLength,
 
     //initialize pointers to stack buffers
     UChar  *b1 = b1Stack, *b2 = b2Stack, *b1Prime=NULL, *b3=b3Stack;
-    int32_t b1Len = 0, b2Len, b1PrimeLen, b3Len,
+    int32_t b1Len, b2Len, b1PrimeLen, b3Len,
             b1Capacity = MAX_LABEL_BUFFER_SIZE, 
             b2Capacity = MAX_LABEL_BUFFER_SIZE,
             b3Capacity = MAX_LABEL_BUFFER_SIZE,
             reqLength=0;
 
+    b1Len = 0;
     UBool* caseFlags = NULL;
 
     UBool srcIsASCII = TRUE;
@@ -543,7 +542,7 @@ _internal_toUnicode(const UChar* src, int32_t srcLength,
         //step 8: return output of step 5
         reqLength = b2Len;
         if(b2Len <= destCapacity) {
-            u_memmove(dest, b2, b2Len);
+            uprv_memmove(dest, b2, b2Len * U_SIZEOF_UCHAR);
         }
     }
     else{
@@ -572,7 +571,7 @@ _internal_toUnicode(const UChar* src, int32_t srcLength,
         // just return the source
         //copy the source to destination
         if(srcLength <= destCapacity){
-            u_memmove(dest, src, srcLength);
+            uprv_memmove(dest,src,srcLength * U_SIZEOF_UCHAR);
         }
         reqLength = srcLength;
     }
@@ -599,7 +598,7 @@ CLEANUP:
         if(dest && srcLength <= destCapacity){
             // srcLength should have already been set earlier.
             U_ASSERT(srcLength >= 0);
-            u_memmove(dest, src, srcLength);
+            uprv_memmove(dest,src,srcLength * U_SIZEOF_UCHAR);
         }
         reqLength = srcLength;
         *status = U_ZERO_ERROR;

@@ -1,25 +1,36 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/saq.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/saq.xml
+ */
 saq{
     AuxExemplarCharacters{"[f q x z]"}
     ExemplarCharacters{"[a b c d e g h i j k l m n o p r s t u v w y]"}
     ExemplarCharactersIndex{"[A B C D E G H I J K L M N O P R S T U V W Y]"}
+    LocaleScript{
+        "Latn",
+    }
     NumberElements{
         latn{
             patterns{
-                accountingFormat{"¤#,##0.00;(¤#,##0.00)"}
-                currencyFormat{"¤#,##0.00"}
+                currencyFormat{"¤#,##0.00;(¤#,##0.00)"}
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.82.45"}
     calendar{
         generic{
             DateTimePatterns{
-                "HH:mm:ss zzzz",
-                "HH:mm:ss z",
-                "HH:mm:ss",
-                "HH:mm",
+                "h:mm:ss a zzzz",
+                "h:mm:ss a z",
+                "h:mm:ss a",
+                "h:mm a",
                 "EEEE, d MMMM y G",
                 "d MMMM y G",
                 "d MMM y G",
@@ -59,15 +70,11 @@ saq{
                 "Tesiran",
                 "Teipa",
             }
-            AmPmMarkersAbbr{
-                "Tesiran",
-                "Teipa",
-            }
             DateTimePatterns{
-                "HH:mm:ss zzzz",
-                "HH:mm:ss z",
-                "HH:mm:ss",
-                "HH:mm",
+                "h:mm:ss a zzzz",
+                "h:mm:ss a z",
+                "h:mm:ss a",
+                "h:mm a",
                 "EEEE, d MMMM y",
                 "d MMMM y",
                 "d MMM y",
@@ -115,7 +122,7 @@ saq{
                     wide{
                         "Mderot ee are",
                         "Mderot ee kuni",
-                        "Mderot ee ong’wan",
+                        "Mderot ee ong'wan",
                         "Mderot ee inet",
                         "Mderot ee ile",
                         "Mderot ee sapa",
@@ -164,7 +171,7 @@ saq{
                         "Lapa le obo",
                         "Lapa le waare",
                         "Lapa le okuni",
-                        "Lapa le ong’wan",
+                        "Lapa le ong'wan",
                         "Lapa le imet",
                         "Lapa le ile",
                         "Lapa le sapa",
@@ -220,7 +227,7 @@ saq{
         day{
             dn{"Mpari"}
             relative{
-                "-1"{"Ng’ole"}
+                "-1"{"Ng'ole"}
                 "0"{"Duo"}
                 "1"{"Taisere"}
             }

@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 * Copyright (C) 2007-2013, International Business Machines Corporation and    *
@@ -111,6 +109,7 @@ public:
 private:
     ZoneMeta(); // Prevent construction.
     static UVector* createMetazoneMappings(const UnicodeString &tzid);
+    static void initAvailableMetaZoneIDs();
     static UnicodeString& formatCustomID(uint8_t hour, uint8_t min, uint8_t sec, UBool negative, UnicodeString& id);
     static const UChar* getShortIDFromCanonical(const UChar* canonicalID);
 };

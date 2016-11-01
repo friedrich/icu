@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2010-2013, International Business Machines Corporation and    *
+ * Copyright (C) 2010-2011, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -114,38 +112,38 @@ public class LanguageTag {
 
     /*
      * BNF in RFC5464
-     *
+     *  
      * Language-Tag  = langtag             ; normal language tags
      *               / privateuse          ; private use tag
      *               / grandfathered       ; grandfathered tags
      *
-     *
+     * 
      * langtag       = language
      *                 ["-" script]
      *                 ["-" region]
      *                 *("-" variant)
      *                 *("-" extension)
      *                 ["-" privateuse]
-     *
+     * 
      * language      = 2*3ALPHA            ; shortest ISO 639 code
      *                 ["-" extlang]       ; sometimes followed by
      *                                     ; extended language subtags
      *               / 4ALPHA              ; or reserved for future use
      *               / 5*8ALPHA            ; or registered language subtag
-     *
+     * 
      * extlang       = 3ALPHA              ; selected ISO 639 codes
      *                 *2("-" 3ALPHA)      ; permanently reserved
-     *
+     * 
      * script        = 4ALPHA              ; ISO 15924 code
-     *
+     * 
      * region        = 2ALPHA              ; ISO 3166-1 code
      *               / 3DIGIT              ; UN M.49 code
-     *
+     * 
      * variant       = 5*8alphanum         ; registered variants
      *               / (DIGIT 3alphanum)
-     *
+     * 
      * extension     = singleton 1*("-" (2*8alphanum))
-     *
+     * 
      *                                     ; Single alphanumerics
      *                                     ; "x" reserved for private use
      * singleton     = DIGIT               ; 0 - 9
@@ -153,9 +151,9 @@ public class LanguageTag {
      *               / %x59-5A             ; Y - Z
      *               / %x61-77             ; a - w
      *               / %x79-7A             ; y - z
-     *
+     * 
      * privateuse    = "x" 1*("-" (1*8alphanum))
-     *
+     * 
      */
     public static LanguageTag parse(String languageTag, ParseStatus sts) {
         if (sts == null) {
@@ -165,14 +163,12 @@ public class LanguageTag {
         }
 
         StringTokenIterator itr;
-        boolean isGrandfathered = false;
 
         // Check if the tag is grandfathered
         String[] gfmap = GRANDFATHERED.get(new AsciiUtil.CaseInsensitiveKey(languageTag));
         if (gfmap != null) {
             // use preferred mapping
             itr = new StringTokenIterator(gfmap[1], SEP);
-            isGrandfathered = true;
         } else {
             itr = new StringTokenIterator(languageTag, SEP);
         }
@@ -189,19 +185,13 @@ public class LanguageTag {
         }
         tag.parsePrivateuse(itr, sts);
 
-        if (isGrandfathered) {
-            // Grandfathered tag is replaced with a well-formed tag above.
-            // However, the parsed length must be the original tag length.
-            assert (itr.isDone());
-            assert (!sts.isError());
-            sts._parseLength = languageTag.length();
-        } else if (!itr.isDone() && !sts.isError()) {
+        if (!itr.isDone() && !sts.isError()) {
             String s = itr.current();
             sts._errorIndex = itr.currentStart();
             if (s.length() == 0) {
                 sts._errorMsg = "Empty subtag";
             } else {
-                sts._errorMsg = "Invalid subtag: " + s;
+                sts._errorMsg = "Invalid subtag: " + s; 
             }
         }
 
@@ -692,7 +682,6 @@ public class LanguageTag {
         return AsciiUtil.toLowerString(s);
     }
 
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
@@ -711,7 +700,7 @@ public class LanguageTag {
                 sb.append(SEP).append(_region);
             }
 
-            for (String variant : _variants) {
+            for (String variant : _extlangs) {
                 sb.append(SEP).append(variant);
             }
 

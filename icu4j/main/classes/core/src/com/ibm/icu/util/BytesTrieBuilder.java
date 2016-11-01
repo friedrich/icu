@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2011-2014, International Business Machines
+*   Copyright (C) 2011-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 *   created on: 2011jan05
@@ -63,9 +61,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * Builds a BytesTrie for the add()ed data.
      * Once built, no further data can be add()ed until clear() is called.
      *
-     * <p>A BytesTrie cannot be empty. At least one (byte sequence, value) pair
-     * must have been add()ed.
-     *
      * <p>Multiple calls to build() or buildByteBuffer() return tries or buffers
      * which share the builder's byte array, without rebuilding.
      * <em>The byte array must not be modified via the buildByteBuffer() result object.</em>
@@ -82,9 +77,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
     /**
      * Builds a BytesTrie for the add()ed data and byte-serializes it.
      * Once built, no further data can be add()ed until clear() is called.
-     *
-     * <p>A BytesTrie cannot be empty. At least one (byte sequence, value) pair
-     * must have been add()ed.
      *
      * <p>Multiple calls to build() or buildByteBuffer() return tries or buffers
      * which share the builder's byte array, without rebuilding.
@@ -129,7 +121,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected boolean matchNodesCanHaveValues() /*const*/ { return false; }
 
@@ -138,7 +129,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int getMaxBranchLinearSubNodeLength() /*const*/ { return BytesTrie.kMaxBranchLinearSubNodeLength; }
     /**
@@ -146,7 +136,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int getMinLinearMatch() /*const*/ { return BytesTrie.kMinLinearMatch; }
     /**
@@ -154,7 +143,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int getMaxLinearMatchLength() /*const*/ { return BytesTrie.kMaxLinearMatchLength; }
 
@@ -175,7 +163,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int write(int b) {
         int newLength=bytesLength+1;
@@ -189,7 +176,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int write(int offset, int length) {
         int newLength=bytesLength+length;
@@ -218,7 +204,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int writeValueAndFinal(int i, boolean isFinal) {
         if(0<=i && i<=BytesTrie.kMaxOneByteValue) {
@@ -257,7 +242,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int writeValueAndType(boolean hasValue, int value, int node) {
         int offset=write(node);
@@ -271,7 +255,6 @@ public final class BytesTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int writeDeltaTo(int jumpTarget) {
         int i=bytesLength-jumpTarget;

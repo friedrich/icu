@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/mas.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/mas.xml
+ */
 mas{
     Languages{
         ak{"nkʉtʉ́k ɔ́ɔ̄ lAkan"}
@@ -48,5 +57,5 @@ mas{
         zh{"nkʉtʉ́k ɔ́ɔ̄ lchina"}
         zu{"nkʉtʉ́k ɔ́ɔ̄ lzulu"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.82.45"}
 }

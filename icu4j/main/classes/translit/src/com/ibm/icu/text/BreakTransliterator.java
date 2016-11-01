@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 1996-2010, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.text;
@@ -11,7 +9,6 @@ package com.ibm.icu.text;
 import java.text.CharacterIterator;
 
 import com.ibm.icu.lang.UCharacter;
-import com.ibm.icu.util.ICUCloneNotSupportedException;
 import com.ibm.icu.util.ULocale;
 
 
@@ -73,7 +70,6 @@ final class BreakTransliterator extends Transliterator {
         | (1<<Character.NON_SPACING_MARK)
         | (1<<Character.ENCLOSING_MARK)
         ;
-    @Override
     protected synchronized void handleTransliterate(Replaceable text, Position pos, boolean incremental) {
         boundaryCount = 0;
         int boundary = 0;
@@ -231,7 +227,6 @@ final class BreakTransliterator extends Transliterator {
         * Implements CharacterIterator.first() for String.
         * @see CharacterIterator#first
         */
-        @Override
         public char first()
         {
             pos = begin;
@@ -242,7 +237,6 @@ final class BreakTransliterator extends Transliterator {
         * Implements CharacterIterator.last() for String.
         * @see CharacterIterator#last
         */
-        @Override
         public char last()
         {
             if (end != begin) {
@@ -257,7 +251,6 @@ final class BreakTransliterator extends Transliterator {
         * Implements CharacterIterator.setIndex() for String.
         * @see CharacterIterator#setIndex
         */
-        @Override
         public char setIndex(int p)
         {
         if (p < begin || p > end) {
@@ -271,7 +264,6 @@ final class BreakTransliterator extends Transliterator {
         * Implements CharacterIterator.current() for String.
         * @see CharacterIterator#current
         */
-        @Override
         public char current()
         {
             if (pos >= begin && pos < end) {
@@ -286,7 +278,6 @@ final class BreakTransliterator extends Transliterator {
         * Implements CharacterIterator.next() for String.
         * @see CharacterIterator#next
         */
-        @Override
         public char next()
         {
             if (pos < end - 1) {
@@ -303,7 +294,6 @@ final class BreakTransliterator extends Transliterator {
         * Implements CharacterIterator.previous() for String.
         * @see CharacterIterator#previous
         */
-        @Override
         public char previous()
         {
             if (pos > begin) {
@@ -319,7 +309,6 @@ final class BreakTransliterator extends Transliterator {
         * Implements CharacterIterator.getBeginIndex() for String.
         * @see CharacterIterator#getBeginIndex
         */
-        @Override
         public int getBeginIndex()
         {
             return begin;
@@ -329,7 +318,6 @@ final class BreakTransliterator extends Transliterator {
         * Implements CharacterIterator.getEndIndex() for String.
         * @see CharacterIterator#getEndIndex
         */
-        @Override
         public int getEndIndex()
         {
             return end;
@@ -339,7 +327,6 @@ final class BreakTransliterator extends Transliterator {
         * Implements CharacterIterator.getIndex() for String.
         * @see CharacterIterator#getIndex
         */
-        @Override
         public int getIndex()
         {
             return pos;
@@ -351,7 +338,6 @@ final class BreakTransliterator extends Transliterator {
         * @return true if the given obj is the same as this
         * ReplaceableCharacterIterator object; false otherwise.
         */
-        @Override
         public boolean equals(Object obj)
         {
             if (this == obj) {
@@ -379,7 +365,6 @@ final class BreakTransliterator extends Transliterator {
         * Computes a hashcode for this iterator.
         * @return A hash code
         */
-        @Override
         public int hashCode()
         {
             return text.hashCode() ^ pos ^ begin ^ end;
@@ -389,7 +374,6 @@ final class BreakTransliterator extends Transliterator {
         * Creates a copy of this iterator.
         * @return A copy of this
         */
-        @Override
         public Object clone()
         {
             try {
@@ -398,7 +382,7 @@ final class BreakTransliterator extends Transliterator {
                 return other;
             }
             catch (CloneNotSupportedException e) {
-                throw new ICUCloneNotSupportedException();
+                throw new IllegalStateException();
             }
         }
 

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /***********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2014, International Business Machines Corporation
+ * Copyright (c) 1997-2011, International Business Machines Corporation
  * and others. All Rights Reserved.
  ***********************************************************************/
 
@@ -35,7 +33,6 @@ public:
      * - displayable name in the desired locale
      */
     void TestProperty(/* char* par */);
-    void TestKeywordValues();
 
     /**
     * This tests the RuleBasedCollator
@@ -137,7 +134,6 @@ public:
     * Tests the setters and getters of variable top
     */
     void TestVariableTopSetting();
-    void TestMaxVariable();
 
     /**
     * Tests GetLocale for a Collator
@@ -170,10 +166,6 @@ public:
     void TestNULLCharTailoring();
 
     void TestClone();
-    void TestCloneBinary();
-    void TestIterNumeric();
-    void TestBadKeywords();
-
 private:
     // If this is too small for the test data, just increase it.
     // Just don't make it too large, otherwise the executable will get too big

@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 1996-2013, International Business Machines Corporation
+*   Copyright (C) 1996-2011, International Business Machines Corporation
 *   and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -486,6 +484,7 @@ private:
     UResourceBundle *fResource;
     void constructForLocale(const UnicodeString& path, const Locale& locale, UErrorCode& error);
     Locale *fLocale;
+
 };
 
 U_NAMESPACE_END

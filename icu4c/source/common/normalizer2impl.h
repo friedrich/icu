@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2009-2014, International Business Machines
+*   Copyright (C) 2009-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -24,6 +22,7 @@
 #if !UCONFIG_NO_NORMALIZATION
 
 #include "unicode/normalizer2.h"
+#include "unicode/udata.h"
 #include "unicode/unistr.h"
 #include "unicode/unorm.h"
 #include "unicode/utf16.h"
@@ -35,19 +34,15 @@ U_NAMESPACE_BEGIN
 
 struct CanonIterData;
 
-class U_COMMON_API Hangul {
+class Hangul {
 public:
     /* Korean Hangul and Jamo constants */
     enum {
         JAMO_L_BASE=0x1100,     /* "lead" jamo */
-        JAMO_L_END=0x1112,
         JAMO_V_BASE=0x1161,     /* "vowel" jamo */
-        JAMO_V_END=0x1175,
         JAMO_T_BASE=0x11a7,     /* "trail" jamo */
-        JAMO_T_END=0x11c2,
 
         HANGUL_BASE=0xac00,
-        HANGUL_END=0xd7a3,
 
         JAMO_L_COUNT=19,
         JAMO_V_COUNT=21,
@@ -115,7 +110,7 @@ private:
 
 class Normalizer2Impl;
 
-class U_COMMON_API ReorderingBuffer : public UMemory {
+class ReorderingBuffer : public UMemory {
 public:
     ReorderingBuffer(const Normalizer2Impl &ni, UnicodeString &dest) :
         impl(ni), str(dest),
@@ -218,17 +213,15 @@ private:
     UChar *codePointStart, *codePointLimit;
 };
 
-class U_COMMON_API Normalizer2Impl : public UObject {
+class U_COMMON_API Normalizer2Impl : public UMemory {
 public:
-    Normalizer2Impl() : normTrie(NULL), fCanonIterData(NULL) {
-        fCanonIterDataInitOnce.reset();
+    Normalizer2Impl() : memory(NULL), normTrie(NULL) {
+        canonIterDataSingleton.fInstance=NULL;
     }
-    virtual ~Normalizer2Impl();
+    ~Normalizer2Impl();
 
-    void init(const int32_t *inIndexes, const UTrie2 *inTrie,
-              const uint16_t *inExtraData, const uint8_t *inSmallFCD);
+    void load(const char *packageName, const char *name, UErrorCode &errorCode);
 
-    void addLcccChars(UnicodeSet &set) const;
     void addPropertyStarts(const USetAdder *sa, UErrorCode &errorCode) const;
     void addCanonIterPropertyStarts(const USetAdder *sa, UErrorCode &errorCode) const;
 
@@ -249,7 +242,6 @@ public:
             return UNORM_NO;
         }
     }
-    UBool isAlgorithmicNoNo(uint16_t norm16) const { return limitNoNo<=norm16 && norm16<minMaybeYes; }
     UBool isCompNo(uint16_t norm16) const { return minNoNo<=norm16 && norm16<minMaybeYes; }
     UBool isDecompYes(uint16_t norm16) const { return norm16<minYesNo || minMaybeYes<=norm16; }
 
@@ -424,18 +416,6 @@ public:
 
     // higher-level functionality ------------------------------------------ ***
 
-    // NFD without an NFD Normalizer2 instance.
-    UnicodeString &decompose(const UnicodeString &src, UnicodeString &dest,
-                             UErrorCode &errorCode) const;
-    /**
-     * Decomposes [src, limit[ and writes the result to dest.
-     * limit can be NULL if src is NUL-terminated.
-     * destLengthEstimate is the initial dest buffer capacity and can be -1.
-     */
-    void decompose(const UChar *src, const UChar *limit,
-                   UnicodeString &dest, int32_t destLengthEstimate,
-                   UErrorCode &errorCode) const;
-
     const UChar *decompose(const UChar *src, const UChar *limit,
                            ReorderingBuffer *buffer, UErrorCode &errorCode) const;
     void decomposeAndAppend(const UChar *src, const UChar *limit,
@@ -480,6 +460,9 @@ public:
     }
     UBool isFCDInert(UChar32 c) const { return getFCD16(c)<=1; }
 private:
+    static UBool U_CALLCONV
+    isAcceptable(void *context, const char *type, const char *name, const UDataInfo *pInfo);
+
     UBool isMaybe(uint16_t norm16) const { return minMaybeYes<=norm16 && norm16<=JAMO_VT; }
     UBool isMaybeOrNonZeroCC(uint16_t norm16) const { return norm16>=minMaybeYes; }
     static UBool isInert(uint16_t norm16) { return norm16==0; }
@@ -583,7 +566,8 @@ private:
     int32_t getCanonValue(UChar32 c) const;
     const UnicodeSet &getCanonStartSet(int32_t n) const;
 
-    // UVersionInfo dataVersion;
+    UDataMemory *memory;
+    UVersionInfo dataVersion;
 
     // Code point thresholds for quick check codes.
     UChar32 minDecompNoCP;
@@ -596,15 +580,13 @@ private:
     uint16_t limitNoNo;
     uint16_t minMaybeYes;
 
-    const UTrie2 *normTrie;
+    UTrie2 *normTrie;
     const uint16_t *maybeYesCompositions;
     const uint16_t *extraData;  // mappings and/or compositions for yesYes, yesNo & noNo characters
     const uint8_t *smallFCD;  // [0x100] one bit per 32 BMP code points, set if any FCD!=0
     uint8_t tccc180[0x180];  // tccc values for U+0000..U+017F
 
-public:  // CanonIterData is public to allow access from C callback functions.
-    UInitOnce       fCanonIterDataInitOnce;
-    CanonIterData  *fCanonIterData;
+    SimpleSingleton canonIterDataSingleton;
 };
 
 // bits in canonIterData
@@ -618,8 +600,13 @@ public:  // CanonIterData is public to allow access from C callback functions.
  */
 class U_COMMON_API Normalizer2Factory {
 public:
+    static const Normalizer2 *getNFCInstance(UErrorCode &errorCode);
+    static const Normalizer2 *getNFDInstance(UErrorCode &errorCode);
     static const Normalizer2 *getFCDInstance(UErrorCode &errorCode);
     static const Normalizer2 *getFCCInstance(UErrorCode &errorCode);
+    static const Normalizer2 *getNFKCInstance(UErrorCode &errorCode);
+    static const Normalizer2 *getNFKDInstance(UErrorCode &errorCode);
+    static const Normalizer2 *getNFKC_CFInstance(UErrorCode &errorCode);
     static const Normalizer2 *getNoopInstance(UErrorCode &errorCode);
 
     static const Normalizer2 *getInstance(UNormalizationMode mode, UErrorCode &errorCode);

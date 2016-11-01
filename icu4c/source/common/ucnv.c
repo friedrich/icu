@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 1998-2016, International Business Machines
+*   Copyright (C) 1998-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -156,7 +154,6 @@ U_CAPI UConverter* U_EXPORT2
 ucnv_safeClone(const UConverter* cnv, void *stackBuffer, int32_t *pBufferSize, UErrorCode *status)
 {
     UConverter *localConverter, *allocatedConverter;
-    int32_t stackBufferSize;
     int32_t bufferSizeNeeded;
     char *stackBufferChars = (char *)stackBuffer;
     UErrorCode cbErr;
@@ -185,13 +182,13 @@ ucnv_safeClone(const UConverter* cnv, void *stackBuffer, int32_t *pBufferSize, U
 
     if (status == NULL || U_FAILURE(*status)){
         UTRACE_EXIT_STATUS(status? *status: U_ILLEGAL_ARGUMENT_ERROR);
-        return NULL;
+        return 0;
     }
 
-    if (cnv == NULL) {
+    if (!pBufferSize || !cnv){
         *status = U_ILLEGAL_ARGUMENT_ERROR;
         UTRACE_EXIT_STATUS(*status);
-        return NULL;
+        return 0;
     }
 
     UTRACE_DATA3(UTRACE_OPEN_CLOSE, "clone converter %s at %p into stackBuffer %p",
@@ -201,10 +198,6 @@ ucnv_safeClone(const UConverter* cnv, void *stackBuffer, int32_t *pBufferSize, U
         /* call the custom safeClone function for sizing */
         bufferSizeNeeded = 0;
         cnv->sharedData->impl->safeClone(cnv, NULL, &bufferSizeNeeded, status);
-        if (U_FAILURE(*status)) {
-            UTRACE_EXIT_STATUS(*status);
-            return NULL;
-        }
     }
     else
     {
@@ -212,16 +205,10 @@ ucnv_safeClone(const UConverter* cnv, void *stackBuffer, int32_t *pBufferSize, U
         bufferSizeNeeded = sizeof(UConverter);
     }
 
-    if (pBufferSize == NULL) {
-        stackBufferSize = 1;
-        pBufferSize = &stackBufferSize;
-    } else {
-        stackBufferSize = *pBufferSize;
-        if (stackBufferSize <= 0){ /* 'preflighting' request - set needed size into *pBufferSize */
-            *pBufferSize = bufferSizeNeeded;
-            UTRACE_EXIT_VALUE(bufferSizeNeeded);
-            return NULL;
-        }
+    if (*pBufferSize <= 0){ /* 'preflighting' request - set needed size into *pBufferSize */
+        *pBufferSize = bufferSizeNeeded;
+        UTRACE_EXIT_VALUE(bufferSizeNeeded);
+        return 0;
     }
 
 
@@ -230,19 +217,19 @@ ucnv_safeClone(const UConverter* cnv, void *stackBuffer, int32_t *pBufferSize, U
      */
     if (U_ALIGNMENT_OFFSET(stackBuffer) != 0) {
         int32_t offsetUp = (int32_t)U_ALIGNMENT_OFFSET_UP(stackBufferChars);
-        if(stackBufferSize > offsetUp) {
-            stackBufferSize -= offsetUp;
+        if(*pBufferSize > offsetUp) {
+            *pBufferSize -= offsetUp;
             stackBufferChars += offsetUp;
         } else {
             /* prevent using the stack buffer but keep the size > 0 so that we do not just preflight */
-            stackBufferSize = 1;
+            *pBufferSize = 1;
         }
     }
 
     stackBuffer = (void *)stackBufferChars;
     
     /* Now, see if we must allocate any memory */
-    if (stackBufferSize < bufferSizeNeeded || stackBuffer == NULL)
+    if (*pBufferSize < bufferSizeNeeded || stackBuffer == NULL)
     {
         /* allocate one here...*/
         localConverter = allocatedConverter = (UConverter *) uprv_malloc (bufferSizeNeeded);
@@ -252,8 +239,11 @@ ucnv_safeClone(const UConverter* cnv, void *stackBuffer, int32_t *pBufferSize, U
             UTRACE_EXIT_STATUS(*status);
             return NULL;
         }
-        *status = U_SAFECLONE_ALLOCATED_WARNING;
-
+        
+        if (U_SUCCESS(*status)) {
+            *status = U_SAFECLONE_ALLOCATED_WARNING;
+        }
+        
         /* record the fact that memory was allocated */
         *pBufferSize = bufferSizeNeeded;
     } else {
@@ -297,7 +287,12 @@ ucnv_safeClone(const UConverter* cnv, void *stackBuffer, int32_t *pBufferSize, U
     }
 
     /* increment refcount of shared data if needed */
-    if (cnv->sharedData->isReferenceCounted) {
+    /*
+    Checking whether it's an algorithic converter is okay
+    in multithreaded applications because the value never changes.
+    Don't check referenceCounter for any other value.
+    */
+    if (cnv->sharedData->referenceCounter != ~0) {
         ucnv_incrementRefCount(cnv->sharedData);
     }
 
@@ -382,7 +377,12 @@ ucnv_close (UConverter * converter)
         uprv_free(converter->subChars);
     }
 
-    if (converter->sharedData->isReferenceCounted) {
+    /*
+    Checking whether it's an algorithic converter is okay
+    in multithreaded applications because the value never changes.
+    Don't check referenceCounter for any other value.
+    */
+    if (converter->sharedData->referenceCounter != ~0) {
         ucnv_unloadSharedDataIfReady(converter->sharedData);
     }
 
@@ -1063,7 +1063,7 @@ _fromUnicodeWithCallback(UConverterFromUnicodeArgs *pArgs, UErrorCode *err) {
 
                         length=(int32_t)(pArgs->sourceLimit-pArgs->source);
                         if(length>0) {
-                            u_memcpy(cnv->preFromU, pArgs->source, length);
+                            uprv_memcpy(cnv->preFromU, pArgs->source, length*U_SIZEOF_UCHAR);
                             cnv->preFromULength=(int8_t)-length;
                         }
 
@@ -1819,7 +1819,7 @@ ucnv_toUChars(UConverter *cnv,
         {
             UChar buffer[1024];
 
-            destLimit=buffer+UPRV_LENGTHOF(buffer);
+            destLimit=buffer+sizeof(buffer)/U_SIZEOF_UCHAR;
             do {
                 dest=buffer;
                 *pErrorCode=U_ZERO_ERROR;
@@ -2648,7 +2648,7 @@ static const UAmbiguousConverter *ucnv_getAmbiguous(const UConverter *cnv)
         return NULL;
     }
 
-    for(i=0; i<UPRV_LENGTHOF(ambiguousConverters); ++i)
+    for(i=0; i<(int32_t)(sizeof(ambiguousConverters)/sizeof(UAmbiguousConverter)); ++i)
     {
         if(0==uprv_strcmp(name, ambiguousConverters[i].name))
         {
@@ -2745,7 +2745,7 @@ ucnv_getInvalidUChars (const UConverter * converter,
     }
     if ((*len = converter->invalidUCharLength) > 0)
     {
-        u_memcpy (errChars, converter->invalidUCharBuffer, *len);
+        uprv_memcpy (errChars, converter->invalidUCharBuffer, sizeof(UChar) * (*len));
     }
 }
 

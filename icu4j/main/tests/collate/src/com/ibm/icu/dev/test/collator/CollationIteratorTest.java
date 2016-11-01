@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2002-2014, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2002-2011, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 
@@ -19,8 +17,6 @@ import java.text.StringCharacterIterator;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.text.CollationElementIterator;
@@ -34,10 +30,14 @@ public class CollationIteratorTest extends TestFmwk {
     String test1 = "What subset of all possible test cases?";
     String test2 = "has the highest probability of detecting";
    
+    public static void main(String[] args) throws Exception {
+        new CollationIteratorTest().run(args);
+        // new CollationIteratorTest().TestNormalizedUnicodeChar();
+    }
+    
     /*
      * @bug 4157299
      */
-    @Test
     public void TestClearBuffers(/* char* par */) {
         RuleBasedCollator c = null;
         try {
@@ -93,7 +93,6 @@ public class CollationIteratorTest extends TestFmwk {
     /** @bug 4108762
      * Test for getMaxExpansion()
      */
-    @Test
     public void TestMaxExpansion(/* char* par */) {
         int unassigned = 0xEFFFD;
         String rule = "&a < ab < c/aba < d < z < ch";
@@ -207,7 +206,6 @@ public class CollationIteratorTest extends TestFmwk {
     /**
      * Test for getOffset() and setOffset()
      */
-    @Test
     public void TestOffset(/* char* par */) {
         RuleBasedCollator en_us;
         try {
@@ -322,7 +320,6 @@ public class CollationIteratorTest extends TestFmwk {
      * @bug 4108758 - Make sure it works with contracting characters
      * 
      */
-    @Test
     public void TestPrevious(/* char* par */) {
         RuleBasedCollator en_us = (RuleBasedCollator)Collator.getInstance(Locale.US);
         CollationElementIterator iter = en_us.getCollationElementIterator(test1);
@@ -400,7 +397,6 @@ public class CollationIteratorTest extends TestFmwk {
     /**
      * Test for setText()
      */
-    @Test
     public void TestSetText(/* char* par */) {
         RuleBasedCollator en_us = (RuleBasedCollator)Collator.getInstance(Locale.US);
         CollationElementIterator iter1 = en_us.getCollationElementIterator(test1);
@@ -455,7 +451,6 @@ public class CollationIteratorTest extends TestFmwk {
      * Test for CollationElementIterator previous and next for the whole set of
      * unicode characters.
      */
-    @Test
     public void TestUnicodeChar() {
         RuleBasedCollator en_us = (RuleBasedCollator)Collator.getInstance(Locale.US);
         CollationElementIterator iter;
@@ -502,7 +497,6 @@ public class CollationIteratorTest extends TestFmwk {
      * Test for CollationElementIterator previous and next for the whole set of
      * unicode characters with normalization on.
      */
-    @Test
     public void TestNormalizedUnicodeChar()
     {
         // thai should have normalization on
@@ -554,7 +548,6 @@ public class CollationIteratorTest extends TestFmwk {
     /**
     * Testing the discontiguous contractions
     */
-    @Test
     public void TestDiscontiguous() 
     {
         String rulestr ="&z < AB < X\u0300 < ABC < X\u0300\u0315";
@@ -630,7 +623,6 @@ public class CollationIteratorTest extends TestFmwk {
     /**
     * Test the incremental normalization
     */
-    @Test
     public void TestNormalization()
     {
         String rules = "&a < \u0300\u0315 < A\u0300\u0315 < \u0316\u0315B < \u0316\u0300\u0315";
@@ -658,17 +650,9 @@ public class CollationIteratorTest extends TestFmwk {
     }
 
     /**
-     * TestSearchCollatorElements tests iterator behavior (forwards and backwards) with
-     * normalization on AND jamo tailoring, among other things.
-     *
-     * Note: This test is sensitive to changes of the root collator,
-     * for example whether the ae-ligature maps to three CEs (as in the DUCET)
-     * or to two CEs (as in the CLDR 24 FractionalUCA.txt).
-     * It is also sensitive to how those CEs map to the iterator's 32-bit CE encoding.
-     * For example, the DUCET's artificial secondary CE in the ae-ligature
-     * may map to two 32-bit iterator CEs (as it did until ICU 52).
-     */
-    @Test
+    * TestSearchCollatorElements tests iterator behavior (forwards and backwards) with
+    * normalization on AND jamo tailoring, among other things.
+    */
     public void TestSearchCollatorElements()
     {
         String tsceText =
@@ -693,7 +677,7 @@ public class CollationIteratorTest extends TestFmwk {
             12, 13,14,15,
             16, 17,18,19,
             20, 21,22,23,
-            24, 25,26,  /* plus another 1-2 offset=26 if ae-ligature maps to three CEs */
+            24, 25,26,26,26,
             26, 27,28,28,
             28,
             29
@@ -708,7 +692,7 @@ public class CollationIteratorTest extends TestFmwk {
             12, 13,14,15,
             16, 17,18,19,20,
             20, 21,22,22,23,23,23,24,
-            24, 25,26,  /* plus another 1-2 offset=26 if ae-ligature maps to three CEs */
+            24, 25,26,26,26,
             26, 27,28,28,
             28,
             29
@@ -748,7 +732,6 @@ public class CollationIteratorTest extends TestFmwk {
             do {
                 offset = uce.getOffset();
                 element = uce.next();
-                logln(String.format("(%s) offset=%2d  ce=%08x\n", tsceItem.localeString, offset, element));
                 if (element == 0) {
                     errln("Error: in locale " + localeString + ", CEIterator next() returned element 0");
                 }
@@ -766,8 +749,9 @@ public class CollationIteratorTest extends TestFmwk {
             if ( ioff < noff ) {
                 errln("Error: in locale " + localeString + ", CEIterator next() returned fewer elements than expected");
             }
-
-            // backwards test
+            
+            /*
+            // Skip the backwards test until ticket #8382 is fixed
             uce.setOffset(tsceText.length());
             ioff = noff;
             do {
@@ -790,6 +774,7 @@ public class CollationIteratorTest extends TestFmwk {
             if ( ioff > 0 ) {
                 errln("Error: in locale " + localeString + ", CEIterator previous() returned fewer elements than expected");
             }
+            */
         }
     }
 }

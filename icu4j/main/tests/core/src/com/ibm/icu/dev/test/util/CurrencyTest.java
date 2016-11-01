@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  **********************************************************************
- * Copyright (c) 2002-2016, International Business Machines
+ * Copyright (c) 2002-2013, International Business Machines
  * Corporation and others.  All Rights Reserved.
  **********************************************************************
  * Author: Alan Liu
@@ -20,11 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
-import com.ibm.icu.dev.test.TestUtil;
-import com.ibm.icu.dev.test.TestUtil.JavaVendor;
 import com.ibm.icu.impl.CurrencyData;
 import com.ibm.icu.text.CurrencyDisplayNames;
 import com.ibm.icu.text.CurrencyMetaInfo;
@@ -43,10 +37,14 @@ import com.ibm.icu.util.ULocale;
  * @summary General test of Currency
  */
 public class CurrencyTest extends TestFmwk {
+
+    public static void main(String[] args) throws Exception {
+        new CurrencyTest().run(args);
+    }
+
     /**
      * Test of basic API.
      */
-    @Test
     public void TestAPI() {
         Currency usd = Currency.getInstance("USD");
         /*int hash = */usd.hashCode();
@@ -97,7 +95,6 @@ public class CurrencyTest extends TestFmwk {
     /**
      * Test registration.
      */
-    @Test
     public void TestRegistration() {
         final Currency jpy = Currency.getInstance("JPY");
         final Currency usd = Currency.getInstance(Locale.US);
@@ -165,7 +162,7 @@ public class CurrencyTest extends TestFmwk {
         if (found) {
             errln("found locale" + fu_FU + " in currency locales after unregister");
         }
-
+        
         Locale[] locs = Currency.getAvailableLocales();
         found = false;
         for (int i = 0; i < locs.length; ++i) {
@@ -182,7 +179,6 @@ public class CurrencyTest extends TestFmwk {
     /**
      * Test names.
      */
-    @Test
     public void TestNames() {
         // Do a basic check of getName()
         // USD { "US$", "US Dollar"            } // 04/04/1792-
@@ -191,43 +187,32 @@ public class CurrencyTest extends TestFmwk {
         Currency usd = Currency.getInstance("USD");
         // Warning: HARD-CODED LOCALE DATA in this test.  If it fails, CHECK
         // THE LOCALE DATA before diving into the code.
-        assertEquals("USD.getName(SYMBOL_NAME)",
-                "$",
-                usd.getName(en, Currency.SYMBOL_NAME, isChoiceFormat));
-        assertEquals("USD.getName(LONG_NAME)",
-                "US Dollar",
-                usd.getName(en, Currency.LONG_NAME, isChoiceFormat));
+        if (!noData()) {
+            assertEquals("USD.getName(SYMBOL_NAME)",
+                         "$",
+                         usd.getName(en, Currency.SYMBOL_NAME, isChoiceFormat));
+            assertEquals("USD.getName(LONG_NAME)",
+                         "US Dollar",
+                         usd.getName(en, Currency.LONG_NAME, isChoiceFormat));
+        }
         // TODO add more tests later
     }
 
-    @Test
-    public void testGetName_Locale_Int_String_BooleanArray() {
-        Currency currency = Currency.getInstance(ULocale.CHINA);
-        boolean[] isChoiceFormat = new boolean[1];
-        int nameStyle = Currency.LONG_NAME;
-        String pluralCount = "";
-        String ulocaleName =
-                currency.getName(ULocale.CANADA, nameStyle, pluralCount, isChoiceFormat);
-        assertEquals("currency name mismatch", "Chinese Yuan", ulocaleName);
-        String localeName = currency.getName(Locale.CANADA, nameStyle, pluralCount, isChoiceFormat);
-        assertEquals("currency name mismatch", ulocaleName, localeName);
-    }
-
-    @Test
     public void TestCoverage() {
         Currency usd = Currency.getInstance("USD");
+        if (!noData()) {
         assertEquals("USD.getSymbol()",
                 "$",
                 usd.getSymbol());
+        }
     }
-
+    
     // A real test of the CurrencyDisplayNames class.
-    @Test
     public void TestCurrencyDisplayNames() {
         if (!CurrencyDisplayNames.hasData()) {
             errln("hasData() should return true.");
         }
-
+        
         // with substitute
         CurrencyDisplayNames cdn = CurrencyDisplayNames.getInstance(ULocale.GERMANY);
         assertEquals("de_USD_name", "US-Dollar", cdn.getName("USD"));
@@ -235,40 +220,40 @@ public class CurrencyTest extends TestFmwk {
         assertEquals("de_USD_plural_other", "US-Dollar", cdn.getPluralName("USD", "other"));
         // unknown plural category, substitute "other"
         assertEquals("de_USD_plural_foo", "US-Dollar", cdn.getPluralName("USD", "foo"));
-
+        
         cdn = CurrencyDisplayNames.getInstance(ULocale.forLanguageTag("en-US"));
         assertEquals("en-US_USD_name", "US Dollar", cdn.getName("USD"));
         assertEquals("en-US_USD_symbol", "$", cdn.getSymbol("USD"));
         assertEquals("en-US_USD_plural_one", "US dollar", cdn.getPluralName("USD", "one"));
         assertEquals("en-US_USD_plural_other", "US dollars", cdn.getPluralName("USD", "other"));
-
+        
         assertEquals("en-US_FOO_name", "FOO", cdn.getName("FOO"));
         assertEquals("en-US_FOO_symbol", "FOO", cdn.getSymbol("FOO"));
         assertEquals("en-US_FOO_plural_other", "FOO", cdn.getPluralName("FOO", "other"));
-
+        
         assertEquals("en-US bundle", "en", cdn.getULocale().toString());
-
+        
         cdn = CurrencyDisplayNames.getInstance(ULocale.forLanguageTag("zz-Gggg-YY"));
         assertEquals("bundle from current locale", "en", cdn.getULocale().toString());
-
+        
         // with no substitute
         cdn = CurrencyDisplayNames.getInstance(ULocale.GERMANY, true);
         assertNotNull("have currency data for Germany", cdn);
-
+        
         // known currency, behavior unchanged
         assertEquals("de_USD_name", "US-Dollar", cdn.getName("USD"));
         assertEquals("de_USD_symbol", "$", cdn.getSymbol("USD"));
         assertEquals("de_USD_plural_other", "US-Dollar", cdn.getPluralName("USD", "other"));
-
+        
         // known currency but unknown plural category
         assertNull("de_USD_plural_foo", cdn.getPluralName("USD", "foo"));
-
+        
         // unknown currency, get null
         assertNull("de_FOO_name", cdn.getName("FOO"));
         assertNull("de_FOO_symbol", cdn.getSymbol("FOO"));
         assertNull("de_FOO_plural_other", cdn.getPluralName("FOO", "other"));
         assertNull("de_FOO_plural_foo", cdn.getPluralName("FOO", "foo"));
-
+        
         // unknown locale with no substitute
         cdn = CurrencyDisplayNames.getInstance(ULocale.forLanguageTag("zz-Gggg-YY"), true);
         String ln = "";
@@ -276,82 +261,74 @@ public class CurrencyTest extends TestFmwk {
             ln = " (" + cdn.getULocale().toString() + ")";
         }
         assertNull("no fallback from unknown locale" + ln , cdn);
-
-        // Locale version
-        cdn = CurrencyDisplayNames.getInstance(Locale.GERMANY, true);
-        assertNotNull("have currency data for Germany (Java Locale)", cdn);
-        assertEquals("de_USD_name (Locale)", "US-Dollar", cdn.getName("USD"));
-        assertNull("de_FOO_name (Locale)", cdn.getName("FOO"));
     }
-
+    
     // Coverage-only test of CurrencyData
-    @Test
     public void TestCurrencyData() {
         CurrencyData.DefaultInfo info_fallback = (CurrencyData.DefaultInfo)CurrencyData.DefaultInfo.getWithFallback(true);
         if (info_fallback == null) {
             errln("getWithFallback() returned null.");
             return;
         }
-
+        
         CurrencyData.DefaultInfo info_nofallback = (CurrencyData.DefaultInfo)CurrencyData.DefaultInfo.getWithFallback(false);
         if (info_nofallback == null) {
             errln("getWithFallback() returned null.");
             return;
         }
-
+        
         if (!info_fallback.getName("isoCode").equals("isoCode") || info_nofallback.getName("isoCode") != null) {
             errln("Error calling getName().");
             return;
         }
-
+        
         if (!info_fallback.getPluralName("isoCode", "type").equals("isoCode") || info_nofallback.getPluralName("isoCode", "type") != null) {
             errln("Error calling getPluralName().");
             return;
         }
-
+        
         if (!info_fallback.getSymbol("isoCode").equals("isoCode") || info_nofallback.getSymbol("isoCode") != null) {
             errln("Error calling getSymbol().");
             return;
         }
-
+        
         if (!info_fallback.symbolMap().isEmpty()) {
             errln("symbolMap() should return empty map.");
             return;
         }
-
+        
         if (!info_fallback.nameMap().isEmpty()) {
             errln("nameMap() should return empty map.");
             return;
         }
-
+        
         if (!info_fallback.getUnitPatterns().isEmpty() || info_nofallback.getUnitPatterns() != null) {
             errln("Error calling getUnitPatterns().");
             return;
         }
-
+        
         if (!info_fallback.getSpacingInfo().equals((CurrencyData.CurrencySpacingInfo.DEFAULT)) ||
                 info_nofallback.getSpacingInfo() != null) {
             errln("Error calling getSpacingInfo().");
             return;
         }
-
+        
         if (info_fallback.getULocale() != ULocale.ROOT) {
             errln("Error calling getLocale().");
             return;
         }
-
+        
         if (info_fallback.getFormatInfo("isoCode") != null) {
             errln("Error calling getFormatInfo().");
             return;
         }
     }
-
+    
     // A real test of CurrencyMetaInfo.
-    @Test
     public void testCurrencyMetaInfoRanges() {
         CurrencyMetaInfo metainfo = CurrencyMetaInfo.getInstance(true);
         assertNotNull("have metainfo", metainfo);
-
+    
         CurrencyFilter filter = CurrencyFilter.onRegion("DE"); // must be capitalized
         List<CurrencyInfo> currenciesInGermany = metainfo.currencyInfo(filter);
         logln("currencies: " + currenciesInGermany.size());
@@ -369,17 +346,17 @@ public class CurrencyTest extends TestFmwk {
                 eurFirstDate = new Date(info.from);
             }
         }
-
+        
         // the Euro and Deutschmark overlapped for several years
         assertEquals("DEM available at last date", 2, metainfo.currencyInfo(filter.withDate(demLastDate)).size());
-
+        
         // demLastDate + 1 millisecond is not the start of the last day, we consider it the next day, so...
         Date demLastDatePlus1ms = new Date(demLastDate.getTime() + 1);
         assertEquals("DEM not available after very start of last date", 1, metainfo.currencyInfo(filter.withDate(demLastDatePlus1ms)).size());
-
+        
         // both available for start of euro
         assertEquals("EUR available on start of first date", 2, metainfo.currencyInfo(filter.withDate(eurFirstDate)).size());
-
+        
         // but not one millisecond before the start of the first day
         Date eurFirstDateMinus1ms = new Date(eurFirstDate.getTime() - 1);
         assertEquals("EUR not avilable before very start of first date", 1, metainfo.currencyInfo(filter.withDate(eurFirstDateMinus1ms)).size());
@@ -392,7 +369,7 @@ public class CurrencyTest extends TestFmwk {
         assertEquals("minute is 59", 59, cal.get(GregorianCalendar.MINUTE));
         assertEquals("second is 59", 59, cal.get(GregorianCalendar.SECOND));
         assertEquals("millisecond is 999", 999, cal.get(GregorianCalendar.MILLISECOND));
-
+        
         // start time is first millisecond of day
         cal.setTime(eurFirstDate);
         assertEquals("hour is 0", 0, cal.get(GregorianCalendar.HOUR_OF_DAY));
@@ -400,27 +377,19 @@ public class CurrencyTest extends TestFmwk {
         assertEquals("second is 0", 0, cal.get(GregorianCalendar.SECOND));
         assertEquals("millisecond is 0", 0, cal.get(GregorianCalendar.MILLISECOND));
     }
-
-    @Test
+    
     public void testCurrencyMetaInfoRangesWithLongs() {
         CurrencyMetaInfo metainfo = CurrencyMetaInfo.getInstance(true);
         assertNotNull("have metainfo", metainfo);
-
+    
         CurrencyFilter filter = CurrencyFilter.onRegion("DE"); // must be capitalized
         List<CurrencyInfo> currenciesInGermany = metainfo.currencyInfo(filter);
-        CurrencyFilter filter_br = CurrencyFilter.onRegion("BR"); // must be capitalized
-        List<CurrencyInfo> currenciesInBrazil = metainfo.currencyInfo(filter_br);
-        logln("currencies Germany: " + currenciesInGermany.size());
-        logln("currencies Brazil: " + currenciesInBrazil.size());
-        long demFirstDate = Long.MIN_VALUE;
+        logln("currencies: " + currenciesInGermany.size());
         long demLastDate = Long.MAX_VALUE;
         long eurFirstDate = Long.MIN_VALUE;
-        CurrencyInfo demInfo = null;
         for (CurrencyInfo info : currenciesInGermany) {
             logln(info.toString());
             if (info.code.equals("DEM")) {
-                demInfo = info;
-                demFirstDate = info.from;
                 demLastDate = info.to;
             } else if (info.code.equals("EUR")) {
                 eurFirstDate = info.from;
@@ -428,33 +397,19 @@ public class CurrencyTest extends TestFmwk {
         }
         // the Euro and Deutschmark overlapped for several years
         assertEquals("DEM available at last date", 2, metainfo.currencyInfo(filter.withDate(demLastDate)).size());
-
+        
         // demLastDate + 1 millisecond is not the start of the last day, we consider it the next day, so...
         long demLastDatePlus1ms = demLastDate + 1;
         assertEquals("DEM not available after very start of last date", 1, metainfo.currencyInfo(filter.withDate(demLastDatePlus1ms)).size());
-
+        
         // both available for start of euro
         assertEquals("EUR available on start of first date", 2, metainfo.currencyInfo(filter.withDate(eurFirstDate)).size());
-
+        
         // but not one millisecond before the start of the first day
         long eurFirstDateMinus1ms = eurFirstDate - 1;
-        assertEquals("EUR not avilable before very start of first date", 1,
-                     metainfo.currencyInfo(filter.withDate(eurFirstDateMinus1ms)).size());
-
-        // Deutschmark available from first millisecond on
-        assertEquals("Millisecond of DEM Big Bang", 1,
-                     metainfo.currencyInfo(CurrencyFilter.onDate(demFirstDate).withRegion("DE")).size());
-
-        assertEquals("From Deutschmark to Euro", 2,
-                     metainfo.currencyInfo(CurrencyFilter.onDateRange(demFirstDate, eurFirstDate).withRegion("DE")).size());
-
-        assertEquals("all Tender for Brazil", 7,
-                metainfo.currencyInfo(CurrencyFilter.onTender().withRegion("BR")).size());
-
-        assertTrue("No legal tender", demInfo.isTender());
+        assertEquals("EUR not avilable before very start of first date", 1, metainfo.currencyInfo(filter.withDate(eurFirstDateMinus1ms)).size());
     }
-
-    @Test
+    
     public void TestWithTender() {
         CurrencyMetaInfo metainfo = CurrencyMetaInfo.getInstance();
         if (metainfo == null) {
@@ -467,28 +422,27 @@ public class CurrencyTest extends TestFmwk {
         assertTrue("More than one currency for switzerland", currencies.size() > 1);
         assertEquals(
                 "With tender",
-                Arrays.asList(new String[] {"CHF", "CHE", "CHW"}),
+                Arrays.asList(new String[] {"CHF"}),
                 metainfo.currencies(filter.withTender()));
     }
-
+   
     // Coverage-only test of the CurrencyMetaInfo class
-    @Test
     public void TestCurrencyMetaInfo() {
         CurrencyMetaInfo metainfo = CurrencyMetaInfo.getInstance();
         if (metainfo == null) {
             errln("Unable to get CurrencyMetaInfo instance.");
             return;
         }
-
+        
         if (!CurrencyMetaInfo.hasData()) {
             errln("hasData() should note return false.");
             return;
         }
-
+        
         CurrencyMetaInfo.CurrencyFilter filter;
         CurrencyMetaInfo.CurrencyInfo info;
         CurrencyMetaInfo.CurrencyDigits digits;
-
+        
         { // CurrencyFilter
             filter = CurrencyMetaInfo.CurrencyFilter.onCurrency("currency");
             CurrencyMetaInfo.CurrencyFilter filter2 = CurrencyMetaInfo.CurrencyFilter.onCurrency("test");
@@ -496,48 +450,48 @@ public class CurrencyTest extends TestFmwk {
                 errln("Unable to create CurrencyFilter.");
                 return;
             }
-
+            
             if (filter.equals(new Object())) {
                 errln("filter should not equal to Object");
                 return;
             }
-
+            
             if (filter.equals(filter2)) {
                 errln("filter should not equal filter2");
                 return;
             }
-
+            
             if (filter.hashCode() == 0) {
                 errln("Error getting filter hashcode");
                 return;
             }
-
+            
             if (filter.toString() == null) {
                 errln("Error calling toString()");
                 return;
             }
         }
-
+            
         { // CurrencyInfo
             info = new CurrencyMetaInfo.CurrencyInfo("region", "code", 0, 1, 1, false);
             if (info == null) {
                 errln("Error creating CurrencyInfo.");
                 return;
             }
-
+            
             if (info.toString() == null) {
                 errln("Error calling toString()");
                 return;
             }
         }
-
+        
         { // CurrencyDigits
             digits = metainfo.currencyDigits("isoCode");
             if (digits == null) {
                 errln("Unable to get CurrencyDigits.");
                 return;
             }
-
+            
             if (digits.toString() == null) {
                 errln("Error calling toString()");
                 return;
@@ -545,7 +499,6 @@ public class CurrencyTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestCurrencyKeyword() {
         ULocale locale = new ULocale("th_TH@collation=traditional;currency=QQQ");
         Currency currency = Currency.getInstance(locale);
@@ -555,7 +508,6 @@ public class CurrencyTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestAvailableCurrencyCodes() {
         String[][] tests = {
             { "eo_AM", "1950-01-05" },
@@ -575,11 +527,11 @@ public class CurrencyTest extends TestFmwk {
             { "eo_AO", "1969-12-31" },
             { "eo_DE@currency=DEM", "2000-12-23", "EUR", "DEM" },
             { "eo-DE-u-cu-dem", "2000-12-23", "EUR", "DEM" },
-            { "en_US", null, "USD", "USN" },
-            { "en_US_PREEURO", null, "USD", "USN" },
-            { "en_US_Q", null, "USD", "USN" },
+            { "en_US", null, "USD" },
+            { "en_US_PREEURO", null, "USD" },
+            { "en_US_Q", null, "USD" },
         };
-
+        
         DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         for (String[] test : tests) {
             ULocale locale = new ULocale(test[0]);
@@ -602,7 +554,7 @@ public class CurrencyTest extends TestFmwk {
                 System.arraycopy(test, 2, expected, 0, expected.length);
             }
             String[] actual = Currency.getAvailableCurrencyCodes(locale, date);
-
+            
             // Order is not important as of 4.4.  We never documented that it was.
             Set<String> expectedSet = new HashSet<String>();
             if (expected != null) {
@@ -613,41 +565,13 @@ public class CurrencyTest extends TestFmwk {
                 actualSet.addAll(Arrays.asList(actual));
             }
             assertEquals(locale + " on " + timeString, expectedSet, actualSet);
-
-            // With Java Locale
-            // Note: skip this test on Java 6 or older when keywords are available
-            if (locale.getKeywords() == null || TestUtil.getJavaVendor() == JavaVendor.Android || TestUtil.getJavaVersion() >= 7) {
-                Locale javaloc = locale.toLocale();
-                String[] actualWithJavaLocale = Currency.getAvailableCurrencyCodes(javaloc, date);
-                // should be exactly same with the ULocale version
-                boolean same = true;
-                if (actual == null) {
-                    if (actualWithJavaLocale != null) {
-                        same = false;
-                    }
-                } else {
-                    if (actualWithJavaLocale == null || actual.length != actualWithJavaLocale.length) {
-                        same = false;
-                    } else {
-                        same = true;
-                        for (int i = 0; i < actual.length; i++) {
-                            if (!actual[i].equals(actualWithJavaLocale[i])) {
-                                same = false;
-                                break;
-                            }
-                        }
-                    }
-                }
-                assertTrue("getAvailableCurrencyCodes with ULocale vs Locale", same);
-            }
         }
     }
 
-    @Test
     public void TestDeprecatedCurrencyFormat() {
         // bug 5952
         Locale locale = new Locale("sr", "QQ");
-        DecimalFormatSymbols icuSymbols = new
+        DecimalFormatSymbols icuSymbols = new 
         com.ibm.icu.text.DecimalFormatSymbols(locale);
         String symbol = icuSymbols.getCurrencySymbol();
         Currency currency = icuSymbols.getCurrency();
@@ -659,28 +583,24 @@ public class CurrencyTest extends TestFmwk {
             logln("for " + locale + " expected " + expectSym+"/"+expectCur + " and got " + symbol+"/"+currency);
         }
     }
-
-    @Test
+    
     public void TestGetKeywordValues(){
 
         final String[][] PREFERRED = {
             {"root",                 },
             {"und",                  },
-            {"und_ZZ",          "XAG", "XAU", "XBA", "XBB", "XBC", "XBD", "XDR", "XPD", "XPT", "XSU", "XTS", "XUA", "XXX"},
-            {"en_US",           "USD", "USN"},
+            {"und_ZZ",               },
+            {"en_US",           "USD"},
             {"en_029",               },
             {"en_TH",           "THB"},
             {"de",              "EUR"},
             {"de_DE",           "EUR"},
-            {"de_ZZ",           "XAG", "XAU", "XBA", "XBB", "XBC", "XBD", "XDR", "XPD", "XPT", "XSU", "XTS", "XUA", "XXX"},
+            {"de_ZZ",                },
             {"ar",              "EGP"},
             {"ar_PS",           "ILS", "JOD"},
-            {"en@currency=CAD",     "USD", "USN"},
+            {"en@currency=CAD",     "USD"},
             {"fr@currency=ZZZ",     "EUR"},
             {"de_DE@currency=DEM",  "EUR"},
-            {"en_US@rg=THZZZZ",     "THB"},
-            {"de@rg=USZZZZ",        "USD", "USN"},
-            {"en_US@currency=CAD;rg=THZZZZ",  "THB"},
         };
 
         String[] ALL = Currency.getKeywordValuesForLocale("currency", ULocale.getDefault(), false);
@@ -688,7 +608,7 @@ public class CurrencyTest extends TestFmwk {
         for (int i = 0; i < ALL.length; i++) {
             ALLSET.add(ALL[i]);
         }
-
+        
         for (int i = 0; i < PREFERRED.length; i++) {
             ULocale loc = new ULocale(PREFERRED[i][0]);
             String[] expected = new String[PREFERRED[i].length - 1];
@@ -697,7 +617,7 @@ public class CurrencyTest extends TestFmwk {
             assertEquals(loc.toString(), expected, pref);
 
             String[] all = Currency.getKeywordValuesForLocale("currency", loc, false);
-            // The items in the two collections should match (ignore order,
+            // The items in the two collections should match (ignore order, 
             // behavior change from 4.3.3)
             Set<String> returnedSet = new HashSet<String>();
             returnedSet.addAll(Arrays.asList(all));
@@ -705,7 +625,6 @@ public class CurrencyTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestIsAvailable() {
         Date d1995 = new Date(788918400000L);   // 1995-01-01 00:00 GMT
         Date d2000 = new Date(946684800000L);   // 2000-01-01 00:00 GMT
@@ -744,7 +663,6 @@ public class CurrencyTest extends TestFmwk {
     /**
      * Test case for getAvailableCurrencies()
      */
-    @Test
     public void TestGetAvailableCurrencies() {
         Set<Currency> avail1 = Currency.getAvailableCurrencies();
 
@@ -759,7 +677,6 @@ public class CurrencyTest extends TestFmwk {
     /**
      * Test case for getNumericCode()
      */
-    @Test
     public void TestGetNumericCode() {
         final Object[][] NUMCODE_TESTDATA = {
             {"USD", 840},
@@ -784,7 +701,6 @@ public class CurrencyTest extends TestFmwk {
     /**
      * Test case for getDisplayName()
      */
-    @Test
     public void TestGetDisplayName() {
         final String[][] DISPNAME_TESTDATA = {
             {"USD", "US Dollar"},
@@ -809,69 +725,8 @@ public class CurrencyTest extends TestFmwk {
             assertEquals("getDisplayName() for " + data[0] + " in locale " + root, data[0], cur.getDisplayName(root));
         }
     }
-
-    @Test
+    
     public void TestCurrencyInfoCtor() {
         new CurrencyMetaInfo.CurrencyInfo("region", "code", 0, 0, 1);
-    }
-
-    /**
-     * Class CurrencyMetaInfo has methods which are overwritten by its derived classes.
-     * A derived class is defined here for the purpose of testing these methods.
-     * Since the creator of CurrencyMetaInfo is defined as 'protected', no instance of
-     * this class can be created directly.
-     */
-    public class TestCurrencyMetaInfo extends CurrencyMetaInfo {
-    }
-
-    final TestCurrencyMetaInfo tcurrMetaInfo = new TestCurrencyMetaInfo();
-
-    /*
-     *
-     * Test methods of base class CurrencyMetaInfo. ICU4J only creates subclasses,
-     * never an instance of the base class.
-     */
-    @Test
-    public void TestCurrMetaInfoBaseClass() {
-        CurrencyFilter usFilter = CurrencyFilter.onRegion("US");
-
-        assertEquals("Empty list expected", 0, tcurrMetaInfo.currencyInfo(usFilter).size());
-        assertEquals("Empty list expected", 0, tcurrMetaInfo.currencies(usFilter).size());
-        assertEquals("Empty list expected", 0, tcurrMetaInfo.regions(usFilter).size());
-
-        assertEquals("Iso format for digits expected",
-                     "CurrencyDigits(fractionDigits='2',roundingIncrement='0')",
-                     tcurrMetaInfo.currencyDigits("isoCode").toString());
-    }
-
-    /**
-     * Test cases for rounding and fractions.
-     */
-    @Test
-    public void testGetDefaultFractionDigits_CurrencyUsage() {
-        Currency currency = Currency.getInstance(ULocale.CHINA);
-        int cashFractionDigits = currency.getDefaultFractionDigits(Currency.CurrencyUsage.CASH);
-        assertEquals("number of digits in fraction incorrect", 2, cashFractionDigits);
-    }
-
-    @Test
-    public void testGetRoundingIncrement() {
-        Currency currency = Currency.getInstance(ULocale.JAPAN);
-        // It appears as though this always returns 0 irrespective of the currency.
-        double roundingIncrement = currency.getRoundingIncrement();
-        assertEquals("Rounding increment not zero", 0.0, roundingIncrement, 0.0);
-    }
-    @Test
-    public void testGetRoundingIncrement_CurrencyUsage() {
-        Currency currency = Currency.getInstance(ULocale.JAPAN);
-        // It appears as though this always returns 0 irrespective of the currency or usage.
-        double roundingIncrement = currency.getRoundingIncrement(Currency.CurrencyUsage.CASH);
-        // TODO: replace the JUnit import with TestFmwk assertEquals.
-        assertEquals("Rounding increment not zero", 0.0, roundingIncrement, 0.0);
-    }
-
-    @Test
-    public void TestCurrencyDataCtor() throws Exception {
-        checkDefaultPrivateConstructor(CurrencyData.class);
     }
 }

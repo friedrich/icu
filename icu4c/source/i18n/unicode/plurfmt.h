@@ -1,13 +1,15 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2007-2014, International Business Machines Corporation and
+* Copyright (C) 2007-2013, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 *
 
 * File PLURFMT.H
+*
+* Modification History:*
+*   Date        Name        Description
+*
 ********************************************************************************
 */
 
@@ -30,7 +32,6 @@
 U_NAMESPACE_BEGIN
 
 class Hashtable;
-class NFRule;
 
 /**
  * <p>
@@ -188,14 +189,10 @@ public:
      * @param status  output param set to success/failure code on exit, which
      *                must not indicate a failure before the function call.
      * @stable ICU 4.0
-	 * <p>
-	 * <h4>Sample code</h4>
-	 * \snippet samples/plurfmtsample/plurfmtsample.cpp PluralFormatExample1
-	 * \snippet samples/plurfmtsample/plurfmtsample.cpp PluralFormatExample
-	 * <p>
      */
     PluralFormat(const Locale& locale, const PluralRules& rules, UErrorCode& status);
 
+#ifndef U_HIDE_DRAFT_API
     /**
      * Creates a new <code>PluralFormat</code> for the plural type.
      * The standard number formatting will be done using the given locale.
@@ -204,9 +201,10 @@ public:
      * @param type    The plural type (e.g., cardinal or ordinal).
      * @param status  output param set to success/failure code on exit, which
      *                must not indicate a failure before the function call.
-     * @stable ICU 50
+     * @draft ICU 50
      */
     PluralFormat(const Locale& locale, UPluralType type, UErrorCode& status);
+#endif /* U_HIDE_DRAFT_API */
 
     /**
      * Creates a new cardinal-number <code>PluralFormat</code> for a given pattern string.
@@ -270,6 +268,7 @@ public:
                  const UnicodeString& pattern,
                  UErrorCode& status);
 
+#ifndef U_HIDE_DRAFT_API
     /**
      * Creates a new <code>PluralFormat</code> for a plural type, a
      * pattern and a locale.
@@ -281,12 +280,13 @@ public:
      *                errors are returned to status if the pattern is invalid.
      * @param status  output param set to success/failure code on exit, which
      *                must not indicate a failure before the function call.
-     * @stable ICU 50
+     * @draft ICU 50
      */
     PluralFormat(const Locale& locale,
                  UPluralType type,
                  const UnicodeString& pattern,
                  UErrorCode& status);
+#endif /* U_HIDE_DRAFT_API */
 
     /**
       * copy constructor.
@@ -450,12 +450,10 @@ public:
      */
     virtual Format* clone(void) const;
 
-   /**
-    * Formats a plural message for a number taken from a Formattable object.
+    /**
+    * Redeclared Format method.
     *
-    * @param obj       The object containing a number for which the 
-    *                  plural message should be formatted.
-    *                  The object must be of a numeric type.
+    * @param obj       The object to be formatted into a string.
     * @param appendTo  output parameter to receive result.
     *                  Result is appended to existing contents.
     * @param pos       On input: an alignment field, if desired.
@@ -530,7 +528,7 @@ public:
 private:
 #endif
      /**
-      * @internal
+      * @internal 
       */
     class U_I18N_API PluralSelector : public UMemory {
       public:
@@ -538,13 +536,11 @@ private:
         /**
          * Given a number, returns the appropriate PluralFormat keyword.
          *
-         * @param context worker object for the selector.
          * @param number The number to be plural-formatted.
          * @param ec Error code.
          * @return The selected PluralFormat keyword.
-         * @internal
          */
-        virtual UnicodeString select(void *context, double number, UErrorCode& ec) const = 0;
+        virtual UnicodeString select(double number, UErrorCode& ec) const = 0;
     };
 
     /**
@@ -557,7 +553,7 @@ private:
 
         virtual ~PluralSelectorAdapter();
 
-        virtual UnicodeString select(void *context, double number, UErrorCode& /*ec*/) const; /**< @internal */
+        virtual UnicodeString select(double number, UErrorCode& /*ec*/) const;
 
         void reset();
 
@@ -582,17 +578,11 @@ private:
      */
     void copyObjects(const PluralFormat& other);
 
-    UnicodeString& format(const Formattable& numberObject, double number,
-                          UnicodeString& appendTo,
-                          FieldPosition& pos,
-                          UErrorCode& status) const; /**< @internal */
-
     /**
      * Finds the PluralFormat sub-message for the given number, or the "other" sub-message.
      * @param pattern A MessagePattern.
      * @param partIndex the index of the first PluralFormat argument style part.
      * @param selector the PluralSelector for mapping the number (minus offset) to a keyword.
-     * @param context worker object for the selector.
      * @param number a number to be matched to one of the PluralFormat argument's explicit values,
      *        or mapped via the PluralSelector.
      * @param ec ICU error code.
@@ -600,13 +590,9 @@ private:
      */
     static int32_t findSubMessage(
          const MessagePattern& pattern, int32_t partIndex,
-         const PluralSelector& selector, void *context, double number, UErrorCode& ec); /**< @internal */
-
-    void parseType(const UnicodeString& source, const NFRule *rbnfLenientScanner,
-        Formattable& result, FieldPosition& pos) const;
+         const PluralSelector& selector, double number, UErrorCode& ec);
 
     friend class MessageFormat;
-    friend class NFRule;
 };
 
 U_NAMESPACE_END

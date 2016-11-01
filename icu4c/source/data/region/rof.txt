@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/rof.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/rof.xml
+ */
 rof{
     Countries{
         AD{"Andoro"}
@@ -9,6 +18,7 @@ rof{
         AI{"Anguila"}
         AL{"Albania"}
         AM{"Amenia"}
+        AN{"Antili za Uholanzi"}
         AO{"Angolo"}
         AR{"Ajentina"}
         AS{"Samoa ya Marekani"}
@@ -227,5 +237,5 @@ rof{
         ZM{"Zambia"}
         ZW{"Zimbabwe"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.82.45"}
 }

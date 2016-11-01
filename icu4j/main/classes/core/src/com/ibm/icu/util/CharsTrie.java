@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2011-2014, International Business Machines
+*   Copyright (C) 2011-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 *   created on: 2011jan06
@@ -385,7 +383,6 @@ public final class CharsTrie implements Cloneable, Iterable<CharsTrie.Entry> {
      * @return A new CharsTrie.Iterator.
      * @stable ICU 4.8
      */
-    @Override
     public Iterator iterator() {
         return new Iterator(chars_, pos_, remainingMatchLength_, 0);
     }
@@ -481,7 +478,6 @@ public final class CharsTrie implements Cloneable, Iterable<CharsTrie.Entry> {
          * @return true if there are more elements.
          * @stable ICU 4.8
          */
-        @Override
         public boolean hasNext() /*const*/ { return pos_>=0 || !stack_.isEmpty(); }
 
         /**
@@ -495,7 +491,6 @@ public final class CharsTrie implements Cloneable, Iterable<CharsTrie.Entry> {
          * @throws NoSuchElementException - iteration has no more elements.
          * @stable ICU 4.8
          */
-        @Override
         public Entry next() {
             int pos=pos_;
             if(pos<0) {
@@ -581,7 +576,6 @@ public final class CharsTrie implements Cloneable, Iterable<CharsTrie.Entry> {
          * @throws UnsupportedOperationException (always)
          * @stable ICU 4.8
          */
-        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -926,7 +920,7 @@ public final class CharsTrie implements Cloneable, Iterable<CharsTrie.Entry> {
         try {
             out.append((char)c);
         } catch(IOException e) {
-            throw new ICUUncheckedIOException(e);
+            throw new RuntimeException(e);
         }
     }
 

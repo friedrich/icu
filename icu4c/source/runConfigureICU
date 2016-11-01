@@ -1,7 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2016 and later: Unicode, Inc. and others.
-# License & terms of use: http://www.unicode.org/copyright.html
-# Copyright (c) 1999-2015, International Business Machines Corporation and
+# Copyright (c) 1999-2012, International Business Machines Corporation and
 # others. All Rights Reserved.
 
 # runConfigureICU: This script will run the "configure" script for the appropriate platform
@@ -42,7 +40,7 @@ The following names can be supplied as the argument for platform:
     Cygwin/MSVC         Use the Microsoft Visual C++ compiler on Cygwin
     Cygwin/MSVC2005     Use the Microsoft Visual C++ 2005 compiler on Cygwin
     Cygwin/ICL          Use the Intel C++ compiler on Cygwin
-    FreeBSD             Use the clang/clang++ or GNU gcc/g++ compilers on FreeBSD
+    FreeBSD             Use the GNU gcc/g++ compilers on Free BSD
     HP-UX/ACC           Use the HP ANSI C/Advanced C++ compilers on HP-UX 11
     IBMi                Use the iCC compilers on IBM i, i5/OS, OS/400
     Linux               Use the clang/clang++ or GNU gcc/g++ compilers on Linux
@@ -50,10 +48,8 @@ The following names can be supplied as the argument for platform:
     Linux/ECC           Use the Intel ECC compiler on Linux
     Linux/ICC           Use the Intel ICC compiler on Linux
     Linux/VA            Use the IBM Visual Age compiler on Power PC Linux
-    MacOSX              Use the default compilers on MacOS X (Darwin)
-    MacOSX/GCC          Use the GNU gcc/g++ compilers on MacOSX (Darwin)
+    MacOSX              Use the GNU gcc/g++ compilers on MacOS X (Darwin)
     MinGW               Use the GNU gcc/g++ compilers on MinGW
-    MSYS/MSVC           Use the Microsoft Visual C++ computer on MSYS
     QNX                 Use the QNX QCC compiler on QNX/Neutrino
     Solaris             Use the Sun cc/CC compilers on Solaris
     Solaris/GCC         Use the GNU gcc/g++ compilers on Solaris
@@ -263,11 +259,11 @@ case $platform in
         THE_COMP="Microsoft Visual C++"
         CC=cl; export CC
         CXX=cl; export CXX
-        RELEASE_CFLAGS='-Gy -MD'
-        RELEASE_CXXFLAGS='-Gy -MD'
-        DEBUG_CFLAGS='-Zi -MDd'
-        DEBUG_CXXFLAGS='-Zi -MDd'
-        DEBUG_LDFLAGS='-DEBUG'
+        RELEASE_CFLAGS='/Gy /MD'
+        RELEASE_CXXFLAGS='/Gy /MD'
+        DEBUG_CFLAGS='/Zi /MDd'
+        DEBUG_CXXFLAGS='/Zi /MDd'
+        DEBUG_LDFLAGS='/DEBUG'
         ;;
     Cygwin/MSVC2005)
         THE_OS="Windows with Cygwin"
@@ -294,44 +290,23 @@ case $platform in
         ;;
     MacOSX)
         THE_OS="MacOS X (Darwin)"
-        THE_COMP="the default"
-        RELEASE_CFLAGS='-O2'
-        RELEASE_CXXFLAGS='-O2'
-        DEBUG_CFLAGS='-g -O0'
-        DEBUG_CXXFLAGS='-g -O0'
-        ;;
-    MacOSX/GCC)
-        THE_OS="MacOS X (Darwin)"
         THE_COMP="the GNU C++"
         RELEASE_CFLAGS='-O2'
         RELEASE_CXXFLAGS='-O2'
         DEBUG_CFLAGS='-g -O0'
         DEBUG_CXXFLAGS='-g -O0'
-        CC=gcc; export CC
-        CXX=g++; export CXX
         ;;
     MinGW)
         THE_OS="MinGW"
         THE_COMP="the GNU C++"
         RELEASE_CFLAGS='-O3'
         RELEASE_CXXFLAGS='-O3'
-        CXXFLAGS="--std=c++03"
-        export CXXFLAGS
-        ;;
-    MSYS/MSVC)
-        THE_OS="MSYS"
-        THE_COMP="Microsoft Visual C++"
-        CC=cl; export CC
-        CXX=cl; export CXX
-        RELEASE_CFLAGS='-Gy -MD'
-        RELEASE_CXXFLAGS='-Gy -MD'
-        DEBUG_CFLAGS='-Zi -MDd'
-        DEBUG_CXXFLAGS='-Zi -MDd'
-        DEBUG_LDFLAGS='-DEBUG'
         ;;
     *BSD)
         THE_OS="BSD"
         THE_COMP="the GNU C++"
+        CC=gcc; export CC
+        CXX=g++; export CXX
         DEBUG_CFLAGS='-g -O0'
         DEBUG_CXXFLAGS='-g -O0'
         ;;
@@ -388,7 +363,7 @@ then
     fi
     if test "$RELEASE_CFLAGS" != ""
     then
-        CFLAGS="$RELEASE_CFLAGS $CFLAGS"
+        CFLAGS="$CFLAGS $RELEASE_CFLAGS"
     fi
     if test "$RELEASE_CXXFLAGS" = ""
     then
@@ -400,11 +375,11 @@ then
     fi
     if test "$RELEASE_CXXFLAGS" != ""
     then
-        CXXFLAGS="$RELEASE_CXXFLAGS $CXXFLAGS"
+        CXXFLAGS="$CXXFLAGS $RELEASE_CXXFLAGS"
     fi
     if test "$RELEASE_LDFLAGS" != ""
     then
-        LDFLAGS="$RELEASE_LDFLAGS $LDFLAGS"
+        LDFLAGS="$LDFLAGS $RELEASE_LDFLAGS"
     fi
 fi
 
@@ -412,15 +387,15 @@ if test $debug -eq 1
 then
     if test "$DEBUG_CFLAGS" != ""
     then
-        CFLAGS="$DEBUG_CFLAGS $CFLAGS"
+        CFLAGS="$CFLAGS $DEBUG_CFLAGS"
     fi
     if test "$DEBUG_CXXFLAGS" != ""
     then
-        CXXFLAGS="$DEBUG_CXXFLAGS $CXXFLAGS"
+        CXXFLAGS="$CXXFLAGS $DEBUG_CXXFLAGS"
     fi
     if test "$DEBUG_LDFLAGS" != ""
     then
-        LDFLAGS="$DEBUG_LDFLAGS $LDFLAGS"
+        LDFLAGS="$LDFLAGS $DEBUG_LDFLAGS"
     fi
 fi
 

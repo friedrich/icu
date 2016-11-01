@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 1996-2013, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 
@@ -146,30 +144,6 @@ public final class VersionInfo implements Comparable<VersionInfo>
     public static final VersionInfo UNICODE_6_2;
 
     /**
-     * Unicode 6.3 version
-     * @stable ICU 52
-     */
-    public static final VersionInfo UNICODE_6_3;
-
-    /**
-     * Unicode 7.0 version
-     * @stable ICU 54
-     */
-    public static final VersionInfo UNICODE_7_0;
-
-    /**
-     * Unicode 8.0 version
-     * @stable ICU 56
-     */
-    public static final VersionInfo UNICODE_8_0;
-
-    /**
-     * Unicode 9.0 version
-     * @stable ICU 58
-     */
-    public static final VersionInfo UNICODE_9_0;
-
-    /**
      * ICU4J current release version
      * @stable ICU 2.8
      */
@@ -181,15 +155,13 @@ public final class VersionInfo implements Comparable<VersionInfo>
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
-    public static final String ICU_DATA_VERSION_PATH = "58b";
-
+    public static final String ICU_DATA_VERSION_PATH = "51b";
+    
     /**
      * Data version in ICU4J.
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static final VersionInfo ICU_DATA_VERSION;
 
     /**
@@ -210,12 +182,10 @@ public final class VersionInfo implements Comparable<VersionInfo>
     public static final VersionInfo UCOL_BUILDER_VERSION;
 
     /**
-     * Constant version 1.
-     * This was intended to be the version of collation tailorings,
-     * but instead the tailoring data carries a version number.
-     * @deprecated ICU 54
+     * This is the version of collation tailorings.
+     * This value may change in subsequent releases of ICU.
+     * @stable ICU 2.8
      */
-    @Deprecated
     public static final VersionInfo UCOL_TAILORINGS_VERSION;
 
 
@@ -226,7 +196,7 @@ public final class VersionInfo implements Comparable<VersionInfo>
      * @param version version String in the format of "major.minor.milli.micro"
      *                or "major.minor.milli" or "major.minor" or "major",
      *                where major, minor, milli, micro are non-negative numbers
-     *                &lt;= 255. If the trailing version numbers are
+     *                <= 255. If the trailing version numbers are
      *                not specified they are taken as 0s. E.g. Version "3.1" is
      *                equivalent to "3.1.0.0".
      * @return an instance of VersionInfo with the argument version.
@@ -271,11 +241,11 @@ public final class VersionInfo implements Comparable<VersionInfo>
 
     /**
      * Returns an instance of VersionInfo with the argument version.
-     * @param major major version, non-negative number &lt;= 255.
-     * @param minor minor version, non-negative number &lt;= 255.
-     * @param milli milli version, non-negative number &lt;= 255.
-     * @param micro micro version, non-negative number &lt;= 255.
-     * @exception IllegalArgumentException when either arguments are negative or &gt; 255
+     * @param major major version, non-negative number <= 255.
+     * @param minor minor version, non-negative number <= 255.
+     * @param milli milli version, non-negative number <= 255.
+     * @param micro micro version, non-negative number <= 255.
+     * @exception IllegalArgumentException when either arguments are negative or > 255
      * @stable ICU 2.6
      */
     public static VersionInfo getInstance(int major, int minor, int milli,
@@ -303,11 +273,11 @@ public final class VersionInfo implements Comparable<VersionInfo>
     /**
      * Returns an instance of VersionInfo with the argument version.
      * Equivalent to getInstance(major, minor, milli, 0).
-     * @param major major version, non-negative number &lt;= 255.
-     * @param minor minor version, non-negative number &lt;= 255.
-     * @param milli milli version, non-negative number &lt;= 255.
+     * @param major major version, non-negative number <= 255.
+     * @param minor minor version, non-negative number <= 255.
+     * @param milli milli version, non-negative number <= 255.
      * @exception IllegalArgumentException when either arguments are
-     *                                     negative or &gt; 255
+     *                                     negative or > 255
      * @stable ICU 2.6
      */
     public static VersionInfo getInstance(int major, int minor, int milli)
@@ -318,10 +288,10 @@ public final class VersionInfo implements Comparable<VersionInfo>
     /**
      * Returns an instance of VersionInfo with the argument version.
      * Equivalent to getInstance(major, minor, 0, 0).
-     * @param major major version, non-negative number &lt;= 255.
-     * @param minor minor version, non-negative number &lt;= 255.
+     * @param major major version, non-negative number <= 255.
+     * @param minor minor version, non-negative number <= 255.
      * @exception IllegalArgumentException when either arguments are
-     *                                     negative or &gt; 255
+     *                                     negative or > 255
      * @stable ICU 2.6
      */
     public static VersionInfo getInstance(int major, int minor)
@@ -332,9 +302,9 @@ public final class VersionInfo implements Comparable<VersionInfo>
     /**
      * Returns an instance of VersionInfo with the argument version.
      * Equivalent to getInstance(major, 0, 0, 0).
-     * @param major major version, non-negative number &lt;= 255.
+     * @param major major version, non-negative number <= 255.
      * @exception IllegalArgumentException when either arguments are
-     *                                     negative or &gt; 255
+     *                                     negative or > 255
      * @stable ICU 2.6
      */
     public static VersionInfo getInstance(int major)
@@ -348,7 +318,6 @@ public final class VersionInfo implements Comparable<VersionInfo>
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static VersionInfo javaVersion() {
         if (javaVersion == null) {
             synchronized(VersionInfo.class) {
@@ -398,7 +367,6 @@ public final class VersionInfo implements Comparable<VersionInfo>
      * @return String representative of VersionInfo
      * @stable ICU 2.6
      */
-    @Override
     public String toString()
     {
         StringBuilder result = new StringBuilder(7);
@@ -459,22 +427,9 @@ public final class VersionInfo implements Comparable<VersionInfo>
      *         false otherwise
      * @stable ICU 2.6
      */
-    @Override
     public boolean equals(Object other)
     {
         return other == this;
-    }
-
-    /**
-     * Returns the hash code value for this set.
-     *
-     * @return the hash code value for this set.
-     * @see java.lang.Object#hashCode()
-     * @stable ICU 58
-     */
-    @Override
-    public int hashCode() {
-        return m_version_;
     }
 
     /**
@@ -488,7 +443,6 @@ public final class VersionInfo implements Comparable<VersionInfo>
      *           has version information less than this object.
      * @stable ICU 2.6
      */
-    @Override
     public int compareTo(VersionInfo other)
     {
         return m_version_ - other.m_version_;
@@ -497,11 +451,7 @@ public final class VersionInfo implements Comparable<VersionInfo>
     // private data members ----------------------------------------------
 
     /**
-     * Unicode data version used by the current release.
-     * Defined here privately for printing by the main() method in this class.
-     * Should be the same as {@link com.ibm.icu.lang.UCharacter#getUnicodeVersion()}
-     * which gets the version number from a data file.
-     * We do not want VersionInfo to have an import dependency on UCharacter.
+     * Unicode data version used by the current release
      */
     private static final VersionInfo UNICODE_VERSION;
 
@@ -555,17 +505,13 @@ public final class VersionInfo implements Comparable<VersionInfo>
         UNICODE_6_0   = getInstance(6, 0, 0, 0);
         UNICODE_6_1   = getInstance(6, 1, 0, 0);
         UNICODE_6_2   = getInstance(6, 2, 0, 0);
-        UNICODE_6_3   = getInstance(6, 3, 0, 0);
-        UNICODE_7_0   = getInstance(7, 0, 0, 0);
-        UNICODE_8_0   = getInstance(8, 0, 0, 0);
-        UNICODE_9_0   = getInstance(9, 0, 0, 0);
 
-        ICU_VERSION   = getInstance(58, 1, 0, 0);
-        ICU_DATA_VERSION = getInstance(58, 1, 0, 0);
-        UNICODE_VERSION = UNICODE_9_0;
+        ICU_VERSION   = getInstance(51, 2, 0, 0);
+        ICU_DATA_VERSION = getInstance(51, 2, 0, 0);
+        UNICODE_VERSION = UNICODE_6_2;
 
-        UCOL_RUNTIME_VERSION = getInstance(9);
-        UCOL_BUILDER_VERSION = getInstance(9);
+        UCOL_RUNTIME_VERSION = getInstance(7);
+        UCOL_BUILDER_VERSION = getInstance(8);
         UCOL_TAILORINGS_VERSION = getInstance(1);
     }
 
@@ -583,9 +529,9 @@ public final class VersionInfo implements Comparable<VersionInfo>
     /**
      * Gets the int from the version numbers
      * @param major non-negative version number
-     * @param minor non-negative version number
-     * @param milli non-negative version number
-     * @param micro non-negative version number
+     * @param minor non-negativeversion number
+     * @param milli non-negativeversion number
+     * @param micro non-negativeversion number
      */
     private static int getInt(int major, int minor, int milli, int micro)
     {
@@ -629,7 +575,7 @@ public final class VersionInfo implements Comparable<VersionInfo>
         System.out.println("Implementation Version: " + ICU_VERSION.getVersionString(2, 4));
         System.out.println("Unicode Data Version:   " + UNICODE_VERSION.getVersionString(2, 4));
         System.out.println("CLDR Data Version:      " + LocaleData.getCLDRVersion().getVersionString(2, 4));
-        System.out.println("Time Zone Data Version: " + getTZDataVersion());
+        System.out.println("Time Zone Data Version: " + TimeZone.getTZDataVersion());
     }
 
     /**
@@ -639,11 +585,8 @@ public final class VersionInfo implements Comparable<VersionInfo>
      * @param minDigits Minimum number of version digits
      * @param maxDigits Maximum number of version digits
      * @return A tailored version string
-     * @internal
-     * @deprecated This API is ICU internal only. (For use in CLDR, etc.)
      */
-    @Deprecated
-    public String getVersionString(int minDigits, int maxDigits) {
+    private String getVersionString(int minDigits, int maxDigits) {
         if (minDigits < 1 || maxDigits < 1
                 || minDigits > 4 || maxDigits > 4 || minDigits > maxDigits) {
             throw new IllegalArgumentException("Invalid min/maxDigits range");
@@ -673,21 +616,4 @@ public final class VersionInfo implements Comparable<VersionInfo>
         return verStr.toString();
     }
     ///CLOVER:ON
-
-
-    // Moved from TimeZone class
-    private static volatile String TZDATA_VERSION = null;
-
-    static String getTZDataVersion() {
-        if (TZDATA_VERSION == null) {
-            synchronized (VersionInfo.class) {
-                if (TZDATA_VERSION == null) {
-                    UResourceBundle tzbundle = UResourceBundle.getBundleInstance("com/ibm/icu/impl/data/icudt"
-                            + VersionInfo.ICU_DATA_VERSION_PATH, "zoneinfo64");
-                    TZDATA_VERSION = tzbundle.getString("TZVersion");
-                }
-            }
-        }
-        return TZDATA_VERSION;
-    }
 }

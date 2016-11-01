@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
-* Copyright (C) 1996-2016, International Business Machines Corporation and
+* Copyright (C) 1996-2013, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 */
@@ -11,8 +9,6 @@ package com.ibm.icu.dev.test.lang;
 
 import java.util.BitSet;
 import java.util.Locale;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.lang.UProperty;
@@ -30,25 +26,9 @@ public class TestUScript extends TestFmwk {
     {
     }
 
-    private static String scriptsToString(int[] scripts) {
-        if(scripts == null) {
-            return "null";
-        }
-        StringBuilder sb = new StringBuilder();
-        for(int script : scripts) {
-            if(sb.length() > 0) {
-                sb.append(' ');
-            }
-            sb.append(UScript.getShortName(script));
-        }
-        return sb.toString();
+    public static void main(String[] args) throws Exception {
+        new TestUScript().run(args);
     }
-
-    private void assertEqualScripts(String msg, int[] expectedScripts, int[] actualScripts) {
-        assertEquals(msg, scriptsToString(expectedScripts), scriptsToString(actualScripts));
-    }
-
-    @Test
     public void TestLocaleGetCode(){
         final ULocale[] testNames={
         /* test locale */
@@ -93,58 +73,31 @@ public class TestUScript extends TestFmwk {
         
         // 
         ULocale defaultLoc = ULocale.getDefault(); 
-        ULocale esperanto = new ULocale("eo_DE");
-        ULocale.setDefault(esperanto);
-        int[] code = UScript.getCode(esperanto); 
+        ULocale esparanto = new ULocale("eo_DE");
+        ULocale.setDefault(esparanto);
+        int[] code = UScript.getCode(esparanto); 
         if(code != null){
             if( code[0] != UScript.LATIN){
-                errln("Did not get the expected script code for Esperanto");
+                errln("Did not get the expected script code for Esparanto");
             }
         }else{
             warnln("Could not load the locale data.");
         }
         ULocale.setDefault(defaultLoc);
-
-        // Should work regardless of whether we have locale data for the language.
-        assertEqualScripts("tg script: Cyrl",  // Tajik
-                new int[] { UScript.CYRILLIC },
-                UScript.getCode(new ULocale("tg")));
-        assertEqualScripts("xsr script: Deva",  // Sherpa
-                new int[] { UScript.DEVANAGARI },
-                UScript.getCode(new ULocale("xsr")));
-
-        // Multi-script languages.
-        assertEqualScripts("ja scripts: Kana Hira Hani",
-                new int[] { UScript.KATAKANA, UScript.HIRAGANA, UScript.HAN },
-                UScript.getCode(ULocale.JAPANESE));
-        assertEqualScripts("ko scripts: Hang Hani",
-                new int[] { UScript.HANGUL, UScript.HAN },
-                UScript.getCode(ULocale.KOREAN));
-        assertEqualScripts("zh script: Hani",
-                new int[] { UScript.HAN },
-                UScript.getCode(ULocale.CHINESE));
-        assertEqualScripts("zh-Hant scripts: Hani Bopo",
-                new int[] { UScript.HAN, UScript.BOPOMOFO },
-                UScript.getCode(ULocale.TRADITIONAL_CHINESE));
-        assertEqualScripts("zh-TW scripts: Hani Bopo",
-                new int[] { UScript.HAN, UScript.BOPOMOFO },
-                UScript.getCode(ULocale.TAIWAN));
-
-        // Ambiguous API, but this probably wants to return Latin rather than Rongorongo (Roro).
-        assertEqualScripts("ro-RO script: Latn",
-                new int[] { UScript.LATIN },
-                UScript.getCode("ro-RO"));  // String not ULocale
     }
 
-    // TODO(junit): remove this and convert the tests that use this to be parameterized
     private void reportDataErrors(int numErrors) {
         if (numErrors >0) {
             // assume missing locale data, so not an error, just a warning
-            errln("encountered " + numErrors + " errors.");
+            if (isModularBuild() || noData()) {
+                // if nodata is set don't even warn
+                warnln("Could not find locale data");
+            } else {
+                errln("encountered " + numErrors + " errors.");
+            }
         }
     }
 
-    @Test
     public void TestMultipleCode(){
         final String[] testNames = { "ja" ,"ko_KR","zh","zh_TW"};
         final int[][] expected = {
@@ -199,7 +152,6 @@ public class TestUScript extends TestFmwk {
         reportDataErrors(numErrors);                 
     }
 
-    @Test
     public void TestGetCode(){
 
         final String[] testNames={
@@ -266,7 +218,6 @@ public class TestUScript extends TestFmwk {
         reportDataErrors(numErrors);
     }
 
-    @Test
     public void TestGetName(){
 
         final int[] testCodes={
@@ -296,7 +247,6 @@ public class TestUScript extends TestFmwk {
         }
 
     }
-    @Test
     public void TestGetShortName(){
         final int[] testCodes={
             /* abbr should return */
@@ -327,7 +277,6 @@ public class TestUScript extends TestFmwk {
             warnln("encountered " + numErrors + " errors in UScript.getShortName()");
         }
     }
-    @Test
     public void TestGetScript(){
         int codepoints[][] = new int[][] {
                 {0x0000FF9D, UScript.KATAKANA },
@@ -374,7 +323,6 @@ public class TestUScript extends TestFmwk {
         }
     }
 
-    @Test
     public void TestGetScriptOfCharsWithScriptExtensions() {
         /* test characters which have Script_Extensions */
         if(!(
@@ -386,7 +334,6 @@ public class TestUScript extends TestFmwk {
         }
     }
 
-    @Test
     public void TestHasScript() {
         if(!(
             !UScript.hasScript(0x063f, UScript.COMMON) &&
@@ -434,7 +381,6 @@ public class TestUScript extends TestFmwk {
         }
     }
 
-    @Test
     public void TestGetScriptExtensions() {
         BitSet scripts=new BitSet(UScript.CODE_LIMIT);
 
@@ -453,7 +399,7 @@ public class TestUScript extends TestFmwk {
                 !scripts.get(UScript.ARABIC)) {
             errln("UScript.getScriptExtensions(U+063F) is not {ARABIC}");
         }
-        if(UScript.getScriptExtensions(0x0640, scripts)>-3 || scripts.cardinality()<3 ||
+        if(UScript.getScriptExtensions(0x0640, scripts)!=-3 || scripts.cardinality()!=3 ||
            !scripts.get(UScript.ARABIC) || !scripts.get(UScript.SYRIAC) || !scripts.get(UScript.MANDAIC)
         ) {
             errln("UScript.getScriptExtensions(U+0640) failed");
@@ -468,7 +414,6 @@ public class TestUScript extends TestFmwk {
         }
     }
 
-    @Test
     public void TestScriptMetadataAPI() {
         /* API & code coverage. */
         String sample = UScript.getSampleString(UScript.LATIN);
@@ -517,23 +462,18 @@ public class TestUScript extends TestFmwk {
      */
     private static final int getCharScript(int script) {
         switch(script) {
-        case UScript.HAN_WITH_BOPOMOFO:
         case UScript.SIMPLIFIED_HAN:
         case UScript.TRADITIONAL_HAN:
             return UScript.HAN;
         case UScript.JAPANESE:
             return UScript.HIRAGANA;
-        case UScript.JAMO:
         case UScript.KOREAN:
             return UScript.HANGUL;
-        case UScript.SYMBOLS_EMOJI:
-            return UScript.SYMBOLS;
         default:
             return script;
         }
     }
 
-    @Test
     public void TestScriptMetadata() {
         UnicodeSet rtl = new UnicodeSet("[[:bc=R:][:bc=AL:]-[:Cn:]-[:sc=Common:]]");
         // So far, sample characters are uppercase.
@@ -576,7 +516,6 @@ public class TestUScript extends TestFmwk {
         assertFalse("Latn does not break between letters", UScript.breaksBetweenLetters(UScript.LATIN));
     }
 
-    @Test
     public void TestScriptNames(){
         for(int i=0; i<UScript.CODE_LIMIT;i++){
             String name = UScript.getName(i);
@@ -589,7 +528,6 @@ public class TestUScript extends TestFmwk {
             }
         }
     }
-    @Test
     public void TestAllCodepoints(){
         int code;
         //String oldId="";
@@ -610,7 +548,6 @@ public class TestUScript extends TestFmwk {
           }
         }
     }
-    @Test
     public void TestNewCode(){
         /*
          * These script codes were originally added to ICU pre-3.6, so that ICU would
@@ -621,52 +558,42 @@ public class TestUScript extends TestFmwk {
          * Whenever this happens, the long script names here need to be updated.
          */
         String[] expectedLong = new String[]{
-            "Balinese", "Batak", "Blis", "Brahmi", "Cham", "Cirt", "Cyrs",
-            "Egyd", "Egyh", "Egyptian_Hieroglyphs",
-            "Geok", "Hans", "Hant", "Pahawh_Hmong", "Old_Hungarian", "Inds",
-            "Javanese", "Kayah_Li", "Latf", "Latg",
-            "Lepcha", "Linear_A", "Mandaic", "Maya", "Meroitic_Hieroglyphs",
-            "Nko", "Old_Turkic", "Old_Permic", "Phags_Pa", "Phoenician", 
+            "Balinese", "Batak", "Blis", "Brahmi", "Cham", "Cirt", "Cyrs", "Egyd", "Egyh", "Egyptian_Hieroglyphs", 
+            "Geok", "Hans", "Hant", "Hmng", "Hung", "Inds", "Javanese", "Kayah_Li", "Latf", "Latg", 
+            "Lepcha", "Lina", "Mandaic", "Maya", "Meroitic_Hieroglyphs", "Nko", "Old_Turkic", "Perm", "Phags_Pa", "Phoenician", 
             "Miao", "Roro", "Sara", "Syre", "Syrj", "Syrn", "Teng", "Vai", "Visp", "Cuneiform", 
             "Zxxx", "Unknown",
-            "Carian", "Jpan", "Tai_Tham", "Lycian", "Lydian", "Ol_Chiki", "Rejang", "Saurashtra", "SignWriting", "Sundanese",
+            "Carian", "Jpan", "Tai_Tham", "Lycian", "Lydian", "Ol_Chiki", "Rejang", "Saurashtra", "Sgnw", "Sundanese",
             "Moon", "Meetei_Mayek",
-            /* new in ICU 4.0 */
+
+            // ICU 4.0
             "Imperial_Aramaic", "Avestan", "Chakma", "Kore",
-            "Kaithi", "Manichaean", "Inscriptional_Pahlavi", "Psalter_Pahlavi", "Phlv",
-            "Inscriptional_Parthian", "Samaritan", "Tai_Viet",
+            "Kaithi", "Mani", "Inscriptional_Pahlavi", "Phlp", "Phlv", "Inscriptional_Parthian", "Samaritan", "Tai_Viet",
             "Zmth", "Zsym",
             /* new in ICU 4.4 */
             "Bamum", "Lisu", "Nkgb", "Old_South_Arabian",
             /* new in ICU 4.6 */
-            "Bassa_Vah", "Duployan", "Elbasan", "Grantha", "Kpel",
-            "Loma", "Mende_Kikakui", "Meroitic_Cursive",
-            "Old_North_Arabian", "Nabataean", "Palmyrene", "Khudawadi", "Warang_Citi",
+            "Bass", "Dupl", "Elba", "Gran", "Kpel", "Loma", "Mend", "Meroitic_Cursive",
+            "Narb", "Nbat", "Palm", "Sind", "Wara",
             /* new in ICU 4.8 */
-            "Afak", "Jurc", "Mro", "Nshu", "Sharada", "Sora_Sompeng", "Takri", "Tangut", "Wole",
+            "Afak", "Jurc", "Mroo", "Nshu", "Sharada", "Sora_Sompeng", "Takri", "Tang", "Wole",
             /* new in ICU 49 */
-            "Anatolian_Hieroglyphs", "Khojki", "Tirhuta",
-            /* new in ICU 52 */
-            "Caucasian_Albanian", "Mahajani",
-            /* new in ICU 54 */
-            "Ahom", "Hatran", "Modi", "Multani", "Pau_Cin_Hau", "Siddham",
-            // new in ICU 58
-            "Adlam", "Bhaiksuki", "Marchen", "Newa", "Osage", "Hanb", "Jamo", "Zsye"
+            "Hluw", "Khoj", "Tirh",
         };
         String[] expectedShort = new String[]{
-            "Bali", "Batk", "Blis", "Brah", "Cham", "Cirt", "Cyrs", "Egyd", "Egyh", "Egyp",
-            "Geok", "Hans", "Hant", "Hmng", "Hung", "Inds", "Java", "Kali", "Latf", "Latg",
-            "Lepc", "Lina", "Mand", "Maya", "Mero", "Nkoo", "Orkh", "Perm", "Phag", "Phnx",
-            "Plrd", "Roro", "Sara", "Syre", "Syrj", "Syrn", "Teng", "Vaii", "Visp", "Xsux",
+            "Bali", "Batk", "Blis", "Brah", "Cham", "Cirt", "Cyrs", "Egyd", "Egyh", "Egyp", 
+            "Geok", "Hans", "Hant", "Hmng", "Hung", "Inds", "Java", "Kali", "Latf", "Latg", 
+            "Lepc", "Lina", "Mand", "Maya", "Mero", "Nkoo", "Orkh", "Perm", "Phag", "Phnx", 
+            "Plrd", "Roro", "Sara", "Syre", "Syrj", "Syrn", "Teng", "Vaii", "Visp", "Xsux", 
             "Zxxx", "Zzzz",
             "Cari", "Jpan", "Lana", "Lyci", "Lydi", "Olck", "Rjng", "Saur", "Sgnw", "Sund",
-            "Moon", "Mtei",
-            /* new in ICU 4.0 */
-            "Armi", "Avst", "Cakm", "Kore",
-            "Kthi", "Mani", "Phli", "Phlp", "Phlv", "Prti", "Samr", "Tavt",
-            "Zmth", "Zsym",
+            "Moon", "Mtei", 
+
+            // ICU 4.0
+            "Armi", "Avst", "Cakm", "Kore", "Kthi", "Mani", "Phli", "Phlp", "Phlv", "Prti",
+            "Samr", "Tavt", "Zmth", "Zsym",
             /* new in ICU 4.4 */
-            "Bamu", "Lisu", "Nkgb", "Sarb",
+            "Bamu", "Lisu", "Nkgb", "Sarb", 
             /* new in ICU 4.6 */
             "Bass", "Dupl", "Elba", "Gran", "Kpel", "Loma", "Mend", "Merc",
             "Narb", "Nbat", "Palm", "Sind", "Wara",
@@ -674,12 +601,6 @@ public class TestUScript extends TestFmwk {
             "Afak", "Jurc", "Mroo", "Nshu", "Shrd", "Sora", "Takr", "Tang", "Wole",
             /* new in ICU 49 */
             "Hluw", "Khoj", "Tirh",
-            /* new in ICU 52 */
-            "Aghb", "Mahj",
-            /* new in ICU 54 */
-            "Ahom", "Hatr", "Modi", "Mult", "Pauc", "Sidd",
-            // new in ICU 58
-            "Adlm", "Bhks", "Marc", "Newa", "Osge", "Hanb", "Jamo", "Zsye"
         };
         if(expectedLong.length!=(UScript.CODE_LIMIT-UScript.BALINESE)) {
             errln("need to add new script codes in lang.TestUScript.java!");

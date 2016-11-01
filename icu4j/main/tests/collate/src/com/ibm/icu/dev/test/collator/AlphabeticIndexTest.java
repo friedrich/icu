@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2008-2015, International Business Machines Corporation and
+ * Copyright (C) 2008-2013, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -16,8 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.util.CollectionUtilities;
@@ -36,7 +32,6 @@ import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.Normalizer2;
 import com.ibm.icu.text.RawCollationKey;
 import com.ibm.icu.text.RuleBasedCollator;
-import com.ibm.icu.text.UTF16;
 import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.util.ULocale;
 
@@ -45,17 +40,17 @@ import com.ibm.icu.util.ULocale;
  */
 public class AlphabeticIndexTest extends TestFmwk {
     /**
-     *
+     * 
      */
     private static final String ARROW = "\u2192";
     private static final boolean DEBUG = ICUDebug.enabled("alphabeticindex");
 
     public static Set<String> KEY_LOCALES = new LinkedHashSet(Arrays.asList(
-            "en", "es", "de", "fr", "ja", "it", "tr", "pt", "zh", "nl",
-            "pl", "ar", "ru", "zh_Hant", "ko", "th", "sv", "fi", "da",
-            "he", "nb", "el", "hr", "bg", "sk", "lt", "vi", "lv", "sr",
-            "pt_PT", "ro", "hu", "cs", "id", "sl", "fil", "fa", "uk",
-            "ca", "hi", "et", "eu", "is", "sw", "ms", "bn", "am", "ta",
+            "en", "es", "de", "fr", "ja", "it", "tr", "pt", "zh", "nl", 
+            "pl", "ar", "ru", "zh_Hant", "ko", "th", "sv", "fi", "da", 
+            "he", "nb", "el", "hr", "bg", "sk", "lt", "vi", "lv", "sr", 
+            "pt_PT", "ro", "hu", "cs", "id", "sl", "fil", "fa", "uk", 
+            "ca", "hi", "et", "eu", "is", "sw", "ms", "bn", "am", "ta", 
             "te", "mr", "ur", "ml", "kn", "gu", "or"));
     private String[][] localeAndIndexCharactersLists = new String[][] {
             /* Arabic*/ {"ar", "\u0627:\u0628:\u062A:\u062B:\u062C:\u062D:\u062E:\u062F:\u0630:\u0631:\u0632:\u0633:\u0634:\u0635:\u0636:\u0637:\u0638:\u0639:\u063A:\u0641:\u0642:\u0643:\u0644:\u0645:\u0646:\u0647:\u0648:\u064A"},
@@ -63,14 +58,14 @@ public class AlphabeticIndexTest extends TestFmwk {
             /* Catalan*/    {"ca", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
             /* Czech*/  {"cs", "A:B:C:\u010C:D:E:F:G:H:CH:I:J:K:L:M:N:O:P:Q:R:\u0158:S:\u0160:T:U:V:W:X:Y:Z:\u017D"},
             /* Danish*/ {"da", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z:\u00C6:\u00D8:\u00C5"},
-            /* German*/ {"de", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
+            /* German*/ {"de", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:Sch:St:T:U:V:W:X:Y:Z"},
             /* Greek*/  {"el", "\u0391:\u0392:\u0393:\u0394:\u0395:\u0396:\u0397:\u0398:\u0399:\u039A:\u039B:\u039C:\u039D:\u039E:\u039F:\u03A0:\u03A1:\u03A3:\u03A4:\u03A5:\u03A6:\u03A7:\u03A8:\u03A9"},
             /* English*/    {"en", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
             /* Spanish*/    {"es", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:\u00D1:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
             /* Estonian*/   {"et", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:\u0160:Z:\u017D:T:U:V:\u00D5:\u00C4:\u00D6:\u00DC:X:Y"},
             /* Basque*/ {"eu", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
             /* Finnish*/    {"fi", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z:\u00C5:\u00C4:\u00D6"},
-            /* Filipino*/   {"fil", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:\u00D1:Ng:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
+            /* Filipino*/   {"fil", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
             /* French*/ {"fr", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
             /* Hebrew*/ {"he", "\u05D0:\u05D1:\u05D2:\u05D3:\u05D4:\u05D5:\u05D6:\u05D7:\u05D8:\u05D9:\u05DB:\u05DC:\u05DE:\u05E0:\u05E1:\u05E2:\u05E4:\u05E6:\u05E7:\u05E8:\u05E9:\u05EA"},
             /* Icelandic*/  {"is", "A:\u00C1:B:C:D:\u00D0:E:\u00C9:F:G:H:I:\u00CD:J:K:L:M:N:O:\u00D3:P:Q:R:S:T:U:\u00DA:V:W:X:Y:\u00DD:Z:\u00DE:\u00C6:\u00D6"},
@@ -78,7 +73,9 @@ public class AlphabeticIndexTest extends TestFmwk {
             /* Japanese*/   {"ja", "\u3042:\u304B:\u3055:\u305F:\u306A:\u306F:\u307E:\u3084:\u3089:\u308F"},
             /* Korean*/ {"ko", "\u3131:\u3134:\u3137:\u3139:\u3141:\u3142:\u3145:\u3147:\u3148:\u314A:\u314B:\u314C:\u314D:\u314E"},
             /* Lithuanian*/ {"lt", "A:B:C:\u010C:D:E:F:G:H:I:J:K:L:M:N:O:P:R:S:\u0160:T:U:V:Z:\u017D"},
-            /* Latvian*/    {"lv", "A:B:C:\u010C:D:E:F:G:\u0122:H:I:J:K:\u0136:L:\u013B:M:N:\u0145:O:P:Q:R:S:\u0160:T:U:V:W:X:Z:\u017D"},
+            // This should be the correct data.  Commented till it is fixed in CLDR collation data.
+            // {"lv", "A:B:C:\u010C:D:E:F:G:\u0122:H:I:Y:J:K:\u0136:L:\u013B:M:N:\u0145:O:P:Q:R:S:\u0160:T:U:V:W:X:Z:\u017D"},
+            /* Latvian*/    {"lv", "A:B:C:\u010C:D:E:F:G:\u0122:H:I:J:K:\u0136:L:\u013B:M:N:\u0145:O:P:Q:R:S:\u0160:T:U:V:W:X:Y:Z:\u017D"},
             /* Norwegian Bokm\u00E5l*/  {"nb", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z:\u00C6:\u00D8:\u00C5"},
             /* Dutch*/  {"nl", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
             /* Polish*/ {"pl", "A:\u0104:B:C:\u0106:D:E:\u0118:F:G:H:I:J:K:L:\u0141:M:N:\u0143:O:\u00D3:P:Q:R:S:\u015A:T:U:V:W:X:Y:Z:\u0179:\u017B"},
@@ -165,7 +162,10 @@ public class AlphabeticIndexTest extends TestFmwk {
             //            /* Yoruba*/ {"yo", "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z"},
 
     };
-
+    public static void main(String[] args) throws Exception{
+        new AlphabeticIndexTest().run(args);
+    }
+    
 //    public void TestAAKeyword() {
 //    ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
 //            ICUResourceBundle.ICU_COLLATION_BASE_NAME, "zh");
@@ -197,7 +197,7 @@ public class AlphabeticIndexTest extends TestFmwk {
 //        int comp = foo.compare("a", "ā");
 //        assertEquals("should fall back to default for zh", -1, comp);
 //    }
-//
+//    
 //    /**
 //     * @param rb
 //     * @param i
@@ -210,12 +210,11 @@ public class AlphabeticIndexTest extends TestFmwk {
 //        }
 //    }
 
-
-    @Test
+    
     public void TestA() {
         String[][] tests = {{"zh_Hant", "渡辺", "12劃"},
                 {"zh", "渡辺", "D"}
-                /*, "zh@collation=unihan", "ja@collation=unihan", "ko@collation=unihan"*/
+                /*, "zh@collation=unihan", "ja@collation=unihan", "ko@collation=unihan"*/ 
                 };
         for (String[] test : tests) {
             AlphabeticIndex<Integer> alphabeticIndex = new AlphabeticIndex<Integer>(new ULocale(test[0]));
@@ -241,26 +240,23 @@ public class AlphabeticIndexTest extends TestFmwk {
         return null;
     }
 
-    @Test
     public void TestFirstCharacters() {
 
         AlphabeticIndex alphabeticIndex = new AlphabeticIndex(Locale.ENGLISH);
         RuleBasedCollator collator = alphabeticIndex.getCollator();
         collator.setStrength(Collator.IDENTICAL);
-        Collection<String> firsts = alphabeticIndex.getFirstCharactersInScripts();
+        Collection<String> firsts = AlphabeticIndex.getFirstCharactersInScripts();
         // Verify that each script is represented exactly once.
-        // Exclude pseudo-scripts like Common (no letters).
-        // Exclude scripts like Braille and Sutton SignWriting
-        // because they only have symbols, not letters.
-        UnicodeSet missingScripts = new UnicodeSet(
-                "[^[:inherited:][:unknown:][:common:][:Braille:][:SignWriting:]]");
+        UnicodeSet missingScripts = new UnicodeSet("[^[:sc=inherited:][:sc=unknown:][:sc=common:][:Script=Braille:]]");
         String last = "";
         for (String index : firsts) {
+            if (index.equals("\uFFFF")) {
+                continue;
+            }
             if (collator.compare(last,index) >= 0) {
                 errln("Characters not in order: " + last + " !< " + index);
             }
-            int script = getFirstRealScript(index);
-            if (script == UScript.UNKNOWN) { continue; }
+            int script = UScript.getScript(index.codePointAt(0)); // we actually look at just the first char
             UnicodeSet s = new UnicodeSet().applyIntPropertyValue(UProperty.SCRIPT, script);
             if (missingScripts.containsNone(s)) {
                 errln("2nd character in script: " + index + "\t" + new UnicodeSet(missingScripts).retainAll(s).toPattern(false));
@@ -285,19 +281,6 @@ public class AlphabeticIndexTest extends TestFmwk {
         }
     }
 
-    private static final int getFirstRealScript(CharSequence s) {
-        for (int i = 0; i < s.length();) {
-            int c = Character.codePointAt(s, i);
-            int script = UScript.getScript(c);
-            if (script != UScript.UNKNOWN && script != UScript.INHERITED && script != UScript.COMMON) {
-                return script;
-            }
-            i += Character.charCount(c);
-        }
-        return UScript.UNKNOWN;
-    }
-
-    @Test
     public void TestBuckets() {
         ULocale additionalLocale = ULocale.ENGLISH;
 
@@ -306,7 +289,6 @@ public class AlphabeticIndexTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestEmpty() {
         // just verify that it doesn't blow up.
         Set<ULocale> locales = new LinkedHashSet<ULocale>();
@@ -327,23 +309,6 @@ public class AlphabeticIndexTest extends TestFmwk {
         }
     }
 
-    @Test
-    public void TestSetGetSpecialLabels() {
-        AlphabeticIndex index = new AlphabeticIndex(Locale.GERMAN).addLabels(new Locale("ru"));
-        index.setUnderflowLabel("__");
-        index.setInflowLabel("--");
-        index.setOverflowLabel("^^");
-        assertEquals("underflow label", "__", index.getUnderflowLabel());
-        assertEquals("inflow label", "--", index.getInflowLabel());
-        assertEquals("overflow label", "^^", index.getOverflowLabel());
-
-        ImmutableIndex ii = index.buildImmutableIndex();
-        assertEquals("0 -> underflow", "__", ii.getBucket(ii.getBucketIndex("0")).getLabel());
-        assertEquals("Ω -> inflow", "--", ii.getBucket(ii.getBucketIndex("Ω")).getLabel());
-        assertEquals("字 -> overflow", "^^", ii.getBucket(ii.getBucketIndex("字")).getLabel());
-    }
-
-    @Test
     public void TestInflow() {
         Object[][] tests = {
                 {0, ULocale.ENGLISH},
@@ -397,10 +362,9 @@ public class AlphabeticIndexTest extends TestFmwk {
         int counter = 0;
         Counter<String> itemCount = new Counter();
         for (String item : test) {
-            index.addRecord(item, counter++);
+            index.addRecord(item, counter++); 
             itemCount.add(item, 1);
         }
-        assertEquals("getRecordCount()", (int)itemCount.getTotal(), index.getRecordCount());  // code coverage
 
         List<String> labels = index.getBucketLabels();
         ImmutableIndex<Integer> immIndex = index.buildImmutableIndex();
@@ -528,7 +492,6 @@ public class AlphabeticIndexTest extends TestFmwk {
         return keys;
     }
 
-    @Test
     public void TestIndexCharactersList() {
         for (String[] localeAndIndexCharacters : localeAndIndexCharactersLists) {
             ULocale locale = new ULocale(localeAndIndexCharacters[0]);
@@ -553,7 +516,6 @@ public class AlphabeticIndexTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestBasics() {
         ULocale[] list = ULocale.getAvailableLocales();
         // get keywords combinations
@@ -580,13 +542,7 @@ public class AlphabeticIndexTest extends TestFmwk {
                 if (locale.getCountry().length() != 0) {
                     continue;
                 }
-                boolean isUnihan = collationValue.contains("unihan");
                 AlphabeticIndex alphabeticIndex = new AlphabeticIndex(locale);
-                if (isUnihan) {
-                    // Unihan tailorings have a label per radical, and there are at least 214,
-                    // if not more when simplified radicals are distinguished.
-                    alphabeticIndex.setMaxLabelCount(500);
-                }
                 final Collection mainChars = alphabeticIndex.getBucketLabels();
                 String mainCharString = mainChars.toString();
                 if (mainCharString.length() > 500) {
@@ -594,7 +550,7 @@ public class AlphabeticIndexTest extends TestFmwk {
                 }
                 logln(mainChars.size() + "\t" + locale + "\t" + locale.getDisplayName(ULocale.ENGLISH));
                 logln("Index:\t" + mainCharString);
-                if (!isUnihan && mainChars.size() > 100) {
+                if (mainChars.size() > 100) {
                     errln("Index character set too large: " +
                             locale + " [" + mainChars.size() + "]:\n    " + mainChars);
                 }
@@ -602,11 +558,10 @@ public class AlphabeticIndexTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestClientSupport() {
         for (String localeString : new String[] {"zh"}) { // KEY_LOCALES, new String[] {"zh"}
             ULocale ulocale = new ULocale(localeString);
-            AlphabeticIndex<Double> alphabeticIndex = new AlphabeticIndex<Double>(ulocale).addLabels(Locale.ENGLISH);
+            AlphabeticIndex<Double> alphabeticIndex = new AlphabeticIndex<Double>(ulocale).addLabels(ULocale.ENGLISH);
             RuleBasedCollator collator = alphabeticIndex.getCollator();
             String [][] tests;
 
@@ -660,7 +615,7 @@ public class AlphabeticIndexTest extends TestFmwk {
                         String myName = null;
                         if (myBucketIterator.hasNext()) {
                             R4<RawCollationKey, String, Integer, Double> myRecord = myBucketIterator.next();
-                            myName = myRecord.get1();
+                            myName = (String) myRecord.get1();
                         }
                         if (!record.getName().equals(myName)) {
                             gotError |= !assertEquals(ulocale + "\t" + bucketLabel + "\t" + "Record Names (" + index + "." + recordIndex++ + ")", record.getName(), myName);
@@ -668,7 +623,7 @@ public class AlphabeticIndexTest extends TestFmwk {
                     }
                     while (myBucketIterator.hasNext()) {
                         R4<RawCollationKey, String, Integer, Double> myRecord = myBucketIterator.next();
-                        String myName = myRecord.get1();
+                        String myName = (String) myRecord.get1();
                         gotError |= !assertEquals(ulocale + "\t" + bucketLabel + "\t" + "Record Names (" + index + "." + recordIndex++ + ")", null, myName);
                     }
                     index++;
@@ -681,10 +636,8 @@ public class AlphabeticIndexTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestFirstScriptCharacters() {
-        Collection<String> firstCharacters =
-                new AlphabeticIndex(ULocale.ENGLISH).getFirstCharactersInScripts();
+        Collection<String> firstCharacters = AlphabeticIndex.getFirstCharactersInScripts();
         Collection<String> expectedFirstCharacters = firstStringsInScript((RuleBasedCollator) Collator.getInstance(ULocale.ROOT));
         Collection<String> diff = new TreeSet<String>(firstCharacters);
         diff.removeAll(expectedFirstCharacters);
@@ -703,7 +656,8 @@ public class AlphabeticIndexTest extends TestFmwk {
     private static Collection<String> firstStringsInScript(RuleBasedCollator ruleBasedCollator) {
         String[] results = new String[UScript.CODE_LIMIT];
         for (String current : TO_TRY) {
-            if (ruleBasedCollator.compare(current, "a") < 0) { // we only want "real" script characters, not symbols.
+            if (ruleBasedCollator.compare(current, "a") < 0) { // TODO fix; we only want "real" script characters, not
+                // symbols.
                 continue;
             }
             int script = UScript.getScript(current.codePointAt(0));
@@ -722,11 +676,12 @@ public class AlphabeticIndexTest extends TestFmwk {
             if (extras.size() != 0) {
                 Normalizer2 normalizer = Normalizer2.getNFKCInstance();
                 for (String current : extras) {
-                    if (!normalizer.isNormalized(current) || ruleBasedCollator.compare(current, "9") <= 0) {
+                    if (!TO_TRY.containsAll(current))
+                        continue;
+                    if (!normalizer.isNormalized(current) || ruleBasedCollator.compare(current, "a") < 0) {
                         continue;
                     }
-                    int script = getFirstRealScript(current);
-                    if (script == UScript.UNKNOWN && !isUnassignedBoundary(current)) { continue; }
+                    int script = UScript.getScript(current.codePointAt(0));
                     if (results[script] == null) {
                         results[script] = current;
                     } else if (ruleBasedCollator.compare(current, results[script]) < 0) {
@@ -737,8 +692,11 @@ public class AlphabeticIndexTest extends TestFmwk {
         } catch (Exception e) {
         } // why have a checked exception???
 
+        results[UScript.LATIN] = "A";  // See comment about en_US_POSIX in the implementation.
         // TODO: We should not test that we get the same strings, but that we
         // get strings that sort primary-equal to those from the implementation.
+        // This whole test becomes obsolete when the root collator adds script-first-primary mappings
+        // and the AlphabeticIndex implementation starts using them.
 
         Collection<String> result = new ArrayList<String>();
         for (int i = 0; i < results.length; ++i) {
@@ -746,17 +704,13 @@ public class AlphabeticIndexTest extends TestFmwk {
                 result.add(results[i]);
             }
         }
+        // AlphabeticIndex also has a boundary string for the ultimate overflow bucket,
+        // for unassigned code points and trailing/special primary weights.
+        result.add("\uFFFF");
         return result;
     }
 
-    private static final boolean isUnassignedBoundary(CharSequence s) {
-        // The root collator provides a script-first-primary boundary contraction
-        // for the unassigned-implicit range.
-        return s.charAt(0) == 0xfdd1 &&
-                UScript.getScript(Character.codePointAt(s, 1)) == UScript.UNKNOWN;
-    }
 
-    @Test
     public void TestZZZ() {
         //            int x = 3;
         //            AlphabeticIndex index = new AlphabeticIndex(ULocale.ENGLISH);
@@ -770,30 +724,27 @@ public class AlphabeticIndexTest extends TestFmwk {
         //            System.out.println("Bucket Count =" + index.getBucketCount());
     }
 
-    @Test
     public void TestSimplified() {
         checkBuckets("zh", simplifiedNames, ULocale.ENGLISH, "W", "\u897f");
     }
-
-    @Test
     public void TestTraditional() {
         checkBuckets("zh_Hant", traditionalNames, ULocale.ENGLISH, "\u4e9f", "\u5357\u9580");
     }
 
-    static final String[] SimpleTests = {
+    static final String[] SimpleTests = { 
         "斎藤",
-        "\u1f2d\u03c1\u03b1",
-        "$", "\u00a3", "12", "2",
+        "\u1f2d\u03c1\u03b1", 
+        "$", "\u00a3", "12", "2", 
         "Davis", "Davis", "Abbot", "\u1D05avis", "Zach", "\u1D05avis", "\u01b5", "\u0130stanbul", "Istanbul", "istanbul", "\u0131stanbul",
         "\u00deor", "\u00c5berg", "\u00d6stlund",
-        "\u1f2d\u03c1\u03b1", "\u1f08\u03b8\u03b7\u03bd\u1fb6",
-        "\u0396\u03b5\u03cd\u03c2", "\u03a0\u03bf\u03c3\u03b5\u03b9\u03b4\u1f63\u03bd", "\u1f0d\u03b9\u03b4\u03b7\u03c2", "\u0394\u03b7\u03bc\u03ae\u03c4\u03b7\u03c1", "\u1f19\u03c3\u03c4\u03b9\u03ac",
+        "\u1f2d\u03c1\u03b1", "\u1f08\u03b8\u03b7\u03bd\u1fb6", 
+        "\u0396\u03b5\u03cd\u03c2", "\u03a0\u03bf\u03c3\u03b5\u03b9\u03b4\u1f63\u03bd", "\u1f0d\u03b9\u03b4\u03b7\u03c2", "\u0394\u03b7\u03bc\u03ae\u03c4\u03b7\u03c1", "\u1f19\u03c3\u03c4\u03b9\u03ac", 
         //"\u1f08\u03c0\u03cc\u03bb\u03bb\u03c9\u03bd", "\u1f0c\u03c1\u03c4\u03b5\u03bc\u03b9\u03c2", "\u1f19\u03c1\u03bc\u1f23\u03c2", "\u1f0c\u03c1\u03b7\u03c2", "\u1f08\u03c6\u03c1\u03bf\u03b4\u03af\u03c4\u03b7", "\u1f2d\u03c6\u03b1\u03b9\u03c3\u03c4\u03bf\u03c2", "\u0394\u03b9\u03cc\u03bd\u03c5\u03c3\u03bf\u03c2",
         "\u6589\u85e4", "\u4f50\u85e4", "\u9234\u6728", "\u9ad8\u6a4b", "\u7530\u4e2d", "\u6e21\u8fba", "\u4f0a\u85e4", "\u5c71\u672c", "\u4e2d\u6751", "\u5c0f\u6797", "\u658e\u85e4", "\u52a0\u85e4",
         //"\u5409\u7530", "\u5c71\u7530", "\u4f50\u3005\u6728", "\u5c71\u53e3", "\u677e\u672c", "\u4e95\u4e0a", "\u6728\u6751", "\u6797", "\u6e05\u6c34"
     };
 
-    static final String[] hackPinyin = {
+    static final String[] hackPinyin = { 
         "a", "\u5416", "\u58ba", //
         "b", "\u516b", "\u62d4", "\u8500", //
         "c", "\u5693", "\u7938", "\u9e7e", //
@@ -819,7 +770,7 @@ public class AlphabeticIndexTest extends TestFmwk {
         "z", "\u5e00", "\u707d", "\u5c0a"
     };
 
-    static final String[] simplifiedNames = {
+    static final String[] simplifiedNames = { 
         "Abbot", "Morton", "Zachary", "Williams", "\u8d75", "\u94b1", "\u5b59", "\u674e", "\u5468", "\u5434", "\u90d1", "\u738b", "\u51af", "\u9648", "\u696e", "\u536b", "\u848b", "\u6c88",
         "\u97e9", "\u6768", "\u6731", "\u79e6", "\u5c24", "\u8bb8", "\u4f55", "\u5415", "\u65bd", "\u5f20", "\u5b54", "\u66f9", "\u4e25", "\u534e", "\u91d1", "\u9b4f", "\u9676", "\u59dc", "\u621a", "\u8c22", "\u90b9",
         "\u55bb", "\u67cf", "\u6c34", "\u7aa6", "\u7ae0", "\u4e91", "\u82cf", "\u6f58", "\u845b", "\u595a", "\u8303", "\u5f6d", "\u90ce", "\u9c81", "\u97e6", "\u660c", "\u9a6c", "\u82d7", "\u51e4", "\u82b1", "\u65b9",
@@ -916,13 +867,12 @@ public class AlphabeticIndexTest extends TestFmwk {
     /**
      * Test AlphabeticIndex vs. root with script reordering.
      */
-    @Test
     public void TestHaniFirst() {
         RuleBasedCollator coll = (RuleBasedCollator) Collator.getInstance(ULocale.ROOT);
         coll.setReorderCodes(UScript.HAN);
         AlphabeticIndex index = new AlphabeticIndex(coll);
         assertEquals("getBucketCount()", 1, index.getBucketCount());   // ... (underflow only)
-        index.addLabels(Locale.ENGLISH);
+        index.addLabels(ULocale.ENGLISH);
         assertEquals("getBucketCount()", 28, index.getBucketCount());  // ... A-Z ...
         int bucketIndex = index.getBucketIndex("\u897f");
         assertEquals("getBucketIndex(U+897F)", 0, bucketIndex);  // underflow bucket
@@ -930,9 +880,9 @@ public class AlphabeticIndexTest extends TestFmwk {
         assertEquals("getBucketIndex(i)", 9, bucketIndex);
         bucketIndex = index.getBucketIndex("\u03B1");
         assertEquals("getBucketIndex(Greek alpha)", 27, bucketIndex);
-        // U+50005 is an unassigned code point which sorts at the end, independent of the Hani group.
-        bucketIndex = index.getBucketIndex(UTF16.valueOf(0x50005));
-        assertEquals("getBucketIndex(U+50005)", 27, bucketIndex);
+        // TODO: Test with an unassigned code point (not just U+FFFF)
+        // when unassigned code points are not in the Hani reordering group any more.
+        // String unassigned = UTF16.valueOf(0x50005);
         bucketIndex = index.getBucketIndex("\uFFFF");
         assertEquals("getBucketIndex(U+FFFF)", 27, bucketIndex);
     }
@@ -940,13 +890,12 @@ public class AlphabeticIndexTest extends TestFmwk {
     /**
      * Test AlphabeticIndex vs. Pinyin with script reordering.
      */
-    @Test
     public void TestPinyinFirst() {
         RuleBasedCollator coll = (RuleBasedCollator) Collator.getInstance(ULocale.CHINESE);
         coll.setReorderCodes(UScript.HAN);
         AlphabeticIndex index = new AlphabeticIndex(coll);
-        assertEquals("getBucketCount()", 28, index.getBucketCount());   // ... A-Z ...
-        index.addLabels(Locale.CHINESE);
+        assertEquals("getBucketCount()", 1, index.getBucketCount());   // ... (underflow only)
+        index.addLabels(ULocale.CHINESE);
         assertEquals("getBucketCount()", 28, index.getBucketCount());  // ... A-Z ...
         int bucketIndex = index.getBucketIndex("\u897f");
         assertEquals("getBucketIndex(U+897F)", 'X' - 'A' + 1, bucketIndex);
@@ -954,9 +903,9 @@ public class AlphabeticIndexTest extends TestFmwk {
         assertEquals("getBucketIndex(i)", 9, bucketIndex);
         bucketIndex = index.getBucketIndex("\u03B1");
         assertEquals("getBucketIndex(Greek alpha)", 27, bucketIndex);
-        // U+50005 is an unassigned code point which sorts at the end, independent of the Hani group.
-        bucketIndex = index.getBucketIndex(UTF16.valueOf(0x50005));
-        assertEquals("getBucketIndex(U+50005)", 27, bucketIndex);
+        // TODO: Test with an unassigned code point (not just U+FFFF)
+        // when unassigned code points are not in the Hani reordering group any more.
+        // String unassigned = UTF16.valueOf(0x50005);
         bucketIndex = index.getBucketIndex("\uFFFF");
         assertEquals("getBucketIndex(U+FFFF)", 27, bucketIndex);
     }
@@ -964,7 +913,6 @@ public class AlphabeticIndexTest extends TestFmwk {
     /**
      * Test labels with multiple primary weights.
      */
-    @Test
     public void TestSchSt() {
         AlphabeticIndex index = new AlphabeticIndex(ULocale.GERMAN);
         index.addLabels(new UnicodeSet("[Æ{Sch*}{St*}]"));
@@ -1006,14 +954,12 @@ public class AlphabeticIndexTest extends TestFmwk {
     /**
      * With no real labels, there should be only the underflow label.
      */
-    @Test
     public void TestNoLabels() {
         RuleBasedCollator coll = (RuleBasedCollator) Collator.getInstance(ULocale.ROOT);
         AlphabeticIndex<Integer> index = new AlphabeticIndex<Integer>(coll);
         index.addRecord("\u897f", 0);
         index.addRecord("i", 0);
         index.addRecord("\u03B1", 0);
-        assertEquals("getRecordCount()", 3, index.getRecordCount());  // code coverage
         assertEquals("getBucketCount()", 1, index.getBucketCount());  // ...
         Bucket<Integer> bucket = index.iterator().next();
         assertEquals("underflow label type", LabelType.UNDERFLOW, bucket.getLabelType());
@@ -1023,7 +969,6 @@ public class AlphabeticIndexTest extends TestFmwk {
     /**
      * Test with the Bopomofo-phonetic tailoring.
      */
-    @Test
     public void TestChineseZhuyin() {
         AlphabeticIndex index = new AlphabeticIndex(ULocale.forLanguageTag("zh-u-co-zhuyin"));
         ImmutableIndex immIndex = index.buildImmutableIndex();
@@ -1033,128 +978,5 @@ public class AlphabeticIndexTest extends TestFmwk {
         assertEquals("label 3", "ㄇ", immIndex.getBucket(3).getLabel());
         assertEquals("label 4", "ㄈ", immIndex.getBucket(4).getLabel());
         assertEquals("label 5", "ㄉ", immIndex.getBucket(5).getLabel());
-    }
-
-    @Test
-    public void TestJapaneseKanji() {
-        AlphabeticIndex index = new AlphabeticIndex(ULocale.JAPANESE);
-        AlphabeticIndex.ImmutableIndex immIndex = index.buildImmutableIndex();
-        // There are no index characters for Kanji in the Japanese standard collator.
-        // They should all go into the overflow bucket.
-        final int[] kanji = { 0x4E9C, 0x95C7, 0x4E00, 0x58F1 };
-        int overflowIndex = immIndex.getBucketCount() - 1;
-        for(int i = 0; i < kanji.length; ++i) {
-            String msg = String.format("kanji[%d]=U+%04X in overflow bucket", i, kanji[i]);
-            assertEquals(msg, overflowIndex, immIndex.getBucketIndex(UTF16.valueOf(kanji[i])));
-        }
-    }
-
-    @Test
-    public void TestFrozenCollator() {
-        // Ticket #9472
-        RuleBasedCollator coll = (RuleBasedCollator) Collator.getInstance(new ULocale("da"));
-        coll.setStrength(Collator.IDENTICAL);
-        coll.freeze();
-        // The AlphabeticIndex constructor used to throw an exception
-        // because it cloned the collator (which preserves frozenness)
-        // and set the clone's strength to PRIMARY.
-        AlphabeticIndex index = new AlphabeticIndex(coll);
-        assertEquals("same strength as input Collator",
-                Collator.IDENTICAL, index.getCollator().getStrength());
-    }
-
-    @Test
-    public void TestChineseUnihan() {
-        AlphabeticIndex index = new AlphabeticIndex(new ULocale("zh-u-co-unihan"));
-        index.setMaxLabelCount(500);  // ICU 54 default is 99.
-        assertEquals("getMaxLabelCount()", 500, index.getMaxLabelCount());  // code coverage
-        AlphabeticIndex.ImmutableIndex immIndex = index.buildImmutableIndex();
-        int bucketCount = immIndex.getBucketCount();
-        if(bucketCount < 216) {
-            // There should be at least an underflow and overflow label,
-            // and one for each of 214 radicals,
-            // and maybe additional labels for simplified radicals.
-            // (ICU4C: dataerrln(), prints only a warning if the data is missing)
-            errln("too few buckets/labels for Chinese/unihan: " + bucketCount +
-                    " (is zh/unihan data available?)");
-            return;
-        } else {
-            logln("Chinese/unihan has " + bucketCount + " buckets/labels");
-        }
-        // bucketIndex = radical number, adjusted for simplified radicals in lower buckets.
-        int bucketIndex = index.getBucketIndex("\u4e5d");
-        assertEquals("getBucketIndex(U+4E5D)", 5, bucketIndex);
-        // radical 100, and there is a 90' since Unicode 8
-        bucketIndex = index.getBucketIndex("\u7527");
-        assertEquals("getBucketIndex(U+7527)", 101, bucketIndex);
-    }
-
-    @Test
-    public void testAddLabels_Locale() {
-        AlphabeticIndex<?> ulocaleIndex = new AlphabeticIndex<String>(ULocale.CANADA);
-        AlphabeticIndex<?> localeIndex = new AlphabeticIndex<String>(Locale.CANADA);
-        ulocaleIndex.addLabels(ULocale.SIMPLIFIED_CHINESE);
-        localeIndex.addLabels(Locale.SIMPLIFIED_CHINESE);
-        assertEquals("getBucketLables() results of ulocaleIndex and localeIndex differ",
-                ulocaleIndex.getBucketLabels(), localeIndex.getBucketLabels());
-    }
-
-    @Test
-    public void testGetRecordCount_empty() {
-        assertEquals("Record count of empty index not 0", 0,
-                new AlphabeticIndex<String>(ULocale.CANADA).getRecordCount());
-    }
-
-    @Test
-    public void testGetRecordCount_withRecords() {
-        assertEquals("Record count of index with one record not 1", 1,
-                new AlphabeticIndex<String>(ULocale.CANADA).addRecord("foo", null).getRecordCount());
-    }
-
-    /**
-     * Check that setUnderflowLabel/setOverflowLabel/setInflowLabel correctly influence the name of
-     * generated labels.
-     */
-    @Test
-    public void testFlowLabels() {
-        AlphabeticIndex<?> index = new AlphabeticIndex<String>(ULocale.ENGLISH)
-                .addLabels(ULocale.forLanguageTag("ru"));
-        index.setUnderflowLabel("underflow");
-        index.setOverflowLabel("overflow");
-        index.setInflowLabel("inflow");
-        index.addRecord("!", null);
-        index.addRecord("\u03B1", null); // GREEK SMALL LETTER ALPHA
-        index.addRecord("\uab70", null); // CHEROKEE SMALL LETTER A
-        AlphabeticIndex.Bucket<?> underflowBucket = null;
-        AlphabeticIndex.Bucket<?> overflowBucket = null;
-        AlphabeticIndex.Bucket<?> inflowBucket = null;
-        for (AlphabeticIndex.Bucket<?> bucket : index) {
-            switch (bucket.getLabelType()) {
-                case UNDERFLOW:
-                    assertNull("LabelType not null", underflowBucket);
-                    underflowBucket = bucket;
-                    break;
-                case OVERFLOW:
-                    assertNull("LabelType not null", overflowBucket);
-                    overflowBucket = bucket;
-                    break;
-                case INFLOW:
-                    assertNull("LabelType not null", inflowBucket);
-                    inflowBucket = bucket;
-                    break;
-            }
-        }
-        assertNotNull("No bucket 'underflow'", underflowBucket);
-        assertEquals("Wrong bucket label", "underflow", underflowBucket.getLabel());
-        assertEquals("Wrong bucket label", "underflow", index.getUnderflowLabel());
-        assertEquals("Bucket size not 1", 1, underflowBucket.size());
-        assertNotNull("No bucket 'overflow'", overflowBucket);
-        assertEquals("Wrong bucket label", "overflow", overflowBucket.getLabel());
-        assertEquals("Wrong bucket label", "overflow", index.getOverflowLabel());
-        assertEquals("Bucket size not 1", 1, overflowBucket.size());
-        assertNotNull("No bucket 'inflow'", inflowBucket);
-        assertEquals("Wrong bucket label", "inflow", inflowBucket.getLabel());
-        assertEquals("Wrong bucket label", "inflow", index.getInflowLabel());
-        assertEquals("Bucket size not 1", 1, inflowBucket.size());
     }
 }

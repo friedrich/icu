@@ -1,12 +1,10 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 1997-2015, International Business Machines Corporation and
+* Copyright (C) 1997-2011, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 *
-* File brkiter.cpp
+* File TXTBDRY.CPP
 *
 * Modification History:
 *
@@ -29,7 +27,6 @@
 #include "unicode/udata.h"
 #include "unicode/ures.h"
 #include "unicode/ustring.h"
-#include "unicode/filteredbrk.h"
 #include "ucln_cmn.h"
 #include "cstring.h"
 #include "umutex.h"
@@ -38,7 +35,6 @@
 #include "uresimp.h"
 #include "uassert.h"
 #include "ubrkimpl.h"
-#include "charstr.h"
 
 // *****************************************************************************
 // class BreakIterator
@@ -56,7 +52,7 @@ BreakIterator::buildInstance(const Locale& loc, const char *type, int32_t kind, 
 {
     char fnbuff[256];
     char ext[4]={'\0'};
-    CharString actualLocale;
+    char actualLocale[ULOC_FULLNAME_CAPACITY];
     int32_t size;
     const UChar* brkfname = NULL;
     UResourceBundle brkRulesStack;
@@ -72,7 +68,13 @@ BreakIterator::buildInstance(const Locale& loc, const char *type, int32_t kind, 
     ures_initStackObject(brkName);
 
     // Get the locale
-    UResourceBundle *b = ures_openNoDefault(U_ICUDATA_BRKITR, loc.getName(), &status);
+    UResourceBundle *b = ures_open(U_ICUDATA_BRKITR, loc.getName(), &status);
+    /* this is a hack for now. Should be fixed when the data is fetched from
+        brk_index.txt */
+    if(status==U_USING_DEFAULT_WARNING){
+        status=U_ZERO_ERROR;
+        ures_openFillIn(b, U_ICUDATA_BRKITR, "", &status);
+    }
 
     // Get the "boundaries" array.
     if (U_SUCCESS(status)) {
@@ -91,7 +93,9 @@ BreakIterator::buildInstance(const Locale& loc, const char *type, int32_t kind, 
 
         // Use the string if we found it
         if (U_SUCCESS(status) && brkfname) {
-            actualLocale.append(ures_getLocaleInternal(brkName, &status), -1, status);
+            uprv_strncpy(actualLocale,
+                ures_getLocaleInternal(brkName, &status),
+                sizeof(actualLocale)/sizeof(actualLocale[0]));
 
             UChar* extStart=u_strchr(brkfname, 0x002e);
             int len = 0;
@@ -119,8 +123,7 @@ BreakIterator::buildInstance(const Locale& loc, const char *type, int32_t kind, 
     // If there is a result, set the valid locale and actual locale, and the kind
     if (U_SUCCESS(status) && result != NULL) {
         U_LOCALE_BASED(locBased, *(BreakIterator*)result);
-        locBased.setLocaleIDs(ures_getLocaleByType(b, ULOC_VALID_LOCALE, &status), 
-                              actualLocale.data());
+        locBased.setLocaleIDs(ures_getLocaleByType(b, ULOC_VALID_LOCALE, &status), actualLocale);
         result->setBreakType(kind);
     }
 
@@ -201,6 +204,7 @@ BreakIterator::getAvailableLocales(int32_t& count)
 
 BreakIterator::BreakIterator()
 {
+    fBufferClone = FALSE;
     *validLocale = *actualLocale = 0;
 }
 
@@ -262,13 +266,11 @@ ICUBreakIteratorService::~ICUBreakIteratorService() {}
 
 // -------------------------------------
 
-// defined in ucln_cmn.h
 U_NAMESPACE_END
 
-static icu::UInitOnce gInitOnce;
+// defined in ucln_cmn.h
+
 static icu::ICULocaleService* gService = NULL;
-
-
 
 /**
  * Release all static memory held by breakiterator.
@@ -280,33 +282,40 @@ static UBool U_CALLCONV breakiterator_cleanup(void) {
         delete gService;
         gService = NULL;
     }
-    gInitOnce.reset();
 #endif
     return TRUE;
 }
 U_CDECL_END
 U_NAMESPACE_BEGIN
 
-static void U_CALLCONV 
-initService(void) {
-    gService = new ICUBreakIteratorService();
-    ucln_common_registerCleanup(UCLN_COMMON_BREAKITERATOR, breakiterator_cleanup);
-}
-
 static ICULocaleService*
 getService(void)
 {
-    umtx_initOnce(gInitOnce, &initService);
+    UBool needsInit;
+    UMTX_CHECK(NULL, (UBool)(gService == NULL), needsInit);
+
+    if (needsInit) {
+        ICULocaleService  *tService = new ICUBreakIteratorService();
+        umtx_lock(NULL);
+        if (gService == NULL) {
+            gService = tService;
+            tService = NULL;
+            ucln_common_registerCleanup(UCLN_COMMON_BREAKITERATOR, breakiterator_cleanup);
+        }
+        umtx_unlock(NULL);
+        delete tService;
+    }
     return gService;
 }
-
 
 // -------------------------------------
 
 static inline UBool
 hasService(void)
 {
-    return !gInitOnce.isReset() && getService() != NULL;
+    UBool retVal;
+    UMTX_CHECK(NULL, gService != NULL, retVal);
+    return retVal;
 }
 
 // -------------------------------------
@@ -386,7 +395,6 @@ BreakIterator::createInstance(const Locale& loc, int32_t kind, UErrorCode& statu
 }
 
 // -------------------------------------
-enum { kKeyValueLenMax = 32 };
 
 BreakIterator*
 BreakIterator::makeInstance(const Locale& loc, int32_t kind, UErrorCode& status)
@@ -395,7 +403,6 @@ BreakIterator::makeInstance(const Locale& loc, int32_t kind, UErrorCode& status)
     if (U_FAILURE(status)) {
         return NULL;
     }
-    char lbType[kKeyValueLenMax];
 
     BreakIterator *result = NULL;
     switch (kind) {
@@ -406,34 +413,10 @@ BreakIterator::makeInstance(const Locale& loc, int32_t kind, UErrorCode& status)
         result = BreakIterator::buildInstance(loc, "word", kind, status);
         break;
     case UBRK_LINE:
-        uprv_strcpy(lbType, "line");
-        {
-            char lbKeyValue[kKeyValueLenMax] = {0};
-            UErrorCode kvStatus = U_ZERO_ERROR;
-            int32_t kLen = loc.getKeywordValue("lb", lbKeyValue, kKeyValueLenMax, kvStatus);
-            if (U_SUCCESS(kvStatus) && kLen > 0 && (uprv_strcmp(lbKeyValue,"strict")==0 || uprv_strcmp(lbKeyValue,"normal")==0 || uprv_strcmp(lbKeyValue,"loose")==0)) {
-                uprv_strcat(lbType, "_");
-                uprv_strcat(lbType, lbKeyValue);
-            }
-        }
-        result = BreakIterator::buildInstance(loc, lbType, kind, status);
+        result = BreakIterator::buildInstance(loc, "line", kind, status);
         break;
     case UBRK_SENTENCE:
         result = BreakIterator::buildInstance(loc, "sentence", kind, status);
-#if !UCONFIG_NO_FILTERED_BREAK_ITERATION
-        {
-            char ssKeyValue[kKeyValueLenMax] = {0};
-            UErrorCode kvStatus = U_ZERO_ERROR;
-            int32_t kLen = loc.getKeywordValue("ss", ssKeyValue, kKeyValueLenMax, kvStatus);
-            if (U_SUCCESS(kvStatus) && kLen > 0 && uprv_strcmp(ssKeyValue,"standard")==0) {
-                FilteredBreakIteratorBuilder* fbiBuilder = FilteredBreakIteratorBuilder::createInstance(loc, kvStatus);
-                if (U_SUCCESS(kvStatus)) {
-                    result = fbiBuilder->build(result, status);
-                    delete fbiBuilder;
-                }
-            }
-        }
-#endif
         break;
     case UBRK_TITLE:
         result = BreakIterator::buildInstance(loc, "title", kind, status);
@@ -459,34 +442,6 @@ const char *
 BreakIterator::getLocaleID(ULocDataLocaleType type, UErrorCode& status) const {
     U_LOCALE_BASED(locBased, *this);
     return locBased.getLocaleID(type, status);
-}
-
-
-// This implementation of getRuleStatus is a do-nothing stub, here to
-// provide a default implementation for any derived BreakIterator classes that
-// do not implement it themselves.
-int32_t BreakIterator::getRuleStatus() const {
-    return 0;
-}
-
-// This implementation of getRuleStatusVec is a do-nothing stub, here to
-// provide a default implementation for any derived BreakIterator classes that
-// do not implement it themselves.
-int32_t BreakIterator::getRuleStatusVec(int32_t *fillInVec, int32_t capacity, UErrorCode &status) {
-    if (U_FAILURE(status)) {
-        return 0;
-    }
-    if (capacity < 1) {
-        status = U_BUFFER_OVERFLOW_ERROR;
-        return 1;
-    }
-    *fillInVec = 0;
-    return 1;
-}
-
-BreakIterator::BreakIterator (const Locale& valid, const Locale& actual) {
-  U_LOCALE_BASED(locBased, (*this));
-  locBased.setLocaleIDs(valid, actual);
 }
 
 U_NAMESPACE_END

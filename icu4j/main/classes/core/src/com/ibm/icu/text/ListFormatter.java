@@ -1,24 +1,21 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2012-2016, Google, International Business Machines Corporation and
+ * Copyright (C) 2012-2013, Google, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
 package com.ibm.icu.text;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import com.ibm.icu.impl.ICUCache;
-import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.SimpleCache;
-import com.ibm.icu.impl.SimpleFormatterImpl;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
 
@@ -27,67 +24,14 @@ import com.ibm.icu.util.UResourceBundle;
  * separately). The class is not subclassable.
  *
  * @author Mark Davis
- * @stable ICU 50
+ * @draft ICU 50
+ * @provisional This API might change or be removed in a future release.
  */
 final public class ListFormatter {
-    // Compiled SimpleFormatter patterns.
     private final String two;
     private final String start;
     private final String middle;
     private final String end;
-    private final ULocale locale;
-    
-    /**
-     * Indicates the style of Listformatter
-     * @internal
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public enum Style {
-        /**
-         * Standard style.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        @Deprecated
-        STANDARD("standard"),
-        /**
-         * Style for full durations
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        @Deprecated
-        DURATION("unit"),
-        /**
-         * Style for durations in abbrevated form
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        @Deprecated
-        DURATION_SHORT("unit-short"),
-        /**
-         * Style for durations in narrow form
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        @Deprecated
-        DURATION_NARROW("unit-narrow");
-        
-        private final String name;
-        
-        Style(String name) {
-            this.name = name;
-        }
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        @Deprecated
-        public String getName() {
-            return name;
-        }
-        
-    }
 
     /**
      * <b>Internal:</b> Create a ListFormatter from component strings,
@@ -106,28 +50,12 @@ final public class ListFormatter {
      *            string for the end of a list items, containing {0} for the
      *            first part of the list, and {1} for the last item.
      * @internal
-     * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public ListFormatter(String two, String start, String middle, String end) {
-        this(
-                compilePattern(two, new StringBuilder()),
-                compilePattern(start, new StringBuilder()),
-                compilePattern(middle, new StringBuilder()),
-                compilePattern(end, new StringBuilder()),
-                null);
-    }
-
-    private ListFormatter(String two, String start, String middle, String end, ULocale locale) {
         this.two = two;
         this.start = start;
         this.middle = middle;
         this.end = end;
-        this.locale = locale;
-    }
-
-    private static String compilePattern(String pattern, StringBuilder sb) {
-        return SimpleFormatterImpl.compileToStringMinMaxArguments(pattern, sb, 2, 2);
     }
 
     /**
@@ -136,10 +64,11 @@ final public class ListFormatter {
      * @param locale
      *            the locale in question.
      * @return ListFormatter
-     * @stable ICU 50
+     * @draft ICU 50
+     * @provisional This API might change or be removed in a future release.
      */
     public static ListFormatter getInstance(ULocale locale) {
-      return getInstance(locale, Style.STANDARD);
+      return cache.get(locale);
     }
 
     /**
@@ -148,31 +77,19 @@ final public class ListFormatter {
      * @param locale
      *            the locale in question.
      * @return ListFormatter
-     * @stable ICU 50
+     * @draft ICU 50
+     * @provisional This API might change or be removed in a future release.
      */
     public static ListFormatter getInstance(Locale locale) {
-        return getInstance(ULocale.forLocale(locale), Style.STANDARD);
-    }
-    
-    /**
-     * Create a list formatter that is appropriate for a locale and style.
-     *
-     * @param locale the locale in question.
-     * @param style the style
-     * @return ListFormatter
-     * @internal
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public static ListFormatter getInstance(ULocale locale, Style style) {
-        return cache.get(locale, style.getName());
+        return getInstance(ULocale.forLocale(locale));
     }
 
     /**
      * Create a list formatter that is appropriate for the default FORMAT locale.
      *
      * @return ListFormatter
-     * @stable ICU 50
+     * @draft ICU 50
+     * @provisional This API might change or be removed in a future release.
      */
     public static ListFormatter getInstance() {
         return getInstance(ULocale.getDefault(ULocale.Category.FORMAT));
@@ -184,7 +101,8 @@ final public class ListFormatter {
      * @param items
      *            items to format. The toString() method is called on each.
      * @return items formatted into a string
-     * @stable ICU 50
+     * @draft ICU 50
+     * @provisional This API might change or be removed in a future release.
      */
     public String format(Object... items) {
         return format(Arrays.asList(items));
@@ -196,137 +114,76 @@ final public class ListFormatter {
      * @param items
      *            items to format. The toString() method is called on each.
      * @return items formatted into a string
-     * @stable ICU 50
+     * @draft ICU 50
+     * @provisional This API might change or be removed in a future release.
      */
     public String format(Collection<?> items) {
-        return format(items, -1).toString();
-    }
-    
-    // Formats a collection of objects and returns the formatted string plus the offset
-    // in the string where the index th element appears. index is zero based. If index is
-    // negative or greater than or equal to the size of items then this function returns -1 for
-    // the offset.
-    FormattedListBuilder format(Collection<?> items, int index) {
+        // TODO optimize this for the common case that the patterns are all of the
+        // form {0}<sometext>{1}.
+        // We avoid MessageFormat, because there is no "sub" formatting.
         Iterator<?> it = items.iterator();
         int count = items.size();
         switch (count) {
         case 0:
-            return new FormattedListBuilder("", false);
+            return "";
         case 1:
-            return new FormattedListBuilder(it.next(), index == 0);
+            return it.next().toString();
         case 2:
-            return new FormattedListBuilder(it.next(), index == 0).append(two, it.next(), index == 1);
+            return format2(two, it.next(), it.next());
         }
-        FormattedListBuilder builder = new FormattedListBuilder(it.next(), index == 0);
-        builder.append(start, it.next(), index == 1);
-        for (int idx = 2; idx < count - 1; ++idx) {
-            builder.append(middle, it.next(), index == idx);
+        String result = it.next().toString();
+        result = format2(start, result, it.next());
+        for (count -= 3; count > 0; --count) {
+            result = format2(middle, result, it.next());
         }
-        return builder.append(end, it.next(), index == count - 1);
+        return format2(end, result, it.next());
     }
-    
-    /**
-     * Returns the pattern to use for a particular item count.
-     * @param count the item count.
-     * @return the pattern with {0}, {1}, {2}, etc. For English,
-     * getPatternForNumItems(3) == "{0}, {1}, and {2}"
-     * @throws IllegalArgumentException when count is 0 or negative.
-     * @stable ICU 52
-     */
-    public String getPatternForNumItems(int count) {
-        if (count <= 0) {
-            throw new IllegalArgumentException("count must be > 0");
-        }
-        ArrayList<String> list = new ArrayList<String>();
-        for (int i = 0; i < count; i++) {
-            list.add(String.format("{%d}", i));
-        }
-        return format(list);
-    }
-    
-    /**
-     * Returns the locale of this object.
-     * @internal
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public ULocale getLocale() {
-        return locale;
-    }
-    
-    // Builds a formatted list
-    static class FormattedListBuilder {
-        private StringBuilder current;
-        private int offset;
-        
-        // Start is the first object in the list; If recordOffset is true, records the offset of
-        // this first object.
-        public FormattedListBuilder(Object start, boolean recordOffset) {
-            this.current = new StringBuilder(start.toString());
-            this.offset = recordOffset ? 0 : -1;
-        }
-        
-        // Appends additional object. pattern is a template indicating where the new object gets
-        // added in relation to the rest of the list. {0} represents the rest of the list; {1}
-        // represents the new object in pattern. next is the object to be added. If recordOffset
-        // is true, records the offset of next in the formatted string.
-        public FormattedListBuilder append(String pattern, Object next, boolean recordOffset) {
-            int[] offsets = (recordOffset || offsetRecorded()) ? new int[2] : null;
-            SimpleFormatterImpl.formatAndReplace(
-                    pattern, current, offsets, current, next.toString());
-            if (offsets != null) {
-                if (offsets[0] == -1 || offsets[1] == -1) {
-                    throw new IllegalArgumentException(
-                            "{0} or {1} missing from pattern " + pattern);
-                }
-                if (recordOffset) {
-                    offset = offsets[1];
-                } else {
-                    offset += offsets[0];
-                }
-            }
-            return this;
-        }
 
-        @Override
-        public String toString() {
-            return current.toString();
+    private String format2(String pattern, Object a, Object b) {
+        int i0 = pattern.indexOf("{0}");
+        int i1 = pattern.indexOf("{1}");
+        if (i0 < 0 || i1 < 0) {
+            throw new IllegalArgumentException("Missing {0} or {1} in pattern " + pattern);
         }
-        
-        // Gets the last recorded offset or -1 if no offset recorded.
-        public int getOffset() {
-            return offset;
+        if (i0 < i1) {
+            return pattern.substring(0, i0) + a + pattern.substring(i0+3, i1) + b + pattern.substring(i1+3);
+        } else {
+            return pattern.substring(0, i1) + b + pattern.substring(i1+3, i0) + a + pattern.substring(i0+3);
         }
-        
-        private boolean offsetRecorded() {
-            return offset >= 0;
-        }
+    }
+
+    /** JUST FOR DEVELOPMENT */
+    // For use with the hard-coded data
+    // TODO Replace by use of RB
+    // Verify in building that all of the patterns contain {0}, {1}.
+
+    static Map<ULocale, ListFormatter> localeToData = new HashMap<ULocale, ListFormatter>();
+    static void add(String locale, String...data) {
+        localeToData.put(new ULocale(locale), new ListFormatter(data[0], data[1], data[2], data[3]));
     }
 
     private static class Cache {
-        private final ICUCache<String, ListFormatter> cache =
-            new SimpleCache<String, ListFormatter>();
+        private final ICUCache<ULocale, ListFormatter> cache =
+            new SimpleCache<ULocale, ListFormatter>();
 
-        public ListFormatter get(ULocale locale, String style) {
-            String key = String.format("%s:%s", locale.toString(), style);
-            ListFormatter result = cache.get(key);
+        public ListFormatter get(ULocale locale) {
+            ListFormatter result = cache.get(locale);
             if (result == null) {
-                result = load(locale, style);
-                cache.put(key, result);
+                result = load(locale);
+                cache.put(locale, result);
             }
             return result;
         }
 
-        private static ListFormatter load(ULocale ulocale, String style) {
+        private static ListFormatter load(ULocale ulocale) {
             ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.
-                    getBundleInstance(ICUData.ICU_BASE_NAME, ulocale);
-            StringBuilder sb = new StringBuilder();
+                    getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, ulocale);
+            r = r.getWithFallback("listPattern/standard");
             return new ListFormatter(
-                compilePattern(r.getWithFallback("listPattern/" + style + "/2").getString(), sb),
-                compilePattern(r.getWithFallback("listPattern/" + style + "/start").getString(), sb),
-                compilePattern(r.getWithFallback("listPattern/" + style + "/middle").getString(), sb),
-                compilePattern(r.getWithFallback("listPattern/" + style + "/end").getString(), sb),
-                ulocale);
+                r.getWithFallback("2").getString(),
+                r.getWithFallback("start").getString(),
+                r.getWithFallback("middle").getString(),
+                r.getWithFallback("end").getString());
         }
     }
 

@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2011-2014, International Business Machines
+*   Copyright (C) 2011-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 *   created on: 2011jan07
@@ -48,9 +46,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * Builds a CharsTrie for the add()ed data.
      * Once built, no further data can be add()ed until clear() is called.
      *
-     * <p>A CharsTrie cannot be empty. At least one (string, value) pair
-     * must have been add()ed.
-     *
      * <p>Multiple calls to build() or buildCharSequence() return tries or sequences
      * which share the builder's char array, without rebuilding.
      * After clear() has been called, a new array will be used.
@@ -65,9 +60,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
     /**
      * Builds a CharsTrie for the add()ed data and char-serializes it.
      * Once built, no further data can be add()ed until clear() is called.
-     *
-     * <p>A CharsTrie cannot be empty. At least one (string, value) pair
-     * must have been add()ed.
      *
      * <p>Multiple calls to build() or buildCharSequence() return tries or sequences
      * which share the builder's char array, without rebuilding.
@@ -107,7 +99,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected boolean matchNodesCanHaveValues() /*const*/ { return true; }
 
@@ -116,7 +107,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int getMaxBranchLinearSubNodeLength() /*const*/ { return CharsTrie.kMaxBranchLinearSubNodeLength; }
     /**
@@ -124,7 +114,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int getMinLinearMatch() /*const*/ { return CharsTrie.kMinLinearMatch; }
     /**
@@ -132,7 +121,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int getMaxLinearMatchLength() /*const*/ { return CharsTrie.kMaxLinearMatchLength; }
 
@@ -153,7 +141,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int write(int unit) {
         int newLength=charsLength+1;
@@ -167,7 +154,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int write(int offset, int length) {
         int newLength=charsLength+length;
@@ -196,7 +182,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int writeValueAndFinal(int i, boolean isFinal) {
         if(0<=i && i<=CharsTrie.kMaxOneUnitValue) {
@@ -224,7 +209,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int writeValueAndType(boolean hasValue, int value, int node) {
         if(!hasValue) {
@@ -252,7 +236,6 @@ public final class CharsTrieBuilder extends StringTrieBuilder {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     @Override
     protected int writeDeltaTo(int jumpTarget) {
         int i=charsLength-jumpTarget;

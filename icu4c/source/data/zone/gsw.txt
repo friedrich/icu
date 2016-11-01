@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/gsw.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/gsw.xml
+ */
 gsw{
-    Version{"2.1.28.76"}
+    Version{"2.0.82.45"}
     zoneStrings{
         "Africa:Accra"{
             ec{"Akkra"}
@@ -79,7 +88,10 @@ gsw{
             ec{"St. Vincent"}
         }
         "Antarctica:DumontDUrville"{
-            ec{"Dumont D’Urville"}
+            ec{"Dumont D'Urville"}
+        }
+        "Antarctica:South_Pole"{
+            ec{"Süüdpol"}
         }
         "Antarctica:Vostok"{
             ec{"Woschtok"}
@@ -294,11 +306,6 @@ gsw{
             ld{"Amazonas-Summerziit"}
             lg{"Amazonas-Ziit"}
             ls{"Amazonas-Schtandardziit"}
-        }
-        "meta:America_Central"{
-            ld{"Amerika-Zentraal Summerziit"}
-            lg{"Amerika-Zentraal Ziit"}
-            ls{"Amerika-Zentraal Schtandardziit"}
         }
         "meta:Europe_Central"{
             ld{"Mitteleuropäischi Summerziit"}

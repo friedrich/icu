@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  *******************************************************************************
  *
- *   Copyright (C) 1999-2013, International Business Machines
+ *   Copyright (C) 1999-2008, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  *
  *******************************************************************************
@@ -21,7 +19,6 @@
 #include "unicode/unistr.h"
 #include "unicode/uscript.h"
 #include "unicode/ubidi.h"
-#include "unicode/ustring.h"
 
 #include "layout/LETypes.h"
 #include "layout/LEScripts.h"
@@ -37,7 +34,6 @@
 
 U_NAMESPACE_USE
 
-static LEErrorCode overallStatus = LE_NO_ERROR;
 struct TestInput
 {
     const char *fontName;
@@ -46,36 +42,6 @@ struct TestInput
     le_int32    scriptCode;
     le_bool     rightToLeft;
 };
-
-/* Returns the path to icu/source/test/testdata/ */
-const char *getSourceTestData() {
-    const char *srcDataDir = NULL;
-#ifdef U_TOPSRCDIR
-    srcDataDir =  U_TOPSRCDIR  U_FILE_SEP_STRING "test" U_FILE_SEP_STRING "testdata" U_FILE_SEP_STRING;
-#else
-    srcDataDir = ".."U_FILE_SEP_STRING".."U_FILE_SEP_STRING"test"U_FILE_SEP_STRING"testdata"U_FILE_SEP_STRING;
-    FILE *f = fopen(".."U_FILE_SEP_STRING".."U_FILE_SEP_STRING"test"U_FILE_SEP_STRING"testdata"U_FILE_SEP_STRING"rbbitst.txt", "r");
-
-    if (f != NULL) {
-        /* We're in icu/source/test/letest/ */
-        fclose(f);
-    } else {
-        /* We're in icu/source/test/letest/(Debug|Release) */
-        srcDataDir = ".."U_FILE_SEP_STRING".."U_FILE_SEP_STRING".."U_FILE_SEP_STRING"test"U_FILE_SEP_STRING"testdata"U_FILE_SEP_STRING;
-    }
-#endif
-
-    return srcDataDir;
-}
-
-const char *getPath(char buffer[2048], const char *filename) {
-    const char *testDataDirectory = getSourceTestData();
-
-    strcpy(buffer, testDataDirectory);
-    strcat(buffer, filename);
-
-    return buffer;
-}
 
 /* 
  * FIXME: should use the output file name and the current date.
@@ -143,34 +109,25 @@ void dumpFloats(FILE *file, const char *tag, float *floats, le_int32 count) {
     fprintf(file, "        </%s>\n", tag);
 }
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char *argv[])
 {
     UErrorCode status = U_ZERO_ERROR;
-    const char *gendataFile = "gendata.xml";
     FILE *outputFile = fopen(argv[1], "w");
-    if(argc>2) {
-      gendataFile = argv[2];
-    }
     time_t now = time(NULL);
     struct tm *local = localtime(&now);
     const char *tmFormat = "%m/%d/%Y %I:%M:%S %p %Z";
     char  tmString[64];
-    le_uint32 count = 0;
+
     strftime(tmString, 64, tmFormat, local);
     fprintf(outputFile, header, local->tm_year + 1900, tmString);
 
     UXMLParser  *parser = UXMLParser::createParser(status);
-    UXMLElement *root   = parser->parseFile(gendataFile, status);
+    UXMLElement *root   = parser->parseFile("gendata.xml", status);
 
     if (root == NULL) {
-      printf("Error: Could not open %s\n", gendataFile);
+        printf("Error: Could not open gendata.xml\n");
         delete parser;
         return -1;
-    } else if(U_FAILURE(status)) {
-      printf("Error reading %s: %s\n", gendataFile, u_errorName(status));
-      return -2;
-    } else {
-      printf("Reading %s\n", gendataFile);
     }
 
     UnicodeString test_case        = UNICODE_STRING_SIMPLE("test-case");
@@ -193,13 +150,11 @@ int main(int argc, char *argv[])
             char *id = getCString(testCase->getAttribute(id_attr));
             char *script = getCString(testCase->getAttribute(script_attr));
             char *lang   = getCString(testCase->getAttribute(lang_attr));
-            ++count;
-            printf("\n ID %s\n", id);
             LEFontInstance *font = NULL;
             const UXMLElement *element;
             int32_t ec = 0;
             int32_t charCount = 0;
-            int32_t typoFlags = LayoutEngine::kTypoFlagKern | LayoutEngine::kTypoFlagLiga; // kerning + ligatures...
+            int32_t typoFlags = 3; // kerning + ligatures...
             UScriptCode scriptCode;
             le_int32 languageCode = -1;
             UnicodeString text;
@@ -236,16 +191,13 @@ int main(int argc, char *argv[])
                 if (tag.compare(test_font) == 0) {
                     char *fontName  = getCString(element->getAttribute(name_attr));
                     const char *version = NULL;
-                    char buf[2048];
-                    PortableFontInstance *pfi = new PortableFontInstance(getPath(buf,fontName), 12, leStatus);
+                    PortableFontInstance *pfi = new PortableFontInstance(fontName, 12, leStatus);
                     
                     if (LE_FAILURE(leStatus)) {
-                      printf("Error: could not open font: %s (path: %s)\n", fontName, buf);
+                        printf("Error: could not open font: %s\n", fontName);
                         freeCString(fontName);
                         goto free_c_strings;
                     }
-
-                    printf(" Generating: %s, %s, %s, %s\n", id, script, lang, fontName);
 
                     version = pfi->getNameString(NAME_VERSION_STRING, PLATFORM_MACINTOSH, MACINTOSH_ROMAN, MACINTOSH_ENGLISH);
 
@@ -255,27 +207,17 @@ int main(int argc, char *argv[])
                         const LEUnicode16 *uversion = pfi->getUnicodeNameString(NAME_VERSION_STRING, PLATFORM_MICROSOFT, MICROSOFT_UNICODE_BMP, MICROSOFT_ENGLISH);
 
                         if (uversion != NULL) {
-                          char uversion_utf8[300];
-                          UErrorCode status2 = U_ZERO_ERROR;
-                          u_strToUTF8(uversion_utf8, 300, NULL, uversion, -1, &status2);
-                          if(U_FAILURE(status2)) {
-                            uversion_utf8[0]=0;
-                          }
-                            fprintf(outputFile, "        <test-font name=\"%s\" version=\"%s\" checksum=\"0x%8.8X\" rchecksum=\"0x%8.8X\"/>\n\n",
-                                    fontName, uversion_utf8, pfi->getFontChecksum(), pfi->getRawChecksum());
+                            fprintf(outputFile, "        <test-font name=\"%s\" version=\"%S\" checksum=\"0x%8.8X\"/>\n\n",
+                                fontName, uversion, pfi->getFontChecksum());
 
                             pfi->deleteNameString(uversion);
-                        } else {
-                          fprintf(outputFile, "        <test-font name=\"%s\" version=\"unknown-0x%8.8X\" checksum=\"0x%8.8X\" rchecksum=\"0x%8.8X\"/>\n\n",
-                                  fontName, pfi->getFontChecksum(), pfi->getFontChecksum(), pfi->getRawChecksum());
                         }
                     } else {
-                        fprintf(outputFile, "        <test-font name=\"%s\" version=\"%s\" checksum=\"0x%8.8X\" rchecksum=\"0x%8.8X\"/>\n\n",
-                                fontName, version, pfi->getFontChecksum(), pfi->getRawChecksum());
+                        fprintf(outputFile, "        <test-font name=\"%s\" version=\"%s\" checksum=\"0x%8.8X\"/>\n\n",
+                            fontName, version, pfi->getFontChecksum());
 
                         pfi->deleteNameString(version);
                     }
-                    fflush(outputFile);
 
                     freeCString(fontName);
 
@@ -288,7 +230,6 @@ int main(int argc, char *argv[])
 
                     utf8 = getUTF8String(&text);
                     fprintf(outputFile, "        <test-text>%s</test-text>\n\n", utf8);
-                    fflush(outputFile);
                     freeCString(utf8);
                 } else {
                     // an unknown tag...
@@ -323,21 +264,13 @@ int main(int argc, char *argv[])
             engine->getCharIndices(indices, leStatus);
             engine->getGlyphPositions(positions, leStatus);
 
-            if(LE_FAILURE(leStatus)) {
-              fprintf(stderr,"ERROR: LO returned error: %s\n", u_errorName((UErrorCode)leStatus));
-              overallStatus = leStatus;
-              fprintf(outputFile, "<!-- ERROR: %d -->\n", leStatus);
-              fflush(outputFile);
-              leStatus = LE_NO_ERROR;
-            } else {
-              dumpLongs(outputFile, "result-glyphs", (le_int32 *) glyphs, glyphCount);
-              
-              dumpLongs(outputFile, "result-indices", indices, glyphCount);
-              
-              dumpFloats(outputFile, "result-positions", positions, glyphCount * 2 + 2);
-              fflush(outputFile);
+            dumpLongs(outputFile, "result-glyphs", (le_int32 *) glyphs, glyphCount);
 
-            }
+            dumpLongs(outputFile, "result-indices", indices, glyphCount);
+
+            dumpFloats(outputFile, "result-positions", positions, glyphCount * 2 + 2);
+
+            fprintf(outputFile, "    </test-case>\n\n");
 
             DELETE_ARRAY(positions);
             DELETE_ARRAY(indices);
@@ -346,9 +279,6 @@ int main(int argc, char *argv[])
             delete engine;
 
 delete_font:
-            fprintf(outputFile, "    </test-case>\n\n");
-            fflush(outputFile);
-
             delete font;
 
 free_c_strings:
@@ -363,21 +293,5 @@ free_c_strings:
 
     fprintf(outputFile, "</layout-tests>\n");
 
-    if(count==0) {
-      fprintf(stderr, "No cases processed!\n");
-      return 1;
-    }
-
-
-    if(LE_FAILURE(overallStatus)) {
-      fprintf(outputFile, "<!-- !!! FAILED. %d -->\n", overallStatus);
-      fprintf(stderr, "!!! FAILED. %d\n", overallStatus);
-      fclose(outputFile);
-      return 0;
-      //      return 1;
-    } else {
-      printf("Generated.\n");
-      fclose(outputFile);
-      return 0;
-    }
+    fclose(outputFile);
 }

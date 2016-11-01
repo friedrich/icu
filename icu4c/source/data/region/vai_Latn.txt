@@ -1,7 +1,15 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/vai_Latn.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/vai_Latn.xml
+ */
 vai_Latn{
-    %%Parent{"root"}
     Countries{
         AD{"Aŋdóra"}
         AE{"Yunaitɛ Arabhi Ɛmire"}
@@ -10,6 +18,7 @@ vai_Latn{
         AI{"Aŋgíla"}
         AL{"Abhaniya"}
         AM{"Améniya"}
+        AN{"Nidɔlɛŋ Aŋtili"}
         AO{"Aŋgóla"}
         AR{"Ajɛŋtína"}
         AS{"Poo Sambowa"}
@@ -227,5 +236,5 @@ vai_Latn{
         ZM{"Zambiya"}
         ZW{"Zimbabhuwe"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.82.45"}
 }

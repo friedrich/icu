@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*****************************************************************************************
  *
  *   Copyright (C) 1996-2009, International Business Machines
@@ -23,15 +21,16 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.ULocale;
 
 public class IntlTestNumberFormatAPI extends com.ibm.icu.dev.test.TestFmwk
 {
+    public static void main(String[] args) throws Exception {
+        new IntlTestNumberFormatAPI().run(args);
+    }
+
     // This test checks various generic API methods in DecimalFormat to achieve 100% API coverage.
-    @Test
     public void TestAPI()
     {
         logln("NumberFormat API test---"); logln("");
@@ -203,7 +202,6 @@ public class IntlTestNumberFormatAPI extends com.ibm.icu.dev.test.TestFmwk
     }
     
     // Jitterbug 4451, for coverage
-    @Test
     public void TestCoverage(){
         class StubNumberFormat extends NumberFormat{
             /**

@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2012-2016, International Business Machines
+*   Copyright (C) 2012-2013, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -112,30 +110,6 @@ void ListFormatterTest::TestEnglish() {
     CheckFourCases("en", one, two, three, four, results);
 }
 
-void ListFormatterTest::Test9946() {
-    UErrorCode errorCode = U_ZERO_ERROR;
-    LocalPointer<ListFormatter> formatter(ListFormatter::createInstance(Locale("en"), errorCode));
-    if (U_FAILURE(errorCode)) {
-        dataerrln(
-            "ListFormatter::createInstance(Locale(\"en\"), errorCode) failed in Test9946: %s",
-            u_errorName(errorCode));
-        return;
-    }
-    UnicodeString data[3] = {"{0}", "{1}", "{2}"};
-    UnicodeString actualResult;
-    formatter->format(data, 3, actualResult, errorCode);
-    if (U_FAILURE(errorCode)) {
-        dataerrln(
-            "ListFormatter::createInstance(Locale(\"en\"), errorCode) failed in Test9946: %s",
-            u_errorName(errorCode));
-        return;
-    }
-    UnicodeString expected("{0}, {1}, and {2}");
-    if (expected != actualResult) {
-        errln("Expected " + expected + ", got " + actualResult);
-    }
-}
-
 void ListFormatterTest::TestEnglishUS() {
     UnicodeString results[4] = {
         one,
@@ -183,9 +157,9 @@ void ListFormatterTest::TestMalayalam() {
 void ListFormatterTest::TestZulu() {
     UnicodeString results[4] = {
         one,
-        one + " ne-" + two,
-        one + ", " + two + ", ne-" + three,
-        one + ", " + two + ", " + three + ", ne-" + four
+        "I-" + one + " ne-" + two,
+        one + ", " + two + ", no-" + three,
+        one + ", " + two + ", " + three + ", no-" + four
     };
 
     CheckFourCases("zu", one, two, three, four, results);
@@ -199,10 +173,9 @@ void ListFormatterTest::TestOutOfOrderPatterns() {
         four + " in the last after " + three + " after " + two + " after the first " + one
     };
 
-    UErrorCode errorCode = U_ZERO_ERROR;
     ListFormatData data("{1} after {0}", "{1} after the first {0}",
                         "{1} after {0}", "{1} in the last after {0}");
-    ListFormatter formatter(data, errorCode);
+    ListFormatter formatter(data);
 
     UnicodeString input1[] = {one};
     CheckFormatting(&formatter, input1, 1, results[0]);
@@ -228,7 +201,6 @@ void ListFormatterTest::runIndexedTest(int32_t index, UBool exec,
         case 5: name = "TestMalayalam"; if (exec) TestMalayalam(); break;
         case 6: name = "TestZulu"; if (exec) TestZulu(); break;
         case 7: name = "TestOutOfOrderPatterns"; if (exec) TestOutOfOrderPatterns(); break;
-        case 8: name = "Test9946"; if (exec) Test9946(); break;
 
         default: name = ""; break;
     }

@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 1998-2014, International Business Machines
+*   Copyright (C) 1998-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -26,12 +24,11 @@
 
 U_CDECL_BEGIN
 /* One time parser initalisation */
-void initParser();
+void initParser(UBool omitCollationRules);
 
 /* Parse a ResourceBundle text file */
 struct SRBRoot* parse(UCHARBUF *buf, const char* inputDir, const char* outputDir,
-                      const char *filename,
-                      UBool makeBinaryCollation, UBool omitCollationRules, UErrorCode *status);
+                      UBool omitBinaryCollation, UErrorCode *status);
 
 U_CDECL_END
 

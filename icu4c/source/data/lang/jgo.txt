@@ -1,32 +1,41 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2013 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/jgo.xml
+// *
+// ***************************************************************************
+/**
+ *  ICU <specials> source: <path>/xml/main/jgo.xml
+ */
 jgo{
     Keys{
-        currency{"Ŋkáp"}
-        numbers{"Pɛnɔ́mba"}
+        currency{"Ŋkɑ́p"}
+        numbers{"Pɛnɔ́mbɑ"}
     }
     Languages{
         ar{"Alâbɛ"}
         de{"Njáman"}
-        el{"Ŋgɛlɛ̂k"}
-        en{"Aŋgɛlúshi"}
+        el{"Ŋɡɛlɛ̂k"}
+        en{"Aŋɡɛlúshi"}
         fr{"Fɛlánci"}
         jgo{"Ndaꞌa"}
-        und{"cú-pʉɔ yi pɛ́ ká kɛ́ jí"}
+        und{"cú-pʉɔ yi pɛ́ kɑ́ kɛ́ jí"}
         zh{"Shinwâ"}
     }
     Scripts{
-        Latn{"mík -ŋwaꞌnɛ yi ɛ́ líŋɛ́nɛ Latɛ̂ŋ"}
-        Zxxx{"ntúu yi pɛ́ ká ŋwaꞌnε"}
-        Zzzz{"ntɛ-ŋwaꞌnɛ yí pɛ́ ká kɛ́ jí"}
+        Latn{"mík -ŋwa’nɛ yi ɛ́ líŋɛ́nɛ Latɛ̂ŋ"}
+        Zxxx{"ntúu yi pɛ́ ká ŋwa’nε"}
+        Zzzz{"ntɛ-ŋwa’nɛ yí pɛ́ kɑ́ kɛ́ jí"}
     }
     Types{
         calendar{
-            gregorian{"mɛlɛ́ꞌ-mɛkát"}
+            gregorian{"mɛlɛ́’-mɛkɑ́t"}
         }
         numbers{
             latn{"pɛnɔ́mba"}
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.82.45"}
 }

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2012, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -30,8 +28,6 @@ class IntlTestRBNF : public IntlTest {
    */
   virtual void TestAPI();
 
-  void TestMultiplePluralRules();
-
   /**
    * Perform a simple spot check on the FractionalRuleSet logic
    */
@@ -49,104 +45,95 @@ class IntlTestRBNF : public IntlTest {
   /**
    * Perform a simple spot check on the English spellout rules
    */
-  void TestEnglishSpellout();
+  virtual void TestEnglishSpellout();
 
   /**
    * Perform a simple spot check on the English ordinal-abbreviation rules
    */
-  void TestOrdinalAbbreviations();
+  virtual void TestOrdinalAbbreviations();
 
   /**
    * Perform a simple spot check on the duration-formatting rules
    */
-  void TestDurations();
+  virtual void TestDurations();
 
   /**
    * Perform a simple spot check on the Spanish spellout rules
    */
-  void TestSpanishSpellout();
+  virtual void TestSpanishSpellout();
 
   /**
    * Perform a simple spot check on the French spellout rules
    */
-  void TestFrenchSpellout();
+  virtual void TestFrenchSpellout();
 
   /**
    * Perform a simple spot check on the Swiss French spellout rules
    */
-  void TestSwissFrenchSpellout();
+  virtual void TestSwissFrenchSpellout();
 
   /**
    * Check that Belgian French matches Swiss French spellout rules
    */
-  void TestBelgianFrenchSpellout();
+  virtual void TestBelgianFrenchSpellout();
 
   /**
    * Perform a simple spot check on the Italian spellout rules
    */
-  void TestItalianSpellout();
+  virtual void TestItalianSpellout();
 
   /**
    * Perform a simple spot check on the Portuguese spellout rules
    */
-  void TestPortugueseSpellout();
+  virtual void TestPortugueseSpellout();
 
   /**
    * Perform a simple spot check on the German spellout rules
    */
-  void TestGermanSpellout();
+  virtual void TestGermanSpellout();
 
   /**
    * Perform a simple spot check on the Thai spellout rules
    */
-  void TestThaiSpellout();
+  virtual void TestThaiSpellout();
 
   /**
    * Perform a simple spot check on the Swedish spellout rules
    */
-  void TestSwedishSpellout();
+  virtual void TestSwedishSpellout();
 
   /**
    * Perform a simple spot check on small values
    */
-  void TestSmallValues();
+  virtual void TestSmallValues();
 
   /**
    * Test localizations using string data.
    */
-  void TestLocalizations();
+  virtual void TestLocalizations();
 
   /**
    * Test that all locales construct ok.
    */
-  void TestAllLocales();
+  virtual void TestAllLocales();
 
   /**
    * Test that hebrew fractions format without trailing '<'
    */
-  void TestHebrewFraction();
+  virtual void TestHebrewFraction();
 
   /**
    * Regression test, don't truncate
    * when doing multiplier substitution to a number format rule.
    */
-  void TestMultiplierSubstitution();
+  virtual void TestMultiplierSubstitution();
 
   /**
    * Test the setDecimalFormatSymbols in RBNF
    */
-  void TestSetDecimalFormatSymbols();
+  virtual void TestSetDecimalFormatSymbols();
 
-  /**
-   * Test the plural rules in RBNF
-   */
-  void TestPluralRules();
-
-    void TestInfinityNaN();
-    void TestVariableDecimalPoint();
-    void TestRounding();
-
-protected:
+ protected:
   virtual void doTest(RuleBasedNumberFormat* formatter, const char* const testData[][2], UBool testParsing);
   virtual void doLenientParseTest(RuleBasedNumberFormat* formatter, const char* testData[][2]);
 

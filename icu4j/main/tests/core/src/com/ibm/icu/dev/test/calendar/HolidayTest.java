@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2010, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -10,9 +8,6 @@ package com.ibm.icu.dev.test.calendar;
 
 import java.util.Date;
 import java.util.Locale;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.LocaleUtility;
@@ -23,28 +18,27 @@ import com.ibm.icu.util.Holiday;
 import com.ibm.icu.util.RangeDateRule;
 import com.ibm.icu.util.SimpleDateRule;
 import com.ibm.icu.util.SimpleHoliday;
-import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
 
 /**
  * Tests for the <code>Holiday</code> class.
  */
 public class HolidayTest extends TestFmwk {
-    @Before
-    public void init() throws Exception {
+    public static void main(String args[]) throws Exception {
+        new HolidayTest().run(args);
+    }
+    protected void init()throws Exception{
         if(cal==null){
             cal = new GregorianCalendar(1, 0, 1);
             longTimeAgo = cal.getTime();
             now = new Date();
         }
     }
-    
-    private Calendar cal;
-    private Date longTimeAgo;
-    private Date now;
-    private static long awhile = 3600L * 24 * 28; // 28 days
+    static  Calendar cal;
+    static  Date longTimeAgo;
+    static  Date now;
+    static  long awhile = 3600L * 24 * 28; // 28 days
 
-    @Test
     public void TestAPI() {
         {
             // getHolidays
@@ -109,10 +103,6 @@ public class HolidayTest extends TestFmwk {
         logln("firstBetween: " + first + " and " + now + " is " + second);
         if (second == null) {
             second = now;
-        } else {
-            if(second.after(now)) {
-                errln("Error: "+h.getDisplayName()+".firstBetween("+first+", "+now+")="+second);
-            }
         }
 
         logln("is on " + first + ": " + h.isOn(first));
@@ -135,98 +125,8 @@ public class HolidayTest extends TestFmwk {
         //        logln("rule: " + h.getRule().toString());
 
         //        h.setRule(h.getRule());
-        
-        
-        logln("HolidayCalendarDemo test");
-        {
-            final Calendar c = Calendar.getInstance(TimeZone.GMT_ZONE); // Temporary copy
-            c.set(2014, 10, 8); // when this test was hit
-            final Date fStartOfMonth = startOfMonth((Calendar)c.clone());
-
-            // Stash away a few useful constants for this calendar and display
-            //minDay = c.getMinimum(Calendar.DAY_OF_WEEK);
-            //daysInWeek = c.getMaximum(Calendar.DAY_OF_WEEK) - minDay + 1;
-
-            //firstDayOfWeek = Calendar.getInstance(fDisplayLocale).getFirstDayOfWeek();
-
-            // Stash away a Date for the start of this month
-
-            // Find the day of week of the first day in this month
-            c.setTime(fStartOfMonth);
-            //firstDayInMonth = c.get(Calendar.DAY_OF_WEEK);
-
-            // Now find the # of days in the month
-            c.roll(Calendar.DATE, false);
-            // final int daysInMonth = c.get(Calendar.DATE);
-
-            // Finally, find the end of the month, i.e. the start of the next one
-            c.roll(Calendar.DATE, true);
-            c.add(Calendar.MONTH, 1);
-            c.getTime();        // JDK 1.1.2 bug workaround
-            c.add(Calendar.SECOND, -1);
-            Date endOfMonth = c.getTime();
-
-            //
-            // Calculate the number of full or partial weeks in this month.
-            // To do this I can just reuse the code that calculates which
-            // calendar cell contains a given date.
-            //
-            //numWeeks = dateToCell(daysInMonth).y - dateToCell(1).y + 1;
-
-            // Remember which holidays fall on which days in this month,
-            // to save the trouble of having to do it later
-            //fHolidays.setSize(0);
-            int patience=100;
-
-            //for (int h = 0; h < fAllHolidays.length; h++)
-            {
-                Date d = fStartOfMonth;
-                while ( (d = h.firstBetween(d, endOfMonth) ) != null)
-                {
-                    if(--patience <= 0) {
-                        errln("Patience exceeded for " + h.getDisplayName() +" at " + d);
-                        break;
-                    }
-                    if(d.after(endOfMonth)) {
-                        errln("Error: for " + h.getDisplayName()+": " + d +" is after end of month " + endOfMonth);
-                        break;
-                    }
-                    c.setTime(d);
-                    logln("New date: " + d);
-//                    fHolidays.addElement( new HolidayInfo(c.get(Calendar.DATE),
-//                                            fAllHolidays[h],
-//                                            fAllHolidays[h].getDisplayName(fDisplayLocale) ));
-
-                    d.setTime( d.getTime() + 1000 );    // "d++"
-                }
-            }
-//            dirty = false;
-        }
-        // end HolidayDemoApplet code
-
     }
-
-    // from HolidayCalendarDemo
-    private Date startOfMonth(/*Date dateInMonth,*/ Calendar fCalendar)
-    {
-        //synchronized(fCalendar) {
-        //    fCalendar.setTime(dateInMonth);             // TODO: synchronization
-
-            int era = fCalendar.get(Calendar.ERA);
-            int year = fCalendar.get(Calendar.YEAR);
-            int month = fCalendar.get(Calendar.MONTH);
-
-            fCalendar.clear();
-            fCalendar.set(Calendar.ERA, era);
-            fCalendar.set(Calendar.YEAR, year);
-            fCalendar.set(Calendar.MONTH, month);
-            fCalendar.set(Calendar.DATE, 1);
-
-            return fCalendar.getTime();
-       // }
-    }
-
-    @Test
+    
     public void TestCoverage(){
         Holiday[] h = { new EasterHoliday("Ram's Easter"),
                         new SimpleHoliday(2, 29, 0, "Leap year", 1900, 2100)};
@@ -264,28 +164,7 @@ public class HolidayTest extends TestFmwk {
         }
         exerciseHoliday(h[1], Locale.getDefault());
     }
-    
-    @Test
-    public void TestEaster(){        
-        // Verify that Easter is working. Should be April 20, 2014
-        final Holiday h = new EasterHoliday("Easter Sunday");
-        final Date beginApril = getDate(2014, Calendar.APRIL, 1);
-        final Date endApril   = getDate(2014, Calendar.APRIL, 30);
-        final Date expect     = getDate(2014, Calendar.APRIL, 20);
-        final Date actual     = h.firstBetween(beginApril, endApril);
-        
-        if(actual == null) {
-            errln("Error: Easter 2014 should be on " + expect + " but got null.");
-        } else {
-            Calendar c = Calendar.getInstance(TimeZone.GMT_ZONE, Locale.US);
-            c.setTime(actual);
-            assertEquals("Easter's year:  ", 2014, c.get(Calendar.YEAR));
-            assertEquals("Easter's month: ", Calendar.APRIL, c.get(Calendar.MONTH));
-            assertEquals("Easter's date:  ", 20, c.get(Calendar.DATE));
-        }
-    }
 
-    @Test
     public void TestIsOn() {
         // jb 1901
         SimpleHoliday sh = new SimpleHoliday(Calendar.AUGUST, 15, "Doug's Day", 1958, 2058);
@@ -330,7 +209,6 @@ public class HolidayTest extends TestFmwk {
         }
     }
     
-    @Test
     public void TestDisplayName() {
         Holiday[] holidays = Holiday.getHolidays(ULocale.US);
         for (int i = 0; i < holidays.length; ++i) {

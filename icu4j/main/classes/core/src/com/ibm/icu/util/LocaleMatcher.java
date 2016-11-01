@@ -1,30 +1,22 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  ****************************************************************************************
- * Copyright (C) 2009-2016, Google, Inc.; International Business Machines Corporation
- * and others. All Rights Reserved.
+ * Copyright (C) 2009-2010, Google, Inc.; International Business Machines Corporation   *
+ * and others. All Rights Reserved.                                                     *
  ****************************************************************************************
  */
 package com.ibm.icu.util;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ibm.icu.impl.ICUData;
-import com.ibm.icu.impl.ICUResourceBundle;
-import com.ibm.icu.impl.Relation;
 import com.ibm.icu.impl.Row;
+import com.ibm.icu.impl.Row.R2;
 import com.ibm.icu.impl.Row.R3;
-import com.ibm.icu.impl.Utility;
 
 /**
  * Provides a way to match the languages (locales) supported by a product to the
@@ -32,10 +24,10 @@ import com.ibm.icu.impl.Utility;
  * example:
  * 
  * <pre>
- * LocaleMatcher matcher = new LocaleMatcher("fr, en-GB, en");
+ * LanguageMatcher matcher = new StandardLanguageMatcher(&quot;fr, en-GB, en&quot;);
  * 
  * // afterwards:
- * matcher.getBestMatch("en-US").toLanguageTag() =&gt; "en"
+ * matcher.getBestMatch(LanguageCode.US).first == LanguageCode.ENGLISH
  * </pre>
  * 
  * It takes into account when languages are close to one another, such as fil
@@ -51,15 +43,7 @@ import com.ibm.icu.impl.Utility;
  * @stable ICU 4.4
  */
 public class LocaleMatcher {
-
-    /**
-     * @internal
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public static final boolean DEBUG = false;
-
-    private static final ULocale UNKNOWN_LOCALE = new ULocale("und");
+    private static final boolean DEBUG = false;
 
     /**
      * Threshold for falling back to the default (first) language. May make this
@@ -71,11 +55,6 @@ public class LocaleMatcher {
      * The default language, in case the threshold is not met.
      */
     private final ULocale defaultLanguage;
-
-    /**
-     * The default language, in case the threshold is not met.
-     */
-    private final double threshold;
 
     /**
      * Create a new language matcher. The highest-weighted language is the
@@ -109,28 +88,13 @@ public class LocaleMatcher {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public LocaleMatcher(LocalePriorityList languagePriorityList, LanguageMatcherData matcherData) {
-        this(languagePriorityList, matcherData, DEFAULT_THRESHOLD);
-    }
-
-    /**
-     * Internal testing function; may expose API later.
-     * @param languagePriorityList LocalePriorityList to match
-     * @param matcherData Internal matching data
-     * @internal
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public LocaleMatcher(LocalePriorityList languagePriorityList, LanguageMatcherData matcherData, double threshold) {
-        this.matcherData = matcherData == null ? defaultWritten : matcherData.freeze();
+        this.matcherData = matcherData;
         for (final ULocale language : languagePriorityList) {
             add(language, languagePriorityList.getWeight(language));
         }
-        processMapping();
         Iterator<ULocale> it = languagePriorityList.iterator();
         defaultLanguage = it.hasNext() ? it.next() : null;
-        this.threshold = threshold;
     }
 
 
@@ -169,10 +133,10 @@ public class LocaleMatcher {
         String region2 = canonicalMap.get(region);
         if (lang2 != null || script2 != null || region2 != null) {
             return new ULocale(
-                lang2 == null ? lang : lang2,
-                    script2 == null ? script : script2,
-                        region2 == null ? region : region2
-                );
+                    lang2 == null ? lang : lang2,
+                            script2 == null ? script : script2,
+                                    region2 == null ? region : region2
+            );
         }
         return ulocale;
     }
@@ -187,18 +151,15 @@ public class LocaleMatcher {
     public ULocale getBestMatch(LocalePriorityList languageList) {
         double bestWeight = 0;
         ULocale bestTableMatch = null;
-        double penalty = 0;
-        OutputDouble matchWeight = new OutputDouble();
         for (final ULocale language : languageList) {
-            final ULocale matchLocale = getBestMatchInternal(language, matchWeight);
-            final double weight = matchWeight.value * languageList.getWeight(language) - penalty;
+            final Row.R2<ULocale, Double> matchRow = getBestMatchInternal(language);
+            final double weight = matchRow.get1() * languageList.getWeight(language);
             if (weight > bestWeight) {
                 bestWeight = weight;
-                bestTableMatch = matchLocale;
+                bestTableMatch = matchRow.get0();
             }
-            penalty += 0.07000001;
         }
-        if (bestWeight < threshold) {
+        if (bestWeight < DEFAULT_THRESHOLD) {
             bestTableMatch = defaultLanguage;
         }
         return bestTableMatch;
@@ -223,16 +184,7 @@ public class LocaleMatcher {
      * @stable ICU 4.4
      */
     public ULocale getBestMatch(ULocale ulocale) {
-        return getBestMatchInternal(ulocale, null);
-    }
-
-    /**
-     * @internal
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public ULocale getBestMatch(ULocale... ulocales) {
-        return getBestMatch(LocalePriorityList.add(ulocales).build());
+        return getBestMatchInternal(ulocale).get0();
     }
 
     /**
@@ -242,7 +194,7 @@ public class LocaleMatcher {
     @Override
     public String toString() {
         return "{" + defaultLanguage + ", " 
-            + localeToMaxLocaleAndWeight + "}";
+        + maximizedLanguageToWeight + "}";
     }
     // ================= Privates =====================
 
@@ -253,98 +205,40 @@ public class LocaleMatcher {
      * @return best matching language code and weight (as per
      *         {@link #match(ULocale, ULocale)})
      */
-    private ULocale getBestMatchInternal(ULocale languageCode, OutputDouble outputWeight) {
+    private Row.R2<ULocale, Double> getBestMatchInternal(ULocale languageCode) {
         languageCode = canonicalize(languageCode);
         final ULocale maximized = addLikelySubtags(languageCode);
         if (DEBUG) {
-            System.out.println("\ngetBestMatchInternal: " + languageCode + ";\t" + maximized);
+            System.out.println("\n" + languageCode + ";\t" + maximized);
         }
         double bestWeight = 0;
         ULocale bestTableMatch = null;
-        String baseLanguage = maximized.getLanguage();
-        Set<R3<ULocale, ULocale, Double>> searchTable = desiredLanguageToPossibleLocalesToMaxLocaleToData.get(baseLanguage);
-        if (searchTable != null) { // we preprocessed the table so as to filter by lanugage
-            if (DEBUG) System.out.println("\tSearching: " + searchTable);
-            for (final R3<ULocale, ULocale, Double> tableKeyValue : searchTable) {
-                ULocale tableKey = tableKeyValue.get0();
-                ULocale maxLocale = tableKeyValue.get1();
-                Double matchedWeight = tableKeyValue.get2();
-                final double match = match(languageCode, maximized, tableKey, maxLocale);
-                if (DEBUG) {
-                    System.out.println("\t" + tableKeyValue + ";\t" + match + "\n");
-                }
-                final double weight = match * matchedWeight;
-                if (weight > bestWeight) {
-                    bestWeight = weight;
-                    bestTableMatch = tableKey;
-                    if (weight > 0.999d) { // bail on good enough match.
-                        break;
-                    }
-                }
+        for (final ULocale tableKey : maximizedLanguageToWeight.keySet()) {
+            R2<ULocale, Double> row = maximizedLanguageToWeight.get(tableKey);
+            final double match = match(languageCode, maximized, tableKey, row.get0());
+            if (DEBUG) {
+                System.out.println("\t" + tableKey + ";\t" + row.toString() + ";\t" + match);
+            }
+            final double weight = match * row.get1();
+            if (weight > bestWeight) {
+                bestWeight = weight;
+                bestTableMatch = tableKey;
             }
         }
-        if (bestWeight < threshold) {
+        if (bestWeight < DEFAULT_THRESHOLD) {
             bestTableMatch = defaultLanguage;
         }
-        if (outputWeight != null) {
-            outputWeight.value = bestWeight; // only return the weight when needed
-        }
-        return bestTableMatch;
-    }
-    
-    /**
-     * @internal 
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    private static class OutputDouble { // TODO, move to where OutputInt is
-        double value;
+        return Row.R2.of(bestTableMatch, bestWeight);
     }
 
     private void add(ULocale language, Double weight) {
         language = canonicalize(language);
-        R3<ULocale, ULocale, Double> row = Row.of(language, addLikelySubtags(language), weight);
-        row.freeze();
-        localeToMaxLocaleAndWeight.add(row);
+        R2<ULocale, Double> row = Row.of(addLikelySubtags(language), weight);
+        maximizedLanguageToWeight.put(language, row);
     }
 
-    /**
-     * We preprocess the data to get just the possible matches for each desired base language. 
-     */
-    private void processMapping() {
-        for (Entry<String, Set<String>> desiredToMatchingLanguages : matcherData.matchingLanguages().keyValuesSet()) {
-            String desired = desiredToMatchingLanguages.getKey();
-            Set<String> supported = desiredToMatchingLanguages.getValue();
-            for (R3<ULocale, ULocale, Double> localeToMaxAndWeight : localeToMaxLocaleAndWeight) {
-                final ULocale key = localeToMaxAndWeight.get0();
-                String lang = key.getLanguage();
-                if (supported.contains(lang)) {
-                    addFiltered(desired, localeToMaxAndWeight);
-                }
-            }
-        }
-        // now put in the values directly, since languages always map to themselves
-        for (R3<ULocale, ULocale, Double> localeToMaxAndWeight : localeToMaxLocaleAndWeight) {
-            final ULocale key = localeToMaxAndWeight.get0();
-            String lang = key.getLanguage();
-            addFiltered(lang, localeToMaxAndWeight);
-        }
-    }
+    Map<ULocale,Row.R2<ULocale, Double>> maximizedLanguageToWeight = new LinkedHashMap<ULocale, R2<ULocale, Double>>();
 
-    private void addFiltered(String desired, R3<ULocale, ULocale, Double> localeToMaxAndWeight) {
-        Set<R3<ULocale, ULocale, Double>> map = desiredLanguageToPossibleLocalesToMaxLocaleToData.get(desired);
-        if (map == null) {
-            desiredLanguageToPossibleLocalesToMaxLocaleToData.put(desired, map = new LinkedHashSet<R3<ULocale, ULocale, Double>>());
-        }
-        map.add(localeToMaxAndWeight);
-        if (DEBUG) {
-            System.out.println(desired + ", " + localeToMaxAndWeight);
-        }
-    }
-
-    Set<Row.R3<ULocale, ULocale, Double>> localeToMaxLocaleAndWeight = new LinkedHashSet<Row.R3<ULocale, ULocale, Double>>();
-    Map<String,Set<Row.R3<ULocale, ULocale, Double>>> desiredLanguageToPossibleLocalesToMaxLocaleToData 
-    = new LinkedHashMap<String,Set<Row.R3<ULocale, ULocale, Double>>>();
 
     // =============== Special Mapping Information ==============
 
@@ -352,21 +246,12 @@ public class LocaleMatcher {
      * We need to add another method to addLikelySubtags that doesn't return
      * null, but instead substitutes Zzzz and ZZ if unknown. There are also
      * a few cases where addLikelySubtags needs to have expanded data, to handle
-     * all deprecated codes.
+     * all deprecated codes, and to update to CLDR 1.6.
      * @param languageCode
      * @return "fixed" addLikelySubtags
      */
+    // TODO(markdavis): update the above when CLDR 1.6 is final.
     private ULocale addLikelySubtags(ULocale languageCode) {
-        // max("und") = "en_Latn_US", and since matching is based on maximized tags, the undefined
-        // language would normally match English.  But that would produce the counterintuitive results
-        // that getBestMatch("und", LocaleMatcher("it,en")) would be "en", and
-        // getBestMatch("en", LocaleMatcher("it,und")) would be "und".
-        //
-        // To avoid that, we change the matcher's definitions of max (AddLikelySubtagsWithDefaults)
-        // so that max("und")="und". That produces the following, more desirable results:
-        if (languageCode.equals(UNKNOWN_LOCALE)) {
-            return UNKNOWN_LOCALE;
-        }
         final ULocale result = ULocale.addLikelySubtags(languageCode);
         // should have method on getLikelySubtags for this
         if (result == null || result.equals(languageCode)) {
@@ -374,11 +259,11 @@ public class LocaleMatcher {
             final String script = languageCode.getScript();
             final String region = languageCode.getCountry();
             return new ULocale((language.length()==0 ? "und"
-                : language)
-                + "_"
-                + (script.length()==0 ? "Zzzz" : script)
-                + "_"
-                + (region.length()==0 ? "ZZ" : region));
+                    : language)
+                    + "_"
+                    + (script.length()==0 ? "Zzzz" : script)
+                    + "_"
+                    + (region.length()==0 ? "ZZ" : region));
         }
         return result;
     }
@@ -390,9 +275,9 @@ public class LocaleMatcher {
         private String region;
         private Level level;
         static Pattern pattern = Pattern.compile(
-            "([a-z]{1,8}|\\*)"
-                + "(?:[_-]([A-Z][a-z]{3}|\\*))?"
-                + "(?:[_-]([A-Z]{2}|[0-9]{3}|\\*))?");
+                "([a-zA-Z]{1,8}|\\*)" +
+                "(?:-([a-zA-Z]{4}|\\*))?" +
+        "(?:-([a-zA-Z]{2}|[0-9]{3}|\\*))?");
 
         public LocalePatternMatcher(String toMatch) {
             Matcher matcher = pattern.matcher(toMatch);
@@ -454,61 +339,18 @@ public class LocaleMatcher {
             }
             return result;
         }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this) {
-                return true;
-            }
-            if (obj == null || !(obj instanceof LocalePatternMatcher)) {
-                return false;
-            }
-            LocalePatternMatcher other = (LocalePatternMatcher) obj;
-            return Utility.objectEquals(level, other.level)
-                && Utility.objectEquals(lang, other.lang)
-                && Utility.objectEquals(script, other.script)
-                && Utility.objectEquals(region, other.region);
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
-        @Override
-        public int hashCode() {
-            return level.ordinal()
-                ^ (lang == null ? 0 : lang.hashCode())
-                ^ (script == null ? 0 : script.hashCode())
-                ^ (region == null ? 0 : region.hashCode());
-        }
     }
 
-    enum Level {
-        language(0.99),
-        script(0.2), 
-        region(0.04);
-
-        final double worst;
-
-        Level(double d) {
-            worst = d;
-        }
-    }
+    enum Level {language, script, region}
 
     private static class ScoreData implements Freezable<ScoreData> {
-        @SuppressWarnings("unused")
-        private static final double maxUnequal_changeD_sameS = 0.5;
-
-        @SuppressWarnings("unused")
-        private static final double maxUnequal_changeEqual = 0.75;
-
         LinkedHashSet<Row.R3<LocalePatternMatcher,LocalePatternMatcher,Double>> scores = new LinkedHashSet<R3<LocalePatternMatcher, LocalePatternMatcher, Double>>();
+        final double worst;
         final Level level;
 
         public ScoreData(Level level) {
             this.level = level;
+            this.worst = (1-(level == Level.language ? 90 : level == Level.script ? 20 : 4))/100.0;
         }
 
         void addDataToScores(String desired, String supported, R3<LocalePatternMatcher,LocalePatternMatcher,Double> data) {
@@ -521,50 +363,79 @@ public class LocaleMatcher {
             //                lang_result.put(supported, result = new LinkedHashSet());
             //            }
             //            result.add(data);
-            boolean added = scores.add(data);
-            if (!added) {
-                throw new ICUException("trying to add duplicate data: " +  data);
-            }
+            scores.add(data);
         }
 
-        double getScore(ULocale dMax, String desiredRaw, String desiredMax, 
-            ULocale sMax, String supportedRaw, String supportedMax) {
-            double distance = 0;
+        double getScore(ULocale desiredLocale, ULocale dMax, String desiredRaw, String desiredMax, 
+                ULocale supportedLocale, ULocale sMax, String supportedRaw, String supportedMax) {
+
+            /*
+             * d, dm, s, sm
+             * dc = d != dm
+             * sc = s != sm
+             * if dm != sm
+             *   rd = rd(dm,sm) // line 4
+             *   if dc != sc
+             *     rd *= 0.75 // lines 3,8
+             *   ef dc
+             *     rd *= 0.5 // lines 7
+             *   end
+             *  ef dc == sc
+             *   rd = 0 // line 6
+             *  else
+             *   rd = 0.25*StdRDiff // lines 2,5
+             */
+
+            boolean desiredChange = desiredRaw.equals(desiredMax);
+            boolean supportedChange = supportedRaw.equals(supportedMax);
+            double distance;
             if (!desiredMax.equals(supportedMax)) {
+                //                Map<String, Set<R3<LocalePatternMatcher,LocalePatternMatcher,Double>>> lang_result = scores.get(desiredMax);
+                //                if (lang_result == null) {
+                //                    distance = worst;
+                //                } else {
+                //                    Set<R3<LocalePatternMatcher,LocalePatternMatcher,Double>> result = lang_result.get(supportedMax);
+                //                    skip:
+                //                    if (result == null) {
+                //                        distance = worst;
+                //                    } else {
                 distance = getRawScore(dMax, sMax);
-            } else if (!desiredRaw.equals(supportedRaw)) { // maxes are equal, changes are equal
-                distance += 0.001;
+                //                }
+                if (desiredChange == supportedChange) {
+                    distance *= 0.75;
+                } else if (desiredChange) {
+                    distance *= 0.5;
+                }
+            } else if (desiredChange == supportedChange) { // maxes are equal, changes are equal
+                distance = 0;
+            } else { // maxes are equal, changes are different
+                distance = 0.25*worst;
             }
             return distance;
         }
 
         private double getRawScore(ULocale desiredLocale, ULocale supportedLocale) {
             if (DEBUG) {
-                System.out.println("\t\t\t" + level + " Raw Score:\t" + desiredLocale + ";\t" + supportedLocale);
+                System.out.println("\t\t\tRaw Score:\t" + desiredLocale + ";\t" + supportedLocale);
             }
             for (R3<LocalePatternMatcher,LocalePatternMatcher,Double> datum : scores) { // : result
                 if (datum.get0().matches(desiredLocale) 
-                    && datum.get1().matches(supportedLocale)) {
+                        && datum.get1().matches(supportedLocale)) {
                     if (DEBUG) {
-                        System.out.println("\t\t\t\tFOUND\t" + datum);
+                        System.out.println("\t\t\tFOUND\t" + datum);
                     }
                     return datum.get2();
                 }
             }
             if (DEBUG) {
-                System.out.println("\t\t\t\tNOTFOUND\t" + level.worst);
+                System.out.println("\t\t\tNOTFOUND\t" + worst);
             }
-            return level.worst;
+            return worst;
         }
 
         public String toString() {
-            StringBuilder result = new StringBuilder().append(level);
-            for (R3<LocalePatternMatcher, LocalePatternMatcher, Double> score : scores) {
-                result.append("\n\t\t").append(score);
-            }
-            return result.toString();
+            return level + ", " + scores;
         }
-
 
         @SuppressWarnings("unchecked")
         public ScoreData cloneAsThawed() {
@@ -574,12 +445,12 @@ public class LocaleMatcher {
                 result.frozen = false;
                 return result;
             } catch (CloneNotSupportedException e) {
-                throw new ICUCloneNotSupportedException(e); // will never happen
+                throw new IllegalArgumentException(e); // will never happen
             }
 
         }
 
-        private volatile boolean frozen = false;
+        private boolean frozen = false;
 
         public ScoreData freeze() {
             return this;
@@ -588,19 +459,6 @@ public class LocaleMatcher {
         public boolean isFrozen() {
             return frozen;
         }
-
-        public Relation<String,String> getMatchingLanguages() {
-            Relation<String,String> desiredToSupported = Relation.of(new LinkedHashMap<String,Set<String>>(), HashSet.class);
-            for (R3<LocalePatternMatcher, LocalePatternMatcher, Double> item : scores) {
-                LocalePatternMatcher desired = item.get0();
-                LocalePatternMatcher supported = item.get1();
-                if (desired.lang != null && supported.lang != null) { // explicitly mentioned languages must have reasonable distance
-                    desiredToSupported.put(desired.lang, supported.lang);
-                }
-            }
-            desiredToSupported.freeze();
-            return desiredToSupported;
-        }
     }
 
     /**
@@ -608,20 +466,15 @@ public class LocaleMatcher {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static class LanguageMatcherData implements Freezable<LanguageMatcherData> {
-        private ScoreData languageScores = new ScoreData(Level.language);
-        private ScoreData scriptScores = new ScoreData(Level.script);
-        private ScoreData regionScores = new ScoreData(Level.region);
-        private Relation<String, String> matchingLanguages;
-        private volatile boolean frozen = false;
-
+        ScoreData languageScores = new ScoreData(Level.language);
+        ScoreData scriptScores = new ScoreData(Level.script);
+        ScoreData regionScores = new ScoreData(Level.region);
 
         /**
          * @internal
          * @deprecated This API is ICU internal only.
          */
-        @Deprecated
         public LanguageMatcherData() {
         }
 
@@ -629,53 +482,40 @@ public class LocaleMatcher {
          * @internal
          * @deprecated This API is ICU internal only.
          */
-        @Deprecated
-        public Relation<String, String> matchingLanguages() {
-            return matchingLanguages;
-        }
-
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        @Deprecated
-        public String toString() {
-            return languageScores + "\n\t" + scriptScores + "\n\t" + regionScores;
-        }
-
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        @Deprecated
         public double match(ULocale a, ULocale aMax, ULocale b, ULocale bMax) {
             double diff = 0;
-            diff += languageScores.getScore(aMax, a.getLanguage(), aMax.getLanguage(), bMax, b.getLanguage(), bMax.getLanguage());
-            if (diff > 0.999d) { // with no language match, we bail
-                return 0.0d;
-            }
-            diff += scriptScores.getScore(aMax, a.getScript(), aMax.getScript(), bMax, b.getScript(), bMax.getScript());
-            diff += regionScores.getScore(aMax, a.getCountry(), aMax.getCountry(), bMax, b.getCountry(), bMax.getCountry());
+            diff += languageScores.getScore(a, aMax, a.getLanguage(), aMax.getLanguage(), b, bMax, b.getLanguage(), bMax.getLanguage());
+            diff += scriptScores.getScore(a, aMax, a.getScript(), aMax.getScript(), b, bMax, b.getScript(), bMax.getScript());
+            diff += regionScores.getScore(a, aMax, a.getCountry(), aMax.getCountry(), b, bMax, b.getCountry(), bMax.getCountry());
 
             if (!a.getVariant().equals(b.getVariant())) {
-                diff += 0.01;
+                diff += 1;
             }
             if (diff < 0.0d) {
                 diff = 0.0d;
             } else if (diff > 1.0d) {
                 diff = 1.0d;
             }
-            if (DEBUG) {
-                System.out.println("\t\t\tTotal Distance\t" + diff);
-            }
             return 1.0 - diff;
         }
 
+
+        /**
+         * Add an exceptional distance between languages, typically because regional
+         * dialects were given their own language codes. At this point the code is
+         * symmetric. We don't bother producing an equivalence class because there are
+         * so few cases; this function depends on the other permutations being
+         * added specifically.
+         * @internal
+         * @deprecated This API is ICU internal only.
+         */
+        private LanguageMatcherData addDistance(String desired, String supported, int percent) {
+            return addDistance(desired, supported, percent, false, null);
+        }
         /**
          * @internal
          * @deprecated This API is ICU internal only.
          */
-        @Deprecated
         public LanguageMatcherData addDistance(String desired, String supported, int percent, String comment) {
             return addDistance(desired, supported, percent, false, comment);
         }
@@ -683,7 +523,6 @@ public class LocaleMatcher {
          * @internal
          * @deprecated This API is ICU internal only.
          */
-        @Deprecated
         public LanguageMatcherData addDistance(String desired, String supported, int percent, boolean oneway) {
             return addDistance(desired, supported, percent, oneway, null);
         }
@@ -691,11 +530,11 @@ public class LocaleMatcher {
         private LanguageMatcherData addDistance(String desired, String supported, int percent, boolean oneway, String comment) {
             if (DEBUG) {
                 System.out.println("\t<languageMatch desired=\"" + desired + "\"" +
-                    " supported=\"" + supported + "\"" +
-                    " percent=\"" + percent + "\""
-                    + (oneway ? " oneway=\"true\"" : "")
-                    + "/>"
-                    + (comment == null ? "" : "\t<!-- " + comment + " -->"));
+                        " supported=\"" + supported + "\"" +
+                        " percent=\"" + percent + "\""
+                        + (oneway ? " oneway=\"true\"" : "")
+                        + "/>"
+                        + (comment == null ? "" : "\t<!-- " + comment + " -->"));
                 //                    //     .addDistance("nn", "nb", 4, true)
                 //                        System.out.println(".addDistance(\"" + desired + "\"" +
                 //                                ", \"" + supported + "\"" +
@@ -712,17 +551,16 @@ public class LocaleMatcher {
             LocalePatternMatcher supportedMatcher = new LocalePatternMatcher(supported);
             Level supportedLen = supportedMatcher.getLevel();
             if (desiredLen != supportedLen) {
-                throw new IllegalArgumentException("Lengths unequal: " + desired + ", " + supported);
+                throw new IllegalArgumentException();
             }
             R3<LocalePatternMatcher,LocalePatternMatcher,Double> data = Row.of(desiredMatcher, supportedMatcher, score);
             R3<LocalePatternMatcher,LocalePatternMatcher,Double> data2 = oneway ? null : Row.of(supportedMatcher, desiredMatcher, score);
-            boolean desiredEqualsSupported = desiredMatcher.equals(supportedMatcher);
             switch (desiredLen) {
             case language:
                 String dlanguage = desiredMatcher.getLanguage();
                 String slanguage = supportedMatcher.getLanguage();
                 languageScores.addDataToScores(dlanguage, slanguage, data);
-                if (!oneway && !desiredEqualsSupported) {
+                if (!oneway) {
                     languageScores.addDataToScores(slanguage, dlanguage, data2);
                 }
                 break;
@@ -730,7 +568,7 @@ public class LocaleMatcher {
                 String dscript = desiredMatcher.getScript();
                 String sscript = supportedMatcher.getScript();
                 scriptScores.addDataToScores(dscript, sscript, data);
-                if (!oneway && !desiredEqualsSupported) {
+                if (!oneway) {
                     scriptScores.addDataToScores(sscript, dscript, data2);
                 }
                 break;
@@ -738,7 +576,7 @@ public class LocaleMatcher {
                 String dregion = desiredMatcher.getRegion();
                 String sregion = supportedMatcher.getRegion();
                 regionScores.addDataToScores(dregion, sregion, data);
-                if (!oneway && !desiredEqualsSupported) {
+                if (!oneway) {
                     regionScores.addDataToScores(sregion, dregion, data2);
                 }
                 break;
@@ -751,7 +589,6 @@ public class LocaleMatcher {
          * @internal
          * @deprecated This API is ICU internal only.
          */
-        @Deprecated
         public LanguageMatcherData cloneAsThawed() {
             LanguageMatcherData result;
             try {
@@ -762,22 +599,18 @@ public class LocaleMatcher {
                 result.frozen = false;
                 return result;
             } catch (CloneNotSupportedException e) {
-                throw new ICUCloneNotSupportedException(e); // will never happen
+                throw new IllegalArgumentException(e); // will never happen
             }
         }
+
+        private boolean frozen = false;
 
         /** 
          * {@inheritDoc}
          * @internal
          * @deprecated This API is ICU internal only.
          */
-        @Deprecated
         public LanguageMatcherData freeze() {
-            languageScores.freeze();
-            regionScores.freeze();
-            scriptScores.freeze();
-            matchingLanguages = languageScores.getMatchingLanguages();
-            frozen = true;
             return this;
         }
 
@@ -786,7 +619,6 @@ public class LocaleMatcher {
          * @internal
          * @deprecated This API is ICU internal only.
          */
-        @Deprecated
         public boolean isFrozen() {
             return frozen;
         }
@@ -794,55 +626,39 @@ public class LocaleMatcher {
 
     LanguageMatcherData matcherData;
 
-    private static final LanguageMatcherData defaultWritten;
+    private static LanguageMatcherData defaultWritten = new LanguageMatcherData()
+    // TODO get data from CLDR
+    .addDistance("no", "nb", 100, "The language no is normally taken as nb in content; we might alias this for lookup.")
+    .addDistance("nn", "nb", 96)
+    .addDistance("nn", "no", 96)
+    .addDistance("da", "no", 90, "Danish and norwegian are reasonably close.")
+    .addDistance("da", "nb", 90)
+    .addDistance("hr", "br", 96, "Serbo-croatian variants are all very close.")
+    .addDistance("sh", "br", 96)
+    .addDistance("sr", "br", 96)
+    .addDistance("sh", "hr", 96)
+    .addDistance("sr", "hr", 96)
+    .addDistance("sh", "sr", 96)
+    .addDistance("sr-Latn", "sr-Cyrl", 90, "Most serbs can read either script.")
+    .addDistance("*-Hans", "*-Hant", 85, true, "Readers of simplified can read traditional much better than reverse.")
+    .addDistance("*-Hant", "*-Hans", 75, true)
+    .addDistance("en-*-US", "en-*-CA", 98, "US is different than others, and Canadian is inbetween.")
+    .addDistance("en-*-US", "en-*-*", 97)
+    .addDistance("en-*-CA", "en-*-*", 98)
+    .addDistance("en-*-*", "en-*-*", 99)
+    .addDistance("es-*-ES", "es-*-ES", 100, "Latin American Spanishes are closer to each other. Approximate by having es-ES be further from everything else.")
+    .addDistance("es-*-ES", "es-*-*", 93)
+    .addDistance("*", "*", 1, "[Default value -- must be at end!] Normally there is no comprehension of different languages.")
+    .addDistance("*-*", "*-*", 20, "[Default value -- must be at end!] Normally there is little comprehension of different scripts.")
+    .addDistance("*-*-*", "*-*-*", 96, "[Default value -- must be at end!] Normally there are small differences across regions.")
+    .freeze();
 
     private static HashMap<String,String> canonicalMap = new HashMap<String, String>();
 
-
     static {
+        // TODO get data from CLDR
         canonicalMap.put("iw", "he");
         canonicalMap.put("mo", "ro");
         canonicalMap.put("tl", "fil");
-
-        ICUResourceBundle suppData = getICUSupplementalData();
-        ICUResourceBundle languageMatching = suppData.findTopLevel("languageMatching");
-        ICUResourceBundle written = (ICUResourceBundle) languageMatching.get("written");
-        defaultWritten = new LanguageMatcherData();
-
-        for(UResourceBundleIterator iter = written.getIterator(); iter.hasNext();) {
-            ICUResourceBundle item = (ICUResourceBundle) iter.next();
-            /*
-            "*_*_*",
-            "*_*_*",
-            "96",
-             */
-            // <languageMatch desired="gsw" supported="de" percent="96" oneway="true" />
-            boolean oneway = item.getSize() > 3 && "1".equals(item.getString(3));
-            defaultWritten.addDistance(item.getString(0), item.getString(1), Integer.parseInt(item.getString(2)), oneway);
-        }
-        defaultWritten.freeze();
-    }
-
-    /**
-     * @internal
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public static ICUResourceBundle getICUSupplementalData() {
-        ICUResourceBundle suppData = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-            ICUData.ICU_BASE_NAME,
-            "supplementalData",
-            ICUResourceBundle.ICU_DATA_CLASS_LOADER);
-        return suppData;
-    }
-
-    /**
-     * @internal
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public static double match(ULocale a, ULocale b) {
-        final LocaleMatcher matcher = new LocaleMatcher("");
-        return matcher.match(a, matcher.addLikelySubtags(a), b, matcher.addLikelySubtags(b));
     }
 }

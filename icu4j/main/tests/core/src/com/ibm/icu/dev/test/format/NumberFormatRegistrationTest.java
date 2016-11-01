@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2003-2010, International Business Machines Corporation and    *
@@ -10,14 +8,16 @@ package com.ibm.icu.dev.test.format;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.NumberFormat.SimpleNumberFormatFactory;
 import com.ibm.icu.util.ULocale;
 
 public class NumberFormatRegistrationTest extends com.ibm.icu.dev.test.TestFmwk {
-    @Test
+
+    public static void main(String[] args) {
+        new NumberFormatRegistrationTest().run(args);
+    }
+
     public void TestRegistration() {
         final ULocale SRC_LOC = ULocale.FRANCE;
         final ULocale SWAP_LOC = ULocale.US;

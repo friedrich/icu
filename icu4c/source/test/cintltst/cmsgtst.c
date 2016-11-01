@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2012, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************
  *
@@ -29,7 +27,8 @@
 #include "cintltst.h"
 #include "cmsgtst.h"
 #include "cformtst.h"
-#include "cmemory.h"
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 static const char* const txt_testCasePatterns[] = {
    "Quotes '', '{', a {0,number,integer} '{'0}",
@@ -1002,7 +1001,6 @@ static void TestJ904(void) {
                              result, 256, &status,
                              string, 1/7.0,
                              789.0+1000*(56+60*(34+60*12)));
-    (void)length;   /* Suppress set but not used warning. */
 
     u_austrncpy(cresult, result, sizeof(cresult));
 
@@ -1033,7 +1031,7 @@ static void OpenMessageFormatTest(void)
     int32_t length=0;
     UErrorCode status = U_ZERO_ERROR;
 
-    u_uastrncpy(pattern, PAT, UPRV_LENGTHOF(pattern));
+    u_uastrncpy(pattern, PAT, sizeof(pattern)/sizeof(pattern[0]));
 
     /* Test umsg_open                   */
     f1 = umsg_open(pattern,length,NULL,NULL,&status);
@@ -1106,10 +1104,10 @@ static void MessageLength(void)
     UChar result[128] = {0};
     UChar expected[sizeof(expectedChars)];
 
-    u_uastrncpy(pattern, patChars, UPRV_LENGTHOF(pattern));
-    u_uastrncpy(expected, expectedChars, UPRV_LENGTHOF(expected));
+    u_uastrncpy(pattern, patChars, sizeof(pattern)/sizeof(pattern[0]));
+    u_uastrncpy(expected, expectedChars, sizeof(expected)/sizeof(expected[0]));
 
-    u_formatMessage("en_US", pattern, 6, result, UPRV_LENGTHOF(result), &status, arg);
+    u_formatMessage("en_US", pattern, 6, result, sizeof(result)/sizeof(result[0]), &status, arg);
     if (U_FAILURE(status)) {
         log_err("u_formatMessage method failed. Error: %s \n",u_errorName(status));
     }
@@ -1129,7 +1127,7 @@ static void TestMessageWithUnusedArgNumber() {
 
     U_STRING_INIT(pattern, "abc {1} def", 11);
     U_STRING_INIT(expected, "abc y def", 9);
-    length = u_formatMessage("en", pattern, -1, result, UPRV_LENGTHOF(result), &errorCode, x, y);
+    length = u_formatMessage("en", pattern, -1, result, LENGTHOF(result), &errorCode, x, y);
     if (U_FAILURE(errorCode) || length != u_strlen(expected) || u_strcmp(result, expected) != 0) {
         log_err("u_formatMessage(pattern with only {1}, 2 args) failed: result length %d, UErrorCode %s \n",
                 (int)length, u_errorName(errorCode));

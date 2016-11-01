@@ -1,25 +1,19 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 2001-2013, International Business Machines Corporation and    *
+ * Copyright (C) 2001-2006, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.impl;
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+// See Allan Holub's 1999 column in JavaWorld, and Doug Lea's code for RWLocks with writer preference.
 
 
 /**
- * <p>A Reader/Writer lock originally written for ICU service
- * implementation. The internal implementation was replaced
- * with the JDK's stock read write lock (ReentrantReadWriteLock)
- * for ICU 52.</p>
- *
- * <p>This assumes that there will be little writing contention.
- * It also doesn't allow active readers to acquire and release
- * a write lock, or deal with priority inversion issues.</p>
+ * <p>A simple Reader/Writer lock.  This assumes that there will
+ * be little writing contention.  It also doesn't allow 
+ * active readers to acquire and release a write lock, or
+ * deal with priority inversion issues.</p>
  *
  * <p>Access to the lock should be enclosed in a try/finally block
  * in order to ensure that the lock is always released in case of
@@ -37,9 +31,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * to return statistics on the use of the lock.</p>
  */
 public class ICURWLock {
-    private ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+    private Object writeLock = new Object();
+    private Object readLock = new Object();
+    private int wwc; // waiting writers
+    private int rc; // active readers, -1 if there's an active writer
+    private int wrc; // waiting readers
 
-    private Stats stats = null;
+    private Stats stats = new Stats(); // maybe don't init to start...
 
     /**
      * Internal class used to gather statistics on the RWLock.
@@ -88,10 +86,9 @@ public class ICURWLock {
         /**
          * Return a string listing all the stats.
          */
-        @Override
         public String toString() {
             return " rc: " + _rc +
-                " mrc: " + _mrc +
+                " mrc: " + _mrc + 
                 " wrc: " + _wrc +
                 " wc: " + _wc +
                 " wwc: " + _wwc;
@@ -115,7 +112,7 @@ public class ICURWLock {
         stats = null;
         return result;
     }
-
+    
     /**
      * Return a snapshot of the current stats.  This does not reset the stats.
      */
@@ -123,6 +120,84 @@ public class ICURWLock {
         return stats == null ? null : new Stats(stats);
     }
 
+    // utilities
+
+    private synchronized boolean gotRead() {
+        ++rc;
+        if (stats != null) {
+            ++stats._rc;
+            if (rc > 1) ++stats._mrc;
+        }
+        return true;
+    }
+
+    private synchronized boolean getRead() {
+        if (rc >= 0 && wwc == 0) {
+            return gotRead();
+        }
+        ++wrc;
+        return false;
+    }
+
+    private synchronized boolean retryRead() {
+        if (stats != null) ++stats._wrc;
+        if (rc >= 0 && wwc == 0) {
+            --wrc;
+            return gotRead();
+        }
+        return false;
+    }
+
+    private synchronized boolean finishRead() {
+        if (rc > 0) {
+            return (0 == --rc && wwc > 0);
+        }
+        throw new IllegalStateException("no current reader to release");
+    }
+    
+    private synchronized boolean gotWrite() {
+        rc = -1;
+        if (stats != null) {
+            ++stats._wc;
+        }
+        return true;
+    }
+
+    private synchronized boolean getWrite() {
+        if (rc == 0) {
+            return gotWrite();
+        }
+        ++wwc;
+        return false;
+    }
+
+    private synchronized boolean retryWrite() {
+        if (stats != null) ++stats._wwc;
+        if (rc == 0) {
+            --wwc;
+            return gotWrite();
+        }
+        return false;
+    }
+
+    private static final int NOTIFY_NONE = 0;
+    private static final int NOTIFY_WRITERS = 1;
+    private static final int NOTIFY_READERS = 2;
+
+    private synchronized int finishWrite() {
+        if (rc < 0) {
+            rc = 0;
+            if (wwc > 0) {
+                return NOTIFY_WRITERS;
+            } else if (wrc > 0) {
+                return NOTIFY_READERS;
+            } else {
+                return NOTIFY_NONE;
+            }
+        }
+        throw new IllegalStateException("no current writer to release");
+    }
+    
     /**
      * <p>Acquire a read lock, blocking until a read lock is
      * available.  Multiple readers can concurrently hold the read
@@ -131,21 +206,23 @@ public class ICURWLock {
      * <p>If there's a writer, or a waiting writer, increment the
      * waiting reader count and block on this.  Otherwise
      * increment the active reader count and return.  Caller must call
-     * releaseRead when done (for example, in a finally block).</p>
+     * releaseRead when done (for example, in a finally block).</p> 
      */
     public void acquireRead() {
-        if (stats != null) {    // stats is null by default
-            synchronized (this) {
-                stats._rc++;
-                if (rwl.getReadLockCount() > 0) {
-                    stats._mrc++;
+        if (!getRead()) {
+            for (;;) {
+                try {
+                    synchronized (readLock) {
+                        readLock.wait();
+                    }
+                    if (retryRead()) {
+                        return;
+                    }
                 }
-                if (rwl.isWriteLocked()) {
-                    stats._wrc++;
+                catch (InterruptedException e) {
                 }
             }
         }
-        rwl.readLock().lock();
     }
 
     /**
@@ -157,7 +234,11 @@ public class ICURWLock {
      * controlled by acquireRead.</p>
      */
     public void releaseRead() {
-        rwl.readLock().unlock();
+        if (finishRead()) {
+            synchronized (writeLock) {
+                writeLock.notify();
+            }
+        }
     }
 
     /**
@@ -169,18 +250,23 @@ public class ICURWLock {
      * having an active writer and return.  Otherwise, add a lock to the
      * end of the waiting writer list, and block on it.  Caller
      * must call releaseWrite when done (for example, in a finally
-     * block).<p>
+     * block).<p> 
      */
     public void acquireWrite() {
-        if (stats != null) {    // stats is null by default
-            synchronized (this) {
-                stats._wc++;
-                if (rwl.getReadLockCount() > 0 || rwl.isWriteLocked()) {
-                    stats._wwc++;
+        if (!getWrite()) {
+            for (;;) {
+                try {
+                    synchronized (writeLock) {
+                        writeLock.wait();
+                    }
+                    if (retryWrite()) {
+                        return;
+                    }
+                }
+                catch (InterruptedException e) {
                 }
             }
         }
-        rwl.writeLock().lock();
     }
 
     /**
@@ -190,9 +276,22 @@ public class ICURWLock {
      * <p>If there are waiting readers, make them all active and
      * notify all of them.  Otherwise, notify the oldest waiting
      * writer, if any.  Call when finished with work controlled by
-     * acquireWrite.</p>
+     * acquireWrite.</p> 
      */
     public void releaseWrite() {
-        rwl.writeLock().unlock();
+        switch (finishWrite()) {
+        case NOTIFY_WRITERS:
+            synchronized (writeLock) {
+                writeLock.notify();
+            }
+            break;
+        case NOTIFY_READERS:
+            synchronized (readLock) {
+                readLock.notifyAll();
+            }
+            break;
+        case NOTIFY_NONE:
+            break;
+        }
     }
 }

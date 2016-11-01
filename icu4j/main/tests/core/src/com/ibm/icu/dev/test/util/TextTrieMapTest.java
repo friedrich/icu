@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2007, International Business Machines Corporation and         *
@@ -9,8 +7,6 @@
 package com.ibm.icu.dev.test.util;
 
 import java.util.Iterator;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.TextTrieMap;
@@ -64,8 +60,12 @@ public class TextTrieMapTest extends TestFmwk {
         {"super", null, SUN},
         {"NO", null, null}
     };
+    
+    public static void main(String[] args) throws Exception {
+        TextTrieMapTest test = new TextTrieMapTest();
+        test.run(args);
+    }
 
-    @Test
     public void TestCaseSensitive() {
         Iterator itr = null;
         TextTrieMap map = new TextTrieMap(false);
@@ -101,7 +101,6 @@ public class TextTrieMapTest extends TestFmwk {
         checkResult(itr, new Object[]{FOO, SUN});
     }
 
-    @Test
     public void TestCaseInsensitive() {
         Iterator itr = null;
         TextTrieMap map = new TextTrieMap(true);

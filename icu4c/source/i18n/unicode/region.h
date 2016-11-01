@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  *******************************************************************************
- * Copyright (C) 2014-2016, International Business Machines Corporation and others.
+ * Copyright (C) 2013, International Business Machines Corporation
  * All Rights Reserved.
  *******************************************************************************
  */
@@ -16,7 +14,69 @@
  */
 
 #include "unicode/utypes.h"
-#include "unicode/uregion.h"
+
+#ifndef U_HIDE_DRAFT_API
+/**
+ * URegionType is an enumeration defining the different types of regions.  Current possible
+ * values are URGN_WORLD, URGN_CONTINENT, URGN_SUBCONTINENT, URGN_TERRITORY, URGN_GROUPING,
+ * URGN_DEPRECATED, and URGN_UNKNOWN.
+ * 
+ * @draft ICU 51 
+ */
+
+typedef enum URegionType {
+    /**
+     * Type representing the unknown region.
+     * @draft ICU 51 
+     */
+    URGN_UNKNOWN,
+
+    /**
+     * Type representing a territory.
+     * @draft ICU 51 
+     */
+    URGN_TERRITORY,
+
+    /**
+     * Type representing the whole world.
+     * @draft ICU 51 
+     */
+    URGN_WORLD,
+
+    /**
+     * Type representing a continent.
+     * @draft ICU 51 
+     */
+    URGN_CONTINENT,
+
+    /**
+     * Type representing a sub-continent.
+     * @draft ICU 51 
+     */
+    URGN_SUBCONTINENT,
+
+    /**
+     * Type representing a grouping of territories that is not to be used in
+     * the normal WORLD/CONTINENT/SUBCONTINENT/TERRITORY containment tree.
+     * @draft ICU 51 
+     */
+    URGN_GROUPING,
+
+    /**
+     * Type representing a region whose code has been deprecated, usually
+     * due to a country splitting into multiple territories or changing its name.
+     * @draft ICU 51 
+     */
+    URGN_DEPRECATED,
+
+    /**
+     * Maximum value for this unumeration.
+     * @draft ICU 51 
+     */
+    URGN_LIMIT
+} URegionType;
+
+
 
 #if !UCONFIG_NO_FORMATTING
 
@@ -64,26 +124,26 @@ U_NAMESPACE_BEGIN
  * The Region class is not intended for public subclassing.
  *
  * @author       John Emmons
- * @stable ICU 51
+ * @draft ICU 51
  */
 
 class U_I18N_API Region : public UObject {
 public:
     /**
      * Destructor.
-     * @stable ICU 51
+     * @draft ICU 51
      */
     virtual ~Region();
 
     /**
      * Returns true if the two regions are equal.
-     * @stable ICU 51
+     * @draft ICU 51
      */
     UBool operator==(const Region &that) const;
 
     /**
      * Returns true if the two regions are NOT equal; that is, if operator ==() returns false.
-     * @stable ICU 51
+     * @draft ICU 51
      */
     UBool operator!=(const Region &that) const;
  
@@ -92,28 +152,28 @@ public:
      * 3-letter ISO code,  UNM.49 numeric code, or other valid Unicode Region Code as defined by the LDML specification.
      * The identifier will be canonicalized internally using the supplemental metadata as defined in the CLDR.
      * If the region code is NULL or not recognized, the appropriate error code will be set ( U_ILLEGAL_ARGUMENT_ERROR )
-     * @stable ICU 51 
+     * @draft ICU 51 
      */
     static const Region* U_EXPORT2 getInstance(const char *region_code, UErrorCode &status);
 
     /**
      * Returns a pointer to a Region using the given numeric region code. If the numeric region code is not recognized,
      * the appropriate error code will be set ( U_ILLEGAL_ARGUMENT_ERROR ).
-     * @stable ICU 51 
+     * @draft ICU 51 
      */
     static const Region* U_EXPORT2 getInstance (int32_t code, UErrorCode &status);
 
     /**
      * Returns an enumeration over the IDs of all known regions that match the given type.
-     * @stable ICU 55
+     * @draft ICU 51 
      */
-    static StringEnumeration* U_EXPORT2 getAvailable(URegionType type, UErrorCode &status);
+    static StringEnumeration* U_EXPORT2 getAvailable(URegionType type);
    
     /**
      * Returns a pointer to the region that contains this region.  Returns NULL if this region is code "001" (World)
      * or "ZZ" (Unknown region). For example, calling this method with region "IT" (Italy) returns the
      * region "039" (Southern Europe).
-     * @stable ICU 51 
+     * @draft ICU 51 
      */
     const Region* getContainingRegion() const;
 
@@ -123,7 +183,7 @@ public:
      * that matches the given type. Note: The URegionTypes = "URGN_GROUPING", "URGN_DEPRECATED", or "URGN_UNKNOWN"
      * are not appropriate for use in this API. NULL will be returned in this case. For example, calling this method
      * with region "IT" (Italy) for type "URGN_CONTINENT" returns the region "150" ( Europe ).
-     * @stable ICU 51 
+     * @draft ICU 51 
      */
     const Region* getContainingRegion(URegionType type) const;
 
@@ -134,22 +194,22 @@ public:
      * any sub-regions. For example, calling this method with region "150" (Europe) returns an enumeration containing
      * the various sub regions of Europe - "039" (Southern Europe) - "151" (Eastern Europe) - "154" (Northern Europe)
      * and "155" (Western Europe).
-     * @stable ICU 55
+     * @draft ICU 51 
      */
-    StringEnumeration* getContainedRegions(UErrorCode &status) const;
+    StringEnumeration* getContainedRegions() const;
 
     /**
      * Returns an enumeration over the IDs of all the regions that are children of this region anywhere in the region
      * hierarchy and match the given type.  This API may return an empty enumeration if this region doesn't have any
      * sub-regions that match the given type. For example, calling this method with region "150" (Europe) and type
      * "URGN_TERRITORY" returns a set containing all the territories in Europe ( "FR" (France) - "IT" (Italy) - "DE" (Germany) etc. )
-     * @stable ICU 55
+     * @draft ICU 51 
      */
-    StringEnumeration* getContainedRegions( URegionType type, UErrorCode &status ) const;
+    StringEnumeration* getContainedRegions( URegionType type ) const;
  
     /**
      * Returns true if this region contains the supplied other region anywhere in the region hierarchy.
-     * @stable ICU 51 
+     * @draft ICU 51 
      */
     UBool contains(const Region &other) const;
 
@@ -157,26 +217,27 @@ public:
      * For deprecated regions, return an enumeration over the IDs of the regions that are the preferred replacement
      * regions for this region.  Returns null for a non-deprecated region.  For example, calling this method with region
      * "SU" (Soviet Union) would return a list of the regions containing "RU" (Russia), "AM" (Armenia), "AZ" (Azerbaijan), etc...
-     * @stable ICU 55 
+     * @draft ICU 51 
      */
-    StringEnumeration* getPreferredValues(UErrorCode &status) const;
+    StringEnumeration* getPreferredValues() const;
+ 
 
     /**
      * Return this region's canonical region code.
-     * @stable ICU 51 
+     * @draft ICU 51 
      */
     const char* getRegionCode() const;
 
     /**
      * Return this region's numeric code.
      * Returns a negative value if the given region does not have a numeric code assigned to it.
-     * @stable ICU 51 
+     * @draft ICU 51 
      */
     int32_t getNumericCode() const;
 
     /**
      * Returns the region type of this region.
-     * @stable ICU 51 
+     * @draft ICU 51 
      */
     URegionType getType() const;
 
@@ -199,6 +260,8 @@ private:
 
     /**
      * Default Constructor. Internal - use factory methods only.
+     *
+     * @internal
      */
     Region();
 
@@ -210,15 +273,17 @@ private:
      * 
      * If the region data has already loaded, then this method simply returns without doing
      * anything meaningful.
+     * @internal
      */
 
-    static void U_CALLCONV loadRegionData(UErrorCode &status);
+    static void loadRegionData();
 
 };
 
 U_NAMESPACE_END
 
 #endif /* #if !UCONFIG_NO_FORMATTING */
+#endif  /* U_HIDE_DRAFT_API */
 #endif // REGION_H
 
 //eof

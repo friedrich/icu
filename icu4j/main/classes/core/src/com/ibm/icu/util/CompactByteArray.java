@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2014, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2009, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -31,7 +29,6 @@ import com.ibm.icu.impl.Utility;
  * @internal
  * @deprecated This API is ICU internal only.
  */
-@Deprecated
 public final class CompactByteArray implements Cloneable {
 
     /**
@@ -39,7 +36,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static  final int UNICODECOUNT =65536;
 
     /**
@@ -48,7 +44,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public CompactByteArray()
     {
         this((byte)0);
@@ -60,7 +55,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public CompactByteArray(byte defaultValue)
     {
         int i;
@@ -87,7 +81,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public CompactByteArray(char indexArray[],
                             byte newValues[])
     {
@@ -96,7 +89,7 @@ public final class CompactByteArray implements Cloneable {
             throw new IllegalArgumentException("Index out of bounds.");
         for (i = 0; i < INDEXCOUNT; ++i) {
             char index = indexArray[i];
-            if (index >= newValues.length+BLOCKCOUNT)
+            if ((index < 0) || (index >= newValues.length+BLOCKCOUNT))
                 throw new IllegalArgumentException("Index out of bounds.");
         }
         indices = indexArray;
@@ -115,7 +108,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public CompactByteArray(String indexArray,
                             String valueArray)
     {
@@ -130,7 +122,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public byte elementAt(char index)
     {
         return (values[(indices[index >> BLOCKSHIFT] & 0xFFFF)
@@ -145,12 +136,11 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public void setElementAt(char index, byte value)
     {
         if (isCompact)
             expand();
-        values[index] = value;
+        values[(int)index] = value;
         touchBlock(index >> BLOCKSHIFT, value);
     }
 
@@ -163,7 +153,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public void setElementAt(char start, char end, byte value)
     {
         int i;
@@ -180,7 +169,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public void compact() {
         compact(false);
     }
@@ -190,7 +178,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public void compact(boolean exhaustive)
     {
         if (!isCompact) {
@@ -284,7 +271,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public char[] getIndexArray()
     {
         return indices;
@@ -296,7 +282,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public byte[] getValueArray()
     {
         return values;
@@ -307,8 +292,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
-    @Deprecated
     public Object clone()
     {
         try {
@@ -318,7 +301,7 @@ public final class CompactByteArray implements Cloneable {
             if (hashes != null) other.hashes = hashes.clone();
             return other;
         } catch (CloneNotSupportedException e) {
-            throw new ICUCloneNotSupportedException(e);
+            throw new IllegalStateException();
         }
     }
 
@@ -330,8 +313,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
-    @Deprecated
     public boolean equals(Object obj) {
         if (obj == null) return false;
         if (this == obj)                      // quick check
@@ -352,8 +333,6 @@ public final class CompactByteArray implements Cloneable {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
-    @Deprecated
     public int hashCode() {
         int result = 0;
         int increment = Math.min(3, values.length/16);
