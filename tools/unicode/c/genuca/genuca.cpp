@@ -1,7 +1,7 @@
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2000-2016, International Business Machines
+*   Copyright (C) 2000-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -25,8 +25,6 @@
 #include "unicode/utypes.h"
 #include "unicode/errorcode.h"
 #include "unicode/localpointer.h"
-#include "unicode/ucol.h"
-#include "unicode/uscript.h"
 #include "unicode/utf8.h"
 #include "charstr.h"
 #include "cmemory.h"
@@ -47,6 +45,8 @@
 #include "uoptions.h"
 #include "uparse.h"
 #include "writesrc.h"
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 #if UCONFIG_NO_COLLATION
 
@@ -83,7 +83,7 @@ static UDataInfo ucaDataInfo={
     0,
 
     { 0x55, 0x43, 0x6f, 0x6c },         // dataFormat="UCol"
-    { 5, 0, 0, 0 },                     // formatVersion
+    { 4, 0, 0, 0 },                     // formatVersion
     { 6, 3, 0, 0 }                      // dataVersion
 };
 
@@ -206,168 +206,32 @@ static int64_t parseCE(const CollationDataBuilder &builder, char *&s, UErrorCode
     }
 }
 
-// Hardcoded mapping from script sample characters to script codes.
-// Pro: Available without complete and updated UCD scripts data,
-//      easy to add non-script codes specific to collation.
-// Con: Needs manual update for each new script or change in sample character.
 static const struct {
-    UChar32 sampleChar;
-    int32_t script;
-} sampleCharsToScripts[] = {
-    { 0x00A0, UCOL_REORDER_CODE_SPACE },
-    { 0x201C, UCOL_REORDER_CODE_PUNCTUATION },
-    { 0x263A, UCOL_REORDER_CODE_SYMBOL },
-    { 0x20AC, UCOL_REORDER_CODE_CURRENCY },
-    { 0x0034, UCOL_REORDER_CODE_DIGIT },
-    { 0x004C, USCRIPT_LATIN },
-    { 0x03A9, USCRIPT_GREEK },
-    { 0x03E2, USCRIPT_COPTIC },
-    { 0x042F, USCRIPT_CYRILLIC },
-    { 0x2C00, USCRIPT_GLAGOLITIC },
-    { 0x1036B, USCRIPT_OLD_PERMIC },
-    { 0x10D3, USCRIPT_GEORGIAN },
-    { 0x0531, USCRIPT_ARMENIAN },
-    { 0x05D0, USCRIPT_HEBREW },
-    { 0x10900, USCRIPT_PHOENICIAN },
-    { 0x0800, USCRIPT_SAMARITAN },
-    { 0x0628, USCRIPT_ARABIC },
-    { 0x0710, USCRIPT_SYRIAC },
-    { 0x0840, USCRIPT_MANDAIC },
-    { 0x078C, USCRIPT_THAANA },
-    { 0x07CA, USCRIPT_NKO },
-    { 0x07D8, USCRIPT_NKO },
-    { 0x2D30, USCRIPT_TIFINAGH },
-    { 0x2D5E, USCRIPT_TIFINAGH },
-    { 0x12A0, USCRIPT_ETHIOPIC },
-    { 0x0905, USCRIPT_DEVANAGARI },
-    { 0x0995, USCRIPT_BENGALI },
-    { 0x0A15, USCRIPT_GURMUKHI },
-    { 0x0A95, USCRIPT_GUJARATI },
-    { 0x0B15, USCRIPT_ORIYA },
-    { 0x0B95, USCRIPT_TAMIL },
-    { 0x0C15, USCRIPT_TELUGU },
-    { 0x0C95, USCRIPT_KANNADA },
-    { 0x0D15, USCRIPT_MALAYALAM },
-    { 0x0D85, USCRIPT_SINHALA },
-    { 0xABC0, USCRIPT_MEITEI_MAYEK },
-    { 0xA800, USCRIPT_SYLOTI_NAGRI },
-    { 0xA882, USCRIPT_SAURASHTRA },
-    { 0x11083, USCRIPT_KAITHI },
-    { 0x11152, USCRIPT_MAHAJANI },
-    { 0x11183, USCRIPT_SHARADA },
-    { 0x11208, USCRIPT_KHOJKI },
-    { 0x112BE, USCRIPT_KHUDAWADI },
-    { 0x1128F, USCRIPT_MULTANI },
-    { 0x11315, USCRIPT_GRANTHA },
-    { 0x11412, USCRIPT_NEWA },
-    { 0x11484, USCRIPT_TIRHUTA },
-    { 0x1158E, USCRIPT_SIDDHAM },
-    { 0x1160E, USCRIPT_MODI },
-    { 0x11680, USCRIPT_TAKRI },
-    { 0x11717, USCRIPT_AHOM },
-    { 0x1B83, USCRIPT_SUNDANESE },
-    { 0x11005, USCRIPT_BRAHMI },
-    { 0x10A00, USCRIPT_KHAROSHTHI },
-    { 0x11C0E, USCRIPT_BHAIKSUKI },
-    { 0x0E17, USCRIPT_THAI },
-    { 0x0EA5, USCRIPT_LAO },
-    { 0xAA80, USCRIPT_TAI_VIET },
-    { 0x0F40, USCRIPT_TIBETAN },
-    { 0x11C72, USCRIPT_MARCHEN },
-    { 0x1C00, USCRIPT_LEPCHA },
-    { 0xA840, USCRIPT_PHAGS_PA },
-    { 0x1900, USCRIPT_LIMBU },
-    { 0x1703, USCRIPT_TAGALOG },
-    { 0x1723, USCRIPT_HANUNOO },
-    { 0x1743, USCRIPT_BUHID },
-    { 0x1763, USCRIPT_TAGBANWA },
-    { 0x1A00, USCRIPT_BUGINESE },
-    { 0x1BC0, USCRIPT_BATAK },
-    { 0xA930, USCRIPT_REJANG },
-    { 0xA90A, USCRIPT_KAYAH_LI },
-    { 0x1000, USCRIPT_MYANMAR },
-    { 0x11103, USCRIPT_CHAKMA },
-    { 0x1780, USCRIPT_KHMER },
-    { 0x1950, USCRIPT_TAI_LE },
-    { 0x1980, USCRIPT_NEW_TAI_LUE },
-    { 0x1A20, USCRIPT_LANNA },
-    { 0xAA00, USCRIPT_CHAM },
-    { 0x1B05, USCRIPT_BALINESE },
-    { 0xA984, USCRIPT_JAVANESE },
-    { 0x1826, USCRIPT_MONGOLIAN },
-    { 0x1C5A, USCRIPT_OL_CHIKI },
-    { 0x13C4, USCRIPT_CHEROKEE },
-    { 0x104B5, USCRIPT_OSAGE },
-    { 0x14C0, USCRIPT_CANADIAN_ABORIGINAL },
-    { 0x168F, USCRIPT_OGHAM },
-    { 0x16A0, USCRIPT_RUNIC },
-    { 0x10CA1, USCRIPT_OLD_HUNGARIAN },
-    { 0x10C00, USCRIPT_ORKHON },
-    { 0xA549, USCRIPT_VAI },
-    { 0xA6A0, USCRIPT_BAMUM },
-    { 0x16AE6, USCRIPT_BASSA_VAH },
-    { 0x1E802, USCRIPT_MENDE },
-    { 0x1E909, USCRIPT_ADLAM, },
-    { 0xAC00, USCRIPT_HANGUL },
-    { 0x304B, USCRIPT_HIRAGANA },
-    { 0x30AB, USCRIPT_KATAKANA },
-    { 0x3105, USCRIPT_BOPOMOFO },
-    { 0xA288, USCRIPT_YI },
-    { 0xA4D0, USCRIPT_LISU },
-    { 0xA4E8, USCRIPT_LISU },
-    { 0x16F00, USCRIPT_MIAO },
-    { 0x118B4, USCRIPT_WARANG_CITI },
-    { 0x11AC0, USCRIPT_PAU_CIN_HAU },
-    { 0x16B1C, USCRIPT_PAHAWH_HMONG },
-    { 0x10280, USCRIPT_LYCIAN },
-    { 0x102A0, USCRIPT_CARIAN },
-    { 0x102B7, USCRIPT_CARIAN },
-    { 0x10920, USCRIPT_LYDIAN },
-    { 0x10300, USCRIPT_OLD_ITALIC },
-    { 0x10308, USCRIPT_OLD_ITALIC },
-    { 0x10330, USCRIPT_GOTHIC },
-    { 0x10414, USCRIPT_DESERET },
-    { 0x10450, USCRIPT_SHAVIAN },
-    { 0x1BC20, USCRIPT_DUPLOYAN },
-    { 0x10480, USCRIPT_OSMANYA },
-    { 0x10500, USCRIPT_ELBASAN },
-    { 0x10537, USCRIPT_CAUCASIAN_ALBANIAN },
-    { 0x110D0, USCRIPT_SORA_SOMPENG },
-    { 0x16A4F, USCRIPT_MRO },
-    { 0x10000, USCRIPT_LINEAR_B },
-    { 0x10647, USCRIPT_LINEAR_A },
-    { 0x10800, USCRIPT_CYPRIOT },
-    { 0x10A60, USCRIPT_OLD_SOUTH_ARABIAN },
-    { 0x10A95, USCRIPT_OLD_NORTH_ARABIAN },
-    { 0x10B00, USCRIPT_AVESTAN },
-    { 0x10873, USCRIPT_PALMYRENE },
-    { 0x10896, USCRIPT_NABATAEAN },
-    { 0x108F4, USCRIPT_HATRAN },
-    { 0x10840, USCRIPT_IMPERIAL_ARAMAIC },
-    { 0x10B40, USCRIPT_INSCRIPTIONAL_PARTHIAN },
-    { 0x10B60, USCRIPT_INSCRIPTIONAL_PAHLAVI },
-    { 0x10B8F, USCRIPT_PSALTER_PAHLAVI },
-    { 0x10AC1, USCRIPT_MANICHAEAN },
-    { 0x10AD8, USCRIPT_MANICHAEAN },
-    { 0x10380, USCRIPT_UGARITIC },
-    { 0x103A0, USCRIPT_OLD_PERSIAN },
-    { 0x12000, USCRIPT_CUNEIFORM },
-    { 0x13153, USCRIPT_EGYPTIAN_HIEROGLYPHS },
-    { 0x109A0, USCRIPT_MEROITIC_CURSIVE },
-    { 0x10980, USCRIPT_MEROITIC_HIEROGLYPHS },
-    { 0x14400, USCRIPT_ANATOLIAN_HIEROGLYPHS },
-    { 0x18229, USCRIPT_TANGUT },
-    { 0x5B57, USCRIPT_HAN },
-    { 0xFDD0, USCRIPT_UNKNOWN }  // unassigned-implicit primary weights
+    const char *name;
+    int32_t code;
+} specialReorderTokens[] = {
+    { "TERMINATOR", -2 },  // -2 means "ignore"
+    { "LEVEL-SEPARATOR", -2 },
+    { "FIELD-SEPARATOR", -2 },
+    { "COMPRESS", -3 },
+    // The standard name is "PUNCT" but FractionalUCA.txt uses the long form.
+    { "PUNCTUATION", UCOL_REORDER_CODE_PUNCTUATION },
+    { "IMPLICIT", USCRIPT_HAN },  // Implicit weights are usually for Han characters. Han & unassigned share a lead byte.
+    { "TRAILING", -2 },  // We do not reorder trailing weights (those after implicits).
+    { "SPECIAL", -2 }  // We must never reorder internal, special CE lead bytes.
 };
 
-static int32_t getCharScript(UChar32 c) {
-    for(int32_t i = 0; i < UPRV_LENGTHOF(sampleCharsToScripts); ++i) {
-        if(c == sampleCharsToScripts[i].sampleChar) {
-            return sampleCharsToScripts[i].script;
+int32_t getReorderCode(const char* name) {
+    int32_t code = CollationRuleParser::getReorderCode(name);
+    if (code >= 0) {
+        return code;
+    }
+    for (int32_t i = 0; i < LENGTHOF(specialReorderTokens); ++i) {
+        if (0 == strcmp(name, specialReorderTokens[i].name)) {
+            return specialReorderTokens[i].code;
         }
     }
-    return USCRIPT_INVALID_CODE;  // -1
+    return -1;  // Same as UCHAR_INVALID_CODE or USCRIPT_INVALID_CODE.
 }
 
 /**
@@ -469,7 +333,7 @@ static struct {
 };
 
 static int64_t getOptionValue(const char *name) {
-    for (int32_t i = 0; i < UPRV_LENGTHOF(vt); ++i) {
+    for (int32_t i = 0; i < LENGTHOF(vt); ++i) {
         if(uprv_strcmp(name, vt[i].name) == 0) {
             return vt[i].value;
         }
@@ -477,9 +341,11 @@ static int64_t getOptionValue(const char *name) {
     return 0;
 }
 
+static UnicodeString *leadByteScripts = NULL;
+
 static void readAnOption(
         CollationBaseDataBuilder &builder, char *buffer, UErrorCode *status) {
-    for (int32_t cnt = 0; cnt<UPRV_LENGTHOF(vt); cnt++) {
+    for (int32_t cnt = 0; cnt<LENGTHOF(vt); cnt++) {
         int32_t vtLen = (int32_t)uprv_strlen(vt[cnt].name);
         if(uprv_strncmp(buffer, vt[cnt].name, vtLen) == 0) {
             ActionType what_to_do = vt[cnt].what_to_do;
@@ -625,12 +491,54 @@ static void readAnOption(
                     fprintf(stderr, "warning: UCA version %s != UCD version %s\n", uca, ucd);
                 }
             } else if (what_to_do == READLEADBYTETOSCRIPTS) {
-                if (strstr(pointer, "COMPRESS") != NULL) {
-                    uint16_t leadByte = (hex2num(*pointer++) * 16);
-                    leadByte += hex2num(*pointer++);
-                    builder.setCompressibleLeadByte(leadByte);
+                uint16_t leadByte = (hex2num(*pointer++) * 16);
+                leadByte += hex2num(*pointer++);
+
+                if(0xe0 <= leadByte && leadByte < Collation::UNASSIGNED_IMPLICIT_BYTE) {
+                    // Extend the Hani range to the end of what this implementation uses.
+                    // FractionalUCA.txt assumes a different algorithm for implicit primary weights,
+                    // and different high-lead byte ranges.
+                    leadByteScripts[leadByte] = leadByteScripts[0xdf];
+                    return;
                 }
-                // We do not need the list of scripts on this line.
+
+                UnicodeString scripts;
+                for(;;) {
+                    pointer = skipWhiteSpace(pointer);
+                    if (*pointer == ']') {
+                        break;
+                    }
+                    const char *scriptName = pointer;
+                    char c;
+                    while((c = *pointer) != 0 && c != ' ' && c != '\t' && c != ']') { ++pointer; }
+                    if(c == 0) {
+                        fprintf(stderr, "Syntax error: unterminated list of scripts: '%s'\n", buffer);
+                        *status = U_INVALID_FORMAT_ERROR;
+                        return;
+                    }
+                    *pointer = 0;
+                    int32_t reorderCode = getReorderCode(scriptName);
+                    *pointer = c;
+                    if (reorderCode == -3) {  // COMPRESS
+                        builder.setCompressibleLeadByte(leadByte);
+                        continue;
+                    }
+                    if (reorderCode == -2) {
+                        continue;  // Ignore "TERMINATOR" etc.
+                    }
+                    if (reorderCode < 0 || 0xffff < reorderCode) {
+                        fprintf(stderr, "Syntax error: unable to parse reorder code from '%s'\n", scriptName);
+                        *status = U_INVALID_FORMAT_ERROR;
+                        return;
+                    }
+                    scripts.append((UChar)reorderCode);
+                }
+                if(!scripts.isEmpty()) {
+                    if(leadByteScripts == NULL) {
+                        leadByteScripts = new UnicodeString[256];
+                    }
+                    leadByteScripts[leadByte] = scripts;
+                }
             }
             return;
         }
@@ -639,7 +547,7 @@ static void readAnOption(
 }
 
 static UBool
-readAnElement(char *line,
+readAnElement(FILE *data,
         CollationBaseDataBuilder &builder,
         UnicodeString &prefix, UnicodeString &s,
         int64_t ces[32], int32_t &cesLength,
@@ -647,69 +555,72 @@ readAnElement(char *line,
     if(U_FAILURE(*status)) {
         return FALSE;
     }
-    int32_t lineLength = (int32_t)uprv_strlen(line);
-    while(lineLength>0 && (line[lineLength-1] == '\r' || line[lineLength-1] == '\n')) {
-      line[--lineLength] = 0;
+    char buffer[30000];
+    char *result = fgets(buffer, sizeof(buffer), data);
+    if(result == NULL) {
+        if(feof(data)) {
+            return FALSE;
+        } else {
+            fprintf(stderr, "empty line but no EOF!\n");
+            *status = U_INVALID_FORMAT_ERROR;
+            return FALSE;
+        }
+    }
+    int32_t buflen = (int32_t)uprv_strlen(buffer);
+    while(buflen>0 && (buffer[buflen-1] == '\r' || buffer[buflen-1] == '\n')) {
+      buffer[--buflen] = 0;
     }
 
-    if(lineLength >= 3 && line[0] == (char)0xef &&
-            line[1] == (char)0xbb && line[2] == (char)0xbf) {
-        // U+FEFF UTF-8 signature byte sequence.
-        // Ignore, assuming it is at the start of the file.
-        line += 3;
-        lineLength -= 3;
-    }
-    if(line[0] == 0 || line[0] == '#') {
+    if(buffer[0] == 0 || buffer[0] == '#') {
         return FALSE; // just a comment, skip whole line
     }
 
     // Directives.
-    if(line[0] == '[') {
-        readAnOption(builder, line, status);
+    if(buffer[0] == '[') {
+        readAnOption(builder, buffer, status);
         return FALSE;
     }
 
-    CharString input;
-    char *startCodePoint = line;
+    char *startCodePoint = buffer;
     char *endCodePoint = strchr(startCodePoint, ';');
     if(endCodePoint == NULL) {
-        fprintf(stderr, "error - line with no code point:\n%s\n", line);
+        fprintf(stderr, "error - line with no code point!\n");
         *status = U_INVALID_FORMAT_ERROR; /* No code point - could be an error, but probably only an empty line */
         return FALSE;
+    } else {
+        *endCodePoint = 0;
     }
 
-    char *pipePointer = strchr(line, '|');
+    char *pipePointer = strchr(buffer, '|');
     if (pipePointer != NULL) {
         // Read the prefix string which precedes the actual string.
-        input.append(startCodePoint, (int32_t)(pipePointer - startCodePoint), *status);
+        *pipePointer = 0;
         UChar *prefixChars = prefix.getBuffer(32);
         int32_t prefixSize =
-            u_parseString(input.data(),
+            u_parseString(startCodePoint,
                           prefixChars, prefix.getCapacity(),
                           NULL, status);
         if(U_FAILURE(*status)) {
             prefix.releaseBuffer(0);
-            fprintf(stderr, "error - parsing of prefix \"%s\" failed: %s\n%s\n",
-                    input.data(), line, u_errorName(*status));
+            fprintf(stderr, "error - parsing of prefix \"%s\" failed: %s\n",
+                    startCodePoint, u_errorName(*status));
             *status = U_INVALID_FORMAT_ERROR;
             return FALSE;
         }
         prefix.releaseBuffer(prefixSize);
         startCodePoint = pipePointer + 1;
-        input.clear();
     }
 
     // Read the string which gets the CE(s) assigned.
-    input.append(startCodePoint, (int32_t)(endCodePoint - startCodePoint), *status);
     UChar *uchars = s.getBuffer(32);
     int32_t cSize =
-        u_parseString(input.data(),
+        u_parseString(startCodePoint,
                       uchars, s.getCapacity(),
                       NULL, status);
     if(U_FAILURE(*status)) {
         s.releaseBuffer(0);
-        fprintf(stderr, "error - parsing of code point(s) \"%s\" failed: %s\n%s\n",
-                input.data(), line, u_errorName(*status));
+        fprintf(stderr, "error - parsing of code point(s) \"%s\" failed: %s\n",
+                startCodePoint, u_errorName(*status));
         *status = U_INVALID_FORMAT_ERROR;
         return FALSE;
     }
@@ -729,14 +640,14 @@ readAnElement(char *line,
             break;
         }
         if(cesLength >= 31) {
-            fprintf(stderr, "Error: Too many CEs on line '%s'\n", line);
+            fprintf(stderr, "Error: Too many CEs on line '%s'\n", buffer);
             *status = U_INVALID_FORMAT_ERROR;
             return FALSE;
         }
         ces[cesLength++] = parseCE(builder, pointer, *status);
         if(U_FAILURE(*status)) {
             fprintf(stderr, "Syntax error parsing CE from line '%s' - %s\n",
-                    line, u_errorName(*status));
+                    buffer, u_errorName(*status));
             return FALSE;
         }
     }
@@ -756,11 +667,11 @@ readAnElement(char *line,
                 uint8_t b = (uint8_t)(ce >> (j * 8));
                 if(j <= 1) { b &= 0x3f; }  // tertiary bytes use 6 bits
                 if (b == 1) {
-                    fprintf(stderr, "Warning: invalid UCA weight byte 01 for %s\n", line);
+                    fprintf(stderr, "Warning: invalid UCA weight byte 01 for %s\n", buffer);
                     return FALSE;
                 }
-                if (j == 7 && b == 2) {
-                    fprintf(stderr, "Warning: invalid UCA primary weight lead byte 02 for %s\n", line);
+                if ((j == 7 || j == 3 || j == 1) && b == 2) {
+                    fprintf(stderr, "Warning: invalid UCA weight lead byte 02 for %s\n", buffer);
                     return FALSE;
                 }
                 if (j == 7) {
@@ -771,7 +682,7 @@ readAnElement(char *line,
                     // 02 is unusable and 03 is the low compression terminator when the lead byte is compressible.
                     if (isCompressible && (b <= 3 || b == 0xff)) {
                         fprintf(stderr, "Warning: invalid UCA primary second weight byte %02X for %s\n",
-                                b, line);
+                                b, buffer);
                         return FALSE;
                     }
                 }
@@ -794,34 +705,23 @@ parseFractionalUCA(const char *filename,
         *status = U_FILE_ACCESS_ERROR;
         return;
     }
-    int32_t lineNumber = 0;
-    char buffer[30000];
+    uint32_t line = 0;
 
     UChar32 maxCodePoint = 0;
     while(!feof(data)) {
         if(U_FAILURE(*status)) {
             fprintf(stderr, "Something returned an error %i (%s) while processing line %u of %s. Exiting...\n",
-                *status, u_errorName(*status), (int)lineNumber, filename);
+                *status, u_errorName(*status), (int)line, filename);
             exit(*status);
         }
 
-        lineNumber++;
-        char *line = fgets(buffer, sizeof(buffer), data);
-        if(line == NULL) {
-            if(feof(data)) {
-                break;
-            } else {
-                fprintf(stderr, "no more input line and also no EOF!\n");
-                *status = U_INVALID_FORMAT_ERROR;
-                return;
-            }
-        }
+        line++;
 
         UnicodeString prefix;
         UnicodeString s;
         int64_t ces[32];
         int32_t cesLength = 0;
-        if(readAnElement(line, builder, prefix, s, ces, cesLength, status)) {
+        if(readAnElement(data, builder, prefix, s, ces, cesLength, status)) {
             // we have read the line, now do something sensible with the read data!
             uint32_t p = (uint32_t)(ces[0] >> 32);
 
@@ -830,21 +730,9 @@ parseFractionalUCA(const char *filename,
                 // are only entered into the inverse table,
                 // not into the normal collation data.
                 builder.addRootElements(ces, cesLength, *status);
-                if(s.length() == 2 && cesLength == 1) {
-                    switch(s[1]) {
-                    case 0x34:
-                        // Lead byte for numeric sorting.
-                        builder.setNumericPrimary(p);
-                        break;
-                    case 0xFF21:
-                        builder.addScriptStart(CollationData::REORDER_RESERVED_BEFORE_LATIN, p);
-                        break;
-                    case 0xFF3A:
-                        builder.addScriptStart(CollationData::REORDER_RESERVED_AFTER_LATIN, p);
-                        break;
-                    default:
-                        break;
-                    }
+                if(s.length() == 2 && s[1] == 0x34 && cesLength == 1) {
+                    // Lead byte for numeric sorting.
+                    builder.setNumericPrimary(p);
                 }
             } else {
                 UChar32 c = s.char32At(0);
@@ -854,38 +742,15 @@ parseFractionalUCA(const char *filename,
                 // CollationBaseDataBuilder::init() maps them to special CEs.
                 // Except for U+FFFE, these have higher primaries in v2 than in FractionalUCA.txt.
                 if(0xfffd <= c && c <= 0xffff) { continue; }
-                if(s.length() >= 2 && c == 0xFDD1) {
-                    UChar32 c2 = s.char32At(1);
-                    int32_t script = getCharScript(c2);
-                    if(script < 0) {
-                        fprintf(stderr,
-                                "Error: Unknown script for first-primary sample character "
-                                "U+%04X on line %u of %s:\n"
-                                "%s\n"
-                                "    (add the character to genuca.cpp sampleCharsToScripts[])\n",
-                                c2, (int)lineNumber, filename, line);
-                        exit(U_INVALID_FORMAT_ERROR);
-                    }
-                    if(script == USCRIPT_UNKNOWN) {
-                        // FDD1 FDD0, first unassigned-implicit primary
-                        builder.addScriptStart(script, Collation::FIRST_UNASSIGNED_PRIMARY);
-                        continue;
-                    }
-                    builder.addScriptStart(script, p);
-                    if(script == USCRIPT_HIRAGANA) {
-                        builder.addScriptStart(USCRIPT_KATAKANA_OR_HIRAGANA, p);
-                    } else if(script == USCRIPT_HAN) {
-                        builder.addScriptStart(USCRIPT_SIMPLIFIED_HAN, p);
-                        builder.addScriptStart(USCRIPT_TRADITIONAL_HAN, p);
-                    }
+                if(s.length() == 2 && s[0] == 0xFDD1 && s[1] == 0xFDD0) {
+                    continue;
                 }
 
                 if(0xe0000000 <= p && p < 0xf0000000) {
                     fprintf(stderr,
                             "Error: Unexpected mapping to an implicit or trailing primary"
-                            " on line %u of %s:\n"
-                            "%s\n",
-                            (int)lineNumber, filename, line);
+                            " on line %u of %s.\n",
+                            (int)line, filename);
                     exit(U_INVALID_FORMAT_ERROR);
                 }
 
@@ -998,7 +863,7 @@ parseFractionalUCA(const char *filename,
     }
 
     if (beVerbose) {
-        printf("\nLines read: %u\n", (int)lineNumber);
+        printf("\nLines read: %u\n", (int)line);
     }
 
     fclose(data);
@@ -1020,6 +885,40 @@ buildAndWriteBaseData(CollationBaseDataBuilder &builder,
         fprintf(stderr, "error: unexpected [fixed tertiary common byte]");
         errorCode = U_INVALID_FORMAT_ERROR;
         return;
+    }
+
+    if(leadByteScripts != NULL) {
+        uint32_t firstLead = Collation::MERGE_SEPARATOR_BYTE + 1;
+        do {
+            // Find the range of lead bytes with this set of scripts.
+            const UnicodeString &firstScripts = leadByteScripts[firstLead];
+            if(firstScripts.isEmpty()) {
+                fprintf(stderr, "[top_byte 0x%02X] has no reorderable scripts\n", (int)firstLead);
+                errorCode = U_INVALID_FORMAT_ERROR;
+                return;
+            }
+            uint32_t lead = firstLead;
+            for(;;) {
+                ++lead;
+                const UnicodeString &scripts = leadByteScripts[lead];
+                // The scripts should either be the same or disjoint.
+                // We do not test if all reordering groups have disjoint sets of scripts.
+                if(scripts.isEmpty() || firstScripts.indexOf(scripts[0]) < 0) { break; }
+                if(scripts != firstScripts) {
+                    fprintf(stderr,
+                            "[top_byte 0x%02X] includes script %d from [top_byte 0x%02X] "
+                            "but not all scripts match\n",
+                            (int)firstLead, scripts[0], (int)lead);
+                    errorCode = U_INVALID_FORMAT_ERROR;
+                    return;
+                }
+            }
+            // lead is one greater than the last lead byte with the same set of scripts as firstLead.
+            builder.addReorderingGroup(firstLead, lead - 1, firstScripts, errorCode);
+            if(U_FAILURE(errorCode)) { return; }
+            firstLead = lead;
+        } while(firstLead < Collation::UNASSIGNED_IMPLICIT_BYTE);
+        delete[] leadByteScripts;
     }
 
     CollationData data(*Normalizer2Factory::getNFCImpl(errorCode));
@@ -1269,7 +1168,7 @@ extern "C" int
 main(int argc, char* argv[]) {
     U_MAIN_INIT_ARGS(argc, argv);
 
-    argc=u_parseArgs(argc, argv, UPRV_LENGTHOF(options), options);
+    argc=u_parseArgs(argc, argv, LENGTHOF(options), options);
 
     /* error handling, printing usage message */
     if(argc<0) {

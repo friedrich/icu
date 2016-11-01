@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2013-2015, International Business Machines
+* Copyright (C) 2013-2014, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
 * collationtailoring.cpp
@@ -42,7 +40,6 @@ CollationTailoring::CollationTailoring(const CollationSettings *baseSettings)
     if(baseSettings != NULL) {
         U_ASSERT(baseSettings->reorderCodesLength == 0);
         U_ASSERT(baseSettings->reorderTable == NULL);
-        U_ASSERT(baseSettings->minHighNoReorder == 0);
     } else {
         settings = new CollationSettings();
     }

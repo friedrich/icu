@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/hsb.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/hsb.xml
+ */
 hsb{
     AuxExemplarCharacters{
         "[á à ă â å ä ã ą ā æ ç ď đ é è ĕ ê ë ė ę ē ğ í ì ĭ î ï İ ī ı ĺ ľ ň ñ ò ŏ ô ö"
@@ -13,6 +22,9 @@ hsb{
     ExemplarCharactersPunctuation{
         "[\\- ‐ – — , ; \\: ! ? . … ' ‘ ’ ‚ \u0022 “ „ « » ( ) \\[ \\] \\{ \\} § @ * "
         "/ \\& #]"
+    }
+    LocaleScript{
+        "Latn",
     }
     NumberElements{
         latn{
@@ -195,7 +207,7 @@ hsb{
         }
         minimumGroupingDigits{"1"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.8.9"}
     calendar{
         generic{
             DateTimePatterns{
@@ -306,10 +318,6 @@ hsb{
                 "dopołdnja",
                 "popołdnju",
             }
-            AmPmMarkersAbbr{
-                "dopołdnja",
-                "popołdnju",
-            }
             AmPmMarkersNarrow{
                 "dop.",
                 "pop.",
@@ -329,6 +337,8 @@ hsb{
                 "{1} {0}",
                 "{1} {0}",
             }
+            NoonMarker{"připołdnju"}
+            NoonMarkerNarrow{"připołd."}
             appendItems{
                 Timezone{"{0} {1}"}
             }
@@ -697,6 +707,11 @@ hsb{
         alternateQuotationStart{"‚"}
         quotationEnd{"“"}
         quotationStart{"„"}
+    }
+    durationUnits{
+        hm{"h:mm"}
+        hms{"h:mm:ss"}
+        ms{"m:ss"}
     }
     fields{
         day{

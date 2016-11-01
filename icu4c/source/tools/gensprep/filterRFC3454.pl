@@ -1,7 +1,5 @@
 #!/usr/bin/perl
-# Copyright (C) 2016 and later: Unicode, Inc. and others.
-# License & terms of use: http://www.unicode.org/copyright.html
-# Copyright (c) 2001-2015 International Business Machines
+# Copyright (c) 2001-2009 International Business Machines
 # Corporation and others. All Rights Reserved.
 
 ####################################################################################
@@ -142,7 +140,7 @@ sub main(){
   if( defined $writeISCSIProhibitedExtra){
       create_iSCSIExtraProhibitedTable($inFH, $outfile);
   }
-  if( defined $writeXMPPNodeProhibitedExtra){
+  if( defined $writeXMPPNodeProhitedExtra){
       create_XMPPNodeExtraProhibitedTable($inFH, $outfile);
   }
   if( defined $writeSASLMap){

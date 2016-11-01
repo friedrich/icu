@@ -1,12 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/km.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/km.xml
+ */
 km{
-    Version{"2.1.28.79"}
-    durationUnits{
-        hm{"h:mm"}
-        hms{"h:mm:ss"}
-        ms{"m:ss"}
-    }
+    Version{"2.1.8.9"}
     units{
         acceleration{
             g-force{
@@ -20,12 +24,12 @@ km{
         }
         angle{
             arc-minute{
-                dnam{"អាកនាទី"}
-                other{"{0} អាកនាទី"}
+                dnam{"arcminutes"}
+                other{"{0} arcminutes"}
             }
             arc-second{
-                dnam{"អាកវិនាទី"}
-                other{"{0} អាកវិនាទី"}
+                dnam{"arcseconds"}
+                other{"{0} arcseconds"}
             }
             degree{
                 dnam{"ដឺក្រេ"}
@@ -34,10 +38,6 @@ km{
             radian{
                 dnam{"រ៉ាដ្យង់"}
                 other{"{0} រ៉ាដ្យង់"}
-            }
-            revolution{
-                dnam{"រង្វិលជុំ"}
-                other{"{0} រង្វិលជុំ"}
             }
         }
         area{
@@ -52,31 +52,26 @@ km{
             square-centimeter{
                 dnam{"សង់ទីម៉ែត្រការ៉េ"}
                 other{"{0} សង់ទីម៉ែត្រការ៉េ"}
-                per{"{0} ក្នុងមួយសង់ទីម៉ែត្រការ៉េ"}
             }
             square-foot{
                 dnam{"ហ្វីត​ការ៉េ"}
                 other{"{0} ហ្វីត​ការ៉េ"}
             }
             square-inch{
-                dnam{"អ៊ីញការ៉េ"}
-                other{"{0} អ៊ីញការ៉េ"}
-                per{"{0} ក្នុងមួយអ៊ីញការ៉េ"}
+                dnam{"អ៊ិន្ឈ៍ការ៉េ"}
+                other{"{0} អ៊ិន្ឈ៍ការ៉េ"}
             }
             square-kilometer{
                 dnam{"គីឡូម៉ែត្រ​ការ៉េ"}
                 other{"{0} គីឡូម៉ែត្រ​ការ៉េ"}
-                per{"{0} ក្នុងមួយគីឡូម៉ែត្រ​ការ៉េ"}
             }
             square-meter{
                 dnam{"ម៉ែត្រ​ការ៉េ"}
                 other{"{0} ម៉ែត្រ​ការ៉េ"}
-                per{"{0} ក្នុងមួយម៉ែត្រការ៉េ"}
             }
             square-mile{
-                dnam{"ម៉ាយការ៉េ"}
-                other{"{0} ម៉ាយការ៉េ"}
-                per{"{0} ក្នុងមួយម៉ាយការ៉េ"}
+                dnam{"ម៉ាយល៍​ការ៉េ"}
+                other{"{0} ម៉ាយល៍​ការ៉េ"}
             }
             square-yard{
                 dnam{"យ៉ាត​ការ៉េ"}
@@ -84,49 +79,17 @@ km{
             }
         }
         compound{
-            per{"{0}​ ក្នុង​មួយ​ {1}"}
-        }
-        concentr{
-            karat{
-                dnam{"ការ៉ាត់"}
-                other{"{0} ការ៉ាត់"}
-            }
-            milligram-per-deciliter{
-                dnam{"មិល្លីក្រាមក្នុងមួយដេស៊ីលីត្រ"}
-                other{"{0} មិល្លីក្រាមក្នុងមួយដេស៊ីលីត្រ"}
-            }
-            millimole-per-liter{
-                dnam{"មិល្លីម៉ូលក្នុងមួយលីត្រ"}
-                other{"{0} មិល្លីម៉ូលក្នុងមួយលីត្រ"}
-            }
-            part-per-million{
-                dnam{"ផ្នែកក្នុងមួយលាន"}
-                other{"{0} ផ្នែកក្នុងមួយលាន"}
-            }
+            per{"{0}​ក្នុង​មួយ​{1}"}
         }
         consumption{
-            liter-per-100kilometers{
-                dnam{"លីត្រក្នុង 100 គីឡូម៉ែត្រ"}
-                other{"{0} លីត្រក្នុង 100 គីឡូម៉ែត្រ"}
-            }
             liter-per-kilometer{
                 dnam{"លីត្រ​ក្នុង​មួយ​គីឡូម៉ែត្រ"}
                 other{"{0} លីត្រ​ក្នុង​មួយ​គីឡូម៉ែត្រ"}
             }
             mile-per-gallon{
-                dnam{"ម៉ាយក្នុង​មួយ​ហ្គាឡុង"}
-                other{"{0} ម៉ាយក្នុង​មួយ​ហ្គាឡុង"}
+                dnam{"ម៉ាយល៍​ក្នុង​មួយ​ហ្គាឡុង"}
+                other{"{0} ម៉ាយល៍​ក្នុង​មួយ​ហ្គាឡុង"}
             }
-            mile-per-gallon-imperial{
-                dnam{"ម៉ាយក្នុងមួយអ៊ីមភៀរៀលហ្គាឡុង"}
-                other{"{0} ម៉ាយក្នុងមួយអ៊ីមភៀរៀលហ្គាឡុង"}
-            }
-        }
-        coordinate{
-            east{"{0}កើត"}
-            north{"{0}ជើង"}
-            south{"{0}ត្បូង"}
-            west{"{0}លិច"}
         }
         digital{
             bit{
@@ -171,14 +134,9 @@ km{
             }
         }
         duration{
-            century{
-                dnam{"សតវត្ស"}
-                other{"{0} សតវត្ស"}
-            }
             day{
                 dnam{"ថ្ងៃ"}
                 other{"{0} ថ្ងៃ"}
-                per{"{0} ក្នុងមួយថ្ងៃ"}
             }
             hour{
                 dnam{"ម៉ោង"}
@@ -196,12 +154,10 @@ km{
             minute{
                 dnam{"នាទី"}
                 other{"{0} នាទី"}
-                per{"{0} ក្នុងមួយនាទី"}
             }
             month{
                 dnam{"ខែ"}
                 other{"{0} ខែ"}
-                per{"{0} ក្នុងមួយខែ"}
             }
             nanosecond{
                 dnam{"ណាណូវិនាទី"}
@@ -215,12 +171,10 @@ km{
             week{
                 dnam{"សប្ដាហ៍"}
                 other{"{0} សប្ដាហ៍"}
-                per{"{0} ក្នុងមួយសប្តាហ៍"}
             }
             year{
                 dnam{"ឆ្នាំ"}
                 other{"{0} ឆ្នាំ"}
-                per{"{0} ក្នុងមួយឆ្នាំ"}
             }
         }
         electric{
@@ -251,16 +205,16 @@ km{
                 other{"{0} កាឡូរី"}
             }
             joule{
-                dnam{"ស៊ូល"}
-                other{"{0} ស៊ូល"}
+                dnam{"joules"}
+                other{"{0} joules"}
             }
             kilocalorie{
                 dnam{"គីឡូកាឡូរី"}
                 other{"{0} គីឡូកាឡូរី"}
             }
             kilojoule{
-                dnam{"គីឡូស៊ូល"}
-                other{"{0} គីឡូស៊ូល"}
+                dnam{"kilojoules"}
+                other{"{0} kilojoules"}
             }
             kilowatt-hour{
                 dnam{"គីឡូវ៉ាត់​ម៉ោង"}
@@ -287,13 +241,12 @@ km{
         }
         length{
             astronomical-unit{
-                dnam{"ឯកតាតារាសាស្ត្រ"}
-                other{"{0} ឯកតាតារាសាស្ត្រ"}
+                dnam{"ឯកតា astronomical"}
+                other{"{0} ឯកតា astronomical"}
             }
             centimeter{
                 dnam{"សង់ទីម៉ែត្រ"}
                 other{"{0} សង់ទីម៉ែត្រ"}
-                per{"{0} ក្នុងមួយសង់ទីម៉ែត្រ"}
             }
             decimeter{
                 dnam{"ដេសីុម៉ែត្រ"}
@@ -302,17 +255,14 @@ km{
             foot{
                 dnam{"ហ្វីត"}
                 other{"{0} ហ្វីត"}
-                per{"{0} ក្នុងមួយហ្វីត"}
             }
             inch{
-                dnam{"អ៊ីញ"}
-                other{"{0} អ៊ីញ"}
-                per{"{0} ក្នុងមួយអ៊ីញ"}
+                dnam{"អ៊ិន្ឈ៍"}
+                other{"{0} អ៊ិន្ឈ៍"}
             }
             kilometer{
                 dnam{"គីឡូម៉ែត្រ"}
                 other{"{0} គីឡូម៉ែត្រ"}
-                per{"{0} ក្នុងមួយគីឡូម៉ែត្រ"}
             }
             light-year{
                 dnam{"ឆ្នាំ​ពន្លឺ"}
@@ -321,19 +271,14 @@ km{
             meter{
                 dnam{"ម៉ែត្រ"}
                 other{"{0} ម៉ែត្រ"}
-                per{"{0} ក្នុងមួយម៉ែត្រ"}
             }
             micrometer{
                 dnam{"មីក្រូ​ម៉ែត្រ"}
                 other{"{0} មីក្រូ​ម៉ែត្រ"}
             }
             mile{
-                dnam{"ម៉ាយ"}
-                other{"{0} ម៉ាយ"}
-            }
-            mile-scandinavian{
-                dnam{"ម៉ាយស្កង់ឌីណាវ"}
-                other{"{0} ម៉ាយស្កង់ឌីណាវ"}
+                dnam{"ម៉ាយល៍"}
+                other{"{0} ម៉ាយល៍"}
             }
             millimeter{
                 dnam{"មិល្លីម៉ែត្រ"}
@@ -344,12 +289,12 @@ km{
                 other{"{0} ណាណូម៉ែត្រ"}
             }
             nautical-mile{
-                dnam{"ណូទិកម៉ាយ"}
-                other{"{0} ណូទិកម៉ាយ"}
+                dnam{"nautical miles"}
+                other{"{0} nautical miles"}
             }
             parsec{
-                dnam{"ផាសិក"}
-                other{"{0} ផាសិក"}
+                dnam{"parsecs"}
+                other{"{0} parsecs"}
             }
             picometer{
                 dnam{"ពីកូម៉ែត្រ"}
@@ -374,12 +319,10 @@ km{
             gram{
                 dnam{"ក្រាម"}
                 other{"{0} ក្រាម"}
-                per{"{0} ក្នុងមួយក្រាម"}
             }
             kilogram{
                 dnam{"គីឡូក្រាម"}
                 other{"{0} គីឡូក្រាម"}
-                per{"{0} ក្នុងមួយគីឡូក្រាម"}
             }
             metric-ton{
                 dnam{"រង្វាស់​តោន"}
@@ -394,9 +337,8 @@ km{
                 other{"{0} មិល្លីក្រាម"}
             }
             ounce{
-                dnam{"អោន"}
-                other{"{0} អោន"}
-                per{"{0} ក្នុងមួយអោន"}
+                dnam{"អោនស៍"}
+                other{"{0} អោនស៍"}
             }
             ounce-troy{
                 dnam{"ត្រយ​អោន"}
@@ -405,7 +347,6 @@ km{
             pound{
                 dnam{"ផោន"}
                 other{"{0} ផោន"}
-                per{"{0} ក្នុងមួយផោន"}
             }
             ton{
                 dnam{"តោន"}
@@ -444,8 +385,8 @@ km{
                 other{"{0} ហិចតូប៉ាស្កាល់"}
             }
             inch-hg{
-                dnam{"អ៊ីញនៃបារត"}
-                other{"{0} អ៊ីញនៃបារត"}
+                dnam{"អ៊ិន្ឈ៍​នៃ​បារត"}
+                other{"{0} អ៊ិន្ឈ៍​នៃ​បារត"}
             }
             millibar{
                 dnam{"មិល្លីបារ"}
@@ -456,8 +397,14 @@ km{
                 other{"{0} មិល្លីម៉ែត្រនៃ​បារត"}
             }
             pound-per-square-inch{
-                dnam{"ផោន​ក្នុង​មួយ​អ៊ីញ​ការ៉េ"}
-                other{"{0} ផោន​ក្នុង​មួយ​អ៊ីញ​ការ៉េ"}
+                dnam{"ផោន​ក្នុង​មួយ​អ៊ិន្ឈ៍​ការ៉េ"}
+                other{"{0} ផោន​ក្នុង​មួយ​អ៊ិន្ឈ៍​ការ៉េ"}
+            }
+        }
+        proportion{
+            karat{
+                dnam{"ការ៉ាត់"}
+                other{"{0} ការ៉ាត់"}
             }
         }
         speed{
@@ -465,17 +412,13 @@ km{
                 dnam{"គីឡូម៉ែត្រ​ក្នុង​មួយ​ម៉ោង"}
                 other{"{0} គីឡូម៉ែត្រ​ក្នុង​មួយ​ម៉ោង"}
             }
-            knot{
-                dnam{"ណត់"}
-                other{"{0} ណត់"}
-            }
             meter-per-second{
                 dnam{"ម៉ែត្រ​ក្នុង​មួយ​វិនាទី"}
                 other{"{0} ម៉ែត្រ​ក្នុង​មួយ​វិនាទី"}
             }
             mile-per-hour{
-                dnam{"ម៉ាយ​ក្នុង​មួយ​ម៉ោង"}
-                other{"{0} ម៉ាយក្នុងមួយម៉ោង"}
+                dnam{"ម៉ាយល៍​ក្នុង​មួយ​ម៉ោង"}
+                other{"{0} ម៉ាយល៍​ក្នុង​មួយ​ម៉ោង"}
             }
         }
         temperature{
@@ -487,10 +430,6 @@ km{
                 dnam{"អង្សា​ហ្វារិនហៃ"}
                 other{"{0} អង្សា​ហ្វារិនហៃ"}
             }
-            generic{
-                dnam{"°"}
-                other{"{0}°"}
-            }
             kelvin{
                 dnam{"អង្សា​ខែលវិន"}
                 other{"{0} អង្សា​ខែលវិន"}
@@ -498,50 +437,44 @@ km{
         }
         volume{
             acre-foot{
-                dnam{"អាហ្វីត"}
-                other{"{0} អាហ្វីត"}
+                dnam{"acre-feet"}
+                other{"{0} acre-feet"}
             }
             centiliter{
                 dnam{"សង់ទីលីត្រ"}
                 other{"{0} សង់ទីលីត្រ"}
             }
             cubic-centimeter{
-                dnam{"សង់ទីម៉ែត្រគូប"}
-                other{"{0} សង់ទីម៉ែត្រគូប"}
-                per{"{0} ក្នុងមួយសង់ទីម៉ែត្រគូប"}
+                dnam{"សង់ទីម៉ែត្រ​គីប"}
+                other{"{0} សង់ទីម៉ែត្រ​គីប"}
             }
             cubic-foot{
-                dnam{"ហ្វីត​គូប"}
-                other{"{0} ហ្វីត​គូប"}
+                dnam{"ហ្វីត​គីប"}
+                other{"{0} ហ្វីត​គីប"}
             }
             cubic-inch{
-                dnam{"អ៊ីញគូប"}
-                other{"{0} អ៊ីញគូប"}
+                dnam{"អ៊ិន្ឈ៍​គីប"}
+                other{"{0} អ៊ិន្ឈ៍​គីប"}
             }
             cubic-kilometer{
-                dnam{"គីឡូម៉ែត្រ​គូប"}
-                other{"{0} គីឡូម៉ែត្រ​គូប"}
+                dnam{"គីឡូម៉ែត្រ​គីប"}
+                other{"{0} គីឡូម៉ែត្រ​គីប"}
             }
             cubic-meter{
-                dnam{"ម៉ែត្រគូប"}
-                other{"{0} ម៉ែត្រគូប"}
-                per{"{0} ក្នុងមួយម៉ែត្រគូប"}
+                dnam{"ម៉ែត្រ​គីប"}
+                other{"{0} ម៉ែត្រ​គីប"}
             }
             cubic-mile{
-                dnam{"ម៉ាយគូប"}
-                other{"{0} ម៉ាយគូប"}
+                dnam{"ម៉ាយល៍​គីប"}
+                other{"{0} ម៉ាយល៍​គីប"}
             }
             cubic-yard{
-                dnam{"យ៉ាតគូប"}
-                other{"{0} យ៉ាតគូប"}
+                dnam{"យ៉ាត​គីប"}
+                other{"{0} យ៉ាត​គីប"}
             }
             cup{
                 dnam{"ពែង"}
                 other{"{0} ពែង"}
-            }
-            cup-metric{
-                dnam{"រង្វាស់ពែង"}
-                other{"{0} រង្វាស់ពែង"}
             }
             deciliter{
                 dnam{"ដេសីុលីត្រ"}
@@ -554,12 +487,6 @@ km{
             gallon{
                 dnam{"ហ្គាឡុង"}
                 other{"{0} ហ្គាឡុង"}
-                per{"{0} ក្នុងមួយហ្គាឡុង"}
-            }
-            gallon-imperial{
-                dnam{"អ៊ីមភៀរៀលហ្គាឡុង"}
-                other{"{0} អ៊ីមភៀរៀលហ្គាឡុង"}
-                per{"{0}/អ៊ីមភៀរៀលហ្គាឡុង"}
             }
             hectoliter{
                 dnam{"ហិកតូលីត្រ"}
@@ -568,7 +495,6 @@ km{
             liter{
                 dnam{"លីត្រ"}
                 other{"{0} លីត្រ"}
-                per{"{0} ក្នុងមួយលីត្រ"}
             }
             megaliter{
                 dnam{"មេកាលីត្រ"}
@@ -579,12 +505,8 @@ km{
                 other{"{0} មិល្លីលីត្រ"}
             }
             pint{
-                dnam{"ភីន"}
-                other{"{0} ភីន"}
-            }
-            pint-metric{
-                dnam{"រង្វាស់ភីន"}
-                other{"{0} រង្វាស់ភីន"}
+                dnam{"pints"}
+                other{"{0} pints"}
             }
             quart{
                 dnam{"ក្វាត"}
@@ -640,18 +562,6 @@ km{
         compound{
             per{"{0}/{1}"}
         }
-        consumption{
-            liter-per-100kilometers{
-                dnam{"L/100km"}
-                other{"{0}L/100km"}
-            }
-        }
-        coordinate{
-            east{"{0}កើត"}
-            north{"{0}ជើង"}
-            south{"{0}ត្បូង"}
-            west{"{0}លិច"}
-        }
         duration{
             day{
                 dnam{"ថ្ងៃ"}
@@ -706,7 +616,7 @@ km{
             }
             meter{
                 dnam{"ម៉ែត្រ"}
-                other{"{0}m"}
+                other{"{0} m"}
             }
             mile{
                 other{"{0} ម៉."}
@@ -762,7 +672,7 @@ km{
         }
         speed{
             kilometer-per-hour{
-                dnam{"km/h"}
+                dnam{"គីឡូម៉ែត្រ​/​ម៉ោង"}
                 other{"{0} kph"}
             }
             meter-per-second{
@@ -790,7 +700,7 @@ km{
             }
             liter{
                 dnam{"លីត្រ"}
-                other{"{0}L"}
+                other{"{0}l"}
             }
         }
     }
@@ -807,12 +717,12 @@ km{
         }
         angle{
             arc-minute{
-                dnam{"អាកនាទី"}
-                other{"{0} អាកនាទី"}
+                dnam{"arcmin"}
+                other{"{0} arcmins"}
             }
             arc-second{
-                dnam{"អាកវិនាទី"}
-                other{"{0} អាកវិនាទី"}
+                dnam{"arcsecs"}
+                other{"{0} arcsecs"}
             }
             degree{
                 dnam{"ដឺក្រេ"}
@@ -821,10 +731,6 @@ km{
             radian{
                 dnam{"រ៉ាដ្យង់"}
                 other{"{0} rad"}
-            }
-            revolution{
-                dnam{"rev"}
-                other{"{0} rev"}
             }
         }
         area{
@@ -839,31 +745,26 @@ km{
             square-centimeter{
                 dnam{"cm²"}
                 other{"{0} cm²"}
-                per{"{0}/cm²"}
             }
             square-foot{
-                dnam{"ft²"}
+                dnam{"ហ្វីត​ការ៉េ"}
                 other{"{0} ft²"}
             }
             square-inch{
-                dnam{"អ៊ីញការ៉េ"}
+                dnam{"អ៊ិន្ឈ៍ការ៉េ"}
                 other{"{0} in²"}
-                per{"{0}/in²"}
             }
             square-kilometer{
                 dnam{"km²"}
                 other{"{0} km²"}
-                per{"{0}/km²"}
             }
             square-meter{
-                dnam{"m²"}
+                dnam{"ម៉ែត្រ​ការ៉េ"}
                 other{"{0} m²"}
-                per{"{0}/m²"}
             }
             square-mile{
-                dnam{"mi²"}
+                dnam{"ម៉ាយល៍​ការ៉េ"}
                 other{"{0} mi²"}
-                per{"{0}/mi²"}
             }
             square-yard{
                 dnam{"yd²"}
@@ -873,104 +774,67 @@ km{
         compound{
             per{"{0}/{1}"}
         }
-        concentr{
-            karat{
-                dnam{"ការ៉ាត់"}
-                other{"{0} kt"}
-            }
-            milligram-per-deciliter{
-                dnam{"mg/dL"}
-                other{"{0} mg/dL"}
-            }
-            millimole-per-liter{
-                dnam{"mmol/L"}
-                other{"{0} mmol/L"}
-            }
-            part-per-million{
-                dnam{"ppm"}
-                other{"{0} ppm"}
-            }
-        }
         consumption{
-            liter-per-100kilometers{
-                dnam{"L/100km"}
-                other{"{0} L/100km"}
-            }
             liter-per-kilometer{
-                dnam{"លីត្រ/km"}
+                dnam{"L/km"}
                 other{"{0} L/km"}
             }
             mile-per-gallon{
-                dnam{"ម៉ាយ​/​ហ្គាឡុង"}
+                dnam{"ម៉ាយល៍​/​ហ្គាឡុង"}
                 other{"{0} mpg"}
             }
-            mile-per-gallon-imperial{
-                dnam{"ម៉ាយ/gal Imp."}
-                other{"{0} mpg Imp."}
-            }
-        }
-        coordinate{
-            east{"{0}កើត"}
-            north{"{0}ជើង"}
-            south{"{0}ត្បូង"}
-            west{"{0}លិច"}
         }
         digital{
             bit{
-                dnam{"bit"}
-                other{"{0} bit"}
+                dnam{"ប៊ីត"}
+                other{"{0} ប៊ីត"}
             }
             byte{
-                dnam{"byte"}
-                other{"{0} byte"}
+                dnam{"បៃ"}
+                other{"{0} បៃ"}
             }
             gigabit{
-                dnam{"Gb"}
-                other{"{0} Gb"}
+                dnam{"ជីកាប៊ីត"}
+                other{"{0} ជីកាប៊ីត"}
             }
             gigabyte{
-                dnam{"GB"}
-                other{"{0} GB"}
+                dnam{"ជីកាបៃ"}
+                other{"{0} ជីកាបៃ"}
             }
             kilobit{
-                dnam{"kb"}
-                other{"{0} kb"}
+                dnam{"គីឡូប៊ីត"}
+                other{"{0} គីឡូប៊ីត"}
             }
             kilobyte{
-                dnam{"kB"}
-                other{"{0} kB"}
+                dnam{"គីឡូបៃ"}
+                other{"{0} គីឡូបៃ"}
             }
             megabit{
-                dnam{"Mb"}
-                other{"{0} Mb"}
+                dnam{"មេហ្គាប៊ីត"}
+                other{"{0} មេហ្គាប៊ីត"}
             }
             megabyte{
-                dnam{"MB"}
-                other{"{0} MB"}
+                dnam{"មេហ្គាបៃ"}
+                other{"{0} មេហ្គាបៃ"}
             }
             terabit{
-                dnam{"Tb"}
-                other{"{0} Tb"}
+                dnam{"តេរ៉ាប៊ីត"}
+                other{"{0} តេរ៉ាប៊ីត"}
             }
             terabyte{
-                dnam{"TB"}
-                other{"{0} TB"}
+                dnam{"តេរ៉ាបៃ"}
+                other{"{0} តេរ៉ាបៃ"}
             }
         }
         duration{
-            century{
-                dnam{"ស.វ"}
-                other{"{0} ស.វ"}
-            }
             day{
                 dnam{"ថ្ងៃ"}
                 other{"{0} ថ្ងៃ"}
-                per{"{0}/ថ្ងៃ"}
             }
             hour{
                 dnam{"ម៉ោង"}
                 other{"{0} ម៉ោង"}
-                per{"{0}/ម៉ោង"}
+                per{"{0} ក្នុង​មួយ​ម៉ោង"}
             }
             microsecond{
                 dnam{"មីក្រូ​វិនាទី"}
@@ -983,12 +847,10 @@ km{
             minute{
                 dnam{"នាទី"}
                 other{"{0} នាទី"}
-                per{"{0}/នាទី"}
             }
             month{
                 dnam{"ខែ"}
                 other{"{0} ខែ"}
-                per{"{0}/ខែ"}
             }
             nanosecond{
                 dnam{"ណាណូវិនាទី"}
@@ -997,17 +859,15 @@ km{
             second{
                 dnam{"វិនាទី"}
                 other{"{0} វិនាទី"}
-                per{"{0}/វិនាទី"}
+                per{"{0} ក្នុង​មួយ​វិនាទី"}
             }
             week{
                 dnam{"សប្ដាហ៍"}
                 other{"{0} សប្ដាហ៍"}
-                per{"{0}/សប្តាហ៍"}
             }
             year{
                 dnam{"ឆ្នាំ"}
                 other{"{0} ឆ្នាំ"}
-                per{"{0}/ឆ្នាំ"}
             }
         }
         electric{
@@ -1038,7 +898,7 @@ km{
                 other{"{0} Cal"}
             }
             joule{
-                dnam{"ស៊ូល"}
+                dnam{"joules"}
                 other{"{0} J"}
             }
             kilocalorie{
@@ -1046,11 +906,11 @@ km{
                 other{"{0} kcal"}
             }
             kilojoule{
-                dnam{"គីឡូស៊ូល"}
+                dnam{"kilojoule"}
                 other{"{0} kJ"}
             }
             kilowatt-hour{
-                dnam{"kWh"}
+                dnam{"គីឡូវ៉ាត់​ម៉ោង"}
                 other{"{0} kWh"}
             }
         }
@@ -1074,13 +934,12 @@ km{
         }
         length{
             astronomical-unit{
-                dnam{"au"}
+                dnam{"ឯកតា astronomical"}
                 other{"{0} au"}
             }
             centimeter{
-                dnam{"cm"}
+                dnam{"សង់ទីម៉ែត្រ"}
                 other{"{0} cm"}
-                per{"{0}/cm"}
             }
             decimeter{
                 dnam{"dm"}
@@ -1089,17 +948,14 @@ km{
             foot{
                 dnam{"ហ្វីត"}
                 other{"{0} ft"}
-                per{"{0}/ft"}
             }
             inch{
-                dnam{"អ៊ីញ"}
+                dnam{"អ៊ិន្ឈ៍"}
                 other{"{0} in"}
-                per{"{0}/in"}
             }
             kilometer{
                 dnam{"km"}
                 other{"{0} km"}
-                per{"{0}/km"}
             }
             light-year{
                 dnam{"ឆ្នាំ​ពន្លឺ"}
@@ -1108,23 +964,18 @@ km{
             meter{
                 dnam{"ម៉ែត្រ"}
                 other{"{0} m"}
-                per{"{0}/m"}
             }
             micrometer{
                 dnam{"មីក្រូ​ម៉ែត្រ"}
                 other{"{0} µm"}
             }
             mile{
-                dnam{"ម៉ាយ"}
+                dnam{"ម៉ាយល៍"}
                 other{"{0} mi"}
             }
-            mile-scandinavian{
-                dnam{"smi"}
-                other{"{0} smi"}
-            }
             millimeter{
-                dnam{"មិល្លីម៉ែត្រ"}
-                other{"{0} មិល្លីម៉ែត្រ"}
+                dnam{"mm"}
+                other{"{0} mm"}
             }
             nanometer{
                 dnam{"nm"}
@@ -1135,7 +986,7 @@ km{
                 other{"{0} nmi"}
             }
             parsec{
-                dnam{"ផាសិក"}
+                dnam{"parsecs"}
                 other{"{0} pc"}
             }
             picometer{
@@ -1156,17 +1007,15 @@ km{
         mass{
             carat{
                 dnam{"ការ៉ាត់"}
-                other{"{0} CD"}
+                other{"{0} ការ៉ាត់"}
             }
             gram{
                 dnam{"ក្រាម"}
                 other{"{0} g"}
-                per{"{0}/g"}
             }
             kilogram{
                 dnam{"kg"}
                 other{"{0} kg"}
-                per{"{0}/kg"}
             }
             metric-ton{
                 dnam{"t"}
@@ -1183,7 +1032,6 @@ km{
             ounce{
                 dnam{"oz"}
                 other{"{0} oz"}
-                per{"{0}/oz"}
             }
             ounce-troy{
                 dnam{"oz troy"}
@@ -1192,7 +1040,6 @@ km{
             pound{
                 dnam{"ផោន"}
                 other{"{0} lb"}
-                per{"{0}/lb"}
             }
             ton{
                 dnam{"តោន"}
@@ -1217,7 +1064,7 @@ km{
                 other{"{0} MW"}
             }
             milliwatt{
-                dnam{"mW"}
+                dnam{"មិល្លីវ៉ាត់"}
                 other{"{0} mW"}
             }
             watt{
@@ -1227,7 +1074,7 @@ km{
         }
         pressure{
             hectopascal{
-                dnam{"hPa"}
+                dnam{"ហិចតូប៉ាស្កាល់"}
                 other{"{0} hPa"}
             }
             inch-hg{
@@ -1235,8 +1082,8 @@ km{
                 other{"{0} inHg"}
             }
             millibar{
-                dnam{"mbar"}
-                other{"{0} mbar"}
+                dnam{"មិល្លីបារ"}
+                other{"{0} មិល្លីបារ"}
             }
             millimeter-of-mercury{
                 dnam{"mm Hg"}
@@ -1247,22 +1094,24 @@ km{
                 other{"{0} psi"}
             }
         }
+        proportion{
+            karat{
+                dnam{"ការ៉ាត់"}
+                other{"{0} kt"}
+            }
+        }
         speed{
             kilometer-per-hour{
-                dnam{"km/h"}
-                other{"{0} kph"}
-            }
-            knot{
-                dnam{"kn"}
-                other{"{0} kn"}
+                dnam{"គីឡូម៉ែត្រ​/​ម៉ោង"}
+                other{"{0} km/h"}
             }
             meter-per-second{
                 dnam{"ម៉ែត្រ​/​វិនាទី"}
-                other{"{0} m/s"}
+                other{"{0} ម៉ែត្រ​/​វិនាទី"}
             }
             mile-per-hour{
-                dnam{"ម៉ាយ​/​ម៉ោង"}
-                other{"{0} mph"}
+                dnam{"ម៉ាយល៍​/​ម៉ោង"}
+                other{"{0} ម៉ាយល៍​​ម៉ោង"}
             }
         }
         temperature{
@@ -1271,12 +1120,8 @@ km{
                 other{"{0}°C"}
             }
             fahrenheit{
-                dnam{"°F"}
+                dnam{"អង្សា​ហ្វារិនហៃ"}
                 other{"{0}°F"}
-            }
-            generic{
-                dnam{"°"}
-                other{"{0}°"}
             }
             kelvin{
                 dnam{"K"}
@@ -1285,24 +1130,23 @@ km{
         }
         volume{
             acre-foot{
-                dnam{"អាហ្វីត"}
+                dnam{"acre ft"}
                 other{"{0} ac ft"}
             }
             centiliter{
-                dnam{"cL"}
-                other{"{0} cL"}
+                dnam{"សង់ទីលីត្រ"}
+                other{"{0} សង់ទីលីត្រ"}
             }
             cubic-centimeter{
-                dnam{"cm³"}
+                dnam{"សង់ទីម៉ែត្រ​គីប"}
                 other{"{0} cm³"}
-                per{"{0}/cm³"}
             }
             cubic-foot{
-                dnam{"ហ្វីត​គូប"}
+                dnam{"ហ្វីត​គីប"}
                 other{"{0} ft³"}
             }
             cubic-inch{
-                dnam{"អ៊ីញគូប"}
+                dnam{"អ៊ិន្ឈ៍​គីប"}
                 other{"{0} in³"}
             }
             cubic-kilometer{
@@ -1312,23 +1156,18 @@ km{
             cubic-meter{
                 dnam{"m³"}
                 other{"{0} m³"}
-                per{"{0}/m³"}
             }
             cubic-mile{
                 dnam{"mi³"}
                 other{"{0} mi³"}
             }
             cubic-yard{
-                dnam{"យ៉ាតគូប"}
+                dnam{"យ៉ាត​គីប"}
                 other{"{0} yd³"}
             }
             cup{
                 dnam{"ពែង"}
-                other{"{0} c"}
-            }
-            cup-metric{
-                dnam{"mcup"}
-                other{"{0} mc"}
+                other{"{0} ពែង"}
             }
             deciliter{
                 dnam{"dL"}
@@ -1341,12 +1180,6 @@ km{
             gallon{
                 dnam{"gal"}
                 other{"{0} gal"}
-                per{"{0}/gal"}
-            }
-            gallon-imperial{
-                dnam{"Imp. gal"}
-                other{"{0} gal Imp."}
-                per{"{0}/gal Imp."}
             }
             hectoliter{
                 dnam{"hL"}
@@ -1354,8 +1187,7 @@ km{
             }
             liter{
                 dnam{"លីត្រ"}
-                other{"{0} L"}
-                per{"{0}/l"}
+                other{"{0} l"}
             }
             megaliter{
                 dnam{"ML"}
@@ -1366,23 +1198,19 @@ km{
                 other{"{0} mL"}
             }
             pint{
-                dnam{"ភីន"}
+                dnam{"pints"}
                 other{"{0} pt"}
             }
-            pint-metric{
-                dnam{"mpt"}
-                other{"{0} mpt"}
-            }
             quart{
-                dnam{"qts"}
+                dnam{"qt"}
                 other{"{0} qt"}
             }
             tablespoon{
-                dnam{"tbsp"}
+                dnam{"ស្លាបព្រា​បាយ"}
                 other{"{0} tbsp"}
             }
             teaspoon{
-                dnam{"tsp"}
+                dnam{"ស្លាបព្រា​កាហ្វេ"}
                 other{"{0} tsp"}
             }
         }

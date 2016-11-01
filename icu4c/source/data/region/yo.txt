@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/yo.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/yo.xml
+ */
 yo{
     Countries{
         AD{"Orílẹ́ède Ààndórà"}
@@ -9,6 +18,7 @@ yo{
         AI{"Orílẹ́ède Ààngúlílà"}
         AL{"Orílẹ́ède Àlùbàníánì"}
         AM{"Orílẹ́ède Améníà"}
+        AN{"Orílẹ́ède Nedalandi ti Antelisi"}
         AO{"Orílẹ́ède Ààngólà"}
         AR{"Orílẹ́ède Agentínà"}
         AS{"Sámóánì ti Orílẹ́ède Àméríkà"}
@@ -227,5 +237,5 @@ yo{
         ZM{"Orílẹ́ède ṣamibia"}
         ZW{"Orílẹ́ède ṣimibabe"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.1.6.69"}
 }

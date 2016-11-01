@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
@@ -282,8 +280,6 @@ void BiDiConformanceTest::TestBidiTest() {
     levelsCount=0;
     orderingCount=0;
     errorCount=0;
-    // paraLevelName must be initialized in case the first non-comment line is in error
-    paraLevelName="N/A";
     while(errorCount<10 && fgets(line, (int)sizeof(line), bidiTestFile.getAlias())!=NULL) {
         ++lineNumber;
         // Remove trailing comments and whitespace.

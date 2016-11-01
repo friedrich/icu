@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 1997-2015, International Business Machines Corporation and
+ * Copyright (c) 1997-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -115,10 +113,6 @@ void IntlTestDecimalFormatAPI::testAPI(/*char *par*/)
     if (noGrouping.getGroupingSize() != 0) {
       errln("Grouping size should be 0 for no grouping.");
     }
-    noGrouping.setGroupingUsed(TRUE);
-    if (noGrouping.getGroupingSize() != 0) {
-      errln("Grouping size should still be 0.");
-    }
     // end bug 10864
 
     status = U_ZERO_ERROR;
@@ -179,7 +173,7 @@ void IntlTestDecimalFormatAPI::testAPI(/*char *par*/)
     Formattable fL(l);
 
     UnicodeString res1, res2, res3, res4;
-    FieldPosition pos1(FieldPosition::DONT_CARE), pos2(FieldPosition::DONT_CARE), pos3(FieldPosition::DONT_CARE), pos4(FieldPosition::DONT_CARE);
+    FieldPosition pos1(0), pos2(0), pos3(0), pos4(0);
 
     res1 = def.format(d, res1, pos1);
     logln( (UnicodeString) "" + (int32_t) d + " formatted to " + res1);
@@ -449,7 +443,6 @@ void IntlTestDecimalFormatAPI::TestCurrencyPluralInfo(){
     DecimalFormat *df = new DecimalFormat(status);
     if(U_FAILURE(status)) {
         errcheckln(status, "ERROR: Could not create DecimalFormat - %s", u_errorName(status));
-        return;
     }
 
     df->adoptCurrencyPluralInfo(cpi);
@@ -608,115 +601,25 @@ void IntlTestDecimalFormatAPI::TestScale()
 void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     UErrorCode status = U_ZERO_ERROR;
 
-    LocalPointer<DecimalFormat> df(new DecimalFormat("###", status), status);
+    LocalPointer<DecimalFormat> df(new DecimalFormat("###", status));
     TEST_ASSERT_STATUS(status);
-    if (status == U_MISSING_RESOURCE_ERROR) {
-        return;
-    }
     FixedDecimal fd = df->getFixedDecimal(44, status);
     TEST_ASSERT_STATUS(status);
     ASSERT_EQUAL(44, fd.source);
     ASSERT_EQUAL(0, fd.visibleDecimalDigitCount);
-    ASSERT_EQUAL(FALSE, fd.isNegative);
 
-    fd = df->getFixedDecimal(-44, status);
-    TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(44, fd.source);
-    ASSERT_EQUAL(0, fd.visibleDecimalDigitCount);
-    ASSERT_EQUAL(TRUE, fd.isNegative);
-
-    df.adoptInsteadAndCheckErrorCode(new DecimalFormat("###.00##", status), status);
+    df.adoptInstead(new DecimalFormat("###.00##", status));
     TEST_ASSERT_STATUS(status);
     fd = df->getFixedDecimal(123.456, status);
     TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount); // v
-    ASSERT_EQUAL(456, fd.decimalDigits); // f
-    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros); // t
-    ASSERT_EQUAL(123, fd.intValue); // i
-    ASSERT_EQUAL(123.456, fd.source); // n
+    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount);
+    ASSERT_EQUAL(456, fd.decimalDigits);
+    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros);
+    ASSERT_EQUAL(123, fd.intValue);
     ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 
-    fd = df->getFixedDecimal(-123.456, status);
-    TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount); // v
-    ASSERT_EQUAL(456, fd.decimalDigits); // f
-    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros); // t
-    ASSERT_EQUAL(123, fd.intValue); // i
-    ASSERT_EQUAL(123.456, fd.source); // n
-    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
-    ASSERT_EQUAL(TRUE, fd.isNegative);
-
-    // test max int digits
-    df->setMaximumIntegerDigits(2);
-    fd = df->getFixedDecimal(123.456, status);
-    TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount); // v
-    ASSERT_EQUAL(456, fd.decimalDigits); // f
-    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros); // t
-    ASSERT_EQUAL(23, fd.intValue); // i
-    ASSERT_EQUAL(23.456, fd.source); // n
-    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
-    ASSERT_EQUAL(FALSE, fd.isNegative);
-
-    fd = df->getFixedDecimal(-123.456, status);
-    TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(3, fd.visibleDecimalDigitCount); // v
-    ASSERT_EQUAL(456, fd.decimalDigits); // f
-    ASSERT_EQUAL(456, fd.decimalDigitsWithoutTrailingZeros); // t
-    ASSERT_EQUAL(23, fd.intValue); // i
-    ASSERT_EQUAL(23.456, fd.source); // n
-    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
-    ASSERT_EQUAL(TRUE, fd.isNegative);
-
-    // test max fraction digits
-    df->setMaximumIntegerDigits(2000000000);
-    df->setMaximumFractionDigits(2);
-    fd = df->getFixedDecimal(123.456, status);
-    TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount); // v
-    ASSERT_EQUAL(46, fd.decimalDigits); // f
-    ASSERT_EQUAL(46, fd.decimalDigitsWithoutTrailingZeros); // t
-    ASSERT_EQUAL(123, fd.intValue); // i
-    ASSERT_EQUAL(123.46, fd.source); // n
-    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
-    ASSERT_EQUAL(FALSE, fd.isNegative);
-
-    fd = df->getFixedDecimal(-123.456, status);
-    TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount); // v
-    ASSERT_EQUAL(46, fd.decimalDigits); // f
-    ASSERT_EQUAL(46, fd.decimalDigitsWithoutTrailingZeros); // t
-    ASSERT_EQUAL(123, fd.intValue); // i
-    ASSERT_EQUAL(123.46, fd.source); // n
-    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
-    ASSERT_EQUAL(TRUE, fd.isNegative);
-
-    // test esoteric rounding
-    df->setMaximumFractionDigits(6);
-    df->setRoundingIncrement(7.3);
-
-    fd = df->getFixedDecimal(30.0, status);
-    TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount); // v
-    ASSERT_EQUAL(20, fd.decimalDigits); // f
-    ASSERT_EQUAL(2, fd.decimalDigitsWithoutTrailingZeros); // t
-    ASSERT_EQUAL(29, fd.intValue); // i
-    ASSERT_EQUAL(29.2, fd.source); // n
-    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
-    ASSERT_EQUAL(FALSE, fd.isNegative);
-
-    fd = df->getFixedDecimal(-30.0, status);
-    TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount); // v
-    ASSERT_EQUAL(20, fd.decimalDigits); // f
-    ASSERT_EQUAL(2, fd.decimalDigitsWithoutTrailingZeros); // t
-    ASSERT_EQUAL(29, fd.intValue); // i
-    ASSERT_EQUAL(29.2, fd.source); // n
-    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
-    ASSERT_EQUAL(TRUE, fd.isNegative);
-
-    df.adoptInsteadAndCheckErrorCode(new DecimalFormat("###", status), status);
+    df.adoptInstead(new DecimalFormat("###", status));
     TEST_ASSERT_STATUS(status);
     fd = df->getFixedDecimal(123.456, status);
     TEST_ASSERT_STATUS(status);
@@ -727,7 +630,7 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     ASSERT_EQUAL(TRUE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 
-    df.adoptInsteadAndCheckErrorCode(new DecimalFormat("###.0", status), status);
+    df.adoptInstead(new DecimalFormat("###.0", status));
     TEST_ASSERT_STATUS(status);
     fd = df->getFixedDecimal(123.01, status);
     TEST_ASSERT_STATUS(status);
@@ -738,7 +641,7 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     ASSERT_EQUAL(TRUE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 
-    df.adoptInsteadAndCheckErrorCode(new DecimalFormat("###.0", status), status);
+    df.adoptInstead(new DecimalFormat("###.0", status));
     TEST_ASSERT_STATUS(status);
     fd = df->getFixedDecimal(123.06, status);
     TEST_ASSERT_STATUS(status);
@@ -749,7 +652,7 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 
-    df.adoptInsteadAndCheckErrorCode(new DecimalFormat("@@@@@", status), status);  // Significant Digits
+    df.adoptInstead(new DecimalFormat("@@@@@", status));  // Significant Digits
     TEST_ASSERT_STATUS(status);
     fd = df->getFixedDecimal(123, status);
     TEST_ASSERT_STATUS(status);
@@ -760,7 +663,7 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     ASSERT_EQUAL(TRUE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 
-    df.adoptInsteadAndCheckErrorCode(new DecimalFormat("@@@@@", status), status);  // Significant Digits
+    df.adoptInstead(new DecimalFormat("@@@@@", status));  // Significant Digits
     TEST_ASSERT_STATUS(status);
     fd = df->getFixedDecimal(1.23, status);
     TEST_ASSERT_STATUS(status);
@@ -783,8 +686,7 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     // Test Big Decimal input.
     // 22 digits before and after decimal, will exceed the precision of a double
     //    and force DecimalFormat::getFixedDecimal() to work with a digit list.
-    df.adoptInsteadAndCheckErrorCode(
-        new DecimalFormat("#####################0.00####################", status), status);
+    df.adoptInstead(new DecimalFormat("#####################0.00####################", status));
     TEST_ASSERT_STATUS(status);
     Formattable fable("12.34", status);
     TEST_ASSERT_STATUS(status);
@@ -868,17 +770,6 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
     ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
     ASSERT_EQUAL(FALSE, fd.isNegative);
 
-    fable.setDecimalNumber("1000000000000000050000.3", status);
-    TEST_ASSERT_STATUS(status);
-    fd = df->getFixedDecimal(fable, status);
-    TEST_ASSERT_STATUS(status);
-    ASSERT_EQUAL(2, fd.visibleDecimalDigitCount);
-    ASSERT_EQUAL(30, fd.decimalDigits);
-    ASSERT_EQUAL(3, fd.decimalDigitsWithoutTrailingZeros);
-    ASSERT_EQUAL(50000LL, fd.intValue);
-    ASSERT_EQUAL(FALSE, fd.hasIntegerValue);
-    ASSERT_EQUAL(FALSE, fd.isNegative);
-
     // Test some int64_t values that are out of the range of a double
     fable.setInt64(4503599627370496LL);
     TEST_ASSERT_STATUS(status);
@@ -923,7 +814,7 @@ void IntlTestDecimalFormatAPI::TestFixedDecimal() {
 void IntlTestDecimalFormatAPI::TestBadFastpath() {
     UErrorCode status = U_ZERO_ERROR;
 
-    LocalPointer<DecimalFormat> df(new DecimalFormat("###", status), status);
+    LocalPointer<DecimalFormat> df(new DecimalFormat("###", status));
     if (U_FAILURE(status)) {
         dataerrln("Error creating new DecimalFormat - %s", u_errorName(status));
         return;
@@ -931,14 +822,13 @@ void IntlTestDecimalFormatAPI::TestBadFastpath() {
 
     UnicodeString fmt;
     fmt.remove();
-    assertEquals("Format 1234", "1234", df->format((int32_t)1234, fmt));
+    assertEquals("Format 1234", "1234", df->format(1234, fmt));
     df->setGroupingUsed(FALSE);
     fmt.remove();
-    assertEquals("Format 1234", "1234", df->format((int32_t)1234, fmt));
+    assertEquals("Format 1234", "1234", df->format(1234, fmt));
     df->setGroupingUsed(TRUE);
-    df->setGroupingSize(3);
     fmt.remove();
-    assertEquals("Format 1234 w/ grouping", "1,234", df->format((int32_t)1234, fmt));
+    assertEquals("Format 1234 w/ grouping", "1,234", df->format(1234, fmt));
 }
 
 void IntlTestDecimalFormatAPI::TestRequiredDecimalPoint() {
@@ -948,7 +838,7 @@ void IntlTestDecimalFormatAPI::TestRequiredDecimalPoint() {
     UnicodeString pat1("##.0000");
     UnicodeString pat2("00.0");
 
-    LocalPointer<DecimalFormat> df(new DecimalFormat(pat1, status), status);
+    LocalPointer<DecimalFormat> df(new DecimalFormat(pat1, status));
     if (U_FAILURE(status)) {
         dataerrln("Error creating new DecimalFormat - %s", u_errorName(status));
         return;

@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/dsb.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/dsb.xml
+ */
 dsb{
     Keys{
         calendar{"kalender"}
@@ -51,8 +60,6 @@ dsb{
         da{"danšćina"}
         dav{"taita"}
         de{"nimšćina"}
-        de_AT{"awstriska nimšćina"}
-        de_CH{"šwicarska wusokonimšćina"}
         dje{"zarma"}
         dsb{"dolnoserbšćina"}
         dua{"duala"}
@@ -231,7 +238,7 @@ dsb{
         su{"sundanšćina"}
         sv{"šwedšćina"}
         sw{"swahilišćina"}
-        sw_CD{"kongojska swahilišćina"}
+        swc{"kongojska swahilišćina"}
         ta{"tamilšćina"}
         te{"telugšćina"}
         teo{"teso"}
@@ -272,7 +279,7 @@ dsb{
         zu{"zulu"}
         zxx{"žedno rěcne wopśimjeśe"}
     }
-    Languages%short{
+    LanguagesShort{
         en_GB{"UK-engelšćina"}
         en_US{"US-engelšćina"}
     }
@@ -378,7 +385,7 @@ dsb{
             tibt{"tibetske cyfry"}
         }
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.8.9"}
     codePatterns{
         language{"Rěc: {0}"}
         script{"Pismo: {0}"}

@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/wae.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/wae.xml
+ */
 wae{
     Currencies{
         BRL{
@@ -27,7 +36,7 @@ wae{
             "Yen",
         }
         RUB{
-            "RUB",
+            "руб",
             "Rubel",
         }
         USD{
@@ -81,5 +90,5 @@ wae{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.1.7.53"}
 }

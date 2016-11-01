@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 * Copyright (C) 2007-2014, International Business Machines Corporation and
@@ -127,14 +125,10 @@ void PluralRulesTest::testAPI(/*char *par*/)
     logln("\n start default locale test case ..\n");
 
     PluralRules defRule(status);
-    LocalPointer<PluralRules> test(new PluralRules(status), status);
+    LocalPointer<PluralRules> test(new PluralRules(status));
+    LocalPointer<PluralRules> newEnPlural(test->forLocale(Locale::getEnglish(), status));
     if(U_FAILURE(status)) {
         dataerrln("ERROR: Could not create PluralRules (default) - exitting");
-        return;
-    }
-    LocalPointer<PluralRules> newEnPlural(test->forLocale(Locale::getEnglish(), status), status);
-    if(U_FAILURE(status)) {
-        dataerrln("ERROR: Could not create PluralRules (English) - exitting");
         return;
     }
 

@@ -1,26 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/kl.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/kl.xml
+ */
 kl{
-    Version{"2.1.27.40"}
-    durationUnits{
-        hm{"h:mm"}
-        hms{"h:mm:ss"}
-        ms{"m:ss"}
-    }
-    units{
-        length{
-            fathom{
-                dnam{"fm"}
-                one{"{0} fm"}
-                other{"{0} fm"}
-            }
-            furlong{
-                dnam{"fur"}
-                one{"{0} fur"}
-                other{"{0} fur"}
-            }
-        }
-    }
+    Version{"2.1.6.69"}
     unitsNarrow{
         area{
             acre{
@@ -37,16 +27,6 @@ kl{
             }
         }
         length{
-            fathom{
-                dnam{"fm"}
-                one{"{0} fm"}
-                other{"{0} fm"}
-            }
-            furlong{
-                dnam{"fur"}
-                one{"{0} fur"}
-                other{"{0} fur"}
-            }
             mile{
                 one{"{0} mi"}
                 other{"{0} mi"}
@@ -91,16 +71,6 @@ kl{
             }
         }
         length{
-            fathom{
-                dnam{"fm"}
-                one{"{0} fm"}
-                other{"{0} fm"}
-            }
-            furlong{
-                dnam{"fur"}
-                one{"{0} fur"}
-                other{"{0} fur"}
-            }
             mile{
                 one{"{0} mi"}
                 other{"{0} mi"}

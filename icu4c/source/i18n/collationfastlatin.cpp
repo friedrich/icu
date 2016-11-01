@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2013-2015, International Business Machines
+* Copyright (C) 2013-2014, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
 * collationfastlatin.cpp
@@ -19,6 +17,7 @@
 #include "collationdata.h"
 #include "collationfastlatin.h"
 #include "collationsettings.h"
+#include "putilimp.h"  // U_ALIGN_CODE
 #include "uassert.h"
 
 U_NAMESPACE_BEGIN
@@ -37,50 +36,33 @@ CollationFastLatin::getOptions(const CollationData *data, const CollationSetting
         // lowest long mini primary.
         miniVarTop = MIN_LONG - 1;
     } else {
+        uint32_t v1 = settings.variableTop >> 24;
         int32_t headerLength = *table & 0xff;
-        int32_t i = 1 + settings.getMaxVariable();
-        if(i >= headerLength) {
+        int32_t i = headerLength - 1;
+        if(i <= 0 || v1 > (table[i] & 0x7f)) {
             return -1;  // variableTop >= digits, should not occur
         }
-        miniVarTop = table[i];
+        while(i > 1 && v1 <= (table[i - 1] & 0x7f)) { --i; }
+        // In the table header, the miniVarTop is in bits 15..7, with 4 zero bits 19..16 implied.
+        // Shift right to make it comparable with long mini primaries in bits 15..3.
+        miniVarTop = (table[i] & 0xff80) >> 4;
     }
 
-    UBool digitsAreReordered = FALSE;
-    if(settings.hasReordering()) {
-        uint32_t prevStart = 0;
-        uint32_t beforeDigitStart = 0;
-        uint32_t digitStart = 0;
-        uint32_t afterDigitStart = 0;
-        for(int32_t group = UCOL_REORDER_CODE_FIRST;
-                group < UCOL_REORDER_CODE_FIRST + CollationData::MAX_NUM_SPECIAL_REORDER_CODES;
-                ++group) {
-            uint32_t start = data->getFirstPrimaryForGroup(group);
-            start = settings.reorder(start);
-            if(group == UCOL_REORDER_CODE_DIGIT) {
-                beforeDigitStart = prevStart;
-                digitStart = start;
-            } else if(start != 0) {
-                if(start < prevStart) {
-                    // The permutation affects the groups up to Latin.
-                    return -1;
-                }
-                // In the future, there might be a special group between digits & Latin.
-                if(digitStart != 0 && afterDigitStart == 0 && prevStart == beforeDigitStart) {
-                    afterDigitStart = start;
-                }
-                prevStart = start;
+    const uint8_t *reorderTable = settings.reorderTable;
+    if(reorderTable != NULL) {
+        const uint16_t *scripts = data->scripts;
+        int32_t length = data->scriptsLength;
+        uint32_t prevLastByte = 0;
+        for(int32_t i = 0; i < length;) {
+            // reordered last byte of the group
+            uint32_t lastByte = reorderTable[scripts[i] & 0xff];
+            if(lastByte < prevLastByte) {
+                // The permutation affects the groups up to Latin.
+                return -1;
             }
-        }
-        uint32_t latinStart = data->getFirstPrimaryForGroup(USCRIPT_LATIN);
-        latinStart = settings.reorder(latinStart);
-        if(latinStart < prevStart) {
-            return -1;
-        }
-        if(afterDigitStart == 0) {
-            afterDigitStart = latinStart;
-        }
-        if(!(beforeDigitStart < digitStart && digitStart < afterDigitStart)) {
-            digitsAreReordered = TRUE;
+            if(scripts[i + 2] == USCRIPT_LATIN) { break; }
+            i = i + 2 + scripts[i + 1];
+            prevLastByte = lastByte;
         }
     }
 
@@ -96,7 +78,7 @@ CollationFastLatin::getOptions(const CollationData *data, const CollationSetting
         }
         primaries[c] = (uint16_t)p;
     }
-    if(digitsAreReordered || (settings.options & CollationSettings::NUMERIC) != 0) {
+    if((settings.options & CollationSettings::NUMERIC) != 0) {
         // Bail out for digits.
         for(UChar32 c = 0x30; c <= 0x39; ++c) { primaries[c] = 0; }
     }
@@ -120,6 +102,7 @@ CollationFastLatin::compareUTF16(const uint16_t *table, const uint16_t *primarie
     options &= 0xffff;  // needed for CollationSettings::getStrength() to work
 
     // Check for supported characters, fetch mini CEs, and compare primaries.
+    U_ALIGN_CODE(16);
     int32_t leftIndex = 0, rightIndex = 0;
     /**
      * Single mini CE or a pair.
@@ -456,6 +439,7 @@ CollationFastLatin::compareUTF8(const uint16_t *table, const uint16_t *primaries
     options &= 0xffff;  // needed for CollationSettings::getStrength() to work
 
     // Check for supported characters, fetch mini CEs, and compare primaries.
+    U_ALIGN_CODE(16);
     int32_t leftIndex = 0, rightIndex = 0;
     /**
      * Single mini CE or a pair.

@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/cs.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/cs.xml
+ */
 cs{
     Countries{
         001{"Svět"}
@@ -40,6 +49,7 @@ cs{
         AI{"Anguilla"}
         AL{"Albánie"}
         AM{"Arménie"}
+        AN{"Nizozemské Antily"}
         AO{"Angola"}
         AQ{"Antarktida"}
         AR{"Argentina"}
@@ -113,7 +123,7 @@ cs{
         FO{"Faerské ostrovy"}
         FR{"Francie"}
         GA{"Gabon"}
-        GB{"Spojené království"}
+        GB{"Velká Británie"}
         GD{"Grenada"}
         GE{"Gruzie"}
         GF{"Francouzská Guyana"}
@@ -272,7 +282,6 @@ cs{
         UA{"Ukrajina"}
         UG{"Uganda"}
         UM{"Menší odlehlé ostrovy USA"}
-        UN{"OSN"}
         US{"Spojené státy"}
         UY{"Uruguay"}
         UZ{"Uzbekistán"}
@@ -293,21 +302,18 @@ cs{
         ZW{"Zimbabwe"}
         ZZ{"Neznámá oblast"}
     }
-    Countries%short{
-        GB{"GB"}
-        HK{"Hongkong"}
-        MO{"Macao"}
-        PS{"Palestina"}
-        UN{"OSN"}
-        US{"USA"}
-    }
     Countries%variant{
         CD{"Kongo (DRK)"}
         CG{"Kongo (republika)"}
-        CI{"Côte d’Ivoire"}
-        CZ{"Česko"}
         FK{"Falklandské ostrovy (Malvíny)"}
         MK{"Makedonie (FYROM)"}
     }
-    Version{"2.1.28.79"}
+    CountriesShort{
+        GB{"VB"}
+        HK{"Hongkong"}
+        MO{"Macao"}
+        PS{"Palestina"}
+        US{"USA"}
+    }
+    Version{"2.1.8.9"}
 }

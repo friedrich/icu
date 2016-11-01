@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/wae.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/wae.xml
+ */
 wae{
     Countries{
         001{"Wäld"}
@@ -40,6 +49,7 @@ wae{
         AI{"Anguilla"}
         AL{"Albanie"}
         AM{"Armenie"}
+        AN{"Holändiši Antillä"}
         AO{"Angola"}
         AQ{"Antarktis"}
         AR{"Argentinie"}
@@ -287,10 +297,6 @@ wae{
         ZW{"Simbabwe"}
         ZZ{"Unbekannti Regio"}
     }
-    Countries%short{
-        HK{"Hongkong"}
-        MO{"Makau"}
-    }
     Countries%variant{
         CD{"Kongo (Demokratiši Rebublik)"}
         CG{"Kongo (Rebublik)"}
@@ -299,5 +305,9 @@ wae{
         MK{"Mazedonie (EJR)"}
         TL{"Wešttimor"}
     }
-    Version{"2.1.27.40"}
+    CountriesShort{
+        HK{"Hongkong"}
+        MO{"Makau"}
+    }
+    Version{"2.1.7.53"}
 }

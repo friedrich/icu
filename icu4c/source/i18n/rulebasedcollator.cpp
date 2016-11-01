@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 1996-2015, International Business Machines
+* Copyright (C) 1996-2014, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
 * rulebasedcollator.cpp
@@ -675,7 +673,9 @@ RuleBasedCollator::setReorderCodes(const int32_t *reorderCodes, int32_t length,
                 errorCode = U_MEMORY_ALLOCATION_ERROR;
                 return;
             }
-            ownedSettings->copyReorderingFrom(defaultSettings, errorCode);
+            ownedSettings->aliasReordering(defaultSettings.reorderCodes,
+                                           defaultSettings.reorderCodesLength,
+                                           defaultSettings.reorderTable);
             setFastLatinOptions(*ownedSettings);
         }
         return;
@@ -685,7 +685,17 @@ RuleBasedCollator::setReorderCodes(const int32_t *reorderCodes, int32_t length,
         errorCode = U_MEMORY_ALLOCATION_ERROR;
         return;
     }
-    ownedSettings->setReordering(*data, reorderCodes, length, errorCode);
+    if(length == 0) {
+        ownedSettings->resetReordering();
+    } else {
+        uint8_t reorderTable[256];
+        data->makeReorderTable(reorderCodes, length, reorderTable, errorCode);
+        if(U_FAILURE(errorCode)) { return; }
+        if(!ownedSettings->setReordering(reorderCodes, length, reorderTable)) {
+            errorCode = U_MEMORY_ALLOCATION_ERROR;
+            return;
+        }
+    }
     setFastLatinOptions(*ownedSettings);
 }
 
@@ -1611,7 +1621,7 @@ RuleBasedCollator::isUnsafe(UChar32 c) const {
     return data->isUnsafeBackward(c, settings->isNumeric());
 }
 
-void U_CALLCONV
+void
 RuleBasedCollator::computeMaxExpansions(const CollationTailoring *t, UErrorCode &errorCode) {
     t->maxExpansions = CollationElementIterator::computeMaxExpansions(t->data, errorCode);
 }

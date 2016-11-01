@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2015, International Business Machines Corporation and
+* Copyright (C) 2011, International Business Machines Corporation and
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 *
@@ -26,9 +24,7 @@ U_NAMESPACE_BEGIN
 
 class NumsysNameEnumeration : public StringEnumeration {
 public:
-    // NumsysNameEnumeration instance adopts numsysNames
-    NumsysNameEnumeration(UVector *numsysNames, UErrorCode& status);
-
+    NumsysNameEnumeration(UVector *fNumsysNames, UErrorCode& status);
     virtual ~NumsysNameEnumeration();
     static UClassID U_EXPORT2 getStaticClassID(void);
     virtual UClassID getDynamicClassID(void) const;

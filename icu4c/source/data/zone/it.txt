@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/it.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/it.xml
+ */
 it{
-    Version{"2.1.28.79"}
+    Version{"2.1.8.32"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -163,7 +172,7 @@ it{
             ec{"Adak"}
         }
         "America:Anchorage"{
-            ec{"Anchorage"}
+            ec{"Fuso orario Alaska"}
         }
         "America:Anguilla"{
             ec{"Anguilla"}
@@ -302,9 +311,6 @@ it{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +675,6 @@ it{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beirut"}
         }
@@ -684,11 +687,11 @@ it{
         "Asia:Calcutta"{
             ec{"Calcutta"}
         }
-        "Asia:Chita"{
-            ec{"Čita"}
-        }
         "Asia:Choibalsan"{
             ec{"Choibalsan"}
+        }
+        "Asia:Chongqing"{
+            ec{"Chongqing"}
         }
         "Asia:Colombo"{
             ec{"Colombo"}
@@ -710,6 +713,9 @@ it{
         }
         "Asia:Gaza"{
             ec{"Gaza"}
+        }
+        "Asia:Harbin"{
+            ec{"Harbin"}
         }
         "Asia:Hebron"{
             ec{"Hebron"}
@@ -740,6 +746,9 @@ it{
         }
         "Asia:Karachi"{
             ec{"Karachi"}
+        }
+        "Asia:Kashgar"{
+            ec{"Kashgar"}
         }
         "Asia:Katmandu"{
             ec{"Kathmandu"}
@@ -828,9 +837,6 @@ it{
         "Asia:Singapore"{
             ec{"Singapore"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymsk"}
-        }
         "Asia:Taipei"{
             ec{"Taipei"}
         }
@@ -848,9 +854,6 @@ it{
         }
         "Asia:Tokyo"{
             ec{"Tokyo"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ulaanbaatar"}
@@ -889,7 +892,7 @@ it{
             ec{"Capo Verde"}
         }
         "Atlantic:Faeroe"{
-            ec{"Isole Fær Øer"}
+            ec{"Isole Faeroe"}
         }
         "Atlantic:Madeira"{
             ec{"Madeira"}
@@ -951,9 +954,6 @@ it{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
-        }
         "Europe:Athens"{
             ec{"Atene"}
         }
@@ -986,7 +986,7 @@ it{
         }
         "Europe:Dublin"{
             ec{"Dublino"}
-            ld{"Ora legale dell’Irlanda"}
+            ld{"Ora legale Irlanda"}
         }
         "Europe:Gibraltar"{
             ec{"Gibilterra"}
@@ -1012,9 +1012,6 @@ it{
         "Europe:Kiev"{
             ec{"Kiev"}
         }
-        "Europe:Kirov"{
-            ec{"Kirov"}
-        }
         "Europe:Lisbon"{
             ec{"Lisbona"}
         }
@@ -1023,7 +1020,7 @@ it{
         }
         "Europe:London"{
             ec{"Londra"}
-            ld{"Ora legale del Regno Unito"}
+            ld{"Ora legale Regno Unito"}
         }
         "Europe:Luxembourg"{
             ec{"Lussemburgo"}
@@ -1090,9 +1087,6 @@ it{
         }
         "Europe:Tirane"{
             ec{"Tirana"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Ulyanovsk"}
         }
         "Europe:Uzhgorod"{
             ec{"Užhorod"}
@@ -1162,9 +1156,6 @@ it{
         }
         "Pacific:Auckland"{
             ec{"Auckland"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Bougainville"}
         }
         "Pacific:Chatham"{
             ec{"Chatham"}
@@ -1292,9 +1283,9 @@ it{
             ls{"Ora standard dell’Africa occidentale"}
         }
         "meta:Alaska"{
-            ld{"Ora legale dell’Alaska"}
+            ld{"Ora legale Alaska"}
             lg{"Ora dell’Alaska"}
-            ls{"Ora standard dell’Alaska"}
+            ls{"Ora standard Alaska"}
         }
         "meta:Amazon"{
             ld{"Ora legale dell’Amazzonia"}
@@ -1411,7 +1402,7 @@ it{
             ls{"Ora standard di Capo Verde"}
         }
         "meta:Chamorro"{
-            ls{"Ora di Chamorro"}
+            ls{"Ora Chamorro"}
         }
         "meta:Chatham"{
             ld{"Ora legale delle Chatham"}
@@ -1434,7 +1425,7 @@ it{
             ls{"Ora standard di Choibalsan"}
         }
         "meta:Christmas"{
-            ls{"Ora dell’Isola Christmas"}
+            ls{"Ora dell’Isola di Natale"}
         }
         "meta:Cocos"{
             ls{"Ora delle Isole Cocos"}
@@ -1768,9 +1759,6 @@ it{
         "meta:Ponape"{
             ls{"Ora di Pohnpei"}
         }
-        "meta:Pyongyang"{
-            ls{"Ora di Pyongyang"}
-        }
         "meta:Reunion"{
             ls{"Ora di Riunione"}
         }
@@ -1796,7 +1784,7 @@ it{
             ls{"Ora delle Seychelles"}
         }
         "meta:Singapore"{
-            ls{"Ora di Singapore"}
+            ls{"Ora Singapore"}
         }
         "meta:Solomon"{
             ls{"Ora delle Isole Salomone"}

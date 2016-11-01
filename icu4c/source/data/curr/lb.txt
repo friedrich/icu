@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/lb.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/lb.xml
+ */
 lb{
     Currencies{
         ADP{
@@ -190,13 +199,9 @@ lb{
             "BYB",
             "Wäissrussesche Rubel (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Wäissrussesche Rubel",
-        }
         BYR{
             "BYR",
-            "Wäissrussesche Rubel (2000–2016)",
+            "Wäissrussesche Rubel",
         }
         BZD{
             "BZD",
@@ -352,7 +357,7 @@ lb{
         }
         GBP{
             "£",
-            "Britescht Pond",
+            "Britescht Pond Sterling",
         }
         GEK{
             "GEK",
@@ -1308,13 +1313,9 @@ lb{
             one{"Wäissrussesche Rubel (1994–1999)"}
             other{"Wäissrussesch Rubel (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"Wäissrussesche Rubel"}
             other{"Wäissrussesch Rubel"}
-        }
-        BYR{
-            one{"Wäissrussesche Rubel (2000–2016)"}
-            other{"Wäissrussesch Rubel (2000–2016)"}
         }
         BZD{
             one{"Belize-Dollar"}
@@ -1469,8 +1470,8 @@ lb{
             other{"Franséisch Frang"}
         }
         GBP{
-            one{"Britescht Pond"}
-            other{"Britesch Pond"}
+            one{"Britescht Pond Sterling"}
+            other{"Britesch Pond Sterling"}
         }
         GEK{
             one{"Georgesche Kupon Larit"}
@@ -2225,5 +2226,5 @@ lb{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.8.9"}
 }

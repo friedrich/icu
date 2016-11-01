@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/es.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/es.xml
+ */
 es{
-    Version{"2.1.28.80"}
+    Version{"2.1.8.9"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abiyán"}
@@ -154,7 +163,7 @@ es{
             ec{"Trípoli"}
         }
         "Africa:Tunis"{
-            ec{"Túnez"}
+            ec{"Túnez capital"}
         }
         "Africa:Windhoek"{
             ec{"Windhoek"}
@@ -302,9 +311,6 @@ es{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +675,6 @@ es{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaúl"}
-        }
         "Asia:Beirut"{
             ec{"Beirut"}
         }
@@ -684,11 +687,11 @@ es{
         "Asia:Calcutta"{
             ec{"Calcuta"}
         }
-        "Asia:Chita"{
-            ec{"Chitá"}
-        }
         "Asia:Choibalsan"{
             ec{"Choibalsan"}
+        }
+        "Asia:Chongqing"{
+            ec{"Chongqing"}
         }
         "Asia:Colombo"{
             ec{"Colombo"}
@@ -710,6 +713,9 @@ es{
         }
         "Asia:Gaza"{
             ec{"Gaza"}
+        }
+        "Asia:Harbin"{
+            ec{"Harbin"}
         }
         "Asia:Hebron"{
             ec{"Hebrón"}
@@ -740,6 +746,9 @@ es{
         }
         "Asia:Karachi"{
             ec{"Karachi"}
+        }
+        "Asia:Kashgar"{
+            ec{"Kashgar"}
         }
         "Asia:Katmandu"{
             ec{"Katmandú"}
@@ -828,9 +837,6 @@ es{
         "Asia:Singapore"{
             ec{"Singapur"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolimsk"}
-        }
         "Asia:Taipei"{
             ec{"Taipéi"}
         }
@@ -848,9 +854,6 @@ es{
         }
         "Asia:Tokyo"{
             ec{"Tokio"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ulán Bator"}
@@ -943,16 +946,13 @@ es{
             ec{"Sídney"}
         }
         "Etc:Unknown"{
-            ec{"ciudad desconocida"}
+            ec{"Ciudad desconocida"}
         }
         "Europe:Amsterdam"{
             ec{"Ámsterdam"}
         }
         "Europe:Andorra"{
             ec{"Andorra"}
-        }
-        "Europe:Astrakhan"{
-            ec{"Astracán"}
         }
         "Europe:Athens"{
             ec{"Atenas"}
@@ -1011,9 +1011,6 @@ es{
         }
         "Europe:Kiev"{
             ec{"Kiev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kírov"}
         }
         "Europe:Lisbon"{
             ec{"Lisboa"}
@@ -1091,9 +1088,6 @@ es{
         "Europe:Tirane"{
             ec{"Tirana"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Uliánovsk"}
-        }
         "Europe:Uzhgorod"{
             ec{"Uzhgorod"}
         }
@@ -1162,9 +1156,6 @@ es{
         }
         "Pacific:Auckland"{
             ec{"Auckland"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Bougainville"}
         }
         "Pacific:Chatham"{
             ec{"Chatham"}
@@ -1242,7 +1233,7 @@ es{
             ec{"Palaos"}
         }
         "Pacific:Pitcairn"{
-            ec{"Pitcairn"}
+            ec{"Islas Pitcairn"}
         }
         "Pacific:Ponape"{
             ec{"Pohnpei"}
@@ -1449,10 +1440,10 @@ es{
             ls{"hora estándar de Choibalsan"}
         }
         "meta:Christmas"{
-            ls{"hora de la Isla de Navidad"}
+            ls{"hora de la isla Christmas"}
         }
         "meta:Cocos"{
-            ls{"hora de las Islas Cocos"}
+            ls{"hora de las islas Cocos"}
         }
         "meta:Colombia"{
             ld{"hora de verano de Colombia"}
@@ -1460,9 +1451,9 @@ es{
             ls{"hora estándar de Colombia"}
         }
         "meta:Cook"{
-            ld{"hora de verano media de las Islas Cook"}
-            lg{"hora de las Islas Cook"}
-            ls{"hora estándar de las Islas Cook"}
+            ld{"hora de verano media de las islas Cook"}
+            lg{"hora de las islas Cook"}
+            ls{"hora estándar de las islas Cook"}
         }
         "meta:Cuba"{
             ld{"hora de verano de Cuba"}
@@ -1548,7 +1539,7 @@ es{
             ls{"hora de las islas Gilbert"}
         }
         "meta:Greenland_Eastern"{
-            ld{"hora de verano de Groenlandia oriental"}
+            ld{"hora de verano de de Groenlandia oriental"}
             lg{"hora de Groenlandia oriental"}
             ls{"hora estándar de Groenlandia oriental"}
         }
@@ -1677,7 +1668,7 @@ es{
             ls{"hora de Maldivas"}
         }
         "meta:Marquesas"{
-            ls{"hora de Marquesas"}
+            ls{"hora de las islas Marquesas"}
         }
         "meta:Marshall_Islands"{
             ls{"hora de las Islas Marshall"}
@@ -1738,7 +1729,7 @@ es{
             ls{"hora de Niue"}
         }
         "meta:Norfolk"{
-            ls{"hora de la isla Norfolk"}
+            ls{"hora de las islas Norfolk"}
         }
         "meta:Noronha"{
             ld{"hora de verano de Fernando de Noronha"}
@@ -1797,9 +1788,6 @@ es{
         }
         "meta:Ponape"{
             ls{"hora de Pohnpei"}
-        }
-        "meta:Pyongyang"{
-            ls{"hora de Pyongyang"}
         }
         "meta:Qyzylorda"{
             ld{"Hora de verano de Qyzylorda"}

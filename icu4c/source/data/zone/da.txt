@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/da.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/da.xml
+ */
 da{
-    Version{"2.1.28.79"}
+    Version{"2.1.9.62"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -302,9 +311,6 @@ da{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +675,6 @@ da{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beirut"}
         }
@@ -684,11 +687,11 @@ da{
         "Asia:Calcutta"{
             ec{"Kolkata"}
         }
-        "Asia:Chita"{
-            ec{"Chita"}
-        }
         "Asia:Choibalsan"{
             ec{"Choibalsan"}
+        }
+        "Asia:Chongqing"{
+            ec{"Chongqing"}
         }
         "Asia:Colombo"{
             ec{"Colombo"}
@@ -710,6 +713,9 @@ da{
         }
         "Asia:Gaza"{
             ec{"Gaza"}
+        }
+        "Asia:Harbin"{
+            ec{"Harbin"}
         }
         "Asia:Hebron"{
             ec{"Hebron"}
@@ -740,6 +746,9 @@ da{
         }
         "Asia:Karachi"{
             ec{"Karachi"}
+        }
+        "Asia:Kashgar"{
+            ec{"Kashgar"}
         }
         "Asia:Katmandu"{
             ec{"Katmandu"}
@@ -811,7 +820,7 @@ da{
             ec{"Riyadh"}
         }
         "Asia:Saigon"{
-            ec{"Ho Chi Minh City"}
+            ec{"Ho Chi Minh-byen"}
         }
         "Asia:Sakhalin"{
             ec{"Sakhalin"}
@@ -827,9 +836,6 @@ da{
         }
         "Asia:Singapore"{
             ec{"Singapore"}
-        }
-        "Asia:Srednekolymsk"{
-            ec{"Srednekolymsk"}
         }
         "Asia:Taipei"{
             ec{"Taipei"}
@@ -848,9 +854,6 @@ da{
         }
         "Asia:Tokyo"{
             ec{"Tokyo"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ulaanbaatar"}
@@ -951,9 +954,6 @@ da{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
-        }
         "Europe:Athens"{
             ec{"Athen"}
         }
@@ -1011,9 +1011,6 @@ da{
         }
         "Europe:Kiev"{
             ec{"Kiev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lissabon"}
@@ -1091,9 +1088,6 @@ da{
         "Europe:Tirane"{
             ec{"Tirane"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Ulyanovsk"}
-        }
         "Europe:Uzhgorod"{
             ec{"Uzhgorod"}
         }
@@ -1162,9 +1156,6 @@ da{
         }
         "Pacific:Auckland"{
             ec{"Auckland"}
-        }
-        "Pacific:Bougainville"{
-            ec{"Bougainville"}
         }
         "Pacific:Chatham"{
             ec{"Chatham"}
@@ -1742,7 +1733,7 @@ da{
             ls{"Niue-tid"}
         }
         "meta:Norfolk"{
-            ls{"Norfolk Island-tid"}
+            ls{"Norfolkøen-tid"}
         }
         "meta:Noronha"{
             ld{"Fernando de Noronha-sommertid"}
@@ -1801,9 +1792,6 @@ da{
         }
         "meta:Ponape"{
             ls{"Ponape-tid"}
-        }
-        "meta:Pyongyang"{
-            ls{"Pyongyang-tid"}
         }
         "meta:Qyzylorda"{
             ld{"Qyzylorda-sommertid"}
@@ -1869,7 +1857,7 @@ da{
             ls{"Tongansk normaltid"}
         }
         "meta:Truk"{
-            ls{"Chuuk-tid"}
+            ls{"Truk-tid"}
         }
         "meta:Turkmenistan"{
             ld{"Turkmensk sommertid"}
@@ -1930,7 +1918,7 @@ da{
         gmtFormat{"GMT{0}"}
         gmtZeroFormat{"GMT"}
         hourFormat{"+HH.mm;-HH.mm"}
-        regionFormat{"{0}"}
+        regionFormat{"Tidszone for {0}"}
         regionFormatDaylight{"{0} (+1)"}
         regionFormatStandard{"{0} (+0)"}
     }

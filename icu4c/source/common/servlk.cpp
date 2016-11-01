@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /**
  *******************************************************************************
  * Copyright (C) 2001-2014, International Business Machines Corporation and    *
@@ -160,13 +158,13 @@ UnicodeString&
 LocaleKey::debug(UnicodeString& result) const
 {
     ICUServiceKey::debug(result);
-    result.append((UnicodeString)" kind: ");
+    result.append(" kind: ");
     result.append(_kind);
-    result.append((UnicodeString)" primaryID: ");
+    result.append(" primaryID: ");
     result.append(_primaryID);
-    result.append((UnicodeString)" fallbackID: ");
+    result.append(" fallbackID: ");
     result.append(_fallbackID);
-    result.append((UnicodeString)" currentID: ");
+    result.append(" currentID: ");
     result.append(_currentID);
     return result;
 }
@@ -174,7 +172,7 @@ LocaleKey::debug(UnicodeString& result) const
 UnicodeString&
 LocaleKey::debugClass(UnicodeString& result) const
 {
-    return result.append((UnicodeString)"LocaleKey ");
+    return result.append("LocaleKey ");
 }
 #endif
 

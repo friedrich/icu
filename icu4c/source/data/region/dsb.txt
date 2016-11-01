@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/dsb.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/dsb.xml
+ */
 dsb{
     Countries{
         001{"swět"}
@@ -292,13 +301,6 @@ dsb{
         ZW{"Simbabwe"}
         ZZ{"njeznaty region"}
     }
-    Countries%short{
-        GB{"UK"}
-        HK{"Hongkong"}
-        MO{"Macao"}
-        PS{"Palestina"}
-        US{"USA"}
-    }
     Countries%variant{
         CD{"Kongo (Demokratiska republika)"}
         CG{"Kongo (Republika)"}
@@ -307,5 +309,12 @@ dsb{
         MK{"Makedońska (PRJ)"}
         TL{"Pódzajtšny Timor"}
     }
-    Version{"2.1.28.76"}
+    CountriesShort{
+        GB{"UK"}
+        HK{"Hongkong"}
+        MO{"Macao"}
+        PS{"Palestina"}
+        US{"USA"}
+    }
+    Version{"2.1.8.9"}
 }

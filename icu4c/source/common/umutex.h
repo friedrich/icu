@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-*   Copyright (C) 1997-2015, International Business Machines
+*   Copyright (C) 1997-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 *
@@ -120,33 +118,6 @@ inline int32_t umtx_atomic_dec(u_atomic_int32_t *var) {
 U_NAMESPACE_END
 
 
-#elif U_HAVE_CLANG_ATOMICS
-/*
- *  Clang __c11 atomic built-ins
- */
-
-U_NAMESPACE_BEGIN
-typedef _Atomic(int32_t) u_atomic_int32_t;
-#define ATOMIC_INT32_T_INITIALIZER(val) val
-
-inline int32_t umtx_loadAcquire(u_atomic_int32_t &var) {
-     return __c11_atomic_load(&var, __ATOMIC_ACQUIRE);
-}
-
-inline void umtx_storeRelease(u_atomic_int32_t &var, int32_t val) {
-   return __c11_atomic_store(&var, val, __ATOMIC_RELEASE);
-}
-
-inline int32_t umtx_atomic_inc(u_atomic_int32_t *var) {
-    return __c11_atomic_fetch_add(var, 1, __ATOMIC_SEQ_CST) + 1;
-}
-
-inline int32_t umtx_atomic_dec(u_atomic_int32_t *var) {
-    return __c11_atomic_fetch_sub(var, 1, __ATOMIC_SEQ_CST) - 1;
-}
-U_NAMESPACE_END
-
-
 #elif U_HAVE_GCC_ATOMICS
 /*
  * gcc atomic ops. These are available on several other compilers as well.
@@ -231,7 +202,7 @@ struct UInitOnce {
 U_COMMON_API UBool U_EXPORT2 umtx_initImplPreInit(UInitOnce &);
 U_COMMON_API void  U_EXPORT2 umtx_initImplPostInit(UInitOnce &);
 
-template<class T> void umtx_initOnce(UInitOnce &uio, T *obj, void (U_CALLCONV T::*fp)()) {
+template<class T> void umtx_initOnce(UInitOnce &uio, T *obj, void (T::*fp)()) {
     if (umtx_loadAcquire(uio.fState) == 2) {
         return;
     }
@@ -244,7 +215,7 @@ template<class T> void umtx_initOnce(UInitOnce &uio, T *obj, void (U_CALLCONV T:
 
 // umtx_initOnce variant for plain functions, or static class functions.
 //               No context parameter.
-inline void umtx_initOnce(UInitOnce &uio, void (U_CALLCONV *fp)()) {
+inline void umtx_initOnce(UInitOnce &uio, void (*fp)()) {
     if (umtx_loadAcquire(uio.fState) == 2) {
         return;
     }
@@ -256,7 +227,7 @@ inline void umtx_initOnce(UInitOnce &uio, void (U_CALLCONV *fp)()) {
 
 // umtx_initOnce variant for plain functions, or static class functions.
 //               With ErrorCode, No context parameter.
-inline void umtx_initOnce(UInitOnce &uio, void (U_CALLCONV *fp)(UErrorCode &), UErrorCode &errCode) {
+inline void umtx_initOnce(UInitOnce &uio, void (*fp)(UErrorCode &), UErrorCode &errCode) {
     if (U_FAILURE(errCode)) {
         return;
     }
@@ -275,7 +246,7 @@ inline void umtx_initOnce(UInitOnce &uio, void (U_CALLCONV *fp)(UErrorCode &), U
 
 // umtx_initOnce variant for plain functions, or static class functions,
 //               with a context parameter.
-template<class T> void umtx_initOnce(UInitOnce &uio, void (U_CALLCONV *fp)(T), T context) {
+template<class T> void umtx_initOnce(UInitOnce &uio, void (*fp)(T), T context) {
     if (umtx_loadAcquire(uio.fState) == 2) {
         return;
     }
@@ -287,7 +258,7 @@ template<class T> void umtx_initOnce(UInitOnce &uio, void (U_CALLCONV *fp)(T), T
 
 // umtx_initOnce variant for plain functions, or static class functions,
 //               with a context parameter and an error code.
-template<class T> void umtx_initOnce(UInitOnce &uio, void (U_CALLCONV *fp)(T, UErrorCode &), T context, UErrorCode &errCode) {
+template<class T> void umtx_initOnce(UInitOnce &uio, void (*fp)(T, UErrorCode &), T context, UErrorCode &errCode) {
     if (U_FAILURE(errCode)) {
         return;
     }
@@ -320,7 +291,13 @@ U_NAMESPACE_END
 // #inlcude "U_USER_MUTEX_H"
 #include U_MUTEX_XSTR(U_USER_MUTEX_H)
 
-#elif U_PLATFORM_USES_ONLY_WIN32_API
+#elif U_PLATFORM_HAS_WIN32_API
+
+/* Windows Definitions.
+ *    Windows comes first in the platform chain.
+ *    Cygwin (and possibly others) have both WIN32 and POSIX APIs. Prefer Win32 in this case.
+ */
+
 
 /* For CRITICAL_SECTION */
 

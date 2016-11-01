@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/es_MX.xml
+// *
+// ***************************************************************************
 es_MX{
     %%Parent{"es_419"}
     Currencies{
@@ -11,6 +17,10 @@ es_MX{
             "ALL",
             "lek albanés",
         }
+        AMD{
+            "AMD",
+            "dram armenio",
+        }
         ANG{
             "Naf",
             "florín de las Antillas Neerlandesas",
@@ -18,6 +28,10 @@ es_MX{
         AOA{
             "Kz",
             "kwanza angoleño",
+        }
+        ARA{
+            "ARA",
+            "austral argentino",
         }
         ARS{
             "$a",
@@ -35,9 +49,49 @@ es_MX{
             "BDT",
             "taka de Bangladesh",
         }
+        BGN{
+            "BGN",
+            "lev búlgaro",
+        }
         BND{
             "BND",
             "dólar de Brunéi",
+        }
+        BOL{
+            "BOL",
+            "BOL",
+        }
+        BOP{
+            "BOP",
+            "peso boliviano",
+        }
+        BOV{
+            "BOV",
+            "MVDOL boliviano",
+        }
+        BRB{
+            "BRB",
+            "nuevo cruceiro brasileño (1967–1986)",
+        }
+        BRC{
+            "BRC",
+            "cruzado brasileño",
+        }
+        BRE{
+            "BRE",
+            "cruceiro brasileño (1990–1993)",
+        }
+        BRN{
+            "BRN",
+            "nuevo cruzado brasileño",
+        }
+        BRR{
+            "BRR",
+            "cruceiro brasileño",
+        }
+        BRZ{
+            "BRZ",
+            "BRZ",
         }
         BTN{
             "BTN",
@@ -47,13 +101,45 @@ es_MX{
             "BWP",
             "pula botsuano",
         }
+        CLE{
+            "CLE",
+            "CLE",
+        }
+        CLF{
+            "CLF",
+            "unidad de fomento chilena",
+        }
         CNY{
             "CN¥",
             "yuan chino",
         }
+        COU{
+            "COU",
+            "unidad de valor real colombiana",
+        }
+        ECS{
+            "ECS",
+            "sucre ecuatoriano",
+        }
+        ECV{
+            "ECV",
+            "unidad de valor constante (UVC) ecuatoriana",
+        }
+        ERN{
+            "ERN",
+            "nakfa eritreo",
+        }
         ETB{
             "ETB",
             "birr etíope",
+        }
+        FKP{
+            "FKP",
+            "libra malvinense",
+        }
+        GBP{
+            "GBP",
+            "libra esterlina británica",
         }
         GEL{
             "GEL",
@@ -75,9 +161,17 @@ es_MX{
             "HRK",
             "kuna croata",
         }
+        HUF{
+            "HUF",
+            "florín húngaro",
+        }
         ILS{
             "ILS",
             "nuevo shéquel israelí",
+        }
+        JMD{
+            "JMD",
+            "dólar jamaiquino",
         }
         JPY{
             "JPY",
@@ -103,6 +197,14 @@ es_MX{
             "LKR",
             "rupia de Sri Lanka",
         }
+        LTL{
+            "LTL",
+            "litas lituano",
+        }
+        LVL{
+            "LVL",
+            "lats letón",
+        }
         MGA{
             "MGA",
             "ariary malgache",
@@ -115,6 +217,10 @@ es_MX{
             "MNT",
             "tugrik mongol",
         }
+        MOP{
+            "MOP",
+            "pataca de Macao",
+        }
         MRO{
             "MRO",
             "ouguiya mauritano",
@@ -123,9 +229,17 @@ es_MX{
             "MVR",
             "rufiyaa de Maldivas",
         }
+        MWK{
+            "MWK",
+            "kwacha malauí",
+        }
         MXN{
             "$",
             "peso mexicano",
+        }
+        MXP{
+            "MXP",
+            "peso de plata mexicano (1861–1992)",
         }
         MYR{
             "MYR",
@@ -138,6 +252,18 @@ es_MX{
         NGN{
             "NGN",
             "naira nigeriano",
+        }
+        NIC{
+            "NIC",
+            "córdoba nicaragüense (1988–1991)",
+        }
+        PEI{
+            "PEI",
+            "inti peruano",
+        }
+        PES{
+            "PES",
+            "sol peruano",
         }
         PGK{
             "PGK",
@@ -167,9 +293,17 @@ es_MX{
             "SLL",
             "leone de Sierra Leona",
         }
+        SRG{
+            "SRG",
+            "florín surinamés",
+        }
         STD{
             "STD",
             "dobra de Santo Tomé y Príncipe",
+        }
+        SVC{
+            "SVC",
+            "colón salvadoreño",
         }
         SZL{
             "SZL",
@@ -191,6 +325,18 @@ es_MX{
             "UAH",
             "grivna ucraniana",
         }
+        USN{
+            "USN",
+            "dólar estadounidense (día siguiente)",
+        }
+        USS{
+            "USS",
+            "dólar estadounidense (mismo día)",
+        }
+        UYI{
+            "UYI",
+            "peso uruguayo en unidades indexadas",
+        }
         UZS{
             "UZS",
             "som uzbeko",
@@ -211,20 +357,23 @@ es_MX{
             "XPF",
             "franco CFP",
         }
+        XXX{
+            "XXX",
+            "divisa desconocida",
+        }
         ZAR{
             "ZAR",
             "rand sudafricano",
         }
         ZMW{
-            "ZMW",
+            "ZMK",
             "kwacha zambiano",
         }
     }
     Currencies%narrow{
         ARS{"$a"}
-        BYN{"Br"}
+        BYR{"Br"}
         DOP{"RD$"}
-        RON{"lei"}
         TRY{"TL"}
     }
     CurrencyPlurals{
@@ -247,6 +396,14 @@ es_MX{
         BDT{
             one{"taka de Bangladesh"}
             other{"taka de Bangladesh"}
+        }
+        BGN{
+            one{"lev búlgaro"}
+            other{"levas búlgaras"}
+        }
+        BHD{
+            one{"dinar bahreiní"}
+            other{"dinares bahreiníes"}
         }
         BND{
             one{"dólar de Brunéi"}
@@ -272,6 +429,14 @@ es_MX{
             one{"birr etíope"}
             other{"birrs etíopes"}
         }
+        FKP{
+            one{"libra malvinense"}
+            other{"libras malvinenses"}
+        }
+        GBP{
+            one{"libra esterlina británica"}
+            other{"libras esterlinas británicas"}
+        }
         GEL{
             one{"lari georgiano"}
             other{"laris georgianos"}
@@ -292,9 +457,17 @@ es_MX{
             one{"kuna croata"}
             other{"kunas croatas"}
         }
+        HUF{
+            one{"florín húngaro"}
+            other{"florines húngaros"}
+        }
         ILS{
             one{"nuevo shéquel israelí"}
             other{"nuevos shéquels israelíes"}
+        }
+        JMD{
+            one{"dólar jamaiquino"}
+            other{"dólares jamaiquinos"}
         }
         JPY{
             one{"yen japonés"}
@@ -320,6 +493,10 @@ es_MX{
             one{"rupia de Sri Lanka"}
             other{"rupias de Sri Lanka"}
         }
+        LTL{
+            one{"litas lituana"}
+            other{"litas lituanas"}
+        }
         LVL{
             one{"lats letón"}
             other{"lats letones"}
@@ -335,6 +512,10 @@ es_MX{
         MNT{
             one{"tugrik mongol"}
             other{"tugriks mongoles"}
+        }
+        MOP{
+            one{"pataca de Macao"}
+            other{"patacas de Macao"}
         }
         MRO{
             one{"ouguiya mauritano"}
@@ -432,6 +613,10 @@ es_MX{
             one{"tala samoano"}
             other{"talas samoanos"}
         }
+        XXX{
+            one{"moneda desconocida/no válida"}
+            other{"monedas desconocidas/no válidas"}
+        }
         ZAR{
             one{"rand sudafricano"}
             other{"rands sudafricanos"}
@@ -441,5 +626,5 @@ es_MX{
             other{"kwachas zambianos"}
         }
     }
-    Version{"2.1.28.76"}
+    Version{"2.1.8.19"}
 }
