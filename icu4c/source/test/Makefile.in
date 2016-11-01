@@ -1,6 +1,4 @@
 ## Makefile.in for ICU tests
-## Copyright (C) 2016 and later: Unicode, Inc. and others.
-## License & terms of use: http://www.unicode.org/copyright.html
 ## Copyright (c) 1999-2014, International Business Machines Corporation and
 ## others. All Rights Reserved.
 
@@ -16,11 +14,7 @@ include $(top_builddir)/icudefs.mk
 subdir = test
 
 @ICUIO_TRUE@IOTEST = iotest
-
-# the letest directory depends on layoutex.
-# If you have layoutex but not layout, you will be using
-# harfbuzz.
-@LAYOUTEX_TRUE@LETEST = letest
+@LAYOUT_TRUE@LETEST = letest
 
 # status dir
 STATUS_TMP = tmp

@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 ***************************************************************************
 *   Copyright (C) 2002-2009 International Business Machines Corporation   *
@@ -15,6 +13,7 @@ import com.ibm.icu.lang.UCharacter;
 
 class RBBISymbolTable implements SymbolTable{
     
+    String               fRules;
     HashMap<String, RBBISymbolTableEntry> fHashTable;
     RBBIRuleScanner      fRuleScanner;
 
@@ -32,7 +31,8 @@ class RBBISymbolTable implements SymbolTable{
     }
 
     
-    RBBISymbolTable(RBBIRuleScanner rs) {
+    RBBISymbolTable(RBBIRuleScanner rs, String rules) {
+        fRules = rules;
         fRuleScanner = rs;
         fHashTable = new HashMap<String, RBBISymbolTableEntry>();
         ffffString = "\uffff";

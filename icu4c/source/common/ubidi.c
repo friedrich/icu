@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 1999-2015, International Business Machines
+*   Copyright (C) 1999-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -405,12 +403,12 @@ static UBool
 checkParaCount(UBiDi *pBiDi) {
     int32_t count=pBiDi->paraCount;
     if(pBiDi->paras==pBiDi->simpleParas) {
-        if(count<=SIMPLE_PARAS_COUNT)
+        if(count<=SIMPLE_PARAS_SIZE)
             return TRUE;
-        if(!getInitialParasMemory(pBiDi, SIMPLE_PARAS_COUNT * 2))
+        if(!getInitialParasMemory(pBiDi, SIMPLE_PARAS_SIZE * 2))
             return FALSE;
         pBiDi->paras=pBiDi->parasMemory;
-        uprv_memcpy(pBiDi->parasMemory, pBiDi->simpleParas, SIMPLE_PARAS_COUNT * sizeof(Para));
+        uprv_memcpy(pBiDi->parasMemory, pBiDi->simpleParas, SIMPLE_PARAS_SIZE * sizeof(Para));
         return TRUE;
     }
     if(!getInitialParasMemory(pBiDi, count * 2))
@@ -681,10 +679,10 @@ bracketInit(UBiDi *pBiDi, BracketData *bd) {
     bd->isoRuns[0].contextPos=0;
     if(pBiDi->openingsMemory) {
         bd->openings=pBiDi->openingsMemory;
-        bd->openingsCount=pBiDi->openingsSize / sizeof(Opening);
+        bd->openingsSize=pBiDi->openingsSize;
     } else {
         bd->openings=bd->simpleOpenings;
-        bd->openingsCount=SIMPLE_OPENINGS_COUNT;
+        bd->openingsSize=SIMPLE_OPENINGS_SIZE;
     }
     bd->isNumbersSpecial=bd->pBiDi->reorderingMode==UBIDI_REORDER_NUMBERS_SPECIAL ||
                          bd->pBiDi->reorderingMode==UBIDI_REORDER_INVERSE_FOR_NUMBERS_SPECIAL;
@@ -745,15 +743,15 @@ static UBool                            /* return TRUE if success */
 bracketAddOpening(BracketData *bd, UChar match, int32_t position) {
     IsoRun *pLastIsoRun=&bd->isoRuns[bd->isoRunLast];
     Opening *pOpening;
-    if(pLastIsoRun->limit>=bd->openingsCount) {  /* no available new entry */
+    if(pLastIsoRun->limit>=bd->openingsSize) {  /* no available new entry */
         UBiDi *pBiDi=bd->pBiDi;
         if(!getInitialOpeningsMemory(pBiDi, pLastIsoRun->limit * 2))
             return FALSE;
         if(bd->openings==bd->simpleOpenings)
             uprv_memcpy(pBiDi->openingsMemory, bd->simpleOpenings,
-                        SIMPLE_OPENINGS_COUNT * sizeof(Opening));
+                        SIMPLE_OPENINGS_SIZE * sizeof(Opening));
         bd->openings=pBiDi->openingsMemory;     /* may have changed */
-        bd->openingsCount=pBiDi->openingsSize / sizeof(Opening);
+        bd->openingsSize=pBiDi->openingsSize;
     }
     pOpening=&bd->openings[pLastIsoRun->limit];
     pOpening->position=position;
@@ -2140,7 +2138,7 @@ resolveImplicitLevels(UBiDi *pBiDi,
     /* The isolates[] entries contain enough information to
        resume the bidi algorithm in the same state as it was
        when it was interrupted by an isolate sequence. */
-    if(dirProps[start]==PDI  && pBiDi->isolateCount >= 0) {
+    if(dirProps[start]==PDI) {
         levState.startON=pBiDi->isolates[pBiDi->isolateCount].startON;
         start1=pBiDi->isolates[pBiDi->isolateCount].start1;
         stateImp=pBiDi->isolates[pBiDi->isolateCount].stateImp;
@@ -2169,9 +2167,6 @@ resolveImplicitLevels(UBiDi *pBiDi,
         } else {
             DirProp prop, prop1;
             prop=dirProps[i];
-            if(prop==B) {
-                pBiDi->isolateCount=-1; /* current isolates stack entry == none */
-            }
             if(inverseRTL) {
                 if(prop==AL) {
                     /* AL before EN does not make it AN */
@@ -2342,7 +2337,7 @@ setParaSuccess(UBiDi *pBiDi) {
 static void
 setParaRunsOnly(UBiDi *pBiDi, const UChar *text, int32_t length,
                 UBiDiLevel paraLevel, UErrorCode *pErrorCode) {
-    void *runsOnlyMemory = NULL;
+    void *runsOnlyMemory;
     int32_t *visualMap;
     UChar *visualText;
     int32_t saveLength, saveTrailingWSStart;
@@ -2385,7 +2380,7 @@ setParaRunsOnly(UBiDi *pBiDi, const UChar *text, int32_t length,
      * direction is not MIXED
      */
     levels=ubidi_getLevels(pBiDi, pErrorCode);
-    uprv_memcpy(saveLevels, levels, (size_t)pBiDi->length*sizeof(UBiDiLevel));
+    uprv_memcpy(saveLevels, levels, pBiDi->length*sizeof(UBiDiLevel));
     saveTrailingWSStart=pBiDi->trailingWSStart;
     saveLength=pBiDi->length;
     saveDirection=pBiDi->direction;
@@ -2514,15 +2509,14 @@ setParaRunsOnly(UBiDi *pBiDi, const UChar *text, int32_t length,
     if(saveLength>pBiDi->levelsSize) {
         saveLength=pBiDi->levelsSize;
     }
-    uprv_memcpy(pBiDi->levels, saveLevels, (size_t)saveLength*sizeof(UBiDiLevel));
+    uprv_memcpy(pBiDi->levels, saveLevels, saveLength*sizeof(UBiDiLevel));
     pBiDi->trailingWSStart=saveTrailingWSStart;
+    /* free memory for mapping table and visual text */
+    uprv_free(runsOnlyMemory);
     if(pBiDi->runCount>1) {
         pBiDi->direction=UBIDI_MIXED;
     }
   cleanup3:
-    /* free memory for mapping table and visual text */
-    uprv_free(runsOnlyMemory);
-
     pBiDi->reorderingMode=UBIDI_REORDER_RUNS_ONLY;
 }
 
@@ -2640,7 +2634,7 @@ ubidi_setPara(UBiDi *pBiDi, const UChar *text, int32_t length,
     }
 
     /* allocate isolate memory */
-    if(pBiDi->isolateCount<=SIMPLE_ISOLATES_COUNT)
+    if(pBiDi->isolateCount<=SIMPLE_ISOLATES_SIZE)
         pBiDi->isolates=pBiDi->simpleIsolates;
     else
         if((int32_t)(pBiDi->isolateCount*sizeof(Isolate))<=pBiDi->isolatesSize)
@@ -2662,10 +2656,16 @@ ubidi_setPara(UBiDi *pBiDi, const UChar *text, int32_t length,
     pBiDi->direction=direction;
     switch(direction) {
     case UBIDI_LTR:
+        /* make sure paraLevel is even */
+        pBiDi->paraLevel=(UBiDiLevel)((pBiDi->paraLevel+1)&~1);
+
         /* all levels are implicitly at paraLevel (important for ubidi_getLevels()) */
         pBiDi->trailingWSStart=0;
         break;
     case UBIDI_RTL:
+        /* make sure paraLevel is odd */
+        pBiDi->paraLevel|=1;
+
         /* all levels are implicitly at paraLevel (important for ubidi_getLevels()) */
         pBiDi->trailingWSStart=0;
         break;

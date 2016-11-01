@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  **********************************************************************
- *   Copyright (C) 1997-2016, International Business Machines
+ *   Copyright (C) 1997-2014, International Business Machines
  *   Corporation and others.  All Rights Reserved.
  **********************************************************************
  *
@@ -23,31 +21,25 @@
  * \file
  * \brief C API: Unicode Script Information
  */
-
+ 
 /**
  * Constants for ISO 15924 script codes.
  *
- * The current set of script code constants supports at least all scripts
- * that are encoded in the version of Unicode which ICU currently supports.
- * The names of the constants are usually derived from the
- * Unicode script property value aliases.
- * See UAX #24 Unicode Script Property (http://www.unicode.org/reports/tr24/)
- * and http://www.unicode.org/Public/UCD/latest/ucd/PropertyValueAliases.txt .
+ * Many of these script codes - those from Unicode's ScriptNames.txt -
+ * are character property values for Unicode's Script property.
+ * See UAX #24 Script Names (http://www.unicode.org/reports/tr24/).
  *
- * In addition, constants for many ISO 15924 script codes
- * are included, for use with language tags, CLDR data, and similar.
- * Some of those codes are not used in the Unicode Character Database (UCD).
- * For example, there are no characters that have a UCD script property value of
- * Hans or Hant. All Han ideographs have the Hani script property value in Unicode.
+ * Starting with ICU 3.6, constants for most ISO 15924 script codes
+ * are included (currently excluding private-use codes Qaaa..Qabx).
+ * For scripts for which there are codes in ISO 15924 but which are not
+ * used in the Unicode Character Database (UCD), there are no Unicode characters
+ * associated with those scripts.
  *
- * Private-use codes Qaaa..Qabx are not included, except as used in the UCD or in CLDR.
+ * For example, there are no characters that have a UCD script code of
+ * Hans or Hant. All Han ideographs have the Hani script code.
+ * The Hans and Hant script codes are used with CLDR data.
  *
- * Starting with ICU 55, script codes are only added when their scripts
- * have been or will certainly be encoded in Unicode,
- * and have been assigned Unicode script property value aliases,
- * to ensure that their script names are stable and match the names of the constants.
- * Script codes like Latf and Aran that are not subject to separate encoding
- * may be added at any time.
+ * ISO 15924 script codes are included for use with CLDR and similar.
  *
  * @stable ICU 2.2
  */
@@ -194,7 +186,7 @@ typedef enum UScriptCode {
       /** @stable ICU 3.4 */
       USCRIPT_OLD_PERSIAN   = 61, /* Xpeo */
 
-      /* New script codes from Unicode and ISO 15924 */
+      /* New script codes from ISO 15924 */
       /** @stable ICU 3.6 */
       USCRIPT_BALINESE                      = 62, /* Bali */
       /** @stable ICU 3.6 */
@@ -286,6 +278,7 @@ typedef enum UScriptCode {
       /** @stable ICU 3.6 */
       USCRIPT_UNKNOWN                       = 103,/* Zzzz */ /* Unknown="Code for uncoded script", for unassigned code points */
 
+      /* New script codes from ISO 15924 */
       /** @stable ICU 3.8 */
       USCRIPT_CARIAN                        = 104,/* Cari */
       /** @stable ICU 3.8 */
@@ -302,7 +295,7 @@ typedef enum UScriptCode {
       USCRIPT_REJANG                        = 110,/* Rjng */
       /** @stable ICU 3.8 */
       USCRIPT_SAURASHTRA                    = 111,/* Saur */
-      /** Sutton SignWriting @stable ICU 3.8 */
+      /** @stable ICU 3.8 */
       USCRIPT_SIGN_WRITING                  = 112,/* Sgnw */
       /** @stable ICU 3.8 */
       USCRIPT_SUNDANESE                     = 113,/* Sund */
@@ -311,6 +304,7 @@ typedef enum UScriptCode {
       /** @stable ICU 3.8 */
       USCRIPT_MEITEI_MAYEK                  = 115,/* Mtei */
 
+      /* New script codes from ISO 15924 */
       /** @stable ICU 4.0 */
       USCRIPT_IMPERIAL_ARAMAIC              = 116,/* Armi */
       /** @stable ICU 4.0 */
@@ -340,6 +334,7 @@ typedef enum UScriptCode {
       /** @stable ICU 4.0 */
       USCRIPT_SYMBOLS                       = 129,/* Zsym */
 
+      /* New script codes from ISO 15924 */
       /** @stable ICU 4.4 */
       USCRIPT_BAMUM                         = 130,/* Bamu */
       /** @stable ICU 4.4 */
@@ -349,14 +344,11 @@ typedef enum UScriptCode {
       /** @stable ICU 4.4 */
       USCRIPT_OLD_SOUTH_ARABIAN             = 133,/* Sarb */
 
+      /* New script codes from ISO 15924 */
       /** @stable ICU 4.6 */
       USCRIPT_BASSA_VAH                     = 134,/* Bass */
-      /** @stable ICU 54 */
-      USCRIPT_DUPLOYAN                      = 135,/* Dupl */
-#ifndef U_HIDE_DEPRECATED_API
-      /** @deprecated ICU 54 Typo, use USCRIPT_DUPLOYAN */
-      USCRIPT_DUPLOYAN_SHORTAND             = USCRIPT_DUPLOYAN,
-#endif  /* U_HIDE_DEPRECATED_API */
+      /** @stable ICU 4.6 */
+      USCRIPT_DUPLOYAN_SHORTAND             = 135,/* Dupl */
       /** @stable ICU 4.6 */
       USCRIPT_ELBASAN                       = 136,/* Elba */
       /** @stable ICU 4.6 */
@@ -365,7 +357,7 @@ typedef enum UScriptCode {
       USCRIPT_KPELLE                        = 138,/* Kpel */
       /** @stable ICU 4.6 */
       USCRIPT_LOMA                          = 139,/* Loma */
-      /** Mende Kikakui @stable ICU 4.6 */
+      /** @stable ICU 4.6 */
       USCRIPT_MENDE                         = 140,/* Mend */
       /** @stable ICU 4.6 */
       USCRIPT_MEROITIC_CURSIVE              = 141,/* Merc */
@@ -375,10 +367,8 @@ typedef enum UScriptCode {
       USCRIPT_NABATAEAN                     = 143,/* Nbat */
       /** @stable ICU 4.6 */
       USCRIPT_PALMYRENE                     = 144,/* Palm */
-      /** @stable ICU 54 */
-      USCRIPT_KHUDAWADI                     = 145,/* Sind */
       /** @stable ICU 4.6 */
-      USCRIPT_SINDHI                        = USCRIPT_KHUDAWADI,
+      USCRIPT_SINDHI                        = 145,/* Sind */
       /** @stable ICU 4.6 */
       USCRIPT_WARANG_CITI                   = 146,/* Wara */
 
@@ -413,104 +403,64 @@ typedef enum UScriptCode {
       /** @stable ICU 52 */
       USCRIPT_MAHAJANI                      = 160,/* Mahj */
 
-      /** @stable ICU 54 */
-      USCRIPT_AHOM                          = 161,/* Ahom */
-      /** @stable ICU 54 */
-      USCRIPT_HATRAN                        = 162,/* Hatr */
-      /** @stable ICU 54 */
-      USCRIPT_MODI                          = 163,/* Modi */
-      /** @stable ICU 54 */
-      USCRIPT_MULTANI                       = 164,/* Mult */
-      /** @stable ICU 54 */
-      USCRIPT_PAU_CIN_HAU                   = 165,/* Pauc */
-      /** @stable ICU 54 */
-      USCRIPT_SIDDHAM                       = 166,/* Sidd */
+      /* Private use codes from Qaaa - Qabx are not supported */
 
-      /** @stable ICU 58 */
-      USCRIPT_ADLAM                         = 167,/* Adlm */
-      /** @stable ICU 58 */
-      USCRIPT_BHAIKSUKI                     = 168,/* Bhks */
-      /** @stable ICU 58 */
-      USCRIPT_MARCHEN                       = 169,/* Marc */
-      /** @stable ICU 58 */
-      USCRIPT_NEWA                          = 170,/* Newa */
-      /** @stable ICU 58 */
-      USCRIPT_OSAGE                         = 171,/* Osge */
-
-      /** @stable ICU 58 */
-      USCRIPT_HAN_WITH_BOPOMOFO             = 172,/* Hanb */
-      /** @stable ICU 58 */
-      USCRIPT_JAMO                          = 173,/* Jamo */
-      /** @stable ICU 58 */
-      USCRIPT_SYMBOLS_EMOJI                 = 174,/* Zsye */
-
-#ifndef U_HIDE_DEPRECATED_API
-    /**
-     * One more than the highest normal UScriptCode value.
-     * The highest value is available via u_getIntPropertyMaxValue(UCHAR_SCRIPT).
-     *
-     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-     */
-    USCRIPT_CODE_LIMIT    = 175
-#endif  // U_HIDE_DEPRECATED_API
+      /** @stable ICU 2.2 */
+      USCRIPT_CODE_LIMIT    = 161
 } UScriptCode;
 
 /**
- * Gets the script codes associated with the given locale or ISO 15924 abbreviation or name.
+ * Gets script codes associated with the given locale or ISO 15924 abbreviation or name. 
  * Fills in USCRIPT_MALAYALAM given "Malayam" OR "Mlym".
- * Fills in USCRIPT_LATIN given "en" OR "en_US"
- * If the required capacity is greater than the capacity of the destination buffer,
- * then the error code is set to U_BUFFER_OVERFLOW_ERROR and the required capacity is returned.
+ * Fills in USCRIPT_LATIN given "en" OR "en_US" 
+ * If required capacity is greater than capacity of the destination buffer then the error code
+ * is set to U_BUFFER_OVERFLOW_ERROR and the required capacity is returned
  *
  * <p>Note: To search by short or long script alias only, use
- * u_getPropertyValueEnum(UCHAR_SCRIPT, alias) instead.  That does
+ * u_getPropertyValueEnum(UCHAR_SCRIPT, alias) instead.  This does
  * a fast lookup with no access of the locale data.
- *
  * @param nameOrAbbrOrLocale name of the script, as given in
  * PropertyValueAliases.txt, or ISO 15924 code or locale
  * @param fillIn the UScriptCode buffer to fill in the script code
  * @param capacity the capacity (size) fo UScriptCode buffer passed in.
  * @param err the error status code.
- * @return The number of script codes filled in the buffer passed in
+ * @return The number of script codes filled in the buffer passed in 
  * @stable ICU 2.4
  */
-U_STABLE int32_t  U_EXPORT2
+U_STABLE int32_t  U_EXPORT2 
 uscript_getCode(const char* nameOrAbbrOrLocale,UScriptCode* fillIn,int32_t capacity,UErrorCode *err);
 
 /**
- * Returns the long Unicode script name, if there is one.
- * Otherwise returns the 4-letter ISO 15924 script code.
- * Returns "Malayam" given USCRIPT_MALAYALAM.
- *
+ * Gets a script name associated with the given script code. 
+ * Returns  "Malayam" given USCRIPT_MALAYALAM
  * @param scriptCode UScriptCode enum
- * @return long script name as given in PropertyValueAliases.txt, or the 4-letter code,
- * or NULL if scriptCode is invalid
+ * @return script long name as given in
+ * PropertyValueAliases.txt, or NULL if scriptCode is invalid
  * @stable ICU 2.4
  */
-U_STABLE const char*  U_EXPORT2
+U_STABLE const char*  U_EXPORT2 
 uscript_getName(UScriptCode scriptCode);
 
 /**
- * Returns the 4-letter ISO 15924 script code,
- * which is the same as the short Unicode script name if Unicode has names for the script.
- * Returns "Mlym" given USCRIPT_MALAYALAM.
- *
+ * Gets a script name associated with the given script code. 
+ * Returns  "Mlym" given USCRIPT_MALAYALAM
  * @param scriptCode UScriptCode enum
- * @return short script name (4-letter code), or NULL if scriptCode is invalid
+ * @return script abbreviated name as given in
+ * PropertyValueAliases.txt, or NULL if scriptCode is invalid
  * @stable ICU 2.4
  */
-U_STABLE const char*  U_EXPORT2
+U_STABLE const char*  U_EXPORT2 
 uscript_getShortName(UScriptCode scriptCode);
 
 /**
  * Gets the script code associated with the given codepoint.
- * Returns USCRIPT_MALAYALAM given 0x0D02
+ * Returns USCRIPT_MALAYALAM given 0x0D02 
  * @param codepoint UChar32 codepoint
  * @param err the error status code.
- * @return The UScriptCode, or 0 if codepoint is invalid
+ * @return The UScriptCode, or 0 if codepoint is invalid 
  * @stable ICU 2.4
  */
-U_STABLE UScriptCode  U_EXPORT2
+U_STABLE UScriptCode  U_EXPORT2 
 uscript_getScript(UChar32 codepoint, UErrorCode *err);
 
 /**
@@ -520,6 +470,9 @@ uscript_getScript(UChar32 codepoint, UErrorCode *err);
  *
  * Some characters are commonly used in multiple scripts.
  * For more information, see UAX #24: http://www.unicode.org/reports/tr24/.
+ *
+ * The Script_Extensions property is provisional. It may be modified or removed
+ * in future versions of the Unicode Standard, and thus in ICU.
  * @param c code point
  * @param sc script code
  * @return TRUE if sc is in Script_Extensions(c)
@@ -546,6 +499,8 @@ uscript_hasScript(UChar32 c, UScriptCode sc);
  * U_BUFFER_OVERFLOW_ERROR is set and the number of Script_Extensions is returned.
  * (Usual ICU buffer handling behavior.)
  *
+ * The Script_Extensions property is provisional. It may be modified or removed
+ * in future versions of the Unicode Standard, and thus in ICU.
  * @param c code point
  * @param scripts output script code array
  * @param capacity capacity of the scripts array

@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
 * Copyright (C) 2012-2014, International Business Machines
@@ -14,11 +12,11 @@
 package com.ibm.icu.impl.coll;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
 import java.util.MissingResourceException;
 
-import com.ibm.icu.impl.ICUBinary;
 import com.ibm.icu.impl.ICUData;
+import com.ibm.icu.impl.ICUResourceBundle;
 
 /**
  * Collation root provider.
@@ -43,20 +41,19 @@ public final class CollationRoot {  // purely static
     }
 
     static {  // Corresponds to C++ load() function.
-        CollationTailoring t = null;
+        CollationTailoring t = new CollationTailoring(null);
+        String path = ICUResourceBundle.ICU_BUNDLE + "/coll/ucadata.icu";
+        InputStream inBytes = ICUData.getRequiredStream(path);
         RuntimeException e2 = null;
         try {
-            ByteBuffer bytes = ICUBinary.getRequiredData("coll/ucadata.icu");
-            CollationTailoring t2 = new CollationTailoring(null);
-            CollationDataReader.read(null, bytes, t2);
-            // Keep t=null until after the root data has been read completely.
-            // Otherwise we would set a non-null root object if the data reader throws an exception.
-            t = t2;
+            CollationDataReader.read(null, inBytes, t);
         } catch(IOException e) {
+            t = null;
             e2 = new MissingResourceException(
                     "IOException while reading CLDR root data",
-                    "CollationRoot", ICUData.ICU_BUNDLE + "/coll/ucadata.icu");
+                    "CollationRoot", path);
         } catch(RuntimeException e) {
+            t = null;
             e2 = e;
         }
         rootSingleton = t;

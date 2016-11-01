@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2013-2016, International Business Machines
+*   Copyright (C) 2013-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -17,7 +15,7 @@
 */
 
 #include "unicode/listformatter.h"
-#include "unicode/simpleformatter.h"
+#include "simplepatternformatter.h"
 #include "mutex.h"
 #include "hash.h"
 #include "cstring.h"
@@ -26,30 +24,31 @@
 #include "ucln_cmn.h"
 #include "uresimp.h"
 
+#define LENGTHOF(array) (int32_t)(sizeof(array) / sizeof((array)[0]))
+
 U_NAMESPACE_BEGIN
 
 struct ListFormatInternal : public UMemory {
-    SimpleFormatter twoPattern;
-    SimpleFormatter startPattern;
-    SimpleFormatter middlePattern;
-    SimpleFormatter endPattern;
+    SimplePatternFormatter twoPattern;
+    SimplePatternFormatter startPattern;
+    SimplePatternFormatter middlePattern;
+    SimplePatternFormatter endPattern;
 
 ListFormatInternal(
         const UnicodeString& two,
         const UnicodeString& start,
         const UnicodeString& middle,
-        const UnicodeString& end,
-        UErrorCode &errorCode) :
-        twoPattern(two, 2, 2, errorCode),
-        startPattern(start, 2, 2, errorCode),
-        middlePattern(middle, 2, 2, errorCode),
-        endPattern(end, 2, 2, errorCode) {}
+        const UnicodeString& end) :
+        twoPattern(two),
+        startPattern(start),
+        middlePattern(middle),
+        endPattern(end) {}
 
-ListFormatInternal(const ListFormatData &data, UErrorCode &errorCode) :
-        twoPattern(data.twoPattern, errorCode),
-        startPattern(data.startPattern, errorCode),
-        middlePattern(data.middlePattern, errorCode),
-        endPattern(data.endPattern, errorCode) { }
+ListFormatInternal(const ListFormatData &data) :
+        twoPattern(data.twoPattern),
+        startPattern(data.startPattern),
+        middlePattern(data.middlePattern),
+        endPattern(data.endPattern) { }
 
 ListFormatInternal(const ListFormatInternal &other) :
     twoPattern(other.twoPattern),
@@ -181,6 +180,12 @@ static ListFormatInternal* loadListFormatInternal(
     rb = ures_getByKeyWithFallback(rb, "listPattern", rb, &errorCode);
     rb = ures_getByKeyWithFallback(rb, style, rb, &errorCode);
 
+    // TODO(Travis Keep): This is a hack until fallbacks can be added for
+    // listPattern/duration and listPattern/duration-narrow in CLDR.
+    if (errorCode == U_MISSING_RESOURCE_ERROR) {
+        errorCode = U_ZERO_ERROR;
+        rb = ures_getByKeyWithFallback(rb, "standard", rb, &errorCode);
+    }
     if (U_FAILURE(errorCode)) {
         ures_close(rb);
         return NULL;
@@ -194,13 +199,9 @@ static ListFormatInternal* loadListFormatInternal(
     if (U_FAILURE(errorCode)) {
         return NULL;
     }
-    ListFormatInternal* result = new ListFormatInternal(two, start, middle, end, errorCode);
+    ListFormatInternal* result = new ListFormatInternal(two, start, middle, end);
     if (result == NULL) {
         errorCode = U_MEMORY_ALLOCATION_ERROR;
-        return NULL;
-    }
-    if (U_FAILURE(errorCode)) {
-        delete result;
         return NULL;
     }
     return result;
@@ -238,8 +239,8 @@ ListFormatter* ListFormatter::createInstance(const Locale& locale, const char *s
     return p;
 }
 
-ListFormatter::ListFormatter(const ListFormatData& listFormatData, UErrorCode &errorCode) {
-    owned = new ListFormatInternal(listFormatData, errorCode);
+ListFormatter::ListFormatter(const ListFormatData& listFormatData) {
+    owned = new ListFormatInternal(listFormatData);
     data = owned;
 }
 
@@ -255,11 +256,10 @@ ListFormatter::~ListFormatter() {
  * On entry offset is an offset into first or -1 if offset unspecified.
  * On exit offset is offset of second in result if recordOffset was set
  * Otherwise if it was >=0 it is set to point into result where it used
- * to point into first. On exit, result is the join of first and second
- * according to pat. Any previous value of result gets replaced.
+ * to point into first.
  */
-static void joinStringsAndReplace(
-        const SimpleFormatter& pat,
+static void joinStrings(
+        const SimplePatternFormatter& pat,
         const UnicodeString& first,
         const UnicodeString& second,
         UnicodeString &result,
@@ -271,12 +271,12 @@ static void joinStringsAndReplace(
     }
     const UnicodeString *params[2] = {&first, &second};
     int32_t offsets[2];
-    pat.formatAndReplace(
+    pat.format(
             params,
-            UPRV_LENGTHOF(params),
+            LENGTHOF(params),
             result,
             offsets,
-            UPRV_LENGTHOF(offsets),
+            LENGTHOF(offsets),
             errorCode);
     if (U_FAILURE(errorCode)) {
         return;
@@ -327,43 +327,62 @@ UnicodeString& ListFormatter::format(
         appendTo.append(items[0]);
         return appendTo;
     }
-    UnicodeString result(items[0]);
+    if (nItems == 2) {
+        if (index == 0) {
+            offset = 0;
+        }
+        joinStrings(
+                data->twoPattern,
+                items[0],
+                items[1],
+                appendTo,
+                index == 1,
+                offset,
+                errorCode);
+        return appendTo;
+    }
+    UnicodeString temp[2];
     if (index == 0) {
         offset = 0;
     }
-    joinStringsAndReplace(
-            nItems == 2 ? data->twoPattern : data->startPattern,
-            result,
+    joinStrings(
+            data->startPattern,
+            items[0],
             items[1],
-            result,
+            temp[0],
             index == 1,
             offset,
             errorCode);
-    if (nItems > 2) {
-        for (int32_t i = 2; i < nItems - 1; ++i) {
-             joinStringsAndReplace(
-                     data->middlePattern,
-                     result,
-                     items[i],
-                     result,
-                     index == i,
-                     offset,
-                     errorCode);
-        }
-        joinStringsAndReplace(
-                data->endPattern,
-                result,
-                items[nItems - 1],
-                result,
-                index == nItems - 1,
-                offset,
-                errorCode);
+    int32_t i;
+    int32_t pos = 0;
+    int32_t npos = 1;
+    for (i = 2; i < nItems - 1; ++i) {
+         temp[npos].remove();
+         joinStrings(
+                 data->middlePattern,
+                 temp[pos],
+                 items[i],
+                 temp[npos],
+                 index == i,
+                 offset,
+                 errorCode);
+         pos = npos;
+         npos = (pos + 1) & 1;
     }
+    temp[npos].remove();
+    joinStrings(
+            data->endPattern,
+            temp[pos],
+            items[nItems - 1],
+            temp[npos],
+            index == nItems - 1,
+            offset,
+            errorCode);
     if (U_SUCCESS(errorCode)) {
         if (offset >= 0) {
             offset += appendTo.length();
         }
-        appendTo += result;
+        appendTo += temp[npos];
     }
     return appendTo;
 }

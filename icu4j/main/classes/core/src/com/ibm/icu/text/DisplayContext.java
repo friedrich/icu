@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2012-2015, International Business Machines Corporation and    *
+ * Copyright (C) 2012-2014, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -70,44 +68,7 @@ public enum DisplayContext {
      * isolated name on a calendar page.
      * @stable ICU 51
      */
-    CAPITALIZATION_FOR_STANDALONE(Type.CAPITALIZATION, 4),
-    /**
-     * ================================
-     * Settings for DISPLAY_LENGTH (use one)
-     */
-    /**
-     * A possible setting for DISPLAY_LENGTH:
-     * use full names when generating a locale name,
-     * e.g. "United States" for US.
-     * @stable ICU 54
-     */
-    LENGTH_FULL(Type.DISPLAY_LENGTH, 0),
-    /**
-     * A possible setting for DISPLAY_LENGTH:
-     * use short names when generating a locale name,
-     * e.g. "U.S." for US.
-     * @stable ICU 54
-     */
-    LENGTH_SHORT(Type.DISPLAY_LENGTH, 1),
-    /**
-     * ================================
-     * Settings for SUBSTITUTE_HANDLING (choose one)
-     */
-    /**
-     * A possible setting for SUBSTITUTE_HANDLING:
-     * Returns a fallback value (e.g., the input code) when no data is available.
-     * This is the default behavior.
-     * @draft ICU 58
-     * @provisional This API might change or be removed in a future release.
-     */
-    SUBSTITUTE(Type.SUBSTITUTE_HANDLING, 0),
-    /**
-     * A possible setting for SUBSTITUTE_HANDLING:
-     * Returns a null value when no data is available.
-     * @draft ICU 58
-     * @provisional This API might change or be removed in a future release.
-     */
-    NO_SUBSTITUTE(Type.SUBSTITUTE_HANDLING, 1);
+    CAPITALIZATION_FOR_STANDALONE(Type.CAPITALIZATION, 4);
 
     /**
      * Type values for DisplayContext
@@ -124,18 +85,7 @@ public enum DisplayContext {
          * CAPITALIZATION_FOR_STANDALONE.
          * @stable ICU 51
          */
-        CAPITALIZATION,
-        /**
-         * DISPLAY_LENGTH can be set to LENGTH_FULL or LENGTH_SHORT.
-         * @stable ICU 54
-         */
-        DISPLAY_LENGTH,
-        /**
-         * SUBSTITUTE_HANDLING can be set to SUBSTITUTE or NO_SUBSTITUTE.
-         * @draft ICU 58
-         * @provisional This API might change or be removed in a future release.
-         */
-        SUBSTITUTE_HANDLING
+        CAPITALIZATION
     }
 
     private final Type type;

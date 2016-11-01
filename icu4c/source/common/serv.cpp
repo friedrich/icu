@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /**
 *******************************************************************************
-* Copyright (C) 2001-2014, International Business Machines Corporation.
+* Copyright (C) 2001-2012, International Business Machines Corporation.
 * All Rights Reserved.
 *******************************************************************************
 */
@@ -104,7 +102,7 @@ UnicodeString&
 ICUServiceKey::debug(UnicodeString& result) const 
 {
     debugClass(result);
-    result.append((UnicodeString)" id: ");
+    result.append(" id: ");
     result.append(_id);
     return result;
 }
@@ -112,7 +110,7 @@ ICUServiceKey::debug(UnicodeString& result) const
 UnicodeString& 
 ICUServiceKey::debugClass(UnicodeString& result) const 
 {
-    return result.append((UnicodeString)"ICUServiceKey");
+    return result.append("ICUServiceKey");
 }
 #endif
 
@@ -172,17 +170,17 @@ UnicodeString&
 SimpleFactory::debug(UnicodeString& toAppendTo) const 
 {
     debugClass(toAppendTo);
-    toAppendTo.append((UnicodeString)" id: ");
+    toAppendTo.append(" id: ");
     toAppendTo.append(_id);
-    toAppendTo.append((UnicodeString)", visible: ");
-    toAppendTo.append(_visible ? (UnicodeString)"T" : (UnicodeString)"F");
+    toAppendTo.append(", visible: ");
+    toAppendTo.append(_visible ? "T" : "F");
     return toAppendTo;
 }
 
 UnicodeString& 
 SimpleFactory::debugClass(UnicodeString& toAppendTo) const 
 {
-    return toAppendTo.append((UnicodeString)"SimpleFactory");
+    return toAppendTo.append("SimpleFactory");
 }
 #endif
 
@@ -621,7 +619,7 @@ ICUService::getVisibleIDs(UVector& result, const UnicodeString* matchID, UErrorC
         if (map != NULL) {
             ICUServiceKey* fallbackKey = createKey(matchID, status);
 
-            for (int32_t pos = UHASH_FIRST;;) {
+            for (int32_t pos = -1;;) {
                 const UHashElement* e = map->nextElement(pos);
                 if (e == NULL) {
                     break;
@@ -763,7 +761,7 @@ ICUService::getDisplayNames(UVector& result,
                 return result;
             }
 
-            int32_t pos = UHASH_FIRST;
+            int32_t pos = -1;
             const UHashElement* entry = NULL;
             while ((entry = m->nextElement(pos)) != NULL) {
                 const UnicodeString* id = (const UnicodeString*)entry->key.pointer;
@@ -790,7 +788,7 @@ ICUService::getDisplayNames(UVector& result,
      * nextElement(pos) will skip the position at pos and begin the iteration
      * at the next position, which in this case will be 0.
      */
-    int32_t pos = UHASH_FIRST; 
+    int32_t pos = -1; 
     const UHashElement *entry = NULL;
     while ((entry = dnCache->cache.nextElement(pos)) != NULL) {
         const UnicodeString* id = (const UnicodeString*)entry->value.pointer;

@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  **********************************************************************
  *   Copyright (C) 2002-2014, International Business Machines
@@ -385,7 +383,7 @@ ParagraphLayout::ParagraphLayout(const LEUnicode chars[], le_int32 count,
     }
     else {
         // initialize
-        for (run = 0; run < fStyleRunCount; run += 1) {
+        for (runStart = 0, run = 0; run < fStyleRunCount; run += 1) {
             fStyleRunInfo[run].font = NULL;
             fStyleRunInfo[run].runBase = 0;
             fStyleRunInfo[run].runLimit = 0;

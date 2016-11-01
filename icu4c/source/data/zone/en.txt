@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/en.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/en.xml
+ */
 en{
-    Version{"2.1.30.50"}
+    Version{"2.0.98.76"}
     zoneStrings{
         "Africa:Sao_Tome"{
             ec{"São Tomé"}
@@ -13,7 +22,7 @@ en{
             ec{"Curaçao"}
         }
         "America:St_Barthelemy"{
-            ec{"St. Barthélemy"}
+            ec{"Saint Barthélemy"}
         }
         "Antarctica:DumontDUrville"{
             ec{"Dumont d’Urville"}
@@ -25,13 +34,10 @@ en{
             ec{"Unknown City"}
         }
         "Europe:Dublin"{
-            ld{"Irish Standard Time"}
+            ld{"Irish Summer Time"}
         }
         "Europe:London"{
             ld{"British Summer Time"}
-        }
-        "Europe:Uzhgorod"{
-            ec{"Uzhhorod"}
         }
         "Indian:Reunion"{
             ec{"Réunion"}
@@ -117,11 +123,6 @@ en{
             ld{"Anadyr Summer Time"}
             lg{"Anadyr Time"}
             ls{"Anadyr Standard Time"}
-        }
-        "meta:Apia"{
-            ld{"Apia Daylight Time"}
-            lg{"Apia Time"}
-            ls{"Apia Standard Time"}
         }
         "meta:Aqtau"{
             ld{"Aqtau Summer Time"}
@@ -289,9 +290,6 @@ en{
             lg{"Eastern European Time"}
             ls{"Eastern European Standard Time"}
         }
-        "meta:Europe_Further_Eastern"{
-            ls{"Further-eastern European Time"}
-        }
         "meta:Europe_Western"{
             ld{"Western European Summer Time"}
             lg{"Western European Time"}
@@ -311,7 +309,7 @@ en{
             ls{"French Guiana Time"}
         }
         "meta:French_Southern"{
-            ls{"French Southern & Antarctic Time"}
+            ls{"French Southern and Antarctic Time"}
         }
         "meta:GMT"{
             ls{"Greenwich Mean Time"}
@@ -575,18 +573,15 @@ en{
             ls{"Phoenix Islands Time"}
         }
         "meta:Pierre_Miquelon"{
-            ld{"St. Pierre & Miquelon Daylight Time"}
-            lg{"St. Pierre & Miquelon Time"}
-            ls{"St. Pierre & Miquelon Standard Time"}
+            ld{"Saint Pierre and Miquelon Daylight Time"}
+            lg{"Saint Pierre and Miquelon Time"}
+            ls{"Saint Pierre and Miquelon Standard Time"}
         }
         "meta:Pitcairn"{
             ls{"Pitcairn Time"}
         }
         "meta:Ponape"{
             ls{"Ponape Time"}
-        }
-        "meta:Pyongyang"{
-            ls{"Pyongyang Time"}
         }
         "meta:Qyzylorda"{
             ld{"Qyzylorda Summer Time"}
@@ -697,7 +692,7 @@ en{
             ls{"Wake Island Time"}
         }
         "meta:Wallis"{
-            ls{"Wallis & Futuna Time"}
+            ls{"Wallis and Futuna Time"}
         }
         "meta:Yakutsk"{
             ld{"Yakutsk Summer Time"}

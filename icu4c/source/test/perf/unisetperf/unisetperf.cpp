@@ -1,12 +1,8 @@
 /*  
-**************************************************************************
-*    Copyright (C) 2016 and later: Unicode, Inc. and others.
-*    License & terms of use: http://www.unicode.org/copyright.html#License
-**************************************************************************
-**************************************************************************
-*   Copyright (C) 2014, International Business Machines
+**********************************************************************
+*   Copyright (C) 2007, International Business Machines
 *   Corporation and others.  All Rights Reserved.
-**************************************************************************
+**********************************************************************
 *   file name:  unisetperf.cpp
 *   encoding:   US-ASCII
 *   tab size:   8 (not used)
@@ -23,7 +19,8 @@
 #include "unicode/uniset.h"
 #include "unicode/unistr.h"
 #include "uoptions.h"
-#include "cmemory.h" // for UPRV_LENGTHOF
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof((array)[0]))
 
 // Command-line options specific to unisetperf.
 // Options do not have abbreviations: Force readable command lines.
@@ -49,7 +46,7 @@ static const char *const unisetperf_usage =
 class UnicodeSetPerformanceTest : public UPerfTest {
 public:
     UnicodeSetPerformanceTest(int32_t argc, const char *argv[], UErrorCode &status)
-            : UPerfTest(argc, argv, options, UPRV_LENGTHOF(options), unisetperf_usage, status),
+            : UPerfTest(argc, argv, options, LENGTHOF(options), unisetperf_usage, status),
               utf8(NULL), utf8Length(0), countInputCodePoints(0), spanCount(0) {
         if (U_SUCCESS(status)) {
             UnicodeString pattern=UnicodeString(options[SET_PATTERN].value, -1, US_INV).unescape();

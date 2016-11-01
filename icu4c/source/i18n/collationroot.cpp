@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 * Copyright (C) 2012-2014, International Business Machines
@@ -32,7 +30,7 @@ U_NAMESPACE_BEGIN
 
 namespace {
 
-static const CollationCacheEntry *rootSingleton = NULL;
+static const CollationTailoring *rootSingleton = NULL;
 static UInitOnce initOnce = U_INITONCE_INITIALIZER;
 
 }  // namespace
@@ -47,7 +45,7 @@ static UBool U_CALLCONV uprv_collation_root_cleanup() {
 
 U_CDECL_END
 
-void U_CALLCONV
+void
 CollationRoot::load(UErrorCode &errorCode) {
     if(U_FAILURE(errorCode)) { return; }
     LocalPointer<CollationTailoring> t(new CollationTailoring(NULL));
@@ -63,26 +61,15 @@ CollationRoot::load(UErrorCode &errorCode) {
     CollationDataReader::read(NULL, inBytes, udata_getLength(t->memory), *t, errorCode);
     if(U_FAILURE(errorCode)) { return; }
     ucln_i18n_registerCleanup(UCLN_I18N_COLLATION_ROOT, uprv_collation_root_cleanup);
-    CollationCacheEntry *entry = new CollationCacheEntry(Locale::getRoot(), t.getAlias());
-    if(entry != NULL) {
-        t.orphan();  // The rootSingleton took ownership of the tailoring.
-        entry->addRef();
-        rootSingleton = entry;
-    }
-}
-
-const CollationCacheEntry *
-CollationRoot::getRootCacheEntry(UErrorCode &errorCode) {
-    umtx_initOnce(initOnce, CollationRoot::load, errorCode);
-    if(U_FAILURE(errorCode)) { return NULL; }
-    return rootSingleton;
+    t->addRef();  // The rootSingleton takes ownership.
+    rootSingleton = t.orphan();
 }
 
 const CollationTailoring *
 CollationRoot::getRoot(UErrorCode &errorCode) {
     umtx_initOnce(initOnce, CollationRoot::load, errorCode);
     if(U_FAILURE(errorCode)) { return NULL; }
-    return rootSingleton->tailoring;
+    return rootSingleton;
 }
 
 const CollationData *

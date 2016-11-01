@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2009, International Business Machines Corporation and         *
@@ -10,9 +8,6 @@
 package com.ibm.icu.dev.test.util;
 
 import java.util.HashMap;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.util.ULocale;
@@ -35,22 +30,24 @@ public class LocaleAliasCollationTest extends com.ibm.icu.dev.test.TestFmwk {
     };
 
     private static final int _LOCALE_NUMBER = _LOCALES.length;
-    private ULocale[] available = null;
+    private static ULocale[] available = null;
     private HashMap availableMap = new HashMap();
     private static final ULocale _DEFAULT_LOCALE = ULocale.US;
+
+    public static void main(String[] args) {
+        new LocaleAliasCollationTest().run(args);
+    }
 
     public LocaleAliasCollationTest() {
     }
 
-    @Before
-    public void init() {
+    protected void init(){
         available = ULocale.getAvailableLocales();
         for(int i=0; i<available.length;i++){
             availableMap.put(available[i].toString(),"");
         }
     }
 
-    @Test
     public void TestCollation() {
         ULocale defLoc = ULocale.getDefault();
         ULocale.setDefault(_DEFAULT_LOCALE);

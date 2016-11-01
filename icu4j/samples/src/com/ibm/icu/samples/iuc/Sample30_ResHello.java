@@ -1,15 +1,12 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2013-2014, International Business Machines Corporation and         *
+ * Copyright (C) 2013, International Business Machines Corporation and         *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.samples.iuc;
 
-import java.util.Locale;
-
+import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
 
 /**
@@ -18,7 +15,7 @@ import com.ibm.icu.util.UResourceBundle;
  */
 public class Sample30_ResHello {
     public static void main(String... args) {
-        Locale locale = Locale.getDefault();
+        ULocale locale = ULocale.getDefault();
         UResourceBundle bundle = 
                 UResourceBundle.getBundleInstance(
                         Sample30_ResHello.class.getPackage().getName().replace('.', '/')+"/data/reshello",

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT: 
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2011, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -17,12 +15,12 @@
 #include "unicode/usetiter.h"
 #include "unicode/schriter.h"
 #include "unicode/utf16.h"
-#include "cmemory.h"
 #include "cstring.h"
 #include "normalizer2impl.h"
 #include "tstnorm.h"
 
-#define ARRAY_LENGTH(array) UPRV_LENGTHOF(array)
+#define LENGTHOF(array) ((int32_t)(sizeof(array)/sizeof((array)[0])))
+#define ARRAY_LENGTH(array) LENGTHOF(array)
 
 #define CASE(id,test) case id:                          \
                           name = #test;                 \
@@ -352,7 +350,7 @@ void BasicNormalizerTest::TestZeroIndex(void) {
         "c\\u0321\\u0327", "c\\u0321\\u0327", "c\\u0321\\u0327",
         "c\\u0327\\u0321", "\\u00E7\\u0321", "c\\u0327\\u0321",
     };
-    int32_t DATA_length = UPRV_LENGTHOF(DATA);
+    int32_t DATA_length = (int32_t)(sizeof(DATA) / sizeof(DATA[0]));
 
     for (int32_t i=0; i<DATA_length; i+=3) {
         UErrorCode status = U_ZERO_ERROR;
@@ -749,27 +747,27 @@ BasicNormalizerTest::TestPreviousNext() {
     // for both sets of test data
     static const char *const moves="0+0+0--0-0-+++0--+++++++0--------";
 
-    TestPreviousNext(src, UPRV_LENGTHOF(src),
-                     expect, UPRV_LENGTHOF(expect),
+    TestPreviousNext(src, LENGTHOF(src),
+                     expect, LENGTHOF(expect),
                      expectIndex,
                      SRC_MIDDLE, EXPECT_MIDDLE,
                      moves, UNORM_NFD, "basic");
 
-    TestPreviousNext(src_j2911, UPRV_LENGTHOF(src_j2911),
-                     expect_j2911, UPRV_LENGTHOF(expect_j2911),
+    TestPreviousNext(src_j2911, LENGTHOF(src_j2911),
+                     expect_j2911, LENGTHOF(expect_j2911),
                      expectIndex_j2911,
                      SRC_MIDDLE, EXPECT_MIDDLE,
                      moves, UNORM_NFKC, "j2911");
 
     // try again from different "middle" indexes
-    TestPreviousNext(src, UPRV_LENGTHOF(src),
-                     expect, UPRV_LENGTHOF(expect),
+    TestPreviousNext(src, LENGTHOF(src),
+                     expect, LENGTHOF(expect),
                      expectIndex,
                      SRC_MIDDLE_2, EXPECT_MIDDLE_2,
                      moves, UNORM_NFD, "basic_2");
 
-    TestPreviousNext(src_j2911, UPRV_LENGTHOF(src_j2911),
-                     expect_j2911, UPRV_LENGTHOF(expect_j2911),
+    TestPreviousNext(src_j2911, LENGTHOF(src_j2911),
+                     expect_j2911, LENGTHOF(expect_j2911),
                      expectIndex_j2911,
                      SRC_MIDDLE_2, EXPECT_MIDDLE_2,
                      moves, UNORM_NFKC, "j2911_2");
@@ -806,7 +804,7 @@ void BasicNormalizerTest::TestConcatenate() {
     int32_t i;
 
     /* test concatenation */
-    for(i=0; i<UPRV_LENGTHOF(cases); ++i) {
+    for(i=0; i<(int32_t)(sizeof(cases)/sizeof(cases[0])); ++i) {
         switch(*cases[i][0]) {
         case 'C': mode=UNORM_NFC; break;
         case 'D': mode=UNORM_NFD; break;
@@ -1066,7 +1064,7 @@ BasicNormalizerTest::TestCompare() {
         { UNORM_UNICODE_3_2<<UNORM_COMPARE_NORM_OPTIONS_SHIFT, "Unicode 3.2" }
     };
 
-    int32_t i, j, k, count=UPRV_LENGTHOF(strings);
+    int32_t i, j, k, count=LENGTHOF(strings);
     int32_t result, refResult;
 
     UErrorCode errorCode;
@@ -1079,7 +1077,7 @@ BasicNormalizerTest::TestCompare() {
     // test them each with each other
     for(i=0; i<count; ++i) {
         for(j=i; j<count; ++j) {
-            for(k=0; k<UPRV_LENGTHOF(opt); ++k) {
+            for(k=0; k<LENGTHOF(opt); ++k) {
                 // test Normalizer::compare
                 errorCode=U_ZERO_ERROR;
                 result=_norm_compare(s[i], s[j], opt[k].options, errorCode);
@@ -1119,14 +1117,14 @@ BasicNormalizerTest::TestCompare() {
     }
 
     // collect all sets into one for contiguous output
-    for(i=0; i<UPRV_LENGTHOF(iI); ++i) {
+    for(i=0; i<LENGTHOF(iI); ++i) {
         if(nfcImpl->getCanonStartSet(iI[i], iSet)) {
             set.addAll(iSet);
         }
     }
 
     // test all of these precomposed characters
-    const Normalizer2 *nfcNorm2=Normalizer2::getNFCInstance(errorCode);
+    const Normalizer2 *nfcNorm2=Normalizer2Factory::getNFCInstance(errorCode);
     UnicodeSetIterator it(set);
     while(it.next() && !it.isString()) {
         UChar32 c=it.getCodepoint();
@@ -1136,7 +1134,7 @@ BasicNormalizerTest::TestCompare() {
         }
 
         s1.setTo(c);
-        for(k=0; k<UPRV_LENGTHOF(opt); ++k) {
+        for(k=0; k<LENGTHOF(opt); ++k) {
             // test Normalizer::compare
             errorCode=U_ZERO_ERROR;
             result=_norm_compare(s1, s2, opt[k].options, errorCode);
@@ -1440,7 +1438,7 @@ BasicNormalizerTest::TestCustomComp() {
     if(errorCode.logDataIfFailureAndReset("unable to load testdata/testnorm.nrm")) {
         return;
     }
-    for(int32_t i=0; i<UPRV_LENGTHOF(pairs); ++i) {
+    for(int32_t i=0; i<LENGTHOF(pairs); ++i) {
         const StringPair &pair=pairs[i];
         UnicodeString input=UnicodeString(pair.input, -1, US_INV).unescape();
         UnicodeString expected=UnicodeString(pair.expected, -1, US_INV).unescape();
@@ -1472,7 +1470,7 @@ BasicNormalizerTest::TestCustomFCC() {
     if(errorCode.logDataIfFailureAndReset("unable to load testdata/testnorm.nrm")) {
         return;
     }
-    for(int32_t i=0; i<UPRV_LENGTHOF(pairs); ++i) {
+    for(int32_t i=0; i<LENGTHOF(pairs); ++i) {
         const StringPair &pair=pairs[i];
         UnicodeString input=UnicodeString(pair.input, -1, US_INV).unescape();
         UnicodeString expected=UnicodeString(pair.expected, -1, US_INV).unescape();
@@ -1487,9 +1485,9 @@ BasicNormalizerTest::TestCustomFCC() {
 void
 BasicNormalizerTest::TestFilteredNormalizer2Coverage() {
     UErrorCode errorCode = U_ZERO_ERROR;
-    const Normalizer2 *nfcNorm2=Normalizer2::getNFCInstance(errorCode);
+    const Normalizer2 *nfcNorm2=Normalizer2Factory::getNFCInstance(errorCode);
     if (U_FAILURE(errorCode)) {
-        dataerrln("Normalizer2::getNFCInstance() call failed - %s", u_errorName(status));
+        dataerrln("Normalizer2Factory::getNFCInstance() call failed - %s", u_errorName(status));
         return;
     }
     UnicodeSet filter(UNICODE_STRING_SIMPLE("[^\\u00a0-\\u00ff\\u0310-\\u031f]"), errorCode);

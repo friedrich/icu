@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bm.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/bm.xml
+ */
 bm{
     Countries{
         AD{"Andɔr"}
@@ -9,6 +18,7 @@ bm{
         AI{"Angiya"}
         AL{"Alibani"}
         AM{"Arimeni"}
+        AN{"Peyiba ka Antiyi"}
         AO{"Angola"}
         AR{"Arizantin"}
         AS{"Samowa amerikani"}
@@ -227,5 +237,5 @@ bm{
         ZM{"Zanbi"}
         ZW{"Zimbabuwe"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.97.28"}
 }

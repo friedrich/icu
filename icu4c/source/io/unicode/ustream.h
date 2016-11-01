@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
 *   Copyright (C) 2001-2014 International Business Machines
@@ -18,8 +16,6 @@
 #define USTREAM_H
 
 #include "unicode/unistr.h"
-
-#if !UCONFIG_NO_CONVERSION  // not available without conversion
 
 /**
  * \file
@@ -66,5 +62,4 @@ U_NAMESPACE_END
 
 /* No operator for UChar because it can conflict with wchar_t  */
 
-#endif
 #endif

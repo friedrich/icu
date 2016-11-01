@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 **********************************************************************
-*   Copyright (C) 2000-2016, International Business Machines
+*   Copyright (C) 2000-2012, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 *   file name:  ucnvisci.c
@@ -19,7 +17,7 @@
 
 #include "unicode/utypes.h"
 
-#if !UCONFIG_NO_CONVERSION && !UCONFIG_NO_LEGACY_CONVERSION && !UCONFIG_ONLY_HTML_CONVERSION
+#if !UCONFIG_NO_CONVERSION && !UCONFIG_NO_LEGACY_CONVERSION
 
 #include "unicode/ucnv.h"
 #include "unicode/ucnv_cb.h"
@@ -1286,7 +1284,7 @@ static void UConverter_toUnicode_ISCII_OFFSETS_LOGIC(UConverterToUnicodeArgs *ar
             /* look at the pre-context and perform special processing */
             switch (sourceChar) {
             case ISCII_INV:
-            case EXT:
+            case EXT: /*falls through*/
             case ATR:
                 *contextCharToUnicode = (UChar)sourceChar;
 
@@ -1324,6 +1322,7 @@ static void UConverter_toUnicode_ISCII_OFFSETS_LOGIC(UConverterToUnicodeArgs *ar
                 }
                 break;
             case 0x0A:
+                /* fall through */
             case 0x0D:
                 data->resetToDefaultToUnicode = TRUE;
                 GET_MAPPING(sourceChar,targetUniChar,data)
@@ -1335,7 +1334,7 @@ static void UConverter_toUnicode_ISCII_OFFSETS_LOGIC(UConverterToUnicodeArgs *ar
                 i=1;
                 found=FALSE;
                 for (; i<vowelSignESpecialCases[0][0]; i++) {
-                    U_ASSERT(i<UPRV_LENGTHOF(vowelSignESpecialCases));
+                    U_ASSERT(i<sizeof(vowelSignESpecialCases)/sizeof(vowelSignESpecialCases[0]));
                     if (vowelSignESpecialCases[i][0]==(uint8_t)*contextCharToUnicode) {
                         targetUniChar=vowelSignESpecialCases[i][1];
                         found=TRUE;
@@ -1421,7 +1420,6 @@ static void UConverter_toUnicode_ISCII_OFFSETS_LOGIC(UConverterToUnicodeArgs *ar
                         /* else fall through to default */
                     }
                     /* else fall through to default */
-                    U_FALLTHROUGH;
                 }
             default:GET_MAPPING(sourceChar,targetUniChar,data)
                 ;
@@ -1619,7 +1617,15 @@ static const UConverterStaticData _ISCIIStaticData={
 
 };
 
-const UConverterSharedData _ISCIIData=
-        UCNV_IMMUTABLE_SHARED_DATA_INITIALIZER(&_ISCIIStaticData, &_ISCIIImpl);
+const UConverterSharedData _ISCIIData={
+    sizeof(UConverterSharedData),
+        ~((uint32_t) 0),
+        NULL,
+        NULL,
+        &_ISCIIStaticData,
+        FALSE,
+        &_ISCIIImpl,
+        0
+};
 
 #endif /* #if !UCONFIG_NO_LEGACY_CONVERSION */

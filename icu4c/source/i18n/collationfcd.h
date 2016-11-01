@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 * Copyright (C) 2012-2014, International Business Machines
@@ -127,8 +125,8 @@ private:
 
     static const uint8_t lcccIndex[2048];
     static const uint8_t tcccIndex[2048];
-    static const uint32_t lcccBits[];
-    static const uint32_t tcccBits[];
+    static const uint32_t lcccBits[65];
+    static const uint32_t tcccBits[114];
 };
 
 U_NAMESPACE_END

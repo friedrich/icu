@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/en_SH.xml
+// *
+// ***************************************************************************
 en_SH{
-    %%Parent{"en_001"}
+    %%Parent{"en_GB"}
     Currencies{
         GBP{
             "GB£",
@@ -9,8 +15,8 @@ en_SH{
         }
         SHP{
             "£",
-            "St. Helena Pound",
+            "Saint Helena Pound",
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.92.58"}
 }

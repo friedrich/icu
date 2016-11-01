@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2012-2016, International Business Machines
+*   Copyright (C) 2012-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -67,13 +65,13 @@ class U_COMMON_API ListFormatter : public UObject{
 
     /**
      * Copy constructor.
-     * @stable ICU 52
+     * @draft ICU 52
      */
     ListFormatter(const ListFormatter&);
 
     /**
      * Assignment operator.
-     * @stable ICU 52
+     * @draft ICU 52
      */
     ListFormatter& operator=(const ListFormatter& other);
 
@@ -147,7 +145,7 @@ class U_COMMON_API ListFormatter : public UObject{
     /**
      * @internal constructor made public for testing.
      */
-    ListFormatter(const ListFormatData &data, UErrorCode &errorCode);
+    ListFormatter(const ListFormatData &data);
     /**
      * @internal constructor made public for testing.
      */

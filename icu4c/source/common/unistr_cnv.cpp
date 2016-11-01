@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
-*   Copyright (C) 1999-2014, International Business Machines
+*   Copyright (C) 1999-2010, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -41,16 +39,20 @@ U_NAMESPACE_BEGIN
 
 #if !U_CHARSET_IS_UTF8
 
-UnicodeString::UnicodeString(const char *codepageData) {
-    fUnion.fFields.fLengthAndFlags = kShortString;
+UnicodeString::UnicodeString(const char *codepageData)
+  : fShortLength(0),
+    fFlags(kShortString)
+{
     if(codepageData != 0) {
         doCodepageCreate(codepageData, (int32_t)uprv_strlen(codepageData), 0);
     }
 }
 
 UnicodeString::UnicodeString(const char *codepageData,
-                             int32_t dataLength) {
-    fUnion.fFields.fLengthAndFlags = kShortString;
+                             int32_t dataLength)
+  : fShortLength(0),
+    fFlags(kShortString)
+{
     if(codepageData != 0) {
         doCodepageCreate(codepageData, dataLength, 0);
     }
@@ -60,8 +62,10 @@ UnicodeString::UnicodeString(const char *codepageData,
 #endif
 
 UnicodeString::UnicodeString(const char *codepageData,
-                             const char *codepage) {
-    fUnion.fFields.fLengthAndFlags = kShortString;
+                             const char *codepage)
+  : fShortLength(0),
+    fFlags(kShortString)
+{
     if(codepageData != 0) {
         doCodepageCreate(codepageData, (int32_t)uprv_strlen(codepageData), codepage);
     }
@@ -69,8 +73,10 @@ UnicodeString::UnicodeString(const char *codepageData,
 
 UnicodeString::UnicodeString(const char *codepageData,
                              int32_t dataLength,
-                             const char *codepage) {
-    fUnion.fFields.fLengthAndFlags = kShortString;
+                             const char *codepage)
+  : fShortLength(0),
+    fFlags(kShortString)
+{
     if(codepageData != 0) {
         doCodepageCreate(codepageData, dataLength, codepage);
     }
@@ -78,8 +84,10 @@ UnicodeString::UnicodeString(const char *codepageData,
 
 UnicodeString::UnicodeString(const char *src, int32_t srcLength,
                              UConverter *cnv,
-                             UErrorCode &errorCode) {
-    fUnion.fFields.fLengthAndFlags = kShortString;
+                             UErrorCode &errorCode)
+  : fShortLength(0),
+    fFlags(kShortString)
+{
     if(U_SUCCESS(errorCode)) {
         // check arguments
         if(src==NULL) {

@@ -1,8 +1,17 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bs_Cyrl.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/bs_Cyrl.xml
+ */
 bs_Cyrl{
     %%Parent{"root"}
-    Version{"2.1.28.76"}
+    Version{"2.0.98.52"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Абиџан"}
@@ -646,6 +655,9 @@ bs_Cyrl{
         "Asia:Choibalsan"{
             ec{"Чојбалсан"}
         }
+        "Asia:Chongqing"{
+            ec{"Чонгкинг"}
+        }
         "Asia:Colombo"{
             ec{"Коломбо"}
         }
@@ -666,6 +678,9 @@ bs_Cyrl{
         }
         "Asia:Gaza"{
             ec{"Газа"}
+        }
+        "Asia:Harbin"{
+            ec{"Харбин"}
         }
         "Asia:Hong_Kong"{
             ec{"Хонг Конг"}
@@ -693,6 +708,9 @@ bs_Cyrl{
         }
         "Asia:Karachi"{
             ec{"Карачи"}
+        }
+        "Asia:Kashgar"{
+            ec{"Кашгар"}
         }
         "Asia:Katmandu"{
             ec{"Катманду"}

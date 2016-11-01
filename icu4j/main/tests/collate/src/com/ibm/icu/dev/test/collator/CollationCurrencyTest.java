@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and
@@ -16,15 +14,16 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.RuleBasedCollator;
  
 public class CollationCurrencyTest extends TestFmwk {
-    @Test
+    public static void main(String[] args) throws Exception {
+        new CollationCurrencyTest().run(args);
+    }
+    
     public void TestCurrency() {
         // All the currency symbols, in collation order
         char[][] currency = {

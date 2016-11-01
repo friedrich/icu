@@ -1,7 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * COPYRIGHT: 
+ * Copyright (c) 1997-2013, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -16,6 +15,8 @@
 #include "normalizer2impl.h"
 #include "uparse.h"
 #include "ucdtest.h"
+
+#define LENGTHOF(array) (int32_t)(sizeof(array)/sizeof(array[0]))
 
 static const char *ignorePropNames[]={
     "FC_NFKC",
@@ -39,7 +40,7 @@ UnicodeTest::UnicodeTest()
         unknownPropertyNames=NULL;
     }
     // Ignore some property names altogether.
-    for(int32_t i=0; i<UPRV_LENGTHOF(ignorePropNames); ++i) {
+    for(int32_t i=0; i<LENGTHOF(ignorePropNames); ++i) {
         unknownPropertyNames->puti(UnicodeString(ignorePropNames[i], -1, US_INV), 1, errorCode);
     }
 }
@@ -61,7 +62,6 @@ void UnicodeTest::runIndexedTest( int32_t index, UBool exec, const char* &name, 
     TESTCASE_AUTO(TestPatternProperties);
     TESTCASE_AUTO(TestScriptMetadata);
     TESTCASE_AUTO(TestBidiPairedBracketType);
-    TESTCASE_AUTO(TestEmojiProperties);
     TESTCASE_AUTO_END;
 }
 
@@ -150,7 +150,7 @@ derivedPropsIndex[]={
     UCHAR_CHANGES_WHEN_NFKC_CASEFOLDED
 };
 
-static int32_t numErrors[UPRV_LENGTHOF(derivedPropsIndex)]={ 0 };
+static int32_t numErrors[LENGTHOF(derivedPropsIndex)]={ 0 };
 
 enum { MAX_ERRORS=50 };
 
@@ -170,7 +170,7 @@ derivedPropsLineFn(void *context,
     }
 
     /* parse derived binary property name, ignore unknown names */
-    i=getTokenIndex(derivedPropsNames, UPRV_LENGTHOF(derivedPropsNames), fields[1][0]);
+    i=getTokenIndex(derivedPropsNames, LENGTHOF(derivedPropsNames), fields[1][0]);
     if(i<0) {
         UnicodeString propName(fields[1][0], (int32_t)(fields[1][1]-fields[1][0]));
         propName.trim();
@@ -188,32 +188,49 @@ derivedPropsLineFn(void *context,
 void UnicodeTest::TestAdditionalProperties() {
 #if !UCONFIG_NO_NORMALIZATION
     // test DerivedCoreProperties.txt and DerivedNormalizationProps.txt
-    if(UPRV_LENGTHOF(derivedProps)<UPRV_LENGTHOF(derivedPropsNames)) {
+    if(LENGTHOF(derivedProps)<LENGTHOF(derivedPropsNames)) {
         errln("error: UnicodeTest::derivedProps[] too short, need at least %d UnicodeSets\n",
-              UPRV_LENGTHOF(derivedPropsNames));
+              LENGTHOF(derivedPropsNames));
         return;
     }
-    if(UPRV_LENGTHOF(derivedPropsIndex)!=UPRV_LENGTHOF(derivedPropsNames)) {
-        errln("error in ucdtest.cpp: UPRV_LENGTHOF(derivedPropsIndex)!=UPRV_LENGTHOF(derivedPropsNames)\n");
+    if(LENGTHOF(derivedPropsIndex)!=LENGTHOF(derivedPropsNames)) {
+        errln("error in ucdtest.cpp: LENGTHOF(derivedPropsIndex)!=LENGTHOF(derivedPropsNames)\n");
         return;
     }
 
-    char path[500];
-    if(getUnidataPath(path) == NULL) {
-        errln("unable to find path to source/data/unidata/");
-        return;
-    }
-    char *basename=strchr(path, 0);
-    strcpy(basename, "DerivedCoreProperties.txt");
-
+    char newPath[256];
+    char backupPath[256];
     char *fields[2][2];
     UErrorCode errorCode=U_ZERO_ERROR;
-    u_parseDelimitedFile(path, ';', fields, 2, derivedPropsLineFn, this, &errorCode);
+
+    /* Look inside ICU_DATA first */
+    strcpy(newPath, pathToDataDirectory());
+    strcat(newPath, "unidata" U_FILE_SEP_STRING "DerivedCoreProperties.txt");
+
+    // As a fallback, try to guess where the source data was located
+    // at the time ICU was built, and look there.
+#   ifdef U_TOPSRCDIR
+        strcpy(backupPath, U_TOPSRCDIR  U_FILE_SEP_STRING "data");
+#   else
+        strcpy(backupPath, loadTestData(errorCode));
+        strcat(backupPath, U_FILE_SEP_STRING ".." U_FILE_SEP_STRING ".." U_FILE_SEP_STRING ".." U_FILE_SEP_STRING ".." U_FILE_SEP_STRING "data");
+#   endif
+    strcat(backupPath, U_FILE_SEP_STRING);
+    strcat(backupPath, "unidata" U_FILE_SEP_STRING "DerivedCoreProperties.txt");
+
+    char *path=newPath;
+    u_parseDelimitedFile(newPath, ';', fields, 2, derivedPropsLineFn, this, &errorCode);
+
+    if(errorCode==U_FILE_ACCESS_ERROR) {
+        errorCode=U_ZERO_ERROR;
+        path=backupPath;
+        u_parseDelimitedFile(backupPath, ';', fields, 2, derivedPropsLineFn, this, &errorCode);
+    }
     if(U_FAILURE(errorCode)) {
         errln("error parsing DerivedCoreProperties.txt: %s\n", u_errorName(errorCode));
         return;
     }
-
+    char *basename=path+strlen(path)-strlen("DerivedCoreProperties.txt");
     strcpy(basename, "DerivedNormalizationProps.txt");
     u_parseDelimitedFile(path, ';', fields, 2, derivedPropsLineFn, this, &errorCode);
     if(U_FAILURE(errorCode)) {
@@ -228,7 +245,7 @@ void UnicodeTest::TestAdditionalProperties() {
     UChar32 start, end;
 
     // test all TRUE properties
-    for(i=0; i<UPRV_LENGTHOF(derivedPropsNames); ++i) {
+    for(i=0; i<LENGTHOF(derivedPropsNames); ++i) {
         rangeCount=derivedProps[i].getRangeCount();
         for(range=0; range<rangeCount && numErrors[i]<MAX_ERRORS; ++range) {
             start=derivedProps[i].getRangeStart(range);
@@ -246,12 +263,12 @@ void UnicodeTest::TestAdditionalProperties() {
     }
 
     // invert all properties
-    for(i=0; i<UPRV_LENGTHOF(derivedPropsNames); ++i) {
+    for(i=0; i<LENGTHOF(derivedPropsNames); ++i) {
         derivedProps[i].complement();
     }
 
     // test all FALSE properties
-    for(i=0; i<UPRV_LENGTHOF(derivedPropsNames); ++i) {
+    for(i=0; i<LENGTHOF(derivedPropsNames); ++i) {
         rangeCount=derivedProps[i].getRangeCount();
         for(range=0; range<rangeCount && numErrors[i]<MAX_ERRORS; ++range) {
             start=derivedProps[i].getRangeStart(range);
@@ -285,7 +302,7 @@ void UnicodeTest::TestBinaryValues() {
     static const char *const falseValues[]={ "N", "No", "F", "False" };
     static const char *const trueValues[]={ "Y", "Yes", "T", "True" };
     int32_t i;
-    for(i=0; i<UPRV_LENGTHOF(falseValues); ++i) {
+    for(i=0; i<LENGTHOF(falseValues); ++i) {
         UnicodeString pattern=UNICODE_STRING_SIMPLE("[:Alphabetic=:]");
         pattern.insert(pattern.length()-2, UnicodeString(falseValues[i], -1, US_INV));
         errorCode=U_ZERO_ERROR;
@@ -299,7 +316,7 @@ void UnicodeTest::TestBinaryValues() {
             errln("UnicodeSet([:Alphabetic=%s:]).complement()!=UnicodeSet([:Alphabetic:])\n", falseValues[i]);
         }
     }
-    for(i=0; i<UPRV_LENGTHOF(trueValues); ++i) {
+    for(i=0; i<LENGTHOF(trueValues); ++i) {
         UnicodeString pattern=UNICODE_STRING_SIMPLE("[:Alphabetic=:]");
         pattern.insert(pattern.length()-2, UnicodeString(trueValues[i], -1, US_INV));
         errorCode=U_ZERO_ERROR;
@@ -420,17 +437,13 @@ namespace {
  */
 UScriptCode getCharScript(UScriptCode script) {
     switch(script) {
-    case USCRIPT_HAN_WITH_BOPOMOFO:
     case USCRIPT_SIMPLIFIED_HAN:
     case USCRIPT_TRADITIONAL_HAN:
         return USCRIPT_HAN;
     case USCRIPT_JAPANESE:
         return USCRIPT_HIRAGANA;
-    case USCRIPT_JAMO:
     case USCRIPT_KOREAN:
         return USCRIPT_HANGUL;
-    case USCRIPT_SYMBOLS_EMOJI:
-        return USCRIPT_SYMBOLS;
     default:
         return script;
     }
@@ -447,7 +460,7 @@ void UnicodeTest::TestScriptMetadata() {
     for(int32_t sci = 0; sci < USCRIPT_CODE_LIMIT; ++sci) {
         UScriptCode sc = (UScriptCode)sci;
         // Run the test with -v to see which script has failures:
-        // .../intltest$ make && ./intltest utility/UnicodeTest/TestScriptMetadata -v | grep -C 6 FAIL
+        // .../intltest$ make && ./intltest utility/UnicodeTest/TestScriptMetadata -v | grep -C 3 FAIL
         logln(uscript_getShortName(sc));
         UScriptUsage usage = uscript_getUsage(sc);
         UnicodeString sample = uscript_getSampleUnicodeString(sc);
@@ -512,19 +525,4 @@ void UnicodeTest::TestBidiPairedBracketType() {
     UnicodeSet pe("[:Pe:]", errorCode);
     assertTrue("bpt=Open is a subset of Ps", ps.containsAll(bpt_open));
     assertTrue("bpt=Close is a subset of Pe", pe.containsAll(bpt_close));
-}
-
-void UnicodeTest::TestEmojiProperties() {
-    assertFalse("space is not Emoji", u_hasBinaryProperty(0x20, UCHAR_EMOJI));
-    assertTrue("shooting star is Emoji", u_hasBinaryProperty(0x1F320, UCHAR_EMOJI));
-    IcuTestErrorCode errorCode(*this, "TestEmojiProperties()");
-    UnicodeSet emoji("[:Emoji:]", errorCode);
-    assertTrue("lots of Emoji", emoji.size() > 700);
-
-    assertTrue("shooting star is Emoji_Presentation",
-               u_hasBinaryProperty(0x1F320, UCHAR_EMOJI_PRESENTATION));
-    assertTrue("Fitzpatrick 6 is Emoji_Modifier",
-               u_hasBinaryProperty(0x1F3FF, UCHAR_EMOJI_MODIFIER));
-    assertTrue("happy person is Emoji_Modifier_Base",
-               u_hasBinaryProperty(0x1F64B, UCHAR_EMOJI_MODIFIER_BASE));
 }

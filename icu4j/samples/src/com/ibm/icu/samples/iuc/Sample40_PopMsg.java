@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2013-2014, International Business Machines Corporation and         *
+ * Copyright (C) 2013, International Business Machines Corporation and         *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -10,13 +8,10 @@ package com.ibm.icu.samples.iuc;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import com.ibm.icu.samples.iuc.PopulationData.TerritoryEntry;
-import com.ibm.icu.text.LocaleDisplayNames;
-import com.ibm.icu.text.LocaleDisplayNames.DialectHandling;
 import com.ibm.icu.text.MessageFormat;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
@@ -28,29 +23,21 @@ import com.ibm.icu.util.UResourceBundle;
 public class Sample40_PopMsg {
     public static void main(String... args) {
         // setup
-        Locale defaultLocaleID = Locale.getDefault();
-        LocaleDisplayNames ldn = LocaleDisplayNames.getInstance(ULocale.forLocale(defaultLocaleID),
-                DialectHandling.DIALECT_NAMES);
-        String defaultLocaleName = ldn.localeDisplayName(defaultLocaleID);
-
+        ULocale locale = ULocale.getDefault();
         Set<PopulationData.TerritoryEntry> territoryList;
-        territoryList = PopulationData.getTerritoryEntries(defaultLocaleID,
+        territoryList = PopulationData.getTerritoryEntries(locale,
                     new HashSet<TerritoryEntry>());
-        int territoryCount = territoryList.size();
         UResourceBundle resourceBundle = 
                 UResourceBundle.getBundleInstance(
                         Sample40_PopMsg.class.getPackage().getName().replace('.', '/')+"/data/popmsg",
-                        defaultLocaleID,
+                        locale,
                         Sample40_PopMsg.class.getClassLoader());
         
         // say hello
-        String pattern = resourceBundle.getString("welcome");
-        MessageFormat fmt = new MessageFormat(pattern,defaultLocaleID);
-        Map<String, Object> msgargs = new HashMap<String, Object>();
-        msgargs.put("territoryCount", territoryCount);
-        msgargs.put("myLanguage", defaultLocaleName);
-        msgargs.put("today", System.currentTimeMillis());
-        System.out.println(fmt.format(msgargs, new StringBuffer(), null));
+        String welcome = resourceBundle.getString("welcome");
+        Map<String, Object> welcomeArgs = new HashMap<String, Object>();
+        welcomeArgs.put("territoryCount", territoryList.size());
+        System.out.println( MessageFormat.format(welcome, welcomeArgs) );
         
         // Population roll call
         String info = resourceBundle.getString("info");

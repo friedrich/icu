@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 1997-2015, International Business Machines Corporation and    *
+* Copyright (C) 1997-2013, International Business Machines Corporation and    *
 * others. All Rights Reserved.                                                *
 *******************************************************************************
 *
@@ -19,7 +17,8 @@
 
 #include "unicode/compactdecimalformat.h"
 #include "unicode/unum.h"
-#include "cmemory.h"
+
+#define LENGTHOF(array) (int32_t)(sizeof(array) / sizeof((array)[0]))
 
 typedef struct ExpectedResult {
   double value;
@@ -48,20 +47,20 @@ static ExpectedResult kEnglishShort[] = {
   {1.23456789E15, "1200T"}};
 
 static ExpectedResult kSerbianShort[] = {
-  {1234.0, "1,2\\u00a0\\u0445\\u0438\\u0459."},
-  {12345.0, "12\\u00a0\\u0445\\u0438\\u0459."},
-  {20789.0, "21\\u00a0\\u0445\\u0438\\u0459."},
-  {123456.0, "120\\u00a0\\u0445\\u0438\\u0459."},
-  {1234567.0, "1,2\\u00A0\\u043C\\u0438\\u043B."},
-  {12345678.0, "12\\u00A0\\u043C\\u0438\\u043B."},
-  {123456789.0, "120\\u00A0\\u043C\\u0438\\u043B."},
-  {1.23456789E9, "1,2\\u00A0\\u043C\\u043B\\u0440\\u0434."},
-  {1.23456789E10, "12\\u00A0\\u043C\\u043B\\u0440\\u0434."},
-  {1.23456789E11, "120\\u00A0\\u043C\\u043B\\u0440\\u0434."},
-  {1.23456789E12, "1,2\\u00A0\\u0431\\u0438\\u043B."},
-  {1.23456789E13, "12\\u00A0\\u0431\\u0438\\u043B."},
-  {1.23456789E14, "120\\u00A0\\u0431\\u0438\\u043B."},
-  {1.23456789E15, "1200\\u00A0\\u0431\\u0438\\u043B."}};
+  {1234.0, "1200"},
+  {12345.0, "12\\u00a0\\u0445\\u0438\\u0459"},
+  {20789.0, "21\\u00a0\\u0445\\u0438\\u0459"},
+  {123456.0, "120\\u00a0\\u0445\\u0438\\u0459"},
+  {1234567.0, "1,2\\u00A0\\u043C\\u0438\\u043B"},
+  {12345678.0, "12\\u00A0\\u043C\\u0438\\u043B"},
+  {123456789.0, "120\\u00A0\\u043C\\u0438\\u043B"},
+  {1.23456789E9, "1,2\\u00A0\\u043C\\u043B\\u0440\\u0434"},
+  {1.23456789E10, "12\\u00A0\\u043C\\u043B\\u0440\\u0434"},
+  {1.23456789E11, "120\\u00A0\\u043C\\u043B\\u0440\\u0434"},
+  {1.23456789E12, "1,2\\u00A0\\u0431\\u0438\\u043B"},
+  {1.23456789E13, "12\\u00A0\\u0431\\u0438\\u043B"},
+  {1.23456789E14, "120\\u00A0\\u0431\\u0438\\u043B"},
+  {1.23456789E15, "1200\\u00A0\\u0431\\u0438\\u043B"}};
 
 static ExpectedResult kSerbianLong[] = {
   {1234.0, "1,2 \\u0445\\u0438\\u0459\\u0430\\u0434\\u0435"}, // 10^3 few
@@ -77,10 +76,10 @@ static ExpectedResult kSerbianLong[] = {
   {2.08901234E10, "21 \\u043C\\u0438\\u043B\\u0438\\u0458\\u0430\\u0440\\u0434\\u0430"}, // 10^9 one
   {2.18901234E10, "22 \\u043C\\u0438\\u043B\\u0438\\u0458\\u0430\\u0440\\u0434\\u0435"}, // 10^9 few
   {1.23456789E11, "120 \\u043C\\u0438\\u043B\\u0438\\u0458\\u0430\\u0440\\u0434\\u0438"}, // 10^9 other
-  {1.23456789E12, "1,2 \\u0431\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}, // 10^12 few
-  {1.23456789E13, "12 \\u0431\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}, // 10^12 other
-  {1.23456789E14, "120 \\u0431\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}, // 10^12 other
-  {1.23456789E15, "1200 \\u0431\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}}; // 10^12 other
+  {1.23456789E12, "1,2 \\u0442\\u0440\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}, // 10^12 few
+  {1.23456789E13, "12 \\u0442\\u0440\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}, // 10^12 other
+  {1.23456789E14, "120 \\u0442\\u0440\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}, // 10^12 other
+  {1.23456789E15, "1200 \\u0442\\u0440\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}}; // 10^12 other
 
 static ExpectedResult kSerbianLongNegative[] = {
   {-1234.0, "-1,2 \\u0445\\u0438\\u0459\\u0430\\u0434\\u0435"},
@@ -96,13 +95,13 @@ static ExpectedResult kSerbianLongNegative[] = {
   {-2.08901234E10, "-21 \\u043C\\u0438\\u043B\\u0438\\u0458\\u0430\\u0440\\u0434\\u0430"},
   {-2.18901234E10, "-22 \\u043C\\u0438\\u043B\\u0438\\u0458\\u0430\\u0440\\u0434\\u0435"},
   {-1.23456789E11, "-120 \\u043C\\u0438\\u043B\\u0438\\u0458\\u0430\\u0440\\u0434\\u0438"},
-  {-1.23456789E12, "-1,2 \\u0431\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"},
-  {-1.23456789E13, "-12 \\u0431\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"},
-  {-1.23456789E14, "-120 \\u0431\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"},
-  {-1.23456789E15, "-1200 \\u0431\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}};
+  {-1.23456789E12, "-1,2 \\u0442\\u0440\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"},
+  {-1.23456789E13, "-12 \\u0442\\u0440\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"},
+  {-1.23456789E14, "-120 \\u0442\\u0440\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"},
+  {-1.23456789E15, "-1200 \\u0442\\u0440\\u0438\\u043B\\u0438\\u043E\\u043D\\u0430"}};
 
 static ExpectedResult kJapaneseShort[] = {
-  {1234.0, "1200"},
+  {1234.0, "1.2\\u5343"},
   {12345.0, "1.2\\u4E07"},
   {123456.0, "12\\u4E07"},
   {1234567.0, "120\\u4E07"},
@@ -118,7 +117,7 @@ static ExpectedResult kJapaneseShort[] = {
 static ExpectedResult kSwahiliShort[] = {
   {1234.0, "elfu\\u00a01.2"},
   {12345.0, "elfu\\u00a012"},
-  {123456.0, "elfu\\u00a0120"},
+  {123456.0, "laki1.2"},
   {1234567.0, "M1.2"},
   {12345678.0, "M12"},
   {123456789.0, "M120"},
@@ -147,13 +146,13 @@ static ExpectedResult kCsShort[] = {
 
 static ExpectedResult kSkLong[] = {
   {1000.0, "1 tis\\u00edc"},
-  {1572.0, "1,6 tis\\u00edca"},
-  {5184.0, "5,2 tis\\u00edca"}};
+  {1572.0, "1,6 tis\\u00edc"},
+  {5184.0, "5,2 tis\\u00edc"}};
 
 static ExpectedResult kSwahiliShortNegative[] = {
   {-1234.0, "elfu\\u00a0-1.2"},
   {-12345.0, "elfu\\u00a0-12"},
-  {-123456.0, "elfu\\u00a0-120"},
+  {-123456.0, "laki-1.2"},
   {-1234567.0, "M-1.2"},
   {-12345678.0, "M-12"},
   {-123456789.0, "M-120"},
@@ -165,7 +164,7 @@ static ExpectedResult kSwahiliShortNegative[] = {
   {-1.23456789E15, "T-1200"}};
 
 static ExpectedResult kArabicLong[] = {
-  {-5300.0, "\\u061C-\\u0665\\u066B\\u0663 \\u0623\\u0644\\u0641"}};
+  {-5300.0, "\\u200F-\\u0665\\u066B\\u0663 \\u0623\\u0644\\u0641"}};
 
 
 class CompactDecimalFormatTest : public IntlTest {
@@ -187,7 +186,6 @@ private:
     void TestArabicLong();
     void TestFieldPosition();
     void TestSignificantDigits();
-    void TestAPIVariants();
     void CheckLocale(
         const Locale& locale, UNumberCompactStyle style,
         const ExpectedResult* expectedResult, int32_t expectedResultLength);
@@ -216,32 +214,31 @@ void CompactDecimalFormatTest::runIndexedTest(
   TESTCASE_AUTO(TestArabicLong);
   TESTCASE_AUTO(TestFieldPosition);
   TESTCASE_AUTO(TestSignificantDigits);
-  TESTCASE_AUTO(TestAPIVariants);
   TESTCASE_AUTO_END;
 }
 
 void CompactDecimalFormatTest::TestEnglishShort() {
-  CheckLocale("en", UNUM_SHORT, kEnglishShort, UPRV_LENGTHOF(kEnglishShort));
+  CheckLocale("en", UNUM_SHORT, kEnglishShort, LENGTHOF(kEnglishShort));
 }
 
 void CompactDecimalFormatTest::TestSerbianShort() {
-  CheckLocale("sr", UNUM_SHORT, kSerbianShort, UPRV_LENGTHOF(kSerbianShort));
+  CheckLocale("sr", UNUM_SHORT, kSerbianShort, LENGTHOF(kSerbianShort));
 }
 
 void CompactDecimalFormatTest::TestSerbianLong() {
-  CheckLocale("sr", UNUM_LONG, kSerbianLong, UPRV_LENGTHOF(kSerbianLong));
+  CheckLocale("sr", UNUM_LONG, kSerbianLong, LENGTHOF(kSerbianLong));
 }
 
 void CompactDecimalFormatTest::TestSerbianLongNegative() {
-  CheckLocale("sr", UNUM_LONG, kSerbianLongNegative, UPRV_LENGTHOF(kSerbianLongNegative));
+  CheckLocale("sr", UNUM_LONG, kSerbianLongNegative, LENGTHOF(kSerbianLongNegative));
 }
 
 void CompactDecimalFormatTest::TestJapaneseShort() {
-  CheckLocale(Locale::getJapan(), UNUM_SHORT, kJapaneseShort, UPRV_LENGTHOF(kJapaneseShort));
+  CheckLocale(Locale::getJapan(), UNUM_SHORT, kJapaneseShort, LENGTHOF(kJapaneseShort));
 }
 
 void CompactDecimalFormatTest::TestSwahiliShort() {
-  CheckLocale("sw", UNUM_SHORT, kSwahiliShort, UPRV_LENGTHOF(kSwahiliShort));
+  CheckLocale("sw", UNUM_SHORT, kSwahiliShort, LENGTHOF(kSwahiliShort));
 }
 
 void CompactDecimalFormatTest::TestFieldPosition() {
@@ -262,7 +259,7 @@ void CompactDecimalFormatTest::TestFieldPosition() {
 }
 
 void CompactDecimalFormatTest::TestCsShort() {
-  CheckLocale("cs", UNUM_SHORT, kCsShort, UPRV_LENGTHOF(kCsShort));
+  CheckLocale("cs", UNUM_SHORT, kCsShort, LENGTHOF(kCsShort));
 }
 
 void CompactDecimalFormatTest::TestSkLong() {
@@ -271,15 +268,15 @@ void CompactDecimalFormatTest::TestSkLong() {
   //   few{"0"}
   //   one{"0"}
   //   other{"0"}
-  CheckLocale("sk", UNUM_LONG, kSkLong, UPRV_LENGTHOF(kSkLong));
+  CheckLocale("sk", UNUM_LONG, kSkLong, LENGTHOF(kSkLong));
 }
 
 void CompactDecimalFormatTest::TestSwahiliShortNegative() {
-  CheckLocale("sw", UNUM_SHORT, kSwahiliShortNegative, UPRV_LENGTHOF(kSwahiliShortNegative));
+  CheckLocale("sw", UNUM_SHORT, kSwahiliShortNegative, LENGTHOF(kSwahiliShortNegative));
 }
 
 void CompactDecimalFormatTest::TestArabicLong() {
-  CheckLocale("ar", UNUM_LONG, kArabicLong, UPRV_LENGTHOF(kArabicLong));
+  CheckLocale("ar", UNUM_LONG, kArabicLong, LENGTHOF(kArabicLong));
 }
 
 void CompactDecimalFormatTest::TestSignificantDigits() {
@@ -296,102 +293,6 @@ void CompactDecimalFormatTest::TestSignificantDigits() {
   if (actual != expected) {
     errln(UnicodeString("Fail: Expected: ") + expected + UnicodeString(" Got: ") + actual);
   }
-}
-
-void CompactDecimalFormatTest::TestAPIVariants() {
-  UErrorCode status = U_ZERO_ERROR;
-  LocalPointer<CompactDecimalFormat> cdf(CompactDecimalFormat::createInstance("en", UNUM_SHORT, status));
-  if (U_FAILURE(status)) {
-    dataerrln("Unable to create format object - %s", u_errorName(status));
-    return;
-  }
-  UnicodeString actual;
-  FieldPosition pos;
-  FieldPositionIterator posIter;
-  UnicodeString expected("123K", -1, US_INV);
-  pos.setField(UNUM_INTEGER_FIELD);
-  
-  actual.remove();
-  pos.setBeginIndex(0);
-  pos.setEndIndex(0);
-  cdf->format((double)123456.0, actual, pos);
-  if (actual != expected || pos.getEndIndex() != 3) {
-    errln(UnicodeString("Fail format(double,UnicodeString&,FieldPosition&): Expected: \"") + expected + "\", pos 3; " +
-                                                                           "Got: \"" + actual + "\", pos " + pos.getEndIndex());
-  }
-  
-  actual.remove();
-  pos.setBeginIndex(0);
-  pos.setEndIndex(0);
-  status = U_ZERO_ERROR;
-  cdf->format((double)123456.0, actual, pos, status);
-  if (actual != expected || pos.getEndIndex() != 3 || status != U_ZERO_ERROR) {
-    errln(UnicodeString("Fail format(double,UnicodeString&,FieldPosition&,UErrorCode&): Expected: \"") + expected + "\", pos 3, status U_ZERO_ERROR; " +
-                                                              "Got: \"" + actual + "\", pos " + pos.getEndIndex() + ", status " + u_errorName(status));
-  }
-  
-  actual.remove();
-  status = U_ZERO_ERROR;
-  cdf->format((double)123456.0, actual, &posIter, status);
-  if (status != U_UNSUPPORTED_ERROR) {
-    errln(UnicodeString("Fail format(double,UnicodeString&,FieldPositionIterator*,UErrorCode&): Expected status U_UNSUPPORTED_ERROR;") +
-                                                              "Got status " + u_errorName(status));
-  }
-
-  actual.remove();
-  pos.setBeginIndex(0);
-  pos.setEndIndex(0);
-  cdf->format((int32_t)123456, actual, pos);
-  if (actual != expected || pos.getEndIndex() != 3) {
-    errln(UnicodeString("Fail format(int32_t,UnicodeString&,FieldPosition&): Expected: \"") + expected + "\", pos 3; " +
-                                                                           "Got: \"" + actual + "\", pos " + pos.getEndIndex());
-  }
-  
-  actual.remove();
-  pos.setBeginIndex(0);
-  pos.setEndIndex(0);
-  status = U_ZERO_ERROR;
-  cdf->format((int32_t)123456, actual, pos, status);
-  if (actual != expected || pos.getEndIndex() != 3 || status != U_ZERO_ERROR) {
-    errln(UnicodeString("Fail format(int32_t,UnicodeString&,FieldPosition&,UErrorCode&): Expected: \"") + expected + "\", pos 3, status U_ZERO_ERROR; " +
-                                                              "Got: \"" + actual + "\", pos " + pos.getEndIndex() + ", status " + u_errorName(status));
-  }
-  
-  actual.remove();
-  status = U_ZERO_ERROR;
-  cdf->format((int32_t)123456, actual, &posIter, status);
-  if (status != U_UNSUPPORTED_ERROR) {
-    errln(UnicodeString("Fail format(int32_t,UnicodeString&,FieldPositionIterator*,UErrorCode&): Expected status U_UNSUPPORTED_ERROR;") +
-                                                              "Got status " + u_errorName(status));
-  }
-
-  actual.remove();
-  pos.setBeginIndex(0);
-  pos.setEndIndex(0);
-  cdf->format((int64_t)123456, actual, pos);
-  if (actual != expected || pos.getEndIndex() != 3) {
-    errln(UnicodeString("Fail format(int64_t,UnicodeString&,FieldPosition&): Expected: \"") + expected + "\", pos 3; " +
-                                                                           "Got: \"" + actual + "\", pos " + pos.getEndIndex());
-  }
-  
-  actual.remove();
-  pos.setBeginIndex(0);
-  pos.setEndIndex(0);
-  status = U_ZERO_ERROR;
-  cdf->format((int64_t)123456, actual, pos, status);
-  if (actual != expected || pos.getEndIndex() != 3 || status != U_ZERO_ERROR) {
-    errln(UnicodeString("Fail format(int64_t,UnicodeString&,FieldPosition&,UErrorCode&): Expected: \"") + expected + "\", pos 3, status U_ZERO_ERROR; " +
-                                                              "Got: \"" + actual + "\", pos " + pos.getEndIndex() + ", status " + u_errorName(status));
-  }
-  
-  actual.remove();
-  status = U_ZERO_ERROR;
-  cdf->format((int64_t)123456, actual, &posIter, status);
-  if (status != U_UNSUPPORTED_ERROR) {
-    errln(UnicodeString("Fail format(int64_t,UnicodeString&,FieldPositionIterator*,UErrorCode&): Expected status U_UNSUPPORTED_ERROR;") +
-                                                              "Got status " + u_errorName(status));
-  }
-
 }
 
 void CompactDecimalFormatTest::CheckLocale(const Locale& locale, UNumberCompactStyle style, const ExpectedResult* expectedResults, int32_t expectedResultLength) {

@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*  
 **********************************************************************
-*   Copyright (C) 2002-2016, International Business Machines
+*   Copyright (C) 2002-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 **********************************************************************
 *   file name:  uconfig.h
@@ -137,15 +135,6 @@
 #endif
 
 /**
- * \def UCONFIG_ENABLE_PLUGINS
- * Determines whether to enable ICU plugins.
- * @internal
- */
-#ifndef UCONFIG_ENABLE_PLUGINS
-#define UCONFIG_ENABLE_PLUGINS 0
-#endif
-
-/**
  * \def U_ENABLE_DYLOAD
  * Whether to enable Dynamic loading in ICU.
  * @internal
@@ -162,6 +151,7 @@
 #ifndef U_CHECK_DYLOAD
 #define U_CHECK_DYLOAD 1
 #endif
+
 
 /**
  * \def U_DEFAULT_SHOW_DRAFT
@@ -210,7 +200,7 @@
  * It does not turn off legacy conversion because that is necessary
  * for ICU to work on EBCDIC platforms (for the default converter).
  * If you want "only collation" and do not build for EBCDIC,
- * then you can define UCONFIG_NO_CONVERSION or UCONFIG_NO_LEGACY_CONVERSION to 1 as well.
+ * then you can define UCONFIG_NO_LEGACY_CONVERSION 1 as well.
  *
  * @stable ICU 2.4
  */
@@ -256,10 +246,6 @@
 #   define UCONFIG_NO_FILE_IO 0
 #endif
 
-#if UCONFIG_NO_FILE_IO && defined(U_TIMEZONE_FILES_DIR) 
-#   error Contradictory file io switches in uconfig.h.
-#endif
-
 /**
  * \def UCONFIG_NO_CONVERSION
  * ICU will not completely build with this switch turned on.
@@ -277,21 +263,6 @@
 
 #if UCONFIG_NO_CONVERSION
 #   define UCONFIG_NO_LEGACY_CONVERSION 1
-#endif
-
-/**
- * \def UCONFIG_ONLY_HTML_CONVERSION
- * This switch turns off all of the converters NOT listed in
- * the HTML encoding standard:
- * http://www.w3.org/TR/encoding/#names-and-labels
- *
- * This is not possible on EBCDIC platforms
- * because they need ibm-37 or ibm-1047 default converters.
- *
- * @stable ICU 55
- */
-#ifndef UCONFIG_ONLY_HTML_CONVERSION
-#   define UCONFIG_ONLY_HTML_CONVERSION 0
 #endif
 
 /**
@@ -446,7 +417,7 @@
  * @internal
  */
 #ifndef UCONFIG_NO_FILTERED_BREAK_ITERATION
-#   define UCONFIG_NO_FILTERED_BREAK_ITERATION 0
+#   define UCONFIG_NO_FILTERED_BREAK_ITERATION 1
 #endif
 
 #endif

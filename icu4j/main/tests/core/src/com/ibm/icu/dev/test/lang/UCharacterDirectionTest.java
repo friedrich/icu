@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2001-2013, International Business Machines Corporation and
@@ -7,8 +5,6 @@
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.lang;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.lang.UCharacterDirection;
@@ -31,11 +27,23 @@ public class UCharacterDirectionTest extends TestFmwk
     
     // public methods --------------------------------------------------------
       
+    public static void main(String[] arg)  
+    {
+        try
+        {
+            UCharacterDirectionTest test = new UCharacterDirectionTest();
+            test.run(arg);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
     /**
     * Gets the name of the argument category
     * @returns category name
     */
-    @Test
     public void TestToString()
     {
         String name[] = {"Left-to-Right",

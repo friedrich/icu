@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2007-2015, International Business Machines Corporation and    *
+ * Copyright (C) 2007-2014, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -49,12 +47,8 @@ public class VTimeZone extends BasicTimeZone {
      * @stable ICU 3.8
      */
     public static VTimeZone create(String tzid) {
-        BasicTimeZone basicTimeZone = TimeZone.getFrozenICUTimeZone(tzid, true);
-        if (basicTimeZone == null) {
-            return null;
-        }
         VTimeZone vtz = new VTimeZone(tzid);
-        vtz.tz = (BasicTimeZone) basicTimeZone.cloneAsThawed();
+        vtz.tz = (BasicTimeZone)TimeZone.getTimeZone(tzid, TimeZone.TIMEZONE_ICU);
         vtz.olsonzid = vtz.tz.getID();
 
         return vtz;
@@ -2101,7 +2095,7 @@ public class VTimeZone extends BasicTimeZone {
     }
 
     // Freezable stuffs
-    private volatile transient boolean isFrozen = false;
+    private transient boolean isFrozen = false;
 
     /**
      * {@inheritDoc}

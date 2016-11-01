@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 1996-2016, International Business Machines Corporation and
+ * Copyright (C) 1996-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -16,7 +14,6 @@ import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.ibm.icu.impl.ClassLoaderUtil;
 import com.ibm.icu.impl.Normalizer2Impl;
 import com.ibm.icu.impl.Normalizer2Impl.ReorderingBuffer;
 import com.ibm.icu.impl.Utility;
@@ -37,7 +34,6 @@ import com.ibm.icu.impl.coll.FCDUTF16CollationIterator;
 import com.ibm.icu.impl.coll.SharedObject;
 import com.ibm.icu.impl.coll.TailoredSet;
 import com.ibm.icu.impl.coll.UTF16CollationIterator;
-import com.ibm.icu.lang.UScript;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.VersionInfo;
 
@@ -46,49 +42,57 @@ import com.ibm.icu.util.VersionInfo;
  * RuleBasedCollator is a concrete subclass of Collator. It allows customization of the Collator via user-specified rule
  * sets. RuleBasedCollator is designed to be fully compliant to the <a
  * href="http://www.unicode.org/unicode/reports/tr10/">Unicode Collation Algorithm (UCA)</a> and conforms to ISO 14651.
- *
- * <p>A Collator is thread-safe only when frozen. See {{@link #isFrozen()} and {@link com.ibm.icu.util.Freezable}.
- *
+ * </p>
+ * 
  * <p>
  * Users are strongly encouraged to read the <a href="http://userguide.icu-project.org/collation">User
  * Guide</a> for more information about the collation service before using this class.
- *
+ * </p>
+ * 
  * <p>
  * Create a RuleBasedCollator from a locale by calling the getInstance(Locale) factory method in the base class
  * Collator. Collator.getInstance(Locale) creates a RuleBasedCollator object based on the collation rules defined by the
  * argument locale. If a customized collation ordering or attributes is required, use the RuleBasedCollator(String)
  * constructor with the appropriate rules. The customized RuleBasedCollator will base its ordering on the CLDR root collation, while
  * re-adjusting the attributes and orders of the characters in the specified rule accordingly.
- *
+ * </p>
+ * 
  * <p>
  * RuleBasedCollator provides correct collation orders for most locales supported in ICU. If specific data for a locale
  * is not available, the orders eventually falls back to the
  * <a href="http://www.unicode.org/reports/tr35/tr35-collation.html#Root_Collation">CLDR root sort order</a>.
- *
+ * </p>
+ * 
  * <p>
  * For information about the collation rule syntax and details about customization, please refer to the <a
  * href="http://userguide.icu-project.org/collation/customization">Collation customization</a> section of the
  * User Guide.
- *
+ * </p>
+ * 
  * <p>
  * <strong>Note</strong> that there are some differences between the Collation rule syntax used in Java and ICU4J:
  * 
  * <ul>
- * <li>According to the JDK documentation: <br>
- * <i>Modifier '!' : Turns on Thai/Lao vowel-consonant swapping. If this rule is in force when a Thai vowel of the range
+ * <li>According to the JDK documentation: <i>
+ * <p>
+ * Modifier '!' : Turns on Thai/Lao vowel-consonant swapping. If this rule is in force when a Thai vowel of the range
  * &#92;U0E40-&#92;U0E44 precedes a Thai consonant of the range &#92;U0E01-&#92;U0E2E OR a Lao vowel of the range
  * &#92;U0EC0-&#92;U0EC4 precedes a Lao consonant of the range &#92;U0E81-&#92;U0EAE then the vowel is placed after the
  * consonant for collation purposes.
- * <br>
+ * </p>
+ * <p>
  * If a rule is without the modifier '!', the Thai/Lao vowel-consonant swapping is not turned on.
+ * </p>
  * </i>
- * <br>
+ * <p>
  * ICU4J's RuleBasedCollator does not support turning off the Thai/Lao vowel-consonant swapping, since the UCA clearly
- * states that it has to be supported to ensure a correct sorting order. If a '!' is encountered, it is ignored.</li>
- * <li>As mentioned in the documentation of the base class Collator, compatibility decomposition mode is not supported.</li>
+ * states that it has to be supported to ensure a correct sorting order. If a '!' is encountered, it is ignored.
+ * </p>
+ * <li>As mentioned in the documentation of the base class Collator, compatibility decomposition mode is not supported.
  * </ul>
  * <p>
  * <strong>Examples</strong>
+ * </p>
  * <p>
  * Creating Customized RuleBasedCollators: <blockquote>
  * 
@@ -99,7 +103,7 @@ import com.ibm.icu.util.VersionInfo;
  * String norwegian = "&amp; a , A &lt; b , B &lt; c , C &lt; d , D &lt; e , E "
  *                    + "&lt; f , F &lt; g , G &lt; h , H &lt; i , I &lt; j , "
  *                    + "J &lt; k , K &lt; l , L &lt; m , M &lt; n , N &lt; "
- *                    + "o , O &lt; p , P &lt; q , Q &lt;r , R &lt;s , S &lt; "
+ *                    + "o , O &lt; p , P &lt; q , Q &lt r , R &lt s , S &lt; "
  *                    + "t , T &lt; u , U &lt; v , V &lt; w , W &lt; x , X "
  *                    + "&lt; y , Y &lt; z , Z &lt; &#92;u00E5 = a&#92;u030A "
  *                    + ", &#92;u00C5 = A&#92;u030A ; aa , AA &lt; &#92;u00E6 "
@@ -171,16 +175,18 @@ import com.ibm.icu.util.VersionInfo;
  * // add a few Japanese characters to sort before English characters
  * // suppose the last character before the first base letter 'a' in
  * // the English collation rule is &#92;u2212
- * String jaString = "&amp; &#92;u2212 &lt;&#92;u3041, &#92;u3042 &lt;&#92;u3043, "
+ * String jaString = "& &#92;u2212 &lt &#92;u3041, &#92;u3042 &lt &#92;u3043, "
  *                   + "&#92;u3044";
  * RuleBasedCollator myJapaneseCollator
  *              = new RuleBasedCollator(en_USCollator.getRules() + jaString);
  * </pre>
  * 
  * </blockquote>
+ * </p>
  * <p>
  * This class is not subclassable
- *
+ * </p>
+ * 
  * @author Syn Wee Quek
  * @stable ICU 2.8
  */
@@ -192,10 +198,12 @@ public final class RuleBasedCollator extends Collator {
      * Constructor that takes the argument rules for customization.
      * The collator will be based on the CLDR root collation, with the
      * attributes and re-ordering of the characters specified in the argument rules.
+     * </p>
      * <p>
      * See the User Guide's section on <a href="http://userguide.icu-project.org/collation/customization">
      * Collation Customization</a> for details on the rule syntax.
-     *
+     * </p>
+     * 
      * @param rules
      *            the collation rules to build the collation table from.
      * @exception ParseException
@@ -221,7 +229,7 @@ public final class RuleBasedCollator extends Collator {
         // Most code using Collator does not need to build a Collator from rules.
         // By using reflection, most code will not have a static dependency on the builder code.
         // CollationBuilder builder = new CollationBuilder(base);
-        ClassLoader classLoader = ClassLoaderUtil.getClassLoader(getClass());
+        ClassLoader classLoader = getClass().getClassLoader();
         CollationTailoring t;
         try {
             Class<?> builderClass = classLoader.loadClass("com.ibm.icu.impl.coll.CollationBuilder");
@@ -231,6 +239,17 @@ public final class RuleBasedCollator extends Collator {
             t = (CollationTailoring)parseAndBuild.invoke(builder, rules);
         } catch(InvocationTargetException e) {
             throw (Exception)e.getTargetException();
+        }
+        CollationSettings ts = t.settings.readOnly();
+        char[] fastLatinPrimaries = new char[CollationFastLatin.LATIN_LIMIT];
+        int fastLatinOptions = CollationFastLatin.getOptions(t.data, ts, fastLatinPrimaries);
+        if(fastLatinOptions != ts.fastLatinOptions ||
+                (fastLatinOptions >= 0 &&
+                    !Arrays.equals(fastLatinPrimaries, ts.fastLatinPrimaries))) {
+            CollationSettings ownedSettings = t.settings.copyOnWrite();
+            ownedSettings.fastLatinOptions = CollationFastLatin.getOptions(
+                t.data, ownedSettings,
+                ownedSettings.fastLatinPrimaries);
         }
         t.actualLocale = null;
         adoptTailoring(t);
@@ -300,10 +319,6 @@ public final class RuleBasedCollator extends Collator {
 
     /**
      * Determines whether the object has been frozen or not.
-     *
-     * <p>An unfrozen Collator is mutable and not thread-safe.
-     * A frozen Collator is immutable and thread-safe.
-     *
      * @stable ICU 4.8
      */
     @Override
@@ -618,10 +633,12 @@ public final class RuleBasedCollator extends Collator {
      * is false, which means the case level is not generated. The contents of the case level are affected by the case
      * first mode. A simple way to ignore accent differences in a string is to set the strength to PRIMARY and enable
      * case level.
+     * </p>
      * <p>
      * See the section on <a href="http://userguide.icu-project.org/collation/architecture">case
      * level</a> for more information.
-     *
+     * </p>
+     * 
      * @param flag
      *            true if case level sorting is required, false otherwise
      * @stable ICU 2.8
@@ -645,18 +662,18 @@ public final class RuleBasedCollator extends Collator {
      * insure that all text is already in the appropriate form before
      * a comparison or before getting a CollationKey. Adjusting
      * decomposition mode allows the user to select between faster and
-     * more complete collation behavior.
+     * more complete collation behavior.</p>
      *
      * <p>Since a great many of the world's languages do not require
      * text normalization, most locales set NO_DECOMPOSITION as the
-     * default decomposition mode.
+     * default decomposition mode.</p>
      *
      * The default decompositon mode for the Collator is
      * NO_DECOMPOSITON, unless specified otherwise by the locale used
-     * to create the Collator.
+     * to create the Collator.</p>
      *
      * <p>See getDecomposition for a description of decomposition
-     * mode.
+     * mode.</p>
      *
      * @param decomposition the new decomposition mode
      * @see #getDecomposition
@@ -725,7 +742,8 @@ public final class RuleBasedCollator extends Collator {
      *              or Collator.ReorderCodes.DEFAULT to restore the default max variable group
      * @return this
      * @see #getMaxVariable
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This API might change or be removed in a future release.
      */
     @Override
     public RuleBasedCollator setMaxVariable(int group) {
@@ -766,7 +784,8 @@ public final class RuleBasedCollator extends Collator {
      * the alternate handling behavior.
      * @return the maximum variable reordering group.
      * @see #setMaxVariable
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This API might change or be removed in a future release.
      */
     @Override
     public int getMaxVariable() {
@@ -798,7 +817,6 @@ public final class RuleBasedCollator extends Collator {
      * @deprecated ICU 53 Call {@link #setMaxVariable(int)} instead.
      */
     @Override
-    @Deprecated
     public int setVariableTop(String varTop) {
         checkNotFrozen();
         if (varTop == null || varTop.length() == 0) {
@@ -836,7 +854,6 @@ public final class RuleBasedCollator extends Collator {
      * @deprecated ICU 53 Call setMaxVariable() instead.
      */
     @Override
-    @Deprecated
     public void setVariableTop(int varTop) {
         checkNotFrozen();
         internalSetVariableTop(varTop & 0xffffffffL);
@@ -895,35 +912,50 @@ public final class RuleBasedCollator extends Collator {
         setFastLatinOptions(ownedSettings);
     }
 
-    /**
-     * {@inheritDoc}
-     *
+    /** 
+     * Sets the reordering codes for this collator.
+     * Collation reordering allows scripts and some other defined blocks of characters 
+     * to be moved relative to each other as a block. This reordering is done on top of 
+     * the DUCET/CLDR standard collation order. Reordering can specify groups to be placed 
+     * at the start and/or the end of the collation order.
+     * <p>By default, reordering codes specified for the start of the order are placed in the 
+     * order given after a group of “special” non-script blocks. These special groups of characters 
+     * are space, punctuation, symbol, currency, and digit. These special groups are represented with
+     * {@link Collator.ReorderCodes}. Script groups can be intermingled with 
+     * these special non-script blocks if those special blocks are explicitly specified in the reordering.
+     * <p>The special code {@link Collator.ReorderCodes#OTHERS OTHERS} stands for any script that is not explicitly 
+     * mentioned in the list of reordering codes given. Anything that is after {@link Collator.ReorderCodes#OTHERS OTHERS}
+     * will go at the very end of the reordering in the order given.
+     * <p>The special reorder code {@link Collator.ReorderCodes#DEFAULT DEFAULT} will reset the reordering for this collator
+     * to the default for this collator. The default reordering may be the DUCET/CLDR order or may be a reordering that
+     * was specified when this collator was created from resource data or from rules. The 
+     * {@link Collator.ReorderCodes#DEFAULT DEFAULT} code <b>must</b> be the sole code supplied when it used. If not
+     * that will result in an {@link IllegalArgumentException} being thrown.
+     * <p>The special reorder code {@link Collator.ReorderCodes#NONE NONE} will remove any reordering for this collator.
+     * The result of setting no reordering will be to have the DUCET/CLDR reordering used. The 
+     * {@link Collator.ReorderCodes#NONE NONE} code <b>must</b> be the sole code supplied when it used.
      * @param order the reordering codes to apply to this collator; if this is null or an empty array
      * then this clears any existing reordering
      * @throws IllegalArgumentException if the reordering codes are malformed in any way (e.g. duplicates, multiple reset codes, overlapping equivalent scripts)
      * @see #getReorderCodes
      * @see Collator#getEquivalentReorderCodes
-     * @see Collator.ReorderCodes
-     * @see UScript
      * @stable ICU 4.8
-     */
+     */ 
     @Override
     public void setReorderCodes(int... order) {
         checkNotFrozen();
-        int length = (order != null) ? order.length : 0;
-        if(length == 1 && order[0] == ReorderCodes.NONE) {
-            length = 0;
-        }
-        if(length == 0 ?
+        if(order == null ?
                 settings.readOnly().reorderCodes.length == 0 :
                 Arrays.equals(order, settings.readOnly().reorderCodes)) {
             return;
         }
+        int length = (order != null) ? order.length : 0;
         CollationSettings defaultSettings = getDefaultSettings();
         if(length == 1 && order[0] == Collator.ReorderCodes.DEFAULT) {
             if(settings.readOnly() != defaultSettings) {
                 CollationSettings ownedSettings = getOwnedSettings();
-                ownedSettings.copyReorderingFrom(defaultSettings);
+                ownedSettings.setReordering(defaultSettings.reorderCodes,
+                                            defaultSettings.reorderTable);
                 setFastLatinOptions(ownedSettings);
             }
             return;
@@ -932,7 +964,9 @@ public final class RuleBasedCollator extends Collator {
         if(length == 0) {
             ownedSettings.resetReordering();
         } else {
-            ownedSettings.setReordering(data, order.clone());
+            byte[] reorderTable = new byte[256];
+            data.makeReorderTable(order, reorderTable);
+            ownedSettings.setReordering(order.clone(), reorderTable);
         }
         setFastLatinOptions(ownedSettings);
     }
@@ -953,7 +987,7 @@ public final class RuleBasedCollator extends Collator {
      * @stable ICU 2.8
      */
     public String getRules() {
-        return tailoring.getRules();
+        return tailoring.rules;
     }
 
     /**
@@ -976,9 +1010,9 @@ public final class RuleBasedCollator extends Collator {
      */
     public String getRules(boolean fullrules) {
         if (!fullrules) {
-            return tailoring.getRules();
+            return tailoring.rules;
         }
-        return CollationLoader.getRootRules() + tailoring.getRules();
+        return CollationLoader.getRootRules() + tailoring.rules;
     }
 
     /**
@@ -1034,15 +1068,18 @@ public final class RuleBasedCollator extends Collator {
     /**
      * <p>
      * Get a Collation key for the argument String source from this RuleBasedCollator.
+     * </p>
      * <p>
      * General recommendation: <br>
      * If comparison are to be done to the same String multiple times, it would be more efficient to generate
      * CollationKeys for the Strings and use CollationKey.compareTo(CollationKey) for the comparisons. If the each
      * Strings are compared to only once, using the method RuleBasedCollator.compare(String, String) will have a better
      * performance.
+     * </p>
      * <p>
      * See the class documentation for an explanation about CollationKeys.
-     *
+     * </p>
+     * 
      * @param source
      *            the text String to be transformed into a collation key.
      * @return the CollationKey for the given String based on this RuleBasedCollator's collation rules. If the source
@@ -1196,10 +1233,9 @@ public final class RuleBasedCollator extends Collator {
     /**
      * Returns the CEs for the string.
      * @param str the string
-     * @internal for tests &amp; tools
+     * @internal for tests & tools
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public long[] internalGetCEs(CharSequence str) {
         CollationBuffer buffer = null;
         try {
@@ -1412,12 +1448,10 @@ public final class RuleBasedCollator extends Collator {
         boolean otherIsRoot = o.data.base == null;
         assert(!thisIsRoot || !otherIsRoot);  // otherwise their data pointers should be ==
         if(thisIsRoot != otherIsRoot) { return false; }
-        String theseRules = tailoring.getRules();
-        String otherRules = o.tailoring.getRules();
-        if((thisIsRoot || theseRules.length() != 0) &&
-                (otherIsRoot || otherRules.length() != 0)) {
+        if((thisIsRoot || tailoring.rules.length() != 0) &&
+                (otherIsRoot || o.tailoring.rules.length() != 0)) {
             // Shortcut: If both collators have valid rule strings, then compare those.
-            if(theseRules.equals(otherRules)) { return true; }
+            if(tailoring.rules.equals(o.tailoring.rules)) { return true; }
         }
         // Different rule strings can result in the same or equivalent tailoring.
         // The rule strings are optional in ICU resource bundles, although included by default.
@@ -1456,7 +1490,7 @@ public final class RuleBasedCollator extends Collator {
      * Compares the source text String to the target text String according to the collation rules, strength and
      * decomposition mode for this RuleBasedCollator. Returns an integer less than, equal to or greater than zero
      * depending on whether the source String is less than, equal to or greater than the target String. See the Collator
-     * class description for an example of use.
+     * class description for an example of use. </p>
      * <p>
      * General recommendation: <br>
      * If comparison are to be done to the same String multiple times, it would be more efficient to generate
@@ -1467,7 +1501,8 @@ public final class RuleBasedCollator extends Collator {
      * and stored for future use. Like CollationKey, RawCollationKey provides a method RawCollationKey.compareTo for key
      * comparisons. If the each Strings are compared to only once, using the method RuleBasedCollator.compare(String,
      * String) will have a better performance.
-     *
+     * </p>
+     * 
      * @param source
      *            the source text String.
      * @param target
@@ -1624,7 +1659,6 @@ public final class RuleBasedCollator extends Collator {
      * @deprecated This API is ICU internal only.
      */
     @Override
-    @Deprecated
     protected int doCompare(CharSequence left, CharSequence right) {
         if(left == right) {
             return Collation.EQUAL;
@@ -1790,11 +1824,11 @@ public final class RuleBasedCollator extends Collator {
      */
     @Override
     public VersionInfo getVersion() {
-        int version = tailoring.version;
+        VersionInfo version = tailoring.version;
         int rtVersion = VersionInfo.UCOL_RUNTIME_VERSION.getMajor();
         return VersionInfo.getInstance(
-                (version >>> 24) + (rtVersion << 4) + (rtVersion >> 4),
-                ((version >> 16) & 0xff), ((version >> 8) & 0xff), (version & 0xff));
+                version.getMajor() + (rtVersion << 4) + (rtVersion >> 4),
+                version.getMinor(), version.getMilli(), version.getMicro());
     }
 
     /**

@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
- * Copyright (C) 1996-2016, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2010, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -80,7 +78,7 @@ public final class RawCollationKey extends ByteArrayWrapper
      * @param bytesToAdopt the byte array to adopt
      * @param size the length of valid data in the byte array
      * @throws IndexOutOfBoundsException if bytesToAdopt == null and size != 0, or
-     * size &lt; 0, or size &gt; bytesToAdopt.length.
+     * size < 0, or size > bytesToAdopt.length.
      * @stable ICU 2.8
      */
     public RawCollationKey(byte[] bytesToAdopt, int size) 

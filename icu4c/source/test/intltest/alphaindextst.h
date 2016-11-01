@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
  * Copyright (c) 2012-2014, International Business Machines Corporation and
@@ -48,7 +46,6 @@ public:
      */
     void TestChineseZhuyin();
     void TestJapaneseKanji();
-    void TestChineseUnihan();
 };
 
 #endif

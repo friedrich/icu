@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2012-2016, Google, International Business Machines Corporation and
+ * Copyright (C) 2012-2014, Google, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -11,14 +9,16 @@ package com.ibm.icu.text;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
 
 import com.ibm.icu.impl.ICUCache;
-import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.SimpleCache;
-import com.ibm.icu.impl.SimpleFormatterImpl;
+import com.ibm.icu.impl.SimplePatternFormatter;
 import com.ibm.icu.util.ULocale;
 import com.ibm.icu.util.UResourceBundle;
 
@@ -30,11 +30,10 @@ import com.ibm.icu.util.UResourceBundle;
  * @stable ICU 50
  */
 final public class ListFormatter {
-    // Compiled SimpleFormatter patterns.
-    private final String two;
-    private final String start;
-    private final String middle;
-    private final String end;
+    private final SimplePatternFormatter two;
+    private final SimplePatternFormatter start;
+    private final SimplePatternFormatter middle;
+    private final SimplePatternFormatter end;
     private final ULocale locale;
     
     /**
@@ -111,23 +110,20 @@ final public class ListFormatter {
     @Deprecated
     public ListFormatter(String two, String start, String middle, String end) {
         this(
-                compilePattern(two, new StringBuilder()),
-                compilePattern(start, new StringBuilder()),
-                compilePattern(middle, new StringBuilder()),
-                compilePattern(end, new StringBuilder()),
+                SimplePatternFormatter.compile(two),
+                SimplePatternFormatter.compile(start),
+                SimplePatternFormatter.compile(middle),
+                SimplePatternFormatter.compile(end),
                 null);
+        
     }
-
-    private ListFormatter(String two, String start, String middle, String end, ULocale locale) {
+    
+    private ListFormatter(SimplePatternFormatter two, SimplePatternFormatter start, SimplePatternFormatter middle, SimplePatternFormatter end, ULocale locale) {
         this.two = two;
         this.start = start;
         this.middle = middle;
         this.end = end;
         this.locale = locale;
-    }
-
-    private static String compilePattern(String pattern, StringBuilder sb) {
-        return SimpleFormatterImpl.compileToStringMinMaxArguments(pattern, sb, 2, 2);
     }
 
     /**
@@ -199,6 +195,9 @@ final public class ListFormatter {
      * @stable ICU 50
      */
     public String format(Collection<?> items) {
+        // TODO optimize this for the common case that the patterns are all of the
+        // form {0}<sometext>{1}.
+        // We avoid MessageFormat, because there is no "sub" formatting.
         return format(items, -1).toString();
     }
     
@@ -231,7 +230,8 @@ final public class ListFormatter {
      * @return the pattern with {0}, {1}, {2}, etc. For English,
      * getPatternForNumItems(3) == "{0}, {1}, and {2}"
      * @throws IllegalArgumentException when count is 0 or negative.
-     * @stable ICU 52
+     * @draft ICU 52
+     * @provisional This API might change or be removed in a future release.
      */
     public String getPatternForNumItems(int count) {
         if (count <= 0) {
@@ -256,13 +256,13 @@ final public class ListFormatter {
     
     // Builds a formatted list
     static class FormattedListBuilder {
-        private StringBuilder current;
+        private String current;
         private int offset;
         
         // Start is the first object in the list; If recordOffset is true, records the offset of
         // this first object.
         public FormattedListBuilder(Object start, boolean recordOffset) {
-            this.current = new StringBuilder(start.toString());
+            this.current = start.toString();
             this.offset = recordOffset ? 0 : -1;
         }
         
@@ -270,11 +270,14 @@ final public class ListFormatter {
         // added in relation to the rest of the list. {0} represents the rest of the list; {1}
         // represents the new object in pattern. next is the object to be added. If recordOffset
         // is true, records the offset of next in the formatted string.
-        public FormattedListBuilder append(String pattern, Object next, boolean recordOffset) {
-            int[] offsets = (recordOffset || offsetRecorded()) ? new int[2] : null;
-            SimpleFormatterImpl.formatAndReplace(
-                    pattern, current, offsets, current, next.toString());
-            if (offsets != null) {
+        public FormattedListBuilder append(SimplePatternFormatter pattern, Object next, boolean recordOffset) {
+            if (pattern.getPlaceholderCount() != 2) {
+                throw new IllegalArgumentException("Need {0} and {1} only in pattern " + pattern);
+            }
+            if (recordOffset || offsetRecorded()) {
+                int[] offsets = new int[2];
+                current = pattern.format(
+                        new StringBuilder(), offsets, current, next.toString()).toString();
                 if (offsets[0] == -1 || offsets[1] == -1) {
                     throw new IllegalArgumentException(
                             "{0} or {1} missing from pattern " + pattern);
@@ -284,13 +287,15 @@ final public class ListFormatter {
                 } else {
                     offset += offsets[0];
                 }
+            } else {
+                current = pattern.format(current, next.toString());
             }
             return this;
         }
 
         @Override
         public String toString() {
-            return current.toString();
+            return current;
         }
         
         // Gets the last recorded offset or -1 if no offset recorded.
@@ -301,6 +306,16 @@ final public class ListFormatter {
         private boolean offsetRecorded() {
             return offset >= 0;
         }
+    }
+
+    /** JUST FOR DEVELOPMENT */
+    // For use with the hard-coded data
+    // TODO Replace by use of RB
+    // Verify in building that all of the patterns contain {0}, {1}.
+
+    static Map<ULocale, ListFormatter> localeToData = new HashMap<ULocale, ListFormatter>();
+    static void add(String locale, String...data) {
+        localeToData.put(new ULocale(locale), new ListFormatter(data[0], data[1], data[2], data[3]));
     }
 
     private static class Cache {
@@ -319,14 +334,24 @@ final public class ListFormatter {
 
         private static ListFormatter load(ULocale ulocale, String style) {
             ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.
-                    getBundleInstance(ICUData.ICU_BASE_NAME, ulocale);
-            StringBuilder sb = new StringBuilder();
-            return new ListFormatter(
-                compilePattern(r.getWithFallback("listPattern/" + style + "/2").getString(), sb),
-                compilePattern(r.getWithFallback("listPattern/" + style + "/start").getString(), sb),
-                compilePattern(r.getWithFallback("listPattern/" + style + "/middle").getString(), sb),
-                compilePattern(r.getWithFallback("listPattern/" + style + "/end").getString(), sb),
-                ulocale);
+                    getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, ulocale);
+            // TODO(Travis Keep): This try-catch is a hack to cover missing aliases
+            // for listPattern/duration and listPattern/duration-narrow in root.txt.
+            try {
+                return new ListFormatter(
+                    SimplePatternFormatter.compile(r.getWithFallback("listPattern/" + style + "/2").getString()),
+                    SimplePatternFormatter.compile(r.getWithFallback("listPattern/" + style + "/start").getString()),
+                    SimplePatternFormatter.compile(r.getWithFallback("listPattern/" + style + "/middle").getString()),
+                    SimplePatternFormatter.compile(r.getWithFallback("listPattern/" + style + "/end").getString()),
+                    ulocale);
+            } catch (MissingResourceException e) {
+                return new ListFormatter(
+                        SimplePatternFormatter.compile(r.getWithFallback("listPattern/standard/2").getString()),
+                        SimplePatternFormatter.compile(r.getWithFallback("listPattern/standard/start").getString()),
+                        SimplePatternFormatter.compile(r.getWithFallback("listPattern/standard/middle").getString()),
+                        SimplePatternFormatter.compile(r.getWithFallback("listPattern/standard/end").getString()),
+                        ulocale);
+            }
         }
     }
 

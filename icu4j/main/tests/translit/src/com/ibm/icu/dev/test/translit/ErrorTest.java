@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2001-2010, International Business Machines Corporation and    *
@@ -7,8 +5,6 @@
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.translit;
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.ReplaceableString;
 import com.ibm.icu.text.Transliterator;
@@ -20,7 +16,10 @@ import com.ibm.icu.text.UnicodeSet;
  */
 public class ErrorTest extends TestFmwk {
 
-    @Test
+    public static void main(String[] args) throws Exception {
+        new ErrorTest().run(args);
+    }
+
     public void TestTransliteratorErrors() {
         String trans = "Latin-Greek";
         String bogusID = "LATINGREEK-GREEKLATIN";
@@ -147,7 +146,6 @@ public class ErrorTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestUnicodeSetErrors() {
         String badPattern = "[[:L:]-[0x0300-0x0400]";
         UnicodeSet set = new UnicodeSet();
@@ -194,7 +192,6 @@ public class ErrorTest extends TestFmwk {
 //        }
 //    }
 
-    @Test
     public void TestRBTErrors() {
 
         String rules = "ab>y";

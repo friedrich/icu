@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-* Copyright (C) 2013-2015, International Business Machines
+* Copyright (C) 2013-2014, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
 * CollationRuleParser.java, ported from collationruleparser.h/.cpp
@@ -720,14 +718,18 @@ public final class CollationRuleParser {
             reorderCodes.add(code);
             i = limit;
         }
-        if(reorderCodes.isEmpty()) {
+        int length = reorderCodes.size();
+        if(length == 1 && reorderCodes.get(0) == Collator.ReorderCodes.DEFAULT) {
+            // The root collator does not have a reordering, by definition.
             settings.resetReordering();
-        } else {
-            int[] codes = new int[reorderCodes.size()];
-            int j = 0;
-            for(Integer code : reorderCodes) { codes[j++] = code; }
-            settings.setReordering(baseData, codes);
+            return;
         }
+        int[] codes = new int[reorderCodes.size()];
+        int j = 0;
+        for(Integer code : reorderCodes) { codes[j++] = code; }
+        byte[] table = new byte[256];
+        baseData.makeReorderTable(codes, table);
+        settings.setReordering(codes, table);
     }
 
     private static final String[] gSpecialReorderCodes = {
@@ -737,7 +739,8 @@ public final class CollationRuleParser {
     /**
      * Gets a script or reorder code from its string representation.
      * @return the script/reorder code, or
-     * -1 if not recognized
+     * -1==Collator.ReorderCodes.REORDER_CODE_DEFAULT, or
+     * -2 if not recognized
      */
     public static int getReorderCode(String word) {
         for(int i = 0; i < gSpecialReorderCodes.length; ++i) {
@@ -753,10 +756,10 @@ public final class CollationRuleParser {
         } catch (IllegalIcuArgumentException e) {
             // fall through
         }
-        if(word.equalsIgnoreCase("others")) {
-            return Collator.ReorderCodes.OTHERS;  // same as Zzzz = USCRIPT_UNKNOWN 
+        if(word.equalsIgnoreCase("default")) {
+            return Collator.ReorderCodes.DEFAULT;
         }
-        return -1;
+        return -2;
     }
 
     private static int getOnOffValue(String s) {

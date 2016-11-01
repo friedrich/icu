@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 1997-2016, International Business Machines Corporation and
+ * Copyright (c) 1997-2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 
@@ -14,7 +12,6 @@
 #include "unicode/udat.h"
 #include "unicode/uscript.h"
 #include "unicode/ulocdata.h"
-#include "cmemory.h"
 #include "cstring.h"
 #include "locmap.h"
 #include "uresimp.h"
@@ -41,7 +38,7 @@ createFlattenSet(USet *origSet, UErrorCode *status) {
     for (idx = 0; idx < origItemCount; idx++) {
         graphmeSize = uset_getItem(origSet, idx,
             &start, &end,
-            graphme, UPRV_LENGTHOF(graphme),
+            graphme, (int32_t)(sizeof(graphme)/sizeof(graphme[0])),
             status);
         if (U_FAILURE(*status)) {
             log_err("ERROR: uset_getItem returned %s\n", u_errorName(*status));
@@ -466,7 +463,7 @@ testLCID(UResourceBundle *currentBundle,
     }
 
     status = U_ZERO_ERROR;
-    len = uprv_convertToPosix(expectedLCID, lcidStringC, UPRV_LENGTHOF(lcidStringC) - 1, &status);
+    len = uprv_convertToPosix(expectedLCID, lcidStringC, sizeof(lcidStringC)/sizeof(lcidStringC[0]) - 1, &status);
     if (U_FAILURE(status)) {
         log_err("ERROR:   %.4x does not have a POSIX mapping due to %s\n",
             expectedLCID, u_errorName(status));
@@ -495,7 +492,7 @@ static void
 TestLocaleStructure(void) {
     // This test checks the locale structure against a key file located
     // at source/test/testdata/structLocale.txt. When adding new data to
-    // a locale file such as en.txt, the structLocale.txt file must be changed
+    // a loale file such as en.txt, the structLocale.txt file must be changed
     // too to include the the template of the new data. Otherwise this test
     // will fail!
 
@@ -959,7 +956,7 @@ static void VerifyTranslation(void) {
             int32_t langSize;
             int32_t strIdx;
             UChar badChar;
-            langSize = uloc_getDisplayLanguage(currLoc, currLoc, langBuffer, UPRV_LENGTHOF(langBuffer), &errorCode);
+            langSize = uloc_getDisplayLanguage(currLoc, currLoc, langBuffer, sizeof(langBuffer)/sizeof(langBuffer[0]), &errorCode);
             if (U_FAILURE(errorCode)) {
                 log_err("error uloc_getDisplayLanguage returned %s\n", u_errorName(errorCode));
             }
@@ -970,7 +967,7 @@ static void VerifyTranslation(void) {
                         currLoc, strIdx, badChar);
                 }
             }
-            langSize = uloc_getDisplayCountry(currLoc, currLoc, langBuffer, UPRV_LENGTHOF(langBuffer), &errorCode);
+            langSize = uloc_getDisplayCountry(currLoc, currLoc, langBuffer, sizeof(langBuffer)/sizeof(langBuffer[0]), &errorCode);
             if (U_FAILURE(errorCode)) {
                 log_err("error uloc_getDisplayCountry returned %s\n", u_errorName(errorCode));
             }
@@ -991,10 +988,6 @@ static void VerifyTranslation(void) {
                     end = ures_getSize(resArray);
                 }
 
-                if ((uprv_strncmp(currLoc,"lrc",3) == 0 || uprv_strncmp(currLoc,"mzn",3) == 0) && 
-                        log_knownIssue("cldrbug:8899", "lrc and mzn locales don't have translated day names")) {
-                    end = 0;
-                }
 
                 for (idx = 0; idx < end; idx++) {
                     const UChar *fromBundleStr = ures_getStringByIndex(resArray, idx, &langSize, &errorCode);
@@ -1003,7 +996,7 @@ static void VerifyTranslation(void) {
                         continue;
                     }
                     strIdx = findStringSetMismatch(currLoc, fromBundleStr, langSize, mergedExemplarSet, TRUE, &badChar);
-                    if ( strIdx >= 0 ) { 
+                    if (strIdx >= 0) {
                         log_err("getDayNames(%s, %d) at index %d returned characters not in the exemplar characters: %04X.\n",
                             currLoc, idx, strIdx, badChar);
                     }
@@ -1044,10 +1037,7 @@ static void VerifyTranslation(void) {
                 ures_close(cal);
             }
             errorCode = U_ZERO_ERROR;
-            numScripts = uscript_getCode(currLoc, scripts, UPRV_LENGTHOF(scripts), &errorCode);
-            if (strcmp(currLoc, "yi") == 0 && numScripts > 0 && log_knownIssue("11217", "Fix result of uscript_getCode for yi: USCRIPT_YI -> USCRIPT_HEBREW")) {
-                scripts[0] = USCRIPT_HEBREW;
-            }
+            numScripts = uscript_getCode(currLoc, scripts, sizeof(scripts)/sizeof(scripts[0]), &errorCode);
             if (numScripts == 0) {
                 log_err("uscript_getCode(%s) doesn't work.\n", currLoc);
             }else if(scripts[0] == USCRIPT_COMMON){
@@ -1090,10 +1080,6 @@ static void VerifyTranslation(void) {
                } else {
                    if ( strstr(fullLoc, "_US")!=NULL || strstr(fullLoc, "_MM")!=NULL || strstr(fullLoc, "_LR")!=NULL ) {
                        if(measurementSystem != UMS_US){
-                            log_err("ulocdata_getMeasurementSystem did not return expected data for locale %s \n", currLoc);
-                       }
-                   } else if ( strstr(fullLoc, "_GB")!=NULL ) {
-                       if(measurementSystem != UMS_UK){
                             log_err("ulocdata_getMeasurementSystem did not return expected data for locale %s \n", currLoc);
                        }
                    } else if (measurementSystem != UMS_SI) {
@@ -1181,9 +1167,6 @@ static void TestExemplarSet(void){
                 log_err("ExemplarSet contains unassigned characters for locale : %s\n", locale);
             }
             codeLen = uscript_getCode(locale, code, 8, &ec);
-            if (strcmp(locale, "yi") == 0 && codeLen > 0 && log_knownIssue("11217", "Fix result of uscript_getCode for yi: USCRIPT_YI -> USCRIPT_HEBREW")) {
-                code[0] = USCRIPT_HEBREW;
-            }
             if (!assertSuccess("uscript_getCode", &ec)) goto END;
 
             for (j=0; j<MAX_SCRIPTS_PER_LOCALE; ++j) {
@@ -1207,7 +1190,7 @@ static void TestExemplarSet(void){
             itemCount = uset_getItemCount(exemplarSet);
             for (m=0; m<itemCount && !existsInScript; ++m) {
                 strLen = uset_getItem(exemplarSet, m, &start, &end, ubuf,
-                                      UPRV_LENGTHOF(ubuf), &ec);
+                                      sizeof(ubuf)/sizeof(ubuf[0]), &ec);
                 /* failure here might mean str[] needs to be larger */
                 if (!assertSuccess("uset_getItem", &ec)) goto END;
                 if (strLen == 0) {
@@ -1261,7 +1244,7 @@ static void TestLocaleDisplayPattern(void){
     static const UChar enExpectPat[] = { 0x007B,0x0030,0x007D,0x0020,0x0028,0x007B,0x0031,0x007D,0x0029,0 }; /* "{0} ({1})" */
     static const UChar enExpectSep[] = { 0x002C,0x0020,0 }; /* ", " */
     static const UChar zhExpectPat[] = { 0x007B,0x0030,0x007D,0xFF08,0x007B,0x0031,0x007D,0xFF09,0 };
-    static const UChar zhExpectSep[] = { 0xFF0C,0 };
+    static const UChar zhExpectSep[] = { 0x3001,0 };
 
     status = U_ZERO_ERROR;
     uld = ulocdata_open("en", &status);

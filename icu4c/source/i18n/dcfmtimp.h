@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ********************************************************************************
 *   Copyright (C) 2012-2014, International Business Machines
@@ -19,8 +17,7 @@ U_NAMESPACE_BEGIN
 enum EDecimalFormatFastpathStatus {
   kFastpathNO = 0,
   kFastpathYES = 1,
-  kFastpathUNKNOWN = 2, /* not yet set */
-  kFastpathMAYBE = 3 /* depends on value being formatted. */
+  kFastpathUNKNOWN = 2 /* not yet set */
 };
 
 /**

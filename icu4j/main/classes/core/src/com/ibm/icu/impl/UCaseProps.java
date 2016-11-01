@@ -1,28 +1,28 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
- *******************************************************************************
- *
- *   Copyright (C) 2004-2015, International Business Machines
- *   Corporation and others.  All Rights Reserved.
- *
- *******************************************************************************
- *   file name:  UCaseProps.java
- *   encoding:   US-ASCII
- *   tab size:   8 (not used)
- *   indentation:4
- *
- *   created on: 2005jan29
- *   created by: Markus W. Scherer
- *
- *   Low-level Unicode character/string case mapping code.
- *   Java port of ucase.h/.c.
- */
+*******************************************************************************
+*
+*   Copyright (C) 2004-2014, International Business Machines
+*   Corporation and others.  All Rights Reserved.
+*
+*******************************************************************************
+*   file name:  UCaseProps.java
+*   encoding:   US-ASCII
+*   tab size:   8 (not used)
+*   indentation:4
+*
+*   created on: 2005jan29
+*   created by: Markus W. Scherer
+*
+*   Low-level Unicode character/string case mapping code.
+*   Java port of ucase.h/.c.
+*/
 
 package com.ibm.icu.impl;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
 import java.util.Iterator;
 
 import com.ibm.icu.lang.UCharacter;
@@ -38,52 +38,64 @@ public final class UCaseProps {
 
     // port of ucase_openProps()
     private UCaseProps() throws IOException {
-        ByteBuffer bytes=ICUBinary.getRequiredData(DATA_FILE_NAME);
-        readData(bytes);
+        InputStream is=ICUData.getRequiredStream(ICUResourceBundle.ICU_BUNDLE+"/"+DATA_FILE_NAME);
+        BufferedInputStream b=new BufferedInputStream(is, 4096 /* data buffer size */);
+        readData(b);
+        b.close();
+        is.close();
     }
 
-    private final void readData(ByteBuffer bytes) throws IOException {
+    private final void readData(InputStream is) throws IOException {
+        DataInputStream inputStream=new DataInputStream(is);
+
         // read the header
-        ICUBinary.readHeader(bytes, FMT, new IsAcceptable());
+        ICUBinary.readHeader(inputStream, FMT, new IsAcceptable());
 
         // read indexes[]
-        int count=bytes.getInt();
+        int i, count;
+        count=inputStream.readInt();
         if(count<IX_TOP) {
             throw new IOException("indexes[0] too small in "+DATA_FILE_NAME);
         }
         indexes=new int[count];
 
         indexes[0]=count;
-        for(int i=1; i<count; ++i) {
-            indexes[i]=bytes.getInt();
+        for(i=1; i<count; ++i) {
+            indexes[i]=inputStream.readInt();
         }
 
         // read the trie
-        trie=Trie2_16.createFromSerialized(bytes);
+        trie=Trie2_16.createFromSerialized(inputStream);
         int expectedTrieLength=indexes[IX_TRIE_SIZE];
         int trieLength=trie.getSerializedLength();
         if(trieLength>expectedTrieLength) {
             throw new IOException(DATA_FILE_NAME+": not enough bytes for the trie");
         }
         // skip padding after trie bytes
-        ICUBinary.skipBytes(bytes, expectedTrieLength-trieLength);
+        inputStream.skipBytes(expectedTrieLength-trieLength);
 
         // read exceptions[]
         count=indexes[IX_EXC_LENGTH];
         if(count>0) {
-            exceptions=ICUBinary.getChars(bytes, count, 0);
+            exceptions=new char[count];
+            for(i=0; i<count; ++i) {
+                exceptions[i]=inputStream.readChar();
+            }
         }
 
         // read unfold[]
         count=indexes[IX_UNFOLD_LENGTH];
         if(count>0) {
-            unfold=ICUBinary.getChars(bytes, count, 0);
+            unfold=new char[count];
+            for(i=0; i<count; ++i) {
+                unfold[i]=inputStream.readChar();
+            }
         }
     }
 
     // implement ICUBinary.Authenticate
     private final static class IsAcceptable implements ICUBinary.Authenticate {
-        @Override
+        // @Override when we switch to Java 6
         public boolean isDataVersionAcceptable(byte version[]) {
             return version[0]==3;
         }
@@ -152,7 +164,7 @@ public final class UCaseProps {
      * @param index (in) desired slot index
      * @param excOffset (in) offset into exceptions[] after excWord=exceptions[excOffset++];
      * @return bits 31..0: slot value
-     *             63..32: modified excOffset, moved to the last char of the value, use +1 for beginning of next slot
+     *             63..32: modified excOffset, moved to the last char of the value, use +1 for beginning of next slot 
      */
     private final long getSlotValueAndOffset(int excWord, int index, int excOffset) {
         long value;
@@ -457,7 +469,7 @@ public final class UCaseProps {
         return getTypeFromProps(trie.get(c));
     }
 
-    /** @return like getType() but also sets IGNORABLE if c is case-ignorable */
+    /** @return same as ucase_getType() and set bit 2 if c is case-ignorable */
     public final int getTypeOrIgnorable(int c) {
         return getTypeAndIgnorableFromProps(trie.get(c));
     }
@@ -550,7 +562,7 @@ public final class UCaseProps {
      *   - The general category of C is
      *     Nonspacing Mark (Mn), or Enclosing Mark (Me), or Format Control (Cf), or
      *     Letter Modifier (Lm), or Symbol Modifier (Sk)
-     *   - C is one of the following characters
+     *   - C is one of the following characters 
      *     U+0027 APOSTROPHE
      *     U+00AD SOFT HYPHEN (SHY)
      *     U+2019 RIGHT SINGLE QUOTATION MARK
@@ -578,13 +590,13 @@ public final class UCaseProps {
          * @param dir >0: Begin iterating forward from the first code point
          * after the one that is being case-mapped.
          *            <0: Begin iterating backward from the first code point
-         * before the one that is being case-mapped.
+         * before the one that is being case-mapped.   
          */
         public void reset(int dir);
         /**
          * Iterate and return the next code point, moving in the direction
          * determined by the reset() call.
-         * @return Next code point, or <0 when the iteration is done.
+         * @return Next code point, or <0 when the iteration is done. 
          */
         public int next();
     }
@@ -609,13 +621,12 @@ public final class UCaseProps {
     private static final int LOC_ROOT=1;
     private static final int LOC_TURKISH=2;
     private static final int LOC_LITHUANIAN=3;
-    static final int LOC_GREEK=4;
 
     /*
      * Checks and caches the type of locale ID as it is relevant for case mapping.
      * If the locCache is not null, then it must be initialized with locCache[0]=0 .
      */
-    static final int getCaseLocale(ULocale locale, int[] locCache) {
+    private static final int getCaseLocale(ULocale locale, int[] locCache) {
         int result;
 
         if(locCache!=null && (result=locCache[0])!=LOC_UNKNOWN) {
@@ -627,8 +638,6 @@ public final class UCaseProps {
         String language=locale.getLanguage();
         if(language.equals("tr") || language.equals("tur") || language.equals("az") || language.equals("aze")) {
             result=LOC_TURKISH;
-        } else if(language.equals("el") || language.equals("ell")) {
-            result=LOC_GREEK;
         } else if(language.equals("lt") || language.equals("lit")) {
             result=LOC_LITHUANIAN;
         }
@@ -1107,7 +1116,7 @@ public final class UCaseProps {
      * @internal
      */
     private static final int FOLD_CASE_OPTIONS_MASK = 0xff;
-
+    
     /* return the simple case folding mapping for c */
     public final int fold(int c, int options) {
         int props=trie.get(c);
@@ -1314,7 +1323,7 @@ public final class UCaseProps {
     private static final String DATA_FILE_NAME=DATA_NAME+"."+DATA_TYPE;
 
     /* format "cAsE" */
-    private static final int FMT=0x63415345;
+    private static final byte FMT[]={ 0x63, 0x41, 0x53, 0x45 };
 
     /* indexes into indexes[] */
     //private static final int IX_INDEX_TOP=0;
@@ -1335,17 +1344,15 @@ public final class UCaseProps {
     public static final int UPPER=2;
     public static final int TITLE=3;
 
-    /** @return NONE, LOWER, UPPER, TITLE */
     private static final int getTypeFromProps(int props) {
         return props&TYPE_MASK;
     }
 
-    /** @return like getTypeFromProps() but also sets IGNORABLE if props indicate case-ignorable */
     private static final int getTypeAndIgnorableFromProps(int props) {
         return props&7;
     }
 
-    static final int IGNORABLE=4;
+    //private static final int IGNORABLE=   4;
     private static final int SENSITIVE=     8;
     private static final int EXCEPTION=     0x10;
 

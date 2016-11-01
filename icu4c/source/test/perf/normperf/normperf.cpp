@@ -1,13 +1,9 @@
 /*
-***********************************************************************
-* Copyright (C) 2016 and later: Unicode, Inc. and others.
-* License & terms of use: http://www.unicode.org/copyright.html#License
-***********************************************************************
-***********************************************************************
-* Copyright (c) 2002-2016, International Business Machines
+**********************************************************************
+* Copyright (c) 2002-2005, International Business Machines
 * Corporation and others.  All Rights Reserved.
-***********************************************************************
-***********************************************************************
+**********************************************************************
+**********************************************************************
 */
 /** 
  * This Program tests the performance of ICU's Normalization engine against Windows
@@ -17,8 +13,9 @@
  */
 #include "normperf.h"
 #include "uoptions.h"
-#include "cmemory.h" // for UPRV_LENGTHOF
 #include <stdio.h>
+
+#define LENGTHOF(array) (sizeof(array)/sizeof((array)[0]))
 
 UPerfFunction* NormalizerPerformanceTest::runIndexedTest(int32_t index, UBool exec,const char* &name, char* par) {
     switch (index) {
@@ -135,7 +132,7 @@ NormalizerPerformanceTest::NormalizerPerformanceTest(int32_t argc, const char* a
         return;
     }
 
-    _remainingArgc = u_parseArgs(_remainingArgc, (char **)argv, UPRV_LENGTHOF(cmdLineOptions), cmdLineOptions);
+    _remainingArgc = u_parseArgs(_remainingArgc, (char **)argv, (int32_t)(LENGTHOF(cmdLineOptions)), cmdLineOptions);
     if(cmdLineOptions[0].doesOccur && cmdLineOptions[0].value!=NULL) {
         options=(int32_t)strtol(cmdLineOptions[0].value, NULL, 16);
     }

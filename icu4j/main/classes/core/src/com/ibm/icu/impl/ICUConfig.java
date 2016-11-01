@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2008-2015, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2008-2010, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.impl;
@@ -28,11 +26,7 @@ public class ICUConfig {
         try {
             InputStream is = ICUData.getStream(CONFIG_PROPS_FILE);
             if (is != null) {
-                try {
-                    CONFIG_PROPS.load(is);
-                } finally {
-                    is.close();
-                }
+                CONFIG_PROPS.load(is);
             }
         } catch (MissingResourceException mre) {
             // If it does not exist, ignore.
@@ -63,7 +57,6 @@ public class ICUConfig {
         if (System.getSecurityManager() != null) {
             try {
                 val = AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
                     public String run() {
                         return System.getProperty(fname);
                     }

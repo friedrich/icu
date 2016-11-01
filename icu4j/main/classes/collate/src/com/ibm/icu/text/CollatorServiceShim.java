@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
-* Copyright (C) 2003-2016, International Business Machines Corporation and
+* Copyright (C) 2003-2014, International Business Machines Corporation and
 * others. All Rights Reserved.
 *******************************************************************************
 */
@@ -13,7 +11,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICULocaleService;
 import com.ibm.icu.impl.ICULocaleService.LocaleKeyFactory;
 import com.ibm.icu.impl.ICUResourceBundle;
@@ -28,7 +25,6 @@ import com.ibm.icu.util.ULocale;
 
 final class CollatorServiceShim extends Collator.ServiceShim {
 
-    @Override
     Collator getInstance(ULocale locale) {
     // use service cache, it's faster than instantiation
 //          if (service.isDefault()) {
@@ -52,7 +48,6 @@ final class CollatorServiceShim extends Collator.ServiceShim {
         }
     }
 
-    @Override
     Object registerInstance(Collator collator, ULocale locale) {
         // Set the collator locales while registering so that getInstance()
         // need not guess whether the collator's locales are already set properly
@@ -61,7 +56,6 @@ final class CollatorServiceShim extends Collator.ServiceShim {
         return service.registerObject(collator, locale);
     }
 
-    @Override
     Object registerFactory(CollatorFactory f) {
         class CFactory extends LocaleKeyFactory {
             CollatorFactory delegate;
@@ -71,19 +65,16 @@ final class CollatorServiceShim extends Collator.ServiceShim {
                 this.delegate = fctry;
             }
 
-            @Override
             public Object handleCreate(ULocale loc, int kind, ICUService srvc) {
                 Object coll = delegate.createCollator(loc);
                 return coll;
             }
 
-            @Override
             public String getDisplayName(String id, ULocale displayLocale) {
                 ULocale objectLocale = new ULocale(id);
                 return delegate.getDisplayName(objectLocale, displayLocale);
             }
 
-            @Override
             public Set<String> getSupportedIDs() {
                 return delegate.getSupportedLocaleIDs();
             }
@@ -92,17 +83,15 @@ final class CollatorServiceShim extends Collator.ServiceShim {
         return service.registerFactory(new CFactory(f));
     }
 
-    @Override
     boolean unregister(Object registryKey) {
         return service.unregisterFactory((Factory)registryKey);
     }
 
-    @Override
     Locale[] getAvailableLocales() {
         // TODO rewrite this to just wrap getAvailableULocales later
         Locale[] result;
         if (service.isDefault()) {
-            result = ICUResourceBundle.getAvailableLocales(ICUData.ICU_COLLATION_BASE_NAME,
+            result = ICUResourceBundle.getAvailableLocales(ICUResourceBundle.ICU_COLLATION_BASE_NAME,
                     ICUResourceBundle.ICU_DATA_CLASS_LOADER);
         } else {
             result = service.getAvailableLocales();
@@ -110,11 +99,10 @@ final class CollatorServiceShim extends Collator.ServiceShim {
         return result;
     }
 
-    @Override
     ULocale[] getAvailableULocales() {
         ULocale[] result;
         if (service.isDefault()) {
-            result = ICUResourceBundle.getAvailableULocales(ICUData.ICU_COLLATION_BASE_NAME,
+            result = ICUResourceBundle.getAvailableULocales(ICUResourceBundle.ICU_COLLATION_BASE_NAME,
                     ICUResourceBundle.ICU_DATA_CLASS_LOADER);
         } else {
             result = service.getAvailableULocales();
@@ -122,7 +110,6 @@ final class CollatorServiceShim extends Collator.ServiceShim {
         return result;
     }
 
-    @Override
     String getDisplayName(ULocale objectLocale, ULocale displayLocale) {
         String id = objectLocale.getName();
         return service.getDisplayName(id, displayLocale);
@@ -134,10 +121,9 @@ final class CollatorServiceShim extends Collator.ServiceShim {
 
             class CollatorFactory extends ICUResourceBundleFactory {
                 CollatorFactory() {
-                    super(ICUData.ICU_COLLATION_BASE_NAME);
+                    super(ICUResourceBundle.ICU_COLLATION_BASE_NAME);
                 }
 
-                @Override
                 protected Object handleCreate(ULocale uloc, int kind, ICUService srvc) {
                     return makeInstance(uloc);
                 }
@@ -146,23 +132,8 @@ final class CollatorServiceShim extends Collator.ServiceShim {
             this.registerFactory(new CollatorFactory());
             markDefault();
         }
-
-        /**
-         * makeInstance() returns an appropriate Collator for any locale.
-         * It falls back to root if there is no specific data.
-         *
-         * <p>Without this override, the service code would fall back to the default locale
-         * which is not desirable for an algorithm with a good Unicode default,
-         * like collation.
-         */
-        @Override
-        public String validateFallbackLocale() {
-            return "";
-        }
-
         ///CLOVER:OFF
         // The following method can not be reached by testing
-        @Override
         protected Object handleDefault(Key key, String[] actualIDReturn) {
             if (actualIDReturn != null) {
                 actualIDReturn[0] = "root";

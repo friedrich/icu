@@ -1,9 +1,7 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
 *
-*   Copyright (C) 1998-2016, International Business Machines
+*   Copyright (C) 1998-2013, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 ******************************************************************************
@@ -297,7 +295,12 @@ ucnv_safeClone(const UConverter* cnv, void *stackBuffer, int32_t *pBufferSize, U
     }
 
     /* increment refcount of shared data if needed */
-    if (cnv->sharedData->isReferenceCounted) {
+    /*
+    Checking whether it's an algorithic converter is okay
+    in multithreaded applications because the value never changes.
+    Don't check referenceCounter for any other value.
+    */
+    if (cnv->sharedData->referenceCounter != ~0) {
         ucnv_incrementRefCount(cnv->sharedData);
     }
 
@@ -382,7 +385,12 @@ ucnv_close (UConverter * converter)
         uprv_free(converter->subChars);
     }
 
-    if (converter->sharedData->isReferenceCounted) {
+    /*
+    Checking whether it's an algorithic converter is okay
+    in multithreaded applications because the value never changes.
+    Don't check referenceCounter for any other value.
+    */
+    if (converter->sharedData->referenceCounter != ~0) {
         ucnv_unloadSharedDataIfReady(converter->sharedData);
     }
 
@@ -1063,7 +1071,7 @@ _fromUnicodeWithCallback(UConverterFromUnicodeArgs *pArgs, UErrorCode *err) {
 
                         length=(int32_t)(pArgs->sourceLimit-pArgs->source);
                         if(length>0) {
-                            u_memcpy(cnv->preFromU, pArgs->source, length);
+                            uprv_memcpy(cnv->preFromU, pArgs->source, length*U_SIZEOF_UCHAR);
                             cnv->preFromULength=(int8_t)-length;
                         }
 
@@ -1819,7 +1827,7 @@ ucnv_toUChars(UConverter *cnv,
         {
             UChar buffer[1024];
 
-            destLimit=buffer+UPRV_LENGTHOF(buffer);
+            destLimit=buffer+sizeof(buffer)/U_SIZEOF_UCHAR;
             do {
                 dest=buffer;
                 *pErrorCode=U_ZERO_ERROR;
@@ -2648,7 +2656,7 @@ static const UAmbiguousConverter *ucnv_getAmbiguous(const UConverter *cnv)
         return NULL;
     }
 
-    for(i=0; i<UPRV_LENGTHOF(ambiguousConverters); ++i)
+    for(i=0; i<(int32_t)(sizeof(ambiguousConverters)/sizeof(UAmbiguousConverter)); ++i)
     {
         if(0==uprv_strcmp(name, ambiguousConverters[i].name))
         {
@@ -2745,7 +2753,7 @@ ucnv_getInvalidUChars (const UConverter * converter,
     }
     if ((*len = converter->invalidUCharLength) > 0)
     {
-        u_memcpy (errChars, converter->invalidUCharBuffer, *len);
+        uprv_memcpy (errChars, converter->invalidUCharBuffer, sizeof(UChar) * (*len));
     }
 }
 

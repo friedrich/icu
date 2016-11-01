@@ -1,16 +1,15 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
- *******************************************************************************
- *   Copyright (C) 2009-2015, International Business Machines
- *   Corporation and others.  All Rights Reserved.
- *******************************************************************************
- */
-
+*******************************************************************************
+*   Copyright (C) 2009-2014, International Business Machines
+*   Corporation and others.  All Rights Reserved.
+*******************************************************************************
+*/
 package com.ibm.icu.impl;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -206,7 +205,6 @@ public final class Normalizer2Impl {
         // They assume that the cc or trailCC of their input is 0.
         // Most of them implement Appendable interface methods.
         // @Override when we switch to Java 6
-        @Override
         public ReorderingBuffer append(char c) {
             str.append(c);
             lastCC=0;
@@ -219,7 +217,6 @@ public final class Normalizer2Impl {
             reorderStart=str.length();
         }
         // @Override when we switch to Java 6
-        @Override
         public ReorderingBuffer append(CharSequence s) {
             if(s.length()!=0) {
                 str.append(s);
@@ -229,7 +226,6 @@ public final class Normalizer2Impl {
             return this;
         }
         // @Override when we switch to Java 6
-        @Override
         public ReorderingBuffer append(CharSequence s, int start, int limit) {
             if(start!=limit) {
                 str.append(s, start, limit);
@@ -416,59 +412,67 @@ public final class Normalizer2Impl {
 
     private static final class IsAcceptable implements ICUBinary.Authenticate {
         // @Override when we switch to Java 6
-        @Override
         public boolean isDataVersionAcceptable(byte version[]) {
             return version[0]==2;
         }
     }
     private static final IsAcceptable IS_ACCEPTABLE = new IsAcceptable();
-    private static final int DATA_FORMAT = 0x4e726d32;  // "Nrm2"
+    private static final byte DATA_FORMAT[] = { 0x4e, 0x72, 0x6d, 0x32  };  // "Nrm2"
 
-    public Normalizer2Impl load(ByteBuffer bytes) {
+    public Normalizer2Impl load(InputStream data) {
         try {
-            dataVersion=ICUBinary.readHeaderAndDataVersion(bytes, DATA_FORMAT, IS_ACCEPTABLE);
-            int indexesLength=bytes.getInt()/4;  // inIndexes[IX_NORM_TRIE_OFFSET]/4
+            BufferedInputStream bis=new BufferedInputStream(data);
+            dataVersion=ICUBinary.readHeaderAndDataVersion(bis, DATA_FORMAT, IS_ACCEPTABLE);
+            DataInputStream ds=new DataInputStream(bis);
+            int indexesLength=ds.readInt()/4;  // inIndexes[IX_NORM_TRIE_OFFSET]/4
             if(indexesLength<=IX_MIN_MAYBE_YES) {
                 throw new ICUUncheckedIOException("Normalizer2 data: not enough indexes");
             }
             int[] inIndexes=new int[indexesLength];
             inIndexes[0]=indexesLength*4;
             for(int i=1; i<indexesLength; ++i) {
-                inIndexes[i]=bytes.getInt();
+                inIndexes[i]=ds.readInt();
             }
-
+    
             minDecompNoCP=inIndexes[IX_MIN_DECOMP_NO_CP];
             minCompNoMaybeCP=inIndexes[IX_MIN_COMP_NO_MAYBE_CP];
-
+    
             minYesNo=inIndexes[IX_MIN_YES_NO];
             minYesNoMappingsOnly=inIndexes[IX_MIN_YES_NO_MAPPINGS_ONLY];
             minNoNo=inIndexes[IX_MIN_NO_NO];
             limitNoNo=inIndexes[IX_LIMIT_NO_NO];
             minMaybeYes=inIndexes[IX_MIN_MAYBE_YES];
-
+    
             // Read the normTrie.
             int offset=inIndexes[IX_NORM_TRIE_OFFSET];
             int nextOffset=inIndexes[IX_EXTRA_DATA_OFFSET];
-            normTrie=Trie2_16.createFromSerialized(bytes);
+            normTrie=Trie2_16.createFromSerialized(ds);
             int trieLength=normTrie.getSerializedLength();
             if(trieLength>(nextOffset-offset)) {
                 throw new ICUUncheckedIOException("Normalizer2 data: not enough bytes for normTrie");
             }
-            ICUBinary.skipBytes(bytes, (nextOffset-offset)-trieLength);  // skip padding after trie bytes
-
+            ds.skipBytes((nextOffset-offset)-trieLength);  // skip padding after trie bytes
+    
             // Read the composition and mapping data.
             offset=nextOffset;
             nextOffset=inIndexes[IX_SMALL_FCD_OFFSET];
             int numChars=(nextOffset-offset)/2;
+            char[] chars;
             if(numChars!=0) {
-                maybeYesCompositions=ICUBinary.getString(bytes, numChars, 0);
+                chars=new char[numChars];
+                for(int i=0; i<numChars; ++i) {
+                    chars[i]=ds.readChar();
+                }
+                maybeYesCompositions=new String(chars);
                 extraData=maybeYesCompositions.substring(MIN_NORMAL_MAYBE_YES-minMaybeYes);
             }
 
             // smallFCD: new in formatVersion 2
             offset=nextOffset;
             smallFCD=new byte[0x100];
-            bytes.get(smallFCD);
+            for(int i=0; i<0x100; ++i) {
+                smallFCD[i]=ds.readByte();
+            }
 
             // Build tccc180[].
             // gennorm2 enforces lccc=0 for c<MIN_CCC_LCCC_CP=U+0300.
@@ -487,13 +491,14 @@ public final class Normalizer2Impl {
                 }
             }
 
+            data.close();
             return this;
         } catch(IOException e) {
             throw new ICUUncheckedIOException(e);
         }
     }
     public Normalizer2Impl load(String name) {
-        return load(ICUBinary.getRequiredData(name));
+        return load(ICUData.getRequiredStream(name));
     }
 
     private void enumLcccRange(int start, int end, int norm16, UnicodeSet set) {
@@ -564,7 +569,6 @@ public final class Normalizer2Impl {
         }
     }
     private static final Trie2.ValueMapper segmentStarterMapper=new Trie2.ValueMapper() {
-        @Override
         public int map(int in) {
             return in&CANON_NOT_SEGMENT_STARTER;
         }
@@ -1834,7 +1838,7 @@ public final class Normalizer2Impl {
             }
             if(key1==(firstUnit&COMP_1_TRAIL_MASK)) {
                 if((firstUnit&COMP_1_TRIPLE)!=0) {
-                    return (compositions.charAt(list+1)<<16)|compositions.charAt(list+2);
+                    return ((int)compositions.charAt(list+1)<<16)|compositions.charAt(list+2);
                 } else {
                     return compositions.charAt(list+1);
                 }
@@ -1879,7 +1883,7 @@ public final class Normalizer2Impl {
                 compositeAndFwd=maybeYesCompositions.charAt(list+1);
                 list+=2;
             } else {
-                compositeAndFwd=((maybeYesCompositions.charAt(list+1)&~COMP_2_TRAIL_MASK)<<16)|
+                compositeAndFwd=(((int)maybeYesCompositions.charAt(list+1)&~COMP_2_TRAIL_MASK)<<16)|
                                 maybeYesCompositions.charAt(list+2);
                 list+=3;
             }

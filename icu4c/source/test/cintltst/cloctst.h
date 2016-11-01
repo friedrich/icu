@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
- * Copyright (c) 1997-2014, International Business Machines Corporation and
+ * Copyright (c) 1997-2013, International Business Machines Corporation and
  * others. All Rights Reserved.
  ********************************************************************/
 /********************************************************************************
@@ -124,11 +122,6 @@ static void TestLikelySubtags(void);
  */
 static void TestForLanguageTag(void);
 static void TestToLanguageTag(void);
-
-static void TestToUnicodeLocaleKey(void);
-static void TestToLegacyKey(void);
-static void TestToUnicodeLocaleType(void);
-static void TestToLegacyType(void);
 
 /**
  * locale data

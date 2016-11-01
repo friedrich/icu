@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/gu.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/gu.xml
+ */
 gu{
-    Version{"2.1.28.79"}
+    Version{"2.0.98.52"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"આબિદ્જાન"}
@@ -303,9 +312,6 @@ gu{
         "America:El_Salvador"{
             ec{"એલ સેલ્વાડોર"}
         }
-        "America:Fort_Nelson"{
-            ec{"ફોર્ટ નેલ્સન"}
-        }
         "America:Fortaleza"{
             ec{"ફોર્ટાલેઝા"}
         }
@@ -367,7 +373,7 @@ gu{
             ec{"વિનામેક,ઇન્ડિયાના"}
         }
         "America:Indianapolis"{
-            ec{"ઇન્ડિયાનાપોલિસ"}
+            ec{"ઇન્ડિયાનપોલિસ"}
         }
         "America:Inuvik"{
             ec{"ઇનુવિક"}
@@ -382,10 +388,10 @@ gu{
             ec{"હુહુઇ"}
         }
         "America:Juneau"{
-            ec{"જુનેઇ"}
+            ec{"જુનો"}
         }
         "America:Kentucky:Monticello"{
-            ec{"મોન્ટીસેલો, કેન્ટુકી"}
+            ec{"મોંટીસેલો,કેન્ટુકી"}
         }
         "America:Kralendijk"{
             ec{"ક્રાલેન્ડિક"}
@@ -472,13 +478,13 @@ gu{
             ec{"નોરોન્હા"}
         }
         "America:North_Dakota:Beulah"{
-            ec{"બિયુલાહ, ઉત્તર ડેકોટા"}
+            ec{"બિયુલાહ,ઉત્તર ડેકોટા"}
         }
         "America:North_Dakota:Center"{
-            ec{"સેન્ટર, ઉત્તર ડેકોટા"}
+            ec{"સેન્ટર,ઉત્તર ડેકોટા"}
         }
         "America:North_Dakota:New_Salem"{
-            ec{"ન્યુ સેલમ, ઉત્તર ડેકોટા"}
+            ec{"નવું સેલમ,ઉત્તર ડેકોટા"}
         }
         "America:Ojinaga"{
             ec{"ઓજિનાગા"}
@@ -607,7 +613,7 @@ gu{
             ec{"ડૅવિસ"}
         }
         "Antarctica:DumontDUrville"{
-            ec{"દુમોન્ત દી‘ઉર્વિલ"}
+            ec{"દુમોન્ત દી'ઉર્વિલ"}
         }
         "Antarctica:Macquarie"{
             ec{"મેક્વેરી"}
@@ -626,9 +632,6 @@ gu{
         }
         "Antarctica:Syowa"{
             ec{"સ્યોવા"}
-        }
-        "Antarctica:Troll"{
-            ec{"ટ્રોલ"}
         }
         "Antarctica:Vostok"{
             ec{"વોસ્ટૉક"}
@@ -669,9 +672,6 @@ gu{
         "Asia:Bangkok"{
             ec{"બેંગકોક"}
         }
-        "Asia:Barnaul"{
-            ec{"બારનૌલ"}
-        }
         "Asia:Beirut"{
             ec{"બૈરુત"}
         }
@@ -684,11 +684,11 @@ gu{
         "Asia:Calcutta"{
             ec{"કોલકાતા"}
         }
-        "Asia:Chita"{
-            ec{"ચિતા"}
-        }
         "Asia:Choibalsan"{
             ec{"ચોઇબાલ્સન"}
+        }
+        "Asia:Chongqing"{
+            ec{"ચોંગકિંગ"}
         }
         "Asia:Colombo"{
             ec{"કોલંબો"}
@@ -711,6 +711,9 @@ gu{
         "Asia:Gaza"{
             ec{"ગાઝા"}
         }
+        "Asia:Harbin"{
+            ec{"હારબિન"}
+        }
         "Asia:Hebron"{
             ec{"હેબ્રોન"}
         }
@@ -724,7 +727,7 @@ gu{
             ec{"ઇર્કુત્સ્ક"}
         }
         "Asia:Jakarta"{
-            ec{"જકાર્તા"}
+            ec{"જાકાર્તા"}
         }
         "Asia:Jayapura"{
             ec{"જયાપુરા"}
@@ -741,8 +744,11 @@ gu{
         "Asia:Karachi"{
             ec{"કરાચી"}
         }
+        "Asia:Kashgar"{
+            ec{"કાશ્ગર"}
+        }
         "Asia:Katmandu"{
-            ec{"કાઠમંડુ"}
+            ec{"કથમન્ડુ"}
         }
         "Asia:Khandyga"{
             ec{"ખંડિગા"}
@@ -751,7 +757,7 @@ gu{
             ec{"ક્રિસ્નોયાર્સ્ક"}
         }
         "Asia:Kuala_Lumpur"{
-            ec{"કુઆલા લુમ્પુર"}
+            ec{"કુઆલાલમ્પુર"}
         }
         "Asia:Kuching"{
             ec{"કુચિંગ"}
@@ -828,9 +834,6 @@ gu{
         "Asia:Singapore"{
             ec{"સિંગાપુર"}
         }
-        "Asia:Srednekolymsk"{
-            ec{"સ્રેડ્નેકોલીમ્સ્ક"}
-        }
         "Asia:Taipei"{
             ec{"તાઇપેઇ"}
         }
@@ -848,9 +851,6 @@ gu{
         }
         "Asia:Tokyo"{
             ec{"ટોક્યો"}
-        }
-        "Asia:Tomsk"{
-            ec{"તોમસ્ક"}
         }
         "Asia:Ulaanbaatar"{
             ec{"ઉલાંબાતર"}
@@ -951,9 +951,6 @@ gu{
         "Europe:Andorra"{
             ec{"ઍંડોરા"}
         }
-        "Europe:Astrakhan"{
-            ec{"આસ્ટ્રખન"}
-        }
         "Europe:Athens"{
             ec{"એથેંસ"}
         }
@@ -986,7 +983,7 @@ gu{
         }
         "Europe:Dublin"{
             ec{"ડબલિન"}
-            ld{"આઈરિશ માનક સમય"}
+            ld{"આઇરિશ ગ્રીષ્મ સમય"}
         }
         "Europe:Gibraltar"{
             ec{"જીબ્રાલ્ટર"}
@@ -1011,9 +1008,6 @@ gu{
         }
         "Europe:Kiev"{
             ec{"કૈવ"}
-        }
-        "Europe:Kirov"{
-            ec{"કીરોવ"}
         }
         "Europe:Lisbon"{
             ec{"લિસ્બન"}
@@ -1091,9 +1085,6 @@ gu{
         "Europe:Tirane"{
             ec{"તિરાને"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"યુલ્યણોવસ્ક"}
-        }
         "Europe:Uzhgorod"{
             ec{"ઉઝ્ગોરોદ"}
         }
@@ -1162,9 +1153,6 @@ gu{
         }
         "Pacific:Auckland"{
             ec{"ઑકલેન્ડ"}
-        }
-        "Pacific:Bougainville"{
-            ec{"બૌગેઈનવિલે"}
         }
         "Pacific:Chatham"{
             ec{"ચથમ"}
@@ -1314,7 +1302,7 @@ gu{
         "meta:America_Central"{
             ld{"ઉત્તર અમેરિકન મધ્ય દિવસ સમય"}
             lg{"ઉત્તર અમેરિકન મધ્ય સમય"}
-            ls{"ઉત્તર અમેરિકન કેન્દ્રિય પ્રમાણભૂત સમય"}
+            ls{"ઉત્તર અમેરિકન મધ્ય પ્રમાણભૂત સમય"}
         }
         "meta:America_Eastern"{
             ld{"ઉત્તર અમેરિકન પૂર્વી દિવસ સમય"}
@@ -1335,11 +1323,6 @@ gu{
             ld{"અનાડિર ગ્રીષ્મ સમય"}
             lg{"અનાદિર સમય"}
             ls{"અનાડિર પ્રમાણભૂત સમય"}
-        }
-        "meta:Apia"{
-            ld{"અપિયા દિવસ સમય"}
-            lg{"એપિયા સમય"}
-            ls{"એપિયા પ્રમાણભૂત સમય"}
         }
         "meta:Aqtau"{
             ld{"અક્તાઉ ગ્રીષ્મ સમય"}
@@ -1387,9 +1370,9 @@ gu{
             ls{"ઓસ્ટ્રેલિયન મધ્ય પશ્ચિમી પ્રમાણભૂત સમય"}
         }
         "meta:Australia_Eastern"{
-            ld{"ઓસ્ટ્રેલિયન પૂર્વીય દિવસ સમય"}
-            lg{"પૂર્વીય ઓસ્ટ્રેલિયા સમય"}
-            ls{"ઓસ્ટ્રેલિયન પૂર્વીય પ્રમાણભૂત સમય"}
+            ld{"ઓસ્ટ્રેલિયન પૂર્વી દિવસ સમય"}
+            lg{"પૂર્વી ઓસ્ટ્રેલિયા સમય"}
+            ls{"ઓસ્ટ્રેલિયન પૂર્વી પ્રમાણભૂત સમય"}
         }
         "meta:Australia_Western"{
             ld{"ઓસ્ટ્રેલિયન પશ્ચિમી દિવસ સમય"}
@@ -1478,7 +1461,7 @@ gu{
             ls{"ડેવિસ સમય"}
         }
         "meta:DumontDUrville"{
-            ls{"ડ્યુમોન્ટ-ડી‘ઉર્વિલ સમય"}
+            ls{"ડ્યુમોન્ટ-ડી'ઉર્વિલ સમય"}
         }
         "meta:East_Timor"{
             ls{"પૂર્વ તિમોર સમય"}
@@ -1500,9 +1483,6 @@ gu{
             ld{"પૂર્વી યુરોપીયન ગ્રીષ્મ સમય"}
             lg{"પૂર્વી યુરોપિયન સમય"}
             ls{"પૂર્વી યુરોપિયન માનક સમય"}
-        }
-        "meta:Europe_Further_Eastern"{
-            ls{"આગળનું-પૂર્વીય યુરોપીયન સમય"}
         }
         "meta:Europe_Western"{
             ld{"પશ્ચિમી યુરોપિયન ગ્રીષ્મ સમય"}
@@ -1590,7 +1570,7 @@ gu{
             ls{"મધ્ય ઇન્ડોનેશિયા સમય"}
         }
         "meta:Indonesia_Eastern"{
-            ls{"પૂર્વીય ઇન્ડોનેશિયા સમય"}
+            ls{"પૂર્વી ઇન્ડોનેશિયા સમય"}
         }
         "meta:Indonesia_Western"{
             ls{"પશ્ચિમી ઇન્ડોનેશિયા સમય"}
@@ -1662,9 +1642,9 @@ gu{
             ls{"મેક્વાયર આઇલેન્ડ સમય"}
         }
         "meta:Magadan"{
-            ld{"મગાડન ગ્રીષ્મ સમય"}
-            lg{"મગાડન સમય"}
-            ls{"મગાડન માનક સમય"}
+            ld{"મગદન ગ્રીષ્મ સમય"}
+            lg{"મેગાડન સમય"}
+            ls{"માગાદાન માનક સમય"}
         }
         "meta:Malaysia"{
             ls{"મલેશિયા સમય"}
@@ -1685,16 +1665,6 @@ gu{
         }
         "meta:Mawson"{
             ls{"મોસન સમય"}
-        }
-        "meta:Mexico_Northwest"{
-            ld{"ઉત્તરપશ્ચિમ મેક્સિકો દિવસ સમય"}
-            lg{"ઉત્તરપશ્ચિમ મેક્સિકો સમય"}
-            ls{"ઉત્તરપશ્ચિમ મેક્સિકો માનક સમય"}
-        }
-        "meta:Mexico_Pacific"{
-            ld{"મેક્સીકન પેસિફિક દિવસ સમય"}
-            lg{"મેક્સીકન પેસિફિક સમય"}
-            ls{"મેક્સીકન પેસિફિક માનક સમય"}
         }
         "meta:Mongolia"{
             ld{"ઉલાન બટોર ગ્રીષ્મ સમય"}
@@ -1745,9 +1715,9 @@ gu{
             ls{"ઉત્તર મારિયાના આઇલેન્ડ્સ"}
         }
         "meta:Novosibirsk"{
-            ld{"નોવસિબિર્સ્ક ગ્રીષ્મ સમય"}
-            lg{"નોવસિબિર્સ્ક સમય"}
-            ls{"નોવસિબિર્સ્ક માનક સમય"}
+            ld{"નોવોસીબર્ક્સ ગ્રીષ્મ સમય"}
+            lg{"નોવોસીર્બિર્સ્ક સમય"}
+            ls{"નોવોસિબિર્સ્ક માનક સમય"}
         }
         "meta:Omsk"{
             ld{"ઓમ્સ્ક ગ્રીષ્મ સમય"}
@@ -1793,9 +1763,6 @@ gu{
         }
         "meta:Ponape"{
             ls{"પોનપે સમય"}
-        }
-        "meta:Pyongyang"{
-            ls{"યોન્ગ્યાન્ગ સમય"}
         }
         "meta:Qyzylorda"{
             ld{"કિઝિલોર્ડા ગ્રીષ્મ સમય"}
@@ -1890,9 +1857,9 @@ gu{
             ls{"વેનેઝુએલા સમય"}
         }
         "meta:Vladivostok"{
-            ld{"વ્લાડિવોસ્ટોક ગ્રીષ્મ સમય"}
-            lg{"વ્લાડિવોસ્ટોક સમય"}
-            ls{"વ્લાડિવોસ્ટોક માનક સમય"}
+            ld{"વ્લેડિવોસ્ટોક ગ્રીષ્મ સમય"}
+            lg{"વ્લેડિવોસ્ટોક સમય"}
+            ls{"વ્લાદિવોસ્તોક માનક સમય"}
         }
         "meta:Volgograd"{
             ld{"વોલ્ગોગ્રેડ ગ્રીષ્મ સમય"}
@@ -1909,14 +1876,14 @@ gu{
             ls{"વૉલિસ અને ફ્યુચુના સમય"}
         }
         "meta:Yakutsk"{
-            ld{"યાકુત્સ્ક ગ્રીષ્મ સમય"}
-            lg{"યાકુત્સ્ક સમય"}
+            ld{"યકુત્સ્ક ગ્રીષ્મ સમય"}
+            lg{"યકુત્સક સમય"}
             ls{"યાકુત્સ્ક માનક સમય"}
         }
         "meta:Yekaterinburg"{
-            ld{"યેકાટેરિનબર્ગ ગ્રીષ્મ સમય"}
-            lg{"યેકાટેરિનબર્ગ સમય"}
-            ls{"યેકાટેરિનબર્ગ માનક સમય"}
+            ld{"ઇકાટેરિન્બર્ગ ગ્રીષ્મ સમય"}
+            lg{"યેકાતેરિંબર્ગ સમય"}
+            ls{"યેકાટેરીન્બર્ગ માનક સમય"}
         }
         fallbackFormat{"{1} ({0})"}
         gmtFormat{"GMT{0}"}
@@ -1924,6 +1891,6 @@ gu{
         hourFormat{"+HH:mm;-HH:mm"}
         regionFormat{"{0} સમય"}
         regionFormatDaylight{"{0} (+1)"}
-        regionFormatStandard{"{0} માનક સમય"}
+        regionFormatStandard{"{0} (+0)"}
     }
 }

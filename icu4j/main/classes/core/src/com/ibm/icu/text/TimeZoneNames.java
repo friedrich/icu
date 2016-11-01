@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2011-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2011-2014, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.text;
@@ -12,12 +10,10 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.Set;
 
 import com.ibm.icu.impl.ICUConfig;
 import com.ibm.icu.impl.SoftCache;
-import com.ibm.icu.impl.TZDBTimeZoneNames;
 import com.ibm.icu.impl.TimeZoneNamesImpl;
 import com.ibm.icu.util.TimeZone;
 import com.ibm.icu.util.ULocale;
@@ -88,43 +84,43 @@ public abstract class TimeZoneNames implements Serializable {
     public enum NameType {
         /**
          * Long display name, such as "Eastern Time".
-         *
+         * 
          * @stable ICU 49
          */
         LONG_GENERIC,
         /**
          * Long display name for standard time, such as "Eastern Standard Time".
-         *
+         * 
          * @stable ICU 49
          */
         LONG_STANDARD,
         /**
          * Long display name for daylight saving time, such as "Eastern Daylight Time".
-         *
+         * 
          * @stable ICU 49
          */
         LONG_DAYLIGHT,
         /**
          * Short display name, such as "ET".
-         *
+         * 
          * @stable ICU 49
          */
         SHORT_GENERIC,
         /**
          * Short display name for standard time, such as "EST".
-         *
+         * 
          * @stable ICU 49
          */
         SHORT_STANDARD,
         /**
          * Short display name for daylight saving time, such as "EDT".
-         *
+         * 
          * @stable ICU 49
          */
         SHORT_DAYLIGHT,
         /**
          * Exemplar location name, such as "Los Angeles".
-         *
+         * 
          * @stable ICU 51
          */
         EXEMPLAR_LOCATION,
@@ -163,44 +159,16 @@ public abstract class TimeZoneNames implements Serializable {
     }
 
     /**
-     * Returns an instance of <code>TimeZoneNames</code> for the specified locale.
+     * Returns an instance of <code>TimeZoneDisplayNames</code> for the specified locale.
      * 
      * @param locale
      *            The locale.
-     * @return An instance of <code>TimeZoneNames</code>
+     * @return An instance of <code>TimeZoneDisplayNames</code>
      * @stable ICU 49
      */
     public static TimeZoneNames getInstance(ULocale locale) {
         String key = locale.getBaseName();
         return TZNAMES_CACHE.getInstance(key, locale);
-    }
-
-    /**
-     * Returns an instance of <code>TimeZoneNames</code> for the specified
-     * {@link java.util.Locale}.
-     * 
-     * @param locale
-     *            The {@link java.util.Locale}.
-     * @return An instance of <code>TimeZoneDisplayNames</code>
-     * @stable ICU 54
-     */
-    public static TimeZoneNames getInstance(Locale locale) {
-        return getInstance(ULocale.forLocale(locale));
-    }
-
-    /**
-     * Returns an instance of <code>TimeZoneNames</code> containing only short specific
-     * zone names ({@link NameType#SHORT_STANDARD} and {@link NameType#SHORT_DAYLIGHT}),
-     * compatible with the IANA tz database's zone abbreviations (not localized).
-     * <br>
-     * Note: The input locale is used for resolving ambiguous names (e.g. "IST" is parsed
-     * as Israel Standard Time for Israel, while it is parsed as India Standard Time for
-     * all other regions). The zone names returned by this instance are not localized.
-     * 
-     * @stable ICU 54
-     */
-    public static TimeZoneNames getTZDBInstance(ULocale locale) {
-        return new TZDBTimeZoneNames(locale);
     }
 
     /**
@@ -442,37 +410,6 @@ public abstract class TimeZoneNames implements Serializable {
     }
 
     /**
-     * @internal For specific users only until proposed publicly.
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public void loadAllDisplayNames() {}
-
-    /**
-     * @internal For specific users only until proposed publicly.
-     * @deprecated This API is ICU internal only.
-     */
-    @Deprecated
-    public void getDisplayNames(String tzID, NameType[] types, long date,
-            String[] dest, int destOffset) {
-        if (tzID == null || tzID.length() == 0) {
-            return;
-        }
-        String mzID = null;
-        for (int i = 0; i < types.length; ++i) {
-            NameType type = types[i];
-            String name = getTimeZoneDisplayName(tzID, type);
-            if (name == null) {
-                if (mzID == null) {
-                    mzID = getMetaZoneID(tzID, date);
-                }
-                name = getMetaZoneDisplayName(mzID, type);
-            }
-            dest[destOffset + i] = name;
-        }
-    }
-
-    /**
      * Sole constructor for invocation by subclass constructors.
      * 
      * @draft ICU 49 (Retain)
@@ -485,9 +422,7 @@ public abstract class TimeZoneNames implements Serializable {
      * The super class of <code>TimeZoneNames</code> service factory classes.
      * 
      * @internal
-     * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     public static abstract class Factory {
         /**
          * The factory method of <code>TimeZoneNames</code>.
@@ -496,19 +431,8 @@ public abstract class TimeZoneNames implements Serializable {
          *            The display locale
          * @return An instance of <code>TimeZoneNames</code>.
          * @internal
-         * @deprecated This API is ICU internal only.
          */
-        @Deprecated
         public abstract TimeZoneNames getTimeZoneNames(ULocale locale);
-
-        /**
-         * Sole constructor
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        @Deprecated
-        protected Factory() {
-        }
     }
 
     /**

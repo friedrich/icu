@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
 *
@@ -32,8 +30,6 @@
 
 #if !UCONFIG_NO_COLLATION
 
-// This part needs to compile as plain C code, for cintltst.
-
 #include "unicode/ucol.h"
 
 /** Check whether two collators are equal. Collators are considered equal if they
@@ -54,80 +50,25 @@ ucol_equals(const UCollator *source, const UCollator *target);
 
 #ifdef __cplusplus
 
-#include "unicode/locid.h"
-#include "unicode/ures.h"
-
 U_NAMESPACE_BEGIN
 
-struct CollationCacheEntry;
+struct CollationTailoring;
 
 class Locale;
 class UnicodeString;
-class UnifiedCache;
 
 /** Implemented in ucol_res.cpp. */
 class CollationLoader {
 public:
     static void appendRootRules(UnicodeString &s);
-    static void loadRules(const char *localeID, const char *collationType,
-                          UnicodeString &rules, UErrorCode &errorCode);
-    // Adds a reference to returned value.
-    static const CollationCacheEntry *loadTailoring(const Locale &locale, UErrorCode &errorCode);
-
-    // Cache callback. Adds a reference to returned value.
-    const CollationCacheEntry *createCacheEntry(UErrorCode &errorCode);
+    static UnicodeString *loadRules(const char *localeID, const char *collationType,
+                                    UErrorCode &errorCode);
+    static const CollationTailoring *loadTailoring(const Locale &locale, Locale &validLocale,
+                                                   UErrorCode &errorCode);
 
 private:
-    static void U_CALLCONV loadRootRules(UErrorCode &errorCode);
-
-    // The following members are used by loadTailoring()
-    // and the cache callback.
-    static const uint32_t TRIED_SEARCH = 1;
-    static const uint32_t TRIED_DEFAULT = 2;
-    static const uint32_t TRIED_STANDARD = 4;
-
-    CollationLoader(const CollationCacheEntry *re, const Locale &requested, UErrorCode &errorCode);
-    ~CollationLoader();
-
-    // All loadFromXXX methods add a reference to the returned value.
-    const CollationCacheEntry *loadFromLocale(UErrorCode &errorCode);
-    const CollationCacheEntry *loadFromBundle(UErrorCode &errorCode);
-    const CollationCacheEntry *loadFromCollations(UErrorCode &errorCode);
-    const CollationCacheEntry *loadFromData(UErrorCode &errorCode);
-
-    // Adds a reference to returned value.
-    const CollationCacheEntry *getCacheEntry(UErrorCode &errorCode);
-
-    /**
-     * Returns the rootEntry (with one addRef()) if loc==root,
-     * or else returns a new cache entry with ref count 1 for the loc and
-     * the root tailoring.
-     */
-    const CollationCacheEntry *makeCacheEntryFromRoot(
-            const Locale &loc, UErrorCode &errorCode) const;
-
-    /**
-     * Returns the entryFromCache as is if loc==validLocale,
-     * or else returns a new cache entry with ref count 1 for the loc and
-     * the same tailoring. In the latter case, a ref count is removed from
-     * entryFromCache.
-     */
-    static const CollationCacheEntry *makeCacheEntry(
-            const Locale &loc,
-            const CollationCacheEntry *entryFromCache,
-            UErrorCode &errorCode);
-
-    const UnifiedCache *cache;
-    const CollationCacheEntry *rootEntry;
-    Locale validLocale;
-    Locale locale;
-    char type[16];
-    char defaultType[16];
-    uint32_t typesTried;
-    UBool typeFallback;
-    UResourceBundle *bundle;
-    UResourceBundle *collations;
-    UResourceBundle *data;
+    CollationLoader();  // not implemented, all methods are static
+    static void loadRootRules(UErrorCode &errorCode);
 };
 
 U_NAMESPACE_END

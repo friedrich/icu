@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/segments/it.xml ../../xml/brkitr/it.xml
+// *
+// ***************************************************************************
 it{
-    Version{"2.1.19.14"}
+    Version{"2.0.92.29"}
     exceptions{
         SentenceBreak:array{
             "N.B.",
@@ -10,8 +16,6 @@ it{
             "fig.",
             "d.p.R.",
             "c.c.p.",
-            "Cfr.",
-            "vol.",
             "Geom.",
             "O.d.G.",
             "S.p.A.",
@@ -23,31 +27,22 @@ it{
             "N.d.T.",
             "rag.",
             "Sig.",
-            "Mod.",
             "pag.",
             "dr.",
-            "tav.",
             "N.d.E.",
-            "DC.",
             "mitt.",
             "Ing.",
-            "int.",
+            "vol.",
             "on.",
             "C.P.",
             "ag.",
-            "L.",
-            "U.S.",
-            "S.M.A.R.T.",
+            "int.",
             "p.i.",
             "tab.",
-            "Ltd.",
-            "Liv.",
-            "D.",
-            "U.S.A.",
+            "all.",
             "sez.",
             "avv.",
-            "S.A.R.",
-            "all.",
+            "tav.",
             "p.",
         }
     }

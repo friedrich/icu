@@ -1,5 +1,4 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
+
 /*
 **********************************************************************
 * Copyright (c) 2003-2014, International Business Machines
@@ -305,9 +304,9 @@ void readzoneinfo(ifstream& file, ZoneInfo& info, bool is64bitData) {
     }
     // skip additional Olson byte version
     file.read(buf, 1);
-    // if '\0', we have just one copy of data, if '2' or '3', there is additional
+    // if '\0', we have just one copy of data, if '2', there is additional
     // 64 bit version at the end.
-    if(buf[0]!=0 && buf[0]!='2' && buf[0]!='3') {
+    if(buf[0]!=0 && buf[0]!='2') {
       throw invalid_argument("Bad Olson version info");
     }
 
@@ -743,7 +742,7 @@ struct FinalZone {
                << " and rule ID " << ruleid;
             throw invalid_argument(os.str());
         }
-        if (year < 1900) {
+        if (year < 1900 || year >= 2050) {
             ostringstream os;
             os << "Invalid input year " << year
                << " with offset " << offset
@@ -1714,13 +1713,17 @@ int main(int argc, char *argv[]) {
     ofstream file(filename.c_str());
     if (file) {
         file << "//---------------------------------------------------------" << endl
-             << "// Copyright (C) 2016 and later: Unicode, Inc. and others." << endl
-             << "// License & terms of use: http://www.unicode.org/copyright.html#License" << endl
+             << "// Copyright (C) 2003";
+        if (thisYear > 2003) {
+            file << "-" << thisYear;
+        }
+        file << ", International Business Machines" << endl
+             << "// Corporation and others.  All Rights Reserved." << endl
              << "//---------------------------------------------------------" << endl
-             << "// Build tool:  tz2icu" << endl
-             << "// Build date:  " << asctime(now) /* << endl -- asctime emits CR */
-             << "// tz database: ftp://ftp.iana.org/tz/" << endl
-             << "// tz version:  " << version << endl
+             << "// Build tool: tz2icu" << endl
+             << "// Build date: " << asctime(now) /* << endl -- asctime emits CR */
+             << "// Olson source: ftp://elsie.nci.nih.gov/pub/" << endl
+             << "// Olson version: " << version << endl
              << "// ICU version: " << U_ICU_VERSION << endl
              << "//---------------------------------------------------------" << endl
              << "// >> !!! >>   THIS IS A MACHINE-GENERATED FILE   << !!! <<" << endl

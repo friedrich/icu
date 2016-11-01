@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bs_Cyrl.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/bs_Cyrl.xml
+ */
 bs_Cyrl{
     %%Parent{"root"}
     Countries{
@@ -37,10 +46,11 @@ bs_Cyrl{
         AD{"Андора"}
         AE{"Уједињени Арапски Емирати"}
         AF{"Авганистан"}
-        AG{"Антигва и Барбуда"}
+        AG{"Антигве и Барбуда"}
         AI{"Ангвила"}
         AL{"Албанија"}
         AM{"Арменија"}
+        AN{"Холандски Антили"}
         AO{"Ангола"}
         AQ{"Антарктик"}
         AR{"Аргентина"}
@@ -288,14 +298,9 @@ bs_Cyrl{
         ZW{"Зимбабве"}
         ZZ{"Непозната или неважећа област"}
     }
-    Countries%short{
+    CountriesShort{
         HK{"Хонг Конг"}
         MO{"Макао"}
     }
-    Countries%variant{
-        CD{"Конго (ДРК)"}
-        CG{"Конго (Република)"}
-        FK{"Фокландска (Малвинска) острва"}
-    }
-    Version{"2.1.28.76"}
+    Version{"2.0.98.52"}
 }

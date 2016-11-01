@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines
+ * Copyright (C) 1996-2014, International Business Machines
  * Corporation and others.  All Rights Reserved.
  *******************************************************************************
  * CollationCompare.java, ported from collationcompare.h/.cpp
@@ -81,9 +79,10 @@ public final class CollationCompare /* all static */ {
 
             if (leftPrimary != rightPrimary) {
                 // Return the primary difference, with script reordering.
-                if (settings.hasReordering()) {
-                    leftPrimary = settings.reorder(leftPrimary);
-                    rightPrimary = settings.reorder(rightPrimary);
+                byte[] reorderTable = settings.reorderTable;
+                if (reorderTable != null) {
+                    leftPrimary = Collation.reorder(reorderTable, leftPrimary);
+                    rightPrimary = Collation.reorder(reorderTable, rightPrimary);
                 }
                 return (leftPrimary < rightPrimary) ? Collation.LESS : Collation.GREATER;
             }
@@ -124,15 +123,16 @@ public final class CollationCompare /* all static */ {
                 int rightStart = 0;
                 for (;;) {
                     // Find the merge separator or the NO_CE terminator.
-                    long p;
                     int leftLimit = leftStart;
-                    while ((p = left.getCE(leftLimit) >>> 32) > Collation.MERGE_SEPARATOR_PRIMARY
-                            || p == 0) {
+                    long leftLower32;
+                    while ((leftLower32 = left.getCE(leftLimit) & 0xffffffffL) > Collation.MERGE_SEPARATOR_LOWER32
+                            || leftLower32 == 0) {
                         ++leftLimit;
                     }
                     int rightLimit = rightStart;
-                    while ((p = right.getCE(rightLimit) >>> 32) > Collation.MERGE_SEPARATOR_PRIMARY
-                            || p == 0) {
+                    long rightLower32;
+                    while ((rightLower32 = right.getCE(rightLimit) & 0xffffffffL) > Collation.MERGE_SEPARATOR_LOWER32
+                            || rightLower32 == 0) {
                         ++rightLimit;
                     }
 
@@ -162,7 +162,7 @@ public final class CollationCompare /* all static */ {
                     // Both strings have the same number of merge separators,
                     // or else there would have been a primary-level difference.
                     assert (left.getCE(leftLimit) == right.getCE(rightLimit));
-                    if (p == Collation.NO_CE_PRIMARY) {
+                    if (left.getCE(leftLimit) == Collation.NO_CE) {
                         break;
                     }
                     // Skip both merge separators and continue.
@@ -267,19 +267,20 @@ public final class CollationCompare /* all static */ {
 
             if (leftTertiary != rightTertiary) {
                 if (CollationSettings.sortsTertiaryUpperCaseFirst(options)) {
-                    // Pass through NO_CE and keep real tertiary weights larger than that.
+                    // Pass through NO_CE and MERGE_SEPARATOR
+                    // and keep real tertiary weights larger than the MERGE_SEPARATOR.
                     // Do not change the artificial uppercase weight of a tertiary CE (0.0.ut),
                     // to keep tertiary CEs well-formed.
                     // Their case+tertiary weights must be greater than those of
                     // primary and secondary CEs.
-                    if (leftTertiary > Collation.NO_CE_WEIGHT16) {
+                    if (leftTertiary > Collation.MERGE_SEPARATOR_WEIGHT16) {
                         if ((leftLower32 & 0xffff0000) != 0) {
                             leftTertiary ^= 0xc000;
                         } else {
                             leftTertiary += 0x4000;
                         }
                     }
-                    if (rightTertiary > Collation.NO_CE_WEIGHT16) {
+                    if (rightTertiary > Collation.MERGE_SEPARATOR_WEIGHT16) {
                         if ((rightLower32 & 0xffff0000) != 0) {
                             rightTertiary ^= 0xc000;
                         } else {
@@ -310,9 +311,11 @@ public final class CollationCompare /* all static */ {
             do {
                 long ce = left.getCE(leftIndex++);
                 leftQuaternary = ce & 0xffff;
-                if (leftQuaternary <= Collation.NO_CE_WEIGHT16) {
-                    // Variable primary or completely ignorable or NO_CE.
+                if (leftQuaternary == 0) {
+                    // Variable primary or completely ignorable.
                     leftQuaternary = ce >>> 32;
+                } else if (leftQuaternary <= Collation.MERGE_SEPARATOR_WEIGHT16) {
+                    // Leave NO_CE or MERGE_SEPARATOR as is.
                 } else {
                     // Regular CE, not tertiary ignorable.
                     // Preserve the quaternary weight in bits 7..6.
@@ -324,9 +327,11 @@ public final class CollationCompare /* all static */ {
             do {
                 long ce = right.getCE(rightIndex++);
                 rightQuaternary = ce & 0xffff;
-                if (rightQuaternary <= Collation.NO_CE_WEIGHT16) {
-                    // Variable primary or completely ignorable or NO_CE.
+                if (rightQuaternary == 0) {
+                    // Variable primary or completely ignorable.
                     rightQuaternary = ce >>> 32;
+                } else if (rightQuaternary <= Collation.MERGE_SEPARATOR_WEIGHT16) {
+                    // Leave NO_CE or MERGE_SEPARATOR as is.
                 } else {
                     // Regular CE, not tertiary ignorable.
                     // Preserve the quaternary weight in bits 7..6.
@@ -336,13 +341,14 @@ public final class CollationCompare /* all static */ {
 
             if (leftQuaternary != rightQuaternary) {
                 // Return the difference, with script reordering.
-                if (settings.hasReordering()) {
-                    leftQuaternary = settings.reorder(leftQuaternary);
-                    rightQuaternary = settings.reorder(rightQuaternary);
+                byte[] reorderTable = settings.reorderTable;
+                if (reorderTable != null) {
+                    leftQuaternary = Collation.reorder(reorderTable, leftQuaternary);
+                    rightQuaternary = Collation.reorder(reorderTable, rightQuaternary);
                 }
                 return (leftQuaternary < rightQuaternary) ? Collation.LESS : Collation.GREATER;
             }
-            if (leftQuaternary == Collation.NO_CE_PRIMARY) {
+            if (leftQuaternary == Collation.NO_CE_WEIGHT16) {
                 break;
             }
         }

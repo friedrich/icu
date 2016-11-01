@@ -1,13 +1,9 @@
 /*
-***********************************************************************
-* Copyright (C) 2016 and later: Unicode, Inc. and others.
-* License & terms of use: http://www.unicode.org/copyright.html#License
-***********************************************************************
-***********************************************************************
-* Copyright (c) 2002-2014, International Business Machines
+**********************************************************************
+* Copyright (c) 2002-2005, International Business Machines
 * Corporation and others.  All Rights Reserved.
-***********************************************************************
-***********************************************************************
+**********************************************************************
+**********************************************************************
 */
 #ifndef _CONVPERF_H
 #define _CONVPERF_H
@@ -18,12 +14,12 @@
 #include "unicode/ucnv.h"
 #include "unicode/uclean.h"
 #include "unicode/ustring.h"
-#include "cmemory.h" // for UPRV_LENGTHOF
 
 #include "unicode/uperf.h"
 
 #define CONVERSION_FLAGS (0) /*WC_DEFAULTCHAR WC_COMPOSITECHECK & WC_SEPCHARS*/
 #define MAX_BUF_SIZE  3048
+#define LENGTHOF(array) (sizeof(array)/sizeof((array)[0]))
 
 class ICUToUnicodePerfFunction : public UPerfFunction{
 private:
@@ -163,7 +159,7 @@ public:
         name = cpName;
         src = pszIn;
         srcLen = szLen;
-        dstLen = UPRV_LENGTHOF(dest);
+        dstLen = LENGTHOF(dest);
         unsigned short bEnc[30]={'\0'};
         const char* tenc=name;
         for(int i=0;*tenc!='\0';i++){
@@ -217,7 +213,7 @@ public:
         name = cpName;
         src = pszIn;
         srcLen = szLen;
-        dstLen = UPRV_LENGTHOF(dest);
+        dstLen = LENGTHOF(dest);
         lpUsedDefaultChar=FALSE;
         unsigned short bEnc[30]={'\0'};
         const char* tenc=name;
@@ -312,7 +308,7 @@ public:
         getErr(err,status);
         src = source;
         srcLen = sourceLen;
-        dstLen = UPRV_LENGTHOF(dst);
+        dstLen = LENGTHOF(dst);
         cpName = name;
     }
 
@@ -368,7 +364,7 @@ public:
         getErr(err,status);
         src = source;
         srcLen = sourceLen;
-        dstLen = UPRV_LENGTHOF(dst);
+        dstLen = LENGTHOF(dst);
         cpName = name;
 
     }
@@ -408,7 +404,7 @@ public:
 
         src = source;
         srcLen = sourceLen;
-        dstLen = UPRV_LENGTHOF(dst);
+        dstLen = LENGTHOF(dst);
         cpName = name;
         unsigned short bEnc[30]={'\0'};
         const char* tenc=name;
@@ -469,7 +465,7 @@ public:
         }
         src = source;
         srcLen = sourceLen;
-        dstLen = UPRV_LENGTHOF(dst);
+        dstLen = LENGTHOF(dst);
         cpName = name;
         /* get the charset info */
         MIMECSETINFO mimeInfo;

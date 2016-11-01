@@ -1,9 +1,21 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/kln.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/kln.xml
+ */
 kln{
     AuxExemplarCharacters{"[f q v x z]"}
     ExemplarCharacters{"[a b c d e g h i j k l m n o p r s t u w y]"}
     ExemplarCharactersIndex{"[A B C D E G H I J K L M N O P R S T U W Y]"}
+    LocaleScript{
+        "Latn",
+    }
     NumberElements{
         latn{
             patterns{
@@ -12,14 +24,14 @@ kln{
             }
         }
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.92.87"}
     calendar{
         generic{
             DateTimePatterns{
-                "HH:mm:ss zzzz",
-                "HH:mm:ss z",
-                "HH:mm:ss",
-                "HH:mm",
+                "h:mm:ss a zzzz",
+                "h:mm:ss a z",
+                "h:mm:ss a",
+                "h:mm a",
                 "EEEE, d MMMM y G",
                 "d MMMM y G",
                 "d MMM y G",
@@ -56,18 +68,14 @@ kln{
         }
         gregorian{
             AmPmMarkers{
-                "karoon",
-                "kooskoliny",
-            }
-            AmPmMarkersAbbr{
-                "krn",
-                "koosk",
+                "Beet",
+                "Kemo",
             }
             DateTimePatterns{
-                "HH:mm:ss zzzz",
-                "HH:mm:ss z",
-                "HH:mm:ss",
-                "HH:mm",
+                "h:mm:ss a zzzz",
+                "h:mm:ss a z",
+                "h:mm:ss a",
+                "h:mm a",
                 "EEEE, d MMMM y",
                 "d MMMM y",
                 "d MMM y",
@@ -104,29 +112,29 @@ kln{
             dayNames{
                 format{
                     abbreviated{
-                        "Kts",
-                        "Kot",
-                        "Koo",
-                        "Kos",
-                        "Koa",
-                        "Kom",
-                        "Kol",
+                        "Tis",
+                        "Tai",
+                        "Aen",
+                        "Som",
+                        "Ang",
+                        "Mut",
+                        "Loh",
                     }
                     wide{
-                        "Kotisap",
-                        "Kotaai",
-                        "Koaeng’",
-                        "Kosomok",
-                        "Koang’wan",
-                        "Komuut",
-                        "Kolo",
+                        "Betutab tisap",
+                        "Betut netai",
+                        "Betutab aeng'",
+                        "Betutab somok",
+                        "Betutab ang'wan",
+                        "Betutab mut",
+                        "Betutab lo",
                     }
                 }
                 stand-alone{
                     narrow{
                         "T",
                         "T",
-                        "O",
+                        "A",
                         "S",
                         "A",
                         "M",
@@ -148,43 +156,43 @@ kln{
                 format{
                     abbreviated{
                         "Mul",
-                        "Ngat",
-                        "Taa",
-                        "Iwo",
-                        "Mam",
-                        "Paa",
+                        "Nga",
+                        "Kip",
+                        "Iwa",
                         "Nge",
-                        "Roo",
+                        "Wak",
+                        "Rop",
+                        "Kog",
                         "Bur",
                         "Epe",
-                        "Kpt",
-                        "Kpa",
+                        "Tai",
+                        "Aen",
                     }
                     wide{
                         "Mulgul",
-                        "Ng’atyaato",
-                        "Kiptaamo",
-                        "Iwootkuut",
-                        "Mamuut",
-                        "Paagi",
-                        "Ng’eiyeet",
-                        "Rooptui",
-                        "Bureet",
-                        "Epeeso",
-                        "Kipsuunde ne taai",
-                        "Kipsuunde nebo aeng’",
+                        "Ng'atyato",
+                        "Kiptamo",
+                        "Iwat kut",
+                        "Ng'eiyet",
+                        "Waki",
+                        "Roptui",
+                        "Kipkogaga",
+                        "Buret",
+                        "Epeso",
+                        "Kipsunde netai",
+                        "Kipsunde nebo aeng",
                     }
                 }
                 stand-alone{
                     narrow{
                         "M",
                         "N",
-                        "T",
+                        "K",
                         "I",
-                        "M",
-                        "P",
                         "N",
+                        "W",
                         "R",
+                        "K",
                         "B",
                         "E",
                         "K",
@@ -202,9 +210,9 @@ kln{
                     }
                     wide{
                         "Robo netai",
-                        "Robo nebo aeng’",
+                        "Robo nebo aeng'",
                         "Robo nebo somok",
-                        "Robo nebo ang’wan",
+                        "Robo nebo ang'wan",
                     }
                 }
             }

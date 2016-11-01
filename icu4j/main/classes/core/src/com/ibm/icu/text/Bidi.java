@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
-*   Copyright (C) 2001-2016, International Business Machines
+*   Copyright (C) 2001-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *******************************************************************************
 */
@@ -61,6 +59,7 @@ import com.ibm.icu.lang.UProperty;
  * Some of the API methods provide access to &quot;runs&quot;. Such a
  * &quot;run&quot; is defined as a sequence of characters that are at the same
  * embedding level after performing the Bidi algorithm.
+ * <p>
  *
  * <h3>Basic concept: paragraph</h3>
  * A piece of text can be divided into several paragraphs by characters
@@ -151,6 +150,11 @@ import com.ibm.icu.lang.UProperty;
  * <li>{@link #OPTION_STREAMING}
  * </ul>
  *
+ *
+ * @author Simon Montagu, Matitiahu Allouche (ported from C code written by Markus W. Scherer)
+ * @stable ICU 3.8
+ *
+ *
  * <h4> Sample code for the ICU Bidi API </h4>
  *
  * <h5>Rendering a paragraph with the ICU Bidi API</h5>
@@ -163,7 +167,7 @@ import com.ibm.icu.lang.UProperty;
  *
  * <p>
  * The basic assumptions are:
- *
+ * </p>
  * <ul>
  * <li>Rendering is done from left to right on a horizontal line.</li>
  * <li>A run of single-style, unidirectional text can be rendered at once.
@@ -257,10 +261,10 @@ import com.ibm.icu.lang.UProperty;
  *          // iterate over style runs
  *          if (direction == Bidi.LTR) {
  *              int styleLimit;
- *              for (i = 0; i &lt; styleRunCount; ++i) {
+ *              for (i = 0; i < styleRunCount; ++i) {
  *                  styleLimit = styleRuns[i].limit;
- *                  if (start &lt; styleLimit) {
- *                      if (styleLimit &gt; limit) {
+ *                  if (start < styleLimit) {
+ *                      if (styleLimit > limit) {
  *                          styleLimit = limit;
  *                      }
  *                      renderRun(text, start, styleLimit,
@@ -274,14 +278,14 @@ import com.ibm.icu.lang.UProperty;
  *          } else {
  *              int styleStart;
  *
- *              for (i = styleRunCount-1; i &gt;= 0; --i) {
- *                  if (i &gt; 0) {
+ *              for (i = styleRunCount-1; i >= 0; --i) {
+ *                  if (i > 0) {
  *                      styleStart = styleRuns[i-1].limit;
  *                  } else {
  *                      styleStart = 0;
  *                  }
- *                  if (limit &gt;= styleStart) {
- *                      if (styleStart &lt; start) {
+ *                  if (limit >= styleStart) {
+ *                      if (styleStart < start) {
  *                          styleStart = start;
  *                      }
  *                      renderRun(text, styleStart, limit, direction,
@@ -301,7 +305,7 @@ import com.ibm.icu.lang.UProperty;
  *          byte direction = line.getDirection();
  *          if (direction != Bidi.MIXED) {
  *              // unidirectional
- *              if (styleRunCount &lt;= 1) {
+ *              if (styleRunCount <= 1) {
  *                  renderRun(text, start, limit, direction, styleRuns[0].style);
  *              } else {
  *                  renderDirectionalRun(text, start, limit, direction,
@@ -318,18 +322,18 @@ import com.ibm.icu.lang.UProperty;
  *                  e.printStackTrace();
  *                  return;
  *              }
- *              if (styleRunCount &lt;= 1) {
+ *              if (styleRunCount <= 1) {
  *                  int style = styleRuns[0].style;
  *
  *                  // iterate over directional runs
- *                  for (i = 0; i &lt; count; ++i) {
+ *                  for (i = 0; i < count; ++i) {
  *                      run = line.getVisualRun(i);
  *                      renderRun(text, run.getStart(), run.getLimit(),
  *                                run.getDirection(), style);
  *                  }
  *              } else {
  *                  // iterate over both directional and style runs
- *                  for (i = 0; i &lt; count; ++i) {
+ *                  for (i = 0; i < count; ++i) {
  *                      run = line.getVisualRun(i);
  *                      renderDirectionalRun(text, run.getStart(),
  *                                           run.getLimit(), run.getDirection(),
@@ -353,18 +357,18 @@ import com.ibm.icu.lang.UProperty;
  *              e.printStackTrace();
  *              return;
  *          }
- *          byte paraLevel = (byte)(1 &amp; para.getParaLevel());
+ *          byte paraLevel = (byte)(1 & para.getParaLevel());
  *          StyleRun styleRun = new StyleRun(length, styleNormal);
  *
- *          if (styleRuns == null || styleRunCount &lt;= 0) {
+ *          if (styleRuns == null || styleRunCount <= 0) {
  *              styleRuns = new StyleRun[1];
  *              styleRunCount = 1;
  *              styleRuns[0] = styleRun;
  *          }
- *          // assume styleRuns[styleRunCount-1].limit&gt;=length
+ *          // assume styleRuns[styleRunCount-1].limit>=length
  *
  *          int width = getTextWidth(text, 0, length, styleRuns, styleRunCount);
- *          if (width &lt;= lineWidth) {
+ *          if (width <= lineWidth) {
  *              // everything fits onto one line
  *
  *              // prepare rendering a new line from either left or right
@@ -393,7 +397,7 @@ import com.ibm.icu.lang.UProperty;
  *                  // from either left or right
  *                  startLine(paraLevel, width);
  *
- *                  if (styleRunStart &gt; 0) {
+ *                  if (styleRunStart > 0) {
  *                      int newRunCount = styleRuns.length - styleRunStart;
  *                      StyleRun[] newRuns = new StyleRun[newRunCount];
  *                      System.arraycopy(styleRuns, styleRunStart, newRuns, 0,
@@ -409,7 +413,7 @@ import com.ibm.icu.lang.UProperty;
  *                  }
  *                  start = limit;
  *                  styleRunStart = styleRunLimit - 1;
- *                  if (start &gt;= styleRuns[styleRunStart].limit) {
+ *                  if (start >= styleRuns[styleRunStart].limit) {
  *                      ++styleRunStart;
  *                  }
  *              }
@@ -424,9 +428,6 @@ import com.ibm.icu.lang.UProperty;
  *  }
  *
  * </pre>
- *
- * @author Simon Montagu, Matitiahu Allouche (ported from C code written by Markus W. Scherer)
- * @stable ICU 3.8
  */
 
 /*
@@ -529,6 +530,7 @@ public class Bidi {
         int   contextPos;               /* position of last strong char found before opening */
         short flags;                    /* bits for L or R/AL found within the pair */
         byte  contextDir;               /* L or R according to last strong char before opening */
+        byte  filler;                   /* to complete a nice multiple of 4 bytes */
     }
 
     static class IsoRun {
@@ -542,7 +544,7 @@ public class Bidi {
     }
 
     static class BracketData {
-        Opening[] openings = new Opening[SIMPLE_OPENINGS_COUNT];
+        Opening[] openings = new Opening[SIMPLE_OPENINGS_SIZE];
         int   isoRunLast;               /* index of last used entry */
         /* array of nested isolated sequence entries; can never excess UBIDI_MAX_EXPLICIT_LEVEL
            + 1 for index 0, + 1 for before the first isolated sequence */
@@ -713,7 +715,7 @@ public class Bidi {
      * this is part of the approximate "inverse Bidi" algorithm
      *
      * <p>This option does not imply corresponding adjustment of the index
-     * mappings.
+     * mappings.</p>
      *
      * @see #setInverse
      * @see #writeReordered
@@ -727,7 +729,7 @@ public class Bidi {
      * (this does not affect INSERT_LRM_FOR_NUMERIC)
      *
      * <p>This option does not imply corresponding adjustment of the index
-     * mappings.
+     * mappings.</p>
      *
      * @see #writeReordered
      * @see #INSERT_LRM_FOR_NUMERIC
@@ -744,7 +746,7 @@ public class Bidi {
      * <code>writeReverse()</code> without mirroring.
      * Doing this in the same step is faster and avoids a temporary buffer.
      * An example for using this option is output to a character terminal that
-     * is designed for RTL scripts and stores text in reverse order.
+     * is designed for RTL scripts and stores text in reverse order.</p>
      *
      * @see #writeReordered
      * @stable ICU 3.8
@@ -828,10 +830,10 @@ public class Bidi {
      * a reordering to a Logical order
      *
      * <p>This option must be set or reset before calling
-     * <code>setPara</code>.
+     * <code>setPara</code>.</p>
      *
      * <p>This option is significant only with reordering modes which generate
-     * a result with Logical order, specifically.
+     * a result with Logical order, specifically.</p>
      * <ul>
      *   <li><code>REORDER_RUNS_ONLY</code></li>
      *   <li><code>REORDER_INVERSE_NUMBERS_AS_L</code></li>
@@ -843,7 +845,7 @@ public class Bidi {
      * <code>REORDER_INVERSE_NUMBERS_AS_L</code> or with calling
      * <code>setInverse(true)</code>, it implies option
      * <code>INSERT_LRM_FOR_NUMERIC</code> in calls to method
-     * <code>writeReordered()</code>.
+     * <code>writeReordered()</code>.</p>
      *
      * <p>For other reordering modes, a minimum number of LRM or RLM characters
      * will be added to the source text after reordering it so as to ensure
@@ -861,7 +863,7 @@ public class Bidi {
      * <code>writeReordered()</code> and it implies option
      * <code>INSERT_LRM_FOR_NUMERIC</code> in calls to method
      * <code>writeReordered()</code> if the reordering mode is
-     * <code>REORDER_INVERSE_NUMBERS_AS_L</code>.
+     * <code>REORDER_INVERSE_NUMBERS_AS_L</code>.</p>
      *
      * @see #setReorderingMode
      * @see #setReorderingOptions
@@ -881,13 +883,13 @@ public class Bidi {
      * remove Bidi control characters
      *
      * <p>This option must be set or reset before calling
-     * <code>setPara</code>.
+     * <code>setPara</code>.</p>
      *
      * <p>This option nullifies option
      * <code>OPTION_INSERT_MARKS</code>. It inhibits option
      * <code>INSERT_LRM_FOR_NUMERIC</code> in calls to method
      * <code>writeReordered()</code> and it implies option
-     * <code>REMOVE_BIDI_CONTROLS</code> in calls to that method.
+     * <code>REMOVE_BIDI_CONTROLS</code> in calls to that method.</p>
      *
      * @see #setReorderingMode
      * @see #setReorderingOptions
@@ -903,12 +905,12 @@ public class Bidi {
      * process the output as part of a stream to be continued
      *
      * <p>This option must be set or reset before calling
-     * <code>setPara</code>.
+     * <code>setPara</code>.</p>
      *
      * <p>This option specifies that the caller is interested in processing
      * large text object in parts. The results of the successive calls are
      * expected to be concatenated by the caller. Only the call for the last
-     * part will have this option bit off.
+     * part will have this option bit off.</p>
      *
      * <p>When this option bit is on, <code>setPara()</code> may process
      * less than the full source text in order to truncate the text at a
@@ -930,12 +932,13 @@ public class Bidi {
      *     <li>resubmit the same text after turning off option
      *         <code>OPTION_STREAMING</code>.</li></ul>
      * In all cases, this option should be turned off before processing the last
-     * part of the text.
+     * part of the text.</p>
      *
      * <p>When the <code>OPTION_STREAMING</code> option is used, it is
      * recommended to call <code>orderParagraphsLTR(true)</code> before calling
      * <code>setPara()</code> so that later paragraphs may be concatenated to
      * previous paragraphs on the right.
+     * </p>
      *
      * @see #setReorderingMode
      * @see #setReorderingOptions
@@ -978,19 +981,16 @@ public class Bidi {
     /**
      * Value returned by <code>BidiClassifier</code> when there is no need to
      * override the standard Bidi class for a given code point.
-     *
-     * <p>This constant is deprecated; use UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS)+1 instead.
-     *
      * @see BidiClassifier
-     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
+     * @stable ICU 3.8
      */
-    @Deprecated
-    public static final int CLASS_DEFAULT = UCharacterDirection.CHAR_DIRECTION_COUNT;
+    public static final int CLASS_DEFAULT = UCharacterDirection
+                                            .CHAR_DIRECTION_COUNT;
 
     /* number of paras entries allocated initially */
-    static final int SIMPLE_PARAS_COUNT = 10;
+    static final int SIMPLE_PARAS_SIZE = 10;
     /* number of isolate run entries for paired brackets allocated initially */
-    static final int SIMPLE_OPENINGS_COUNT = 20;
+    static final int SIMPLE_OPENINGS_SIZE = 20;
 
     private static final char CR = '\r';
     private static final char LF = '\n';
@@ -1089,8 +1089,8 @@ public class Bidi {
 
     /* fields for paragraph handling, set in getDirProps() */
     int                 paraCount;
-    int[]               paras_limit = new int[SIMPLE_PARAS_COUNT];
-    byte[]              paras_level = new byte[SIMPLE_PARAS_COUNT];
+    int[]               paras_limit = new int[SIMPLE_PARAS_SIZE];
+    byte[]              paras_level = new byte[SIMPLE_PARAS_SIZE];
 
     /* fields for line reordering */
     int                 runCount;     /* ==-1: runs not set up yet */
@@ -1421,19 +1421,19 @@ public class Bidi {
      * to logical order. This is effectively the inverse algorithm of the
      * described Bidi algorithm. Note that there is no standard algorithm for
      * this "inverse Bidi" and that the current implementation provides only an
-     * approximation of "inverse Bidi".
+     * approximation of "inverse Bidi".</p>
      *
      * <p>With <code>isInversed</code> set to <code>true</code>,
      * this method changes the behavior of some of the subsequent methods
      * in a way that they can be used for the inverse Bidi algorithm.
      * Specifically, runs of text with numeric characters will be treated in a
      * special way and may need to be surrounded with LRM characters when they are
-     * written in reordered sequence.
+     * written in reordered sequence.</p>
      *
      * <p>Output runs should be retrieved using <code>getVisualRun()</code>.
      * Since the actual input for "inverse Bidi" is visually ordered text and
      * <code>getVisualRun()</code> gets the reordered runs, these are actually
-     * the runs of the logically ordered output.
+     * the runs of the logically ordered output.</p>
      *
      * <p>Calling this method with argument <code>isInverse</code> set to
      * <code>true</code> is equivalent to calling <code>setReorderingMode</code>
@@ -1466,7 +1466,7 @@ public class Bidi {
      * <code>setReorderingMode</code> will return <code>true</code> if the
      * reordering mode was set to
      * <code>REORDER_INVERSE_NUMBERS_AS_L</code>, <code>false</code>
-     * for all other values.
+     * for all other values.</p>
      *
      * @return <code>true</code> if the <code>Bidi</code> object is set to
      * perform the inverse Bidi algorithm by handling numbers as L.
@@ -1489,22 +1489,22 @@ public class Bidi {
      *
      * <p>The normal operation of the Bidi algorithm as described in the Unicode
      * Standard Annex #9 is to take text stored in logical (keyboard, typing)
-     * order and to determine how to reorder it for visual rendering.
+     * order and to determine how to reorder it for visual rendering.</p>
      *
      * <p>With the reordering mode set to a value other than
      * <code>REORDER_DEFAULT</code>, this method changes the behavior of some of
      * the subsequent methods in a way such that they implement an inverse Bidi
-     * algorithm or some other algorithm variants.
+     * algorithm or some other algorithm variants.</p>
      *
      * <p>Some legacy systems store text in visual order, and for operations
      * with standard, Unicode-based algorithms, the text needs to be transformed
      * into logical order. This is effectively the inverse algorithm of the
      * described Bidi algorithm. Note that there is no standard algorithm for
-     * this "inverse Bidi", so a number of variants are implemented here.
+     * this "inverse Bidi", so a number of variants are implemented here.</p>
      *
      * <p>In other cases, it may be desirable to emulate some variant of the
      * Logical to Visual algorithm (e.g. one used in MS Windows), or perform a
-     * Logical to Logical transformation.
+     * Logical to Logical transformation.</p>
      *
      * <ul>
      * <li>When the Reordering Mode is set to
@@ -1618,7 +1618,7 @@ public class Bidi {
      * or <code>writeReordered()</code> are actually runs or character string
      * of logically ordered output.<br>
      * For all the "inverse Bidi" modes, the source text should not contain
-     * Bidi control characters other than LRM or RLM.
+     * Bidi control characters other than LRM or RLM.</p>
      *
      * <p>Note that option <code>OUTPUT_REVERSE</code> of
      * <code>writeReordered</code> has no useful meaning and should not be used
@@ -2050,7 +2050,7 @@ public class Bidi {
         bd.isoRuns[0].level = GetParaLevelAt(0);
         bd.isoRuns[0].lastStrong = bd.isoRuns[0].lastBase = bd.isoRuns[0].contextDir = (byte)(GetParaLevelAt(0) & 1);
         bd.isoRuns[0].contextPos = 0;
-        bd.openings = new Opening[SIMPLE_OPENINGS_COUNT];
+        bd.openings = new Opening[SIMPLE_OPENINGS_SIZE];
         bd.isNumbersSpecial = reorderingMode == REORDER_NUMBERS_SPECIAL ||
                               reorderingMode == REORDER_INVERSE_FOR_NUMBERS_SPECIAL;
     }
@@ -3443,8 +3443,6 @@ public class Bidi {
             } else {
                 byte prop, prop1;
                 prop = dirProps[i];
-                if (prop == B)
-                    isolateCount = -1;  /* current isolates stack entry == none */
                 if (inverseRTL) {
                     if (prop == AL) {
                         /* AL before EN does not make it AN */
@@ -3867,7 +3865,7 @@ public class Bidi {
      *        (same index) character if the level has the
      *        <code>LEVEL_OVERRIDE</code> bit set.<br><br>
      *        Except for that bit, it must be
-     *        <code>paraLevel&lt;=embeddingLevels[]&lt;=MAX_EXPLICIT_LEVEL</code>,
+     *        <code>paraLevel<=embeddingLevels[]<=MAX_EXPLICIT_LEVEL</code>,
      *        with one exception: a level of zero may be specified for a
      *        paragraph separator even if <code>paraLevel&gt;0</code> when multiple
      *        paragraphs are submitted in the same call to <code>setPara()</code>.<br><br>
@@ -3951,7 +3949,7 @@ public class Bidi {
      *        (same index) character if the level has the
      *        <code>LEVEL_OVERRIDE</code> bit set.<br><br>
      *        Except for that bit, it must be
-     *        <code>paraLevel&lt;=embeddingLevels[]&lt;=MAX_EXPLICIT_LEVEL</code>,
+     *        <code>paraLevel<=embeddingLevels[]<=MAX_EXPLICIT_LEVEL</code>,
      *        with one exception: a level of zero may be specified for a
      *        paragraph separator even if <code>paraLevel&gt;0</code> when multiple
      *        paragraphs are submitted in the same call to <code>setPara()</code>.<br><br>
@@ -4068,10 +4066,16 @@ public class Bidi {
          */
         switch (direction) {
         case LTR:
+            /* make sure paraLevel is even */
+            paraLevel = (byte)((paraLevel + 1) & ~1);
+
             /* all levels are implicitly at paraLevel (important for getLevels()) */
             trailingWSStart = 0;
             break;
         case RTL:
+            /* make sure paraLevel is odd */
+            paraLevel |= 1;
+
             /* all levels are implicitly at paraLevel (important for getLevels()) */
             trailingWSStart = 0;
             break;
@@ -4680,8 +4684,8 @@ public class Bidi {
     /**
      * Retrieves the Bidi class for a given code point.
      * <p>If a <code>BidiClassifier</code> is defined and returns a value
-     * other than <code>CLASS_DEFAULT=UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS)+1</code>,
-     * that value is used; otherwise the default class determination mechanism is invoked.
+     * other than <code>CLASS_DEFAULT</code>, that value is used; otherwise
+     * the default class determination mechanism is invoked.</p>
      *
      * @param c The code point to get a Bidi class for.
      *
@@ -5174,7 +5178,7 @@ public class Bidi {
      * Some elements of the source array may have no mapping in the
      * destination array. In that case, their value will be
      * the special value <code>MAP_NOWHERE</code>.
-     * All elements must be &gt;=0 or equal to <code>MAP_NOWHERE</code>.
+     * All elements must be >=0 or equal to <code>MAP_NOWHERE</code>.
      * Some elements in the source map may have a value greater than the
      * srcMap.length if the destination array has more elements than the
      * source array.
@@ -5664,7 +5668,7 @@ public class Bidi {
      *
      * <p>The text may have been aliased (only a reference was stored
      * without copying the contents), thus it must not have been modified
-     * since the <code>setPara()</code> call.
+     * since the <code>setPara()</code> call.</p>
      *
      * This method preserves the integrity of characters with multiple
      * code units and (optionally) combining characters.

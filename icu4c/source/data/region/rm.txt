@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/rm.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/rm.xml
+ */
 rm{
     Countries{
         001{"mund"}
@@ -9,13 +18,13 @@ rm{
         009{"Oceania"}
         011{"Africa dal Vest"}
         013{"America Centrala"}
-        014{"Africa da l’Ost"}
+        014{"Africa da l'Ost"}
         015{"Africa dal Nord"}
         017{"Africa Centrala"}
         018{"Africa Meridiunala"}
         019{"America dal Nord, America Centrala ed America dal Sid"}
         029{"Caribica"}
-        030{"Asia da l’Ost"}
+        030{"Asia da l'Ost"}
         034{"Asia dal Sid"}
         035{"Asia dal Sidost"}
         039{"Europa dal Sid"}
@@ -38,6 +47,7 @@ rm{
         AI{"Anguilla"}
         AL{"Albania"}
         AM{"Armenia"}
+        AN{"Antillas Ollandaisas"}
         AO{"Angola"}
         AQ{"Antarctica"}
         AR{"Argentinia"}
@@ -73,7 +83,7 @@ rm{
         CF{"Republica Centralafricana"}
         CG{"Congo"}
         CH{"Svizra"}
-        CI{"Costa d’Ivur"}
+        CI{"Costa d'Ivur"}
         CK{"Inslas Cook"}
         CL{"Chile"}
         CM{"Camerun"}
@@ -124,7 +134,7 @@ rm{
         GU{"Guam"}
         GW{"Guinea-Bissau"}
         GY{"Guyana"}
-        HK{"Regiun d’administraziun speziala da Hongkong, China"}
+        HK{"Regiun d'administraziun speziala da Hongkong, China"}
         HM{"Inslas da Heard e da McDonlad"}
         HN{"Honduras"}
         HR{"Croazia"}
@@ -135,7 +145,7 @@ rm{
         IL{"Israel"}
         IM{"Insla da Man"}
         IN{"India"}
-        IO{"Territori Britannic en l’Ocean Indic"}
+        IO{"Territori Britannic en l'Ocean Indic"}
         IQ{"Irac"}
         IR{"Iran"}
         IS{"Islanda"}
@@ -177,7 +187,7 @@ rm{
         ML{"Mali"}
         MM{"Myanmar"}
         MN{"Mongolia"}
-        MO{"Regiun d’administraziun speziala Macao, China"}
+        MO{"Regiun d'administraziun speziala Macao, China"}
         MP{"Inslas Mariannas dal Nord"}
         MQ{"Martinique"}
         MR{"Mauretania"}
@@ -229,7 +239,7 @@ rm{
         SD{"Sudan"}
         SE{"Svezia"}
         SG{"Singapur"}
-        SH{"Sontg’Elena"}
+        SH{"Sontg'Elena"}
         SI{"Slovenia"}
         SJ{"Svalbard e Jan Mayen"}
         SK{"Slovachia"}
@@ -249,7 +259,7 @@ rm{
         TH{"Tailanda"}
         TJ{"Tadschikistan"}
         TK{"Tokelau"}
-        TL{"Timor da l’Ost"}
+        TL{"Timor da l'Ost"}
         TM{"Turkmenistan"}
         TN{"Tunesia"}
         TO{"Tonga"}
@@ -260,8 +270,8 @@ rm{
         TZ{"Tansania"}
         UA{"Ucraina"}
         UG{"Uganda"}
-        UM{"Inslas pitschnas perifericas dals Stadis Unids da l’America"}
-        US{"Stadis Unids da l’America"}
+        UM{"Inslas pitschnas perifericas dals Stadis Unids da l'America"}
+        US{"Stadis Unids da l'America"}
         UY{"Uruguay"}
         UZ{"Usbekistan"}
         VA{"Citad dal Vatican"}
@@ -280,5 +290,5 @@ rm{
         ZW{"Simbabwe"}
         ZZ{"Regiun betg encouschenta u nunvalaivla"}
     }
-    Version{"2.1.28.76"}
+    Version{"2.0.98.52"}
 }

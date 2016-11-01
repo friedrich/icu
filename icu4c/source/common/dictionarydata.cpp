@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
 *******************************************************************************
-* Copyright (C) 2014-2016, International Business Machines
+* Copyright (C) 2014, International Business Machines
 * Corporation and others.  All Rights Reserved.
 *******************************************************************************
 * dictionarydata.h
@@ -42,31 +40,22 @@ int32_t UCharsDictionaryMatcher::getType() const {
     return DictionaryData::TRIE_TYPE_UCHARS;
 }
 
-int32_t UCharsDictionaryMatcher::matches(UText *text, int32_t maxLength, int32_t limit,
-                            int32_t *lengths, int32_t *cpLengths, int32_t *values,
-                            int32_t *prefix) const {
-
+int32_t UCharsDictionaryMatcher::matches(UText *text, int32_t maxLength, int32_t *lengths, int32_t &count, int32_t limit, int32_t *values) const {
     UCharsTrie uct(characters);
-    int32_t startingTextIndex = (int32_t)utext_getNativeIndex(text);
-    int32_t wordCount = 0;
-    int32_t codePointsMatched = 0;
-
-    for (UChar32 c = utext_next32(text); c >= 0; c=utext_next32(text)) {
-        UStringTrieResult result = (codePointsMatched == 0) ? uct.first(c) : uct.next(c);
-        int32_t lengthMatched = (int32_t)utext_getNativeIndex(text) - startingTextIndex;
-        codePointsMatched += 1;
+    UChar32 c = utext_next32(text);
+    if (c < 0) {
+        return 0;
+    }
+    UStringTrieResult result = uct.first(c);
+    int32_t numChars = 1;
+    count = 0;
+    for (;;) {
         if (USTRINGTRIE_HAS_VALUE(result)) {
-            if (wordCount < limit) {
+            if (count < limit) {
                 if (values != NULL) {
-                    values[wordCount] = uct.getValue();
+                    values[count] = uct.getValue();
                 }
-                if (lengths != NULL) {
-                    lengths[wordCount] = lengthMatched;
-                }
-                if (cpLengths != NULL) {
-                    cpLengths[wordCount] = codePointsMatched;
-                }
-                ++wordCount;
+                lengths[count++] = numChars;
             }
             if (result == USTRINGTRIE_FINAL_VALUE) {
                 break;
@@ -75,15 +64,20 @@ int32_t UCharsDictionaryMatcher::matches(UText *text, int32_t maxLength, int32_t
         else if (result == USTRINGTRIE_NO_MATCH) {
             break;
         }
-        if (lengthMatched >= maxLength) {
+
+        // TODO: why do we have a text limit if the UText knows its length?
+        if (numChars >= maxLength) {
             break;
         }
-    }
 
-    if (prefix != NULL) {
-        *prefix = codePointsMatched;
+        c = utext_next32(text);
+        if (c < 0) {
+            break;
+        }
+        ++numChars;
+        result = uct.next(c);
     }
-    return wordCount;
+    return numChars;
 }
 
 BytesDictionaryMatcher::~BytesDictionaryMatcher() {
@@ -110,30 +104,22 @@ int32_t BytesDictionaryMatcher::getType() const {
     return DictionaryData::TRIE_TYPE_BYTES;
 }
 
-int32_t BytesDictionaryMatcher::matches(UText *text, int32_t maxLength, int32_t limit,
-                            int32_t *lengths, int32_t *cpLengths, int32_t *values,
-                            int32_t *prefix) const {
+int32_t BytesDictionaryMatcher::matches(UText *text, int32_t maxLength, int32_t *lengths, int32_t &count, int32_t limit, int32_t *values) const {
     BytesTrie bt(characters);
-    int32_t startingTextIndex = (int32_t)utext_getNativeIndex(text);
-    int32_t wordCount = 0;
-    int32_t codePointsMatched = 0;
-
-    for (UChar32 c = utext_next32(text); c >= 0; c=utext_next32(text)) {
-        UStringTrieResult result = (codePointsMatched == 0) ? bt.first(transform(c)) : bt.next(transform(c));
-        int32_t lengthMatched = (int32_t)utext_getNativeIndex(text) - startingTextIndex;
-        codePointsMatched += 1;
+    UChar32 c = utext_next32(text);
+    if (c < 0) {
+        return 0;
+    }
+    UStringTrieResult result = bt.first(transform(c));
+    int32_t numChars = 1;
+    count = 0;
+    for (;;) {
         if (USTRINGTRIE_HAS_VALUE(result)) {
-            if (wordCount < limit) {
+            if (count < limit) {
                 if (values != NULL) {
-                    values[wordCount] = bt.getValue();
+                    values[count] = bt.getValue();
                 }
-                if (lengths != NULL) {
-                    lengths[wordCount] = lengthMatched;
-                }
-                if (cpLengths != NULL) {
-                    cpLengths[wordCount] = codePointsMatched;
-                }
-                ++wordCount;
+                lengths[count++] = numChars;
             }
             if (result == USTRINGTRIE_FINAL_VALUE) {
                 break;
@@ -142,15 +128,20 @@ int32_t BytesDictionaryMatcher::matches(UText *text, int32_t maxLength, int32_t 
         else if (result == USTRINGTRIE_NO_MATCH) {
             break;
         }
-        if (lengthMatched >= maxLength) {
+
+        // TODO: why do we have a text limit if the UText knows its length?
+        if (numChars >= maxLength) {
             break;
         }
-    }
 
-    if (prefix != NULL) {
-        *prefix = codePointsMatched;
+        c = utext_next32(text);
+        if (c < 0) {
+            break;
+        }
+        ++numChars;
+        result = bt.next(transform(c));
     }
-    return wordCount;
+    return numChars;
 }
 
 

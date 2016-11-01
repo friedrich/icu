@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
 *
-*   Copyright (C) 1996-2016, International Business Machines
+*   Copyright (C) 1996-2014, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -15,11 +13,10 @@
 
 package com.ibm.icu.impl.coll;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.MissingResourceException;
 
-import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.util.ICUUncheckedIOException;
 import com.ibm.icu.util.Output;
@@ -44,7 +41,7 @@ public final class CollationLoader {
         synchronized(CollationLoader.class) {
             if (rootRules == null) {
                 UResourceBundle rootBundle = UResourceBundle.getBundleInstance(
-                        ICUData.ICU_COLLATION_BASE_NAME, ULocale.ROOT);
+                        ICUResourceBundle.ICU_COLLATION_BASE_NAME, ULocale.ROOT);
                 rootRules = rootBundle.getString("UCARules");
             }
         }
@@ -56,40 +53,20 @@ public final class CollationLoader {
         return rootRules;
     }
 
-    /**
-     * Simpler/faster methods for ASCII than ones based on Unicode data.
-     * TODO: There should be code like this somewhere already??
-     */
-    private static final class ASCII {
-        static String toLowerCase(String s) {
-            for (int i = 0; i < s.length(); ++i) {
-                char c = s.charAt(i);
-                if ('A' <= c && c <= 'Z') {
-                    StringBuilder sb = new StringBuilder(s.length());
-                    sb.append(s, 0, i).append((char)(c + 0x20));
-                    while (++i < s.length()) {
-                        c = s.charAt(i);
-                        if ('A' <= c && c <= 'Z') { c = (char)(c + 0x20); }
-                        sb.append(c);
-                    }
-                    return sb.toString();
-                }
-            }
-            return s;
-        }
-    }
-
-    static String loadRules(ULocale locale, String collationType) {
+    static String loadRules(ULocale locale, CharSequence collationType) {
         UResourceBundle bundle = UResourceBundle.getBundleInstance(
-                ICUData.ICU_COLLATION_BASE_NAME, locale);
-        UResourceBundle data = ((ICUResourceBundle)bundle).getWithFallback(
-                "collations/" + ASCII.toLowerCase(collationType));
+                ICUResourceBundle.ICU_COLLATION_BASE_NAME, locale);
+        UResourceBundle data = ((ICUResourceBundle)bundle).getWithFallback("collations/" + collationType);
         String rules = data.getString("Sequence");
         return rules;
     }
 
-    private static final UResourceBundle findWithFallback(UResourceBundle table, String entryName) {
-        return ((ICUResourceBundle)table).findWithFallback(entryName);
+    private static final UResourceBundle getWithFallback(UResourceBundle table, String entryName) {
+        try {
+            return ((ICUResourceBundle)table).getWithFallback(entryName);
+        } catch(MissingResourceException e) {
+            return null;
+        }
     }
 
     public static CollationTailoring loadTailoring(ULocale locale, Output<ULocale> outValidLocale) {
@@ -107,9 +84,8 @@ public final class CollationLoader {
 
         UResourceBundle bundle = null;
         try {
-            bundle = ICUResourceBundle.getBundleInstance(
-                    ICUData.ICU_COLLATION_BASE_NAME, locale,
-                    ICUResourceBundle.OpenType.LOCALE_ROOT);
+            bundle = UResourceBundle.getBundleInstance(
+                    ICUResourceBundle.ICU_COLLATION_BASE_NAME, locale);
         } catch (MissingResourceException e) {
             outValidLocale.value = ULocale.ROOT;
             return root;
@@ -127,7 +103,7 @@ public final class CollationLoader {
         // There are zero or more tailorings in the collations table.
         UResourceBundle collations;
         try {
-            collations = bundle.get("collations");
+            collations = ((ICUResourceBundle)bundle).get("collations");
             if (collations == null) {
                 return root;
             }
@@ -139,15 +115,16 @@ public final class CollationLoader {
         String type = locale.getKeywordValue("collation");
         String defaultType = "standard";
 
-        String defT = ((ICUResourceBundle)collations).findStringWithFallback("default");
-        if (defT != null) {
-            defaultType = defT;
+        try {
+            String defT = ((ICUResourceBundle)collations).getStringWithFallback("default");
+            if (defT != null) {
+                defaultType = defT;
+            }
+        } catch(MissingResourceException ignored) {
         }
 
         if (type == null || type.equals("default")) {
             type = defaultType;
-        } else {
-            type = ASCII.toLowerCase(type);
         }
 
         // Load the collations/type tailoring, with type fallback.
@@ -156,27 +133,27 @@ public final class CollationLoader {
         // ICU4C, but not used by ICU4J
 
         // boolean typeFallback = false;
-        UResourceBundle data = findWithFallback(collations, type);
+        UResourceBundle data = getWithFallback(collations, type);
         if (data == null &&
                 type.length() > 6 && type.startsWith("search")) {
             // fall back from something like "searchjl" to "search"
             // typeFallback = true;
             type = "search";
-            data = findWithFallback(collations, type);
+            data = getWithFallback(collations, type);
         }
 
         if (data == null && !type.equals(defaultType)) {
             // fall back to the default type
             // typeFallback = true;
             type = defaultType;
-            data = findWithFallback(collations, type);
+            data = getWithFallback(collations, type);
         }
 
         if (data == null && !type.equals("standard")) {
             // fall back to the "standard" type
             // typeFallback = true;
             type = "standard";
-            data = findWithFallback(collations, type);
+            data = getWithFallback(collations, type);
         }
 
         if (data == null) {
@@ -199,18 +176,22 @@ public final class CollationLoader {
         t.actualLocale = actualLocale;
 
         // deserialize
-        UResourceBundle binary = data.get("%%CollationBin");
-        ByteBuffer inBytes = binary.getBinary();
+        UResourceBundle binary = ((ICUResourceBundle)data).get("%%CollationBin");
+        byte[] inBytes = binary.getBinary(null);
+        ByteArrayInputStream inStream = new ByteArrayInputStream(inBytes);
         try {
-            CollationDataReader.read(root, inBytes, t);
+            CollationDataReader.read(root, inStream, t);
         } catch (IOException e) {
             throw new ICUUncheckedIOException("Failed to load collation tailoring data for locale:"
                     + actualLocale + " type:" + type, e);
-        }
+        }   // No need to close BAIS.
 
         // Try to fetch the optional rules string.
         try {
-            t.setRulesResource(data.get("Sequence"));
+            String s = ((ICUResourceBundle)data).getString("Sequence");
+            if (s != null) {
+                t.rules = s;
+            }
         } catch(MissingResourceException ignored) {
         }
 
@@ -229,10 +210,13 @@ public final class CollationLoader {
         if (!actualLocale.equals(validLocale)) {
             // Opening a bundle for the actual locale should always succeed.
             UResourceBundle actualBundle = UResourceBundle.getBundleInstance(
-                    ICUData.ICU_COLLATION_BASE_NAME, actualLocale);
-            defT = ((ICUResourceBundle)actualBundle).findStringWithFallback("collations/default");
-            if (defT != null) {
-                defaultType = defT;
+                    ICUResourceBundle.ICU_COLLATION_BASE_NAME, actualLocale);
+            try {
+                String defT = ((ICUResourceBundle)actualBundle).getStringWithFallback("collations/default");
+                if (defT != null) {
+                    defaultType = defT;
+                }
+            } catch(MissingResourceException ignored) {
             }
         }
 

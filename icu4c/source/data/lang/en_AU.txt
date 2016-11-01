@@ -1,16 +1,18 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/en_AU.xml
+// *
+// ***************************************************************************
 en_AU{
-    %%Parent{"en_001"}
+    %%Parent{"en_GB"}
     Languages{
-        en_US{"United States English"}
-        ro_MD{"Moldovan"}
+        en_US{"US English"}
     }
-    Types{
-        calendar{
-            dangi{"Korean Calendar"}
-            ethiopic{"Ethiopian Calendar"}
-        }
+    Scripts{
+        Thai{"Thai"}
     }
-    Version{"2.1.30.50"}
+    Version{"2.0.92.87"}
 }

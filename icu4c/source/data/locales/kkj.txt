@@ -1,5 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/kkj.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/kkj.xml
+ */
 kkj{
     AuxExemplarCharacters{"[q x z]"}
     ExemplarCharacters{
@@ -13,6 +22,9 @@ kkj{
         "Nd} ǋ {Ny} Ŋ {Ŋg} {Ŋgb} {Ŋgw} O Ɔ {Ɔ\u0327} P R S T U {U\u0327} V W Y]"
     }
     ExemplarCharactersPunctuation{"[, \\: ! ? . … ‘ ‹ › “ ” « » ( ) *]"}
+    LocaleScript{
+        "Latn",
+    }
     NumberElements{
         default{"latn"}
         latn{
@@ -23,7 +35,7 @@ kkj{
         }
         native{"latn"}
     }
-    Version{"2.1.27.40"}
+    Version{"2.0.96.25"}
     calendar{
         generic{
             DateTimePatterns{

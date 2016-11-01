@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2008-2015, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2008-2012, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.impl.javaspi;
@@ -207,7 +205,7 @@ public class ICULocaleServiceProvider {
                 locBld.setVariant(var.toString());
                 ULocale ulocWithVar = locBld.build();
                 locales.add(ulocWithVar.toLocale());
-            } catch (Exception ignored) {
+            } catch (Exception e) {
                 // ignore
             }
         }
@@ -234,11 +232,7 @@ public class ICULocaleServiceProvider {
         Properties spiConfigProps = new Properties();
         try {
             InputStream is = ClassLoader.getSystemResourceAsStream(SPI_PROP_FILE);
-            try {
-                spiConfigProps.load(is);
-            } finally {
-                is.close();
-            }
+            spiConfigProps.load(is);
 
             String val = (String)spiConfigProps.get(SUFFIX_KEY);
             if (val != null && val.length() > 0) {

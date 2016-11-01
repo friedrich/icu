@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /**
  *******************************************************************************
- * Copyright (C) 2001-2014, International Business Machines Corporation and    *
+ * Copyright (C) 2001-2005, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  *
@@ -73,8 +71,9 @@ LocaleKeyFactory::updateVisibleIDs(Hashtable& result, UErrorCode& status) const 
     const Hashtable* supported = getSupportedIDs(status);
     if (supported) {
         UBool visible = (_coverage & 0x1) == 0;
+
         const UHashElement* elem = NULL;
-        int32_t pos = UHASH_FIRST;
+        int32_t pos = 0;
         while ((elem = supported->nextElement(pos)) != NULL) {
             const UnicodeString& id = *((const UnicodeString*)elem->key.pointer);
             if (!visible) {
@@ -128,9 +127,9 @@ UnicodeString&
 LocaleKeyFactory::debug(UnicodeString& result) const
 {
     debugClass(result);
-    result.append((UnicodeString)", name: ");
+    result.append(", name: ");
     result.append(_name);
-    result.append((UnicodeString)", coverage: ");
+    result.append(", coverage: ");
     result.append(_coverage);
     return result;
 }
@@ -138,7 +137,7 @@ LocaleKeyFactory::debug(UnicodeString& result) const
 UnicodeString&
 LocaleKeyFactory::debugClass(UnicodeString& result) const
 {
-  return result.append((UnicodeString)"LocaleKeyFactory");
+  return result.append("LocaleKeyFactory");
 }
 #endif
 

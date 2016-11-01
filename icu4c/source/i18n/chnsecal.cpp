@@ -1,8 +1,6 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /*
  ******************************************************************************
- * Copyright (C) 2007-2014, International Business Machines Corporation
+ * Copyright (C) 2007-2013, International Business Machines Corporation
  * and others. All Rights Reserved.
  ******************************************************************************
  *
@@ -51,13 +49,10 @@ static void debug_chnsecal_msg(const char *pat, ...)
 
 
 // --- The cache --
-static UMutex astroLock = U_MUTEX_INITIALIZER;  // Protects access to gChineseCalendarAstro.
+static UMutex astroLock = U_MUTEX_INITIALIZER;  // pod bay door lock
 static icu::CalendarAstronomer *gChineseCalendarAstro = NULL;
-
-// Lazy Creation & Access synchronized by class CalendarCache with a mutex.
 static icu::CalendarCache *gChineseCalendarWinterSolsticeCache = NULL;
 static icu::CalendarCache *gChineseCalendarNewYearCache = NULL;
-
 static icu::TimeZone *gChineseCalendarZoneAstroCalc = NULL;
 static icu::UInitOnce gChineseCalendarZoneAstroCalcInitOnce = U_INITONCE_INITIALIZER;
 

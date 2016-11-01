@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2014-2015, International Business Machines Corporation and
+ * Copyright (C) 2014, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -17,7 +15,8 @@ package com.ibm.icu.util;
  * but when ICU can rely on Java 8 this class should be changed to extend
  * java.io.UncheckedIOException instead.
  *
- * @stable ICU 53
+ * @draft ICU 53
+ * @provisional This API might change or be removed in a future release.
  */
 public class ICUUncheckedIOException extends RuntimeException {
     private static final long serialVersionUID = 1210263498513384449L;
@@ -25,7 +24,8 @@ public class ICUUncheckedIOException extends RuntimeException {
     /**
      * Default constructor.
      *
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This API might change or be removed in a future release.
      */
     public ICUUncheckedIOException() {
     }
@@ -34,7 +34,8 @@ public class ICUUncheckedIOException extends RuntimeException {
      * Constructor.
      *
      * @param message exception message string
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This API might change or be removed in a future release.
      */
     public ICUUncheckedIOException(String message) {
         super(message);
@@ -44,7 +45,8 @@ public class ICUUncheckedIOException extends RuntimeException {
      * Constructor.
      *
      * @param cause original exception (normally a {@link java.io.IOException})
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This API might change or be removed in a future release.
      */
     public ICUUncheckedIOException(Throwable cause) {
         super(cause);
@@ -55,7 +57,8 @@ public class ICUUncheckedIOException extends RuntimeException {
      *
      * @param message exception message string
      * @param cause original exception (normally a {@link java.io.IOException})
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This API might change or be removed in a future release.
      */
     public ICUUncheckedIOException(String message, Throwable cause) {
         super(message, cause);

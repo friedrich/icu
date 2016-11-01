@@ -1,24 +1,18 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2007-2016, International Business Machines Corporation and
+ * Copyright (C) 2007-2013, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
 
 package com.ibm.icu.dev.test.format;
 
-import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.DecimalFormat;
@@ -36,10 +30,13 @@ import com.ibm.icu.util.ULocale;
  *
  */
 public class PluralFormatUnitTest extends TestFmwk {
-    @Test
+    public static void main(String[] args) throws Exception {
+        new PluralFormatUnitTest().run(args);
+    }
+
     public void TestConstructor() {
         // Test correct formatting of numbers.
-        PluralFormat plFmts[] = new PluralFormat[10];
+        PluralFormat plFmts[] = new PluralFormat[8];
         plFmts[0] = new PluralFormat();
         plFmts[0].applyPattern("other{#}");
         plFmts[1] = new PluralFormat(PluralRules.DEFAULT);
@@ -55,46 +52,24 @@ public class PluralFormatUnitTest extends TestFmwk {
                 "other{#}");
         plFmts[7] = new PluralFormat(ULocale.getDefault(), "other{#}");
 
-        // Constructors with Java Locale
-        plFmts[8] = new PluralFormat(Locale.getDefault());
-        plFmts[8].applyPattern("other{#}");
-        plFmts[9] = new PluralFormat(Locale.getDefault(), PluralRules.DEFAULT);
-        plFmts[9].applyPattern("other{#}");
-
         // These plural formats should produce the same output as a
         // NumberFormat for the default locale.
         NumberFormat numberFmt = NumberFormat.getInstance(ULocale.getDefault());
         for (int n = 1; n < 13; n++) {
             String result = numberFmt.format(n);
             for (int k = 0; k < plFmts.length; ++k) {
-                TestFmwk.assertEquals("PluralFormat's output is not as expected",
+                this.assertEquals("PluralFormat's output is not as expected",
                         result, plFmts[k].format(n));
             }
         }
         // Test some bigger numbers.
-        // Coverage: Use the format(Object, ...) version.
-        StringBuffer sb = new StringBuffer();
-        FieldPosition ignore = new FieldPosition(-1);
         for (int n = 100; n < 113; n++) {
             String result = numberFmt.format(n*n);
             for (int k = 0; k < plFmts.length; ++k) {
-                sb.delete(0, sb.length());
-                String pfResult = plFmts[k].format(Long.valueOf(n*n), sb, ignore).toString();
-                TestFmwk.assertEquals("PluralFormat's output is not as expected", result, pfResult);
+                this.assertEquals("PluralFormat's output is not as expected",
+                        result, plFmts[k].format(n*n));
             }
         }
-    }
-
-    public void TestEquals() {
-        // There is neither clone() nor a copy constructor.
-        PluralFormat de_fee_1 = new PluralFormat(ULocale.GERMAN, PluralType.CARDINAL, "other{fee}");
-        PluralFormat de_fee_2 = new PluralFormat(ULocale.GERMAN, PluralType.CARDINAL, "other{fee}");
-        PluralFormat de_fi = new PluralFormat(ULocale.GERMAN, PluralType.CARDINAL, "other{fi}");
-        PluralFormat fr_fee = new PluralFormat(ULocale.FRENCH, PluralType.CARDINAL, "other{fee}");
-        assertTrue("different de_fee objects", de_fee_1 != de_fee_2);
-        assertTrue("equal de_fee objects", de_fee_1.equals(de_fee_2));
-        assertFalse("different pattern strings", de_fee_1.equals(de_fi));
-        assertFalse("different locales", de_fee_1.equals(fr_fee));
     }
 
     public void TestApplyPatternAndFormat() {
@@ -206,7 +181,6 @@ public class PluralFormatUnitTest extends TestFmwk {
     }
 
 
-    @Test
     public void TestSamples() {
         Map<ULocale,Set<ULocale>> same = new LinkedHashMap();
         for (ULocale locale : PluralRules.getAvailableULocales()) {
@@ -238,7 +212,6 @@ public class PluralFormatUnitTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestSetLocale() {
         // Create rules for testing.
         PluralRules oddAndEven = PluralRules.createRules("odd__: n mod 2 is 1");
@@ -265,7 +238,6 @@ public class PluralFormatUnitTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestParse() {
         PluralFormat plFmt = new PluralFormat("other{test}");
         try {
@@ -284,7 +256,6 @@ public class PluralFormatUnitTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestPattern() {
         Object[] args = { "acme", null };
 
@@ -312,7 +283,6 @@ public class PluralFormatUnitTest extends TestFmwk {
         assertEquals("message formats are equal", pfmt, pfmt2);
     }
 
-    @Test
     public void TestExtendedPluralFormat() {
         String[] targets = {
                 "There are no widgets.",
@@ -347,7 +317,6 @@ public class PluralFormatUnitTest extends TestFmwk {
         assertEquals("should find first matching *explicit* value", "vv", pf.format(1));
     }
 
-    @Test
     public void TestExtendedPluralFormatParsing() {
         String[] failures = {
                 "offset:1..0 =0 {Foo}",
@@ -366,7 +335,6 @@ public class PluralFormatUnitTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestOrdinalFormat() {
         String pattern = "one{#st file}two{#nd file}few{#rd file}other{#th file}";
         PluralFormat pf = new PluralFormat(ULocale.ENGLISH, PluralType.ORDINAL, pattern);
@@ -379,15 +347,8 @@ public class PluralFormatUnitTest extends TestFmwk {
         pf.applyPattern(pattern);
         assertEquals("PluralFormat.format(456)", "456th file", pf.format(456));
         assertEquals("PluralFormat.format(111)", "111th file", pf.format(111));
-
-        // Code coverage: Use Locale not ULocale.
-        pf = new PluralFormat(Locale.ENGLISH, PluralType.ORDINAL);
-        pf.applyPattern(pattern);
-        assertEquals("PluralFormat.format(456)", "456th file", pf.format(456));
-        assertEquals("PluralFormat.format(111)", "111th file", pf.format(111));
     }
 
-    @Test
     public void TestDecimals() {
         // Simple number replacement.
         PluralFormat pf = new PluralFormat(ULocale.ENGLISH, "one{one meter}other{# meters}");
@@ -399,12 +360,5 @@ public class PluralFormatUnitTest extends TestFmwk {
         assertEquals("offset-decimals format(1)", "another 0.0 meters", pf2.format(1));
         assertEquals("offset-decimals format(2)", "another 1.0 meters", pf2.format(2));
         assertEquals("offset-decimals format(2.5)", "another 1.5 meters", pf2.format(2.5));
-    }
-    
-    @Test
-    public void TestNegative() {
-        PluralFormat pluralFormat = new PluralFormat(ULocale.ENGLISH, "one{# foot}other{# feet}");
-        String actual = pluralFormat.format(-3);
-        assertEquals(pluralFormat.toString(), "-3 feet", actual);
     }
 }

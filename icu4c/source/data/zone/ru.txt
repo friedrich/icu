@@ -1,7 +1,16 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2014 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ru.xml
+// *
+// ***************************************************************************
+/**
+ * ICU <specials> source: <path>/common/main/ru.xml
+ */
 ru{
-    Version{"2.1.29.20"}
+    Version{"2.0.98.62"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Абиджан"}
@@ -16,7 +25,7 @@ ru{
             ec{"Алжир"}
         }
         "Africa:Asmera"{
-            ec{"Асмэра"}
+            ec{"Асмера"}
         }
         "Africa:Bamako"{
             ec{"Бамако"}
@@ -283,7 +292,7 @@ ru{
             ec{"Доусон"}
         }
         "America:Dawson_Creek"{
-            ec{"Доусон-Крик"}
+            ec{"Досон-Крик"}
         }
         "America:Denver"{
             ec{"Денвер"}
@@ -303,9 +312,6 @@ ru{
         "America:El_Salvador"{
             ec{"Сальвадор"}
         }
-        "America:Fort_Nelson"{
-            ec{"Форт Нельсон"}
-        }
         "America:Fortaleza"{
             ec{"Форталеза"}
         }
@@ -313,13 +319,13 @@ ru{
             ec{"Глейс-Бей"}
         }
         "America:Godthab"{
-            ec{"Нуук"}
+            ec{"Готхоб"}
         }
         "America:Goose_Bay"{
             ec{"Гус-Бей"}
         }
         "America:Grand_Turk"{
-            ec{"Гранд-Терк"}
+            ec{"Гранд Турк"}
         }
         "America:Grenada"{
             ec{"Гренада"}
@@ -349,22 +355,22 @@ ru{
             ec{"Нокс"}
         }
         "America:Indiana:Marengo"{
-            ec{"Маренго, Индиана"}
+            ec{"Маренго"}
         }
         "America:Indiana:Petersburg"{
-            ec{"Питерсберг, Индиана"}
+            ec{"Петерсбург"}
         }
         "America:Indiana:Tell_City"{
             ec{"Телл-Сити"}
         }
         "America:Indiana:Vevay"{
-            ec{"Вевей, Индиана"}
+            ec{"Вивэй"}
         }
         "America:Indiana:Vincennes"{
-            ec{"Винсеннес"}
+            ec{"Винсенс"}
         }
         "America:Indiana:Winamac"{
-            ec{"Уинамак"}
+            ec{"Винамак"}
         }
         "America:Indianapolis"{
             ec{"Индианаполис"}
@@ -385,7 +391,7 @@ ru{
             ec{"Джуно"}
         }
         "America:Kentucky:Monticello"{
-            ec{"Монтиселло, Кентукки"}
+            ec{"Монтиселло"}
         }
         "America:Kralendijk"{
             ec{"Кралендейк"}
@@ -454,7 +460,7 @@ ru{
             ec{"Монтевидео"}
         }
         "America:Montserrat"{
-            ec{"Монтсеррат"}
+            ec{"Монсеррат"}
         }
         "America:Nassau"{
             ec{"Нассау"}
@@ -469,16 +475,16 @@ ru{
             ec{"Ном"}
         }
         "America:Noronha"{
-            ec{"Норонья"}
+            ec{"Норонха"}
         }
         "America:North_Dakota:Beulah"{
             ec{"Бойла, Северная Дакота"}
         }
         "America:North_Dakota:Center"{
-            ec{"Центр, Северная Дакота"}
+            ec{"Северная Дакота - Центр"}
         }
         "America:North_Dakota:New_Salem"{
-            ec{"Нью-Сейлем, Северная Дакота"}
+            ec{"Нью-Салем"}
         }
         "America:Ojinaga"{
             ec{"Охинага"}
@@ -487,7 +493,7 @@ ru{
             ec{"Панама"}
         }
         "America:Pangnirtung"{
-            ec{"Пангниртунг"}
+            ec{"Пангниртанг"}
         }
         "America:Paramaribo"{
             ec{"Парамарибо"}
@@ -520,7 +526,7 @@ ru{
             ec{"Реджайна"}
         }
         "America:Resolute"{
-            ec{"Резольют"}
+            ec{"Резолют"}
         }
         "America:Rio_Branco"{
             ec{"Риу-Бранку"}
@@ -547,7 +553,7 @@ ru{
             ec{"Ситка"}
         }
         "America:St_Barthelemy"{
-            ec{"Сен-Бартелеми"}
+            ec{"Сен-Бартельми"}
         }
         "America:St_Johns"{
             ec{"Сент-Джонс"}
@@ -565,7 +571,7 @@ ru{
             ec{"Сент-Винсент"}
         }
         "America:Swift_Current"{
-            ec{"Свифт-Керрент"}
+            ec{"Свифт-Карент"}
         }
         "America:Tegucigalpa"{
             ec{"Тегусигальпа"}
@@ -607,7 +613,7 @@ ru{
             ec{"Дейвис"}
         }
         "Antarctica:DumontDUrville"{
-            ec{"Дюмон-д’Юрвиль"}
+            ec{"Дюмон-д'Юрвиль"}
         }
         "Antarctica:Macquarie"{
             ec{"Маккуори"}
@@ -626,9 +632,6 @@ ru{
         }
         "Antarctica:Syowa"{
             ec{"Сёва"}
-        }
-        "Antarctica:Troll"{
-            ec{"Тролль"}
         }
         "Antarctica:Vostok"{
             ec{"Восток"}
@@ -669,9 +672,6 @@ ru{
         "Asia:Bangkok"{
             ec{"Бангкок"}
         }
-        "Asia:Barnaul"{
-            ec{"Барнаул"}
-        }
         "Asia:Beirut"{
             ec{"Бейрут"}
         }
@@ -684,11 +684,11 @@ ru{
         "Asia:Calcutta"{
             ec{"Калькутта"}
         }
-        "Asia:Chita"{
-            ec{"Чита"}
-        }
         "Asia:Choibalsan"{
             ec{"Чойбалсан"}
+        }
+        "Asia:Chongqing"{
+            ec{"Чунцин"}
         }
         "Asia:Colombo"{
             ec{"Коломбо"}
@@ -711,6 +711,9 @@ ru{
         "Asia:Gaza"{
             ec{"Газа"}
         }
+        "Asia:Harbin"{
+            ec{"Харбин"}
+        }
         "Asia:Hebron"{
             ec{"Хеврон"}
         }
@@ -727,7 +730,7 @@ ru{
             ec{"Джакарта"}
         }
         "Asia:Jayapura"{
-            ec{"Джаяпура"}
+            ec{"Джайпур"}
         }
         "Asia:Jerusalem"{
             ec{"Иерусалим"}
@@ -740,6 +743,9 @@ ru{
         }
         "Asia:Karachi"{
             ec{"Карачи"}
+        }
+        "Asia:Kashgar"{
+            ec{"Кашгар"}
         }
         "Asia:Katmandu"{
             ec{"Катманду"}
@@ -787,7 +793,7 @@ ru{
             ec{"Омск"}
         }
         "Asia:Oral"{
-            ec{"Уральск"}
+            ec{"Орал (Уральск)"}
         }
         "Asia:Phnom_Penh"{
             ec{"Пномпень"}
@@ -805,7 +811,7 @@ ru{
             ec{"Кызылорда"}
         }
         "Asia:Rangoon"{
-            ec{"Янгон"}
+            ec{"Рангун"}
         }
         "Asia:Riyadh"{
             ec{"Эр-Рияд"}
@@ -814,7 +820,7 @@ ru{
             ec{"Хошимин"}
         }
         "Asia:Sakhalin"{
-            ec{"о-в Сахалин"}
+            ec{"Сахалин, о-в"}
         }
         "Asia:Samarkand"{
             ec{"Самарканд"}
@@ -827,9 +833,6 @@ ru{
         }
         "Asia:Singapore"{
             ec{"Сингапур"}
-        }
-        "Asia:Srednekolymsk"{
-            ec{"Среднеколымск"}
         }
         "Asia:Taipei"{
             ec{"Тайбэй"}
@@ -844,13 +847,10 @@ ru{
             ec{"Тегеран"}
         }
         "Asia:Thimphu"{
-            ec{"Тхимпху"}
+            ec{"Тимпу"}
         }
         "Asia:Tokyo"{
             ec{"Токио"}
-        }
-        "Asia:Tomsk"{
-            ec{"Томск"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Улан-Батор"}
@@ -886,22 +886,22 @@ ru{
             ec{"Канарские о-ва"}
         }
         "Atlantic:Cape_Verde"{
-            ec{"Кабо-Верде"}
+            ec{"Острова Зеленого Мыса"}
         }
         "Atlantic:Faeroe"{
             ec{"Фарерские о-ва"}
         }
         "Atlantic:Madeira"{
-            ec{"Мадейра"}
+            ec{"Мадейра, о-в"}
         }
         "Atlantic:Reykjavik"{
             ec{"Рейкьявик"}
         }
         "Atlantic:South_Georgia"{
-            ec{"Южная Георгия"}
+            ec{"Ю.Джорджия и Ю.Сэндвинчевы о-ва"}
         }
         "Atlantic:St_Helena"{
-            ec{"о-в Святой Елены"}
+            ec{"Св. Елены, о-в"}
         }
         "Atlantic:Stanley"{
             ec{"Стэнли"}
@@ -931,7 +931,7 @@ ru{
             ec{"Линдеман"}
         }
         "Australia:Lord_Howe"{
-            ec{"Лорд-Хау"}
+            ec{"Лорд-Хау, о-в"}
         }
         "Australia:Melbourne"{
             ec{"Мельбурн"}
@@ -950,9 +950,6 @@ ru{
         }
         "Europe:Andorra"{
             ec{"Андорра"}
-        }
-        "Europe:Astrakhan"{
-            ec{"Астрахань"}
         }
         "Europe:Athens"{
             ec{"Афины"}
@@ -986,7 +983,7 @@ ru{
         }
         "Europe:Dublin"{
             ec{"Дублин"}
-            ld{"Ирландия, стандартное время"}
+            ld{"Ирландия, летнее время"}
         }
         "Europe:Gibraltar"{
             ec{"Гибралтар"}
@@ -998,7 +995,7 @@ ru{
             ec{"Хельсинки"}
         }
         "Europe:Isle_of_Man"{
-            ec{"о-в Мэн"}
+            ec{"Остров Мэн"}
         }
         "Europe:Istanbul"{
             ec{"Стамбул"}
@@ -1012,9 +1009,6 @@ ru{
         "Europe:Kiev"{
             ec{"Киев"}
         }
-        "Europe:Kirov"{
-            ec{"Киров"}
-        }
         "Europe:Lisbon"{
             ec{"Лиссабон"}
         }
@@ -1023,7 +1017,7 @@ ru{
         }
         "Europe:London"{
             ec{"Лондон"}
-            ld{"Великобритания, летнее время"}
+            ld{"Британское летнее время"}
         }
         "Europe:Luxembourg"{
             ec{"Люксембург"}
@@ -1091,9 +1085,6 @@ ru{
         "Europe:Tirane"{
             ec{"Тирана"}
         }
-        "Europe:Ulyanovsk"{
-            ec{"Ульяновск"}
-        }
         "Europe:Uzhgorod"{
             ec{"Ужгород"}
         }
@@ -1131,13 +1122,13 @@ ru{
             ec{"Чагос"}
         }
         "Indian:Christmas"{
-            ec{"о-в Рождества"}
+            ec{"О-в Рождества"}
         }
         "Indian:Cocos"{
             ec{"Кокосовые о-ва"}
         }
         "Indian:Comoro"{
-            ec{"Коморы"}
+            ec{"Коморские о-ва"}
         }
         "Indian:Kerguelen"{
             ec{"Кергелен"}
@@ -1152,31 +1143,28 @@ ru{
             ec{"Маврикий"}
         }
         "Indian:Mayotte"{
-            ec{"Майотта"}
+            ec{"Майорка"}
         }
         "Indian:Reunion"{
             ec{"Реюньон"}
         }
         "Pacific:Apia"{
-            ec{"Апиа"}
+            ec{"Апия"}
         }
         "Pacific:Auckland"{
             ec{"Окленд"}
         }
-        "Pacific:Bougainville"{
-            ec{"Бугенвиль"}
-        }
         "Pacific:Chatham"{
-            ec{"Чатем"}
+            ec{"Чатем, о-в"}
         }
         "Pacific:Easter"{
-            ec{"о-в Пасхи"}
+            ec{"Пасхи, о-в"}
         }
         "Pacific:Efate"{
             ec{"Эфате"}
         }
         "Pacific:Enderbury"{
-            ec{"о-в Эндербери"}
+            ec{"Эндербери, о-в"}
         }
         "Pacific:Fakaofo"{
             ec{"Факаофо"}
@@ -1188,13 +1176,13 @@ ru{
             ec{"Фунафути"}
         }
         "Pacific:Galapagos"{
-            ec{"Галапагосские о-ва"}
+            ec{"Галапагосcкие о-ва"}
         }
         "Pacific:Gambier"{
-            ec{"о-ва Гамбье"}
+            ec{"Гамбье, о-ва"}
         }
         "Pacific:Guadalcanal"{
-            ec{"Гуадалканал"}
+            ec{"Гвадалканал"}
         }
         "Pacific:Guam"{
             ec{"Гуам"}
@@ -1203,7 +1191,7 @@ ru{
             ec{"Гонолулу"}
         }
         "Pacific:Johnston"{
-            ec{"Джонстон"}
+            ec{"Джонстон, ат."}
         }
         "Pacific:Kiritimati"{
             ec{"Киритимати"}
@@ -1221,7 +1209,7 @@ ru{
             ec{"Маркизские о-ва"}
         }
         "Pacific:Midway"{
-            ec{"о-ва Мидуэй"}
+            ec{"Мидуэй, о-ва"}
         }
         "Pacific:Nauru"{
             ec{"Науру"}
@@ -1242,10 +1230,10 @@ ru{
             ec{"Палау"}
         }
         "Pacific:Pitcairn"{
-            ec{"Питкэрн"}
+            ec{"Питкерн"}
         }
         "Pacific:Ponape"{
-            ec{"Понпеи"}
+            ec{"Понапе, о-в"}
         }
         "Pacific:Port_Moresby"{
             ec{"Порт-Морсби"}
@@ -1257,7 +1245,7 @@ ru{
             ec{"Сайпан"}
         }
         "Pacific:Tahiti"{
-            ec{"Таити"}
+            ec{"Таити, о-в"}
         }
         "Pacific:Tarawa"{
             ec{"Тарава"}
@@ -1266,10 +1254,10 @@ ru{
             ec{"Тонгатапу"}
         }
         "Pacific:Truk"{
-            ec{"Трук"}
+            ec{"Трук, о-ва"}
         }
         "Pacific:Wake"{
-            ec{"Уэйк"}
+            ec{"Уэйк, о-в"}
         }
         "Pacific:Wallis"{
             ec{"Уоллис"}
@@ -1336,15 +1324,10 @@ ru{
             lg{"Время по Анадырю"}
             ls{"Анадырь стандартное время"}
         }
-        "meta:Apia"{
-            ld{"Апиа, летнее время"}
-            lg{"Апиа"}
-            ls{"Апиа, стандартное время"}
-        }
         "meta:Aqtau"{
             ld{"Актау летнее время"}
             lg{"Актау время"}
-            ls{"Актау, стандартное время"}
+            ls{"Актау стандартное время"}
         }
         "meta:Aqtobe"{
             ld{"Актобе летнее время"}
@@ -1402,9 +1385,9 @@ ru{
             ls{"Азербайджан, стандартное время"}
         }
         "meta:Azores"{
-            ld{"Азорские о-ва, летнее время"}
-            lg{"Азорские о-ва"}
-            ls{"Азорские о-ва, стандартное время"}
+            ld{"Азоры, летнее время"}
+            lg{"Азоры"}
+            ls{"Азоры, стандартное время"}
         }
         "meta:Bangladesh"{
             ld{"Бангладеш, летнее время"}
@@ -1457,7 +1440,7 @@ ru{
             ls{"Чойбалсан, стандартное время"}
         }
         "meta:Christmas"{
-            ls{"о-в Рождества"}
+            ls{"О-в Рождества"}
         }
         "meta:Cocos"{
             ls{"Кокосовые о-ва"}
@@ -1468,9 +1451,9 @@ ru{
             ls{"Колумбия, стандартное время"}
         }
         "meta:Cook"{
-            ld{"Острова Кука, полулетнее время"}
-            lg{"Острова Кука"}
-            ls{"Острова Кука, стандартное время"}
+            ld{"О-ва Кука, полулетнее время"}
+            lg{"О-ва Кука"}
+            ls{"О-ва Кука, стандартное время"}
         }
         "meta:Cuba"{
             ld{"Куба, летнее время"}
@@ -1481,7 +1464,7 @@ ru{
             ls{"Дейвис"}
         }
         "meta:DumontDUrville"{
-            ls{"Дюмон-д’Юрвиль"}
+            ls{"Дюмон-д'Юрвиль"}
         }
         "meta:East_Timor"{
             ls{"Восточный Тимор"}
@@ -1504,18 +1487,15 @@ ru{
             lg{"Восточная Европа"}
             ls{"Восточная Европа, стандартное время"}
         }
-        "meta:Europe_Further_Eastern"{
-            ls{"Минское время"}
-        }
         "meta:Europe_Western"{
             ld{"Западная Европа, летнее время"}
             lg{"Западная Европа"}
             ls{"Западная Европа, стандартное время"}
         }
         "meta:Falkland"{
-            ld{"Фолклендские о-ва, летнее время"}
-            lg{"Фолклендские о-ва"}
-            ls{"Фолклендские о-ва, стандартное время"}
+            ld{"Фолкленды, летнее время"}
+            lg{"Фолкленды"}
+            ls{"Фолкленды, стандартное время"}
         }
         "meta:Fiji"{
             ld{"Фиджи, летнее время"}
@@ -1526,7 +1506,7 @@ ru{
             ls{"Французская Гвиана"}
         }
         "meta:French_Southern"{
-            ls{"Французские Южные и Антарктические территории"}
+            ls{"Французское южное и антарктическое время"}
         }
         "meta:GMT"{
             ls{"Среднее время по Гринвичу"}
@@ -1543,7 +1523,7 @@ ru{
             ls{"Грузия, стандартное время"}
         }
         "meta:Gilbert_Islands"{
-            ls{"о-ва Гилберта"}
+            ls{"О-ва Гилберта"}
         }
         "meta:Greenland_Eastern"{
             ld{"Восточная Гренландия, летнее время"}
@@ -1618,9 +1598,9 @@ ru{
             ls{"Япония, стандартное время"}
         }
         "meta:Kamchatka"{
-            ld{"Петропавловск-Камчатский, летнее время"}
-            lg{"Петропавловск-Камчатский"}
-            ls{"Петропавловск-Камчатский, стандартное время"}
+            ld{"Летнее время в Петропавловске-Камчатском"}
+            lg{"Время в Петропавловску-Камчатскому"}
+            ls{"Стандартное время в Петропавловску-Камчатскому"}
         }
         "meta:Kazakhstan_Eastern"{
             ls{"Восточный Казахстан"}
@@ -1634,7 +1614,7 @@ ru{
             ls{"Корея, стандартное время"}
         }
         "meta:Kosrae"{
-            ls{"Косрае"}
+            ls{"Косраэ"}
         }
         "meta:Krasnoyarsk"{
             ld{"Красноярск, летнее время"}
@@ -1648,7 +1628,7 @@ ru{
             ls{"Шри-Ланка"}
         }
         "meta:Line_Islands"{
-            ls{"о-ва Лайн"}
+            ls{"О-ва Лайн"}
         }
         "meta:Lord_Howe"{
             ld{"Лорд-Хау, летнее время"}
@@ -1678,7 +1658,7 @@ ru{
             ls{"Маркизские о-ва"}
         }
         "meta:Marshall_Islands"{
-            ls{"Маршалловы Острова"}
+            ls{"Маршалловы о-ва"}
         }
         "meta:Mauritius"{
             ld{"Маврикий, летнее время"}
@@ -1687,16 +1667,6 @@ ru{
         }
         "meta:Mawson"{
             ls{"Моусон"}
-        }
-        "meta:Mexico_Northwest"{
-            ld{"Северо-западное мексиканское летнее время"}
-            lg{"Северо-западное мексиканское время"}
-            ls{"Северо-западное мексиканское стандартное время"}
-        }
-        "meta:Mexico_Pacific"{
-            ld{"Тихоокеанское мексиканское летнее время"}
-            lg{"Тихоокеанское мексиканское время"}
-            ls{"Тихоокеанское мексиканское стандартное время"}
         }
         "meta:Mongolia"{
             ld{"Улан-Батор, летнее время"}
@@ -1783,7 +1753,7 @@ ru{
             ls{"Филиппины, стандартное время"}
         }
         "meta:Phoenix_Islands"{
-            ls{"о-ва Феникс"}
+            ls{"О-ва Феникс"}
         }
         "meta:Pierre_Miquelon"{
             ld{"Сен-Пьер и Микелон, летнее время"}
@@ -1794,10 +1764,7 @@ ru{
             ls{"Питкэрн"}
         }
         "meta:Ponape"{
-            ls{"Понпеи"}
-        }
-        "meta:Pyongyang"{
-            ls{"Пхеньян"}
+            ls{"О-ва Понапе"}
         }
         "meta:Qyzylorda"{
             ld{"Кызылорда, летнее время*"}
@@ -1826,13 +1793,13 @@ ru{
             ls{"Самоа, стандартное время"}
         }
         "meta:Seychelles"{
-            ls{"Сейшельские Острова"}
+            ls{"Сейшелы"}
         }
         "meta:Singapore"{
             ls{"Сингапур"}
         }
         "meta:Solomon"{
-            ls{"Соломоновы Острова"}
+            ls{"Соломоновы о-ва"}
         }
         "meta:South_Georgia"{
             ls{"Южная Георгия"}
@@ -1844,7 +1811,7 @@ ru{
             ls{"Сёва"}
         }
         "meta:Tahiti"{
-            ls{"Таити"}
+            ls{"О-в Таити"}
         }
         "meta:Taipei"{
             ld{"Тайвань, летнее время"}
@@ -1863,7 +1830,7 @@ ru{
             ls{"Тонга, стандартное время"}
         }
         "meta:Truk"{
-            ls{"Трук"}
+            ls{"Чуук"}
         }
         "meta:Turkmenistan"{
             ld{"Туркмения, летнее время"}
@@ -1905,7 +1872,7 @@ ru{
             ls{"Восток"}
         }
         "meta:Wake"{
-            ls{"Уэйк"}
+            ls{"О-в Уэйк"}
         }
         "meta:Wallis"{
             ls{"Уоллис и Футуна"}
@@ -1924,7 +1891,7 @@ ru{
         gmtFormat{"GMT{0}"}
         gmtZeroFormat{"GMT"}
         hourFormat{"+HH:mm;-HH:mm"}
-        regionFormat{"{0}"}
+        regionFormat{"{0} время"}
         regionFormatDaylight{"{0} (+1)"}
         regionFormatStandard{"{0} (+0)"}
     }

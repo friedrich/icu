@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and
@@ -16,9 +14,6 @@ package com.ibm.icu.dev.test.collator;
  
 import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
 import com.ibm.icu.text.Collator;
@@ -26,6 +21,10 @@ import com.ibm.icu.text.RuleBasedCollator;
 import com.ibm.icu.util.ULocale;
  
 public class CollationKanaTest extends TestFmwk{
+    public static void main(String[] args) throws Exception{
+        new CollationKanaTest().run(args);
+    }
+
     private static char[][] testSourceCases = {
         {0xff9E},
         {0x3042},
@@ -96,16 +95,12 @@ public class CollationKanaTest extends TestFmwk{
     
     public CollationKanaTest() {
     }
-    
-    @Before
-    public void init()throws Exception { 
+    protected void init()throws Exception{ 
         if(myCollation==null){
             myCollation = Collator.getInstance(Locale.JAPANESE); 
         }
     }
-
     // performs test with strength TERIARY
-    @Test
     public void TestTertiary() {
         int i = 0;
         myCollation.setStrength(Collator.TERTIARY);
@@ -116,7 +111,6 @@ public class CollationKanaTest extends TestFmwk{
     }
 
     /* Testing base letters */
-    @Test
     public void TestBase() {
         int i;
         myCollation.setStrength(Collator.PRIMARY);
@@ -126,7 +120,6 @@ public class CollationKanaTest extends TestFmwk{
     }
 
     /* Testing plain, Daku-ten, Handaku-ten letters */
-    @Test
     public void TestPlainDakutenHandakuten() {
         int i;
         myCollation.setStrength(Collator.SECONDARY);
@@ -138,7 +131,6 @@ public class CollationKanaTest extends TestFmwk{
     /* 
     * Test Small, Large letters
     */
-    @Test
     public void TestSmallLarge() {
         int i;
         myCollation.setStrength(Collator.TERTIARY);
@@ -151,7 +143,6 @@ public class CollationKanaTest extends TestFmwk{
     /*
     * Test Katakana, Hiragana letters
     */
-    @Test
     public void TestKatakanaHiragana() {
         int i;
         myCollation.setStrength(Collator.QUATERNARY);
@@ -163,7 +154,6 @@ public class CollationKanaTest extends TestFmwk{
     /*
     * Test Choo-on kigoo
     */
-    @Test
     public void TestChooonKigoo() {
         int i;
         myCollation.setStrength(Collator.QUATERNARY);
@@ -175,7 +165,6 @@ public class CollationKanaTest extends TestFmwk{
     /*
      * Test common Hiragana and Katakana characters (e.g. 0x3099) (ticket:6140)
      */
-    @Test
     public void TestCommonCharacters() {
         char[] tmp1 = { 0x3058, 0x30B8 };
         char[] tmp2 = { 0x3057, 0x3099, 0x30B7, 0x3099 };

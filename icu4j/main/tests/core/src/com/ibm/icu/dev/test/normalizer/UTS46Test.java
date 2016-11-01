@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
 *******************************************************************************
 * Copyright (C) 2010-2014, International Business Machines
@@ -14,8 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Normalizer2Impl.UTF16Plus;
 import com.ibm.icu.text.IDNA;
@@ -26,6 +22,9 @@ import com.ibm.icu.text.IDNA;
  * @since 2010jul10
  */
 public class UTS46Test extends TestFmwk {
+    public static void main(String[] args) throws Exception {
+        new UTS46Test().run(args);
+    }
     public UTS46Test() {
         int commonOptions=
             IDNA.USE_STD3_RULES|IDNA.CHECK_BIDI|
@@ -35,7 +34,6 @@ public class UTS46Test extends TestFmwk {
                                        IDNA.NONTRANSITIONAL_TO_ASCII|IDNA.NONTRANSITIONAL_TO_UNICODE);
     }
 
-    @Test
     public void TestAPI() {
         StringBuilder result=new StringBuilder();
         IDNA.Info info=new IDNA.Info();
@@ -70,7 +68,6 @@ public class UTS46Test extends TestFmwk {
         }
     }
 
-    @Test
     public void TestNotSTD3() {
         IDNA not3=IDNA.getUTS46Instance(IDNA.CHECK_BIDI);
         String input="\u0000A_2+2=4\n.e\u00DFen.net";
@@ -363,7 +360,6 @@ public class UTS46Test extends TestFmwk {
           "1234567890123456789012345678901234567890123456789012345678901",
           "UIDNA_ERROR_LABEL_TOO_LONG|UIDNA_ERROR_DOMAIN_NAME_TOO_LONG" },
         // hyphen errors and empty-label errors
-        // Ticket #10883: ToUnicode also checks for empty labels.
         { ".", "B", ".", "UIDNA_ERROR_EMPTY_LABEL" },
         { "\uFF0E", "B", ".", "UIDNA_ERROR_EMPTY_LABEL" },
         // "xn---q----jra"=="-q--a-umlaut-"
@@ -377,13 +373,11 @@ public class UTS46Test extends TestFmwk {
           "UIDNA_ERROR_EMPTY_LABEL|UIDNA_ERROR_LEADING_HYPHEN|UIDNA_ERROR_TRAILING_HYPHEN|"+
           "UIDNA_ERROR_HYPHEN_3_4" },
         { "a..c", "B", "a..c", "UIDNA_ERROR_EMPTY_LABEL" },
-        { "a.xn--.c", "B", "a..c", "UIDNA_ERROR_EMPTY_LABEL" },
         { "a.-b.", "B", "a.-b.", "UIDNA_ERROR_LEADING_HYPHEN" },
         { "a.b-.c", "B", "a.b-.c", "UIDNA_ERROR_TRAILING_HYPHEN" },
         { "a.-.c", "B", "a.-.c", "UIDNA_ERROR_LEADING_HYPHEN|UIDNA_ERROR_TRAILING_HYPHEN" },
         { "a.bc--de.f", "B", "a.bc--de.f", "UIDNA_ERROR_HYPHEN_3_4" },
         { "\u00E4.\u00AD.c", "B", "\u00E4..c", "UIDNA_ERROR_EMPTY_LABEL" },
-        { "\u00E4.xn--.c", "B", "\u00E4..c", "UIDNA_ERROR_EMPTY_LABEL" },
         { "\u00E4.-b.", "B", "\u00E4.-b.", "UIDNA_ERROR_LEADING_HYPHEN" },
         { "\u00E4.b-.c", "B", "\u00E4.b-.c", "UIDNA_ERROR_TRAILING_HYPHEN" },
         { "\u00E4.-.c", "B", "\u00E4.-.c", "UIDNA_ERROR_LEADING_HYPHEN|UIDNA_ERROR_TRAILING_HYPHEN" },
@@ -464,7 +458,6 @@ public class UTS46Test extends TestFmwk {
         //   "", "" },
     };
 
-    @Test
     public void TestSomeCases() {
         StringBuilder aT=new StringBuilder(), uT=new StringBuilder();
         StringBuilder aN=new StringBuilder(), uN=new StringBuilder();
@@ -500,10 +493,10 @@ public class UTS46Test extends TestFmwk {
                                     i, testCase.o, testCase.s, e));
                 continue;
             }
-            // ToUnicode does not set length-overflow errors.
+            // ToUnicode does not set length errors.
             uniErrors.clear();
             uniErrors.addAll(testCase.errors);
-            uniErrors.removeAll(lengthOverflowErrors);
+            uniErrors.removeAll(lengthErrors);
             char mode=testCase.o.charAt(0);
             if(mode=='B' || mode=='N') {
                 if(!sameErrors(uNInfo, uniErrors)) {
@@ -724,7 +717,8 @@ public class UTS46Test extends TestFmwk {
         IDNA.Error.PUNYCODE,
         IDNA.Error.LABEL_HAS_DOT,
         IDNA.Error.INVALID_ACE_LABEL);
-    private static final EnumSet<IDNA.Error> lengthOverflowErrors=EnumSet.of(
+    private static final EnumSet<IDNA.Error> lengthErrors=EnumSet.of(
+            IDNA.Error.EMPTY_LABEL,
             IDNA.Error.LABEL_TOO_LONG,
             IDNA.Error.DOMAIN_NAME_TOO_LONG);
 

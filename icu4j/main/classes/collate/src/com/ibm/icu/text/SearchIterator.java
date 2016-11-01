@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2015, International Business Machines Corporation and    *
+ * Copyright (C) 1996-2014, International Business Machines Corporation and    *
  * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
@@ -714,7 +712,6 @@ public abstract class SearchIterator
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Deprecated
     //TODO: This protected method is @stable 2.0 in ICU4C
     protected void setMatchNotFound() {
         search_.matchedIndex_ = DONE;
@@ -734,13 +731,15 @@ public abstract class SearchIterator
      * 
      * @see #setElementComparisonType(ElementComparisonType)
      * @see #getElementComparisonType()
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This API might change or be removed in a future release.
      */
     public enum ElementComparisonType {
         /**
          * Standard collation element comparison at the specified collator strength.
          * 
-         * @stable ICU 53
+         * @draft ICU 53
+         * @provisional This API might change or be removed in a future release.
          */
         STANDARD_ELEMENT_COMPARISON,
         /**
@@ -755,7 +754,8 @@ public abstract class SearchIterator
          * diacritic in the pattern will only match an e with the same diacritic in
          * the searched text.
          * 
-         * @stable ICU 53
+         * @draft ICU 53
+         * @provisional This API might change or be removed in a future release.
          */
         PATTERN_BASE_WEIGHT_IS_WILDCARD,
 
@@ -771,7 +771,8 @@ public abstract class SearchIterator
          * diacritic in the pattern will only match an e with the same diacritic or a
          * plain e in the searched text.
          * 
-         * @stable ICU 53
+         * @draft ICU 53
+         * @provisional This API might change or be removed in a future release.
          */
         ANY_BASE_WEIGHT_IS_WILDCARD
     }
@@ -783,7 +784,8 @@ public abstract class SearchIterator
      * 
      * @see ElementComparisonType
      * @see #getElementComparisonType()
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This API might change or be removed in a future release.
      */
     public void setElementComparisonType(ElementComparisonType type) {
         search_.elementComparisonType_ = type;
@@ -794,7 +796,8 @@ public abstract class SearchIterator
      * 
      * @see ElementComparisonType
      * @see #setElementComparisonType(ElementComparisonType)
-     * @stable ICU 53
+     * @draft ICU 53
+     * @provisional This API might change or be removed in a future release.
      */
     public ElementComparisonType getElementComparisonType() {
         return search_.elementComparisonType_;
