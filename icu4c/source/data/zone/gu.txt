@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/gu.xml
+// *
+// ***************************************************************************
 gu{
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"આબિદ્જાન"}
@@ -302,9 +308,6 @@ gu{
         }
         "America:El_Salvador"{
             ec{"એલ સેલ્વાડોર"}
-        }
-        "America:Fort_Nelson"{
-            ec{"ફોર્ટ નેલ્સન"}
         }
         "America:Fortaleza"{
             ec{"ફોર્ટાલેઝા"}
@@ -669,9 +672,6 @@ gu{
         "Asia:Bangkok"{
             ec{"બેંગકોક"}
         }
-        "Asia:Barnaul"{
-            ec{"બારનૌલ"}
-        }
         "Asia:Beirut"{
             ec{"બૈરુત"}
         }
@@ -724,7 +724,7 @@ gu{
             ec{"ઇર્કુત્સ્ક"}
         }
         "Asia:Jakarta"{
-            ec{"જકાર્તા"}
+            ec{"જાકાર્તા"}
         }
         "Asia:Jayapura"{
             ec{"જયાપુરા"}
@@ -849,9 +849,6 @@ gu{
         "Asia:Tokyo"{
             ec{"ટોક્યો"}
         }
-        "Asia:Tomsk"{
-            ec{"તોમસ્ક"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"ઉલાંબાતર"}
         }
@@ -951,9 +948,6 @@ gu{
         "Europe:Andorra"{
             ec{"ઍંડોરા"}
         }
-        "Europe:Astrakhan"{
-            ec{"આસ્ટ્રખન"}
-        }
         "Europe:Athens"{
             ec{"એથેંસ"}
         }
@@ -1011,9 +1005,6 @@ gu{
         }
         "Europe:Kiev"{
             ec{"કૈવ"}
-        }
-        "Europe:Kirov"{
-            ec{"કીરોવ"}
         }
         "Europe:Lisbon"{
             ec{"લિસ્બન"}
@@ -1090,9 +1081,6 @@ gu{
         }
         "Europe:Tirane"{
             ec{"તિરાને"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"યુલ્યણોવસ્ક"}
         }
         "Europe:Uzhgorod"{
             ec{"ઉઝ્ગોરોદ"}
@@ -1794,9 +1782,6 @@ gu{
         "meta:Ponape"{
             ls{"પોનપે સમય"}
         }
-        "meta:Pyongyang"{
-            ls{"યોન્ગ્યાન્ગ સમય"}
-        }
         "meta:Qyzylorda"{
             ld{"કિઝિલોર્ડા ગ્રીષ્મ સમય"}
             lg{"કિઝિલોર્ડા સમય"}
@@ -1924,6 +1909,6 @@ gu{
         hourFormat{"+HH:mm;-HH:mm"}
         regionFormat{"{0} સમય"}
         regionFormatDaylight{"{0} (+1)"}
-        regionFormatStandard{"{0} માનક સમય"}
+        regionFormatStandard{"{0} (+0)"}
     }
 }

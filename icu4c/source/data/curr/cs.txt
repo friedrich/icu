@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/cs.xml
+// *
+// ***************************************************************************
 cs{
     Currencies{
         ADP{
@@ -218,13 +224,9 @@ cs{
             "BYB",
             "běloruský rubl (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "běloruský rubl",
-        }
         BYR{
             "BYR",
-            "běloruský rubl (2000–2016)",
+            "běloruský rubl",
         }
         BZD{
             "BZD",
@@ -824,7 +826,7 @@ cs{
         }
         RON{
             "RON",
-            "rumunský leu",
+            "rumunské leu",
         }
         RSD{
             "RSD",
@@ -1204,7 +1206,7 @@ cs{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -1222,7 +1224,6 @@ cs{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -1263,7 +1264,6 @@ cs{
         PKR{"Rs"}
         PLN{"zł"}
         PYG{"₲"}
-        RON{"L"}
         RUB{"₽"}
         RUR{"р."}
         RWF{"RF"}
@@ -1606,17 +1606,11 @@ cs{
             one{"běloruský rubl (1994–1999)"}
             other{"běloruských rublů (1994–1999)"}
         }
-        BYN{
+        BYR{
             few{"běloruské rubly"}
             many{"běloruského rublu"}
             one{"běloruský rubl"}
             other{"běloruských rublů"}
-        }
-        BYR{
-            few{"běloruské rubly (2000–2016)"}
-            many{"běloruského rublu (2000–2016)"}
-            one{"běloruský rubl (2000–2016)"}
-            other{"běloruských rublů (2000–2016)"}
         }
         BZD{
             few{"belizské dolary"}
@@ -2515,7 +2509,7 @@ cs{
         RON{
             few{"rumunské lei"}
             many{"rumunského leu"}
-            one{"rumunský leu"}
+            one{"rumunské leu"}
             other{"rumunských lei"}
         }
         RSD{
@@ -3053,5 +3047,5 @@ cs{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
 }

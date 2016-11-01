@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/sl.xml
+// *
+// ***************************************************************************
 sl{
     Countries{
         001{"Svet"}
@@ -131,7 +137,7 @@ sl{
         GU{"Guam"}
         GW{"Gvineja Bissau"}
         GY{"Gvajana"}
-        HK{"Posebno administrativno območje LR Kitajske Hongkong"}
+        HK{"Posebno administrativno območje LR Kitajske Hong Kong"}
         HM{"Heardov otok in McDonaldovi otoki"}
         HN{"Honduras"}
         HR{"Hrvaška"}
@@ -253,14 +259,14 @@ sl{
         SY{"Sirija"}
         SZ{"Svazi"}
         TA{"Tristan da Cunha"}
-        TC{"Otoki Turks in Caicos"}
+        TC{"Otočji Turks in Caicos"}
         TD{"Čad"}
         TF{"Francosko južno ozemlje"}
         TG{"Togo"}
         TH{"Tajska"}
         TJ{"Tadžikistan"}
         TK{"Tokelau"}
-        TL{"Timor-Leste"}
+        TL{"Vzhodni Timor"}
         TM{"Turkmenistan"}
         TN{"Tunizija"}
         TO{"Tonga"}
@@ -271,8 +277,7 @@ sl{
         TZ{"Tanzanija"}
         UA{"Ukrajina"}
         UG{"Uganda"}
-        UM{"Stranski zunanji otoki Združenih držav"}
-        UN{"Združeni narodi"}
+        UM{"Druga ameriška ozemlja v Tihem oceanu"}
         US{"Združene države Amerike"}
         UY{"Urugvaj"}
         UZ{"Uzbekistan"}
@@ -298,7 +303,6 @@ sl{
         HK{"Hongkong"}
         MO{"Macao"}
         PS{"Palestina"}
-        UN{"Združeni narodi"}
         US{"ZDA"}
     }
     Countries%variant{
@@ -307,7 +311,6 @@ sl{
         CI{"Côte d’Ivoire"}
         FK{"Falklandski otoki (Malvini)"}
         MK{"Makedonija (FYROM)"}
-        TL{"Vzhodni Timor"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
 }

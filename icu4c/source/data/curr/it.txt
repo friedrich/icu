@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/it.xml
+// *
+// ***************************************************************************
 it{
     Currencies{
         ADP{
@@ -186,13 +192,9 @@ it{
             "BYB",
             "nuovo rublo bielorusso (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "rublo bielorusso",
-        }
         BYR{
             "BYR",
-            "rublo bielorusso (2000–2016)",
+            "rublo bielorusso",
         }
         BZD{
             "BZD",
@@ -1093,18 +1095,18 @@ it{
         BDT{"৳"}
         BMD{"$"}
         BND{"$"}
-        BOB{"Bs"}
+        BOB{"$b"}
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"Br"}
+        BYR{"Br"}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
         CNY{"¥"}
         COP{"$"}
         CRC{"₡"}
-        CUC{"$"}
+        CUC{"CUC$"}
         CUP{"$"}
         CZK{"Kč"}
         DKK{"kr"}
@@ -1114,7 +1116,6 @@ it{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -1155,7 +1156,6 @@ it{
         PKR{"Rs"}
         PLN{"zł"}
         PYG{"₲"}
-        RON{"L"}
         RUB{"₽"}
         RWF{"RF"}
         SBD{"$"}
@@ -1281,13 +1281,9 @@ it{
             one{"pula del Botswana"}
             other{"pula del Botswana"}
         }
-        BYN{
+        BYR{
             one{"rublo bielorusso"}
             other{"rubli bielorussi"}
-        }
-        BYR{
-            one{"rublo bielorusso (2000–2016)"}
-            other{"rubli bielorussi (2000–2016)"}
         }
         BZD{
             one{"dollaro del Belize"}
@@ -1846,5 +1842,5 @@ it{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
 }

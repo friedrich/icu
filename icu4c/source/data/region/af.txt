@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/af.xml
+// *
+// ***************************************************************************
 af{
     Countries{
         001{"Wêreld"}
@@ -272,7 +278,6 @@ af{
         UA{"Oekraïne"}
         UG{"Uganda"}
         UM{"VS klein omliggende eilande"}
-        UN{"verenigde nasies"}
         US{"Verenigde State van Amerika"}
         UY{"Uruguay"}
         UZ{"Oesbekistan"}
@@ -298,15 +303,13 @@ af{
         HK{"Hongkong"}
         MO{"Macau"}
         PS{"Palestina"}
-        UN{"VN"}
         US{"VSA"}
     }
     Countries%variant{
         CD{"Kongo (DRK)"}
         CG{"Kongo (Republiek die)"}
-        CZ{"Tjeggië"}
         FK{"Falklandeilande (Malvinas)"}
         MK{"Macedonië (VJRM)"}
     }
-    Version{"2.1.29.44"}
+    Version{"2.1.22.93"}
 }

@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/supplementalMetadata.xml
+// *
+// ***************************************************************************
 metadata:table(nofallback){
     alias{
         language{
@@ -119,13 +125,9 @@ metadata:table(nofallback){
                 reason{"overlong"}
                 replacement{"bn"}
             }
-            bh{
-                reason{"macrolanguage"}
-                replacement{"bho"}
-            }
             bih{
                 reason{"overlong"}
-                replacement{"bho"}
+                replacement{"bh"}
             }
             bis{
                 reason{"overlong"}
@@ -935,10 +937,6 @@ metadata:table(nofallback){
                 reason{"overlong"}
                 replacement{"pt"}
             }
-            prs{
-                reason{"overlong"}
-                replacement{"fa_AF"}
-            }
             pus{
                 reason{"overlong"}
                 replacement{"ps"}
@@ -1102,10 +1100,6 @@ metadata:table(nofallback){
             swa{
                 reason{"overlong"}
                 replacement{"sw"}
-            }
-            swc{
-                reason{"overlong"}
-                replacement{"sw_CD"}
             }
             swe{
                 reason{"overlong"}
@@ -4236,7 +4230,6 @@ metadata:table(nofallback){
         "ml_IN",
         "mn_MN",
         "mn_Mong_CN",
-        "mni_IN",
         "moh_CA",
         "mr_IN",
         "ms_Arab_MY",

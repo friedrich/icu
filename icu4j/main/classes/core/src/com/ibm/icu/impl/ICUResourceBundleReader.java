@@ -1,8 +1,6 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2004-2016, International Business Machines Corporation and
+ * Copyright (C) 2004-2015, International Business Machines Corporation and
  * others. All Rights Reserved.
  *******************************************************************************
  */
@@ -15,6 +13,8 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.IntBuffer;
 
+import com.ibm.icu.impl.UResource.ArraySink;
+import com.ibm.icu.impl.UResource.TableSink;
 import com.ibm.icu.util.ICUException;
 import com.ibm.icu.util.ICUUncheckedIOException;
 import com.ibm.icu.util.ULocale;
@@ -34,7 +34,7 @@ public final class ICUResourceBundleReader {
      */
     private static final int DATA_FORMAT = 0x52657342;
     private static final class IsAcceptable implements ICUBinary.Authenticate {
-        @Override
+        // @Override when we switch to Java 6
         public boolean isDataVersionAcceptable(byte formatVersion[]) {
             return
                     (formatVersion[0] == 1 && (formatVersion[1] & 0xff) >= 1) ||
@@ -155,7 +155,6 @@ public final class ICUResourceBundleReader {
             this.localeID = (localeID == null) ? "" : localeID;
         }
 
-        @Override
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
@@ -168,7 +167,6 @@ public final class ICUResourceBundleReader {
                     && this.localeID.equals(info.localeID);
         }
 
-        @Override
         public int hashCode() {
             return baseName.hashCode() ^ localeID.hashCode();
         }
@@ -218,7 +216,7 @@ public final class ICUResourceBundleReader {
         // set pool bundle if necessary
         if (usesPoolBundle) {
             poolBundleReader = getReader(baseName, "pool", loader);
-            if (poolBundleReader == null || !poolBundleReader.isPoolBundle) {
+            if (!poolBundleReader.isPoolBundle) {
                 throw new IllegalStateException("pool.res is not a pool bundle");
             }
             if (poolBundleReader.poolCheckSum != poolCheckSum) {
@@ -532,7 +530,7 @@ public final class ICUResourceBundleReader {
                 length=((first-0xdfef)<<16)|b16BitUnits.charAt(offset+1);
                 offset+=2;
             } else {
-                length=(b16BitUnits.charAt(offset+1)<<16)|b16BitUnits.charAt(offset+2);
+                length=((int)b16BitUnits.charAt(offset+1)<<16)|b16BitUnits.charAt(offset+2);
                 offset+=3;
             }
             // Cast up to CharSequence to insulate against the CharBuffer.subSequence() return type change
@@ -725,6 +723,22 @@ public final class ICUResourceBundleReader {
         }
     }
 
+    private int getArrayLength(int res) {
+        int offset = RES_GET_OFFSET(res);
+        if(offset == 0) {
+            return 0;
+        }
+        int type = RES_GET_TYPE(res);
+        if(type == UResourceBundle.ARRAY) {
+            offset = getResourceByteOffset(offset);
+            return getInt(offset);
+        } else if(type == ICUResourceBundle.ARRAY16) {
+            return b16BitUnits.charAt(offset);
+        } else {
+            return 0;
+        }
+    }
+
     Array getArray(int res) {
         int type=RES_GET_TYPE(res);
         if(!URES_IS_ARRAY(type)) {
@@ -741,6 +755,25 @@ public final class ICUResourceBundleReader {
         Array array = (type == UResourceBundle.ARRAY) ?
                 new Array32(this, offset) : new Array16(this, offset);
         return (Array)resourceCache.putIfAbsent(res, array, 0);
+    }
+
+    private int getTableLength(int res) {
+        int offset = RES_GET_OFFSET(res);
+        if(offset == 0) {
+            return 0;
+        }
+        int type = RES_GET_TYPE(res);
+        if(type == UResourceBundle.TABLE) {
+            offset = getResourceByteOffset(offset);
+            return bytes.getChar(offset);
+        } else if(type == ICUResourceBundle.TABLE16) {
+            return b16BitUnits.charAt(offset);
+        } else if(type == ICUResourceBundle.TABLE32) {
+            offset = getResourceByteOffset(offset);
+            return getInt(offset);
+        } else {
+            return 0;
+        }
     }
 
     Table getTable(int res) {
@@ -800,7 +833,7 @@ public final class ICUResourceBundleReader {
 
     static class ReaderValue extends UResource.Value {
         ICUResourceBundleReader reader;
-        int res;
+        private int res;
 
         @Override
         public int getType() {
@@ -858,81 +891,6 @@ public final class ICUResourceBundleReader {
             }
             return bb;
         }
-
-        @Override
-        public com.ibm.icu.impl.UResource.Array getArray() {
-            Array array = reader.getArray(res);
-            if (array == null) {
-                throw new UResourceTypeMismatchException("");
-            }
-            return array;
-        }
-
-        @Override
-        public com.ibm.icu.impl.UResource.Table getTable() {
-            Table table = reader.getTable(res);
-            if (table == null) {
-                throw new UResourceTypeMismatchException("");
-            }
-            return table;
-        }
-
-        @Override
-        public boolean isNoInheritanceMarker() {
-            return reader.isNoInheritanceMarker(res);
-        }
-
-        @Override
-        public String[] getStringArray() {
-            Array array = reader.getArray(res);
-            if (array == null) {
-                throw new UResourceTypeMismatchException("");
-            }
-            return getStringArray(array);
-        }
-
-        @Override
-        public String[] getStringArrayOrStringAsArray() {
-            Array array = reader.getArray(res);
-            if (array != null) {
-                return getStringArray(array);
-            }
-            String s = reader.getString(res);
-            if (s != null) {
-                return new String[] { s };
-            }
-            throw new UResourceTypeMismatchException("");
-        }
-
-        @Override
-        public String getStringOrFirstOfArray() {
-            String s = reader.getString(res);
-            if (s != null) {
-                return s;
-            }
-            Array array = reader.getArray(res);
-            if (array != null && array.size > 0) {
-                int r = array.getContainerResource(reader, 0);
-                s = reader.getString(r);
-                if (s != null) {
-                    return s;
-                }
-            }
-            throw new UResourceTypeMismatchException("");
-        }
-
-        private String[] getStringArray(Array array) {
-            String[] result = new String[array.size];
-            for (int i = 0; i < array.size; ++i) {
-                int r = array.getContainerResource(reader, i);
-                String s = reader.getString(r);
-                if (s == null) {
-                    throw new UResourceTypeMismatchException("");
-                }
-                result[i] = s;
-            }
-            return result;
-        }
     }
 
     // Container value classes --------------------------------------------- ***
@@ -941,7 +899,7 @@ public final class ICUResourceBundleReader {
         protected int size;
         protected int itemsOffset;
 
-        public final int getSize() {
+        final int getSize() {
             return size;
         }
         int getContainerResource(ICUResourceBundleReader reader, int index) {
@@ -973,16 +931,39 @@ public final class ICUResourceBundleReader {
         Container() {
         }
     }
-    static class Array extends Container implements UResource.Array {
+    static class Array extends Container {
         Array() {}
-        @Override
-        public boolean getValue(int i, UResource.Value value) {
-            if (0 <= i && i < size) {
-                ReaderValue readerValue = (ReaderValue)value;
-                readerValue.res = getContainerResource(readerValue.reader, i);
-                return true;
+        void getAllItems(ICUResourceBundleReader reader,
+                UResource.Key key, ReaderValue value, ArraySink sink) {
+            for (int i = 0; i < size; ++i) {
+                int res = getContainerResource(reader, i);
+                int type = RES_GET_TYPE(res);
+                if (URES_IS_ARRAY(type)) {
+                    int numItems = reader.getArrayLength(res);
+                    ArraySink subSink = sink.getOrCreateArraySink(i, numItems);
+                    if (subSink != null) {
+                        Array array = reader.getArray(res);
+                        assert(array.size == numItems);
+                        array.getAllItems(reader, key, value, subSink);
+                    }
+                } else if (URES_IS_TABLE(type)) {
+                    int numItems = reader.getTableLength(res);
+                    TableSink subSink = sink.getOrCreateTableSink(i, numItems);
+                    if (subSink != null) {
+                        Table table = reader.getTable(res);
+                        assert(table.size == numItems);
+                        table.getAllItems(reader, key, value, subSink);
+                    }
+                /* TODO: settle on how to deal with aliases, port to C++
+                } else if (type == ICUResourceBundle.ALIAS) {
+                    throw new UnsupportedOperationException(
+                            "aliases not handled in resource enumeration"); */
+                } else {
+                    value.res = res;
+                    sink.put(i, value);
+                }
             }
-            return false;
+            sink.leave();
         }
     }
     private static final class Array32 extends Array {
@@ -1006,12 +987,10 @@ public final class ICUResourceBundleReader {
             itemsOffset = offset + 1;
         }
     }
-    static class Table extends Container implements UResource.Table {
+    static class Table extends Container {
         protected char[] keyOffsets;
         protected int[] key32Offsets;
 
-        Table() {
-        }
         String getKey(ICUResourceBundleReader reader, int index) {
             if (index < 0 || size <= index) {
                 return null;
@@ -1050,19 +1029,46 @@ public final class ICUResourceBundleReader {
         int getResource(ICUResourceBundleReader reader, String resKey) {
             return getContainerResource(reader, findTableItem(reader, resKey));
         }
-        @Override
-        public boolean getKeyAndValue(int i, UResource.Key key, UResource.Value value) {
-            if (0 <= i && i < size) {
-                ReaderValue readerValue = (ReaderValue)value;
+        void getAllItems(ICUResourceBundleReader reader,
+                UResource.Key key, ReaderValue value, TableSink sink) {
+            for (int i = 0; i < size; ++i) {
                 if (keyOffsets != null) {
-                    readerValue.reader.setKeyFromKey16(keyOffsets[i], key);
+                    reader.setKeyFromKey16(keyOffsets[i], key);
                 } else {
-                    readerValue.reader.setKeyFromKey32(key32Offsets[i], key);
+                    reader.setKeyFromKey32(key32Offsets[i], key);
                 }
-                readerValue.res = getContainerResource(readerValue.reader, i);
-                return true;
+                int res = getContainerResource(reader, i);
+                int type = RES_GET_TYPE(res);
+                if (URES_IS_ARRAY(type)) {
+                    int numItems = reader.getArrayLength(res);
+                    ArraySink subSink = sink.getOrCreateArraySink(key, numItems);
+                    if (subSink != null) {
+                        Array array = reader.getArray(res);
+                        assert(array.size == numItems);
+                        array.getAllItems(reader, key, value, subSink);
+                    }
+                } else if (URES_IS_TABLE(type)) {
+                    int numItems = reader.getTableLength(res);
+                    TableSink subSink = sink.getOrCreateTableSink(key, numItems);
+                    if (subSink != null) {
+                        Table table = reader.getTable(res);
+                        assert(table.size == numItems);
+                        table.getAllItems(reader, key, value, subSink);
+                    }
+                /* TODO: settle on how to deal with aliases, port to C++
+                } else if (type == ICUResourceBundle.ALIAS) {
+                    throw new UnsupportedOperationException(
+                            "aliases not handled in resource enumeration"); */
+                } else if (reader.isNoInheritanceMarker(res)) {
+                    sink.putNoFallback(key);
+                } else {
+                    value.res = res;
+                    sink.put(key, value);
+                }
             }
-            return false;
+            sink.leave();
+        }
+        Table() {
         }
     }
     private static final class Table1632 extends Table {
@@ -1119,7 +1125,7 @@ public final class ICUResourceBundleReader {
      * <p>This cache uses int[] and Object[] arrays to minimize object creation
      * and avoid auto-boxing.
      *
-     * <p>Large resource objects are usually stored in SoftReferences.
+     * <p>Large resource objects are stored in SoftReferences.
      *
      * <p>For few resources, a small table is used with binary search.
      * When more resources are cached, then the data structure changes to be faster
@@ -1147,18 +1153,11 @@ public final class ICUResourceBundleReader {
         private int levelBitsList;
         private Level rootLevel;
 
-        private static boolean storeDirectly(int size) {
-            return size < LARGE_SIZE || CacheValue.futureInstancesWillBeStrong();
-        }
-
         @SuppressWarnings("unchecked")
         private static final Object putIfCleared(Object[] values, int index, Object item, int size) {
             Object value = values[index];
             if(!(value instanceof SoftReference)) {
-                // The caller should be consistent for each resource,
-                // that is, create equivalent objects of equal size every time,
-                // but the CacheValue "strength" may change over time.
-                // assert size < LARGE_SIZE;
+                assert size < LARGE_SIZE;  // Caller should be consistent for each resource.
                 return value;
             }
             assert size >= LARGE_SIZE;
@@ -1166,8 +1165,7 @@ public final class ICUResourceBundleReader {
             if(value != null) {
                 return value;
             }
-            values[index] = CacheValue.futureInstancesWillBeStrong() ?
-                    item : new SoftReference<Object>(item);
+            values[index] = new SoftReference<Object>(item);
             return item;
         }
 
@@ -1216,7 +1214,7 @@ public final class ICUResourceBundleReader {
                         return level.putIfAbsent(key, item, size);
                     }
                     keys[index] = key;
-                    values[index] = storeDirectly(size) ? item : new SoftReference<Object>(item);
+                    values[index] = (size >= LARGE_SIZE) ? new SoftReference<Object>(item) : item;
                     return item;
                 }
                 // Collision: Add a child level, move the old item there,
@@ -1348,7 +1346,7 @@ public final class ICUResourceBundleReader {
                     }
                     ++length;
                     keys[index] = res;
-                    values[index] = storeDirectly(size) ? item : new SoftReference<Object>(item);
+                    values[index] = (size >= LARGE_SIZE) ? new SoftReference<Object>(item) : item;
                     return item;
                 } else /* not found && length == SIMPLE_LENGTH */ {
                     // Grow to become trie-like.

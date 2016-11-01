@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2010-2016, Google, Inc.; International Business Machines      *
@@ -352,8 +350,7 @@ public class LocalePriorityList implements Iterable<ULocale> {
 
     private static Comparator<Double> myDescendingDouble = new Comparator<Double>() {
         public int compare(Double o1, Double o2) {
-            int result = o1.compareTo(o2);
-            return result > 0 ? -1 : result < 0 ? 1 : 0; // Reverse the order.
+            return -o1.compareTo(o2);
         }
     };
 }

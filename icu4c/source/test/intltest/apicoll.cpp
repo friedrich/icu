@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 /********************************************************************
  * COPYRIGHT:
  * Copyright (c) 1997-2016, International Business Machines Corporation and
@@ -81,9 +79,16 @@ CollationAPITest::TestProperty(/* char* par */)
     logln("Test ctors : ");
     col = Collator::createInstance(Locale::getEnglish(), success);
     if (U_FAILURE(success)){
-        errcheckln(success, "English Collator creation failed. - %s", u_errorName(success));
+        errcheckln(success, "Default Collator creation failed. - %s", u_errorName(success));
         return;
     }
+
+    StringEnumeration* kwEnum = col->getKeywordValuesForLocale("", Locale::getEnglish(),true,success);
+    if (U_FAILURE(success)){
+        errcheckln(success, "Get Keyword Values for Locale failed. - %s", u_errorName(success));
+        return;
+    }
+    delete kwEnum;
 
     col->getVersion(versionArray);
     // Check for a version greater than some value rather than equality
@@ -222,29 +227,6 @@ CollationAPITest::TestProperty(/* char* par */)
     delete frCol;
     delete aFrCol;
     delete junk;
-}
-
-void CollationAPITest::TestKeywordValues() {
-    IcuTestErrorCode errorCode(*this, "TestKeywordValues");
-    LocalPointer<Collator> col(Collator::createInstance(Locale::getEnglish(), errorCode));
-    if (errorCode.logIfFailureAndReset("English Collator creation failed")) {
-        return;
-    }
-
-    LocalPointer<StringEnumeration> kwEnum(
-        col->getKeywordValuesForLocale("collation", Locale::getEnglish(), TRUE, errorCode));
-    if (errorCode.logIfFailureAndReset("Get Keyword Values for English Collator failed")) {
-        return;
-    }
-    assertTrue("expect at least one collation tailoring for English", kwEnum->count(errorCode) > 0);
-    const char *kw;
-    UBool hasStandard = FALSE;
-    while ((kw = kwEnum->next(NULL, errorCode)) != NULL) {
-        if (strcmp(kw, "standard") == 0) {
-            hasStandard = TRUE;
-        }
-    }
-    assertTrue("expect at least the 'standard' collation tailoring for English", hasStandard);
 }
 
 void 
@@ -1572,9 +1554,9 @@ void CollationAPITest::TestVariableTopSetting() {
                (int64_t)newVarTop2, (int64_t)newVarTop);
 
   coll->setAttribute(UCOL_ALTERNATE_HANDLING, UCOL_SHIFTED, status);
-  assertEquals("empty==dollar", (int32_t)UCOL_EQUAL, (int32_t)coll->compare(UnicodeString(), dollar));
-  assertEquals("empty==euro", (int32_t)UCOL_EQUAL, (int32_t)coll->compare(UnicodeString(), euro));
-  assertEquals("dollar<zero", (int32_t)UCOL_LESS, (int32_t)coll->compare(dollar, UnicodeString((UChar)0x30)));
+  assertEquals("empty==dollar", UCOL_EQUAL, coll->compare(UnicodeString(), dollar));
+  assertEquals("empty==euro", UCOL_EQUAL, coll->compare(UnicodeString(), euro));
+  assertEquals("dollar<zero", UCOL_LESS, coll->compare(dollar, UnicodeString((UChar)0x30)));
 
   coll->setVariableTop(oldVarTop, status);
 
@@ -1609,9 +1591,9 @@ void CollationAPITest::TestMaxVariable() {
   }
 
   coll->setAttribute(UCOL_ALTERNATE_HANDLING, UCOL_SHIFTED, errorCode);
-  assertEquals("empty==dollar", (int32_t)UCOL_EQUAL, (int32_t)coll->compare(UnicodeString(), UnicodeString((UChar)0x24)));
-  assertEquals("empty==euro", (int32_t)UCOL_EQUAL, (int32_t)coll->compare(UnicodeString(), UnicodeString((UChar)0x20AC)));
-  assertEquals("dollar<zero", (int32_t)UCOL_LESS, (int32_t)coll->compare(UnicodeString((UChar)0x24), UnicodeString((UChar)0x30)));
+  assertEquals("empty==dollar", UCOL_EQUAL, coll->compare(UnicodeString(), UnicodeString((UChar)0x24)));
+  assertEquals("empty==euro", UCOL_EQUAL, coll->compare(UnicodeString(), UnicodeString((UChar)0x20AC)));
+  assertEquals("dollar<zero", UCOL_LESS, coll->compare(UnicodeString((UChar)0x24), UnicodeString((UChar)0x30)));
 }
 
 void CollationAPITest::TestGetLocale() {
@@ -2370,7 +2352,7 @@ void CollationAPITest::TestCloneBinary() {
     rbc->setAttribute(UCOL_STRENGTH, UCOL_PRIMARY, errorCode);
     UnicodeString uUmlaut((UChar)0xfc);
     UnicodeString ue = UNICODE_STRING_SIMPLE("ue");
-    assertEquals("rbc/primary: u-umlaut==ue", (int32_t)UCOL_EQUAL, rbc->compare(uUmlaut, ue, errorCode));
+    assertEquals("rbc/primary: u-umlaut==ue", UCOL_EQUAL, rbc->compare(uUmlaut, ue, errorCode));
     uint8_t bin[25000];
     int32_t binLength = rbc->cloneBinary(bin, UPRV_LENGTHOF(bin), errorCode);
     if(errorCode.logDataIfFailureAndReset("rbc->cloneBinary()")) {
@@ -2382,8 +2364,8 @@ void CollationAPITest::TestCloneBinary() {
     if(errorCode.logDataIfFailureAndReset("RuleBasedCollator(rbc binary)")) {
         return;
     }
-    assertEquals("rbc2.strength==primary", (int32_t)UCOL_PRIMARY, rbc2.getAttribute(UCOL_STRENGTH, errorCode));
-    assertEquals("rbc2: u-umlaut==ue", (int32_t)UCOL_EQUAL, rbc2.compare(uUmlaut, ue, errorCode));
+    assertEquals("rbc2.strength==primary", UCOL_PRIMARY, rbc2.getAttribute(UCOL_STRENGTH, errorCode));
+    assertEquals("rbc2: u-umlaut==ue", UCOL_EQUAL, rbc2.compare(uUmlaut, ue, errorCode));
     assertTrue("rbc==rbc2", *rbc == rbc2);
     uint8_t bin2[25000];
     int32_t bin2Length = rbc2.cloneBinary(bin2, UPRV_LENGTHOF(bin2), errorCode);
@@ -2394,8 +2376,8 @@ void CollationAPITest::TestCloneBinary() {
     if(errorCode.logDataIfFailureAndReset("RuleBasedCollator(rbc binary, length<0)")) {
         return;
     }
-    assertEquals("rbc3.strength==primary", (int32_t)UCOL_PRIMARY, rbc3.getAttribute(UCOL_STRENGTH, errorCode));
-    assertEquals("rbc3: u-umlaut==ue", (int32_t)UCOL_EQUAL, rbc3.compare(uUmlaut, ue, errorCode));
+    assertEquals("rbc3.strength==primary", UCOL_PRIMARY, rbc3.getAttribute(UCOL_STRENGTH, errorCode));
+    assertEquals("rbc3: u-umlaut==ue", UCOL_EQUAL, rbc3.compare(uUmlaut, ue, errorCode));
     assertTrue("rbc==rbc3", *rbc == rbc3);
 }
 
@@ -2482,7 +2464,6 @@ void CollationAPITest::runIndexedTest( int32_t index, UBool exec, const char* &n
     if (exec) logln("TestSuite CollationAPITest: ");
     TESTCASE_AUTO_BEGIN;
     TESTCASE_AUTO(TestProperty);
-    TESTCASE_AUTO(TestKeywordValues);
     TESTCASE_AUTO(TestOperators);
     TESTCASE_AUTO(TestDuplicate);
     TESTCASE_AUTO(TestCompare);

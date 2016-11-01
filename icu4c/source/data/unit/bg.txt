@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/bg.xml
+// *
+// ***************************************************************************
 bg{
-    Version{"2.1.30.6"}
+    Version{"2.1.23.7"}
     durationUnits{
         hm{"h:mm"}
         hms{"h:mm:ss"}
@@ -79,7 +85,6 @@ bg{
                 dnam{"квадратни километри"}
                 one{"{0} квадратен километър"}
                 other{"{0} квадратни километра"}
-                per{"{0} на квадратен километър"}
             }
             square-meter{
                 dnam{"квадратни метри"}
@@ -91,7 +96,6 @@ bg{
                 dnam{"квадратни мили"}
                 one{"{0} квадратна миля"}
                 other{"{0} квадратни мили"}
-                per{"{0} на квадратна миля"}
             }
             square-yard{
                 dnam{"квадратни ярдове"}
@@ -100,28 +104,13 @@ bg{
             }
         }
         compound{
-            per{"{0} на {1}"}
+            per{"{0} в {1}"}
         }
         concentr{
             karat{
                 dnam{"карати"}
                 one{"{0} карат"}
                 other{"{0} карата"}
-            }
-            milligram-per-deciliter{
-                dnam{"милиграми на децилитър"}
-                one{"{0} милиграм на децилитър"}
-                other{"{0} милиграма на децилитър"}
-            }
-            millimole-per-liter{
-                dnam{"милимоли на литър"}
-                one{"{0} милимол на литър"}
-                other{"{0} милимола на литър"}
-            }
-            part-per-million{
-                dnam{"части на милион"}
-                one{"{0} ppm"}
-                other{"{0} ppm"}
             }
         }
         consumption{
@@ -139,11 +128,6 @@ bg{
                 dnam{"мили с един галон"}
                 one{"{0} миля с един галон"}
                 other{"{0} мили с един галон"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"мили с един императорски галон"}
-                one{"{0} миля с един императорски галон"}
-                other{"{0} мили с един императорски галон"}
             }
         }
         coordinate{
@@ -365,7 +349,6 @@ bg{
                 dnam{"футове"}
                 one{"{0} фут"}
                 other{"{0} фута"}
-                per{"{0} на фут"}
             }
             inch{
                 dnam{"инчове"}
@@ -491,7 +474,6 @@ bg{
                 dnam{"фунтове"}
                 one{"{0} фунт"}
                 other{"{0} фунта"}
-                per{"{0} на фунт"}
             }
             ton{
                 dnam{"къси тонове"}
@@ -675,12 +657,6 @@ bg{
                 one{"{0} галона"}
                 other{"{0} галона"}
                 per{"{0} на галон"}
-            }
-            gallon-imperial{
-                dnam{"имперски галони"}
-                one{"{0} имперски галон"}
-                other{"{0} имперски галона"}
-                per{"{0} на имперски галон"}
             }
             hectoliter{
                 dnam{"хектолитри"}
@@ -1043,7 +1019,6 @@ bg{
                 dnam{"km²"}
                 one{"{0} km²"}
                 other{"{0} km²"}
-                per{"{0}/km²"}
             }
             square-meter{
                 dnam{"m²"}
@@ -1055,7 +1030,6 @@ bg{
                 dnam{"кв. мили"}
                 one{"{0} кв. миля"}
                 other{"{0} кв. мили"}
-                per{"{0}/mi²"}
             }
             square-yard{
                 dnam{"кв. ярдове"}
@@ -1068,24 +1042,9 @@ bg{
         }
         concentr{
             karat{
-                dnam{"карати"}
+                dnam{"К"}
                 one{"{0} карат"}
                 other{"{0} карата"}
-            }
-            milligram-per-deciliter{
-                dnam{"mg/dL"}
-                one{"{0} mg/dL"}
-                other{"{0} mg/dL"}
-            }
-            millimole-per-liter{
-                dnam{"mmol/L"}
-                one{"{0} mmol/L"}
-                other{"{0} mmol/L"}
-            }
-            part-per-million{
-                dnam{"ppm"}
-                one{"{0} ppm"}
-                other{"{0} ppm"}
             }
         }
         consumption{
@@ -1103,11 +1062,6 @@ bg{
                 dnam{"mpg"}
                 one{"{0} mpg"}
                 other{"{0} mpg"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"мили/имп. гал."}
-                one{"{0} миля/имп. галон"}
-                other{"{0} мили/имп. галон"}
             }
         }
         coordinate{
@@ -1570,7 +1524,7 @@ bg{
             acre-foot{
                 dnam{"акър-футове"}
                 one{"{0} акър-фут"}
-                other{"{0} акър-фута"}
+                other{"{0} ac ft"}
             }
             centiliter{
                 dnam{"cl"}
@@ -1638,13 +1592,7 @@ bg{
                 dnam{"галони"}
                 one{"{0} галон"}
                 other{"{0} галона"}
-                per{"{0}/гал."}
-            }
-            gallon-imperial{
-                dnam{"имп. галон"}
-                one{"{0} имп. галон"}
-                other{"{0} имп. гал."}
-                per{"{0}/имп. галон"}
+                per{"{0}/gal"}
             }
             hectoliter{
                 dnam{"hl"}

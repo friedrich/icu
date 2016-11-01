@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2014, International Business Machines Corporation and         *
@@ -16,7 +14,7 @@ import com.ibm.icu.lang.UProperty;
 import com.ibm.icu.lang.UScript;
 
 class BurmeseBreakEngine extends DictionaryBreakEngine {
-
+    
     // Constants for BurmeseBreakIterator
     // How many words in a row are "good enough"?
     private static final byte BURMESE_LOOKAHEAD = 3;
@@ -27,13 +25,13 @@ class BurmeseBreakEngine extends DictionaryBreakEngine {
     private static final byte BURMESE_PREFIX_COMBINE_THRESHOLD = 3;
     // Minimum word size
     private static final byte BURMESE_MIN_WORD = 2;
-
+    
     private DictionaryMatcher fDictionary;
     private static UnicodeSet fBurmeseWordSet;
     private static UnicodeSet fEndWordSet;
     private static UnicodeSet fBeginWordSet;
     private static UnicodeSet fMarkSet;
-
+    
     static {
         // Initialize UnicodeSets
         fBurmeseWordSet = new UnicodeSet();
@@ -52,14 +50,14 @@ class BurmeseBreakEngine extends DictionaryBreakEngine {
         fMarkSet.compact();
         fEndWordSet.compact();
         fBeginWordSet.compact();
-
+        
         // Freeze the static UnicodeSet
         fBurmeseWordSet.freeze();
         fMarkSet.freeze();
         fEndWordSet.freeze();
         fBeginWordSet.freeze();
     }
-
+    
     public BurmeseBreakEngine() throws IOException {
         super(BreakIterator.KIND_WORD, BreakIterator.KIND_LINE);
         setCharacters(fBurmeseWordSet);
@@ -67,19 +65,16 @@ class BurmeseBreakEngine extends DictionaryBreakEngine {
         fDictionary = DictionaryData.loadDictionaryFor("Mymr");
     }
 
-    @Override
     public boolean equals(Object obj) {
         // Normally is a singleton, but it's possible to have duplicates
         //   during initialization. All are equivalent.
         return obj instanceof BurmeseBreakEngine;
     }
 
-    @Override
     public int hashCode() {
         return getClass().hashCode();
     }
-
-    @Override
+    
     public boolean handles(int c, int breakType) {
         if (breakType == BreakIterator.KIND_WORD || breakType == BreakIterator.KIND_LINE) {
             int script = UCharacter.getIntPropertyValue(c, UProperty.SCRIPT);
@@ -88,11 +83,10 @@ class BurmeseBreakEngine extends DictionaryBreakEngine {
         return false;
     }
 
-    @Override
     public int divideUpDictionaryRange(CharacterIterator fIter, int rangeStart, int rangeEnd,
             DequeI foundBreaks) {
-
-
+        
+        
         if ((rangeEnd - rangeStart) < BURMESE_MIN_WORD) {
             return 0;  // Not enough characters for word
         }
@@ -163,7 +157,7 @@ class BurmeseBreakEngine extends DictionaryBreakEngine {
                 // no preceding word, or the non-word shares less than the minimum threshold
                 // of characters with a dictionary word, then scan to resynchronize
                 if (words[wordsFound%BURMESE_LOOKAHEAD].candidates(fIter, fDictionary, rangeEnd) <= 0 &&
-                        (wordLength == 0 ||
+                        (wordLength == 0 || 
                                 words[wordsFound%BURMESE_LOOKAHEAD].longestPrefix() < BURMESE_PREFIX_COMBINE_THRESHOLD)) {
                     // Look for a plausible word boundary
                     int remaining = rangeEnd - (current + wordLength);
@@ -209,7 +203,7 @@ class BurmeseBreakEngine extends DictionaryBreakEngine {
 
             // Look ahead for possible suffixes if a dictionary word does not follow.
             // We do this in code rather than using a rule so that the heuristic
-            // resynch continues to function. For example, one of the suffix characters
+            // resynch continues to function. For example, one of the suffix characters 
             // could be a typo in the middle of a word.
             // NOT CURRENTLY APPLICABLE TO BURMESE
 

@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2013-2016, International Business Machines Corporation and
@@ -9,8 +7,6 @@
 package com.ibm.icu.dev.test.format;
 
 import java.util.Locale;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.math.BigDecimal;
@@ -25,7 +21,11 @@ import com.ibm.icu.text.RelativeDateTimeFormatter.Style;
 import com.ibm.icu.util.ULocale;
 
 public class RelativeDateTimeFormatterTest extends TestFmwk {
-    @Test
+
+    public static void main(String[] args) throws Exception {
+        new RelativeDateTimeFormatterTest().run(args);
+    }
+
     public void TestRelativeDateWithQuantity() {
         Object[][] data = {
                 {0.0, Direction.NEXT, RelativeUnit.SECONDS, "in 0 seconds"},
@@ -94,7 +94,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRelativeDateWithQuantityCaps() {
         Object[][] data = {
                 {0.0, Direction.NEXT, RelativeUnit.SECONDS, "In 0 seconds"},
@@ -169,7 +168,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRelativeDateWithQuantityShort() {
         Object[][] data = {
                 {0.0, Direction.NEXT, RelativeUnit.SECONDS, "in 0 sec."},
@@ -244,7 +242,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRelativeDateWithQuantityNarrow() {
         Object[][] data = {
                 {0.0, Direction.NEXT, RelativeUnit.SECONDS, "in 0 sec."},
@@ -321,7 +318,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
 
 
 
-    @Test
     public void TestRelativeDateWithQuantitySr() {
         Object[][] data = {
                 {0.0, Direction.NEXT, RelativeUnit.MONTHS, "\u0437\u0430 0 \u043C\u0435\u0441\u0435\u0446\u0438"},
@@ -336,7 +332,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRelativeDateWithQuantitySrFallback() {
         Object[][] data = {
                 {0.0, Direction.NEXT, RelativeUnit.MONTHS, "\u0437\u0430 0 \u043C."},
@@ -355,7 +350,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRelativeDateWithoutQuantity() {
         Object[][] data = {
                 {Direction.NEXT_2, AbsoluteUnit.DAY, null},
@@ -419,7 +413,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRelativeDateWithoutQuantityCaps() {
         Object[][] data = {
                 {Direction.NEXT_2, AbsoluteUnit.DAY, null},
@@ -489,7 +482,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRelativeDateWithoutQuantityShort() {
         Object[][] data = {
                 {Direction.NEXT_2, AbsoluteUnit.DAY, null},
@@ -563,7 +555,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRelativeDateWithoutQuantityNarrow() {
         Object[][] data = {
                 {Direction.NEXT_2, AbsoluteUnit.DAY, null},
@@ -637,7 +628,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestRelativeDateTimeUnitFormatters() {
         double[] offsets = { -5.0, -2.2, -2.0, -1.0, -0.7, 0.0, 0.7, 1.0, 2.0, 5.0 };
 
@@ -785,7 +775,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestTwoBeforeTwoAfter() {
         Object[][] data = {
                 {Direction.NEXT_2, AbsoluteUnit.DAY, "pasado ma\u00F1ana"},
@@ -798,7 +787,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestFormatWithQuantityIllegalArgument() {
         RelativeDateTimeFormatter fmt = RelativeDateTimeFormatter.getInstance(new ULocale("en_US"));
         try {
@@ -815,7 +803,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestFormatWithoutQuantityIllegalArgument() {
         RelativeDateTimeFormatter fmt = RelativeDateTimeFormatter.getInstance(new ULocale("en_US"));
         try {
@@ -838,7 +825,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestCustomNumberFormat() {
         ULocale loc = new ULocale("en_US");
         NumberFormat nf = NumberFormat.getInstance(loc);
@@ -868,13 +854,11 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestCombineDateAndTime() {
         RelativeDateTimeFormatter fmt = RelativeDateTimeFormatter.getInstance(new ULocale("en_US"));
         assertEquals("TestcombineDateAndTime", "yesterday, 3:50", fmt.combineDateAndTime("yesterday", "3:50"));
     }
 
-    @Test
     public void TestJavaLocale() {
         Locale loc = Locale.US;
         double amount = 12.3456d;
@@ -891,8 +875,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         s = fmt.format(amount, Direction.LAST, RelativeUnit.SECONDS);
         assertEquals("Java Locale.US", "12.3 seconds ago", s);
     }
-
-    @Test
     public void TestGetters() {
         RelativeDateTimeFormatter fmt = RelativeDateTimeFormatter.getInstance(
                 new ULocale("en_US"),
@@ -904,17 +886,8 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
                 "",
                 DisplayContext.CAPITALIZATION_FOR_BEGINNING_OF_SENTENCE,
                 fmt.getCapitalizationContext());
-
-        // test the no-arguments getInstance();
-        RelativeDateTimeFormatter fmt_default = RelativeDateTimeFormatter.getInstance();
-        assertEquals("", RelativeDateTimeFormatter.Style.LONG, fmt_default.getFormatStyle());
-        assertEquals(
-                "",
-                DisplayContext.CAPITALIZATION_NONE,
-                fmt_default.getCapitalizationContext());
     }
 
-    @Test
     public void TestBadDisplayContext() {
         try {
             RelativeDateTimeFormatter.getInstance(
@@ -927,7 +900,6 @@ public class RelativeDateTimeFormatterTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestSidewaysDataLoading() {
         RelativeDateTimeFormatter fmt = RelativeDateTimeFormatter.getInstance(
                 new ULocale("en_GB"),

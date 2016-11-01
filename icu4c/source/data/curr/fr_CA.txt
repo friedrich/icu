@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fr_CA.xml
+// *
+// ***************************************************************************
 fr_CA{
     Currencies{
         ARS{
@@ -65,10 +71,6 @@ fr_CA{
         ILS{
             "ILS",
             "nouveau shekel israélien",
-        }
-        INR{
-            "INR",
-            "roupie indienne",
         }
         JPY{
             "¥",
@@ -144,7 +146,6 @@ fr_CA{
         }
     }
     Currencies%narrow{
-        GEL{"GEL"}
         KMF{"CF"}
         NIO{"C$"}
         ZMW{"ZK"}
@@ -166,5 +167,5 @@ fr_CA{
             other{"(devise inconnue)"}
         }
     }
-    Version{"2.1.27.99"}
+    Version{"2.1.24.13"}
 }

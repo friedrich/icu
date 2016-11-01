@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2016, International Business Machines Corporation and    *
@@ -276,7 +274,7 @@ import java.util.Map;
 @Deprecated
 public class RuleBasedTransliterator extends Transliterator {
 
-    private final Data data;
+    private Data data;
 
 //    /**
 //     * Constructs a new transliterator from the given rules.
@@ -325,7 +323,6 @@ public class RuleBasedTransliterator extends Transliterator {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     protected void handleTransliterate(Replaceable text,
                                        Position index, boolean incremental) {
@@ -443,7 +440,6 @@ public class RuleBasedTransliterator extends Transliterator {
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public String toRules(boolean escapeUnprintable) {
         return data.ruleSet.toRules(escapeUnprintable);
@@ -464,7 +460,7 @@ public class RuleBasedTransliterator extends Transliterator {
 //    public UnicodeSet getTargetSet() {
 //        return data.ruleSet.getSourceTargetSet(true, unicodeFilter);
 //    }
-
+    
     /**
      * @internal
      * @deprecated This API is ICU internal only.

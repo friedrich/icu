@@ -1,13 +1,19 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/et.xml
+// *
+// ***************************************************************************
 et{
     Keys{
         calendar{"kalender"}
-        cf{"rahavorming"}
         colAlternate{"sümbolite eiramine järjestuses"}
         colBackwards{"diakriitikute pöördjärjestus"}
         colCaseFirst{"suur- ja väiketähe järjestus"}
         colCaseLevel{"järjestuse tõstutundlikkus"}
+        colHiraganaQuaternary{"kana kirja järjestus"}
         colNormalization{"normaliseeritud järjestus"}
         colNumeric{"numbrite järjestus"}
         colStrength{"järjestuskaalud"}
@@ -19,6 +25,7 @@ et{
         numbers{"numbrid"}
         timezone{"ajavöönd"}
         va{"lokaadi variant"}
+        variableTop{"sümbolite alusel järjestamine"}
         x{"erakasutus"}
     }
     Languages{
@@ -40,7 +47,7 @@ et{
         ale{"aleuudi"}
         aln{"geegi"}
         alt{"altai"}
-        am{"amhara"}
+        am{"amhari"}
         an{"aragoni"}
         ang{"vanainglise"}
         anp{"angika"}
@@ -126,7 +133,6 @@ et{
         cps{"kapisnoni"}
         cr{"krii"}
         crh{"krimmitatari"}
-        crs{"seišelli"}
         cs{"tšehhi"}
         csb{"kašuubi"}
         cu{"kirikuslaavi"}
@@ -227,7 +233,6 @@ et{
         gwi{"gvitšini"}
         ha{"hausa"}
         hai{"haida"}
-        hak{"hakka"}
         haw{"havai"}
         he{"heebrea"}
         hi{"hindi"}
@@ -415,7 +420,7 @@ et{
         nov{"noviaal"}
         nqo{"nkoo"}
         nr{"lõunandebele"}
-        nso{"põhjasotho"}
+        nso{"pedi"}
         nus{"nueri"}
         nv{"navaho"}
         nwc{"vananevari"}
@@ -424,7 +429,7 @@ et{
         nyn{"nkole"}
         nyo{"njoro"}
         nzi{"nzima"}
-        oc{"oksitaani"}
+        oc{"provansi"}
         oj{"odžibvei"}
         om{"oromo"}
         or{"oria"}
@@ -438,7 +443,6 @@ et{
         pap{"papiamento"}
         pau{"belau"}
         pcd{"pikardi"}
-        pcm{"Nigeeria pidžinkeel"}
         pdc{"Pennsylvania saksa"}
         pdt{"mennoniidisaksa"}
         peo{"vanapärsia"}
@@ -623,6 +627,8 @@ et{
         zen{"zenaga"}
         zgh{"tamasikti (Maroko)"}
         zh{"hiina"}
+        zh_Hans{"hiina (lihtsustatud)"}
+        zh_Hant{"hiina (traditsiooniline)"}
         zu{"suulu"}
         zun{"sunji"}
         zxx{"mittekeeleline"}
@@ -678,12 +684,11 @@ et{
         Grek{"kreeka"}
         Gujr{"gudžarati"}
         Guru{"gurmukhi"}
-        Hanb{"hanbi"}
         Hang{"korea"}
         Hani{"hani"}
         Hano{"hanunoo"}
-        Hans{"lihtsustatud"}
-        Hant{"traditsiooniline"}
+        Hans{"hiina lihtsustatud"}
+        Hant{"hiina traditsiooniline"}
         Hatr{"Hatra"}
         Hebr{"heebrea"}
         Hira{"hiragana"}
@@ -693,7 +698,6 @@ et{
         Hung{"vanaungari"}
         Inds{"Induse"}
         Ital{"vanaitali"}
-        Jamo{"jamo"}
         Java{"jaava"}
         Jpan{"jaapani"}
         Jurc{"tšurtšeni"}
@@ -798,7 +802,6 @@ et{
         Yiii{"jii"}
         Zinh{"päritud"}
         Zmth{"matemaatiline tähistus"}
-        Zsye{"emoji"}
         Zsym{"sümbolid"}
         Zxxx{"kirjakeeleta"}
         Zyyy{"üldine"}
@@ -829,10 +832,6 @@ et{
             persian{"Pärsia kalender"}
             roc{"Hiina Vabariigi kalender"}
         }
-        cf{
-            account{"arvelduse rahavorming"}
-            standard{"standardne rahavorming"}
-        }
         colAlternate{
             non-ignorable{"järjesta sümbolid"}
             shifted{"eira järjestuses sümboleid"}
@@ -849,6 +848,10 @@ et{
         colCaseLevel{
             no{"tõstutundetu järjestus"}
             yes{"tõstutundlik järjestus"}
+        }
+        colHiraganaQuaternary{
+            no{"järjesta kana eraldi"}
+            yes{"järjesta kana erinevalt"}
         }
         colNormalization{
             no{"järjesta normaliseerimata"}
@@ -885,11 +888,6 @@ et{
             unihan{"võtmete-kriipsude sortimisjärjestus"}
             zhuyin{"zhuyin’i sortimisjärjestus"}
         }
-        d0{
-            fwidth{"Täislaius"}
-            hwidth{"Poolaius"}
-            npinyin{"Numbriline"}
-        }
         hc{
             h11{"12-tunnine süsteem (0–11)"}
             h12{"12-tunnine süsteem (1–12)"}
@@ -900,10 +898,6 @@ et{
             loose{"paindlik reavahetuse laad"}
             normal{"harilik reavahetuse laad"}
             strict{"jäik reavahetuse laad"}
-        }
-        m0{
-            bgn{"BGN"}
-            ungegn{"UNGEGN"}
         }
         ms{
             metric{"meetermõõdustik"}
@@ -1011,22 +1005,7 @@ et{
         VALENCIA{"valentsia"}
         WADEGILE{"Wade’i-Gilesi latinisatsioon"}
     }
-    Version{"2.1.28.79"}
-    characterLabelPattern{
-        all{"{0} — Kõik"}
-        category-list{"{0}: {1}"}
-        compatibility{"{0} — Ühilduvus"}
-        enclosed{"{0} — Suletud"}
-        extended{"{0} — Laiendatud"}
-        historic{"{0} — Ajalooline"}
-        miscellaneous{"{0} — Mitmesugune"}
-        other{"{0} — Muu"}
-        scripts{"Kirjad — {0}"}
-        strokes{
-            one{"{0} Kriipsud"}
-            other{"{0} Kriipsud"}
-        }
-    }
+    Version{"2.1.22.93"}
     codePatterns{
         language{"Keel: {0}"}
         script{"Kiri: {0}"}

@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/to.xml
+// *
+// ***************************************************************************
 to{
-    Version{"2.1.27.98"}
+    Version{"2.1.23.79"}
     durationUnits{
         hm{"h:mm"}
         hms{"h:mm:ss"}
@@ -86,18 +92,6 @@ to{
                 dnam{"kalati"}
                 other{"kalati ʻe {0}"}
             }
-            milligram-per-deciliter{
-                dnam{"milikalami he tesilita"}
-                other{"milikalami ʻe {0} he tesilita"}
-            }
-            millimole-per-liter{
-                dnam{"milimole he lita"}
-                other{"milimole ʻe {0} he lita"}
-            }
-            part-per-million{
-                dnam{"konga he miliona"}
-                other{"konga ʻe {0} he miliona"}
-            }
         }
         consumption{
             liter-per-100kilometers{
@@ -111,10 +105,6 @@ to{
             mile-per-gallon{
                 dnam{"maile he kālani"}
                 other{"maile ʻe {0} he kālani"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"maile he kālani fakaʻemipaea"}
-                other{"maile ʻe {0} he kālani fakaʻemipaea"}
             }
         }
         digital{
@@ -524,11 +514,6 @@ to{
                 dnam{"kālani"}
                 other{"kālani ʻe {0}"}
             }
-            gallon-imperial{
-                dnam{"kālani fakaʻemipaea"}
-                other{"kālani fakaʻemipaea ʻe {0}"}
-                per{"{0} ki he kālani fakaʻemipaea"}
-            }
             hectoliter{
                 dnam{"hēkitolita"}
                 other{"hēkitolita ʻe {0}"}
@@ -655,9 +640,6 @@ to{
             mile-per-gallon{
                 dnam{"mi/kā"}
                 other{"{0} mi/kā"}
-            }
-            mile-per-gallon-imperial{
-                other{"{0}m/kāʻe"}
             }
         }
         digital{
@@ -1180,18 +1162,6 @@ to{
                 dnam{"kt"}
                 other{"kt ʻe {0}"}
             }
-            milligram-per-deciliter{
-                dnam{"mk/tl"}
-                other{"mk ʻe {0}/tl"}
-            }
-            millimole-per-liter{
-                dnam{"mmol/l"}
-                other{"mmol ʻe {0}/l"}
-            }
-            part-per-million{
-                dnam{"khm"}
-                other{"khm ʻe {0}"}
-            }
         }
         consumption{
             liter-per-100kilometers{
@@ -1205,10 +1175,6 @@ to{
             mile-per-gallon{
                 dnam{"mi/kā"}
                 other{"mi ʻe {0}/kā"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"mi/kāʻem"}
-                other{"mi ʻe {0}/kāʻem"}
             }
         }
         digital{
@@ -1617,11 +1583,6 @@ to{
             gallon{
                 dnam{"kā"}
                 other{"kā ʻe {0}"}
-            }
-            gallon-imperial{
-                dnam{"kāʻem"}
-                other{"kāʻem ʻe {0}"}
-                per{"{0} / kāʻem"}
             }
             hectoliter{
                 dnam{"hl"}

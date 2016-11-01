@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ga.xml
+// *
+// ***************************************************************************
 ga{
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -302,9 +308,6 @@ ga{
         }
         "America:El_Salvador"{
             ec{"An tSalvadóir"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +672,6 @@ ga{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Béiriút"}
         }
@@ -849,9 +849,6 @@ ga{
         "Asia:Tokyo"{
             ec{"Tóiceo"}
         }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"Ulaanbaatar"}
         }
@@ -951,9 +948,6 @@ ga{
         "Europe:Andorra"{
             ec{"Andóra"}
         }
-        "Europe:Astrakhan"{
-            ec{"An Astracáin"}
-        }
         "Europe:Athens"{
             ec{"An Aithin"}
         }
@@ -1012,9 +1006,6 @@ ga{
         }
         "Europe:Kiev"{
             ec{"Cív"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Liospóin"}
@@ -1092,9 +1083,6 @@ ga{
         }
         "Europe:Tirane"{
             ec{"Tirane"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Ulyanovsk"}
         }
         "Europe:Uzhgorod"{
             ec{"Uzhgorod"}
@@ -1807,9 +1795,6 @@ ga{
         }
         "meta:Ponape"{
             ls{"Am Phohnpei"}
-        }
-        "meta:Pyongyang"{
-            ls{"Am Pyongyang"}
         }
         "meta:Qyzylorda"{
             ld{"Am Samhraidh Qyzylorda"}

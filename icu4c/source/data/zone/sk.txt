@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/sk.xml
+// *
+// ***************************************************************************
 sk{
-    Version{"2.1.28.79"}
+    Version{"2.1.24.11"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -302,9 +308,6 @@ sk{
         }
         "America:El_Salvador"{
             ec{"Salvádor"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -607,7 +610,7 @@ sk{
             ec{"Davis"}
         }
         "Antarctica:DumontDUrville"{
-            ec{"Dumont d’Urville"}
+            ec{"Dumont D’Urville"}
         }
         "Antarctica:Macquarie"{
             ec{"Macquarie"}
@@ -668,9 +671,6 @@ sk{
         }
         "Asia:Bangkok"{
             ec{"Bangkok"}
-        }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
         }
         "Asia:Beirut"{
             ec{"Bejrút"}
@@ -849,9 +849,6 @@ sk{
         "Asia:Tokyo"{
             ec{"Tokio"}
         }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
-        }
         "Asia:Ulaanbaatar"{
             ec{"Ulanbátar"}
         }
@@ -951,9 +948,6 @@ sk{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrachán"}
-        }
         "Europe:Athens"{
             ec{"Atény"}
         }
@@ -1011,9 +1005,6 @@ sk{
         }
         "Europe:Kiev"{
             ec{"Kyjev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lisabon"}
@@ -1090,9 +1081,6 @@ sk{
         }
         "Europe:Tirane"{
             ec{"Tirana"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Uľjanovsk"}
         }
         "Europe:Uzhgorod"{
             ec{"Užhorod"}
@@ -1761,9 +1749,6 @@ sk{
         }
         "meta:Ponape"{
             ls{"ponapský čas"}
-        }
-        "meta:Pyongyang"{
-            ls{"pchjongjanský čas"}
         }
         "meta:Reunion"{
             ls{"réunionský čas"}

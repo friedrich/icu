@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2015, International Business Machines Corporation and    *
@@ -12,8 +10,6 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Random;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.math.BigDecimal;
@@ -29,6 +25,19 @@ import com.ibm.icu.util.ULocale;
  * introduces a dependency on collation.  See RbnfLenientScannerTest.
  */
 public class RbnfTest extends TestFmwk {
+    public static void main(String[] args) {
+        RbnfTest test = new RbnfTest();
+
+        try {
+            test.run(args);
+        }
+        catch (Throwable e) {
+            System.out.println("Entire test failed because of exception: "
+                               + e.toString());
+            e.printStackTrace();
+        }
+    }
+
     static String fracRules =
         "%main:\n" +
         // this rule formats the number if it's 1 or more.  It formats
@@ -60,7 +69,6 @@ public class RbnfTest extends TestFmwk {
         "    9: <0</9;\n" +
         "   10: <0</10;\n";
 
-    @Test
     public void TestCoverage() {
         String durationInSecondsRules =
                 // main rule set for formatting with words
@@ -212,7 +220,6 @@ public class RbnfTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestUndefinedSpellout() {
         Locale greek = new Locale("el", "", "");
         RuleBasedNumberFormat[] formatters = {
@@ -265,7 +272,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the English spellout rules
      */
-    @Test
     public void TestEnglishSpellout() {
         RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(Locale.US,
                 RuleBasedNumberFormat.SPELLOUT);
@@ -298,7 +304,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the English ordinal-abbreviation rules
      */
-    @Test
     public void TestOrdinalAbbreviations() {
         RuleBasedNumberFormat formatter= new RuleBasedNumberFormat(Locale.US,
                 RuleBasedNumberFormat.ORDINAL);
@@ -328,7 +333,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the duration-formatting rules
      */
-    @Test
     public void TestDurations() {
         RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(Locale.US,
                 RuleBasedNumberFormat.DURATION);
@@ -352,7 +356,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the Spanish spellout rules
      */
-    @Test
     public void TestSpanishSpellout() {
         RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new Locale("es", "es",
                 ""), RuleBasedNumberFormat.SPELLOUT);
@@ -387,7 +390,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the French spellout rules
      */
-    @Test
     public void TestFrenchSpellout() {
         RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(Locale.FRANCE,
                 RuleBasedNumberFormat.SPELLOUT);
@@ -427,7 +429,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the Swiss French spellout rules
      */
-    @Test
     public void TestSwissFrenchSpellout() {
         RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new Locale("fr", "CH"),
                 RuleBasedNumberFormat.SPELLOUT);
@@ -467,7 +468,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the Italian spellout rules
      */
-    @Test
     public void TestItalianSpellout() {
         RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(Locale.ITALIAN,
                 RuleBasedNumberFormat.SPELLOUT);
@@ -500,7 +500,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the German spellout rules
      */
-    @Test
     public void TestGermanSpellout() {
         RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(Locale.GERMANY,
                 RuleBasedNumberFormat.SPELLOUT);
@@ -531,7 +530,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the Thai spellout rules
      */
-    @Test
     public void TestThaiSpellout() {
         RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new Locale("th", "TH"),
                 RuleBasedNumberFormat.SPELLOUT);
@@ -556,7 +554,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the ordinal spellout rules
      */
-    @Test
     public void TestPluralRules() {
         String enRules = "%digits-ordinal:"
                 + "-x: −>>;"
@@ -658,7 +655,6 @@ public class RbnfTest extends TestFmwk {
     /**
      * Perform a simple spot check on the parsing going into an infinite loop for alternate rules.
      */
-    @Test
     public void TestMultiplePluralRules() {
         // This is trying to model the feminine form, but don't worry about the details too much.
         // We're trying to test the plural rules where there are different prefixes.
@@ -752,7 +748,6 @@ public class RbnfTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestFractionalRuleSet() {
         RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(fracRules,
                 Locale.ENGLISH);
@@ -787,7 +782,6 @@ public class RbnfTest extends TestFmwk {
         doTest(formatter, testData, false); // exact values aren't parsable from fractions
     }
 
-    @Test
     public void TestSwedishSpellout()
     {
         Locale locale = new Locale("sv", "", "");
@@ -847,7 +841,6 @@ public class RbnfTest extends TestFmwk {
         doTest(formatter, testDataYear, true);
     }
 
-    @Test
     public void TestBigNumbers() {
         BigInteger bigI = new BigInteger("1234567890", 10);
         StringBuffer buf = new StringBuffer();
@@ -861,7 +854,6 @@ public class RbnfTest extends TestFmwk {
         logln("big dec: " + buf.toString());
     }
 
-    @Test
     public void TestTrailingSemicolon() {
         String thaiRules =
             "%default:\n" +
@@ -906,7 +898,6 @@ public class RbnfTest extends TestFmwk {
         doTest(formatter, testData, true);
     }
 
-    @Test
     public void TestSmallValues() {
         String[][] testData = {
                 { "0.001", "zero point zero zero one" },
@@ -946,7 +937,6 @@ public class RbnfTest extends TestFmwk {
         doTest(formatter, testData, true);
     }
 
-    @Test
     public void TestRuleSetDisplayName() {
         /**
          * Spellout rules for U.K. English.
@@ -1086,7 +1076,6 @@ public class RbnfTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestAllLocales() {
         StringBuilder errors = new StringBuilder();
         String[] names = {
@@ -1187,7 +1176,6 @@ public class RbnfTest extends TestFmwk {
     /* Tests the method
      *      public boolean equals(Object that)
      */
-    @Test
     public void TestEquals(){
         // Tests when "if (!(that instanceof RuleBasedNumberFormat))" is true
         RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat("dummy");
@@ -1265,7 +1253,6 @@ public class RbnfTest extends TestFmwk {
     /* Tests the method
      *      public ULocale[] getRuleSetDisplayNameLocales()
      */
-    @Test
     public void TestGetRuleDisplayNameLocales(){
         // Tests when "if (ruleSetDisplayNames != null" is false
         RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat("dummy");
@@ -1280,7 +1267,6 @@ public class RbnfTest extends TestFmwk {
      *      private String[] getNameListForLocale(ULocale loc)
      *      public String[] getRuleSetDisplayNames(ULocale loc)
      */
-    @Test
     public void TestGetNameListForLocale(){
         // Tests when "if (names != null)" is false and
         //  "if (loc != null && ruleSetDisplayNames != null)" is false
@@ -1297,7 +1283,6 @@ public class RbnfTest extends TestFmwk {
     /* Tests the method
      *      public String getRuleSetDisplayName(String ruleSetName, ULocale loc)
      */
-    @Test
     public void TestGetRulesSetDisplayName(){
         RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat("dummy");
         //rbnf.getRuleSetDisplayName("dummy", new ULocale("en_US"));
@@ -1321,7 +1306,6 @@ public class RbnfTest extends TestFmwk {
     /* Test the method
      *      public void process(StringBuffer buf, NFRuleSet ruleSet)
      */
-    @Test
     public void TestChineseProcess(){
         String ruleWithChinese =
             "%simplified:\n"
@@ -1443,7 +1427,6 @@ public class RbnfTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestSetDecimalFormatSymbols() {
         RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(Locale.ENGLISH, RuleBasedNumberFormat.ORDINAL);
 
@@ -1468,7 +1451,6 @@ public class RbnfTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestContext() {
         class TextContextItem {
             public String locale;
@@ -1515,7 +1497,6 @@ public class RbnfTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestInfinityNaN() {
         String enRules = "%default:"
                 + "-x: minus >>;"
@@ -1549,7 +1530,6 @@ public class RbnfTest extends TestFmwk {
         doTest(enFormatter, enDefaultTestData, true);
     }
 
-    @Test
     public void TestVariableDecimalPoint() {
         String enRules = "%spellout-numbering:"
                 + "-x: minus >>;"
@@ -1585,7 +1565,6 @@ public class RbnfTest extends TestFmwk {
         doTest(enFormatter, enTestCommaData, true);
     }
 
-    @Test
     public void TestRounding() {
         RuleBasedNumberFormat enFormatter = new RuleBasedNumberFormat(ULocale.ENGLISH, RuleBasedNumberFormat.SPELLOUT);
         String[][] enTestFullData = {
@@ -1644,28 +1623,5 @@ public class RbnfTest extends TestFmwk {
                 {"4.3", "four point three"}, // Not 4.299!
         };
         doTest(enFormatter, enTestThreeDigitsDownData, false);
-    }
-
-    @Test
-    public void testLargeNumbers() {
-        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(ULocale.US, RuleBasedNumberFormat.SPELLOUT);
-
-        String[][] enTestFullData = {
-                {"9999999999999998", "nine quadrillion nine hundred ninety-nine trillion nine hundred ninety-nine billion nine hundred ninety-nine million nine hundred ninety-nine thousand nine hundred ninety-eight"},
-                {"9999999999999999", "nine quadrillion nine hundred ninety-nine trillion nine hundred ninety-nine billion nine hundred ninety-nine million nine hundred ninety-nine thousand nine hundred ninety-nine"},
-                {"999999999999999999", "nine hundred ninety-nine quadrillion nine hundred ninety-nine trillion nine hundred ninety-nine billion nine hundred ninety-nine million nine hundred ninety-nine thousand nine hundred ninety-nine"},
-                {"1000000000000000000", "1,000,000,000,000,000,000"}, // The rules don't go to 1 quintillion yet
-                {"-9223372036854775809", "-9,223,372,036,854,775,809"}, // We've gone beyond 64-bit precision
-                {"-9223372036854775808", "-9,223,372,036,854,775,808"}, // We've gone beyond +64-bit precision
-                {"-9223372036854775807", "minus 9,223,372,036,854,775,807"}, // Minimum 64-bit precision
-                {"-9223372036854775806", "minus 9,223,372,036,854,775,806"}, // Minimum 64-bit precision + 1
-                {"9223372036854774111", "9,223,372,036,854,774,111"}, // Below 64-bit precision
-                {"9223372036854774999", "9,223,372,036,854,774,999"}, // Below 64-bit precision
-                {"9223372036854775000", "9,223,372,036,854,775,000"}, // Below 64-bit precision
-                {"9223372036854775806", "9,223,372,036,854,775,806"}, // Maximum 64-bit precision - 1
-                {"9223372036854775807", "9,223,372,036,854,775,807"}, // Maximum 64-bit precision
-                {"9223372036854775808", "9,223,372,036,854,775,808"}, // We've gone beyond 64-bit precision
-        };
-        doTest(rbnf, enTestFullData, false);
     }
 }

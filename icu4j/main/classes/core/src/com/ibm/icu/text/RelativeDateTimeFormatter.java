@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2013-2016, International Business Machines Corporation and
@@ -11,12 +9,12 @@ package com.ibm.icu.text;
 import java.util.EnumMap;
 import java.util.Locale;
 
-import com.ibm.icu.impl.CacheBase;
+import com.ibm.icu.impl.CalendarData;
 import com.ibm.icu.impl.DontCareFieldPosition;
-import com.ibm.icu.impl.ICUData;
+import com.ibm.icu.impl.ICUCache;
 import com.ibm.icu.impl.ICUResourceBundle;
+import com.ibm.icu.impl.SimpleCache;
 import com.ibm.icu.impl.SimpleFormatterImpl;
-import com.ibm.icu.impl.SoftCache;
 import com.ibm.icu.impl.StandardPlural;
 import com.ibm.icu.impl.UResource;
 import com.ibm.icu.lang.UCharacter;
@@ -865,17 +863,17 @@ public final class RelativeDateTimeFormatter {
     }
 
     private static class Cache {
-        private final CacheBase<String, RelativeDateTimeFormatterData, ULocale> cache =
-            new SoftCache<String, RelativeDateTimeFormatterData, ULocale>() {
-                @Override
-                protected RelativeDateTimeFormatterData createInstance(String key, ULocale locale) {
-                    return new Loader(locale).load();
-                }
-            };
+        private final ICUCache<String, RelativeDateTimeFormatterData> cache =
+            new SimpleCache<String, RelativeDateTimeFormatterData>();
 
         public RelativeDateTimeFormatterData get(ULocale locale) {
             String key = locale.toString();
-            return cache.getInstance(key, locale);
+            RelativeDateTimeFormatterData result = cache.get(key);
+            if (result == null) {
+                result = new Loader(locale).load();
+                cache.put(key, result);
+            }
+            return result;
         }
     }
 
@@ -900,14 +898,18 @@ public final class RelativeDateTimeFormatter {
 
     /**
      * Sink for enumerating all of the relative data time formatter names.
+     * Contains inner sink classes, each one corresponding to a type of resource table.
+     * The outer sink handles the top-level 'fields'.
      *
      * More specific bundles (en_GB) are enumerated before their parents (en_001, en, root):
      * Only store a value if it is still missing, that is, it has not been overridden.
+     *
+     * C++: Each inner sink class has a reference to the main outer sink.
+     * Java: Use non-static inner classes instead.
      */
-    private static final class RelDateTimeDataSink extends UResource.Sink {
-
+    private static final class RelDateTimeFmtDataSink extends UResource.TableSink {
         // For white list of units to handle in RelativeDateTimeFormatter.
-        private enum DateTimeUnit {
+        private static enum DateTimeUnit {
             SECOND(RelativeUnit.SECONDS, null),
             MINUTE(RelativeUnit.MINUTES, null),
             HOUR(RelativeUnit.HOURS, null),
@@ -992,7 +994,13 @@ public final class RelativeDateTimeFormatter {
         EnumMap<Style, EnumMap<RelativeUnit, String[][]>> styleRelUnitPatterns =
                 new EnumMap<Style, EnumMap<RelativeUnit, String[][]>>(Style.class);
 
+        private ULocale ulocale = null;
+
         StringBuilder sb = new StringBuilder();
+
+        public RelDateTimeFmtDataSink(ULocale locale) {
+            ulocale = locale;
+        }
 
         // Values keep between levels of parsing the CLDR data.
         int pastFutureIndex;
@@ -1028,139 +1036,11 @@ public final class RelativeDateTimeFormatter {
             }
         }
 
-        public void consumeTableRelative(UResource.Key key, UResource.Value value) {
-            UResource.Table unitTypesTable = value.getTable();
-            for (int i = 0; unitTypesTable.getKeyAndValue(i, key, value); i++) {
-                if (value.getType() == ICUResourceBundle.STRING) {
-                    String valueString = value.getString();
+        @Override
+        public void put(UResource.Key key, UResource.Value value) {
+            // Parse and store aliases.
+            if (value.getType() != ICUResourceBundle.ALIAS) { return; }
 
-                    EnumMap<AbsoluteUnit, EnumMap<Direction, String>> absMap = qualitativeUnitMap.get(style);
-
-                    if (unit.relUnit == RelativeUnit.SECONDS) {
-                        if (key.contentEquals("0")) {
-                            // Handle Zero seconds for "now".
-                            EnumMap<Direction, String> unitStrings = absMap.get(AbsoluteUnit.NOW);
-                            if (unitStrings == null) {
-                                unitStrings = new EnumMap<Direction, String>(Direction.class);
-                                absMap.put(AbsoluteUnit.NOW, unitStrings);
-                            }
-                            if (unitStrings.get(Direction.PLAIN) == null) {
-                                unitStrings.put(Direction.PLAIN, valueString);
-                            }
-                            continue;
-                        }
-                    }
-                    Direction keyDirection = keyToDirection(key);
-                    if (keyDirection == null) {
-                        continue;
-                    }
-                    AbsoluteUnit absUnit = unit.absUnit;
-                    if (absUnit == null) {
-                        continue;
-                    }
-
-                    if (absMap == null) {
-                        absMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
-                        qualitativeUnitMap.put(style, absMap);
-                    }
-                    EnumMap<Direction, String> dirMap = absMap.get(absUnit);
-                    if (dirMap == null) {
-                        dirMap = new EnumMap<Direction, String>(Direction.class);
-                        absMap.put(absUnit, dirMap);
-                    }
-                    if (dirMap.get(keyDirection) == null) {
-                        // Do not override values already entered.
-                        dirMap.put(keyDirection, value.getString());
-                    }
-                }
-            }
-        }
-
-        // Record past or future and
-        public void consumeTableRelativeTime(UResource.Key key, UResource.Value value) {
-            if (unit.relUnit == null) {
-                return;
-            }
-            UResource.Table unitTypesTable = value.getTable();
-            for (int i = 0; unitTypesTable.getKeyAndValue(i, key, value); i++) {
-                if (key.contentEquals("past")) {
-                    pastFutureIndex = 0;
-                } else if (key.contentEquals("future")) {
-                    pastFutureIndex = 1;
-                } else {
-                    continue;
-                }
-                // Get the details of the relative time.
-                consumeTimeDetail(key, value);
-            }
-        }
-
-        public void consumeTimeDetail(UResource.Key key, UResource.Value value) {
-            UResource.Table unitTypesTable = value.getTable();
-
-            EnumMap<RelativeUnit, String[][]> unitPatterns  = styleRelUnitPatterns.get(style);
-            if (unitPatterns == null) {
-                unitPatterns = new EnumMap<RelativeUnit, String[][]>(RelativeUnit.class);
-                styleRelUnitPatterns.put(style, unitPatterns);
-            }
-            String[][] patterns = unitPatterns.get(unit.relUnit);
-            if (patterns == null) {
-                patterns = new String[2][StandardPlural.COUNT];
-                unitPatterns.put(unit.relUnit, patterns);
-            }
-
-            // Stuff the pattern for the correct plural index with a simple formatter.
-            for (int i = 0; unitTypesTable.getKeyAndValue(i, key, value); i++) {
-                if (value.getType() == ICUResourceBundle.STRING) {
-                    int pluralIndex = StandardPlural.indexFromString(key.toString());
-                    if (patterns[pastFutureIndex][pluralIndex] == null) {
-                        patterns[pastFutureIndex][pluralIndex] =
-                                SimpleFormatterImpl.compileToStringMinMaxArguments(
-                                        value.getString(), sb, 0, 1);
-                    }
-                }
-            }
-        }
-
-        private void handlePlainDirection(UResource.Key key, UResource.Value value) {
-            AbsoluteUnit absUnit = unit.absUnit;
-            if (absUnit == null) {
-                return;  // Not interesting.
-            }
-            EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap =
-                    qualitativeUnitMap.get(style);
-            if (unitMap == null) {
-                unitMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
-                qualitativeUnitMap.put(style, unitMap);
-            }
-            EnumMap<Direction,String> dirMap = unitMap.get(absUnit);
-            if (dirMap == null) {
-                dirMap = new EnumMap<Direction,String>(Direction.class);
-                unitMap.put(absUnit, dirMap);
-            }
-            if (dirMap.get(Direction.PLAIN) == null) {
-                dirMap.put(Direction.PLAIN, value.toString());
-            }
-        }
-
-        // Handle at the Unit level,
-        public void consumeTimeUnit(UResource.Key key, UResource.Value value) {
-            UResource.Table unitTypesTable = value.getTable();
-            for (int i = 0; unitTypesTable.getKeyAndValue(i, key, value); i++) {
-                if (key.contentEquals("dn") && value.getType() == ICUResourceBundle.STRING) {
-                    handlePlainDirection(key, value);
-                }
-                if (value.getType() == ICUResourceBundle.TABLE) {
-                    if (key.contentEquals("relative")) {
-                        consumeTableRelative(key, value);
-                    } else if (key.contentEquals("relativeTime")) {
-                        consumeTableRelativeTime(key, value);
-                    }
-                }
-            }
-        }
-
-        private void handleAlias(UResource.Key key, UResource.Value value, boolean noFallback) {
             Style sourceStyle = styleFromKey(key);
             int limit = key.length() - styleSuffixLength(sourceStyle);
             DateTimeUnit unit = DateTimeUnit.orNullFromString(key.substring(0, limit));
@@ -1179,37 +1059,165 @@ public final class RelativeDateTimeFormatter {
                     throw new ICUException(
                             "Inconsistent style fallback for style " + sourceStyle + " to " + targetStyle);
                 }
-                return;
             }
         }
 
         @Override
-        public void put(UResource.Key key, UResource.Value value, boolean noFallback) {
-            // Main entry point to sink
-            if (value.getType() == ICUResourceBundle.ALIAS) {
-                return;
-            }
+        public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+            // Get base unit and style from the key value.
+            style = styleFromKey(key);
+            int limit = key.length() - styleSuffixLength(style);
+            String unitString = key.substring(0, limit);
 
-            UResource.Table table = value.getTable();
-            // Process each key / value in this table.
-            for (int i = 0; table.getKeyAndValue(i, key, value); i++) {
-                if (value.getType() == ICUResourceBundle.ALIAS) {
-                    handleAlias(key, value, noFallback);
-                } else {
-                    // Remember style and unit for deeper levels.
-                    style = styleFromKey(key);
-                    int limit = key.length() - styleSuffixLength(style);
-                    unit = DateTimeUnit.orNullFromString(key.substring(0, limit));
-                    if (unit != null) {
-                        // Process only if unitString is in the white list.
-                        consumeTimeUnit(key, value);
-                    }
+            // Process only if unitString is in the white list.
+            unit = DateTimeUnit.orNullFromString(unitString);
+            if (unit == null) {
+                return null;
+            }
+            return unitSink;  // Continue parsing this path.
+        }
+
+        // Sinks for additional levels under /fields/*/relative/ and /fields/*/relativeTime/
+
+        // Sets values under relativeTime paths, e.g., "hour/relativeTime/future/one"
+        class RelativeTimeDetailSink extends UResource.TableSink {
+            @Override
+            public void put(UResource.Key key, UResource.Value value) {
+                /* Make two lists of simplePatternFmtList, one for past and one for future.
+                 *  Set a SimpleFormatter pattern for the <style, relative unit, plurality>
+                 *
+                 * Fill in values for the particular plural given, e.g., ONE, FEW, OTHER, etc.
+                 */
+                EnumMap<RelativeUnit, String[][]> unitPatterns  =
+                        styleRelUnitPatterns.get(style);
+                if (unitPatterns == null) {
+                    unitPatterns = new EnumMap<RelativeUnit, String[][]>(RelativeUnit.class);
+                    styleRelUnitPatterns.put(style, unitPatterns);
+                }
+                String[][] patterns = unitPatterns.get(unit.relUnit);
+                if (patterns == null) {
+                    patterns = new String[2][StandardPlural.COUNT];
+                    unitPatterns.put(unit.relUnit, patterns);
+                }
+                int pluralIndex = StandardPlural.indexFromString(key.toString());
+                if (patterns[pastFutureIndex][pluralIndex] == null) {
+                    patterns[pastFutureIndex][pluralIndex] =
+                            SimpleFormatterImpl.compileToStringMinMaxArguments(
+                                    value.getString(), sb, 0, 1);
                 }
             }
         }
+        RelativeTimeDetailSink relativeTimeDetailSink = new RelativeTimeDetailSink();
 
-        RelDateTimeDataSink() {
+        // Handles "relativeTime" entries, e.g., under "day", "hour", "minute", "minute-short", etc.
+        class RelativeTimeSink extends UResource.TableSink {
+            @Override
+            public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+                if (key.contentEquals("past")) {
+                    pastFutureIndex = 0;
+                } else if (key.contentEquals("future")) {
+                    pastFutureIndex = 1;
+                } else {
+                    return null;
+                }
+                if (unit.relUnit == null) {
+                    return null;
+                }
+                return relativeTimeDetailSink;
+            }
         }
+        RelativeTimeSink relativeTimeSink = new RelativeTimeSink();
+
+        // Handles "relative" entries, e.g., under "day", "day-short", "fri", "fri-narrow", "fri-short", etc.
+        class RelativeSink extends UResource.TableSink {
+            @Override
+            public void put(UResource.Key key, UResource.Value value) {
+
+                EnumMap<AbsoluteUnit, EnumMap<Direction, String>> absMap = qualitativeUnitMap.get(style);
+
+                if (unit.relUnit == RelativeUnit.SECONDS) {
+                    if (key.contentEquals("0")) {
+                        // Handle Zero seconds for "now".
+                        EnumMap<Direction, String> unitStrings = absMap.get(AbsoluteUnit.NOW);
+                        if (unitStrings == null) {
+                            unitStrings = new EnumMap<Direction, String>(Direction.class);
+                            absMap.put(AbsoluteUnit.NOW, unitStrings);
+                        }
+                        if (unitStrings.get(Direction.PLAIN) == null) {
+                            unitStrings.put(Direction.PLAIN, value.getString());
+                        }
+                        return;
+                    }
+                }
+                Direction keyDirection = keyToDirection(key);
+                if (keyDirection == null) {
+                    return;
+                }
+                AbsoluteUnit absUnit = unit.absUnit;
+                if (absUnit == null) {
+                    return;
+                }
+
+                if (absMap == null) {
+                    absMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
+                    qualitativeUnitMap.put(style, absMap);
+                }
+                EnumMap<Direction, String> dirMap = absMap.get(absUnit);
+                if (dirMap == null) {
+                    dirMap = new EnumMap<Direction, String>(Direction.class);
+                    absMap.put(absUnit, dirMap);
+                }
+                if (dirMap.get(keyDirection) == null) {
+                    // Do not override values already entered.
+                    dirMap.put(keyDirection, value.getString());
+                }
+            }
+        }
+        RelativeSink relativeSink = new RelativeSink();
+
+        // Handles entries under units, recognizing "relative" and "relativeTime" entries.
+        class UnitSink extends UResource.TableSink {
+            @Override
+            public void put(UResource.Key key, UResource.Value value) {
+                if (key.contentEquals("dn")) {
+                    // Handle Display Name for PLAIN direction for some units.
+                    AbsoluteUnit absUnit = unit.absUnit;
+                    if (absUnit == null) {
+                        return;  // Not interesting.
+                    }
+                    EnumMap<AbsoluteUnit, EnumMap<Direction, String>> unitMap =
+                            qualitativeUnitMap.get(style);
+                    if (unitMap == null) {
+                        unitMap = new EnumMap<AbsoluteUnit, EnumMap<Direction, String>>(AbsoluteUnit.class);
+                        qualitativeUnitMap.put(style, unitMap);
+                    }
+                    EnumMap<Direction,String> dirMap = unitMap.get(absUnit);
+                    if (dirMap == null) {
+                        dirMap = new EnumMap<Direction,String>(Direction.class);
+                        unitMap.put(absUnit, dirMap);
+                    }
+                    if (dirMap.get(Direction.PLAIN) == null) {
+                        String displayName = value.toString();
+                        // TODO(Travis Keep): This is a hack to get around CLDR bug 6818.
+                        if (ulocale.getLanguage().equals("en")) {
+                            displayName = displayName.toLowerCase(Locale.ROOT);
+                        }
+                        dirMap.put(Direction.PLAIN, displayName);
+                    }
+                }
+            }
+
+            @Override
+            public UResource.TableSink getOrCreateTableSink(UResource.Key key, int initialSize) {
+                if (key.contentEquals("relative")) {
+                    return relativeSink;
+                } else if (key.contentEquals("relativeTime")) {
+                    return relativeTimeSink;
+                }
+                return null;
+            }
+        }
+        UnitSink unitSink = new UnitSink();
     }
 
     private static class Loader {
@@ -1219,37 +1227,14 @@ public final class RelativeDateTimeFormatter {
             this.ulocale = ulocale;
         }
 
-        private String getDateTimePattern(ICUResourceBundle r) {
-            String calType = r.getStringWithFallback("calendar/default");
-            if (calType == null || calType.equals("")) {
-                calType = "gregorian";
-            }
-            String resourcePath = "calendar/" + calType + "/DateTimePatterns";
-            ICUResourceBundle patternsRb = r.findWithFallback(resourcePath);
-            if (patternsRb == null && calType.equals("gregorian")) {
-                // Try with gregorian.
-                patternsRb = r.findWithFallback("calendar/gregorian/DateTimePatterns");
-            }
-            if (patternsRb == null || patternsRb.getSize() < 9) {
-                // Undefined or too few elements.
-                return "{1} {0}";
-            } else {
-                int elementType = patternsRb.get(8).getType();
-                if (elementType == UResourceBundle.ARRAY) {
-                    return patternsRb.get(8).getString(0);
-                } else {
-                    return patternsRb.getString(8);
-                }
-            }
-        }
-
         public RelativeDateTimeFormatterData load() {
             // Sink for traversing data.
-            RelDateTimeDataSink sink = new RelDateTimeDataSink();
-
+            RelDateTimeFmtDataSink sink = new RelDateTimeFmtDataSink(ulocale);
             ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.
-                    getBundleInstance(ICUData.ICU_BASE_NAME, ulocale);
-            r.getAllItemsWithFallback("fields", sink);
+                    getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, ulocale);
+
+            // Use sink mechanism to traverse data structure.
+            r.getAllTableItemsWithFallback("fields", sink);
 
             // Check fallbacks array for loops or too many levels.
             for (Style testStyle : Style.values()) {
@@ -1266,9 +1251,13 @@ public final class RelativeDateTimeFormatter {
                 }
             }
 
+            // TODO: Replace this use of CalendarData.
+            CalendarData calData = new CalendarData(
+                    ulocale, r.getStringWithFallback("calendar/default"));
+
             return new RelativeDateTimeFormatterData(
                     sink.qualitativeUnitMap, sink.styleRelUnitPatterns,
-                    getDateTimePattern(r));
+                    calData.getDateTimePattern());
         }
     }
 

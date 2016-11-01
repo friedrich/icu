@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/gu.xml
+// *
+// ***************************************************************************
 gu{
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
     durationUnits{
         hm{"h:mm"}
         hms{"h:mm:ss"}
@@ -10,9 +16,9 @@ gu{
     units{
         acceleration{
             g-force{
-                dnam{"ગુ-બળ"}
-                one{"{0} ગુ-બળ"}
-                other{"{0} ગુ-બળ"}
+                dnam{"g-બળ"}
+                one{"{0} g-બળ"}
+                other{"{0} g-બળ"}
             }
             meter-per-second-squared{
                 dnam{"મીટર પ્રતિ સેકન્ડ²"}
@@ -79,7 +85,6 @@ gu{
                 dnam{"ચોરસ કિલોમીટર"}
                 one{"{0} ચોરસ કિલોમીટર"}
                 other{"{0} ચોરસ કિલોમીટર"}
-                per{"{0} પ્રતિ ચોરસ કિમી"}
             }
             square-meter{
                 dnam{"ચોરસ મીટર"}
@@ -91,7 +96,6 @@ gu{
                 dnam{"ચોરસ માઇલ"}
                 one{"{0} ચોરસ માઇલ"}
                 other{"{0} ચોરસ માઇલ"}
-                per{"{0} પ્રતિ ચોરસ માઈલ"}
             }
             square-yard{
                 dnam{"ચોરસ વાર"}
@@ -107,21 +111,6 @@ gu{
                 dnam{"કૅરેટ"}
                 one{"{0} કૅરેટ"}
                 other{"{0} કૅરેટ"}
-            }
-            milligram-per-deciliter{
-                dnam{"મિલિગ્રામ પ્રતિ ડેસિલિટર"}
-                one{"{0} મિલિગ્રામ પ્રતિ ડેસિલિટર"}
-                other{"{0} મિલિગ્રામ પ્રતિ ડેસિલિટર"}
-            }
-            millimole-per-liter{
-                dnam{"મિલિમોલ પ્રતિ લિટર"}
-                one{"{0} મિલિમોલ પ્રતિ લિટર"}
-                other{"{0} મિલિમોલ પ્રતિ લિટર"}
-            }
-            part-per-million{
-                dnam{"કણ પ્રતિ મિલિયન"}
-                one{"{0} કણ પ્રતિ મિલિયન"}
-                other{"{0} કણ પ્રતિ મિલિયન"}
             }
         }
         consumption{
@@ -139,11 +128,6 @@ gu{
                 dnam{"માઇલ પ્રતિ ગૅલન"}
                 one{"{0} માઇલ પ્રતિ ગૅલન"}
                 other{"{0} માઇલ પ્રતિ ગૅલન"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"માઈલ પ્રતિ ઈમ્પે. ગેલન"}
-                one{"{0} માઈલ પ્રતિ ઈમ્પે. ગેલન"}
-                other{"{0} માઈલ પ્રતિ ઈમ્પે. ગેલન"}
             }
         }
         coordinate{
@@ -676,12 +660,6 @@ gu{
                 other{"{0} ગૅલન"}
                 per{"{0} પ્રતિ ગૅલન"}
             }
-            gallon-imperial{
-                dnam{"ઈમ્પિ. ગૅલન"}
-                one{"{0} ઈમ્પિ. ગૅલન"}
-                other{"{0} ઈમ્પિ. ગૅલન"}
-                per{"{0} પ્રતિ ઈમ્પિ. ગૅલન"}
-            }
             hectoliter{
                 dnam{"હેક્ટોલીટર"}
                 one{"{0} હેક્ટોલીટર"}
@@ -933,8 +911,8 @@ gu{
         speed{
             kilometer-per-hour{
                 dnam{"કિમી/કલાક"}
-                one{"{0} કિપ્રક"}
-                other{"{0} કિપ્રક"}
+                one{"{0} km/h"}
+                other{"{0} km/h"}
             }
             meter-per-second{
                 one{"{0} m/s"}
@@ -975,14 +953,14 @@ gu{
     unitsShort{
         acceleration{
             g-force{
-                dnam{"ગુ-બળ"}
-                one{"{0} ગુ"}
-                other{"{0} ગુ"}
+                dnam{"g-બળ"}
+                one{"{0} G"}
+                other{"{0} G"}
             }
             meter-per-second-squared{
                 dnam{"મીટર/સેકન્ડ²"}
-                one{"{0} મી/સે²"}
-                other{"{0} મી/સે²"}
+                one{"{0} m/s²"}
+                other{"{0} m/s²"}
             }
         }
         angle{
@@ -1044,7 +1022,6 @@ gu{
                 dnam{"ચોરસ કિમી"}
                 one{"{0} ચોરસ કિમી"}
                 other{"{0} ચોરસ કિમી"}
-                per{"{0} /ચોરસ કિમી"}
             }
             square-meter{
                 dnam{"ચોરસ મીટર"}
@@ -1056,7 +1033,6 @@ gu{
                 dnam{"ચોરસ માઇલ"}
                 one{"{0} ચોરસ માઇલ"}
                 other{"{0} ચોરસ માઇલ"}
-                per{"{0} / ચોરસ માઈલ"}
             }
             square-yard{
                 dnam{"ચોરસ વાર"}
@@ -1072,21 +1048,6 @@ gu{
                 dnam{"કૅરેટ"}
                 one{"{0} કૅરેટ"}
                 other{"{0} કૅરેટ"}
-            }
-            milligram-per-deciliter{
-                dnam{"mg/dL"}
-                one{"{0} mg/dL"}
-                other{"{0} mg/dL"}
-            }
-            millimole-per-liter{
-                dnam{"મિલિમોલ/લિટર"}
-                one{"{0} mmol/L"}
-                other{"{0} mmol/L"}
-            }
-            part-per-million{
-                dnam{"કણ/મિલિયન"}
-                one{"{0} ppm"}
-                other{"{0} ppm"}
             }
         }
         consumption{
@@ -1104,11 +1065,6 @@ gu{
                 dnam{"માઇલ/ગૅલન"}
                 one{"{0} માઇલ/ગૅલન"}
                 other{"{0} માઇલ/ગૅલન"}
-            }
-            mile-per-gallon-imperial{
-                dnam{"માઈલ/ઈમ્પે. ગેલન"}
-                one{"{0} mpg Imp."}
-                other{"{0} mpg Imp."}
             }
         }
         coordinate{
@@ -1250,39 +1206,39 @@ gu{
                 other{"{0} Ω"}
             }
             volt{
-                dnam{"volt"}
+                dnam{"વૉલ્ટ્સ"}
                 one{"{0} V"}
                 other{"{0} V"}
             }
         }
         energy{
             calorie{
-                dnam{"cal"}
+                dnam{"કેલરી"}
                 one{"{0} Cal"}
-                other{"{0} cal"}
+                other{"{0} Cal"}
             }
             foodcalorie{
-                dnam{"Cal"}
+                dnam{"કેલરી"}
                 one{"{0} Cal"}
                 other{"{0} Cal"}
             }
             joule{
-                dnam{"joule"}
+                dnam{"જૂલ"}
                 one{"{0} J"}
                 other{"{0} J"}
             }
             kilocalorie{
-                dnam{"kcal"}
+                dnam{"કિલોકેલરી"}
                 one{"{0} kcal"}
                 other{"{0} kcal"}
             }
             kilojoule{
-                dnam{"kJ"}
+                dnam{"કિલોજૂલ"}
                 one{"{0} kJ"}
                 other{"{0} kJ"}
             }
             kilowatt-hour{
-                dnam{"kWh"}
+                dnam{"કિલોવૉટ-કલાક"}
                 one{"{0} kWh"}
                 other{"{0} kWh"}
             }
@@ -1294,7 +1250,7 @@ gu{
                 other{"{0} GHz"}
             }
             hertz{
-                dnam{"હર્ટ્ઝ"}
+                dnam{"Hz"}
                 one{"{0} Hz"}
                 other{"{0} Hz"}
             }
@@ -1427,9 +1383,9 @@ gu{
                 per{"{0}/કિગ્રા"}
             }
             metric-ton{
-                dnam{"t"}
-                one{"{0} t"}
-                other{"{0} t"}
+                dnam{"મેટ્રિક ટન"}
+                one{"{0} મેટ્રિક ટન"}
+                other{"{0} મેટ્રિક ટન"}
             }
             microgram{
                 dnam{"µગ્રામ"}
@@ -1466,32 +1422,32 @@ gu{
         }
         power{
             gigawatt{
-                dnam{"GW"}
+                dnam{"ગીગાવૉટ"}
                 one{"{0} GW"}
                 other{"{0} GW"}
             }
             horsepower{
-                dnam{"hp"}
+                dnam{"હોર્સપાવર"}
                 one{"{0} hp"}
                 other{"{0} hp"}
             }
             kilowatt{
-                dnam{"kW"}
+                dnam{"કિલોવૉટ"}
                 one{"{0} kW"}
                 other{"{0} kW"}
             }
             megawatt{
-                dnam{"MW"}
+                dnam{"મેગાવૉટ"}
                 one{"{0} MW"}
                 other{"{0} MW"}
             }
             milliwatt{
-                dnam{"mW"}
+                dnam{"મિલિવૉટ"}
                 one{"{0} mW"}
                 other{"{0} mW"}
             }
             watt{
-                dnam{"watt"}
+                dnam{"વૉટ"}
                 one{"{0} W"}
                 other{"{0} W"}
             }
@@ -1508,9 +1464,9 @@ gu{
                 other{"{0} inHg"}
             }
             millibar{
-                dnam{"mbar"}
-                one{"{0} mbar"}
-                other{"{0} mbar"}
+                dnam{"મિલિબાર"}
+                one{"{0} મિલિબાર"}
+                other{"{0} મિલિબાર"}
             }
             millimeter-of-mercury{
                 dnam{"mm Hg"}
@@ -1518,7 +1474,7 @@ gu{
                 other{"{0} mm Hg"}
             }
             pound-per-square-inch{
-                dnam{"psi"}
+                dnam{"પાઉન્ડ/વર્ગ ઇંચ"}
                 one{"{0} psi"}
                 other{"{0} psi"}
             }
@@ -1530,9 +1486,9 @@ gu{
                 other{"{0} કિમી/કલાક"}
             }
             knot{
-                dnam{"નોટ"}
-                one{"{0} નોટ"}
-                other{"{0} નોટ"}
+                dnam{"kn"}
+                one{"{0} kn"}
+                other{"{0} kn"}
             }
             meter-per-second{
                 dnam{"મીટર/સેકન્ડ"}
@@ -1640,12 +1596,6 @@ gu{
                 one{"{0} ગૅલન"}
                 other{"{0} ગૅલન"}
                 per{"{0}/ગૅલન"}
-            }
-            gallon-imperial{
-                dnam{"ઈમ્પિ. ગૅલન"}
-                one{"{0} ગૅલન ઈમ્પિ."}
-                other{"{0} ગૅલન ઈમ્પિ."}
-                per{"{0} /ગૅલન ઈમ્પિ."}
             }
             hectoliter{
                 dnam{"હેક્ટોલીટર"}

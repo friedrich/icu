@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/mr.xml
+// *
+// ***************************************************************************
 mr{
     Currencies{
         AED{
@@ -94,13 +100,9 @@ mr{
             "BWP",
             "बोट्सवानन पुला",
         }
-        BYN{
-            "BYN",
-            "बेलारुशियन रुबल",
-        }
         BYR{
             "BYR",
-            "बेलारुशियन रुबल (2000–2016)",
+            "बेलारुशियन रुबल",
         }
         BZD{
             "BZD",
@@ -656,7 +658,7 @@ mr{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -673,7 +675,6 @@ mr{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -835,13 +836,9 @@ mr{
             one{"बोट्सवानन पुला"}
             other{"बोट्सवाना पुलाज"}
         }
-        BYN{
+        BYR{
             one{"बेलारुशियन रुबल"}
             other{"बेलारुशियन रुबल्स"}
-        }
-        BYR{
-            one{"बेलारुशियन रुबल (2000–2016)"}
-            other{"बेलारुशियन रुबल्स (2000–2016)"}
         }
         BZD{
             one{"बेलीझ डॉलर"}
@@ -1376,5 +1373,5 @@ mr{
             other{"झांबियन क्वाचास"}
         }
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
 }

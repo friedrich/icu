@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 1996-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 1996-2016, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 
@@ -19,7 +17,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import com.ibm.icu.impl.ICUData;
 import com.ibm.icu.impl.ICUDebug;
 import com.ibm.icu.impl.ICUResourceBundle;
 import com.ibm.icu.impl.PatternProps;
@@ -829,7 +826,7 @@ public class RuleBasedNumberFormat extends NumberFormat {
         this.locale = locale;
 
         ICUResourceBundle bundle = (ICUResourceBundle)UResourceBundle.
-            getBundleInstance(ICUData.ICU_RBNF_BASE_NAME, locale);
+            getBundleInstance(ICUResourceBundle.ICU_RBNF_BASE_NAME, locale);
 
         // TODO: determine correct actual/valid locale.  Note ambiguity
         // here -- do actual/valid refer to pattern, DecimalFormatSymbols,
@@ -896,7 +893,6 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * @return A RuleBasedNumberFormat that is equal to this one.
      * @stable ICU 2.0
      */
-    @Override
     public Object clone() {
         return super.clone();
     }
@@ -907,7 +903,6 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * @return true if the two formatters have identical behavior.
      * @stable ICU 2.0
      */
-    @Override
     public boolean equals(Object that) {
         // if the other object isn't a RuleBasedNumberFormat, that's
         // all we need to know
@@ -939,14 +934,13 @@ public class RuleBasedNumberFormat extends NumberFormat {
             return true;
         }
     }
-
+    
     /**
      * Mock implementation of hashCode(). This implementation always returns a constant
      * value. When Java assertion is enabled, this method triggers an assertion failure.
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public int hashCode() {
         return super.hashCode();
@@ -960,7 +954,6 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * the same result.
      * @stable ICU 2.0
      */
-    @Override
     public String toString() {
 
         // accumulate the descriptions of all the rule sets in a
@@ -1182,7 +1175,6 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * @return toAppendTo
      * @stable ICU 2.0
      */
-    @Override
     public StringBuffer format(double number,
                                StringBuffer toAppendTo,
                                FieldPosition ignore) {
@@ -1212,7 +1204,6 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * @return toAppendTo
      * @stable ICU 2.0
      */
-    @Override
     public StringBuffer format(long number,
                                StringBuffer toAppendTo,
                                FieldPosition ignore) {
@@ -1234,7 +1225,6 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * Format a BigInteger.
      * @stable ICU 2.0
      */
-    @Override
     public StringBuffer format(BigInteger number,
                                StringBuffer toAppendTo,
                                FieldPosition pos) {
@@ -1247,15 +1237,11 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * Format a BigDecimal.
      * @stable ICU 2.0
      */
-    @Override
     public StringBuffer format(java.math.BigDecimal number,
                                StringBuffer toAppendTo,
                                FieldPosition pos) {
         return format(new com.ibm.icu.math.BigDecimal(number), toAppendTo, pos);
     }
-
-    private static final com.ibm.icu.math.BigDecimal MAX_VALUE = com.ibm.icu.math.BigDecimal.valueOf(Long.MAX_VALUE);
-    private static final com.ibm.icu.math.BigDecimal MIN_VALUE = com.ibm.icu.math.BigDecimal.valueOf(Long.MIN_VALUE);
 
     /**
      * <strong style="font-family: helvetica; color: red;">NEW</strong>
@@ -1263,18 +1249,10 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * Format a BigDecimal.
      * @stable ICU 2.0
      */
-    @Override
     public StringBuffer format(com.ibm.icu.math.BigDecimal number,
                                StringBuffer toAppendTo,
                                FieldPosition pos) {
-        if (MIN_VALUE.compareTo(number) >= 0 || MAX_VALUE.compareTo(number) <= 0) {
-            // We're outside of our normal range that this framework can handle.
-            // The DecimalFormat will provide more accurate results.
-            return getDecimalFormat().format(number, toAppendTo, pos);
-        }
-        if (number.scale() == 0) {
-            return format(number.longValue(), toAppendTo, pos);
-        }
+        // TEMPORARY:
         return format(number.doubleValue(), toAppendTo, pos);
     }
 
@@ -1294,7 +1272,6 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * @see #setLenientParseMode
      * @stable ICU 2.0
      */
-    @Override
     public Number parse(String text, ParsePosition parsePosition) {
 
         // parsePosition tells us where to start parsing.  We copy the
@@ -1383,7 +1360,7 @@ public class RuleBasedNumberFormat extends NumberFormat {
     }
 
     /**
-     * Sets the provider for the lenient scanner.  If this has not been set,
+     * Sets the provider for the lenient scanner.  If this has not been set, 
      * {@link #setLenientParseMode}
      * has no effect.  This is necessary to decouple collation from format code.
      * @param scannerProvider the provider
@@ -1473,11 +1450,11 @@ public class RuleBasedNumberFormat extends NumberFormat {
         }
         return "";
     }
-
+    
     /**
      * Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
      * provided symbols.
-     *
+     * 
      * @param newSymbols desired DecimalFormatSymbols
      * @see DecimalFormatSymbols
      * @stable ICU 49
@@ -1506,15 +1483,14 @@ public class RuleBasedNumberFormat extends NumberFormat {
 
     /**
      * {@icu} Set a particular DisplayContext value in the formatter,
-     * such as CAPITALIZATION_FOR_STANDALONE. Note: For getContext, see
+     * such as CAPITALIZATION_FOR_STANDALONE. Note: For getContext, see 
      * NumberFormat.
-     *
-     * @param context The DisplayContext value to set.
+     * 
+     * @param context The DisplayContext value to set. 
      * @stable ICU 53
      */
     // Here we override the NumberFormat implementation in order to
-    // lazily initialize relevant items
-    @Override
+    // lazily initialize relevant items 
     public void setContext(DisplayContext context) {
         super.setContext(context);
         if (!capitalizationInfoIsSet &&
@@ -1536,7 +1512,7 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * <code>BigDecimal.ROUND_UNNECESSARY</code>.
      * @see #setRoundingMode
      * @see java.math.BigDecimal
-     * @stable ICU 56
+     * @draft ICU 56
      */
     @Override
     public int getRoundingMode() {
@@ -1552,7 +1528,7 @@ public class RuleBasedNumberFormat extends NumberFormat {
      * @exception IllegalArgumentException if <code>roundingMode</code> is unrecognized.
      * @see #getRoundingMode
      * @see java.math.BigDecimal
-     * @stable ICU 56
+     * @draft ICU 56
      */
     @Override
     public void setRoundingMode(int roundingMode) {
@@ -1864,10 +1840,10 @@ public class RuleBasedNumberFormat extends NumberFormat {
     }
 
     /**
-     * Set capitalizationForListOrMenu, capitalizationForStandAlone
+     * Set capitalizationForListOrMenu, capitalizationForStandAlone 
      */
     private void initCapitalizationContextInfo(ULocale theLocale) {
-        ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUData.ICU_BASE_NAME, theLocale);
+        ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(ICUResourceBundle.ICU_BASE_NAME, theLocale);
         try {
             ICUResourceBundle rdb = rb.getWithFallback("contextTransforms/number-spellout");
             int[] intVector = rdb.getIntVector();
@@ -1951,7 +1927,7 @@ public class RuleBasedNumberFormat extends NumberFormat {
         // be built, and pass it to the rule set (along with an insertion
         // position of 0 and the number being formatted) to the rule set
         // for formatting
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         if (getRoundingMode() != BigDecimal.ROUND_UNNECESSARY) {
             // We convert to a string because BigDecimal insists on excessive precision.
             number = new BigDecimal(Double.toString(number)).setScale(getMaximumFractionDigits(), roundingMode).doubleValue();
@@ -1980,14 +1956,8 @@ public class RuleBasedNumberFormat extends NumberFormat {
         // be built, and pass it to the rule set (along with an insertion
         // position of 0 and the number being formatted) to the rule set
         // for formatting
-        StringBuilder result = new StringBuilder();
-        if (number == Long.MIN_VALUE) {
-            // We can't handle this value right now. Provide an accurate default value.
-            result.append(getDecimalFormat().format(Long.MIN_VALUE));
-        }
-        else {
-            ruleSet.format(number, result, 0, 0);
-        }
+        StringBuffer result = new StringBuffer();
+        ruleSet.format(number, result, 0, 0);
         postProcess(result, ruleSet);
         return result.toString();
     }
@@ -1995,7 +1965,7 @@ public class RuleBasedNumberFormat extends NumberFormat {
     /**
      * Post-process the rules if we have a post-processor.
      */
-    private void postProcess(StringBuilder result, NFRuleSet ruleSet) {
+    private void postProcess(StringBuffer result, NFRuleSet ruleSet) {
         if (postProcessRules != null) {
             if (postProcessor == null) {
                 int ix = postProcessRules.indexOf(";");

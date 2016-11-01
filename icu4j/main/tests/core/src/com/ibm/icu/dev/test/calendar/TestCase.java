@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2010, International Business Machines Corporation and    *
@@ -193,21 +191,20 @@ public class TestCase {
         for (int i=0; i < c.getFieldCount(); i++) {
             if (isSet(i) && get(i) != c.get(i)) {
                 StringBuffer buf = new StringBuffer();
-                buf.append("Fail: " + CalendarTestFmwk.fieldName(i) + " = " + c.get(i) +
+                buf.append("Fail: " + CalendarTest.fieldName(i) + " = " + c.get(i) +
                           ", expected " + get(i));
                 for (int j=0; j<c.getFieldCount(); ++j) {
                     if (isSet(j)) {
                         if (get(j) == c.get(j)) {
-                            buf.append("\n  ok: " + CalendarTestFmwk.fieldName(j) + " = " +
+                            buf.append("\n  ok: " + CalendarTest.fieldName(j) + " = " +
                                       c.get(j));
                         } else {
-                            buf.append("\n  fail: " + CalendarTestFmwk.fieldName(j) + " = " +
+                            buf.append("\n  fail: " + CalendarTest.fieldName(j) + " = " +
                                       c.get(j) + ", expected " + get(j));
                         }
                     }
                 }
-                // TODO(junit): blanked out TestLog
-                //log.errln(buf.toString());
+                log.errln(buf.toString());
                 return false;
             }
         }

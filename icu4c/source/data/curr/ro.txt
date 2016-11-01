@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ro.xml
+// *
+// ***************************************************************************
 ro{
     Currencies{
         ADP{
@@ -68,7 +74,7 @@ ro{
         }
         BBD{
             "BBD",
-            "dolar din Barbados",
+            "dolar Barbados",
         }
         BDT{
             "BDT",
@@ -146,13 +152,9 @@ ro{
             "BWP",
             "pula Botswana",
         }
-        BYN{
-            "BYN",
-            "rublă belarusă",
-        }
         BYR{
             "BYR",
-            "rublă belarusă (2000–2016)",
+            "rublă belarusă",
         }
         BZD{
             "BZD",
@@ -448,7 +450,7 @@ ro{
         }
         LKR{
             "LKR",
-            "rupie srilankeză",
+            "rupie din Sri Lanka",
         }
         LRD{
             "LRD",
@@ -704,7 +706,7 @@ ro{
         }
         SGD{
             "SGD",
-            "dolar singaporez",
+            "dolar Singapore",
         }
         SHP{
             "SHP",
@@ -736,7 +738,7 @@ ro{
         }
         SSP{
             "SSP",
-            "liră din Sudanul de Sud",
+            "liră sud-sudaneză",
         }
         STD{
             "STD",
@@ -1004,7 +1006,7 @@ ro{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -1021,7 +1023,6 @@ ro{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -1062,7 +1063,6 @@ ro{
         PKR{"Rs"}
         PLN{"zł"}
         PYG{"₲"}
-        RON{"lei"}
         RUB{"₽"}
         RWF{"RF"}
         SBD{"$"}
@@ -1243,19 +1243,14 @@ ro{
             other{"ngultrum din Bhutan"}
         }
         BWP{
-            few{"pula Botswana"}
-            one{"pula Botswana"}
-            other{"pula Botswana"}
+            few{"pule Botswana"}
+            one{"pulă Botswana"}
+            other{"pule Botswana"}
         }
-        BYN{
+        BYR{
             few{"ruble belaruse"}
             one{"rublă belarusă"}
             other{"ruble belaruse"}
-        }
-        BYR{
-            few{"ruble belaruse (2000–2016)"}
-            one{"rublă belarusă (2000–2016)"}
-            other{"ruble belaruse (2000–2016)"}
         }
         BZD{
             few{"dolari din Belize"}
@@ -1603,9 +1598,9 @@ ro{
             other{"lire libaneze"}
         }
         LKR{
-            few{"rupii srilankeze"}
-            one{"rupie srilankeză"}
-            other{"rupii srilankeze"}
+            few{"rupii din Sri Lanka"}
+            one{"rupie din Sri Lanka"}
+            other{"rupii Sri Lanka"}
         }
         LRD{
             few{"dolari liberieni"}
@@ -1898,9 +1893,9 @@ ro{
             other{"coroane suedeze"}
         }
         SGD{
-            few{"dolari singaporezi"}
-            one{"dolar singaporez"}
-            other{"dolari singaporezi"}
+            few{"dolari Singapore"}
+            one{"dolar Singapore"}
+            other{"dolari Singapore"}
         }
         SHP{
             few{"lire Insula Sf. Elena"}
@@ -1938,9 +1933,9 @@ ro{
             other{"guldeni Surinam"}
         }
         SSP{
-            few{"lire din Sudanul de Sud"}
-            one{"liră din Sudanul de Sud"}
-            other{"lire din Sudanul de Sud"}
+            few{"lire sud-sudaneze"}
+            one{"liră sud-sudaneză"}
+            other{"lire sud-sudaneze"}
         }
         STD{
             few{"dobre Sao Tome și Principe"}
@@ -2105,7 +2100,7 @@ ro{
         XAF{
             few{"franci CFA BEAC"}
             one{"franc CFA BEAC"}
-            other{"franci CFA central-africani"}
+            other{"franci Comunitatea Financiară"}
         }
         XCD{
             few{"dolari din Caraibele de Est"}
@@ -2188,5 +2183,5 @@ ro{
         one{"{0} {1}"}
         other{"{0} de {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
 }

@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2004-2016, International Business Machines Corporation and         *
@@ -15,7 +13,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -37,9 +34,7 @@ import com.ibm.icu.text.UnicodeSet;
  */
 public abstract class TestBoilerplate<T> extends TestFmwk {
 
-    protected static Random random = new Random(12345);
-
-    protected final void _test() throws Exception {
+    public final void TestMain() throws Exception {
         List<T> list = new LinkedList<T>();
         while (_addTestObject(list)) {
         }
@@ -142,26 +137,26 @@ public abstract class TestBoilerplate<T> extends TestFmwk {
     /* Utilities */
     public static boolean verifySetsIdentical(AbstractTestLog here, UnicodeSet set1, UnicodeSet set2) {
         if (set1.equals(set2)) return true;
-        TestFmwk.errln("Sets differ:");
-        TestFmwk.errln("UnicodeMap - HashMap");
-        TestFmwk.errln(new UnicodeSet(set1).removeAll(set2).toPattern(true));
-        TestFmwk.errln("HashMap - UnicodeMap");
-        TestFmwk.errln(new UnicodeSet(set2).removeAll(set1).toPattern(true));
+        here.errln("Sets differ:");
+        here.errln("UnicodeMap - HashMap");
+        here.errln(new UnicodeSet(set1).removeAll(set2).toPattern(true));
+        here.errln("HashMap - UnicodeMap");
+        here.errln(new UnicodeSet(set2).removeAll(set1).toPattern(true));
         return false;
     }
 
     public static boolean verifySetsIdentical(AbstractTestLog here, Set values1, Set values2) {
         if (values1.equals(values2)) return true;
         Set temp;
-        TestFmwk.errln("Values differ:");
-        TestFmwk.errln("UnicodeMap - HashMap");
+        here.errln("Values differ:");
+        here.errln("UnicodeMap - HashMap");
         temp = new TreeSet(values1);
         temp.removeAll(values2);
-        TestFmwk.errln(show(temp));
-        TestFmwk.errln("HashMap - UnicodeMap");
+        here.errln(show(temp));
+        here.errln("HashMap - UnicodeMap");
         temp = new TreeSet(values2);
         temp.removeAll(values1);
-        TestFmwk.errln(show(temp));
+        here.errln(show(temp));
         return false;
     }
     

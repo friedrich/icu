@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/en.xml
+// *
+// ***************************************************************************
 en{
-    Version{"2.1.30.50"}
+    Version{"2.1.24.18"}
     units{
         acceleration{
             g-force{
@@ -74,7 +80,6 @@ en{
                 dnam{"square kilometers"}
                 one{"{0} square kilometer"}
                 other{"{0} square kilometers"}
-                per{"{0} per square kilometer"}
             }
             square-meter{
                 dnam{"square meters"}
@@ -86,7 +91,6 @@ en{
                 dnam{"square miles"}
                 one{"{0} square mile"}
                 other{"{0} square miles"}
-                per{"{0} per square mile"}
             }
             square-yard{
                 dnam{"square yards"}
@@ -804,7 +808,6 @@ en{
                 dnam{"mi²"}
                 one{"{0}mi²"}
                 other{"{0}mi²"}
-                per{"{0}/mi²"}
             }
             square-yard{
                 dnam{"yd²"}
@@ -851,9 +854,9 @@ en{
                 other{"{0}mpg"}
             }
             mile-per-gallon-imperial{
-                dnam{"mpg UK"}
-                one{"{0}m/gUK"}
-                other{"{0}m/gUK"}
+                dnam{"mpg Imp"}
+                one{"{0}mpgIm"}
+                other{"{0}mpgIm"}
             }
         }
         digital{
@@ -1083,7 +1086,7 @@ en{
                 other{"{0}ly"}
             }
             meter{
-                dnam{"m"}
+                dnam{"meter"}
                 one{"{0}m"}
                 other{"{0}m"}
             }
@@ -1246,9 +1249,9 @@ en{
                 other{"{0}mb"}
             }
             millimeter-of-mercury{
-                dnam{"mmHg"}
-                one{"{0}mmHg"}
-                other{"{0}mmHg"}
+                dnam{"mm Hg"}
+                one{"{0}mm Hg"}
+                other{"{0}mm Hg"}
             }
             pound-per-square-inch{
                 dnam{"psi"}
@@ -1500,7 +1503,6 @@ en{
                 dnam{"km²"}
                 one{"{0} km²"}
                 other{"{0} km²"}
-                per{"{0}/km²"}
             }
             square-meter{
                 dnam{"meters²"}
@@ -1512,7 +1514,6 @@ en{
                 dnam{"sq miles"}
                 one{"{0} sq mi"}
                 other{"{0} sq mi"}
-                per{"{0}/mi²"}
             }
             square-yard{
                 dnam{"yards²"}
@@ -1810,7 +1811,7 @@ en{
                 other{"{0} ly"}
             }
             meter{
-                dnam{"m"}
+                dnam{"meters"}
                 one{"{0} m"}
                 other{"{0} m"}
                 per{"{0}/m"}
@@ -1968,7 +1969,7 @@ en{
                 other{"{0} hPa"}
             }
             inch-hg{
-                dnam{"inHg"}
+                dnam{"in Hg"}
                 one{"{0} inHg"}
                 other{"{0} inHg"}
             }
@@ -1978,9 +1979,9 @@ en{
                 other{"{0} mbar"}
             }
             millimeter-of-mercury{
-                dnam{"mmHg"}
-                one{"{0} mmHg"}
-                other{"{0} mmHg"}
+                dnam{"mm Hg"}
+                one{"{0} mm Hg"}
+                other{"{0} mm Hg"}
             }
             pound-per-square-inch{
                 dnam{"psi"}
@@ -2117,7 +2118,6 @@ en{
                 dnam{"liters"}
                 one{"{0} L"}
                 other{"{0} L"}
-                per{"{0}/L"}
             }
             megaliter{
                 dnam{"ML"}

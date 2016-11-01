@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/fil.xml
+// *
+// ***************************************************************************
 fil{
     Countries{
         001{"Mundo"}
@@ -137,7 +143,7 @@ fil{
         HR{"Croatia"}
         HT{"Haiti"}
         HU{"Hungary"}
-        IC{"Canary Islands"}
+        IC{"Canary Island"}
         ID{"Indonesia"}
         IE{"Ireland"}
         IL{"Israel"}
@@ -272,7 +278,6 @@ fil{
         UA{"Ukraine"}
         UG{"Uganda"}
         UM{"U.S. Outlying Islands"}
-        UN{"Nagkakaisang Bansa"}
         US{"Estados Unidos"}
         UY{"Uruguay"}
         UZ{"Uzbekistan"}
@@ -298,17 +303,15 @@ fil{
         HK{"Hong Kong"}
         MO{"Macau"}
         PS{"Palestine"}
-        UN{"UN"}
         US{"U.S."}
     }
     Countries%variant{
         CD{"Congo (DRC)"}
         CG{"Congo (Republika)"}
         CI{"Ivory Coast"}
-        CZ{"Czechia"}
         FK{"Falkland Islands (Islas Malvinas)"}
         MK{"Macedonia (FYROM)"}
         TL{"East Timor"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
 }

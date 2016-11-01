@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2005-2015, International Business Machines Corporation and
@@ -19,8 +17,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.dev.test.TestUtil;
 import com.ibm.icu.text.IDNA;
@@ -32,7 +28,11 @@ import com.ibm.icu.text.UTF16;
  * 
  */
 public class IDNAConformanceTest extends TestFmwk {
-    @Test
+
+    public static void main(String[] args) throws Exception {
+        new IDNAConformanceTest().run(args);
+    }
+
     public void TestConformance() {
 
         TreeMap inputData = null;

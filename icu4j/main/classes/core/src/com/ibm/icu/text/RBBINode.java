@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /********************************************************************
  * COPYRIGHT:
  * Copyright (c) 2001-2016, International Business Machines Corporation and
@@ -172,6 +170,8 @@ class RBBINode {
                 n.fRightChild.fParent = n;
             }
         }
+        n.fRuleRoot = this.fRuleRoot;
+        n.fChainIn  = this.fChainIn;
         return n;
     }
 
@@ -197,9 +197,8 @@ class RBBINode {
     //-------------------------------------------------------------------------
     RBBINode flattenVariables() {
         if (fType == varRef) {
-            RBBINode retNode  = fLeftChild.cloneTree();
-            retNode.fRuleRoot = this.fRuleRoot;
-            retNode.fChainIn  = this.fChainIn;
+            RBBINode retNode = fLeftChild.cloneTree();
+            // delete this;
             return retNode;
         }
 

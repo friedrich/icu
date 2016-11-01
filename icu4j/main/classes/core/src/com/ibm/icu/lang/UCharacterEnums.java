@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
  *******************************************************************************
  * Copyright (C) 2004-2016, International Business Machines Corporation and
@@ -20,7 +18,7 @@ public class UCharacterEnums {
     private UCharacterEnums() {}
 
     /**
-     * 'Enum' for the CharacterCategory constants.  These constants are
+     * 'Enum' for the CharacterCategory constants.  These constants are 
      * compatible in name <b>but not in value</b> with those defined in
      * {@link java.lang.Character}.
      * @see UCharacterCategory
@@ -31,11 +29,11 @@ public class UCharacterEnums {
          * Unassigned character type
          * @stable ICU 2.1
          */
-        public static final byte UNASSIGNED              = 0;
+        public static final byte UNASSIGNED              = 0; 
 
         /**
          * Character type Cn
-         * Not Assigned (no characters in [UnicodeData.txt] have this property)
+         * Not Assigned (no characters in [UnicodeData.txt] have this property) 
          * @stable ICU 2.6
          */
         public static final byte GENERAL_OTHER_TYPES     = 0;
@@ -91,7 +89,7 @@ public class UCharacterEnums {
 
         /**
          * Character type Nd
-         * @stable ICU 2.1
+         * @stable ICU 2.1      
          */
         public static final byte DECIMAL_DIGIT_NUMBER    = 9;
 
@@ -100,7 +98,7 @@ public class UCharacterEnums {
          * @stable ICU 2.1
          */
         public static final byte LETTER_NUMBER           = 10;
-
+        
         /**
          * Character type No
          * @stable ICU 2.1
@@ -160,7 +158,7 @@ public class UCharacterEnums {
          * @stable ICU 2.1
          */
         public static final byte START_PUNCTUATION       = 20;
-
+        
         /**
          * Character type Pe
          * @stable ICU 2.1
@@ -190,19 +188,19 @@ public class UCharacterEnums {
          * @stable ICU 2.1
          */
         public static final byte CURRENCY_SYMBOL         = 25;
-
+        
         /**
          * Character type Sk
          * @stable ICU 2.1
          */
         public static final byte MODIFIER_SYMBOL         = 26;
-
+        
         /**
          * Character type So
          * @stable ICU 2.1
          */
         public static final byte OTHER_SYMBOL            = 27;
-
+        
         /**
          * Character type Pi
          * @see #INITIAL_QUOTE_PUNCTUATION
@@ -232,11 +230,9 @@ public class UCharacterEnums {
          * @stable ICU 2.8
          */
         public static final byte FINAL_QUOTE_PUNCTUATION   = 29;
-
+        
         /**
-         * One more than the highest normal ECharacterCategory value.
-         * This numeric value is stable (will not change), see
-         * http://www.unicode.org/policies/stability_policy.html#Property_Value
+         * Character type count
          * @stable ICU 2.1
          */
         public static final byte CHAR_CATEGORY_COUNT     = 30;
@@ -323,7 +319,7 @@ public class UCharacterEnums {
         /**
          * Directional type AN
          * @stable ICU 2.1
-         */
+         */                                                    
         public static final int ARABIC_NUMBER              = 5;
 
         /**
@@ -365,7 +361,7 @@ public class UCharacterEnums {
         /**
          * Directional type S
          * @stable ICU 2.1
-         */
+         */      
         public static final int SEGMENT_SEPARATOR          = 8;
 
         /**
@@ -420,7 +416,7 @@ public class UCharacterEnums {
          * Directional type LRO
          * @stable ICU 2.1
          */
-        public static final int LEFT_TO_RIGHT_OVERRIDE     = 12;
+        public static final int LEFT_TO_RIGHT_OVERRIDE     = 12;  
 
         /**
          * Equivalent to {@link
@@ -539,12 +535,9 @@ public class UCharacterEnums {
         public static final byte POP_DIRECTIONAL_ISOLATE     = 22;
 
         /**
-         * One more than the highest normal ECharacterDirection value.
-         * The highest value is available via UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS).
-         *
-         * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
+         * Number of directional types
+         * @stable ICU 2.1
          */
-        @Deprecated
         public static final int CHAR_DIRECTION_COUNT       = 23;
 
         /**

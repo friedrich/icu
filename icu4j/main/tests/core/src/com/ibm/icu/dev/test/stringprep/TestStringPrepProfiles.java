@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2009, International Business Machines Corporation and         *
@@ -7,8 +5,6 @@
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.stringprep;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.StringPrep;
@@ -19,6 +15,10 @@ import com.ibm.icu.text.StringPrepParseException;
  *
  */
 public class TestStringPrepProfiles extends TestFmwk {
+    public static void main(String[] args) throws Exception {
+        new TestStringPrepProfiles().run(args);
+    }
+    
     /*
      * The format of the test cases should be the following:
      * {
@@ -135,7 +135,6 @@ public class TestStringPrepProfiles extends TestFmwk {
         return -1;
     }
     
-    @Test
     public void TestProfiles() {
         String profileName = null;
         StringPrep sprep = null;

@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/dayPeriods.xml
+// *
+// ***************************************************************************
 dayPeriods:table(nofallback){
     locales{
         af{"set3"}
@@ -1103,28 +1109,24 @@ dayPeriods:table(nofallback){
         }
         set139{
             afternoon1{
-                before{"16:00"}
-                from{"12:00"}
+                before{"15:00"}
+                from{"11:00"}
             }
             afternoon2{
                 before{"18:00"}
-                from{"16:00"}
+                from{"15:00"}
             }
             evening1{
                 before{"22:00"}
                 from{"18:00"}
             }
             morning1{
-                before{"12:00"}
-                from{"06:00"}
+                before{"11:00"}
+                from{"05:00"}
             }
             night1{
-                before{"03:00"}
+                before{"05:00"}
                 from{"22:00"}
-            }
-            night2{
-                before{"06:00"}
-                from{"03:00"}
             }
         }
         set14{
@@ -2873,12 +2875,12 @@ dayPeriods:table(nofallback){
         }
         set66{
             afternoon1{
-                before{"16:00"}
-                from{"12:00"}
+                before{"15:00"}
+                from{"11:00"}
             }
             afternoon2{
                 before{"18:00"}
-                from{"16:00"}
+                from{"15:00"}
             }
             evening1{
                 before{"22:00"}
@@ -2888,16 +2890,12 @@ dayPeriods:table(nofallback){
                 at{"00:00"}
             }
             morning1{
-                before{"12:00"}
-                from{"06:00"}
+                before{"11:00"}
+                from{"05:00"}
             }
             night1{
-                before{"03:00"}
+                before{"05:00"}
                 from{"22:00"}
-            }
-            night2{
-                before{"06:00"}
-                from{"03:00"}
             }
         }
         set67{

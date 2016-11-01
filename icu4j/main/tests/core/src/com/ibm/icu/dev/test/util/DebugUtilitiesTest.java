@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2007, International Business Machines Corporation and         *
@@ -7,8 +5,6 @@
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.util;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 
@@ -18,7 +14,13 @@ import com.ibm.icu.dev.test.TestFmwk;
  */
 public class DebugUtilitiesTest extends TestFmwk {
 
-    @Test
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+            new DebugUtilitiesTest().run(args);
+    }
+    
     public void TestStrings() {
         logln("ICU4C version was "+DebugUtilitiesData.ICU4C_VERSION);
         int typeCount = DebugUtilities.typeCount();

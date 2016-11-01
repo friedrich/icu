@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/sv.xml
+// *
+// ***************************************************************************
 sv{
     Currencies{
         ADP{
@@ -218,13 +224,9 @@ sv{
             "BYB",
             "vitrysk ny rubel (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "vitrysk rubel",
-        }
         BYR{
             "BYR",
-            "vitrysk rubel (2000–2016)",
+            "vitrysk rubel",
         }
         BZD{
             "BZ$",
@@ -448,7 +450,7 @@ sv{
         }
         GYD{
             "GYD",
-            "Guyanadollar",
+            "guyanansk dollar",
         }
         HKD{
             "HKD",
@@ -476,10 +478,10 @@ sv{
         }
         IDR{
             "IDR",
-            "indonesisk rupie",
+            "indonesisk rupiah",
         }
         IEP{
-            "IE£",
+            "IEP",
             "irländskt pund",
         }
         ILP{
@@ -676,7 +678,7 @@ sv{
         }
         MOP{
             "MOP",
-            "makanesisk pataca",
+            "macaosk pataca",
         }
         MRO{
             "MRO",
@@ -1096,7 +1098,7 @@ sv{
         }
         XFU{
             "XFU",
-            "internationella järnvägsunionens franc",
+            "French UIC-Franc",
         }
         XOF{
             "CFA",
@@ -1208,7 +1210,7 @@ sv{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -1226,7 +1228,6 @@ sv{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -1267,7 +1268,6 @@ sv{
         PKR{"Rs"}
         PLN{"zł"}
         PYG{"₲"}
-        RON{"L"}
         RUB{"₽"}
         RWF{"RF"}
         SBD{"$"}
@@ -1513,13 +1513,9 @@ sv{
             one{"vitrysk rubel (1994–1999)"}
             other{"vitryska nya rubel (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"vitrysk rubel"}
             other{"vitryska rubel"}
-        }
-        BYR{
-            one{"vitrysk rubel (2000–2016)"}
-            other{"vitryska rubel (2000–2016)"}
         }
         BZD{
             one{"belizisk dollar"}
@@ -1742,8 +1738,8 @@ sv{
             other{"Guinea-Bissau-pesos"}
         }
         GYD{
-            one{"Guyanadollar"}
-            other{"Guyanadollar"}
+            one{"guyanansk dollar"}
+            other{"guyanska dollar"}
         }
         HKD{
             one{"Hongkongdollar"}
@@ -1770,8 +1766,8 @@ sv{
             other{"ungerska forinter"}
         }
         IDR{
-            one{"indonesisk rupie"}
-            other{"indonesiska rupier"}
+            one{"indonesisk rupiah"}
+            other{"indonesiska rupiah"}
         }
         IEP{
             one{"irländskt pund"}
@@ -1970,8 +1966,8 @@ sv{
             other{"mongoliska tögrög"}
         }
         MOP{
-            one{"makanesisk pataca"}
-            other{"makanesiska pataca"}
+            one{"macaosk pataca"}
+            other{"macaoska pataca"}
         }
         MRO{
             one{"mauretansk ouguiya"}
@@ -2198,8 +2194,8 @@ sv{
             other{"surinamesiska dollar"}
         }
         SRG{
-            one{"surinamesisk gulden"}
-            other{"surinamesiska gulden"}
+            one{"Surinam-gulden"}
+            other{"Surinam-gulden"}
         }
         SSP{
             one{"sydsudanesiskt pund"}
@@ -2366,7 +2362,7 @@ sv{
             other{"europeiska monetära enheter"}
         }
         XBC{
-            one{"europeisk gammal kontoenhet"}
+            one{"europeisk gammal kontoenhet-9"}
             other{"europeiska kontoenheter (XBC)"}
         }
         XBD{
@@ -2494,5 +2490,5 @@ sv{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.30.7"}
+    Version{"2.1.23.66"}
 }

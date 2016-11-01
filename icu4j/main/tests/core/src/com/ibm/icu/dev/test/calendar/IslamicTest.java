@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 1996-2015, International Business Machines Corporation and    *
@@ -16,9 +14,6 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.Locale;
 
-import org.junit.Test;
-
-import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.LocaleUtility;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -32,7 +27,11 @@ import com.ibm.icu.util.ULocale;
 /**
  * Tests for the <code>IslamicCalendar</code> class.
  */
-public class IslamicTest extends CalendarTestFmwk {
+public class IslamicTest extends CalendarTest {
+    public static void main(String args[]) throws Exception {
+        new IslamicTest().run(args);
+    }
+
     /** Constants to save typing. */
     public static final int MUHARRAM = IslamicCalendar.MUHARRAM;
     public static final int SAFAR =  IslamicCalendar.SAFAR;
@@ -47,7 +46,6 @@ public class IslamicTest extends CalendarTestFmwk {
     public static final int QIDAH =  IslamicCalendar.DHU_AL_QIDAH;
     public static final int HIJJAH =  IslamicCalendar.DHU_AL_HIJJAH;
 
-    @Test
     public void TestRoll() {
         int[][] tests = new int[][] {
             //       input                roll by          output
@@ -78,7 +76,6 @@ public class IslamicTest extends CalendarTestFmwk {
      * A huge list of test cases to make sure that computeTime and computeFields
      * work properly for a wide range of data in the civil calendar.
      */
-    @Test
     public void TestCivilCases()
     {
         final TestCase[] tests = {
@@ -131,7 +128,6 @@ public class IslamicTest extends CalendarTestFmwk {
         doTestCases(tests, civilCalendar);
     }
 
-    @Test
     public void TestBasic() {
         IslamicCalendar cal = newCivil();
         cal.clear();
@@ -151,7 +147,6 @@ public class IslamicTest extends CalendarTestFmwk {
     /**
      * Test limits of the Islamic calendar
      */
-    @Test
     public void TestLimits() {
         Calendar cal = Calendar.getInstance();
         cal.set(2007, Calendar.JANUARY, 1);
@@ -165,12 +160,11 @@ public class IslamicTest extends CalendarTestFmwk {
 
         IslamicCalendar islamic2 = new IslamicCalendar();
         islamic2.setCalculationType(CalculationType.ISLAMIC);
-        int testTime = TestFmwk.getExhaustiveness() <= 5 ? 20000 : 800000;
+        int testTime = getInclusion() <= 5 ? 20000 : 800000;
         doLimitsTest(islamic2, null, cal.getTime(), testTime);
         doTheoreticalLimitsTest(islamic2, true);
     }
 
-    @Test
     public void Test7427() {
         // Test the add month in a leap year problem as reported in ticket #7427
         IslamicCalendar cal = new IslamicCalendar();
@@ -184,8 +178,6 @@ public class IslamicTest extends CalendarTestFmwk {
                        cal.get(IslamicCalendar.MONTH) + " Year:" + cal.get(IslamicCalendar.YEAR));
            }
     }
-    
-    @Test
     public void TestCoverage() {
     {
         // new IslamicCalendar(TimeZone)
@@ -333,8 +325,7 @@ public class IslamicTest extends CalendarTestFmwk {
             errln("Expected calendar to be type " + expectType + " but instead it is " + theType);
         }
     }
-
-    @Test
+    
     public void Test8822() {
         verifyType(newIslamic(),"islamic");
         verifyType(newCivil(),"islamic-civil");
@@ -369,7 +360,7 @@ public class IslamicTest extends CalendarTestFmwk {
         }
     }
     
-    @Test
+    
     public void TestIslamicUmAlQura() {
 
         class GregoUmmAlQuraMap {
@@ -903,7 +894,6 @@ public class IslamicTest extends CalendarTestFmwk {
         }
     }
     
-    @Test
     public void TestSerialization8449() {
         try {
             ByteArrayOutputStream icuStream = new ByteArrayOutputStream();
@@ -965,7 +955,6 @@ public class IslamicTest extends CalendarTestFmwk {
         }
     }
     
-    @Test
     public void TestIslamicTabularDates() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
@@ -996,7 +985,6 @@ public class IslamicTest extends CalendarTestFmwk {
 
     }
 
-    @Test
     public void TestCreationByLocale() {
         ULocale islamicLoc = new ULocale("ar_SA@calendar=islamic-umalqura"); 
         IslamicCalendar is_cal = new IslamicCalendar(islamicLoc);

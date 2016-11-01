@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
 * Copyright (C) 1999-2010, International Business Machines Corporation and    *
@@ -8,8 +6,6 @@
 */
 
 package com.ibm.icu.dev.test.lang;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.lang.UScript;
@@ -22,6 +18,10 @@ public class TestUScriptRun extends TestFmwk
         // nothing
     }
     
+    public static void main(String[] args) throws Exception {
+        new TestUScriptRun().run(args);
+    }
+
     private static final class RunTestData
     {
         String runText;
@@ -92,7 +92,6 @@ public class TestUScriptRun extends TestFmwk
         }
     }
 
-    @Test
     public void TestContstruction()
     {
         UScriptRun scriptRun = null;
@@ -215,7 +214,6 @@ public class TestUScriptRun extends TestFmwk
         }
     }
     
-    @Test
     public void TestReset()
     {
         UScriptRun scriptRun = null;
@@ -324,7 +322,6 @@ public class TestUScriptRun extends TestFmwk
         }
     }
     
-    @Test
     public void TestRuns()
     {
         for (int i = 0; i < m_testData.length; i += 1) {

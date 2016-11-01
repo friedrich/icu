@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2014-2016, International Business Machines Corporation and
@@ -7,8 +5,6 @@
  *******************************************************************************
  */
 package com.ibm.icu.dev.test.util;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.MessageFormat;
@@ -26,7 +22,16 @@ public class SimpleFormatterTest extends TestFmwk {
        
      // public methods -----------------------------------------------
      
-     @Test
+     public static void main(String arg[]) 
+     {
+         SimpleFormatterTest test = new SimpleFormatterTest();
+         try {
+             test.run(arg);
+         } catch (Exception e) {
+             test.errln("Error testing SimpleFormatterTest");
+         }
+     }
+     
      public void TestWithNoArguments() {
          SimpleFormatter fmt = SimpleFormatter.compile("This doesn''t have templates '{0}");
          assertEquals(
@@ -64,7 +69,6 @@ public class SimpleFormatterTest extends TestFmwk {
                  fmt.formatAndReplace(new StringBuilder(), null, (CharSequence[])null).toString());
      }
 
-     @Test
      public void TestSyntaxErrors() {
          try {
              SimpleFormatter.compile("{}");
@@ -78,14 +82,12 @@ public class SimpleFormatterTest extends TestFmwk {
          }
      }
 
-     @Test
      public void TestOneArgument() {
         assertEquals("TestOneArgument",
                 "1 meter",
                 SimpleFormatter.compile("{0} meter").format("1"));
      }
 
-     @Test
      public void TestBigArgument() {
          SimpleFormatter fmt = SimpleFormatter.compile("a{20}c");
          assertEquals("{20} count", 21, fmt.getArgumentLimit());
@@ -94,7 +96,6 @@ public class SimpleFormatterTest extends TestFmwk {
          assertEquals("{20}=b", "abc", fmt.format(values));
       }
 
-     @Test
      public void TestGetTextWithNoArguments() {
          assertEquals(
                  "",
@@ -103,7 +104,6 @@ public class SimpleFormatterTest extends TestFmwk {
                          "Templates {1}{2} and {3} are here.").getTextWithNoArguments());
      }
      
-     @Test
      public void TestTooFewArgumentValues() {
          SimpleFormatter fmt = SimpleFormatter.compile(
                  "Templates {2}{1} and {4} are out of order.");
@@ -129,7 +129,6 @@ public class SimpleFormatterTest extends TestFmwk {
          }
      }
      
-     @Test
      public void TestWithArguments() {
          SimpleFormatter fmt = SimpleFormatter.compile(
                  "Templates {2}{1} and {4} are out of order.");
@@ -154,7 +153,6 @@ public class SimpleFormatterTest extends TestFmwk {
          verifyOffsets(expectedOffsets, offsets);
      }
      
-     @Test
      public void TestFormatUseAppendToAsArgument() {
          SimpleFormatter fmt = SimpleFormatter.compile(
                  "Arguments {0} and {1}");
@@ -167,7 +165,6 @@ public class SimpleFormatterTest extends TestFmwk {
          }
      }
      
-     @Test
      public void TestFormatReplaceNoOptimization() {
          SimpleFormatter fmt = SimpleFormatter.compile("{2}, {0}, {1} and {3}");
          int[] offsets = new int[4];
@@ -185,7 +182,6 @@ public class SimpleFormatterTest extends TestFmwk {
      }
      
      
-     @Test
      public void TestFormatReplaceNoOptimizationLeadingText() {
          SimpleFormatter fmt = SimpleFormatter.compile("boo {2}, {0}, {1} and {3}");
          int[] offsets = new int[4];
@@ -202,7 +198,6 @@ public class SimpleFormatterTest extends TestFmwk {
          verifyOffsets(expectedOffsets, offsets);
      }
      
-     @Test
      public void TestFormatReplaceOptimization() {
          SimpleFormatter fmt = SimpleFormatter.compile("{2}, {0}, {1} and {3}");
          int[] offsets = new int[4];
@@ -219,7 +214,6 @@ public class SimpleFormatterTest extends TestFmwk {
          verifyOffsets(expectedOffsets, offsets);  
      }
      
-     @Test
      public void TestFormatReplaceOptimizationNoOffsets() {
          SimpleFormatter fmt = SimpleFormatter.compile("{2}, {0}, {1} and {3}");
          StringBuilder result = new StringBuilder("original");
@@ -233,7 +227,6 @@ public class SimpleFormatterTest extends TestFmwk {
          
      }
      
-     @Test
      public void TestFormatReplaceNoOptimizationNoOffsets() {
          SimpleFormatter fmt = SimpleFormatter.compile(
                  "Arguments {0} and {1}");
@@ -244,7 +237,6 @@ public class SimpleFormatterTest extends TestFmwk {
                  fmt.formatAndReplace(result, null, result, "frog").toString());
      }
      
-     @Test
      public void TestFormatReplaceNoOptimizationLeadingArgumentUsedTwice() {
          SimpleFormatter fmt = SimpleFormatter.compile(
                  "{2}, {0}, {1} and {3} {2}");
@@ -261,7 +253,6 @@ public class SimpleFormatterTest extends TestFmwk {
          verifyOffsets(expectedOffsets, offsets);
      }
 
-     @Test
      public void TestQuotingLikeMessageFormat() {
          String pattern = "{0} don't can''t '{5}''}{a' again '}'{1} to the '{end";
          SimpleFormatter spf = SimpleFormatter.compile(pattern);
@@ -271,7 +262,7 @@ public class SimpleFormatterTest extends TestFmwk {
          assertEquals("SimpleFormatter", expected, spf.format("X", "Y"));
      }
 
-     private void verifyOffsets(int[] expected, int[] actual) {
+     void verifyOffsets(int[] expected, int[] actual) {
          for (int i = 0; i < expected.length; ++i) {
              if (expected[i] != actual[i]) {
                  errln("Expected "+expected[i]+", got " + actual[i]);

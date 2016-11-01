@@ -1,7 +1,13 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ca.xml
+// *
+// ***************************************************************************
 ca{
-    Version{"2.1.28.79"}
+    Version{"2.1.22.93"}
     zoneStrings{
         "Africa:Abidjan"{
             ec{"Abidjan"}
@@ -253,7 +259,7 @@ ca{
             ec{"Caiman"}
         }
         "America:Chicago"{
-            ec{"Chicago"}
+            ec{"Xicago"}
         }
         "America:Chihuahua"{
             ec{"Chihuahua"}
@@ -302,9 +308,6 @@ ca{
         }
         "America:El_Salvador"{
             ec{"El Salvador"}
-        }
-        "America:Fort_Nelson"{
-            ec{"Fort Nelson"}
         }
         "America:Fortaleza"{
             ec{"Fortaleza"}
@@ -669,9 +672,6 @@ ca{
         "Asia:Bangkok"{
             ec{"Bangkok"}
         }
-        "Asia:Barnaul"{
-            ec{"Barnaul"}
-        }
         "Asia:Beirut"{
             ec{"Beirut"}
         }
@@ -802,7 +802,7 @@ ca{
             ec{"Qatar"}
         }
         "Asia:Qyzylorda"{
-            ec{"Kizil-Orda"}
+            ec{"Kizilordà"}
         }
         "Asia:Rangoon"{
             ec{"Rangoon"}
@@ -848,9 +848,6 @@ ca{
         }
         "Asia:Tokyo"{
             ec{"Tòquio"}
-        }
-        "Asia:Tomsk"{
-            ec{"Tomsk"}
         }
         "Asia:Ulaanbaatar"{
             ec{"Ulaanbaatar"}
@@ -951,9 +948,6 @@ ca{
         "Europe:Andorra"{
             ec{"Andorra"}
         }
-        "Europe:Astrakhan"{
-            ec{"Astrakhan"}
-        }
         "Europe:Athens"{
             ec{"Atenes"}
         }
@@ -1011,9 +1005,6 @@ ca{
         }
         "Europe:Kiev"{
             ec{"Kíev"}
-        }
-        "Europe:Kirov"{
-            ec{"Kirov"}
         }
         "Europe:Lisbon"{
             ec{"Lisboa"}
@@ -1090,9 +1081,6 @@ ca{
         }
         "Europe:Tirane"{
             ec{"Tirana"}
-        }
-        "Europe:Ulyanovsk"{
-            ec{"Uliànovsk"}
         }
         "Europe:Uzhgorod"{
             ec{"Uzhgorod"}
@@ -1773,9 +1761,6 @@ ca{
         }
         "meta:Ponape"{
             ls{"Hora de Ponape"}
-        }
-        "meta:Pyongyang"{
-            ls{"Hora de Pyongyang"}
         }
         "meta:Reunion"{
             ls{"Hora de Reunió"}

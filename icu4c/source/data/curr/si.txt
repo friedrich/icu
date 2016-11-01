@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/si.xml
+// *
+// ***************************************************************************
 si{
     Currencies{
         AED{
@@ -94,13 +100,9 @@ si{
             "BWP",
             "බොට්ස්වානා පුලා",
         }
-        BYN{
-            "BYN",
-            "බෙලරූස් රූබල්",
-        }
         BYR{
             "BYR",
-            "බෙලරූස් රූබල් (2000–2016)",
+            "බෙලරූස් රූබල්",
         }
         BZD{
             "BZD",
@@ -652,7 +654,7 @@ si{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -669,7 +671,6 @@ si{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -832,13 +833,9 @@ si{
             one{"බොට්ස්වානා පුලා"}
             other{"බොට්ස්වානා පුලා"}
         }
-        BYN{
+        BYR{
             one{"බෙලරූස් රූබල්"}
             other{"බෙලරූස් රූබල්"}
-        }
-        BYR{
-            one{"බෙලරූස් රූබල් (2000–2016)"}
-            other{"බෙලරූස් රූබල් (2000–2016)"}
         }
         BZD{
             one{"බෙලිස් ඩොලර්"}
@@ -1373,5 +1370,5 @@ si{
         one{"{1}{0}"}
         other{"{1}{0}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.23.84"}
 }

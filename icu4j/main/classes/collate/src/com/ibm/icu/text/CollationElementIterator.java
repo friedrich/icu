@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /**
 *******************************************************************************
 * Copyright (C) 1996-2016, International Business Machines Corporation and
@@ -584,16 +582,37 @@ public final class CollationElementIterator
         dir_ = 0;
     }
 
+    // Java porting note: This method is @stable ICU 2.0 in ICU4C, but not available
+    // in ICU4J. For now, keep it package local.
+    /**
+    * Gets the comparison order in the desired strength. Ignore the other
+    * differences.
+    * @param order The order value
+    */
+    int strengthOrder(int order) {
+        int s = rbc_.settings.readOnly().getStrength();
+        // Mask off the unwanted differences.
+        if (s == Collator.PRIMARY) {
+            order &= 0xffff0000;
+        }
+        else if (s == Collator.SECONDARY) {
+            order &= 0xffffff00;
+        }
+
+        return order;
+    }
+
+
     private static final class MaxExpSink implements ContractionsAndExpansions.CESink {
         MaxExpSink(Map<Integer, Integer> h) {
             maxExpansions = h;
         }
 
-        @Override
+        // Java 6: @Override
         public void handleCE(long ce) {
         }
 
-        @Override
+        // Java 6: @Override
         public void handleExpansion(long ces[], int start, int length) {
             if (length <= 1) {
                 // We do not need to add single CEs into the map.
@@ -673,7 +692,6 @@ public final class CollationElementIterator
      *             CollationElementIterator
      * @stable ICU 2.8
      */
-    @Override
     public boolean equals(Object that) {
         if (that == this) {
             return true;
@@ -695,7 +713,6 @@ public final class CollationElementIterator
      * @internal
      * @deprecated This API is ICU internal only.
      */
-    @Override
     @Deprecated
     public int hashCode() {
         assert false : "hashCode not designed";

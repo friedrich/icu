@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  **********************************************************************
  * Copyright (c) 2011-2016, International Business Machines
@@ -16,8 +14,6 @@ package com.ibm.icu.dev.test.util;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.util.Region;
 import com.ibm.icu.util.Region.RegionType;
@@ -28,6 +24,11 @@ import com.ibm.icu.util.Region.RegionType;
  */
 
 public class RegionTest extends TestFmwk {
+
+    public static void main(String[] args) throws Exception {
+        new RegionTest().run(args);
+    }
+
     String[][] knownRegions = {
             //   Code  , Numeric , Parent, Type, Containing Continent
             { "001", "001", null , "WORLD", null },
@@ -333,7 +334,6 @@ public class RegionTest extends TestFmwk {
     /**
      * Test for known regions.
      */    
-    @Test
     public void TestKnownRegions() {
 
         for (String [] rd : knownRegions ) {
@@ -360,7 +360,6 @@ public class RegionTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestGetInstanceString() {
         String[][] testData = {
                 //  Input ID, Expected ID, Expected Type
@@ -402,7 +401,6 @@ public class RegionTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestGetInstanceInt() {
         String[][] testData = {
                 //  Input ID, Expected ID, Expected Type
@@ -434,7 +432,6 @@ public class RegionTest extends TestFmwk {
 
     }
 
-    @Test
     public void TestGetContainedRegions() {        
         for (String [] rd : knownRegions ) {
             try {
@@ -455,7 +452,6 @@ public class RegionTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestGetContainedRegionsWithType() {        
         for (String [] rd : knownRegions ) {
             try {
@@ -476,7 +472,6 @@ public class RegionTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestGetContainingRegionWithType() {        
         for (String [] rd : knownRegions ) {
             try {
@@ -498,7 +493,6 @@ public class RegionTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestGetContainingRegion() {        
         for (String [] rd : knownRegions ) {
             try {
@@ -520,7 +514,6 @@ public class RegionTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestGetPreferredValues() {
         String[][] testData = {
                 //  Input ID, Expected Preferred Values...
@@ -553,7 +546,6 @@ public class RegionTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestContains() {        
         for (String [] rd : knownRegions ) {
             try {
@@ -571,7 +563,6 @@ public class RegionTest extends TestFmwk {
         }
     }
 
-    @Test
     public void TestAvailableTerritories() {
         // Test to make sure that the set of territories contained in World and the set of all available
         // territories are one and the same.

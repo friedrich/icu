@@ -1,9 +1,7 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
- * Copyright (C) 2009-2016, International Business Machines Corporation and
- * others. All Rights Reserved.
+ * Copyright (C) 2009-2014, International Business Machines Corporation and    *
+ * others. All Rights Reserved.                                                *
  *******************************************************************************
  */
 package com.ibm.icu.impl;
@@ -26,7 +24,7 @@ public class ICUCurrencyMetaInfo extends CurrencyMetaInfo {
 
     public ICUCurrencyMetaInfo() {
         ICUResourceBundle bundle = (ICUResourceBundle) ICUResourceBundle.getBundleInstance(
-            ICUData.ICU_CURR_BASE_NAME, "supplementalData",
+            ICUResourceBundle.ICU_CURR_BASE_NAME, "supplementalData",
             ICUResourceBundle.ICU_DATA_CLASS_LOADER);
         regionInfo = bundle.findTopLevel("CurrencyMap");
         digitInfo = bundle.findTopLevel("CurrencyMeta");
@@ -67,7 +65,7 @@ public class ICUCurrencyMetaInfo extends CurrencyMetaInfo {
             return new CurrencyDigits(data[0], data[1]);
         }
     }
-
+    
     private <T> List<T> collect(Collector<T> collector, CurrencyFilter filter) {
         // We rely on the fact that the data lists the regions in order, and the
         // priorities in order within region.  This means we don't need
@@ -169,7 +167,7 @@ public class ICUCurrencyMetaInfo extends CurrencyMetaInfo {
             return defaultValue;
         }
         int[] values = b.getIntVector();
-        return ((long) values[0] << 32) | ((values[1]) & MASK);
+        return ((long) values[0] << 32) | (((long) values[1]) & MASK);
     }
 
     // Utility, just because I don't like the n^2 behavior of using list.contains to build a
@@ -199,17 +197,14 @@ public class ICUCurrencyMetaInfo extends CurrencyMetaInfo {
         // about duplicates.
         private List<CurrencyInfo> result = new ArrayList<CurrencyInfo>();
 
-        @Override
         public void collect(String region, String currency, long from, long to, int priority, boolean tender) {
             result.add(new CurrencyInfo(region, currency, from, to, priority, tender));
         }
 
-        @Override
         public List<CurrencyInfo> getList() {
             return Collections.unmodifiableList(result);
         }
 
-        @Override
         public int collects() {
             return Everything;
         }
@@ -218,18 +213,15 @@ public class ICUCurrencyMetaInfo extends CurrencyMetaInfo {
     private static class RegionCollector implements Collector<String> {
         private final UniqueList<String> result = UniqueList.create();
 
-        @Override
         public void collect(
                 String region, String currency, long from, long to, int priority, boolean tender) {
             result.add(region);
         }
 
-        @Override
         public int collects() {
             return Region;
         }
 
-        @Override
         public List<String> getList() {
             return result.list();
         }
@@ -238,18 +230,15 @@ public class ICUCurrencyMetaInfo extends CurrencyMetaInfo {
     private static class CurrencyCollector implements Collector<String> {
         private final UniqueList<String> result = UniqueList.create();
 
-        @Override
         public void collect(
                 String region, String currency, long from, long to, int priority, boolean tender) {
             result.add(currency);
         }
 
-        @Override
         public int collects() {
             return Currency;
         }
 
-        @Override
         public List<String> getList() {
             return result.list();
         }

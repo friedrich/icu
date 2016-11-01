@@ -1,5 +1,11 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/tr.xml
+// *
+// ***************************************************************************
 tr{
     Currencies{
         ADP{
@@ -218,13 +224,9 @@ tr{
             "BYB",
             "Yeni Beyaz Rusya Rublesi (1994–1999)",
         }
-        BYN{
-            "BYN",
-            "Beyaz Rusya Rublesi",
-        }
         BYR{
             "BYR",
-            "Beyaz Rusya Rublesi (2000–2016)",
+            "Beyaz Rusya Rublesi",
         }
         BZD{
             "BZD",
@@ -1213,7 +1215,7 @@ tr{
         BRL{"R$"}
         BSD{"$"}
         BWP{"P"}
-        BYN{"р."}
+        BYR{"р."}
         BZD{"$"}
         CAD{"$"}
         CLP{"$"}
@@ -1231,7 +1233,6 @@ tr{
         FJD{"$"}
         FKP{"£"}
         GBP{"£"}
-        GEL{"₾"}
         GIP{"£"}
         GNF{"FG"}
         GTQ{"Q"}
@@ -1272,7 +1273,6 @@ tr{
         PKR{"Rs"}
         PLN{"zł"}
         PYG{"₲"}
-        RON{"L"}
         RUB{"₽"}
         RUR{"р."}
         RWF{"RF"}
@@ -1507,13 +1507,9 @@ tr{
             one{"Yeni Beyaz Rusya Rublesi (1994–1999)"}
             other{"Yeni Beyaz Rusya Rublesi (1994–1999)"}
         }
-        BYN{
+        BYR{
             one{"Beyaz Rusya rublesi"}
             other{"Beyaz Rusya rublesi"}
-        }
-        BYR{
-            one{"Beyaz Rusya rublesi (2000–2016)"}
-            other{"Beyaz Rusya rublesi (2000–2016)"}
         }
         BZD{
             one{"Belize doları"}
@@ -2368,5 +2364,5 @@ tr{
         one{"{0} {1}"}
         other{"{0} {1}"}
     }
-    Version{"2.1.28.79"}
+    Version{"2.1.23.73"}
 }

@@ -1,5 +1,3 @@
-// Copyright (C) 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html
 // ***************************************************************************
 // *
 // * Copyright (C) 2010-2016 International Business Machines
@@ -8,6 +6,6 @@
 // ***************************************************************************
 
 icuver:table(nofallback){ 
-    DataVersion { "58.1.0.0" }
-    ICUVersion  { "58.1.0.0" }
+    DataVersion { "57.1.0.0" }
+    ICUVersion  { "57.1.0.0" }
 }

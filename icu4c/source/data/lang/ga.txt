@@ -1,9 +1,14 @@
-﻿// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
+﻿// ***************************************************************************
+// *
+// * Copyright (C) 2016 International Business Machines
+// * Corporation and others. All Rights Reserved.
+// * Tool: org.unicode.cldr.icu.NewLdml2IcuConverter
+// * Source File: <path>/common/main/ga.xml
+// *
+// ***************************************************************************
 ga{
     Keys{
         calendar{"Féilire"}
-        cf{"Formáid Airgeadra"}
         collation{"Ord Sórtála"}
         currency{"Airgeadra"}
         hc{"Timthriall Uaire (12 vs 24)"}
@@ -14,7 +19,6 @@ ga{
     Languages{
         aa{"Afáiris"}
         ab{"Abcáisis"}
-        ady{"Adaigéis"}
         ae{"Aivéistis"}
         af{"Afracáinis"}
         ain{"Aidhniúis"}
@@ -60,7 +64,6 @@ ga{
         cv{"Suvaisis"}
         cy{"Breatnais"}
         da{"Danmhairgis"}
-        dav{"Taita"}
         de{"Gearmáinis"}
         de_AT{"Gearmáinis Ostarach"}
         de_CH{"Ard-Ghearmáinis Eilvéiseach"}
@@ -139,7 +142,6 @@ ga{
         it{"Iodáilis"}
         iu{"Ionúitis"}
         ja{"Seapáinis"}
-        jbo{"Lojban"}
         jut{"Iútlainnis"}
         jv{"Iáivis"}
         ka{"Seoirsis"}
@@ -188,7 +190,6 @@ ga{
         mrj{"Mairis Iartharach"}
         ms{"Malaeis"}
         mt{"Máltais"}
-        mul{"Ilteangacha"}
         mwl{"Mioraindéis"}
         mwr{"Marmhairis"}
         my{"Burmais"}
@@ -224,7 +225,6 @@ ga{
         pt_BR{"Portaingéilis na Brasaíle"}
         pt_PT{"Portaingéilis Ibéarach"}
         qu{"Ceatsuais"}
-        quc{"Cuitséis"}
         rm{"Rómainis"}
         rn{"Rúindis"}
         ro{"Rómáinis"}
@@ -245,7 +245,6 @@ ga{
         sg{"Sangóis"}
         sga{"Sean-Ghaeilge"}
         sh{"Seirbea-Chróitis"}
-        shi{"Tachelhit"}
         si{"Siolóinis"}
         sk{"Slóvaicis"}
         sl{"Slóivéinis"}
@@ -313,9 +312,7 @@ ga{
         en_US{"Béarla S.A.M."}
     }
     Scripts{
-        Aghb{"Albánach Cugasach"}
         Arab{"Arabach"}
-        Armi{"Aramach Impiriúil"}
         Armn{"Airméanach"}
         Avst{"Aivéisteach"}
         Bali{"Bailíoch"}
@@ -340,7 +337,6 @@ ga{
         Grek{"Gréagach"}
         Gujr{"Gúisearátach"}
         Guru{"Gurmúcach"}
-        Hanb{"Han agus Bopomofo"}
         Hang{"Hangalach"}
         Hani{"Han"}
         Hans{"Simplithe"}
@@ -351,7 +347,6 @@ ga{
         Hrkt{"Siollabraí Seapánacha"}
         Hung{"Sean-Ungárach"}
         Ital{"Sean-Iodáilic"}
-        Jamo{"Seamó"}
         Java{"Iávach"}
         Jpan{"Seapánach"}
         Kana{"Catacánach"}
@@ -374,16 +369,12 @@ ga{
         Mlym{"Mailéalamach"}
         Mong{"Mongólach"}
         Mymr{"Maenmarach"}
-        Narb{"Sean-Arabach Thuaidh"}
         Ogam{"Ogham"}
         Orya{"Oiríseach"}
         Perm{"Sean-Pheirmeach"}
         Phnx{"Féiníceach"}
-        Plrd{"Pollard Foghrach"}
-        Prti{"Pairtiach Inscríbhinniúil"}
         Runr{"Rúnach"}
         Samr{"Samárach"}
-        Sarb{"Sean-Arabach Theas"}
         Shaw{"Shawach"}
         Sinh{"Siolónach"}
         Syrc{"Siriceach"}
@@ -394,13 +385,9 @@ ga{
         Thaa{"Tánach"}
         Thai{"Téalannach"}
         Tibt{"Tibéadach"}
-        Ugar{"Úgairíteach"}
         Xpeo{"Sean-Pheirseach"}
         Xsux{"Dingchruthach Suiméar-Acádach"}
-        Yiii{"Ís"}
-        Zinh{"Oidhreacht"}
         Zmth{"Nodaireacht Mhatamaiticiúil"}
-        Zsye{"Emoji"}
         Zsym{"Siombailí"}
         Zxxx{"Gan Scríobh"}
         Zyyy{"Coitianta"}
@@ -419,21 +406,16 @@ ga{
             ethiopic{"Féilire Aetóipice"}
             gregorian{"Féilire Ghréagóra"}
             hebrew{"Féilire na nEabhrach"}
-            indian{"Féilire Náisiúnta na hIndia"}
-            islamic{"Féilire Ioslamach"}
+            islamic{"Féilire Ioslámach"}
             iso8601{"Féilire ISO-8601"}
             japanese{"Féilire Seapánach"}
             persian{"Féilire Peirseach"}
             roc{"Féilire Téavánach"}
         }
-        cf{
-            account{"Formáid Airgeadra don Chuntasaíocht"}
-            standard{"Formáid Airgeadra Caighdeánach"}
-        }
         collation{
-            ducet{"Ord Sórtála Réamhshocraithe Unicode"}
+            ducet{"Ord Réamhshocraithe Sórtála Unicode"}
             search{"Cuardach Ilfhóinteach"}
-            standard{"Ord Sórtála Caighdeánach"}
+            standard{"Ord Caighdeánach Sórtála"}
         }
         hc{
             h11{"Córas 12 Uair (0–11)"}
@@ -448,44 +430,34 @@ ga{
         }
         ms{
             metric{"Córas Méadrach"}
-            uksystem{"Córas Tomhais Reachtúil"}
-            ussystem{"Córas Tomhais SAM"}
+            uksystem{"Córas Impiriúil Tomhais"}
+            ussystem{"Córas SAM Tomhais"}
         }
         numbers{
             arab{"Digití Ind-Arabacha"}
             arabext{"Digití Ind-Arabacha Breisithe"}
             armn{"Uimhreacha Airméanacha"}
-            armnlow{"Uimhreacha Cás Íochtair Airméanacha"}
             bali{"Digití Bailíocha"}
             beng{"Digití Beangálacha"}
-            cyrl{"Uimhreacha Coireallacha"}
             deva{"Digití Déiveanágracha"}
             ethi{"Uimhreacha Aetóipice"}
             fullwide{"Digití Lánleithid"}
             geor{"Uimhreacha Seoirseacha"}
             grek{"Uimhreacha Gréagacha"}
-            greklow{"Uimhreacha Cás Íochtair Gréagacha"}
             gujr{"Digití Gúisearátacha"}
             guru{"Digití Gurmúcacha"}
             hanidec{"Uimhreacha Deachúlacha Síneacha"}
-            hans{"Uimhreacha sa tSínis Shimplithe"}
-            hansfin{"Uimhreacha Airgeadúla sa tSínis Shimplithe"}
-            hant{"Uimhreacha sa tSínis Thraidisiúnta"}
-            hantfin{"Uimhreacha Airgeadúla sa tSínis Thraidisiúnta"}
             hebr{"Uimhreacha Eabhracha"}
             java{"Digití Iávacha"}
             jpan{"Uimhreacha Seapánacha"}
-            jpanfin{"Uimhreacha Airgeadúla Seapánacha"}
             khmr{"Digití Ciméaracha"}
             knda{"Digití Cannadacha"}
             laoo{"Digití Laosacha"}
             latn{"Digití Iartharacha"}
             mlym{"Digití Mailéalamacha"}
-            mong{"Digití Mongólacha"}
             mymr{"Digití Maenmaracha"}
             orya{"Digití Oiríseacha"}
             roman{"Uimhreacha Rómhánacha"}
-            romanlow{"Uimhreacha Cás Íochtair Rómhánacha"}
             taml{"Uimhreacha Traidisiúnta Tamalacha"}
             tamldec{"Digití Tamalacha"}
             telu{"Digití Teileagúcha"}
@@ -494,60 +466,16 @@ ga{
         }
     }
     Variants{
-        1901{"Litriú Traidisiúnta na Gearmáinise"}
         1959ACAD{"Acadúil"}
         ALALC97{"Rómhánú ALA-LC, eagrán 1997"}
-        AREVELA{"Airméinis an Oirthir"}
-        AREVMDA{"Airméinis an Iarthair"}
-        BASICENG{"Bun-Bhéarla"}
-        BOHORIC{"Aibítir Bohorič"}
-        CORNU{"Béarla an Choirn"}
-        DAJNKO{"Aibítir Dajnko"}
-        FONIPA{"Fogharscríobh IPA"}
-        FONUPA{"Fogharscríobh UPA"}
         HEPBURN{"Rómhánú Hepburn"}
-        KKCOR{"Gnáth-Litriú"}
-        KSCOR{"Litriú Caighdeánach"}
-        METELKO{"Aibítir Metelko"}
-        MONOTON{"Aontonach"}
-        NEWFOUND{"Talamh an Éisc"}
-        NULIK{"Volapük Nua-Aimseartha"}
-        OXENDICT{"Litriú OED"}
         PINYIN{"Rómhánú Pinyin"}
-        POLYTON{"Iltonach"}
         POSIX{"Ríomhaire"}
-        REVISED{"Litriú Athbhreithnithe"}
-        RIGIK{"Volapük Clasaiceach"}
-        SCOTLAND{"Béarla Caighdeánach na hAlban"}
-        SCOUSE{"Béarla Learphoill"}
-        SIMPLE{"Simplí"}
-        UCCOR{"Litriú Comhaontaithe"}
-        UCRCOR{"Litriú Comhaontaithe Athbhreithnithe"}
         ULSTER{"Cúige Uladh"}
-        UNIFON{"Aibítir foghraíochta Unifon"}
-        VAIDIKA{"Véideach"}
         VALENCIA{"Vaileinsis"}
         WADEGILE{"Rómhánú Wade-Giles"}
     }
-    Version{"2.1.28.79"}
-    characterLabelPattern{
-        all{"{0} — Uile"}
-        category-list{"{0}: {1}:"}
-        compatibility{"{0} — Comhoiriúnacht"}
-        enclosed{"{0} — Iniata"}
-        extended{"{0} — Breisithe"}
-        historic{"{0} — Stairiúil"}
-        miscellaneous{"{0} — Éagsúil"}
-        other{"{0} — Eile"}
-        scripts{"Scripteanna — {0}"}
-        strokes{
-            few{"{0} Stríoc"}
-            many{"{0} Stríoc"}
-            one{"{0} Stríoc"}
-            other{"{0} Stríoc"}
-            two{"{0} Stríoc"}
-        }
-    }
+    Version{"2.1.22.93"}
     codePatterns{
         language{"Teanga: {0}"}
         script{"Script: {0}"}

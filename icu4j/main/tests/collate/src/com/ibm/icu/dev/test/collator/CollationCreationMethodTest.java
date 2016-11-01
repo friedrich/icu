@@ -1,5 +1,3 @@
-// © 2016 and later: Unicode, Inc. and others.
-// License & terms of use: http://www.unicode.org/copyright.html#License
 /*
  *******************************************************************************
  * Copyright (C) 2002-2014, International Business Machines Corporation and         *
@@ -11,8 +9,6 @@ package com.ibm.icu.dev.test.collator;
 
 import java.util.Locale;
 import java.util.Random;
-
-import org.junit.Test;
 
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.text.CollationKey;
@@ -30,7 +26,12 @@ import com.ibm.icu.text.RuleBasedCollator;
  */
 public class CollationCreationMethodTest extends TestFmwk 
 {
-    @Test
+    
+    public static void main(String[] args) throws Exception 
+    {
+        new CollationCreationMethodTest().run(args);
+    }
+
     public void TestRuleVsLocaleCreationMonkey()
     {
         //create a RBC from a collator reader by reading in a locale collation file
