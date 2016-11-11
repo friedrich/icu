@@ -5007,7 +5007,7 @@ static decNumber * decMultiplyOp(decNumber *res, const decNumber *lhs,
 
       /* Make sure no signed int overflow below. This is always true */
       /* if the given numbers have less digits than DEC_MAX_DIGITS. */
-      U_ASSERT(iacc <= INT32_MAX/sizeof(uLong));
+      U_ASSERT((uint32_t)iacc <= INT32_MAX/sizeof(uLong));
       needbytes=iacc*sizeof(uLong);
       #if DECDPUN==1
       zoff=(iacc+7)/8;        /* items to offset by  */
