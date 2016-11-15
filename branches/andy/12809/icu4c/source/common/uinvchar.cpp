@@ -451,6 +451,7 @@ U_CFUNC int32_t
 uprv_compareInvAscii(const UDataSwapper *ds,
                      const char *outString, int32_t outLength,
                      const UChar *localString, int32_t localLength) {
+    (void)ds;
     int32_t minLength;
     UChar32 c1, c2;
     uint8_t c;
@@ -496,6 +497,7 @@ U_CFUNC int32_t
 uprv_compareInvEbcdic(const UDataSwapper *ds,
                       const char *outString, int32_t outLength,
                       const UChar *localString, int32_t localLength) {
+    (void)ds;
     int32_t minLength;
     UChar32 c1, c2;
     uint8_t c;

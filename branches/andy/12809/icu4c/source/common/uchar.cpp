@@ -68,6 +68,7 @@ struct _EnumTypeCallback {
 
 static uint32_t U_CALLCONV
 _enumTypeValue(const void *context, uint32_t value) {
+    (void)context;
     return GET_CATEGORY(value);
 }
 
@@ -654,6 +655,8 @@ _enumPropertyStartsRange(const void *context, UChar32 start, UChar32 end, uint32
     /* add the start code point to the USet */
     const USetAdder *sa=(const USetAdder *)context;
     sa->add(sa->set, start);
+    (void)end;
+    (void)value;
     return TRUE;
 }
 

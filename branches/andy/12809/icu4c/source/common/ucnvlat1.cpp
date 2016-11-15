@@ -421,6 +421,9 @@ _Latin1GetUnicodeSet(const UConverter *cnv,
                      const USetAdder *sa,
                      UConverterUnicodeSet which,
                      UErrorCode *pErrorCode) {
+    (void)cnv;
+    (void)which;
+    (void)pErrorCode;
     sa->addRange(sa->set, 0, 0xff);
 }
 
@@ -695,6 +698,9 @@ _ASCIIGetUnicodeSet(const UConverter *cnv,
                     const USetAdder *sa,
                     UConverterUnicodeSet which,
                     UErrorCode *pErrorCode) {
+    (void)cnv;
+    (void)which;
+    (void)pErrorCode;
     sa->addRange(sa->set, 0, 0x7f);
 }
 

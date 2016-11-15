@@ -600,7 +600,9 @@ static const UConverterImpl _LMBCSImpl##n={\
     NULL,\
     NULL,\
     _LMBCSSafeClone,\
-    ucnv_getCompleteUnicodeSet\
+    ucnv_getCompleteUnicodeSet,\
+    NULL,\
+    NULL\
 };\
 static const UConverterStaticData _LMBCSStaticData##n={\
   sizeof(UConverterStaticData),\
@@ -629,12 +631,12 @@ _LMBCSOpenWorker(UConverter*  _this,
                  UErrorCode*  err,
                  ulmbcs_byte_t OptGroup)
 {
-    UConverterDataLMBCS * extraInfo = _this->extraInfo =
-        (UConverterDataLMBCS*)uprv_malloc (sizeof (UConverterDataLMBCS));
+    UConverterDataLMBCS * extraInfo = (UConverterDataLMBCS*)uprv_malloc (sizeof (UConverterDataLMBCS));
+    _this->extraInfo = extraInfo;
     if(extraInfo != NULL)
     {
         UConverterNamePieces stackPieces;
-        UConverterLoadArgs stackArgs={ (int32_t)sizeof(UConverterLoadArgs) };
+        UConverterLoadArgs stackArgs= UCNV_LOAD_ARGS_INITIALIZER;
         ulmbcs_byte_t i;
 
         uprv_memset(extraInfo, 0, sizeof(UConverterDataLMBCS));
@@ -691,6 +693,7 @@ _LMBCSSafeClone(const UConverter *cnv,
                 void *stackBuffer, 
                 int32_t *pBufferSize, 
                 UErrorCode *status) {
+    (void)status;
     LMBCSClone *newLMBCS;
     UConverterDataLMBCS *extraInfo;
     int32_t i;

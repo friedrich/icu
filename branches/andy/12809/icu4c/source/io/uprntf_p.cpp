@@ -184,6 +184,9 @@ u_printf_simple_percent_handler(const u_printf_stream_handler  *handler,
                                 const u_printf_spec_info       *info,
                                 const ufmt_args                *args)
 {
+    (void)formatBundle;
+    (void)info;
+    (void)args;
     static const UChar PERCENT[] = { UP_PERCENT };
 
     /* put a single '%' onto the output */
@@ -198,6 +201,7 @@ u_printf_string_handler(const u_printf_stream_handler  *handler,
                         const u_printf_spec_info       *info,
                         const ufmt_args                *args)
 {
+    (void)formatBundle;
     UChar *s;
     UChar buffer[UFMT_DEFAULT_BUFFER_SIZE];
     int32_t len, written;
@@ -248,6 +252,7 @@ u_printf_char_handler(const u_printf_stream_handler  *handler,
                       const u_printf_spec_info       *info,
                       const ufmt_args                *args)
 {
+    (void)formatBundle;
     UChar s[U16_MAX_LENGTH+1];
     int32_t len = 1, written;
     unsigned char arg = (unsigned char)(args[0].int64Value);
@@ -418,6 +423,7 @@ u_printf_hex_handler(const u_printf_stream_handler  *handler,
                      const u_printf_spec_info       *info,
                      const ufmt_args                *args)
 {
+    (void)formatBundle;
     int64_t         num        = args[0].int64Value;
     UChar           result[UPRINTF_BUFFER_SIZE];
     int32_t         len        = UPRINTF_BUFFER_SIZE;
@@ -453,6 +459,7 @@ u_printf_octal_handler(const u_printf_stream_handler  *handler,
                        const u_printf_spec_info       *info,
                        const ufmt_args                *args)
 {
+    (void)formatBundle;
     int64_t         num        = args[0].int64Value;
     UChar           result[UPRINTF_BUFFER_SIZE];
     int32_t         len        = UPRINTF_BUFFER_SIZE;
@@ -539,7 +546,8 @@ u_printf_pointer_handler(const u_printf_stream_handler  *handler,
                          ULocaleBundle                  *formatBundle,
                          const u_printf_spec_info       *info,
                          const ufmt_args                *args)
-{
+{ 
+    (void)formatBundle;
     UChar           result[UPRINTF_BUFFER_SIZE];
     int32_t         len  = UPRINTF_BUFFER_SIZE;
 
@@ -751,6 +759,7 @@ u_printf_ustring_handler(const u_printf_stream_handler  *handler,
                          const u_printf_spec_info       *info,
                          const ufmt_args                *args)
 {
+    (void)formatBundle;
     int32_t len, written;
     const UChar *arg = (const UChar*)(args[0].ptrValue);
 
@@ -779,6 +788,7 @@ u_printf_uchar_handler(const u_printf_stream_handler  *handler,
                        const u_printf_spec_info       *info,
                        const ufmt_args                *args)
 {
+    (void)formatBundle;
     int32_t written = 0;
     UChar arg = (UChar)(args[0].int64Value);
 
@@ -858,6 +868,9 @@ u_printf_count_handler(const u_printf_stream_handler  *handler,
                        const u_printf_spec_info       *info,
                        const ufmt_args                *args)
 {
+    (void)handler;
+    (void)context;
+    (void)formatBundle;
     int32_t *count = (int32_t*)(args[0].ptrValue);
 
     /* in the special case of count, the u_printf_spec_info's width */

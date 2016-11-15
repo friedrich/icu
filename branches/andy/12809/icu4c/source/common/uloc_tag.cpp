@@ -823,7 +823,7 @@ _appendVariantsToLanguageTag(const char* localeID, char* appendAt, int32_t capac
 
                     /* validate */
                     if (_isVariantSubtag(pVar, -1)) {
-                        if (uprv_strcmp(pVar,POSIX_VALUE) || len != uprv_strlen(POSIX_VALUE)) {
+                        if (uprv_strcmp(pVar,POSIX_VALUE) || len != (int32_t)uprv_strlen(POSIX_VALUE)) {
                             /* emit the variant to the list */
                             var = (VariantListEntry*)uprv_malloc(sizeof(VariantListEntry));
                             if (var == NULL) {
@@ -1371,7 +1371,7 @@ _appendLDMLExtensionAsKeywords(const char* ldmlext, ExtensionListEntry** appendT
 
                 U_ASSERT(pBcpKey != NULL);
 
-                if (bcpKeyLen >= sizeof(bcpKeyBuf)) {
+                if (bcpKeyLen >= (int32_t)sizeof(bcpKeyBuf)) {
                     /* the BCP key is invalid */
                     *status = U_ILLEGAL_ARGUMENT_ERROR;
                     goto cleanup;
@@ -1406,7 +1406,7 @@ _appendLDMLExtensionAsKeywords(const char* ldmlext, ExtensionListEntry** appendT
 
                 if (pBcpType) {
                     char bcpTypeBuf[128];       /* practically long enough even considering multiple subtag type */
-                    if (bcpTypeLen >= sizeof(bcpTypeBuf)) {
+                    if (bcpTypeLen >= (int32_t)sizeof(bcpTypeBuf)) {
                         /* the BCP type is too long */
                         *status = U_ILLEGAL_ARGUMENT_ERROR;
                         goto cleanup;
@@ -1642,6 +1642,7 @@ _appendKeywords(ULanguageTag* langtag, char* appendAt, int32_t capacity, UErrorC
 
 static int32_t
 _appendPrivateuseToLanguageTag(const char* localeID, char* appendAt, int32_t capacity, UBool strict, UBool hadPosix, UErrorCode* status) {
+    (void)hadPosix;
     char buf[ULOC_FULLNAME_CAPACITY];
     char tmpAppend[ULOC_FULLNAME_CAPACITY];
     UErrorCode tmpStatus = U_ZERO_ERROR;

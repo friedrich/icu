@@ -1432,7 +1432,7 @@ static void UConverter_toUnicode_ISCII_OFFSETS_LOGIC(UConverterToUnicodeArgs *ar
             if (*toUnicodeStatus != missingCharMarker) {
                 /* Check to make sure that consonant clusters are handled correct for Gurmukhi script. */
                 if (data->currentDeltaToUnicode == PNJ_DELTA && data->prevToUnicodeStatus != 0 && isPNJConsonant(data->prevToUnicodeStatus) &&
-                        (*toUnicodeStatus + PNJ_DELTA) == PNJ_SIGN_VIRAMA && (targetUniChar + PNJ_DELTA) == data->prevToUnicodeStatus) {
+                        (*toUnicodeStatus + PNJ_DELTA) == PNJ_SIGN_VIRAMA && ((UChar32)(targetUniChar + PNJ_DELTA) == data->prevToUnicodeStatus)) {
                     /* Consonant clusters C + HALANT + C should be encoded as ADHAK + C */
                     offset = (int)(source-args->source - 3);
                     tempTargetUniChar = PNJ_ADHAK; /* This is necessary to avoid some compiler warnings. */
@@ -1556,6 +1556,9 @@ _ISCIIGetUnicodeSet(const UConverter *cnv,
                     UConverterUnicodeSet which,
                     UErrorCode *pErrorCode)
 {
+    (void)cnv;
+    (void)which;
+    (void)pErrorCode;
     int32_t idx, script;
     uint8_t mask;
 
@@ -1598,7 +1601,9 @@ static const UConverterImpl _ISCIIImpl={
     _ISCIIgetName,
     NULL,
     _ISCII_SafeClone,
-    _ISCIIGetUnicodeSet
+    _ISCIIGetUnicodeSet,
+    NULL,
+    NULL
 };
 
 static const UConverterStaticData _ISCIIStaticData={

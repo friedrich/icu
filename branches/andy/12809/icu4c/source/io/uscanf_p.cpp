@@ -380,6 +380,11 @@ u_scanf_simple_percent_handler(UFILE        *input,
                                int32_t      *fmtConsumed,
                                int32_t      *argConverted)
 {
+    (void)info;
+    (void)args;
+    (void)fmt;
+    (void)fmtConsumed;
+
     /* make sure the next character in the input is a percent */
     *argConverted = 0;
     if(u_fgetc(input) != 0x0025) {
@@ -396,6 +401,10 @@ u_scanf_count_handler(UFILE         *input,
                       int32_t       *fmtConsumed,
                       int32_t       *argConverted)
 {
+    (void)input;
+    (void)fmt;
+    (void)fmtConsumed;
+
     /* in the special case of count, the u_scanf_spec_info's width */
     /* will contain the # of items converted thus far */
     if (!info->fSkipArg) {
@@ -420,6 +429,9 @@ u_scanf_double_handler(UFILE        *input,
                        int32_t      *fmtConsumed,
                        int32_t      *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     int32_t         len;
     double          num;
     UNumberFormat   *format;
@@ -485,6 +497,9 @@ u_scanf_scientific_handler(UFILE        *input,
                            int32_t      *fmtConsumed,
                            int32_t      *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     int32_t         len;
     double          num;
     UNumberFormat   *format;
@@ -582,6 +597,9 @@ u_scanf_scidbl_handler(UFILE        *input,
                        int32_t      *fmtConsumed,
                        int32_t      *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     int32_t       len;
     double        num;
     UNumberFormat *scientificFormat, *genericFormat;
@@ -672,6 +690,9 @@ u_scanf_integer_handler(UFILE       *input,
                         int32_t     *fmtConsumed,
                         int32_t     *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     int32_t         len;
     void            *num        = (void*) (args[0].ptrValue);
     UNumberFormat   *format;
@@ -745,6 +766,9 @@ u_scanf_percent_handler(UFILE       *input,
                         int32_t     *fmtConsumed,
                         int32_t     *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     int32_t         len;
     double          num;
     UNumberFormat   *format;
@@ -802,6 +826,9 @@ u_scanf_string_handler(UFILE        *input,
                        int32_t      *fmtConsumed,
                        int32_t      *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     const UChar *source;
     UConverter  *conv;
     char        *arg    = (char*)(args[0].ptrValue);
@@ -900,6 +927,9 @@ u_scanf_ustring_handler(UFILE       *input,
                         int32_t     *fmtConsumed,
                         int32_t     *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     UChar   *arg     = (UChar*)(args[0].ptrValue);
     UChar   *alias     = arg;
     int32_t count;
@@ -969,6 +999,9 @@ u_scanf_spellout_handler(UFILE          *input,
                          int32_t        *fmtConsumed,
                          int32_t        *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     int32_t         len;
     double          num;
     UNumberFormat   *format;
@@ -1028,6 +1061,9 @@ u_scanf_hex_handler(UFILE       *input,
                     int32_t     *fmtConsumed,
                     int32_t     *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     int32_t     len;
     int32_t     skipped;
     void        *num    = (void*) (args[0].ptrValue);
@@ -1084,6 +1120,9 @@ u_scanf_octal_handler(UFILE         *input,
                       int32_t       *fmtConsumed,
                       int32_t       *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     int32_t     len;
     int32_t     skipped;
     void        *num         = (void*) (args[0].ptrValue);
@@ -1131,6 +1170,9 @@ u_scanf_pointer_handler(UFILE       *input,
                         int32_t     *fmtConsumed,
                         int32_t     *argConverted)
 {
+    (void)fmt;
+    (void)fmtConsumed;
+
     int32_t len;
     int32_t skipped;
     void    *result;

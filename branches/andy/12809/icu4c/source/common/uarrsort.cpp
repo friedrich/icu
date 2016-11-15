@@ -38,16 +38,19 @@ enum {
 
 U_CAPI int32_t U_EXPORT2
 uprv_uint16Comparator(const void *context, const void *left, const void *right) {
+    (void)context;
     return (int32_t)*(const uint16_t *)left - (int32_t)*(const uint16_t *)right;
 }
 
 U_CAPI int32_t U_EXPORT2
 uprv_int32Comparator(const void *context, const void *left, const void *right) {
+    (void)context;
     return *(const int32_t *)left - *(const int32_t *)right;
 }
 
 U_CAPI int32_t U_EXPORT2
 uprv_uint32Comparator(const void *context, const void *left, const void *right) {
+    (void)context;
     uint32_t l=*(const uint32_t *)left, r=*(const uint32_t *)right;
 
     /* compare directly because (l-r) would overflow the int32_t result */

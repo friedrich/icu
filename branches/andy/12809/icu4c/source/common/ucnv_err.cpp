@@ -107,6 +107,10 @@ UCNV_FROM_U_CALLBACK_STOP (
                   UConverterCallbackReason reason,
                   UErrorCode * err)
 {
+    (void)context;
+    (void)fromUArgs;
+    (void)codeUnits;
+    (void)length;
     if (reason == UCNV_UNASSIGNED && IS_DEFAULT_IGNORABLE_CODE_POINT(codePoint))
     {
         /*
@@ -130,6 +134,7 @@ UCNV_TO_U_CALLBACK_STOP (
                    UErrorCode * err)
 {
     /* the caller must have set the error code accordingly */
+    (void)context; (void)toUArgs; (void)codePoints; (void)length; (void)reason; (void)err;
     return;
 }
 
@@ -143,6 +148,9 @@ UCNV_FROM_U_CALLBACK_SKIP (
                   UConverterCallbackReason reason,
                   UErrorCode * err)
 {
+    (void)fromUArgs;
+    (void)codeUnits;
+    (void)length;
     if (reason <= UCNV_IRREGULAR)
     {
         if (reason == UCNV_UNASSIGNED && IS_DEFAULT_IGNORABLE_CODE_POINT(codePoint))
@@ -171,6 +179,8 @@ UCNV_FROM_U_CALLBACK_SUBSTITUTE (
                   UConverterCallbackReason reason,
                   UErrorCode * err)
 {
+    (void)codeUnits;
+    (void)length;
     if (reason <= UCNV_IRREGULAR)
     {
         if (reason == UCNV_UNASSIGNED && IS_DEFAULT_IGNORABLE_CODE_POINT(codePoint))
@@ -368,6 +378,9 @@ UCNV_TO_U_CALLBACK_SKIP (
                  UConverterCallbackReason reason,
                  UErrorCode * err)
 {
+    (void)toArgs;
+    (void)codeUnits;
+    (void)length;
     if (reason <= UCNV_IRREGULAR)
     {
         if (context == NULL || (*((char*)context) == UCNV_PRV_STOP_ON_ILLEGAL && reason == UCNV_UNASSIGNED))
@@ -388,6 +401,8 @@ UCNV_TO_U_CALLBACK_SUBSTITUTE (
                  UConverterCallbackReason reason,
                  UErrorCode * err)
 {
+    (void)codeUnits;
+    (void)length;
     if (reason <= UCNV_IRREGULAR)
     {
         if (context == NULL || (*((char*)context) == UCNV_PRV_STOP_ON_ILLEGAL && reason == UCNV_UNASSIGNED))

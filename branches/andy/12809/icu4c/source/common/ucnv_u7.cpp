@@ -196,6 +196,7 @@ static void
 _UTF7Open(UConverter *cnv,
           UConverterLoadArgs *pArgs,
           UErrorCode *pErrorCode) {
+    (void)pArgs;
     if(UCNV_GET_VERSION(cnv)<=1) {
         /* TODO(markus): Should just use cnv->options rather than copying the version number. */
         cnv->fromUnicodeStatus=UCNV_GET_VERSION(cnv)<<28;
@@ -1462,7 +1463,9 @@ static const UConverterImpl _IMAPImpl={
     NULL,
     NULL, /* we don't need writeSub() because we never call a callback at fromUnicode() */
     NULL,
-    ucnv_getCompleteUnicodeSet
+    ucnv_getCompleteUnicodeSet,
+    NULL,
+    NULL
 };
 
 static const UConverterStaticData _IMAPStaticData={

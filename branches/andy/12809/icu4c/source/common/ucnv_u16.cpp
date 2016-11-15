@@ -21,6 +21,7 @@
 #if !UCONFIG_NO_CONVERSION
 
 #include "unicode/ucnv.h"
+#include "unicode/uversion.h"
 #include "ucnv_bld.h"
 #include "ucnv_cnv.h"
 #include "cmemory.h"
@@ -587,6 +588,7 @@ static void
 _UTF16BEOpen(UConverter *cnv,
              UConverterLoadArgs *pArgs,
              UErrorCode *pErrorCode) {
+    (void)pArgs;
     if(UCNV_GET_VERSION(cnv)<=1) {
         _UTF16BEReset(cnv, UCNV_RESET_BOTH);
     } else {
@@ -1186,6 +1188,7 @@ static void
 _UTF16LEOpen(UConverter *cnv,
              UConverterLoadArgs *pArgs,
              UErrorCode *pErrorCode) {
+    (void)pArgs;
     if(UCNV_GET_VERSION(cnv)<=1) {
         _UTF16LEReset(cnv, UCNV_RESET_BOTH);
     } else {
@@ -1281,7 +1284,7 @@ _UTF16Reset(UConverter *cnv, UConverterResetChoice choice) {
     }
 }
 
-static const UConverterSharedData _UTF16v2Data;
+extern const UConverterSharedData _UTF16v2Data;
 
 static void
 _UTF16Open(UConverter *cnv,
@@ -1315,7 +1318,7 @@ _UTF16GetName(const UConverter *cnv) {
     }
 }
 
-const UConverterSharedData _UTF16Data;
+extern const UConverterSharedData _UTF16Data;
 
 #define IS_UTF16BE(cnv) ((cnv)->sharedData==&_UTF16BEData)
 #define IS_UTF16LE(cnv) ((cnv)->sharedData==&_UTF16LEData)
@@ -1557,7 +1560,7 @@ static const UConverterStaticData _UTF16v2StaticData = {
     { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } /* reserved */
 };
 
-static const UConverterSharedData _UTF16v2Data =
+const UConverterSharedData _UTF16v2Data =
         UCNV_IMMUTABLE_SHARED_DATA_INITIALIZER(&_UTF16v2StaticData, &_UTF16v2Impl);
 
 #endif

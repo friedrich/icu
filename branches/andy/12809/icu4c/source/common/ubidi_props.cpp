@@ -55,6 +55,8 @@ ubidi_getSingleton() {
 
 static UBool U_CALLCONV
 _enumPropertyStartsRange(const void *context, UChar32 start, UChar32 end, uint32_t value) {
+    (void)end;
+    (void)value;
     /* add the start code point to the USet */
     const USetAdder *sa=(const USetAdder *)context;
     sa->add(sa->set, start);

@@ -2017,7 +2017,9 @@ static const UConverterImpl _SCSUImpl={
     _SCSUGetName,
     NULL,
     _SCSUSafeClone,
-    ucnv_getCompleteUnicodeSet
+    ucnv_getCompleteUnicodeSet,
+    NULL,
+    NULL
 };
 
 static const UConverterStaticData _SCSUStaticData={
