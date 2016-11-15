@@ -11,7 +11,6 @@
 *   indentation:4
 */
 
-#define   UTRACE_IMPL
 #include "unicode/utrace.h"
 #include "utracimp.h"
 #include "cstring.h"
@@ -134,7 +133,7 @@ static void outputHexBytes(int64_t val, int32_t charsToOutput,
 
 /* Output a pointer value in hex.  Work with any size of pointer   */
 static void outputPtrBytes(void *val, char *outBuf, int32_t *outIx, int32_t capacity) {
-    int32_t  i;
+    uint32_t  i;
     int32_t  incVal = 1;              /* +1 for big endian, -1 for little endian          */
     char     *p     = (char *)&val;   /* point to current byte to output in the ptr val  */
 
@@ -230,7 +229,7 @@ utrace_vformat(char *outBuf, int32_t capacity, int32_t indent, const char *fmt, 
 
         case 'S':
             /* UChar * string, with length, len==-1 for null terminated. */
-            ptrArg = va_arg(args, void *);             /* Ptr    */
+            ptrArg = va_arg(args, char *);             /* Ptr    */
             intArg =(int32_t)va_arg(args, int32_t);    /* Length */
             outputUString((const UChar *)ptrArg, intArg, outBuf, &outIx, capacity, indent);
             break;
@@ -261,7 +260,7 @@ utrace_vformat(char *outBuf, int32_t capacity, int32_t indent, const char *fmt, 
             
         case 'p':
             /*  Pointers.   */
-            ptrArg = va_arg(args, void *);
+            ptrArg = va_arg(args, char *);
             outputPtrBytes(ptrArg, outBuf, &outIx, capacity);
             break;
 
@@ -332,7 +331,7 @@ utrace_vformat(char *outBuf, int32_t capacity, int32_t indent, const char *fmt, 
                             break;
                         case 's':
                             charsToOutput = 0;
-                            outputString(*ptrPtr, outBuf, &outIx, capacity, indent);
+                            outputString((const char *)*ptrPtr, outBuf, &outIx, capacity, indent);
                             outputChar('\n', outBuf, &outIx, capacity, indent);
                             longArg = *ptrPtr==NULL? 0: 1;   /* for test for null term. array. */
                             ptrPtr++;

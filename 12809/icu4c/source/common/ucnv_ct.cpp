@@ -264,7 +264,7 @@ _CompoundTextOpen(UConverter *cnv, UConverterLoadArgs *pArgs, UErrorCode *errorC
         UConverterDataCompoundText *myConverterData = (UConverterDataCompoundText *) cnv->extraInfo;
 
         UConverterNamePieces stackPieces;
-        UConverterLoadArgs stackArgs={ (int32_t)sizeof(UConverterLoadArgs) };
+        UConverterLoadArgs stackArgs=UCNV_LOAD_ARGS_INITIALIZER;
 
         myConverterData->myConverterArray[COMPOUND_TEXT_SINGLE_0] = NULL;
         myConverterData->myConverterArray[COMPOUND_TEXT_SINGLE_1] = ucnv_loadSharedData("icu-internal-compound-s1", &stackPieces, &stackArgs, errorCode);
@@ -319,10 +319,13 @@ _CompoundTextClose(UConverter *converter) {
 
 static void
 _CompoundTextReset(UConverter *converter, UConverterResetChoice choice) {
+    (void)converter;
+    (void)choice;
 }
 
 static const char*
 _CompoundTextgetName(const UConverter* cnv){
+    (void)cnv;
     return "x11-compound-text";
 }
 
@@ -613,7 +616,9 @@ static const UConverterImpl _CompoundTextImpl = {
     _CompoundTextgetName,
     NULL,
     NULL,
-    _CompoundText_GetUnicodeSet
+    _CompoundText_GetUnicodeSet,
+    NULL,
+    NULL
 };
 static const UConverterStaticData _CompoundTextStaticData = {
     sizeof(UConverterStaticData),

@@ -8,7 +8,7 @@
 *
 ******************************************************************************
 *
-* File ufile.c
+* File ufile.cpp
 *
 * Modification History:
 *
@@ -24,7 +24,9 @@
  * fileno is not declared when building with GCC in strict mode.
  */
 #if defined(__GNUC__) && defined(__STRICT_ANSI__)
-#undef __STRICT_ANSI__
+// TODO(andy): better understand why this was here.
+//             #include <string> fails when building with C++.
+// #undef __STRICT_ANSI__
 #endif
 
 #include "locmap.h"

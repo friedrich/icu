@@ -604,7 +604,9 @@ static const UConverterImpl _HZImpl={
     NULL,
     _HZ_WriteSub,
     _HZ_SafeClone,
-    _HZ_GetUnicodeSet
+    _HZ_GetUnicodeSet,
+    NULL,
+    NULL
 };
 
 static const UConverterStaticData _HZStaticData={

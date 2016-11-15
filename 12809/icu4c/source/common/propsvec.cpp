@@ -499,6 +499,8 @@ upvec_compactToUTrie2Handler(void *context,
                              UChar32 start, UChar32 end,
                              int32_t rowIndex, uint32_t *row, int32_t columns,
                              UErrorCode *pErrorCode) {
+    (void)row;
+    (void)columns;
     UPVecToUTrie2Context *toUTrie2=(UPVecToUTrie2Context *)context;
     if(start<UPVEC_FIRST_SPECIAL_CP) {
         utrie2_setRange32(toUTrie2->trie, start, end, (uint32_t)rowIndex, TRUE, pErrorCode);

@@ -44,7 +44,7 @@ U_CFUNC UDataMemory *UDataMemory_createNewInstance(UErrorCode *pErr) {
     if (U_FAILURE(*pErr)) {
         return NULL;
     }
-    This = uprv_malloc(sizeof(UDataMemory));
+    This = (UDataMemory *)uprv_malloc(sizeof(UDataMemory));
     if (This == NULL) {
         *pErr = U_MEMORY_ALLOCATION_ERROR; }
     else {

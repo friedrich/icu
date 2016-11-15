@@ -221,6 +221,7 @@ offsetTOCLookupFn(const UDataMemory *pData,
                   const char *tocEntryName,
                   int32_t *pLength,
                   UErrorCode *pErrorCode) {
+    (void)pErrorCode;
     const UDataOffsetTOC  *toc = (UDataOffsetTOC *)pData->toc;
     if(toc!=NULL) {
         const char *base=(const char *)toc;
@@ -272,6 +273,7 @@ static const DataHeader *pointerTOCLookupFn(const UDataMemory *pData,
                    const char *name,
                    int32_t *pLength,
                    UErrorCode *pErrorCode) {
+    (void)pErrorCode;
     if(pData->toc!=NULL) {
         const PointerTOC *toc = (PointerTOC *)pData->toc;
         int32_t number, count=(int32_t)toc->count;

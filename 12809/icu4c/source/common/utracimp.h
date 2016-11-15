@@ -53,11 +53,7 @@ U_CDECL_BEGIN
  * Use only via UTRACE_ macros.
  * @internal
  */
-#ifdef UTRACE_IMPL
-U_EXPORT int32_t
-#else
 U_CFUNC U_COMMON_API int32_t
-#endif
 utrace_level;
 
 

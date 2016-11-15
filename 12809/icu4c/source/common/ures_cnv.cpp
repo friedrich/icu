@@ -43,7 +43,7 @@ ures_openU(const UChar *myPath,
     }
     else {
         length=u_strlen(myPath);
-        if(length>=sizeof(pathBuffer)) {
+        if(length>=(int32_t)sizeof(pathBuffer)) {
             *status=U_ILLEGAL_ARGUMENT_ERROR;
             return NULL;
         } else if(uprv_isInvariantUString(myPath, length)) {
@@ -61,7 +61,7 @@ ures_openU(const UChar *myPath,
             if(U_FAILURE(*status)) {
                 return NULL;
             }
-            if(length>=sizeof(pathBuffer)) {
+            if(length>=(int32_t)sizeof(pathBuffer)) {
                 /* not NUL-terminated - path too long */
                 *status=U_ILLEGAL_ARGUMENT_ERROR;
                 return NULL;

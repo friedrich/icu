@@ -374,7 +374,7 @@ udata_openSwapper(UBool inIsBigEndian, uint8_t inCharset,
     }
 
     /* allocate the swapper */
-    swapper=uprv_malloc(sizeof(UDataSwapper));
+    swapper=(UDataSwapper *)uprv_malloc(sizeof(UDataSwapper));
     if(swapper==NULL) {
         *pErrorCode=U_MEMORY_ALLOCATION_ERROR;
         return NULL;
@@ -435,7 +435,7 @@ udata_openSwapperForInputData(const void *data, int32_t length,
     }
 
     pHeader=(const DataHeader *)data;
-    if( (length>=0 && length<sizeof(DataHeader)) ||
+    if( (length>=0 && length<(int32_t)sizeof(DataHeader)) ||
         pHeader->dataHeader.magic1!=0xda ||
         pHeader->dataHeader.magic2!=0x27 ||
         pHeader->info.sizeofUChar!=2

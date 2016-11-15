@@ -197,7 +197,7 @@ uscript_openRun(const UChar *src, int32_t length, UErrorCode *pErrorCode)
         return NULL;
     }
 
-    result = uprv_malloc(sizeof (UScriptRun));
+    result = (UScriptRun *)uprv_malloc(sizeof (UScriptRun));
 
     if (result == NULL) {
         *pErrorCode = U_MEMORY_ALLOCATION_ERROR;

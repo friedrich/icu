@@ -53,7 +53,7 @@
  * @internal
  */
 #ifdef U_UTF8_IMPL
-U_EXPORT const uint8_t 
+extern const uint8_t
 #elif defined(U_STATIC_IMPLEMENTATION) || defined(U_COMMON_IMPLEMENTATION)
 U_CFUNC const uint8_t
 #else
